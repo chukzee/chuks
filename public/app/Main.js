@@ -8,22 +8,23 @@ var Main = {};
     var pageRouteUrl;
     var isMainInit;
     var deviceUrl = "device/";
+    var device_category;
     var appUrl = "app/";
     var listeners = {};
     Main.controller = {}; // js in the controller folder will dynamically use this prototype
     Main.ro = {};// object for storing global access for rcall variables for making remote method calls
 
-    Main.helper = {
-        loadDefaultProfilePhoto: function (evt) {
+    Main.helper = new function () {
+
+        var loadDefaultPhoto = function (evt, available) {
 
             if (!evt.target) {
                 console.warn('event target is undefined! this may be caused by '
                         + 'invalid call or use of method to get default'
-                        + ' profile photo - make the event is passed as parameter');
+                        + ' profile photo - make sure the event is passed as parameter');
                 return;
             }
 
-            var available = 'app/images/default_person.png';
             //check if last error is due to failure to load the default image.
             //we will terminate the process if the default image was not found
             if (evt.target.src.endsWith('/' + available)) {
@@ -33,8 +34,23 @@ var Main = {};
             }
 
             evt.target.src = available;//get the default image
-        }
+        };
+
+        this.loadDefaultProfilePhoto = function (evt) {
+            loadDefaultPhoto(evt, 'app/images/default_person.png');
+        };
+
+        this.loadDefaultGroupPhoto = function (evt) {
+            loadDefaultPhoto(evt, 'app/images/default_group.png');
+        };
+
+
+        this.loadDefaultTournamentPhoto = function (evt) {
+            loadDefaultPhoto(evt, 'app/images/default_tournament.png');
+        };
+
     };
+
     function xhrReq(send, method, url) {
         var data, successFn, errorFn, completeFn;
         if (arguments.length === 4) {
@@ -178,8 +194,27 @@ var Main = {};
             //because of the bind(this) in the constructor above - the 'this' of the
             // Main.device class instance is bind to onDeviceReady.
             this.isMobileDeviceReady = true;
-        }
+        },
 
+        getCategory: function () {
+            return device_category;
+        },
+
+        isSmall: function () {
+            return device_category === "small";
+        },
+
+        isMedium: function () {
+            return device_category === "medium";
+        },
+
+        isLarge: function () {
+            return device_category === "large";
+        },
+
+        isXLarge: function () {
+            return window.screen.width > 800; //important! checking current width of  screen 
+        }
     };
 
 
@@ -188,8 +223,8 @@ var Main = {};
         isFunc: function (fn) {
             return typeof fn === "function";
         },
-        isString: function (fn) {
-            return typeof fn === "string";
+        isString: function (str) {
+            return typeof str === "string";
         },
         isArray: function (a) {
             return a && a.constructor === Array;
@@ -256,8 +291,8 @@ var Main = {};
                         return;
                     }
 
-                    console.log('Object.getOwnPropertyNames(rcalFailures)  ', Object.getOwnPropertyNames(rcalFailures));
-                    console.log('Object.getOwnPropertyNames(rcalFailures).length  ', Object.getOwnPropertyNames(rcalFailures).length);
+                    //console.log('Object.getOwnPropertyNames(rcalFailures)  ', Object.getOwnPropertyNames(rcalFailures));
+                    //console.log('Object.getOwnPropertyNames(rcalFailures).length  ', Object.getOwnPropertyNames(rcalFailures).length);
 
                     if (Object.getOwnPropertyNames(rcalFailures).length > 0) {
                         this.live(rcalFailures, arguments[0]);
@@ -286,7 +321,12 @@ var Main = {};
 
             if (classes.length === 0) {
                 if (Main.util.isFunc(fn)) {
-                    fn();
+                    try {
+                        fn();
+                    } catch (e) {
+                        console.warn(e);
+                    }
+
                 }
                 return;
             }
@@ -380,7 +420,12 @@ var Main = {};
                         }
 
                         if (Main.util.isFunc(fn)) {
-                            fn();
+                            try {
+                                fn();
+                            } catch (e) {
+                                console.warn(e);
+                            }
+
                         }
                         for (var rem_classs = 0; rem_classs < rcallWaitingFn.length; rem_classs++) {
                             if (Main.util.isFunc(rcallWaitingFn[rem_classs])) {
@@ -553,8 +598,76 @@ var Main = {};
             }
         };
     }
-    ;
 
+    function Event() {
+
+        var evtList = {};
+        /**
+         * Used to register an event listener
+         * 
+         * @param {type} evt_name - The name of the event
+         * @param {type} func -  The callback of the event
+         * @returns {undefined}
+         */
+        this.on = function (evt_name, func) {
+            if (!evtList[evt_name]) {
+                evtList[evt_name] = [];
+            }
+            if (Main.util.isFunc(func)) {
+                evtList[evt_name].push(func);
+            }
+        };
+        /**
+         * Used to remove an event listener
+         * 
+         * 
+         * @param {type} evt_name  - The name of the  event
+         * @param {type} func - (option) the callback function attached to the event that should be removed only. If not specified the event and all its callbacks will be removed
+         * @returns {undefined}
+         */
+        this.remove = function (evt_name, func) {
+
+            if (evtList[evt_name] && !func) {
+                evtList[evt_name] = null;
+            } else if (evtList[evt_name]) {
+                var evt = evtList[evt_name];
+                for (var f in evt) {
+                    if (evt[f] === func) {
+                        evt[f].splice(f, 1);
+                    }
+                }
+            }
+        };
+        /**
+         * Used to fire an event.
+         * The first parameter is the event name and the other parameters are 
+         * the arguments to be passed to the  listener callback function
+         * 
+         * @param {type} evt_name - The name of the event
+         * @returns {undefined}
+         */
+        this.fire = function (evt_name) {
+            var argus = [];
+            if (arguments.length > 1) {
+                for (var i = 1; i < arguments.length; i++) {
+                    argus[i - 1] = arguments[i];
+                }
+            }
+            if (evtList[evt_name]) {
+                var evt = evtList[evt_name];
+                for (var f in evt) {
+                    try {
+                        evt[f].apply(this, argus);
+                    } catch (e) {
+                        console.warn(e);
+                    }
+
+                }
+            }
+        };
+
+
+    }
 
 
     function Page() {
@@ -903,7 +1016,7 @@ var Main = {};
                                 $(children[k]).remove();//remove from this postion
                                 $('body').append(children[k]);//append to the end                                
                                 //clear all previous event listeners
-                                $(document).add("*").off();
+                                // $(document).add("*").off();//deprecate - incorrect!
                                 var lastPage = pages[pages.length - 1];
                                 //call relevant event listeners
                                 callListeners(listeners["ready"]);
@@ -944,7 +1057,7 @@ var Main = {};
                     });
 
                     //clear all previous event listeners
-                    $(document).add("*").off();
+                    //$(document).add("*").off();//deprecate - incorrect!
                     var lastPage = pages[pages.length - 1];
                     //call relevant event listeners
                     callListeners(listeners["ready"]);
@@ -1073,16 +1186,109 @@ var Main = {};
     }
 
 
-    function List() {
+    function Listview() {
         var listTpl = {};
         var listTplWaitCount = {};
         var ListTplGetting = {};
+        var _game9ja_Dom_Hold_Data = '_game9ja_Dom_Hold_Data_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+        var upOut = {};
+        var downOut = {};
+        var MAX_OFF = 15;//max number of elements off view before consodering remove element from dom.
+        var MAX_REMAINING_OFF = MAX_OFF - 5;//max number of elements to be left after removal for excess 
+        var MIN_REMAINING_OFF = MAX_REMAINING_OFF - 5;//number of elements off view before putting back the removed elements
 
-        function tplParam(html, obj) {
+        function listThis(html, obj) {
 
-            var set = obj.set;
-            for (var name in set) {
-                var value = set[name];
+            var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+
+            this.addItem = function (data) {//analogous to appendItem
+                this.appendItem(data);
+            };
+
+            this.appendItem = function (data) {
+
+                topCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                bottomCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                if (downOut[container_id].length) {
+                    downOut[container_id].unshift(data);
+                } else {
+                    putItem(html, obj, data, doAppendItem);
+                }
+
+                /*
+                 //TESTING!!!
+                 if (downOut[container_id].length + $(obj.container).children().length === 100) {//TESTING!!! TO BE REMOVED
+                 
+                 for(var i=0; i<downOut[container_id].length; i++){
+                 console.log(downOut[container_id][i].black_player_name);
+                 }
+                 }*/
+
+            };
+
+            this.prependItem = function (data) {
+
+                bottomCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                topCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                if (upOut[container_id].length) {
+                    upOut[container_id].unshift(data);
+                } else {
+                    putItem(html, obj, data, doPrependItem);
+                }
+
+                /*
+                 //TESTING!!!
+                 if (upOut[container_id].length + $(obj.container).children().length === 100) {//TESTING!!! TO BE REMOVED
+                 
+                 for(var i=0; i<upOut[container_id].length; i++){
+                 console.log(upOut[container_id][i].black_player_name);
+                 }
+                 
+                 }*/
+
+            };
+
+            //NOT YET TESTED
+            this.removeItemAt = function (index) {
+                if (index < 0) {
+                    return;//important
+                }
+                var up_out = upOut[container_id];
+                var down_out = downOut[container_id];
+                var children = $(obj.container).children();
+                if (index < up_out.length) {
+                    up_out.splice(index, 1);
+                } else if (index < up_out.length + children.length) {
+                    var c_index = index - up_out.length;
+                    var child = children[c_index];
+                    if (child) {
+                        child.remove();
+                    }
+                } else {
+                    //TODO - NOT YET TESTED
+                    var c_index = index - up_out.length - children.length;
+                    down_out.splice(c_index, 1);
+                }
+
+
+
+            };
+
+        }
+
+        function putItem(html, obj, data, actionFn) {
+            var item = tplParam(html, obj, data);
+            actionFn(obj, data, item);
+        }
+
+        function tplParam(html, obj, data) {
+
+            for (var name in data) {
+                var value = data[name];
                 var tpl_name = '{' + name + '}';
                 var h;
                 do {
@@ -1092,10 +1298,10 @@ var Main = {};
 
             }
 
-            var content = $('<div class='
+            var content = $('<div '
                     + (obj.itemClass
                             && Main.util.isString(obj.itemClass)
-                            ? obj.itemClass : "list-group-item")
+                            ? (' class="' + obj.itemClass + '" ') : '')
                     + '></div>').html(html);
 
             //remove title and script tags if present
@@ -1108,34 +1314,347 @@ var Main = {};
             return content;
         }
 
-        function doAddItem(obj, item) {
+        function doAppendItem(obj, data, item) {
+
             $(obj.container).append(item);
+
+            var children = $(obj.container).children();
+            var last = children[children.length - 1]; //last element
+
+            //store the data to the dom element for tracking
+            last[_game9ja_Dom_Hold_Data] = data;
+
         }
-        function doPrependItem(obj, item) {
+
+        function doPrependItem(obj, data, item) {
+
             $(obj.container).prepend(item);
+
+            var children = $(obj.container).children();
+            var first = children[0]; //first element
+
+            //store the data to the dom element for tracking
+            first[_game9ja_Dom_Hold_Data] = data;
+
         }
-        function handle(html, obj, tplFn, actionFn) {
-            var item = tplFn(html, obj);
-            if (!$(obj.container).hasClass("list-group")) {
-                $(obj.container).addClass("list-group");
+
+        function handle(html, obj) {
+            var container_id = obj.container.charAt(0) === "#" ? obj.container.substring(1) : obj.container;
+            if (!upOut[container_id]) {
+                upOut[container_id] = []; // initialize
+            }
+            if (!downOut[container_id]) {
+                downOut[container_id] = []; // initialize
             }
 
-            actionFn(obj, item);
+
+            $(obj.container).html('');//clear previous content
+
+            $(obj.container).off("click");
+            $(obj.container).on("click", onSelectItem.bind({container: obj.container, onSelect: obj.onSelect}));
+
+            var cont_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+            var parent = document.getElementById(cont_id);
+
+            var lstThis = new listThis(html, obj);
+
+            var onScroll = onScrollList.bind({obj: obj, itemHtml: html, container_id: cont_id, container: parent, scrollContainer: obj.scrollContainer});
+
+            Main.dom.removeListener(obj.scrollContainer, 'scroll', onScroll, false);
+            Main.dom.addListener(obj.scrollContainer, 'scroll', onScroll, false);
+
+            try {
+                obj.onReady.bind(lstThis)();
+            } catch (e) {
+                console.warn(e);
+            }
+
+
         }
-        function putItem(obj, actionCallback) {
+
+        function onScrollList(evt) {
+
+            if (!this.lastScrollTop) {
+                this.lastScrollTop = 0;
+            }
+
+            var count = 0;
+
+            if (this.lastScrollTop < evt.target.scrollTop) {
+
+                while (topCutOff(this.container, this.scrollContainer, this.container_id, this.itemHtml, this.obj)) {
+                    //continue until no more cutoff
+
+                    console.log('count topCutOff looping ', ++count);
+                }
+            } else {
+
+                while (bottomCutOff(this.container, this.scrollContainer, this.container_id, this.itemHtml, this.obj)) {
+                    //continue until no more cutoff
+
+                    console.log('count bottomCutOff looping ', ++count);
+                }
+            }
+
+
+            this.lastScrollTop = evt.target.scrollTop;
+        }
+
+        function topCutOff(_container, _scrollContainer, container_id, itemHtml, obj) {
+            var container, scrollContainer;
+
+            if (Main.util.isString(_container)) {
+                var cid = _container.charAt(0) === '#' ? _container.substring(1) : _container;
+                container = document.getElementById(cid);
+            } else if (_container) {
+                container = _container;
+            } else {
+                return;
+            }
+
+            if (Main.util.isString(_scrollContainer)) {
+                var sid = _scrollContainer.charAt(0) === '#' ? _scrollContainer.substring(1) : _scrollContainer;
+                scrollContainer = document.getElementById(sid);
+            } else if (_scrollContainer) {
+                scrollContainer = _scrollContainer;
+            } else {
+                return;
+            }
+
+            var firstChild = container.children[0];
+            if (!firstChild) {
+                return;
+            }
+            var firstChildBound = firstChild.getBoundingClientRect();
+            var scrollBound = scrollContainer.getBoundingClientRect();
+
+            var item_up_top = firstChildBound.top;
+            var item_size = firstChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var count_off_up = (scrollBound.top - item_up_top) / item_size;
+            var up_out = upOut[container_id];
+            var trim;
+            if (count_off_up >= MAX_OFF) {
+                var CUT_OFF = MAX_OFF - MAX_REMAINING_OFF;
+                for (var i = 0; i < CUT_OFF; i++) {
+                    var child = container.children[0];
+
+                    if (container.removeChild(child)) {
+                        var data = child[_game9ja_Dom_Hold_Data];
+                        up_out.push(data);
+                        trim = true;
+
+                        console.log("removed top - child count = ", container.children.length);
+                    }
+                }
+            }
+
+            addBackBottomCutOff(container, scrollBound, container_id, itemHtml, obj);
+
+            return trim;
+        }
+
+        function bottomCutOff(_container, _scrollContainer, container_id, itemHtml, obj) {
+            var container, scrollContainer;
+
+            if (Main.util.isString(_container)) {
+                var cid = _container.charAt(0) === '#' ? _container.substring(1) : _container;
+                container = document.getElementById(cid);
+            } else if (_container) {
+                container = _container;
+            } else {
+                return;
+            }
+
+            if (Main.util.isString(_scrollContainer)) {
+                var sid = _scrollContainer.charAt(0) === '#' ? _scrollContainer.substring(1) : _scrollContainer;
+                scrollContainer = document.getElementById(sid);
+            } else if (_scrollContainer) {
+                scrollContainer = _scrollContainer;
+            } else {
+                return;
+            }
+
+            var lastChild = container.children[container.children.length - 1];
+            if (!lastChild) {
+                return;
+            }
+            var lastChildBound = lastChild.getBoundingClientRect();
+            var scrollBound = scrollContainer.getBoundingClientRect();
+
+            var item_size = lastChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var item_bottom = lastChildBound.top + lastChildBound.height;
+            var scroll_cont_bottom = scrollBound.top + scrollBound.height;
+
+            var count_off_bottom = (item_bottom - scroll_cont_bottom) / item_size;
+
+            var down_out = downOut[container_id];
+            var trim;
+            if (count_off_bottom >= MAX_OFF) {
+                var CUT_OFF = MAX_OFF - MAX_REMAINING_OFF;
+                for (var i = 0; i < CUT_OFF; i++) {
+                    var last_child = container.children[container.children.length - 1];
+
+                    if (container.removeChild(last_child)) {
+                        var data = last_child[_game9ja_Dom_Hold_Data];
+                        down_out.push(data);
+                        trim = true;
+
+                        console.log("removed bottom - child count = ", container.children.length);
+                    }
+                }
+            }
+
+
+            addBackTopCutOff(container, scrollBound, container_id, itemHtml, obj);
+
+            return trim;
+        }
+
+        function addBackTopCutOff(container, scrollBound, container_id, itemHtml, obj) {
+
+            if (!upOut[container_id].length) {
+                return;
+            }
+
+            var firstChild = container.children[0];
+            if (!firstChild) {
+                return;
+            }
+            var firstChildBound = firstChild.getBoundingClientRect();
+            var item_up_top = firstChildBound.top;
+            var item_size = firstChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var count_off_up = (scrollBound.top - item_up_top) / item_size;
+            var up_out = upOut[container_id];
+            if (count_off_up < MAX_REMAINING_OFF) {
+                var add_back_count = MAX_OFF - count_off_up;
+                add_back_count = add_back_count > up_out.length ? up_out.length : add_back_count;
+
+                for (var i = 0; i < add_back_count; i++) {
+                    var last_index = up_out.length - 1;
+                    if (last_index < 0) {
+                        break;
+                    }
+                    var last_data = up_out[last_index];
+                    putItem(itemHtml, obj, last_data, doPrependItem);
+                    up_out.splice(last_index, 1);
+                }
+
+            }
+
+        }
+
+
+        function addBackBottomCutOff(container, scrollBound, container_id, itemHtml, obj) {
+
+            if (!downOut[container_id].length) {
+                return;
+            }
+
+            var lastChild = container.children[container.children.length - 1];
+            if (!lastChild) {
+                return;
+            }
+
+            var lastChildBound = lastChild.getBoundingClientRect();
+
+            var item_size = lastChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var item_bottom = lastChildBound.top + lastChildBound.height;
+            var scroll_cont_bottom = scrollBound.top + scrollBound.height;
+
+            var count_off_bottom = (item_bottom - scroll_cont_bottom) / item_size;
+            var down_out = downOut[container_id];
+            if (count_off_bottom < MAX_REMAINING_OFF) {
+                var add_back_count = MAX_OFF - count_off_bottom;
+                add_back_count = add_back_count > down_out.length ? down_out.length : add_back_count;
+
+                for (var i = 0; i < add_back_count; i++) {
+                    var last_index = down_out.length - 1;
+                    if (last_index < 0) {
+                        break;
+                    }
+                    var last_data = down_out[last_index];
+                    putItem(itemHtml, obj, last_data, doAppendItem);
+                    down_out.splice(last_index, 1);
+                }
+
+            }
+
+
+        }
+
+
+        function onSelectItem(evt) {
+            var children = $(this.container).children();
+            if (!children.length) {
+                return;
+            }
+
+            var parent = evt.target;
+
+            while (parent && parent !== document.body) {
+                var saved_data = parent[_game9ja_Dom_Hold_Data];
+                if (saved_data) {
+                    if (Main.util.isFunc(this.onSelect)) {
+                        //call the onSelect callback
+                        try {
+                            this.onSelect.bind({data: saved_data})(evt, saved_data);
+                        } catch (e) {
+                            console.warn(e);
+                        }
+
+                    }
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+        }
+
+
+        this.create = function (obj) {
             if (!obj.tplUrl) {
                 console.warn('missing list property - tplUrl');
                 return;
-            } else if (!obj.container) {
-                console.warn('missing list property - container');
+            } else if (!Main.util.isString(obj.container)) {
+                console.warn('missing list property or not a string - container');
                 return;
-            } else if (!obj.set) {
-                console.warn('missing list property - set');
+            } else if (!Main.util.isFunc(obj.onReady)) {
+                console.warn('missing list property or not a function - onReady');
                 return;
             }
+
+            if (!obj.scrollContainer) {
+                obj.scrollContainer = obj.container;
+                console.warn('scrollContainer property not provided and container property has be selected in it place! Is this your intention?');
+            }
+
+            var scrollEl = obj.scrollContainer;
+            if (Main.util.isString(obj.scrollContainer)) {
+                var sid = obj.scrollContainer.charAt(0) === '#' ? obj.scrollContainer.substring(1) : obj.scrollContainer;
+                scrollEl = document.getElementById(sid);
+            }
+
+            scrollEl.style.overflow = 'auto';
+
+            var me = this;
             var html = listTpl[obj.tplUrl];
             if (html) {
-                handle(html, obj, tplParam, actionCallback);
+                handle(html, obj);
             } else {
                 var url = pageRouteUrl + obj.tplUrl;
                 if (ListTplGetting[obj.tplUrl] === obj.tplUrl) {
@@ -1151,16 +1670,18 @@ var Main = {};
 
                     listTpl[obj.tplUrl] = response;
 
-                    handle(response, obj, tplParam, actionCallback);
+                    handle(response, obj);
                     delete ListTplGetting[obj.tplUrl];
                     //consider list templates waiting
-                    var countWait = listTplWaitCount[obj.tplUrl].length;
-                    if (countWait) {
-                        for (var i = 0; i < countWait; i++) {
-                            var argu = listTplWaitCount[obj.tplUrl][i];
-                            putItem.apply(null, argu);
+                    if (listTplWaitCount[obj.tplUrl]) {
+                        var countWait = listTplWaitCount[obj.tplUrl].length;
+                        if (countWait) {
+                            for (var i = 0; i < countWait; i++) {
+                                var argu = listTplWaitCount[obj.tplUrl][i];
+                                me.create.apply(null, argu);
+                            }
+                            delete listTplWaitCount[obj.tplUrl];
                         }
-                        delete listTplWaitCount[obj.tplUrl];
                     }
 
 
@@ -1169,26 +1690,39 @@ var Main = {};
                     console.log("could not get resource:", url);
                 });
             }
-        }
-        this.addItem = function (obj) {
-            putItem(obj, doAddItem);
+
+            /**
+             * Get the data in the listview at the specified index
+             * 
+             */
+            this.getData = function (index) {
+                if (index < 0) {
+                    return;//important
+                }
+                var container_id = this.container.charAt(0) === '#' ? this.container.substring(1) : this.container;
+                var up_out = upOut[container_id];
+                var down_out = downOut[container_id];
+                var children = $(obj.container).children();
+                if (index < up_out.length) {
+                    return  up_out[index];
+                } else if (index < up_out.length + children.length) {
+                    var c_index = index - up_out.length;
+                    var child = children[c_index];
+                    if (child) {
+                        return child[_game9ja_Dom_Hold_Data];
+                    }
+                } else {
+                    //TODO - NOT YET TESTED
+                    var c_index = index - up_out.length - children.length;
+                    return down_out[index];
+                }
+
+
+            }.bind(obj);
+
+            return this;
         };
 
-        this.appendItem = function (obj) {//analogous to addItem
-            this.addItem(obj);
-        };
-
-        this.prependItem = function (obj) {
-            putItem(obj, doPrependItem);
-        };
-
-        this.removeItem = function (obj) {
-            //TODO
-        };
-
-        this.removeItemAt = function (index) {
-            //TODO
-        };
     }
 
     function Busy() {
@@ -1415,10 +1949,10 @@ var Main = {};
 
     }
 
-
+    Main.event = new Event();
     Main.rcall = new RCall();
     Main.page = new Page();
-    Main.list = new List();
+    Main.listview = new Listview();
     Main.anim = new Animate();
     Main.fullscreen = new Fullscreen();
     Main.busy = new Busy();
@@ -1429,6 +1963,7 @@ var Main = {};
         this.addListener = function (e, type, callback, capture) {
             var el = e;
             if (Main.util.isString(e)) {
+                e = e.charAt(0) === '#' ? e.substring(1) : e;
                 el = document.getElementById(e);
                 if (!el) {
                     throw new Error('unknown element id - ' + e);
@@ -1445,6 +1980,7 @@ var Main = {};
         this.removeListener = function (e, type, callback, capture) {
             var el = e;
             if (Main.util.isString(e)) {
+                e = e.charAt(0) === '#' ? e.substring(1) : e;
                 el = document.getElementById(e);
                 if (!el) {
                     throw new Error('unknown element id - ' + e);
@@ -1463,6 +1999,7 @@ var Main = {};
 
     function Menu() {
         var defaultWidth = 150;
+        var menuHeaderHeight = 30; //must not change -  used in css
         var menuCmp;
         var menuBtn;
 
@@ -1505,46 +2042,59 @@ var Main = {};
             };
 
             this.getItems = function () {
-                
+
                 var children = mnuBody.children();
                 var items = [];
                 if (children.length) {
 
                     for (var i = 0; i < children.length; i++) {
                         var len = children[i].children.length;
-                        if(len === 0){
+                        if (len === 0) {
                             items.push(children[i].innerHTML);
-                        }else if(len === 1){
+                        } else if (len === 1) {
                             items.push(children[i].children[0]);
-                        }else{ // > 1
+                        } else { // > 1
                             items.push(children[i].children);
                         }
-                        
+
                     }
                 }
 
                 return items;
             };
+            this.setItems = function (items) {
+
+                if (Main.util.isArray(items)) {
+                    this.clear();
+                    for (var n in items) {
+                        this.appendItem(items[n]);
+                    }
+                } else if (Main.util.isString(items)) {
+                    this.clear();
+                    this.appendItem(items);
+                }
+
+            };
 
             this.addItem = function (item) {
-                
+
                 this.appendItem(item);
             };
 
             this.appendItem = function (item) {
-                
+
                 var e = createMenuItem(_this, menuThis, menuCmp, mnuBody, item);
                 mnuBody.append(e);
             };
 
             this.prependItem = function (item) {
-                
+
                 var e = createMenuItem(_this, menuThis, menuCmp, mnuBody, item);
                 mnuBody.prepend(e);
             };
 
             this.removeItemAt = function (index) {
-                
+
                 var children = mnuBody.children();
                 if (children[index]) {
                     $(children[index]).remove();
@@ -1552,35 +2102,57 @@ var Main = {};
             };
 
             this.clearItems = function () {
-                
+
                 mnuBody.html('');
             };
 
             this.clear = function () {
-                
+
                 this.clearItems();
             };
 
             this.setHeader = function (text) {
-                
+
                 var children = menuCmp.children();
                 if (children.length && children[0].className === 'game9ja-menu-header') {
                     children[0].innerHTML = text;
                 } else {
                     menuCmp.prepend('<div class="game9ja-menu-header" >' + text + '</div>');
                 }
-
+                normalizeBodyHeight(menuCmp);
             };
 
             this.setFooter = function (text) {
-                
+
                 var children = menuCmp.children();
                 if (children.length && children[children.length - 1].className === 'game9ja-menu-footer') {
                     children[children.length - 1].innerHTML = text;
                 } else {
                     menuCmp.append('<div class="game9ja-menu-footer" >' + text + '</div>');
                 }
+                normalizeBodyHeight(menuCmp);
             };
+
+            function normalizeBodyHeight(menu) {
+                var children = menuCmp.children();
+                var h = menu[0].clientHeight;
+                if (!h) {
+                    return;
+                }
+                var mnu_body;
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i].className === 'game9ja-menu-header') {
+                        h -= menuHeaderHeight;
+                    } else if (children[i].className === 'game9ja-menu-footer') {
+                        h -= menuHeaderHeight; // same as header height
+                    } else if (children[i].className === 'game9ja-menu-body') {
+                        mnu_body = children[i];
+                    }
+                }
+
+                mnu_body.style.height = h + 'px';
+
+            }
 
             return this;
         }
@@ -1598,7 +2170,6 @@ var Main = {};
                 $(e).on('click', _this.onSelect.bind(mThis));
             }
 
-
             return e;
         }
 
@@ -1609,13 +2180,14 @@ var Main = {};
          * <br>
          * <br>
          * obj = { <br>
-         *       width [opt] : ....,<br>
-         *       height [opt] : ....,<br>
-         *       items        : [....]// array of element. can also be text only<br>
-         *       header [opt] : .....<br>
-         *       footer [opt] : .....<br>
-         *       onShow [opt] : .....<br>
-         *       onSelect [opt] : .....<br>
+         *       target : ....,//can be the element id or the element itself <br>
+         *       items  : [....]// array of element. can also be text only<br>
+         *       width [opt] : ...., //width of the menu in pixel - px <br>
+         *       height [opt] : ...., //height of the menu in pixel - px <br>
+         *       header [opt] : .....,<br>
+         *       footer [opt] : .....,<br>
+         *       onShow [opt] : .....,<br>
+         *       onSelect [opt] : .....,<br>
          * }<br>
          * <br>
          * where '|' means 'or the property that follows'. <br>
@@ -1627,6 +2199,7 @@ var Main = {};
          * The follow method can be called in the onShow and onSelect callback function <br>
          * for creating dynamic content of the menu:<br>
          * <br>
+         * this.setItems() --- sets the items of the menu - replaces previous items
          * this.getItems() -- gets all items of the menu<br>
          * this.addItem() --- append an item -- can be elements or plain text<br>
          * this.appendItem() --- append an item - same as this.addItem() -- can be elements or plain text<br>
@@ -1671,20 +2244,31 @@ var Main = {};
                 if (x + mnu_width + padding > body_bound.width) {
                     x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
                 }
-                
-                this.height = this.height? new String(this.height).replace('px', ''): null;
-                
+
+                this.height = this.height ? new String(this.height).replace('px', '') : null;
+
                 var style = 'position: absolute; top : ' + y +
                         'px; left: ' + x +
-                        'px; width: ' + mnu_width + 
-                        'px;' + (!isNaN(this.height - 0) ? 'height: '+this.height +'px;' :'');
+                        'px; width: ' + mnu_width +
+                        'px;' + (!isNaN(this.height - 0) ? 'height: ' + this.height + 'px;' : '');
                 menuCmp = $('<div class="game9ja-menu" style = "' + style + '" ></div>');
 
                 if (this.header) {
                     menuCmp.append('<div class="game9ja-menu-header">' + this.header + '</div>');
                 }
 
-                menuCmp.append('<div class="game9ja-menu-body"></div>');
+                var body_height_style = this.height;
+                if (this.height) {
+                    if (this.header && this.footer) {
+                        body_height_style = this.height - 2 * menuHeaderHeight;
+                    } else if (this.header || this.footer) {
+                        body_height_style = this.height - menuHeaderHeight;
+                    }
+                }
+
+                body_height_style = body_height_style ? "style='height: " + body_height_style + "px;'" : '';
+
+                menuCmp.append('<div class="game9ja-menu-body" ' + body_height_style + '></div>');
 
                 var mnuBody = menuCmp.find('.game9ja-menu-body');
                 var els = [];
@@ -1758,7 +2342,11 @@ var Main = {};
                 }
 
                 if (btns[shownIndex]) {
-                    obj.onShow[id_prefix + btns[shownIndex].id]();
+                    var func = obj.onShow[id_prefix + btns[shownIndex].id];
+                    if (Main.util.isFunc(func)) {
+                        func();
+                    }
+
                 }
 
             }
@@ -1816,7 +2404,9 @@ var Main = {};
 
             for (var i = 0; i < contents.length; i++) {
                 if (contents[i].style.display === 'block' && i !== this.tabIndex) {
-                    this.fn();
+                    if (Main.util.isFunc(this.fn)) {
+                        this.fn();
+                    }
                     animShowTab(contents[this.tabIndex], contents[i], i < this.tabIndex);
                     break;
                 }
@@ -1915,21 +2505,30 @@ var Main = {};
 
             if (Math.abs(change_x) > SW_MAX_X && Math.abs(change_y) < SW_MAX_SLANT) {
                 if (change_x > 0) {
-                    obj.left();
+                    if (Main.util.isFunc(obj.left)) {
+                        obj.left();
+                    }
 
                     //console.log('left ');
                 } else {
-                    obj.right();
+                    if (Main.util.isFunc(obj.right)) {
+                        obj.right();
+                    }
 
                     //console.log('right ');
                 }
             } else if (Math.abs(change_y) > SW_MAX_Y && Math.abs(change_x) < SW_MAX_SLANT) {
                 if (change_y > 0) {
-                    obj.up();
+
+                    if (Main.util.isFunc(obj.up)) {
+                        obj.up();
+                    }
 
                     //console.log('up ');
                 } else {
-                    obj.down();
+                    if (Main.util.isFunc(obj.down)) {
+                        obj.down();
+                    }
 
                     //console.log('down ');
                 }
@@ -2148,16 +2747,16 @@ var Main = {};
             var size = window.screen.width > window.screen.height ?
                     window.screen.width
                     : window.screen.height;
-            var category;
+
             if (size > 768) {//desktops and laptops
-                category = "large";
+                device_category = "large";
             } else if (size <= 768 && size > 600) {//tablets
-                category = "medium";
+                device_category = "medium";
             } else {//smart phones
-                category = "small";
+                device_category = "small";
             }
 
-            return category;
+            return device_category;
         }
 
 

@@ -99,13 +99,10 @@ and open the template in the editor.
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 600px) {
   /*Good! Only screen size 768px and above will 
   have no back button. their content will be displayed 
   like desktop . 
-  So tablets with size 768px and above
-  will have their screen orientation locked to landscape
-  and their content will show as in desktop and laptop.
   */
   .game9ja-back-btn {
     visibility: hidden;

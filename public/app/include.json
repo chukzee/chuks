@@ -36,9 +36,18 @@
         
         "js": [
             "draftgame.js",
-            "jquery-1.10.2.min.js", 
-            //"bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
-            "tween/TweenMax.min.js"
+            "lib/jquery-1.10.2.min.js", 
+            //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
+            "lib/tween/TweenMax.min.js",
+            "Chat.js",
+            "Comment.js",
+            "GamePanel.js",
+            "VideoCall.js",
+            "VoiceCall.js",
+            "Stats.js",
+            "Util.js",
+            "UI.js",
+            "Match.js"
         ] 
     },
 
@@ -53,10 +62,10 @@
 
         "js": [
             "test.js", 
-            "GameHome.js", 
-            "GameSelect.js",
-            "GameView.js",
-            "GameWatch.js"
+            "GameHome-sd.js", 
+            "GameSelect-sd.js",
+            "GameView-sd.js",
+            "GameWatch-sd.js"
         ] 
     },
 
@@ -70,10 +79,10 @@
         ],
 
         "js": [
-            "GameHome.js", 
-            "GameSelect.js",
-            "GameView.js",
-            "GameWatch.js"
+            "GameHome-md.js", 
+            "GameSelect-md.js",
+            "GameView-md.js",
+            "GameWatch-md.js"
         ]
     },
 
@@ -87,10 +96,10 @@
         ],
 
         "js": [
-            "GameHome.js", 
-            "GameSelect.js",
-            "GameView.js",
-            "GameWatch.js"
+            "GameHome-ld.js", 
+            "GameSelect-ld.js",
+            "GameView-ld.js",
+            "GameWatch-ld.js"
         ]
     }
 }

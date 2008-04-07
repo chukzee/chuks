@@ -17,3 +17,16 @@ run(2);
 run(3);
 run(4);
 run(5);
+
+console.log('------------------');
+
+var n = [];
+n.push("a");
+n.push("b");
+n.push("c");
+n.push("d");
+n.push("e");
+var b = n.unshift('z', 'v');
+
+console.log('n ',n);
+console.log('b ',b);

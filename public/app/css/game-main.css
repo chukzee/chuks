@@ -99,14 +99,20 @@ and open the template in the editor.
     .game9ja-main > .game9ja-tab > .game9ja-tab-body {
       position: absolute;
       top: 35px;
+      bottom: 0;
       left: 0;
-      width: 100%;
-      height: 100%; }
+      width: 100%; }
       .game9ja-main > .game9ja-tab > .game9ja-tab-body > div {
         display: none;
         position: absolute;
+        top: 0;
         left: 0;
         width: 100%;
         height: 100%; }
+
+.game9ja-tab-padding {
+  padding: 10px  0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
 
 /*# sourceMappingURL=game-main.css.map */

@@ -5,10 +5,6 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-    </head>
     <body>
         <div class="game9ja-game-view">
             <div class="game9ja-game-view-header">
@@ -16,14 +12,14 @@ and open the template in the editor.
                     
                     <div id="game-view-white-name"></div>                     
                     <img onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game-view-white-pic"  alt="" />                    
-                    <div id="game-view-score"></div>
+                    <div id="game-view-game-score"></div>
                     <div id="game-view-game-status"></div>                    
                     <img  onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game-view-black-pic" />
                     <div id="game-view-black-name"></div>
                     
                 </div>
-                <i class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i><!--back button-->
-                <i class="fa fa-ellipsis-v game9ja-header-item-right" id="game-view-menu"></i>
+                <i id="game-view-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i><!--back button-->
+                <i id="game-view-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
             </div>
             <div class="game9ja-game-view-body">
                 <div id="game-view-main">

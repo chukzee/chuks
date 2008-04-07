@@ -40,6 +40,9 @@ class Chat extends   Base {
                 black_full_name: 'black_player_full_name',
                 time: new Date().getTime(),
                 msg: "this is a simulated message " + i,
+                content_type:'text',//e.g text or voice (as in WhatsApp)
+                vioce_data_url:'path/voice_data',//the url of the voice data to download the voice from (as in WhatsApp)
+                vioce_data_byte_size:'2MB',
                 status: 'seen'//e.g sent , delivered, seen
             };
 

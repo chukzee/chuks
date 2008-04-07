@@ -11,21 +11,23 @@ and open the template in the editor.
 @import "base-var.scss";
 
 $heading_color : #ddd;
-$height : 30px;
+$height : 30px;//must be 30px - please do not change! 30px is used in Main.js for normalization.
 
 .game9ja-menu{
-    
+    position: absolute;
+    //width : 200px;
+    //height : 200px;
     min-width : 120px;
-    max-height : 60%;
+    max-height : 80%;
     border: 1px #ccc solid;
     color : #222;
     background: white;
     @include box-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
-    
+
     > .game9ja-menu-header{
-        position: absolute;
-        top:0;
-        left:0;
+        position: relative;
+        //top:0;
+        //left:0;
         width: 100%;
         padding : $base_padding;
         text-align: center;
@@ -33,12 +35,15 @@ $height : 30px;
         height: $height;
         @include box-sizing(border-box);
         font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
-    
+
     > .game9ja-menu-body{
-        position: absolute;
-        top : $height;
-        bottom:$height;
+        position: relative;
+        //top : $height;
+        //bottom:$height;
         width: 100%;        
         overflow: auto;
         padding : $base_padding;
@@ -52,12 +57,12 @@ $height : 30px;
                 background: #eee;
             }
         }
-        
+
     }
-    
+
     > .game9ja-menu-footer{
-        position: absolute;
-        bottom: 0;
+        position: relative;
+        //bottom: 0;
         height: $height;
         width: 100%;
         padding : $base_padding;
@@ -65,5 +70,8 @@ $height : 30px;
         border-top: 1px #ccc solid;
         @include box-sizing(border-box);
         font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }

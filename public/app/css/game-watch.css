@@ -137,13 +137,10 @@ and open the template in the editor.
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 600px) {
   /*Good! Only screen size 768px and above will 
   have no back button. their content will be displayed 
   like desktop . 
-  So tablets with size 768px and above
-  will have their screen orientation locked to landscape
-  and their content will show as in desktop and laptop.
   */
   .game9ja-back-btn {
     visibility: hidden;
@@ -324,43 +321,5 @@ and open the template in the editor.
       background: linear-gradient(#999, #bbb);
       display: none;
       box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2); }
-    @media screen and (min-width: 600px) {
-      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) {
-        /* holds center panel for game playiing area e.g game board*/
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 60%;
-        height: 100%;
-        background-color: gray; }
-      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(2) {
-        /* holds right panel for chats, comments etc*/
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 40%;
-        height: 100%;
-        background-color: burlywood;
-        display: block;
-        box-shadow: 0px 0px 0px transparent; } }
-    @media screen and (min-width: 768px) {
-      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) {
-        /* holds center panel for game playiing area e.g game board*/
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 70%;
-        height: 100%;
-        background-color: gray; }
-      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(2) {
-        /* holds right panel for chats, comments etc*/
-        position: absolute;
-        top: 0;
-        right: 0px;
-        width: 30%;
-        height: 100%;
-        background-color: burlywood;
-        display: block;
-        box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2); } }
 
 /*# sourceMappingURL=game-watch.css.map */
