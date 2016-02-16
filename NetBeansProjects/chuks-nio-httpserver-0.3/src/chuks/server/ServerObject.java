@@ -25,23 +25,31 @@ public interface ServerObject <T>{
     
     public void putMmemoryCache(Object key, Object value);
     public void putMmemoryCache(Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putMmemoryCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     public void putMmemoryCache(String region_name, Serializable key, Serializable value);
     public void putMmemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putMmemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     
     public void putDiskCache(Serializable key, Serializable value);
     public void putDiskCache(Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putDiskCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     public void putDiskCache(String region_name, Serializable key, Serializable value);
     public void putDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     
     public void putRemoteDiskCache(Serializable key, Serializable value);
     public void putRemoteDiskCache(Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putRemoteDiskCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     public void putRemoteDiskCache(String region_name, Serializable key, Serializable value);
     public void putRemoteDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putRemoteDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     
     public void putRemoteMemoryCache(Serializable key, Serializable value);
     public void putRemoteMemoryCache(Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putRemoteMemoryCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     public void putRemoteMemoryCache(String region_name, Serializable key, Serializable value);
     public void putRemoteMemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms);
+    public void putRemoteMemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms);
     
     public Object getMemoryCache(Object key);    
     public Object getDiskCache(Serializable key);

@@ -356,12 +356,22 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
+    public void putMmemoryCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
+
+    }
+
+    @Override
     public void putMmemoryCache(String region_name, Serializable key, Serializable value) {
 
     }
 
     @Override
     public void putMmemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms) {
+
+    }
+
+    @Override
+    public void putMmemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
 
     }
 
@@ -376,6 +386,11 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
+    public void putDiskCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
+
+    }
+
+    @Override
     public void putDiskCache(String region_name, Serializable key, Serializable value) {
         
     }
@@ -384,7 +399,12 @@ class ServerObjectImpl extends AbstractServerObject {
     public void putDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms) {
         
     }
-
+    
+    @Override
+    public void putDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
+        
+    }
+    
     @Override
     public void putRemoteDiskCache(Serializable key, Serializable value) {
         TCPCacheTransport.enqueueCache(key, value, CacheActionType.ADD_DISK);
@@ -392,6 +412,11 @@ class ServerObjectImpl extends AbstractServerObject {
 
     @Override
     public void putRemoteDiskCache(Serializable key, Serializable value, int time_to_live_in_ms) {
+        
+    }
+
+    @Override
+    public void putRemoteDiskCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
         
     }
 
@@ -406,12 +431,22 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
+    public void putRemoteDiskCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
+        
+    }
+
+    @Override
     public void putRemoteMemoryCache(Serializable key, Serializable value) {
         TCPCacheTransport.enqueueCache(key, value, CacheActionType.ADD_MEMORY);
     }
 
     @Override
     public void putRemoteMemoryCache(Serializable key, Serializable value, int time_to_live_in_ms) {
+        
+    }
+
+    @Override
+    public void putRemoteMemoryCache(Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
         
     }
 
@@ -424,7 +459,12 @@ class ServerObjectImpl extends AbstractServerObject {
     public void putRemoteMemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms) {
         
     }
-    
+
+    @Override
+    public void putRemoteMemoryCache(String region_name, Serializable key, Serializable value, int time_to_live_in_ms, int max_idle_time_in_ms) {
+        
+    }
+        
     @Override
     public Object getMemoryCache(Object key) {
         return ServerCache.LRUMemoryCache.get(key);
