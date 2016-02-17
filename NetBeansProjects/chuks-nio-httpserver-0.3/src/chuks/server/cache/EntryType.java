@@ -9,12 +9,9 @@ package chuks.server.cache;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface RemoteAction {
-    Enum ADD_DISK = CacheActionType.ADD_DISK;
-    Enum ADD_MEMORY = CacheActionType.ADD_MEMORY;
-    Enum REMOVE_DISK = CacheActionType.REMOVE_DISK;
-    Enum REMOVE_MEMORY = CacheActionType.REMOVE_MEMORY;
-    
-    Enum getActionType();
-
+public enum EntryType {
+     DISK_LOCAL,
+     MEMORY_LOCAL,
+     DISK_DISTRIBUTED,
+     MEMORY_DISTRIBUTED
 }

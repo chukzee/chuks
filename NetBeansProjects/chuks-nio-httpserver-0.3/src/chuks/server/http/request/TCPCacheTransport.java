@@ -34,7 +34,7 @@ class TCPCacheTransport {
     static int CONNECT_MODE = 20;
     static ScheduledExecutorService execSend;
     static TCPCacheTransport tCPCacheTransport;
-    final static Object lock = new Object();
+    //final static Object lock = new Object();
     static private boolean started;
     private static ServerAppClassLoader appClassLoader;
 
@@ -96,7 +96,7 @@ class TCPCacheTransport {
         if (tCPCacheTransport != null) {
             return tCPCacheTransport;
         }
-        synchronized (lock) {
+        synchronized (TCPCacheTransport.class) {
             if (tCPCacheTransport == null) {
                 appClassLoader = new ServerAppClassLoader(TCPCacheTransport.class.getClassLoader());
                 tCPCacheTransport = new TCPCacheTransport();
@@ -118,9 +118,7 @@ class TCPCacheTransport {
      * @param value
      * @param entry_type
      */
-    public static void enqueueCache(Object key, Object value, CacheActionType entry_type) {
-        RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                SimpleHttpServer.getStrCacheSockAddr(), entry_type);
+    public static void enqueueCache(RemoteCachePacket rmtEntry) {
         cacheDispatchQueue.add(rmtEntry);
     }
 
@@ -129,7 +127,7 @@ class TCPCacheTransport {
             return;
         }
 
-        synchronized (lock) {
+        synchronized (TCPCacheTransport.class) {
             if (started) {
                 return;
             }

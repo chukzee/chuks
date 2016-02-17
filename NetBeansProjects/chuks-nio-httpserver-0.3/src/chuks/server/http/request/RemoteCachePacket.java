@@ -6,7 +6,7 @@
 package chuks.server.http.request;
 
 import chuks.server.cache.CacheActionType;
-import chuks.server.cache.RemoteAction;
+import chuks.server.cache.EntryType;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,13 +18,16 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
- class RemoteCachePacket<K,V> implements Serializable , RemoteAction{
+ class RemoteCachePacket<K,V> implements Serializable{
     static final long serialVersionUID = 4194045857493038438L; 
     private K key;
     private V value;
     private String origin;
     private CacheActionType cache_action_type;
     final private transient Map senders = Collections.synchronizedMap(new HashMap());//cheaper to use HashMap than HashSet since HashSet uses HashMap for implementation
+    private int time_to_live_in_secs = -1;//default is forever
+    private int max_idle_time_in_secs = -1;//default is forever
+    private String region_name;
 
     private RemoteCachePacket(){}
     
@@ -70,9 +73,33 @@ import java.util.Map;
     int totalConsumers(){
         return senders.size();
     }
-    
-    @Override
-    public CacheActionType getActionType() {
+   
+    public CacheActionType getAction() {
         return cache_action_type;
+    }
+
+    void setTimeToLive(int time_to_live_in_secs) {
+        this.time_to_live_in_secs = time_to_live_in_secs;
+    }
+
+    void setMaxIdleTime(int max_idle_time_in_secs) {
+        this.max_idle_time_in_secs = max_idle_time_in_secs;
+    }
+    
+    
+    int getTimeToLive() {
+        return this.time_to_live_in_secs;
+    }
+
+    int getMaxIdleTime() {
+        return this.max_idle_time_in_secs;
+    }
+
+    void setCacheRegionName(String region_name) {
+        this.region_name = region_name;
+    }
+    
+    String getCacheRegionName() {
+        return this.region_name;
     }
 }

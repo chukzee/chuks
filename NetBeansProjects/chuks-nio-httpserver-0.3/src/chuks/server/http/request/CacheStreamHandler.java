@@ -249,7 +249,7 @@ final class CacheStreamHandler implements Runnable {
 
                 //System.out.println("test received  value = " + rmtPack.getValue() );
 
-                switch (rmtPack.getActionType()) {
+                switch (rmtPack.getAction()) {
                     case ADD_MEMORY:
                         ServerCache.putRCEInMemory(rmtPack);
                         //System.out.println("put in memory  value = " + rmtPack.getValue() );                        
@@ -258,6 +258,12 @@ final class CacheStreamHandler implements Runnable {
                         ServerCache.putRCEInDisk(rmtPack);
                         //System.out.println("put in disk  value = " + rmtPack.getValue() );                        
                         break;
+                    case REMOVE_MEMORY:
+                        //TODO
+                        break;
+                    case REMOVE_DISK:
+                        //TODO
+                        break;                        
                 }
 
             } catch (NullPointerException ex) {

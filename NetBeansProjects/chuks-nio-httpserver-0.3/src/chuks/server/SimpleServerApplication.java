@@ -26,6 +26,20 @@ public interface SimpleServerApplication <T>{
      * @throws java.lang.Exception 
      */
     T initialize(ServerObject so) throws Exception;
+    
+    /**This method only called once through out the life time of the web app.
+     * Once called, it will never be called again upon any request.
+     * This method is provide for application that only needs to initialize
+     * a process only once.
+     * <p>For example {@code ServerObject.createCacheRegion()} is
+     * a good candidate for calling in this method since once the cache region 
+     * of the specified name is created is will be highly unnecessary to call
+     * it again for the entire life of the app thus saving your application from
+     * unnecessary object creation.
+     * 
+     * @param so 
+     */        
+    void callOnce(ServerObject so);
 
     boolean startSession();
 
@@ -33,15 +47,14 @@ public interface SimpleServerApplication <T>{
     
     /**This is the last method called signifying the end of the life cycle of the class
      * 
-     * @param so
-     * @param nameVaulue 
+     * @param so 
      */
     void onFinish(ServerObject so);
     
     /**This method is called when there is an error in executing this class
      * 
-     * @param so
-     * @param nameVaulue 
+     * @param so 
+     * @param ex 
      */
     void onError(ServerObject so, SimpleHttpServerException ex);
 }

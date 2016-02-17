@@ -159,6 +159,7 @@ class ServerAppManager implements Runnable {
             SimpleServerApplication freshCopy;
             try {
                 freshCopy = (SimpleServerApplication) sr.initialize(serverObj); // initialize() should return a fresh copy
+                freshCopy.callOnce(serverObj);//called only once for the entire exist of the SimpleServerApplication Class
             } catch (Exception ex) {
                 requestValidator.handleReceiverError(ex, null);
                 return null;

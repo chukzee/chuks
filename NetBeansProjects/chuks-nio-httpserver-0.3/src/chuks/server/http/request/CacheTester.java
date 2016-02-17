@@ -34,7 +34,7 @@ class CacheTester implements Runnable, Serializable {
     static int CLIENT_MODE = 4;
     static int SERVER_MODE = 8;
     int mode;
-    static TCPCacheTransport tcpCache;    
+    static TCPCacheTransport tcpCache;
     static int i = 0;
     //final Object lock = new Object();//commeted to avoid NotSerializableException when i send MyTest object which is inner class of CacheTester 
     final MyTest lock = new MyTest();
@@ -43,10 +43,11 @@ class CacheTester implements Runnable, Serializable {
         this.mode = mode;
     }
 
-    class MyTest implements Serializable{
+    class MyTest implements Serializable {
+
         String value = "test";
     }
-    
+
     @Override
     public void run() {
 
@@ -74,7 +75,6 @@ class CacheTester implements Runnable, Serializable {
         new Thread(new CacheTester(SERVER_MODE)).start();
 
     }
-
 
     private void runAsClient() {
         new Thread(new Runnable() {
@@ -117,8 +117,10 @@ class CacheTester implements Runnable, Serializable {
                 i++;
             }
             ThreadUtil.sleep(3000);
-            
-            TCPCacheTransport.enqueueCache("as client chuks_key_" + i, new MyTest(), CacheActionType.ADD_MEMORY);
+
+            RemoteCachePacket rmtEntry = new RemoteCachePacket("as client chuks_key_" + i, new MyTest(),
+                    SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
+            TCPCacheTransport.enqueueCache(rmtEntry);
             System.out.println("enqueue as client chuks_key_" + i);
         }
 
@@ -171,7 +173,10 @@ class CacheTester implements Runnable, Serializable {
                 i++;
             }
             ThreadUtil.sleep(3000);
-            TCPCacheTransport.enqueueCache("as server chuks_key_" + i, "something in the cache_" + i, CacheActionType.ADD_MEMORY);
+
+            RemoteCachePacket rmtEntry = new RemoteCachePacket("as server chuks_key_" + i, "something in the cache_" + i,
+                    SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
+            TCPCacheTransport.enqueueCache(rmtEntry);
             System.out.println("enqueue as server chuks_key_" + i);
         }
 
