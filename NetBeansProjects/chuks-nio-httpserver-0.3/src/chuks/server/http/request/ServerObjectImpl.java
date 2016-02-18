@@ -355,13 +355,13 @@ class ServerObjectImpl extends AbstractServerObject {
     @Override
     public void putCache(Serializable key, Serializable value, EntryType entry_type) {
         switch (entry_type) {
-            case MEMORY_LOCAL:
+            case LOCAL_MEMORY:
                 jcsCache.put(key, value, defaultMemoryElemtentAttr);
                 break;
-            case DISK_LOCAL:
+            case LOCAL_DISK:
                 jcsCache.put(key, value, defaultDiskElemtentAttr);
                 break;
-            case MEMORY_DISTRIBUTED:
+            case DISTRIBUTED_MEMORY:
 
                 //first store in local memory
                 jcsCache.put(key, value, defaultMemoryElemtentAttr);
@@ -371,7 +371,7 @@ class ServerObjectImpl extends AbstractServerObject {
                         SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
                 TCPCacheTransport.enqueueCache(rmtEntry);
                 break;
-            case DISK_DISTRIBUTED:
+            case DISTRIBUTED_DISK:
 
                 //first store in local disk
                 jcsCache.put(key, value, defaultDiskElemtentAttr);
@@ -389,17 +389,17 @@ class ServerObjectImpl extends AbstractServerObject {
         ElementAttributes elementAttr = new ElementAttributes();
         elementAttr.setMaxLife(time_to_live_in_secs);
         switch (entry_type) {
-            case MEMORY_LOCAL:
+            case LOCAL_MEMORY:
                 elementAttr.setIsSpool(false);//store only in memory      
                 jcsCache.put(key, value, elementAttr);
                 break;
-            case DISK_LOCAL:
+            case LOCAL_DISK:
                 elementAttr.setIsSpool(true);//will be flushed to disk      
                 jcsCache.put(key, value, elementAttr);
                 break;
-            case MEMORY_DISTRIBUTED:
+            case DISTRIBUTED_MEMORY:
 
-                //first store local memory
+                //first store in local memory
                 elementAttr.setIsSpool(false);//store only in memory      
                 jcsCache.put(key, value, elementAttr);
 
@@ -409,7 +409,7 @@ class ServerObjectImpl extends AbstractServerObject {
                 rmtEntry.setTimeToLive(time_to_live_in_secs);
                 TCPCacheTransport.enqueueCache(rmtEntry);
                 break;
-            case DISK_DISTRIBUTED:
+            case DISTRIBUTED_DISK:
 
                 //first store in local disk
                 elementAttr.setIsSpool(true);//will be flushed to disk      
@@ -431,17 +431,17 @@ class ServerObjectImpl extends AbstractServerObject {
         elementAttr.setMaxLife(time_to_live_in_secs);
         elementAttr.setIdleTime(max_idle_time_in_secs);
         switch (entry_type) {
-            case MEMORY_LOCAL:
+            case LOCAL_MEMORY:
                 elementAttr.setIsSpool(false);//store only in memory      
                 jcsCache.put(key, value, elementAttr);
                 break;
-            case DISK_LOCAL:
+            case LOCAL_DISK:
                 elementAttr.setIsSpool(true);//will be flushed to disk      
                 jcsCache.put(key, value, elementAttr);
                 break;
-            case MEMORY_DISTRIBUTED:
+            case DISTRIBUTED_MEMORY:
 
-                //first store local memory
+                //first store in local memory
                 elementAttr.setIsSpool(false);//store only in memory      
                 jcsCache.put(key, value, elementAttr);
 
@@ -452,7 +452,7 @@ class ServerObjectImpl extends AbstractServerObject {
                 rmtEntry.setMaxIdleTime(max_idle_time_in_secs);
                 TCPCacheTransport.enqueueCache(rmtEntry);
                 break;
-            case DISK_DISTRIBUTED:
+            case DISTRIBUTED_DISK:
 
                 //first store in local disk
                 elementAttr.setIsSpool(true);//will be flushed to disk      
@@ -471,17 +471,24 @@ class ServerObjectImpl extends AbstractServerObject {
 
     @Override
     public void putCache(String region_name, Serializable key, Serializable value, EntryType entry_type) {
+            
+        CacheAccess cacheAcsess = jcsCacheRegions.get(region_name);
+        if(cacheAcsess==null){
+            Properties prop = new Properties();//Well, just create the object to avoid Null test
+            cacheAcsess = createRegion(region_name, prop,true);
+        }
+        
         switch (entry_type) {
-            case MEMORY_LOCAL:
-                jcsCache.put(key, value, defaultMemoryElemtentAttr);
+            case LOCAL_MEMORY:
+                cacheAcsess.put(key, value, defaultMemoryElemtentAttr);
                 break;
-            case DISK_LOCAL:
-                jcsCache.put(key, value, defaultDiskElemtentAttr);
+            case LOCAL_DISK:
+                cacheAcsess.put(key, value, defaultDiskElemtentAttr);
                 break;
-            case MEMORY_DISTRIBUTED:
+            case DISTRIBUTED_MEMORY:
 
                 //first store in local memory
-                jcsCache.put(key, value, defaultMemoryElemtentAttr);
+                cacheAcsess.put(key, value, defaultMemoryElemtentAttr);
 
                 //enqueue cache for tcp transport
                 RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
@@ -489,10 +496,10 @@ class ServerObjectImpl extends AbstractServerObject {
                 rmtEntry.setCacheRegionName(region_name);
                 TCPCacheTransport.enqueueCache(rmtEntry);
                 break;
-            case DISK_DISTRIBUTED:
+            case DISTRIBUTED_DISK:
 
                 //first store in local disk
-                jcsCache.put(key, value, defaultDiskElemtentAttr);
+                cacheAcsess.put(key, value, defaultDiskElemtentAttr);
 
                 //enqueue cache for tcp transport
                 rmtEntry = new RemoteCachePacket(key, value,
@@ -506,22 +513,30 @@ class ServerObjectImpl extends AbstractServerObject {
 
     @Override
     public void putCache(String region_name, Serializable key, Serializable value, int time_to_live_in_secs, EntryType entry_type) {
+       
+        CacheAccess cacheAcsess = jcsCacheRegions.get(region_name);
+        if(cacheAcsess==null){
+            Properties prop = new Properties();            
+            prop.put(Attr.CacheTimeToLive.name(), time_to_live_in_secs);
+            cacheAcsess = createRegion(region_name, prop,true);
+        }
+        
         ElementAttributes elementAttr = new ElementAttributes();
         elementAttr.setMaxLife(time_to_live_in_secs);
         switch (entry_type) {
-            case MEMORY_LOCAL:
+            case LOCAL_MEMORY:
                 elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
                 break;
-            case DISK_LOCAL:
+            case LOCAL_DISK:
                 elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
                 break;
-            case MEMORY_DISTRIBUTED:
+            case DISTRIBUTED_MEMORY:
 
-                //first store local memory
+                //first store in local memory
                 elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
 
                 //enqueue cache for tcp transport
                 RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
@@ -530,11 +545,11 @@ class ServerObjectImpl extends AbstractServerObject {
                 rmtEntry.setTimeToLive(time_to_live_in_secs);
                 TCPCacheTransport.enqueueCache(rmtEntry);
                 break;
-            case DISK_DISTRIBUTED:
+            case DISTRIBUTED_DISK:
 
                 //first store in local disk
                 elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
 
                 //enqueue cache for tcp transport                
                 rmtEntry = new RemoteCachePacket(key, value,
@@ -548,23 +563,32 @@ class ServerObjectImpl extends AbstractServerObject {
 
     @Override
     public void putCache(String region_name, Serializable key, Serializable value, int time_to_live_in_secs, int max_idle_time_in_secs, EntryType entry_type) {
+        
+        CacheAccess cacheAcsess = jcsCacheRegions.get(region_name);
+        if(cacheAcsess==null){
+            Properties prop = new Properties();
+            prop.put(Attr.CacheTimeToLive.name(), time_to_live_in_secs);
+            prop.put(Attr.MaxMemoryCacheIdleTime.name(), max_idle_time_in_secs);
+            cacheAcsess = createRegion(region_name, prop,true);
+        }
+            
         ElementAttributes elementAttr = new ElementAttributes();
         elementAttr.setMaxLife(time_to_live_in_secs);
         elementAttr.setIdleTime(max_idle_time_in_secs);
         switch (entry_type) {
-            case MEMORY_LOCAL:
+            case LOCAL_MEMORY:
                 elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
                 break;
-            case DISK_LOCAL:
+            case LOCAL_DISK:
                 elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
                 break;
-            case MEMORY_DISTRIBUTED:
+            case DISTRIBUTED_MEMORY:
 
-                //first store local memory
+                //first store in local memory
                 elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
 
                 //enqueue cache for tcp transport
                 RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
@@ -574,11 +598,11 @@ class ServerObjectImpl extends AbstractServerObject {
                 rmtEntry.setMaxIdleTime(max_idle_time_in_secs);
                 TCPCacheTransport.enqueueCache(rmtEntry);
                 break;
-            case DISK_DISTRIBUTED:
+            case DISTRIBUTED_DISK:
 
                 //first store in local disk
                 elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
+                cacheAcsess.put(key, value, elementAttr);
 
                 //enqueue cache for tcp transport                
                 rmtEntry = new RemoteCachePacket(key, value,
@@ -609,11 +633,7 @@ class ServerObjectImpl extends AbstractServerObject {
     
     @Override
     public void createCacheRegion(String region_name, Properties config) {
-        CompositeCacheAttributes ccattr = new CompositeCacheAttributes();
-        ElementAttributes eattr = new ElementAttributes();
-        
-        CacheAccess<Object, Object> ca = JCS.defineRegion(region_name, ccattr, eattr);
-        jcsCacheRegions.put(region_name, ca);
+        createRegion(region_name, config, false);//false means do not filter the config properties
     }
 
 }

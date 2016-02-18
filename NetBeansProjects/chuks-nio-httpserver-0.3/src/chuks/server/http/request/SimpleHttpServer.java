@@ -585,19 +585,9 @@ public class SimpleHttpServer implements HttpServer {
                     ServerConfig.MAX_CACHE_SEND_TRIALS = pConfig.getInt(key);
                 }
 
-                key = configAttrBundle.getString(Attr.MaxMemoryCacheSize.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.MAX_MEMORY_CACHE_SIZE = pConfig.getInt(key);
-                }
-
                 key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
                 if (pConfig.containsKey(key)) {
                     ServerConfig.MAX_MEMORY_CACHE_IDLE_TIME = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.MaxDiskCacheIdleTime.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.MAX_DISK_CACHE_IDLE_TIME = pConfig.getInt(key);
                 }
 
                 key = configAttrBundle.getString(Attr.MaxReqestCacheFileSize.name());

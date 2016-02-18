@@ -37,7 +37,6 @@ public abstract class ServerConfig {
     static File TEMP_FILE_DIR;
     static int MAX_CACHE_SEND_TRIALS;//see resource bundle
     static int MAX_REMOTE_CACHE_HANDLER_THREADS;//see resource bundle
-    static int MAX_MEMORY_CACHE_SIZE;//see resource bundle
     static int MAX_MEMORY_CACHE_IDLE_TIME;//see resource bundle
     static int MAX_DISK_CACHE_IDLE_TIME;//see resource bundle
 
@@ -60,9 +59,9 @@ public abstract class ServerConfig {
 
         MAX_CACHE_SEND_TRIALS = Integer.parseInt(d.getString(Attr.MaxSendRemoteCacheTrials.name()));
         MAX_REMOTE_CACHE_HANDLER_THREADS = Integer.parseInt(d.getString(Attr.MaxRemoteCacheHandlerThreads.name()));
-        MAX_MEMORY_CACHE_SIZE = Integer.parseInt(d.getString(Attr.MaxMemoryCacheSize.name()));
         MAX_REQUEST_CACHE_FILE_SIZE = Integer.parseInt(d.getString(Attr.MaxReqestCacheFileSize.name()));
         DEFAULT_INDEX_FILE_EXTENSION = d.getString(Attr.DefaultIndexFileExtension.name());
+        
         if (DEFAULT_INDEX_FILE_EXTENSION == null) {
             DEFAULT_INDEX_FILE_EXTENSION = "";
         }

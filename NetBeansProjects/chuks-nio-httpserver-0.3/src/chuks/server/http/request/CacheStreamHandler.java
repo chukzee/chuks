@@ -147,7 +147,7 @@ final class CacheStreamHandler implements Runnable {
         try {
 
             sentAttempts++;
-            
+            remoteCacheEntry.updateCacheExpiry();//update the cache expiry before sending - this will consider delay in sending
             objStreamOut.writeObject(remoteCacheEntry);
             objStreamOut.flush();
             lastFailedCacheEntry = null;
@@ -251,10 +251,12 @@ final class CacheStreamHandler implements Runnable {
 
                 switch (rmtPack.getAction()) {
                     case ADD_MEMORY:
+                        rmtPack.updateCacheExpiryAfterTransit();
                         ServerCache.putRCEInMemory(rmtPack);
                         //System.out.println("put in memory  value = " + rmtPack.getValue() );                        
                         break;
                     case ADD_DISK:
+                        rmtPack.updateCacheExpiryAfterTransit();
                         ServerCache.putRCEInDisk(rmtPack);
                         //System.out.println("put in disk  value = " + rmtPack.getValue() );                        
                         break;

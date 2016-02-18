@@ -10,8 +10,8 @@ package chuks.server.cache;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public enum EntryType {
-     DISK_LOCAL,
-     MEMORY_LOCAL,
-     DISK_DISTRIBUTED,
-     MEMORY_DISTRIBUTED
+     LOCAL_DISK,
+     LOCAL_MEMORY,
+     DISTRIBUTED_DISK,
+     DISTRIBUTED_MEMORY
 }
