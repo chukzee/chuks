@@ -22,7 +22,7 @@ public interface HttpFileObject {
          * <p>
          * <strong>NOTE:</strong>If the only operation to perform on this file is just to save it
          * in the file system then calling this method is by far more recommended
-         * that using <code>getContent()</code> or <code>getContentInputStream()</code>
+         * than using <code>getContent()</code> or <code>getContentInputStream()</code>
          * to first obtain the file data only to save it afterwards without any
          * intermediate manipulation.
          * <p>
