@@ -260,7 +260,7 @@ final class CacheStreamHandler implements Runnable {
             } catch (SocketTimeoutException ex) {
                 //do not not close socket due to read timeout except for partial read
                 if (ex.bytesTransferred > 0) {
-                    closeSocket();//close due to partial read befor read timeout
+                    closeSocket();//close due to partial read before read timeout
                 }
                 //System.err.println(this.getClass().getName()+": "+ex.getMessage());
                 //Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
