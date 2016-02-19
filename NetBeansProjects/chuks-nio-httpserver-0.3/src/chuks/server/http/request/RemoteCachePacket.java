@@ -7,6 +7,10 @@ package chuks.server.http.request;
 
 import chuks.server.cache.CacheActionType;
 import chuks.server.cache.EntryType;
+import chuks.server.cache.ICacheProperties;
+import chuks.server.cache.IEntryAttributes;
+import chuks.server.cache.config.CacheProperties;
+import chuks.server.cache.config.EntryAttributes;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,22 +28,43 @@ class RemoteCachePacket<K, V> implements Serializable {
     private K key;
     private V value;
     private String origin;
-    private CacheActionType cache_action_type;
+    private IEntryAttributes entryAttr;
     final private transient Map senders = Collections.synchronizedMap(new HashMap());//cheaper to use HashMap than HashSet since HashSet uses HashMap for implementation
-    private int time_to_live_in_secs = -1;//default is forever
-    private int max_idle_time_in_secs = -1;//default is forever
+    private long time_to_live_remaining = -1;//default is forever
+    private long max_idle_time = -1;//default is forever
     private String region_name;
     private long last_update_time;
+    private boolean remove;
 
     private RemoteCachePacket() {
     }
 
-    RemoteCachePacket(K key, V value, String origin, CacheActionType cache_action_type) {
+    RemoteCachePacket(K key, V value, String origin, IEntryAttributes attr) {
         this.key = key;
         this.value = value;
         this.origin = origin;
-        this.cache_action_type = cache_action_type;
+        this.entryAttr = attr;
         last_update_time = System.currentTimeMillis();
+        if (attr != null) {
+            time_to_live_remaining = attr.getTimeToLiveInSeconds();
+        }
+    }
+
+    /**
+     * Use this construct to remote the cache with the specified key.
+     *
+     * @param key
+     * @param origin
+     */
+    RemoteCachePacket(K key, String origin) {
+        this.key = key;
+        this.origin = origin;
+        this.remove = true;
+        last_update_time = System.currentTimeMillis();
+    }
+
+    IEntryAttributes getAttributes() {
+        return entryAttr != null ? entryAttr : new EntryAttributes();
     }
 
     K getKey() {
@@ -78,45 +103,41 @@ class RemoteCachePacket<K, V> implements Serializable {
         return senders.size();
     }
 
-    public CacheActionType getAction() {
-        return cache_action_type;
+    public boolean isRemoveCache() {
+        return remove;
     }
 
-    void setTimeToLive(int time_to_live_in_secs) {
-        this.time_to_live_in_secs = time_to_live_in_secs;
+    long getTimeToLiveRemaining() {
+        return this.time_to_live_remaining;
     }
 
-    void setMaxIdleTime(int max_idle_time_in_secs) {
-        this.max_idle_time_in_secs = max_idle_time_in_secs;
+    long getTimeToLive() {
+        return this.time_to_live_remaining;
     }
 
-    int getTimeToLiveRemaining() {
-        return this.time_to_live_in_secs;
-    }
-
-    int getMaxIdleTimeRemaining() {
-        return this.max_idle_time_in_secs;
+    long getMaxIdleTime() {
+        return this.max_idle_time;
     }
 
     void updateCacheExpiry() {
         int elapse = (int) ((System.currentTimeMillis() - last_update_time) / 1000);//secs
-        if (time_to_live_in_secs > -1) {
-            time_to_live_in_secs -= elapse;
-            if (time_to_live_in_secs < 0) {
-                time_to_live_in_secs = 0;//expires
+        if (time_to_live_remaining > -1) {
+            time_to_live_remaining -= elapse;
+            if (time_to_live_remaining < 0) {
+                time_to_live_remaining = 0;//expires
             }
         }
-        
+
         last_update_time = System.currentTimeMillis();
     }
 
     void updateCacheExpiryAfterTransit() {
         int transit_delay = (int) ((System.currentTimeMillis() - last_update_time) / 1000);//secs 
         if (transit_delay > 0 && transit_delay < 10) {//we assume 10 to be max transit delay unless the system time at the two end points is not synchronized
-            if (time_to_live_in_secs > -1) {
-                time_to_live_in_secs -= transit_delay;
-                if (time_to_live_in_secs < 0) {
-                    time_to_live_in_secs = 0;//expires
+            if (time_to_live_remaining > -1) {
+                time_to_live_remaining -= transit_delay;
+                if (time_to_live_remaining < 0) {
+                    time_to_live_remaining = 0;//expires
                 }
             }
         }

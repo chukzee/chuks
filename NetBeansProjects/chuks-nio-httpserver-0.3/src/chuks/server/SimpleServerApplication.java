@@ -12,7 +12,7 @@ package chuks.server;
 public interface SimpleServerApplication <T>{
     
     /**This is the first method called upon any request.It is 
-     * the begining of the life cycle of this class<br/>
+     * the beginning of the life cycle of this class<br/>
      * This method is called as an efficient means of getting
      * a new instance of the class rather than using reflection 
      * which is very expensive.<br/> the method is expected
@@ -27,20 +27,24 @@ public interface SimpleServerApplication <T>{
      */
     T initialize(ServerObject so) throws Exception;
     
-    /**This method only called once through out the life time of the web app.
+    /**This method is only called once through out the life time of the web app.
      * Once called, it will never be called again upon any request.
      * This method is provide for application that only needs to initialize
      * a process only once.
      * <p>For example {@code ServerObject.createCacheRegion()} is
      * a good candidate for calling in this method since once the cache region 
-     * of the specified name is created is will be highly unnecessary to call
+     * of the specified name is created it will be highly unnecessary to call
      * it again for the entire life of the app thus saving your application from
-     * unnecessary object creation.
+     * unnecessary objects creation.
      * 
      * @param so 
      */        
     void callOnce(ServerObject so);
 
+    /**Use this method to start a session.
+     * 
+     * @return 
+     */
     boolean startSession();
 
     void onRequest(Request r, ServerObject so);

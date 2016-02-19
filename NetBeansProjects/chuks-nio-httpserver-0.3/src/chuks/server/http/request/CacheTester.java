@@ -7,6 +7,7 @@ package chuks.server.http.request;
 
 import chuks.server.SimpleHttpServerException;
 import chuks.server.cache.CacheActionType;
+import chuks.server.cache.config.EntryAttributes;
 import chuks.server.util.ThreadUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,7 +120,7 @@ class CacheTester implements Runnable, Serializable {
             ThreadUtil.sleep(3000);
 
             RemoteCachePacket rmtEntry = new RemoteCachePacket("as client chuks_key_" + i, new MyTest(),
-                    SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
+                    SimpleHttpServer.getStrCacheSockAddr(), new EntryAttributes());
             TCPCacheTransport.enqueueCache(rmtEntry);
             System.out.println("enqueue as client chuks_key_" + i);
         }
@@ -175,7 +176,7 @@ class CacheTester implements Runnable, Serializable {
             ThreadUtil.sleep(3000);
 
             RemoteCachePacket rmtEntry = new RemoteCachePacket("as server chuks_key_" + i, "something in the cache_" + i,
-                    SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
+                    SimpleHttpServer.getStrCacheSockAddr(), new EntryAttributes());
             TCPCacheTransport.enqueueCache(rmtEntry);
             System.out.println("enqueue as server chuks_key_" + i);
         }

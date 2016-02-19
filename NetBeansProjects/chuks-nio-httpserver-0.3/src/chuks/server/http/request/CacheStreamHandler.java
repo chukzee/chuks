@@ -248,25 +248,12 @@ final class CacheStreamHandler implements Runnable {
                 RemoteCachePacket rmtPack = (RemoteCachePacket) obj;
 
                 //System.out.println("test received  value = " + rmtPack.getValue() );
-
-                switch (rmtPack.getAction()) {
-                    case ADD_MEMORY:
-                        rmtPack.updateCacheExpiryAfterTransit();
-                        ServerCache.putRCEInMemory(rmtPack);
-                        //System.out.println("put in memory  value = " + rmtPack.getValue() );                        
-                        break;
-                    case ADD_DISK:
-                        rmtPack.updateCacheExpiryAfterTransit();
-                        ServerCache.putRCEInDisk(rmtPack);
-                        //System.out.println("put in disk  value = " + rmtPack.getValue() );                        
-                        break;
-                    case REMOVE_MEMORY:
-                        //TODO
-                        break;
-                    case REMOVE_DISK:
-                        //TODO
-                        break;                        
+                if(rmtPack.isRemoveCache()){
+                    ServerCache.removeRCE(rmtPack);
+                }else{
+                    ServerCache.putRCE(rmtPack);
                 }
+               
 
             } catch (NullPointerException ex) {
                 Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);

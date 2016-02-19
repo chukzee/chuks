@@ -6,18 +6,18 @@ package chuks.server.http.request;
 
 import chuks.server.HttpSession;
 import chuks.server.JDBCSettings;
-import chuks.server.ServerObject;
 import chuks.server.SimpleHttpServerException;
 import chuks.server.cache.CacheActionType;
 import chuks.server.cache.EntryType;
-import chuks.server.http.sql.SQLResultSetHandler;
+import chuks.server.cache.ICacheProperties;
+import chuks.server.cache.IEntryAttributes;
+import chuks.server.cache.config.CacheProperties;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -38,15 +38,15 @@ import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.engine.ElementAttributes;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.json.JSONObject;
 import static chuks.server.http.request.ServerCache.*;
+import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.access.CacheAccess;
-import org.apache.commons.jcs.engine.CompositeCacheAttributes;
 import org.apache.commons.jcs.engine.behavior.ICompositeCacheAttributes;
+import org.apache.commons.jcs.engine.behavior.IElementAttributes;
 
 /**
  *
@@ -353,272 +353,90 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
-    public void putCache(Serializable key, Serializable value, EntryType entry_type) {
-        switch (entry_type) {
-            case LOCAL_MEMORY:
-                jcsCache.put(key, value, defaultMemoryElemtentAttr);
-                break;
-            case LOCAL_DISK:
-                jcsCache.put(key, value, defaultDiskElemtentAttr);
-                break;
-            case DISTRIBUTED_MEMORY:
+    public void putCache(Serializable key, Serializable value) {
 
-                //first store in local memory
-                jcsCache.put(key, value, defaultMemoryElemtentAttr);
+        jcsCache.put(key, value);
 
-                //enqueue cache for tcp transport
-                RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-            case DISTRIBUTED_DISK:
-
-                //first store in local disk
-                jcsCache.put(key, value, defaultDiskElemtentAttr);
-
-                //enqueue cache for tcp transport
-                rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_DISK);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
+        if (defaultEntryAttr.isDistributed()) {
+            RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
+                    SimpleHttpServer.getStrCacheSockAddr(), defaultEntryAttr);
+            TCPCacheTransport.enqueueCache(rmtEntry);
         }
     }
 
     @Override
-    public void putCache(Serializable key, Serializable value, int time_to_live_in_secs, EntryType entry_type) {
-        ElementAttributes elementAttr = new ElementAttributes();
-        elementAttr.setMaxLife(time_to_live_in_secs);
-        switch (entry_type) {
-            case LOCAL_MEMORY:
-                elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
-                break;
-            case LOCAL_DISK:
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
-                break;
-            case DISTRIBUTED_MEMORY:
+    public void putCache(Serializable key, Serializable value, IEntryAttributes attr) {
 
-                //first store in local memory
-                elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
-
-                //enqueue cache for tcp transport
-                RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-            case DISTRIBUTED_DISK:
-
-                //first store in local disk
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
-
-                //enqueue cache for tcp transport                
-                rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_DISK);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-        }
-
-    }
-
-    @Override
-    public void putCache(Serializable key, Serializable value, int time_to_live_in_secs, int max_idle_time_in_secs, EntryType entry_type) {
-        ElementAttributes elementAttr = new ElementAttributes();
-        elementAttr.setMaxLife(time_to_live_in_secs);
-        elementAttr.setIdleTime(max_idle_time_in_secs);
-        switch (entry_type) {
-            case LOCAL_MEMORY:
-                elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
-                break;
-            case LOCAL_DISK:
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
-                break;
-            case DISTRIBUTED_MEMORY:
-
-                //first store in local memory
-                elementAttr.setIsSpool(false);//store only in memory      
-                jcsCache.put(key, value, elementAttr);
-
-                //enqueue cache for tcp transport
-                RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                rmtEntry.setMaxIdleTime(max_idle_time_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-            case DISTRIBUTED_DISK:
-
-                //first store in local disk
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                jcsCache.put(key, value, elementAttr);
-
-                //enqueue cache for tcp transport                
-                rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_DISK);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                rmtEntry.setMaxIdleTime(max_idle_time_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-        }
-
-    }
-
-    @Override
-    public void putCache(String region_name, Serializable key, Serializable value, EntryType entry_type) {
-            
-        CacheAccess cacheAcsess = jcsCacheRegions.get(region_name);
-        if(cacheAcsess==null){
-            Properties prop = new Properties();//Well, just create the object to avoid Null test
-            cacheAcsess = createRegion(region_name, prop,true);
-        }
+        ElementAttributes elem_attr = new ElementAttributes();
         
-        switch (entry_type) {
-            case LOCAL_MEMORY:
-                cacheAcsess.put(key, value, defaultMemoryElemtentAttr);
-                break;
-            case LOCAL_DISK:
-                cacheAcsess.put(key, value, defaultDiskElemtentAttr);
-                break;
-            case DISTRIBUTED_MEMORY:
-
-                //first store in local memory
-                cacheAcsess.put(key, value, defaultMemoryElemtentAttr);
-
-                //enqueue cache for tcp transport
-                RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
-                rmtEntry.setCacheRegionName(region_name);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-            case DISTRIBUTED_DISK:
-
-                //first store in local disk
-                cacheAcsess.put(key, value, defaultDiskElemtentAttr);
-
-                //enqueue cache for tcp transport
-                rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_DISK);
-                rmtEntry.setCacheRegionName(region_name);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-        }
-
-    }
-
-    @Override
-    public void putCache(String region_name, Serializable key, Serializable value, int time_to_live_in_secs, EntryType entry_type) {
-       
-        CacheAccess cacheAcsess = jcsCacheRegions.get(region_name);
-        if(cacheAcsess==null){
-            Properties prop = new Properties();            
-            prop.put(Attr.CacheTimeToLive.name(), time_to_live_in_secs);
-            cacheAcsess = createRegion(region_name, prop,true);
-        }
+        elem_attr.setIdleTime(attr.getMaxIdleTimeInSeconds());
+        elem_attr.setMaxLife(attr.getTimeToLiveInSeconds());
+        elem_attr.setIsSpool(attr.isSpool());
+        elem_attr.setIsEternal(attr.isEternal());
         
-        ElementAttributes elementAttr = new ElementAttributes();
-        elementAttr.setMaxLife(time_to_live_in_secs);
-        switch (entry_type) {
-            case LOCAL_MEMORY:
-                elementAttr.setIsSpool(false);//store only in memory      
-                cacheAcsess.put(key, value, elementAttr);
-                break;
-            case LOCAL_DISK:
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                cacheAcsess.put(key, value, elementAttr);
-                break;
-            case DISTRIBUTED_MEMORY:
+        jcsCache.put(key, value, elem_attr);
 
-                //first store in local memory
-                elementAttr.setIsSpool(false);//store only in memory      
-                cacheAcsess.put(key, value, elementAttr);
-
-                //enqueue cache for tcp transport
-                RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
-                rmtEntry.setCacheRegionName(region_name);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-            case DISTRIBUTED_DISK:
-
-                //first store in local disk
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                cacheAcsess.put(key, value, elementAttr);
-
-                //enqueue cache for tcp transport                
-                rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_DISK);
-                rmtEntry.setCacheRegionName(region_name);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
+        if (attr.isDistributed()) {
+            RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
+                    SimpleHttpServer.getStrCacheSockAddr(), attr);
+            TCPCacheTransport.enqueueCache(rmtEntry);
         }
     }
 
     @Override
-    public void putCache(String region_name, Serializable key, Serializable value, int time_to_live_in_secs, int max_idle_time_in_secs, EntryType entry_type) {
-        
-        CacheAccess cacheAcsess = jcsCacheRegions.get(region_name);
-        if(cacheAcsess==null){
-            Properties prop = new Properties();
-            prop.put(Attr.CacheTimeToLive.name(), time_to_live_in_secs);
-            prop.put(Attr.MaxMemoryCacheIdleTime.name(), max_idle_time_in_secs);
-            cacheAcsess = createRegion(region_name, prop,true);
+    public void putCache(String region_name, Serializable key, Serializable value) {
+
+        CacheAccess cacheAcsess = null;
+        if (region_name == null) {
+            cacheAcsess = jcsCache;
+        } else {
+            cacheAcsess = jcsCacheRegions.get(region_name);
         }
-            
-        ElementAttributes elementAttr = new ElementAttributes();
-        elementAttr.setMaxLife(time_to_live_in_secs);
-        elementAttr.setIdleTime(max_idle_time_in_secs);
-        switch (entry_type) {
-            case LOCAL_MEMORY:
-                elementAttr.setIsSpool(false);//store only in memory      
-                cacheAcsess.put(key, value, elementAttr);
-                break;
-            case LOCAL_DISK:
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                cacheAcsess.put(key, value, elementAttr);
-                break;
-            case DISTRIBUTED_MEMORY:
+        if (cacheAcsess == null) {
+            return;
+        }
+        IElementAttributes cattr = cacheAcsess.getDefaultElementAttributes();
+        if (cattr.getIsRemote()) {
+            RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
+                    SimpleHttpServer.getStrCacheSockAddr(), null);
+            rmtEntry.setCacheRegionName(region_name);
+            TCPCacheTransport.enqueueCache(rmtEntry);
+        }
+    }
 
-                //first store in local memory
-                elementAttr.setIsSpool(false);//store only in memory      
-                cacheAcsess.put(key, value, elementAttr);
+    @Override
+    public void putCache(String region_name, Serializable key, Serializable value, IEntryAttributes attr) {
+        CacheAccess cacheAcsess = null;
+        if (region_name == null) {
+            cacheAcsess = jcsCache;
+        } else {
+            cacheAcsess = jcsCacheRegions.get(region_name);
+        }
+        if (cacheAcsess == null) {
+            cacheAcsess = createRegion(attr);
+        }
 
-                //enqueue cache for tcp transport
-                RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_MEMORY);
-                rmtEntry.setCacheRegionName(region_name);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                rmtEntry.setMaxIdleTime(max_idle_time_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
-            case DISTRIBUTED_DISK:
+        ElementAttributes elem_attr = new ElementAttributes();
+        elem_attr.setIdleTime(attr.getMaxIdleTimeInSeconds());
+        elem_attr.setMaxLife(attr.getTimeToLiveInSeconds());
+        elem_attr.setIsSpool(attr.isSpool());
+        elem_attr.setIsEternal(attr.isEternal());
+        //elem_attr.setSize(size);//come back
 
-                //first store in local disk
-                elementAttr.setIsSpool(true);//will be flushed to disk      
-                cacheAcsess.put(key, value, elementAttr);
+        cacheAcsess.put(key, value, elem_attr);
 
-                //enqueue cache for tcp transport                
-                rmtEntry = new RemoteCachePacket(key, value,
-                        SimpleHttpServer.getStrCacheSockAddr(), CacheActionType.ADD_DISK);
-                rmtEntry.setCacheRegionName(region_name);
-                rmtEntry.setTimeToLive(time_to_live_in_secs);
-                rmtEntry.setMaxIdleTime(max_idle_time_in_secs);
-                TCPCacheTransport.enqueueCache(rmtEntry);
-                break;
+        if (attr.isDistributed()) {
+            RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
+                    SimpleHttpServer.getStrCacheSockAddr(), attr);
+            rmtEntry.setCacheRegionName(region_name);
+            TCPCacheTransport.enqueueCache(rmtEntry);
         }
 
     }
 
     @Override
     public Object getCache(Object key) {
-        return jcsCache.get(key);
+        return jcsCache.getCacheControl().localGet(key).getVal();
     }
 
     @Override
@@ -627,13 +445,12 @@ class ServerObjectImpl extends AbstractServerObject {
         if (ca == null) {
             return null;
         }
-        return ca.get(key);
+        return ca.getCacheControl().localGet(key).getVal();
     }
 
-    
     @Override
-    public void createCacheRegion(String region_name, Properties config) {
-        createRegion(region_name, config, false);//false means do not filter the config properties
+    public void createCacheRegion(String region_name, ICacheProperties config) {
+        createRegion(config);
     }
 
 }

@@ -27,8 +27,6 @@ public enum Attr {
     CachePort,
     CacheServers,
     MaxSendRemoteCacheTrials,
-    //MaxMemoryCacheSize,
-    //MaxDiskCacheIdleTime,
     MaxReqestCacheFileSize,
     CacheTimeToLive,
     MaxMemoryCacheIdleTime,
