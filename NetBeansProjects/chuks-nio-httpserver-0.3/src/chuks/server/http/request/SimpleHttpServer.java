@@ -8,6 +8,7 @@ package chuks.server.http.request;
 import chuks.server.HttpServer;
 import chuks.server.SimpleHttpServerException;
 import chuks.server.SimpleServerConfigException;
+import chuks.server.cache.config.CacheProperties;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.concurrent.*;
 import java.util.logging.*;
 import javax.net.ServerSocketFactory;
@@ -34,7 +36,7 @@ import org.apache.commons.configuration.PropertiesConfigurationLayout;
  */
 public class SimpleHttpServer implements HttpServer {
 
-    private static char FileSeparator='\\';//but will be set automatically based on the OS anyway
+    private static char FileSeparator = '\\';//but will be set automatically based on the OS anyway
     static int cache_port;
     static SocketAddress cacheSockAddress;
 
@@ -605,6 +607,66 @@ public class SimpleHttpServer implements HttpServer {
                     ServerConfig.DEFAULT_INDEX_FILE_EXTENSION = pConfig.getString(key);
                 }
 
+                CacheProperties cacheProp = new CacheProperties();
+                
+                cacheProp.setCacheRegionName("default");//come back
+                cacheProp.setDistributedCache(this.enableRemoteCache);
+                cacheProp.setEternal(pConfig.getBoolean(configAttrBundle.getString(Attr.IsCacheEternal.name())));
+                cacheProp.setMaxCacheObjects(pConfig.getInt(configAttrBundle.getString(Attr.MaxCachedObjects.name())));
+                cacheProp.setMaxMemoryIdleTimeInSeconds(pConfig.getLong(configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name())));
+                cacheProp.setMaxSpoolPerRun(pConfig.getInt(configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name())));
+                cacheProp.setShrinkerIntervalInSeconds(pConfig.getLong(configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name())));
+                cacheProp.setSpoolChunkSize(pConfig.getInt(configAttrBundle.getString(Attr.CacheSpoolChunkSize.name())));
+                cacheProp.setTimeToLiveInSeconds(pConfig.getLong(configAttrBundle.getString(Attr.CacheTimeToLive.name())));
+                cacheProp.setUseMemoryShrinker(pConfig.getBoolean(configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name())));
+
+                ServerCache.createDefaultRegion(cacheProp);
+                
+                /*Properties cachePro = new Properties();
+                cachePro.put("jcs.default", "DC");
+                cachePro.put("jcs.default.cacheattributes", "org.apache.commons.jcs.engine.CompositeCacheAttributes");
+                cachePro.put("jcs.default.cacheattributes.MemoryCacheName", "org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache");
+                cachePro.put("jcs.region.MyRegionName.elementattributes", "org.apache.commons.jcs.engine.ElementAttributes");
+                
+                key = configAttrBundle.getString(Attr.CacheDiskPath.name());
+                cachePro.put("jcs.auxiliary.DC.attributes.DiskPath", pConfig.getString(key));
+
+                key = configAttrBundle.getString(Attr.CacheSpoolChunkSize.name());
+                cachePro.put("jcs.default.cacheattributes.UseMemoryShrinker", pConfig.getBoolean(key));
+
+                key = configAttrBundle.getString(Attr.CacheTimeToLive.name());
+                cachePro.put("jcs.default.elementattributes.MaxLife", pConfig.getLong(key));
+
+                key = configAttrBundle.getString(Attr.IsCacheEternal.name());
+                cachePro.put("jcs.default.elementattributes.IsEternal", pConfig.getBoolean(key));
+
+                key = configAttrBundle.getString(Attr.MaxCacheSize.name());
+                cachePro.put("jcs.default.elementattributes.Size", pConfig.getInt(key));//come back
+
+                key = configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name());
+                cachePro.put("jcs.default.cacheattributes.MaxSpoolPerRun", pConfig.getInt(key));
+
+                key = configAttrBundle.getString(Attr.MaxCachedObjects.name());
+                cachePro.put("jcs.default.cacheattributes.MaxObjects", pConfig.getInt(key));
+
+                key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
+                cachePro.put("jcs.default.cacheattributes.MaxMemoryIdleTimeSeconds", pConfig.getLong(key));
+
+                key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
+                cachePro.put("jcs.default.cacheattributes.UseMemoryShrinker", pConfig.getBoolean(key));
+
+                key = configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name());
+                cachePro.put("jcs.default.cacheattributes.ShrinkerIntervalSeconds", pConfig.getInt(key));
+
+                key = configAttrBundle.getString(Attr.UseDiskCache.name());
+                cachePro.put("jcs.default.cacheattributes.", pConfig.getString(key));
+
+                key = configAttrBundle.getString(Attr.CacheDiskPath.name());
+                cachePro.put("jcs.default.cacheattributes.", pConfig.getString(key));
+
+                key = configAttrBundle.getString(Attr.CacheDiskPath.name());
+                cachePro.put("jcs.default.cacheattributes.", pConfig.getString(key));
+                */
             } catch (Exception ex) {//do not use multi try catch
                 throw new SimpleServerConfigException(ex.getMessage());
             }

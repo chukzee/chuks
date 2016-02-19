@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 final class CacheStreamHandler implements Runnable {
 
     private Socket sock;
-    private RemoteCachePacket lastFailedCacheEntry;
+    private RemoteCachePacket lastFailedCachePacket;
     private int sentAttempts;
     private String remoteHost;
     private int remotePort;
@@ -69,22 +69,22 @@ final class CacheStreamHandler implements Runnable {
                 return;
             }
 
-            if (lastFailedCacheEntry!=null) {
-                sendCache(lastFailedCacheEntry);
+            if (lastFailedCachePacket!=null) {
+                sendCache(lastFailedCachePacket);
                 return;
             }
-            RemoteCachePacket remoteCacheEntry = cacheDispatchQueue.peek();//get only
-            if (remoteCacheEntry == null) {
+            RemoteCachePacket remoteCachePacket = cacheDispatchQueue.peek();//get only
+            if (remoteCachePacket == null) {
                 return;
             }
-            if (!remoteCacheEntry.isConsumedBy(name)) {
-                sendCache(remoteCacheEntry);
+            if (!remoteCachePacket.isConsumedBy(name)) {
+                sendCache(remoteCachePacket);
             } else {
                 Iterator<RemoteCachePacket> i = cacheDispatchQueue.iterator();//safe - since iterators of ConcurrentLinkedQueue DO NOT throw ConcurrentModificationException - see java doc
                 while (i.hasNext()) {
-                    remoteCacheEntry = i.next();
-                    if (!remoteCacheEntry.isConsumedBy(name)) {
-                        sendCache(remoteCacheEntry);
+                    remoteCachePacket = i.next();
+                    if (!remoteCachePacket.isConsumedBy(name)) {
+                        sendCache(remoteCachePacket);
                         break;
                     }
                 }
@@ -131,38 +131,38 @@ final class CacheStreamHandler implements Runnable {
 
     }
 
-    private void handleSendFailure(RemoteCachePacket remoteCacheEntry) {
+    private void handleSendFailure(RemoteCachePacket remoteCachePacket) {
 
         if (sentAttempts < ServerConfig.getMaxCacheSendTrails()) {
             //sleep a little before next attempt           
             ThreadUtil.sleep(1000);
         } else {
-            cacheDispatchQueue.remove(remoteCacheEntry);//no more attempts allowed            
+            cacheDispatchQueue.remove(remoteCachePacket);//no more attempts allowed            
         }
 
     }
 
-    private void sendCache(RemoteCachePacket remoteCacheEntry) {
+    private void sendCache(RemoteCachePacket remoteCachePacket) {
 
         try {
 
             sentAttempts++;
-            remoteCacheEntry.updateCacheExpiry();//update the cache expiry before sending - this will consider delay in sending
-            objStreamOut.writeObject(remoteCacheEntry);
+            remoteCachePacket.updateCacheExpiry();//update the cache expiry before sending - this will consider delay in sending
+            objStreamOut.writeObject(remoteCachePacket);
             objStreamOut.flush();
-            lastFailedCacheEntry = null;
-            remoteCacheEntry.registerConsumer(name);
-            if (remoteCacheEntry.totalConsumers() >= TCPCacheTransport.totalCacheStreamHandlers()) {
-                cacheDispatchQueue.remove(remoteCacheEntry);
+            lastFailedCachePacket = null;
+            remoteCachePacket.registerConsumer(name);
+            if (remoteCachePacket.totalConsumers() >= TCPCacheTransport.totalCacheStreamHandlers()) {
+                cacheDispatchQueue.remove(remoteCachePacket);
             }
 
         } catch (IOException ex) {
-            lastFailedCacheEntry = remoteCacheEntry;
+            lastFailedCachePacket = remoteCachePacket;
             if (sock.isClosed() || !sock.isConnected() || sock.isOutputShutdown()) {
                 closeSocket();//ensure close
                 return;
             }
-            handleSendFailure(remoteCacheEntry);
+            handleSendFailure(remoteCachePacket);
             Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
