@@ -11,46 +11,33 @@ import chuks.server.cache.ICacheProperties;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class CacheProperties implements ICacheProperties{
-    
-    protected boolean useDiskSwapStrategy;
-    protected int maxCacheObject;
-    protected boolean useDisk;
-    private boolean useRemoteCache;
+final public class CacheProperties implements ICacheProperties {
+
+    protected boolean useDiskSwapStrategy = true;
+    protected int maxCacheObject = 1000;
+    protected boolean useDisk = true;
+    private boolean useRemoteCache = false;
     private String regionName;
     private boolean useMemoryShrinker = false;
     private long maxMemoryIdleTime = -1;//default is -1 meaning forever
     private long shrinkerInterval = 30;
     private int maxSpoolPerRun = -1;
     private int spoolChunkSize = 2;
-    private boolean eternal;
-    private boolean isSpool;
+    private boolean eternal = false;
     private long timeToLive = -1;//default is -1 meaning forever
+    private String diskPath;
+    private int diskMaxPurgatorySize = 10000;
+    private int diskMaxKeySize = 10000;
+    private int diskOptimizeAtRemoveCount = 300000;
+    private boolean diskOptimizeOnShutdown = true;
+    private int diskMaxRecyleBinSize = 500;
+    private DiskLimitType diskLimitType = DiskLimitType.COUNT;
+    private boolean useDiskCacheOnly = false;
 
-    
-    public CacheProperties(){
-        
+    public CacheProperties() {
+
     }
-    /**Configure the cache to use disk and set the disk strategy.
-     * <br/>
-     * The parameter {@code useDiskSwapStrategy} determines whether items will only go to disk when the memory limit is reached.
-     * If set to true then items go to disk upon memory limit while if false then item
-     * go to disk on a normal put
-     * <br/>
-     * The parameter {@code spool} is used to set whether is cache should go straight to the disk or not. 
-     * 
-     * @param useDiskCache
-     * @param useDiskSwapStrategy
-     * @param spool if true the cache moves straight to the disk
-     */
-    public CacheProperties(boolean useDiskCache, boolean useDiskSwapStrategy, boolean spool){
-        this.useDisk = useDiskCache;
-        this.useDiskSwapStrategy = useDiskSwapStrategy;
-        this.isSpool = spool;
-       
-    }
-    
-    
+
     @Override
     public boolean isDiskSwapStrategy() {
         return this.useDiskSwapStrategy;
@@ -67,7 +54,7 @@ public class CacheProperties implements ICacheProperties{
     }
 
     @Override
-    public boolean isUseDisk(){
+    public boolean isUseDisk() {
         return this.useDisk;
     }
 
@@ -135,7 +122,7 @@ public class CacheProperties implements ICacheProperties{
     public void setSpoolChunkSize(int spoolChunkSize) {
         this.spoolChunkSize = spoolChunkSize;
     }
-    
+
     @Override
     public int getSpoolChunkSize() {
         return spoolChunkSize;
@@ -152,11 +139,6 @@ public class CacheProperties implements ICacheProperties{
     }
 
     @Override
-    public boolean isSpool() {
-        return isSpool;
-    }
-
-    @Override
     public void setEternal(boolean eternal) {
         this.eternal = eternal;
     }
@@ -165,5 +147,85 @@ public class CacheProperties implements ICacheProperties{
     public boolean isEternal() {
         return eternal;
     }
-    
+
+    @Override
+    public void setDiskPath(String disk_path) {
+        this.diskPath = disk_path;
+    }
+
+    @Override
+    public String getDiskPath() {
+        return diskPath;
+    }
+
+    @Override
+    public void setDiskMaxPurgatorySize(int size) {
+        diskMaxPurgatorySize = size;
+    }
+
+    @Override
+    public int getDiskMaxPurgatorySize() {
+        return diskMaxPurgatorySize;
+    }
+
+    @Override
+    public void setDiskMaxKeySize(int size) {
+        diskMaxKeySize = size;
+    }
+
+    @Override
+    public int getDisMaxKeySize() {
+        return diskMaxKeySize;
+    }
+
+    @Override
+    public void setDiskOptimizeAtRemoveCount(int count) {
+        diskOptimizeAtRemoveCount = count;
+    }
+
+    @Override
+    public int getDisOptimizeAtRemoveCount() {
+        return diskOptimizeAtRemoveCount;
+    }
+
+    @Override
+    public void setDiskOptimizeOnShutdown(boolean optimize) {
+        diskOptimizeOnShutdown = optimize;
+    }
+
+    @Override
+    public boolean getDisOptimizeOnShutdown() {
+        return diskOptimizeOnShutdown;
+    }
+
+    @Override
+    public void setDiskMaxRecyleBinSize(int size) {
+        diskMaxRecyleBinSize = size;
+    }
+
+    @Override
+    public int getDiskMaxRecyleBinSize() {
+        return diskMaxRecyleBinSize;
+    }
+
+    @Override
+    public void setDiskLimitType(DiskLimitType type) {
+        diskLimitType = type;
+    }
+
+    @Override
+    public DiskLimitType getDiskLimitType() {
+        return diskLimitType;
+    }
+
+    @Override
+    public void setUseDiskCacheOnly(boolean spool) {
+        useDiskCacheOnly = spool;
+    }
+
+    @Override
+    public boolean isUseDiskCacheOnly() {
+        return useDiskCacheOnly;
+    }
+
 }

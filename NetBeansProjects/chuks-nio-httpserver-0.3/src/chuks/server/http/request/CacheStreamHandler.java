@@ -8,9 +8,7 @@ package chuks.server.http.request;
 import static chuks.server.http.request.TCPCacheTransport.*;
 import chuks.server.util.ThreadUtil;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -18,7 +16,6 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
@@ -248,7 +245,9 @@ final class CacheStreamHandler implements Runnable {
                 RemoteCachePacket rmtPack = (RemoteCachePacket) obj;
 
                 //System.out.println("test received  value = " + rmtPack.getValue() );
-                if(rmtPack.isRemoveCache()){
+                if(rmtPack.isRemoveAllCache()){
+                    ServerCache.removeAllRCE(rmtPack);
+                }else if(rmtPack.isRemoveCache()){
                     ServerCache.removeRCE(rmtPack);
                 }else{
                     ServerCache.putRCE(rmtPack);

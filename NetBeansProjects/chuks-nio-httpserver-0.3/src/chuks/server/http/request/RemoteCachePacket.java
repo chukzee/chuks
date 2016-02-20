@@ -35,6 +35,7 @@ class RemoteCachePacket<K, V> implements Serializable {
     private String region_name;
     private long last_update_time;
     private boolean remove;
+    private boolean removeAll;
 
     private RemoteCachePacket() {
     }
@@ -63,6 +64,20 @@ class RemoteCachePacket<K, V> implements Serializable {
         last_update_time = System.currentTimeMillis();
     }
 
+    /**
+     * Use this construct to remote the cache with the specified key.
+     *
+     * @param key
+     * @param origin
+     */
+    RemoteCachePacket(String origin) {
+        this.key = key;
+        this.origin = origin;
+        this.remove = true;
+        this.removeAll = true;
+        last_update_time = System.currentTimeMillis();
+    }
+    
     IEntryAttributes getAttributes() {
         return entryAttr != null ? entryAttr : new EntryAttributes();
     }
@@ -105,6 +120,10 @@ class RemoteCachePacket<K, V> implements Serializable {
 
     public boolean isRemoveCache() {
         return remove;
+    }
+
+    public boolean isRemoveAllCache() {
+        return removeAll;
     }
 
     long getTimeToLiveRemaining() {

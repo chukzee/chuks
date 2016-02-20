@@ -43,16 +43,20 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.json.JSONObject;
 import static chuks.server.http.request.ServerCache.*;
+import java.util.HashMap;
 import org.apache.commons.jcs.JCS;
 import org.apache.commons.jcs.access.CacheAccess;
+import org.apache.commons.jcs.engine.CacheElement;
+import org.apache.commons.jcs.engine.behavior.ICacheElement;
 import org.apache.commons.jcs.engine.behavior.ICompositeCacheAttributes;
 import org.apache.commons.jcs.engine.behavior.IElementAttributes;
+import org.apache.commons.jcs.engine.control.CompositeCache;
 
 /**
  *
  * @author USER
  */
-class ServerObjectImpl extends AbstractServerObject {
+class ServerObjectImpl<K, V> extends AbstractServerObject {
 
     private StringBuilder html_buff;
     private byte[] pdf_buff;
@@ -353,50 +357,88 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
-    public void putCache(Serializable key, Serializable value) {
+    public void putCache(Serializable key, Serializable value) throws IOException {
 
-        jcsCache.put(key, value);
+        if (key == null) {
+            throw new IllegalArgumentException("Cache key must not be null");
+        }
+
+        if (value == null) {
+            throw new IllegalArgumentException("Cache value must not be null");
+        }
+
+        CacheElement ce = new CacheElement(jcsCache.getCacheName(), key, value);
+        IElementAttributes cattr = jcsCache.getElementAttributes();
+        ce.setElementAttributes(cattr);
+        jcsCache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
 
         if (defaultEntryAttr.isDistributed()) {
             RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
                     SimpleHttpServer.getStrCacheSockAddr(), defaultEntryAttr);
             TCPCacheTransport.enqueueCache(rmtEntry);
         }
+
     }
 
     @Override
-    public void putCache(Serializable key, Serializable value, IEntryAttributes attr) {
+    public void putCache(Serializable key, Serializable value, IEntryAttributes attr) throws IOException {
+
+        if (key == null) {
+            throw new IllegalArgumentException("Cache key must not be null");
+        }
+
+        if (value == null) {
+            throw new IllegalArgumentException("Cache value must not be null");
+        }
 
         ElementAttributes elem_attr = new ElementAttributes();
-        
+
         elem_attr.setIdleTime(attr.getMaxIdleTimeInSeconds());
         elem_attr.setMaxLife(attr.getTimeToLiveInSeconds());
         elem_attr.setIsSpool(attr.isSpool());
         elem_attr.setIsEternal(attr.isEternal());
-        
-        jcsCache.put(key, value, elem_attr);
+
+        CacheElement ce = new CacheElement(jcsCache.getCacheName(), key, value);
+
+        ce.setElementAttributes(elem_attr);
+
+        jcsCache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
 
         if (attr.isDistributed()) {
             RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
                     SimpleHttpServer.getStrCacheSockAddr(), attr);
             TCPCacheTransport.enqueueCache(rmtEntry);
         }
+
     }
 
     @Override
-    public void putCache(String region_name, Serializable key, Serializable value) {
+    public void putCache(String region_name, Serializable key, Serializable value) throws IOException {
 
-        CacheAccess cacheAcsess = null;
-        if (region_name == null) {
-            cacheAcsess = jcsCache;
-        } else {
-            cacheAcsess = jcsCacheRegions.get(region_name);
+        if (key == null) {
+            throw new IllegalArgumentException("Cache key must not be null");
         }
-        if (cacheAcsess == null) {
+
+        if (value == null) {
+            throw new IllegalArgumentException("Cache value must not be null");
+        }
+
+        CompositeCache cache = null;
+        if (region_name == null) {
+            cache = jcsCache;
+        } else {
+            cache = jcsCacheRegions.get(region_name);
+        }
+        if (cache == null) {
             return;
         }
-        IElementAttributes cattr = cacheAcsess.getDefaultElementAttributes();
-        if (cattr.getIsRemote()) {
+
+        CacheElement ce = new CacheElement(region_name, key, value);
+        IElementAttributes cattr = cache.getElementAttributes();
+        ce.setElementAttributes(cattr);
+        cache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
+
+        if (cattr != null && cattr.getIsRemote()) {
             RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
                     SimpleHttpServer.getStrCacheSockAddr(), null);
             rmtEntry.setCacheRegionName(region_name);
@@ -405,15 +447,24 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
-    public void putCache(String region_name, Serializable key, Serializable value, IEntryAttributes attr) {
-        CacheAccess cacheAcsess = null;
-        if (region_name == null) {
-            cacheAcsess = jcsCache;
-        } else {
-            cacheAcsess = jcsCacheRegions.get(region_name);
+    public void putCache(String region_name, Serializable key, Serializable value, IEntryAttributes attr) throws IOException {
+
+        if (key == null) {
+            throw new IllegalArgumentException("Cache key must not be null");
         }
-        if (cacheAcsess == null) {
-            cacheAcsess = createRegion(attr);
+
+        if (value == null) {
+            throw new IllegalArgumentException("Cache value must not be null");
+        }
+
+        CompositeCache cache;
+        if (region_name == null) {
+            cache = jcsCache;
+        } else {
+            cache = jcsCacheRegions.get(region_name);
+        }
+        if (cache == null) {
+            cache = createRegion(attr);
         }
 
         ElementAttributes elem_attr = new ElementAttributes();
@@ -423,7 +474,10 @@ class ServerObjectImpl extends AbstractServerObject {
         elem_attr.setIsEternal(attr.isEternal());
         //elem_attr.setSize(size);//come back
 
-        cacheAcsess.put(key, value, elem_attr);
+        CacheElement ce = new CacheElement(region_name, key, value);
+        IElementAttributes cattr = cache.getElementAttributes();
+        ce.setElementAttributes(cattr);
+        cache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
 
         if (attr.isDistributed()) {
             RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
@@ -435,17 +489,17 @@ class ServerObjectImpl extends AbstractServerObject {
     }
 
     @Override
-    public Object getCache(Object key) {
-        return jcsCache.getCacheControl().localGet(key).getVal();
+    public Object getCache(Serializable key) {
+        return jcsCache.localGet(key).getVal();//we are not intrested in JCS remote implementation - we've got ours
     }
 
     @Override
-    public Object getCache(String regon_name, Object key) {
-        CacheAccess ca = jcsCacheRegions.get(regon_name);
-        if (ca == null) {
+    public Object getCache(String regon_name, Serializable key) {
+        CompositeCache cache = jcsCacheRegions.get(regon_name);
+        if (cache == null) {
             return null;
         }
-        return ca.getCacheControl().localGet(key).getVal();
+        return cache.localGet(key).getVal();//we are not intrested in JCS remote implementation - we've got ours
     }
 
     @Override
@@ -453,4 +507,98 @@ class ServerObjectImpl extends AbstractServerObject {
         createRegion(config);
     }
 
+    @Override
+    public Map getMatchingCache(String pattern) {
+        return getMatchingCache(jcsCache, pattern);
+    }
+
+    @Override
+    public Map getMatchingCache(String region_name, String pattern) {
+        CompositeCache cache = jcsCacheRegions.get(region_name);
+        if (cache == null) {
+            return null;
+        }
+        return getMatchingCache(cache, pattern);
+    }
+
+    private Map getMatchingCache(CompositeCache cache, String pattern) {
+        HashMap unwrappedResults = new HashMap();
+        Map wrappedResults = cache.getMatching(pattern);
+        if (wrappedResults != null) {
+            for (Object entry : wrappedResults.entrySet()) {
+                Map.Entry en = (Map.Entry) entry;
+                ICacheElement element = (ICacheElement) en.getValue();
+                if (element != null) {
+                    unwrappedResults.put(en.getKey(), element.getVal());
+                }
+            }
+        }
+        return unwrappedResults;
+    }
+
+    @Override
+    public void removeCache(Serializable key) {
+        removeCache(jcsCache, key);
+    }
+
+    @Override
+    public void removeCache(String region_name, Serializable key) {
+        if (region_name == null) {
+            removeCache(jcsCache, key);
+            return;
+        }
+        CompositeCache cache = jcsCacheRegions.get(region_name);
+        if (cache == null) {
+            //here the region is not found so check the remote location and then remove if found.
+            RemoteCachePacket rmtEntry = new RemoteCachePacket(key,
+                    SimpleHttpServer.getStrCacheSockAddr());
+            rmtEntry.setCacheRegionName(region_name);
+            TCPCacheTransport.enqueueCache(rmtEntry);
+            return;
+        }
+
+        //here the region is found so remove both locally and remotely.
+        removeCache(cache, key);
+    }
+
+    private void removeCache(CompositeCache cache, Serializable key) {
+        cache.localRemove(key);
+        RemoteCachePacket rmtEntry = new RemoteCachePacket(key,
+                SimpleHttpServer.getStrCacheSockAddr());
+        rmtEntry.setCacheRegionName(cache.getCacheName());
+        TCPCacheTransport.enqueueCache(rmtEntry);
+    }
+
+    @Override
+    public void removeAllCache() throws IOException {
+        removeAllCache(jcsCache);
+    }
+
+    @Override
+    public void removeAllCache(String region_name) throws IOException {
+        if (region_name == null) {
+            removeAllCache(jcsCache);
+            return;
+        }
+        CompositeCache cache = jcsCacheRegions.get(region_name);
+        if (cache == null) {
+            //here the region is not found so check the remote location and then remove all if found.
+            RemoteCachePacket rmtEntry = new RemoteCachePacket(
+                    SimpleHttpServer.getStrCacheSockAddr());
+            rmtEntry.setCacheRegionName(region_name);
+            TCPCacheTransport.enqueueCache(rmtEntry);
+            return;
+        }
+
+        //here the region is found so remove all both locally and remotely.
+        removeAllCache(cache);
+    }
+
+    private void removeAllCache(CompositeCache cache) throws IOException {
+        cache.localRemoveAll();
+        RemoteCachePacket rmtEntry = new RemoteCachePacket(
+                SimpleHttpServer.getStrCacheSockAddr());
+        rmtEntry.setCacheRegionName(cache.getCacheName());
+        TCPCacheTransport.enqueueCache(rmtEntry);
+    }
 }

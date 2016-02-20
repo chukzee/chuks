@@ -609,7 +609,7 @@ public class SimpleHttpServer implements HttpServer {
 
                 CacheProperties cacheProp = new CacheProperties();
                 
-                cacheProp.setCacheRegionName("default");//come back
+                cacheProp.setCacheRegionName(null);//set to null to create default region
                 cacheProp.setDistributedCache(this.enableRemoteCache);
                 cacheProp.setEternal(pConfig.getBoolean(configAttrBundle.getString(Attr.IsCacheEternal.name())));
                 cacheProp.setMaxCacheObjects(pConfig.getInt(configAttrBundle.getString(Attr.MaxCachedObjects.name())));
