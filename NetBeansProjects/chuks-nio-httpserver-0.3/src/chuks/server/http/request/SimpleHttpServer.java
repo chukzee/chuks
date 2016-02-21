@@ -174,8 +174,9 @@ public class SimpleHttpServer implements HttpServer {
             checkConfig();
             ServerHandler.isRunning = true;
             ServerHandler.getInstance().start();
-            ServerAppManager.getInstance().start();
-
+            WebAppManager.getInstance().start();
+            Bootstrap.getInstance().load();
+            
             if (enableRemoteCache) {
                 TCPCacheTransport cTran = TCPCacheTransport.getInstance();
                 cTran.start();
@@ -192,6 +193,7 @@ public class SimpleHttpServer implements HttpServer {
 
     @Override
     public boolean stop() {
+        finalizeOperation();
         ServerHandler.isRunning = false;
         //COME BACK FOR BETTER AND MORE COMPREHENSIVE CLEAN UP
         return true;
@@ -201,6 +203,11 @@ public class SimpleHttpServer implements HttpServer {
         return !ServerHandler.isRunning;
     }
 
+    private void finalizeOperation(){
+        //save the load web app class names
+        
+    }
+    
     private void checkConfig() throws SimpleServerConfigException {
 
         if (classPath == null || classPath.isEmpty()) {
@@ -622,51 +629,6 @@ public class SimpleHttpServer implements HttpServer {
 
                 ServerCache.createDefaultRegion(cacheProp);
                 
-                /*Properties cachePro = new Properties();
-                cachePro.put("jcs.default", "DC");
-                cachePro.put("jcs.default.cacheattributes", "org.apache.commons.jcs.engine.CompositeCacheAttributes");
-                cachePro.put("jcs.default.cacheattributes.MemoryCacheName", "org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache");
-                cachePro.put("jcs.region.MyRegionName.elementattributes", "org.apache.commons.jcs.engine.ElementAttributes");
-                
-                key = configAttrBundle.getString(Attr.CacheDiskPath.name());
-                cachePro.put("jcs.auxiliary.DC.attributes.DiskPath", pConfig.getString(key));
-
-                key = configAttrBundle.getString(Attr.CacheSpoolChunkSize.name());
-                cachePro.put("jcs.default.cacheattributes.UseMemoryShrinker", pConfig.getBoolean(key));
-
-                key = configAttrBundle.getString(Attr.CacheTimeToLive.name());
-                cachePro.put("jcs.default.elementattributes.MaxLife", pConfig.getLong(key));
-
-                key = configAttrBundle.getString(Attr.IsCacheEternal.name());
-                cachePro.put("jcs.default.elementattributes.IsEternal", pConfig.getBoolean(key));
-
-                key = configAttrBundle.getString(Attr.MaxCacheSize.name());
-                cachePro.put("jcs.default.elementattributes.Size", pConfig.getInt(key));//come back
-
-                key = configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name());
-                cachePro.put("jcs.default.cacheattributes.MaxSpoolPerRun", pConfig.getInt(key));
-
-                key = configAttrBundle.getString(Attr.MaxCachedObjects.name());
-                cachePro.put("jcs.default.cacheattributes.MaxObjects", pConfig.getInt(key));
-
-                key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
-                cachePro.put("jcs.default.cacheattributes.MaxMemoryIdleTimeSeconds", pConfig.getLong(key));
-
-                key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
-                cachePro.put("jcs.default.cacheattributes.UseMemoryShrinker", pConfig.getBoolean(key));
-
-                key = configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name());
-                cachePro.put("jcs.default.cacheattributes.ShrinkerIntervalSeconds", pConfig.getInt(key));
-
-                key = configAttrBundle.getString(Attr.UseDiskCache.name());
-                cachePro.put("jcs.default.cacheattributes.", pConfig.getString(key));
-
-                key = configAttrBundle.getString(Attr.CacheDiskPath.name());
-                cachePro.put("jcs.default.cacheattributes.", pConfig.getString(key));
-
-                key = configAttrBundle.getString(Attr.CacheDiskPath.name());
-                cachePro.put("jcs.default.cacheattributes.", pConfig.getString(key));
-                */
             } catch (Exception ex) {//do not use multi try catch
                 throw new SimpleServerConfigException(ex.getMessage());
             }

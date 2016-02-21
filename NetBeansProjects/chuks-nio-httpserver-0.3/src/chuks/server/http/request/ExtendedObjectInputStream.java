@@ -19,9 +19,9 @@ import java.lang.reflect.Proxy;
  */
 class ExtendedObjectInputStream extends ObjectInputStream {
 
-    private final ServerAppClassLoader classLoader;
+    private final WebAppClassLoader classLoader;
 
-    ExtendedObjectInputStream(InputStream in, ServerAppClassLoader classLoader) throws IOException {
+    ExtendedObjectInputStream(InputStream in, WebAppClassLoader classLoader) throws IOException {
         super(in);
         this.classLoader = classLoader;
     }

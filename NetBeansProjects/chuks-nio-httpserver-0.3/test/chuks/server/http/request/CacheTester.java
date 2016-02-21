@@ -8,6 +8,11 @@ package chuks.server.http.request;
 import chuks.server.SimpleHttpServerException;
 import chuks.server.cache.CacheActionType;
 import chuks.server.cache.config.EntryAttributes;
+import chuks.server.http.request.RemoteCachePacket;
+import chuks.server.http.request.ServerConfig;
+import chuks.server.http.request.ServerHandler;
+import chuks.server.http.request.SimpleHttpServer;
+import chuks.server.http.request.TCPCacheTransport;
 import chuks.server.util.ThreadUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +27,6 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ServerSocketFactory;
-import test.TestNetworkSerializatiion;
 
 /**
  *
@@ -99,7 +103,7 @@ class CacheTester implements Runnable, Serializable {
                                 oos.writeObject(cache);
                             } catch (IOException | ClassNotFoundException ex) {
                                 //IOException is a super class of InvalidClassException, StreamCorruptedException and OptionalDataException
-                                Logger.getLogger(TestNetworkSerializatiion.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(CacheTester.class.getName()).log(Level.SEVERE, null, ex);
                                 sock.close();
                                 break;
                             }
@@ -152,7 +156,7 @@ class CacheTester implements Runnable, Serializable {
                                     oos.writeObject(cache);
                                 } catch (IOException | ClassNotFoundException ex) {
                                     //IOException is a super class of InvalidClassException, StreamCorruptedException and OptionalDataException
-                                    Logger.getLogger(TestNetworkSerializatiion.class.getName()).log(Level.SEVERE, null, ex);
+                                    Logger.getLogger(CacheTester.class.getName()).log(Level.SEVERE, null, ex);
                                     sock.close();
                                     break;
                                 }

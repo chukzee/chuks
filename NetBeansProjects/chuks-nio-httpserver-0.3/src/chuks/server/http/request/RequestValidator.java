@@ -244,7 +244,7 @@ abstract class RequestValidator {
                 = new ServerObjectImpl(request.getCookiesPair(),
                         request.getCookieSessionToken());
 
-        SimpleServerApplication server_app = ServerAppManager.getServerApp(requestedFilePath, this, serverObj);
+        SimpleServerApplication server_app = WebAppManager.getWebApp(requestedFilePath, this, serverObj);
 
         if (server_app == null) {//now we             
             return;

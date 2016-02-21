@@ -23,15 +23,15 @@ import java.util.zip.ZipEntry;
  *
  * @author USER
  */
-class ServerAppClassLoader extends ClassLoader {
+class WebAppClassLoader extends ClassLoader {
 
     private Class<?> clp;
     private String classAbsoluteFileName;
 
-    private ServerAppClassLoader() {
+    private WebAppClassLoader() {
     }
 
-    public ServerAppClassLoader(ClassLoader classLoader) {
+    public WebAppClassLoader(ClassLoader classLoader) {
         super(classLoader);
     }
 
@@ -63,7 +63,7 @@ class ServerAppClassLoader extends ClassLoader {
      */
     @Override
     protected Class<?> findClass(String className) throws ClassNotFoundException {
-
+System.out.println(className);
         FileInputStream fis = null;
         try {
 
@@ -82,7 +82,7 @@ class ServerAppClassLoader extends ClassLoader {
             }
 
         } catch (IOException ex) {
-            Logger.getLogger(ServerAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WebAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
 
         } finally {
             try {
@@ -90,7 +90,7 @@ class ServerAppClassLoader extends ClassLoader {
                     fis.close();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ServerAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(WebAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -177,7 +177,7 @@ class ServerAppClassLoader extends ClassLoader {
             try {
                 jar_file = new JarFile(f);
             } catch (IOException ex) {
-                Logger.getLogger(ServerAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(WebAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
             }
             ZipEntry entry = jar_file.getEntry(name);
             if (entry != null) {
@@ -187,7 +187,7 @@ class ServerAppClassLoader extends ClassLoader {
                     String url_path = "jar:file:///"+jar_file_name+".jar!/"+name;
                     url = new URL(url_path);
                 } catch (MalformedURLException ex) {
-                    Logger.getLogger(ServerAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(WebAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return url;
             }

@@ -36,9 +36,9 @@ class TCPCacheTransport {
     static TCPCacheTransport tCPCacheTransport;
     //final static Object lock = new Object();
     static private boolean started;
-    private static ServerAppClassLoader appClassLoader;
+    private static WebAppClassLoader appClassLoader;
 
-    static ServerAppClassLoader delegatedClassLoader() {
+    static WebAppClassLoader delegatedClassLoader() {
         return appClassLoader;
     }
     private final ScheduledExecutorService execRecv;
@@ -98,7 +98,7 @@ class TCPCacheTransport {
         }
         synchronized (TCPCacheTransport.class) {
             if (tCPCacheTransport == null) {
-                appClassLoader = new ServerAppClassLoader(TCPCacheTransport.class.getClassLoader());
+                appClassLoader = new WebAppClassLoader(TCPCacheTransport.class.getClassLoader());
                 tCPCacheTransport = new TCPCacheTransport();
             }
         }

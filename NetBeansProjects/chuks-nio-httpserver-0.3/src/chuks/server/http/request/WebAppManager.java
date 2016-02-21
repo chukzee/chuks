@@ -34,34 +34,43 @@ import java.util.logging.Logger;
  *
  * @author USER
  */
-class ServerAppManager implements Runnable {
+class WebAppManager implements Runnable {
 
-    private static Map<String, SimpleServerApplication> ssrMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
+    
+    /**
+     * Hold the initialized web apps (ie classes that implements SimpleServerApplication)
+     */
+    private static Map<String, SimpleServerApplication> webAppMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
+    
+    /**
+     * Hold the Class object of the web apps (ie classes that implements SimpleServerApplication) loaded by the Bootstrap class during server start up
+     */
+    private static Map<String, Class> webAppClassObjectsMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
     //private static String classPath;
     private final static Object c_lock = new Object();
     private static boolean isClassFilesChange;
-    private static ServerAppClassLoader lastClassLoader;
+    private static WebAppClassLoader lastClassLoader;
     private static SimpleHttpServerException initException;
     private final WatchService watcher;
     private final Map<WatchKey, Path> keys;
     private boolean trace = false;
-    static private ServerAppManager serverAppManager;
+    static private WebAppManager serverAppManager;
     static private boolean isStarted;
 
-    private ServerAppManager() throws IOException {
+    private WebAppManager() throws IOException {
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<>();
 
     }
 
-    static ServerAppManager getInstance() throws IOException {
+    static WebAppManager getInstance() throws IOException {
 
         if (serverAppManager != null) {
             return serverAppManager;
         }
         synchronized (c_lock) {
             if (serverAppManager == null) {
-                return serverAppManager = new ServerAppManager();
+                return serverAppManager = new WebAppManager();
             }
         }
         return serverAppManager;
@@ -81,30 +90,31 @@ class ServerAppManager implements Runnable {
         new Thread(serverAppManager).start();
     }
 
-    static SimpleServerApplication getServerApp(String classLoc, RequestValidator requestValidator, ServerObjectImpl serverObj) {
+    static SimpleServerApplication getWebApp(String classAbsoluteFilename, RequestValidator requestValidator, ServerObjectImpl serverObj) {
 
-        String className = classLoc.substring(getClassPath().length(), classLoc.length() - SERVER_FILE_EXT.length() - 1);
+        String className = classAbsoluteFilename.substring(getClassPath().length(), classAbsoluteFilename.length() - SERVER_FILE_EXT.length() - 1);
         className = className.replace(fileSeparator(), '.');//Yes - replace all occurence of OS file seperator with '.' . Yes replace() does replace all the char occurence - see doc 
         SimpleServerApplication ssr;
         try {
             synchronized (c_lock) {
                 if (!isClassFilesChange) {
-                    ssr = ssrMap.get(className);
+                    ssr = webAppMap.get(className);
                     if (ssr != null) {
                         return (SimpleServerApplication) ssr.initialize(serverObj);//return fresh copy - that which has not been used.
                     }
 
                     if (lastClassLoader == null) {
-                        lastClassLoader = new ServerAppClassLoader(ServerAppManager.class.getClassLoader());
+                        lastClassLoader = new WebAppClassLoader(WebAppManager.class.getClassLoader());
                     }
-                    ssr = checkFileSystem(className, classLoc, lastClassLoader, requestValidator, serverObj);//ok load from the file system;
+                    ssr = checkFileSystem(className, classAbsoluteFilename, lastClassLoader, requestValidator, serverObj);//ok load from the file system;
                 } else {
 
                     //At this point the class files have changed
-                    ssrMap.clear();
+                    webAppMap.clear();
+                    webAppClassObjectsMap.clear();
                     isClassFilesChange = false;//set to false since we have initialize the class loader anyway.
-                    ServerAppClassLoader classLoader = new ServerAppClassLoader(ServerAppManager.class.getClassLoader());
-                    ssr = checkFileSystem(className, classLoc, classLoader, requestValidator, serverObj);//ok load from the file system;
+                    WebAppClassLoader classLoader = new WebAppClassLoader(WebAppManager.class.getClassLoader());
+                    ssr = checkFileSystem(className, classAbsoluteFilename, classLoader, requestValidator, serverObj);//ok load from the file system;
                 }
             }//end of sync
         } catch (Exception ex) {
@@ -118,12 +128,12 @@ class ServerAppManager implements Runnable {
         return ssr;
     }
 
-    static private SimpleServerApplication checkFileSystem(String className, String classLoc, ServerAppClassLoader classLoader, RequestValidator requestValidator, ServerObjectImpl serverObj) {
+    static private SimpleServerApplication checkFileSystem(String className, String classAbsoluteFilename, WebAppClassLoader classLoader, RequestValidator requestValidator, ServerObjectImpl serverObj) {
 
         //check the cache once more if you were a waiter during lock
         //because we want to try as much as possible
         //to skip the reload of the class and java reflection below which altogether is expensive.
-        SimpleServerApplication ssr = ssrMap.get(className);//check cache again
+        SimpleServerApplication ssr = webAppMap.get(className);//check cache again
         if (ssr != null) {
             try {
                 return (SimpleServerApplication) ssr.initialize(serverObj);//return fresh copy - that which has not been used.
@@ -133,28 +143,32 @@ class ServerAppManager implements Runnable {
             }
         }
 
-        lastClassLoader = classLoader;
-
         //Ok, we've done our best, we've got no choice but to go for the class reload and java reflection.
         //The condition above will try as much as possible to limit execution below this point
         initException = null;
         try {
-            classLoader.setClassAbsoluteFileName(classLoc);
-            Class<?> c;
+
+            Class<?> cl;
             try {
-                c = classLoader.loadClass(className); //loadClass is already synchronized in ClassLoader so we are safe
-                /*similaryly use Class.forNam(...). except that Class.forName(...) 
-                 *can be used for Class initialization( ie static initializtion) if the
-                 *initialize parameter is set to true
-                c = Class.forName(className, false, classLoader);
-                */
-                
+                //well check if the class was loaded by our Bootstrap.class 
+                if ((cl = webAppClassObjectsMap.get(className)) == null) {
+                    lastClassLoader = classLoader;
+                    classLoader.setClassAbsoluteFileName(classAbsoluteFilename);
+                    cl = classLoader.loadClass(className); //loadClass is already synchronized in ClassLoader so we are safe
+                     
+                    /*similaryly use Class.forNam(...). except that Class.forName(...) 
+                     *can be used for Class initialization( ie static initializtion) if the
+                     *initialize parameter is set to true
+                     c = Class.forName(className, false, classLoader);
+                     */
+                    
+                }
             } catch (ClassNotFoundException ex) {
                 requestValidator.ensureResourceNotFound(ex);
                 return null;
             }
 
-            SimpleServerApplication sr = (SimpleServerApplication) c.newInstance();
+            SimpleServerApplication sr = (SimpleServerApplication) cl.newInstance();
             //store a fresh copy in the map rather than use reflection next time
             SimpleServerApplication freshCopy;
             try {
@@ -170,12 +184,12 @@ class ServerAppManager implements Runnable {
                     || freshCopy.equals(sr)) {
                 //invalid fresh copy since the class of freshCopy and sr must be the same
                 //and the objects must not be equal.
-                initException = new SimpleHttpServerException("incorrectly initialized " + classLoc + " - expected: new " + sr.getClass().getName() + "()");
+                initException = new SimpleHttpServerException("incorrectly initialized " + classAbsoluteFilename + " - expected: new " + sr.getClass().getName() + "()");
                 sr.onError(new ServerObjectImpl(null, null), initException);//notify error 
                 throw initException;
             }
 
-            ssrMap.put(className, freshCopy);//store the fresh copy
+            webAppMap.put(className, freshCopy);//store the fresh copy
 
             return sr;//return this instance since we already have a fresh copy for another server app
 
@@ -183,10 +197,37 @@ class ServerAppManager implements Runnable {
                 InstantiationException |
                 IllegalAccessException |
                 SimpleHttpServerException ce) {
-            Logger.getLogger(ServerAppManager.class.getName()).log(Level.SEVERE, null, ce);
+            Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, ce);
         }
 
         return null;
+    }
+
+    static boolean loadWebApp(String classAbsoluteFilename) {
+        String className = classAbsoluteFilename.substring(getClassPath().length(), classAbsoluteFilename.length() - SERVER_FILE_EXT.length() - 1);
+        className = className.replace(fileSeparator(), '.');
+        synchronized (c_lock) {
+            try {
+                if (webAppClassObjectsMap.get(className) != null
+                        || webAppMap.get(className) != null) {
+                    return false;//already loaded
+                }
+
+                //load it
+                if (lastClassLoader == null) {
+                    lastClassLoader = new WebAppClassLoader(WebAppManager.class.getClassLoader());
+                }
+                lastClassLoader.setClassAbsoluteFileName(classAbsoluteFilename);
+                Class<?> cl = lastClassLoader.loadClass(className);
+                webAppClassObjectsMap.put(className, cl);
+                //cl.newInstance();//Testing
+                //Logger.getLogger(WebAppManager.class.getName()).log(Level.INFO, "Loaded : {0}"+"."+SERVER_FILE_EXT, className);
+                return true;
+            } catch (Exception ex) {
+                Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -253,7 +294,7 @@ class ServerAppManager implements Runnable {
             try {
                 key = watcher.take();
             } catch (InterruptedException x) {
-                Logger.getLogger(ServerAppManager.class.getName()).log(Level.SEVERE, null, x);
+                Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, x);
                 return;
             }
 
@@ -284,29 +325,29 @@ class ServerAppManager implements Runnable {
                     synchronized (c_lock) {
                         isClassFilesChange = true; //flag file change for the next waiting thread to create new class loader
                     }
-                    
+
                     String file_path = child.toString();
-                    if(ServerCache.LRUOptimalCache.containsKey(file_path)){
-                       ServerCache.LRUOptimalCache.remove(file_path);
+                    if (ServerCache.LRUOptimalCache.containsKey(file_path)) {
+                        ServerCache.LRUOptimalCache.remove(file_path);
                     }
-                    
-                    if(child.getParent().equals(getPathClassPath())){
+
+                    if (child.getParent().equals(getPathClassPath())) {
                         //Whenever any file in the class path is modified the index file in the cache must be remove.
                         //since the default index file extension configuration settings might change at runtime, it
                         //we be safer to remove the index file from cache with every modification of class path files.
-                        
-                       //remove any index file 
-                       if(file_path.endsWith(fileSeparator()+"index.html")){
-                           ServerCache.LRUOptimalCache.remove(file_path);
-                       }
-                       
-                       if(file_path.endsWith(fileSeparator()+"index."+DEFAULT_INDEX_FILE_EXTENSION)){
-                           ServerCache.LRUOptimalCache.remove(file_path);
-                       }
-                       
-                       if(file_path.endsWith(fileSeparator()+"index")){
-                           ServerCache.LRUOptimalCache.remove(file_path);
-                       }
+
+                        //remove any index file 
+                        if (file_path.endsWith(fileSeparator() + "index.html")) {
+                            ServerCache.LRUOptimalCache.remove(file_path);
+                        }
+
+                        if (file_path.endsWith(fileSeparator() + "index." + DEFAULT_INDEX_FILE_EXTENSION)) {
+                            ServerCache.LRUOptimalCache.remove(file_path);
+                        }
+
+                        if (file_path.endsWith(fileSeparator() + "index")) {
+                            ServerCache.LRUOptimalCache.remove(file_path);
+                        }
                     }
                 }
 
@@ -319,7 +360,7 @@ class ServerAppManager implements Runnable {
                         }
                     } catch (IOException x) {
                         // ignore to keep sample readbale
-                        Logger.getLogger(ServerAppManager.class.getName()).log(Level.SEVERE, null, x);
+                        Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, x);
                     }
                 }
             }
@@ -365,9 +406,9 @@ class ServerAppManager implements Runnable {
                 Thread.sleep(2000);
 
             } catch (IOException ex) {
-                Logger.getLogger(ServerAppManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
-                Logger.getLogger(ServerAppManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
