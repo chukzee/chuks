@@ -29,103 +29,104 @@ public class LauchGUI extends javax.swing.JFrame {
 
         dlgAdvanceDiskCacheSettings = new javax.swing.JDialog();
         jLabel25 = new javax.swing.JLabel();
-        jTextField21 = new javax.swing.JTextField();
+        txtMaxDiskPurgatorySize = new javax.swing.JTextField();
         jLabel26 = new javax.swing.JLabel();
-        jTextField22 = new javax.swing.JTextField();
+        txtMaxDiskKeySize = new javax.swing.JTextField();
         jLabel27 = new javax.swing.JLabel();
-        jTextField23 = new javax.swing.JTextField();
+        txtMaxDiskRecycleBinSize = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
-        jTextField24 = new javax.swing.JTextField();
+        txtDiskOptimizedAtRemoveCount = new javax.swing.JTextField();
         jLabel29 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox();
-        jCheckBox7 = new javax.swing.JCheckBox();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
+        cboDiskLimitType = new javax.swing.JComboBox();
+        chkDiskOptimizeOnShutdown = new javax.swing.JCheckBox();
+        cmdAdvanceDiskCacheApply = new javax.swing.JButton();
+        cmdAdvanceDiskCacheCancel = new javax.swing.JButton();
+        cmdAdvanceDiskCacheReset = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtServerHost = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtServerPort = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
-        jTextField4 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        txtWebRoot = new javax.swing.JTextField();
+        cmdBrowseWebRoot = new javax.swing.JButton();
+        txtClassPath = new javax.swing.JTextField();
+        cmdBrowseClassPath = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        txtLibraryPath = new javax.swing.JTextField();
+        cmdLibraryPath = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        txtDisguisedExtension = new javax.swing.JTextField();
+        chkEnableErrorOutput = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
-        jButton16 = new javax.swing.JButton();
+        txtDefaultIndexFileExtension = new javax.swing.JTextField();
+        cmdRestBasicConfig = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
         jTextField25 = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        jTextField13 = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
-        jTextField14 = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        lblMaxTimeToLive = new javax.swing.JLabel();
+        txtMaxMemoryCacheTimeToLive = new javax.swing.JTextField();
+        lblMaxIdleTime = new javax.swing.JLabel();
+        txtMaxMemoryCacheIdleTime = new javax.swing.JTextField();
+        lbleMTLSeconds = new javax.swing.JLabel();
+        lbleITeconds = new javax.swing.JLabel();
+        chkIsMemoryCacheEternal = new javax.swing.JCheckBox();
         jPanel7 = new javax.swing.JPanel();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
+        chkSpoolToDisk = new javax.swing.JCheckBox();
+        chkUseMemoryShrinker = new javax.swing.JCheckBox();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jTextField15 = new javax.swing.JTextField();
-        jTextField16 = new javax.swing.JTextField();
-        jLabel19 = new javax.swing.JLabel();
-        jTextField17 = new javax.swing.JTextField();
+        txtMaxMemoryCacheObjects = new javax.swing.JTextField();
+        txtMaxMemoryCacheSize = new javax.swing.JTextField();
+        lblMaxSpoolPerRun = new javax.swing.JLabel();
+        txtMaxSpoolPerRun = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
-        jTextField18 = new javax.swing.JTextField();
-        jLabel22 = new javax.swing.JLabel();
-        jTextField20 = new javax.swing.JTextField();
-        jLabel24 = new javax.swing.JLabel();
+        lblShrinkerInterval = new javax.swing.JLabel();
+        txtMemoryShrinkerInterval = new javax.swing.JTextField();
+        lblShrinkerSec = new javax.swing.JLabel();
+        txtMaxSpoolChunkSize = new javax.swing.JTextField();
+        lblSpoolChunkSize = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        lstCacheServerAddressess = new javax.swing.JList();
         jLabel8 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
-        jTextField9 = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        txtCachePort = new javax.swing.JTextField();
+        txtEnterCacheServerAddress = new javax.swing.JTextField();
+        cmdAddCacheServerAddress = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jTextField10 = new javax.swing.JTextField();
+        txtMaxRemoteCacheHandlerThreads = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
-        jTextField11 = new javax.swing.JTextField();
-        jTextField12 = new javax.swing.JTextField();
+        txtMaxRemoteCacheSendTrails = new javax.swing.JTextField();
+        MaxRequestFileCacheSize = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jTextField19 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jLabel23 = new javax.swing.JLabel();
-        jCheckBox6 = new javax.swing.JCheckBox();
-        jButton7 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
+        chkUseDiskCache = new javax.swing.JCheckBox();
+        txtDiskPath = new javax.swing.JTextField();
+        cmdBrowseDiskPath = new javax.swing.JButton();
+        lblEnterDiskPath = new javax.swing.JLabel();
+        chkSwapCacheToDisk = new javax.swing.JCheckBox();
+        cmdAdvanceDiskCacheSetting = new javax.swing.JButton();
+        cmdResetCacheConfig = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        cmdStartServer = new javax.swing.JButton();
         jToolBar1 = new javax.swing.JToolBar();
-        jButton10 = new javax.swing.JButton();
+        cmdOpen = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        jButton11 = new javax.swing.JButton();
+        cmdSave = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        jButton12 = new javax.swing.JButton();
+        cmdResetAll = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
-        jButton15 = new javax.swing.JButton();
+        cmdHelp = new javax.swing.JButton();
 
         dlgAdvanceDiskCacheSettings.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         dlgAdvanceDiskCacheSettings.setTitle("Advace disk cache configuration");
+        dlgAdvanceDiskCacheSettings.setSize(new java.awt.Dimension(400, 300));
 
         jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel25.setText("Max. purgatory size");
@@ -142,18 +143,18 @@ public class LauchGUI extends javax.swing.JFrame {
         jLabel29.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel29.setText("Disk Limit type");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COUNT", "SIZE" }));
+        cboDiskLimitType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COUNT", "SIZE" }));
 
-        jCheckBox7.setText("Optimize on shutdown");
+        chkDiskOptimizeOnShutdown.setText("Optimize on shutdown");
 
-        jButton8.setText("Apply");
+        cmdAdvanceDiskCacheApply.setText("Apply");
 
-        jButton9.setText("Cancel");
+        cmdAdvanceDiskCacheCancel.setText("Cancel");
 
-        jButton13.setText("Reset");
-        jButton13.addActionListener(new java.awt.event.ActionListener() {
+        cmdAdvanceDiskCacheReset.setText("Reset");
+        cmdAdvanceDiskCacheReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton13ActionPerformed(evt);
+                cmdAdvanceDiskCacheResetActionPerformed(evt);
             }
         });
 
@@ -167,31 +168,31 @@ public class LauchGUI extends javax.swing.JFrame {
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtMaxDiskPurgatorySize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtMaxDiskRecycleBinSize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField22, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtMaxDiskKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel28, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jCheckBox7, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(chkDiskOptimizeOnShutdown, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jTextField24, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+                                .addComponent(cboDiskLimitType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtDiskOptimizedAtRemoveCount, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
-                                .addComponent(jButton8)
+                                .addComponent(cmdAdvanceDiskCacheApply)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton9)))))
+                                .addComponent(cmdAdvanceDiskCacheCancel)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton13)
+                .addComponent(cmdAdvanceDiskCacheReset)
                 .addContainerGap())
         );
         dlgAdvanceDiskCacheSettingsLayout.setVerticalGroup(
@@ -200,34 +201,34 @@ public class LauchGUI extends javax.swing.JFrame {
                 .addGap(40, 40, 40)
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel25)
-                    .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMaxDiskPurgatorySize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26)
-                    .addComponent(jTextField22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMaxDiskKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel27)
-                    .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMaxDiskRecycleBinSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel28)
-                    .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiskOptimizedAtRemoveCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel29)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboDiskLimitType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addGap(7, 7, 7)
-                        .addComponent(jCheckBox7))
+                        .addComponent(chkDiskOptimizeOnShutdown))
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addGap(27, 27, 27)
                         .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton8)
-                            .addComponent(jButton9)
-                            .addComponent(jButton13))))
-                .addContainerGap(32, Short.MAX_VALUE))
+                            .addComponent(cmdAdvanceDiskCacheApply)
+                            .addComponent(cmdAdvanceDiskCacheCancel)
+                            .addComponent(cmdAdvanceDiskCacheReset))))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -247,17 +248,17 @@ public class LauchGUI extends javax.swing.JFrame {
         jLabel3.setText("Web root");
         jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        jButton2.setText("Browse");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        cmdBrowseWebRoot.setText("Browse");
+        cmdBrowseWebRoot.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                cmdBrowseWebRootActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Browse");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        cmdBrowseClassPath.setText("Browse");
+        cmdBrowseClassPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                cmdBrowseClassPathActionPerformed(evt);
             }
         });
 
@@ -265,10 +266,10 @@ public class LauchGUI extends javax.swing.JFrame {
         jLabel4.setText("Class path");
         jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        jButton4.setText("Browse");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        cmdLibraryPath.setText("Browse");
+        cmdLibraryPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                cmdLibraryPathActionPerformed(evt);
             }
         });
 
@@ -280,19 +281,19 @@ public class LauchGUI extends javax.swing.JFrame {
         jLabel6.setText("Disguise extension");
         jLabel6.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+        txtDisguisedExtension.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
+                txtDisguisedExtensionActionPerformed(evt);
             }
         });
 
-        jCheckBox1.setText("Enable Error output");
+        chkEnableErrorOutput.setText("Enable Error output");
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("Default index file extension");
         jLabel7.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        jButton16.setText("Reset");
+        cmdRestBasicConfig.setText("Reset");
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Http thread pool"));
 
@@ -342,27 +343,27 @@ public class LauchGUI extends javax.swing.JFrame {
                         .addGap(10, 10, 10)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtDefaultIndexFileExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtDisguisedExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGap(50, 50, 50)
-                                            .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))
-                                        .addComponent(jTextField3)
-                                        .addComponent(jTextField4)
-                                        .addComponent(jTextField5))
+                                            .addComponent(chkEnableErrorOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))
+                                        .addComponent(txtWebRoot)
+                                        .addComponent(txtClassPath)
+                                        .addComponent(txtLibraryPath))
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jTextField1)
-                                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)))
+                                        .addComponent(txtServerHost)
+                                        .addComponent(txtServerPort, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)))
                                 .addGap(18, 18, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jButton16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(cmdRestBasicConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cmdBrowseClassPath, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cmdBrowseWebRoot, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cmdLibraryPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 284, Short.MAX_VALUE))))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -371,37 +372,37 @@ public class LauchGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton16))
+                    .addComponent(txtServerHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdRestBasicConfig))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtServerPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
+                    .addComponent(txtWebRoot, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdBrowseWebRoot))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
+                    .addComponent(txtClassPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdBrowseClassPath))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton4))
+                        .addComponent(txtLibraryPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmdLibraryPath))
                     .addComponent(jLabel5))
                 .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox1))
+                    .addComponent(txtDisguisedExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkEnableErrorOutput))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDefaultIndexFileExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(47, 47, 47)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(63, Short.MAX_VALUE))
@@ -411,15 +412,20 @@ public class LauchGUI extends javax.swing.JFrame {
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, " General cache attributes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
-        jLabel13.setText("Max. time to live");
+        lblMaxTimeToLive.setText("Max. time to live");
 
-        jLabel14.setText("Max. idle time");
+        lblMaxIdleTime.setText("Max. idle time");
 
-        jLabel15.setText("seconds");
+        lbleMTLSeconds.setText("seconds");
 
-        jLabel16.setText("seconds");
+        lbleITeconds.setText("seconds");
 
-        jCheckBox2.setText("Is eternal");
+        chkIsMemoryCacheEternal.setText("Is eternal");
+        chkIsMemoryCacheEternal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkIsMemoryCacheEternalActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -428,17 +434,17 @@ public class LauchGUI extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
-                    .addComponent(jLabel14))
+                    .addComponent(chkIsMemoryCacheEternal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblMaxTimeToLive, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                    .addComponent(lblMaxIdleTime))
                 .addGap(28, 28, 28)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField13, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .addComponent(jTextField14))
+                    .addComponent(txtMaxMemoryCacheTimeToLive, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .addComponent(txtMaxMemoryCacheIdleTime))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15)
-                    .addComponent(jLabel16))
+                    .addComponent(lbleMTLSeconds)
+                    .addComponent(lbleITeconds))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -446,38 +452,58 @@ public class LauchGUI extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13)
-                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel15))
+                    .addComponent(lblMaxTimeToLive)
+                    .addComponent(txtMaxMemoryCacheTimeToLive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbleMTLSeconds))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16))
+                    .addComponent(lblMaxIdleTime)
+                    .addComponent(txtMaxMemoryCacheIdleTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbleITeconds))
                 .addGap(18, 18, 18)
-                .addComponent(jCheckBox2)
+                .addComponent(chkIsMemoryCacheEternal)
                 .addContainerGap())
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Memory cache attributes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
-        jCheckBox3.setText("Spool to disk");
+        chkSpoolToDisk.setText("Spool to disk");
+        chkSpoolToDisk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkSpoolToDiskActionPerformed(evt);
+            }
+        });
 
-        jCheckBox4.setText("Use shrinker");
+        chkUseMemoryShrinker.setText("Use shrinker");
+        chkUseMemoryShrinker.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkUseMemoryShrinkerActionPerformed(evt);
+            }
+        });
 
         jLabel17.setText("Max. cache objects");
 
         jLabel18.setText("Max. cache size");
 
-        jLabel19.setText("Max. spol per run");
+        lblMaxSpoolPerRun.setText("Max. spol per run");
+        lblMaxSpoolPerRun.setEnabled(false);
+
+        txtMaxSpoolPerRun.setEnabled(false);
 
         jLabel20.setText("bytes");
 
-        jLabel21.setText("Shrinker interval");
+        lblShrinkerInterval.setText("Shrinker interval");
+        lblShrinkerInterval.setEnabled(false);
 
-        jLabel22.setText("sec.");
+        txtMemoryShrinkerInterval.setEnabled(false);
 
-        jLabel24.setText("Spool chunk size");
+        lblShrinkerSec.setText("sec.");
+        lblShrinkerSec.setEnabled(false);
+
+        txtMaxSpoolChunkSize.setEnabled(false);
+
+        lblSpoolChunkSize.setText("Spool chunk size");
+        lblSpoolChunkSize.setEnabled(false);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -486,33 +512,37 @@ public class LauchGUI extends javax.swing.JFrame {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox4)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField18, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel22))
+                    .addComponent(chkUseMemoryShrinker)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel19)
-                                    .addComponent(jCheckBox3))
-                                .addGap(19, 19, 19)
-                                .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel24)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel7Layout.createSequentialGroup()
                                 .addComponent(jLabel17)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addComponent(txtMaxMemoryCacheObjects, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtMaxMemoryCacheSize, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(lblMaxSpoolPerRun)
+                                            .addComponent(chkSpoolToDisk))
+                                        .addGap(19, 19, 19))
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(lblShrinkerInterval, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(26, 26, 26)))
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtMaxSpoolPerRun, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+                                    .addComponent(txtMemoryShrinkerInterval))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(lblSpoolChunkSize)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(txtMaxSpoolChunkSize, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(lblShrinkerSec))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel20)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -523,35 +553,35 @@ public class LauchGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
-                    .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMaxMemoryCacheObjects, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel18)
-                    .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMaxMemoryCacheSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel20))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox3)
+                .addComponent(chkSpoolToDisk)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel24)
-                        .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lblSpoolChunkSize)
+                        .addComponent(txtMaxSpoolChunkSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel19)
-                        .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lblMaxSpoolPerRun)
+                        .addComponent(txtMaxSpoolPerRun, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox4)
+                .addComponent(chkUseMemoryShrinker)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel21)
-                    .addComponent(jTextField18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel22))
+                    .addComponent(lblShrinkerInterval)
+                    .addComponent(txtMemoryShrinkerInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblShrinkerSec))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(lstCacheServerAddressess);
 
         jLabel8.setText("Cache port");
 
-        jButton5.setText("Add");
+        cmdAddCacheServerAddress.setText("Add");
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel9.setText("Register cache servers - <host name>:<port number>");
@@ -560,24 +590,33 @@ public class LauchGUI extends javax.swing.JFrame {
 
         jLabel11.setText("Max. remote cache send trails");
 
-        jLabel12.setText("Max. remote cache send trails");
+        jLabel12.setText("Max. requested file cache size");
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Disk cache attributes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
-        jCheckBox5.setText("Use disk cache");
-
-        jTextField19.setText("jTextField19");
-
-        jButton6.setText("Browse");
-
-        jLabel23.setText("Enter disk path");
-
-        jCheckBox6.setText("Swap cache to disk");
-
-        jButton7.setText("Advance settings");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        chkUseDiskCache.setText("Use disk cache");
+        chkUseDiskCache.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                chkUseDiskCacheActionPerformed(evt);
+            }
+        });
+
+        txtDiskPath.setEnabled(false);
+
+        cmdBrowseDiskPath.setText("Browse");
+        cmdBrowseDiskPath.setEnabled(false);
+
+        lblEnterDiskPath.setText("Enter disk path");
+        lblEnterDiskPath.setEnabled(false);
+
+        chkSwapCacheToDisk.setText("Swap cache to disk");
+        chkSwapCacheToDisk.setEnabled(false);
+
+        cmdAdvanceDiskCacheSetting.setText("Advance settings");
+        cmdAdvanceDiskCacheSetting.setEnabled(false);
+        cmdAdvanceDiskCacheSetting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdAdvanceDiskCacheSettingActionPerformed(evt);
             }
         });
 
@@ -590,13 +629,13 @@ public class LauchGUI extends javax.swing.JFrame {
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel8Layout.createSequentialGroup()
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblEnterDiskPath, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtDiskPath, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6))
-                    .addComponent(jCheckBox5)
-                    .addComponent(jCheckBox6)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cmdBrowseDiskPath))
+                    .addComponent(chkUseDiskCache)
+                    .addComponent(chkSwapCacheToDisk)
+                    .addComponent(cmdAdvanceDiskCacheSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
@@ -605,20 +644,20 @@ public class LauchGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton6)
-                        .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cmdBrowseDiskPath)
+                        .addComponent(txtDiskPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(jCheckBox5)
+                        .addComponent(chkUseDiskCache)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel23)
+                        .addComponent(lblEnterDiskPath)
                         .addGap(22, 22, 22)))
-                .addComponent(jCheckBox6)
+                .addComponent(chkSwapCacheToDisk)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton7)
+                .addComponent(cmdAdvanceDiskCacheSetting)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton14.setText("Reset");
+        cmdResetCacheConfig.setText("Reset");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -632,7 +671,7 @@ public class LauchGUI extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField12, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
+                                .addComponent(MaxRequestFileCacheSize, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -640,11 +679,11 @@ public class LauchGUI extends javax.swing.JFrame {
                                     .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                    .addComponent(jTextField11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                    .addComponent(jTextField8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))))
+                                    .addComponent(txtMaxRemoteCacheHandlerThreads, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                                    .addComponent(txtMaxRemoteCacheSendTrails, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                                    .addComponent(txtCachePort, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton14))
+                        .addComponent(cmdResetCacheConfig))
                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -652,9 +691,9 @@ public class LauchGUI extends javax.swing.JFrame {
                     .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5))
+                        .addComponent(txtEnterCacheServerAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmdAddCacheServerAddress))
                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -666,30 +705,30 @@ public class LauchGUI extends javax.swing.JFrame {
                         .addGap(21, 21, 21)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
-                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtCachePort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel10)
-                            .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtMaxRemoteCacheHandlerThreads, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel9)
-                            .addComponent(jButton14))
+                            .addComponent(cmdResetCacheConfig))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5))))
+                            .addComponent(txtEnterCacheServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmdAddCacheServerAddress))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel11)
-                            .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtMaxRemoteCacheSendTrails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12)
-                            .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(MaxRequestFileCacheSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1))
@@ -715,7 +754,7 @@ public class LauchGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Log", jPanel4);
 
-        jButton1.setText("Start Server");
+        cmdStartServer.setText("Start Server");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -723,45 +762,45 @@ public class LauchGUI extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmdStartServer, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(cmdStartServer)
                 .addContainerGap())
         );
 
         jToolBar1.setRollover(true);
 
-        jButton10.setText("Open");
-        jButton10.setFocusable(false);
-        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton10);
+        cmdOpen.setText("Open");
+        cmdOpen.setFocusable(false);
+        cmdOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdOpen);
         jToolBar1.add(jSeparator1);
 
-        jButton11.setText("Save");
-        jButton11.setFocusable(false);
-        jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton11.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton11);
+        cmdSave.setText("Save");
+        cmdSave.setFocusable(false);
+        cmdSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdSave);
         jToolBar1.add(jSeparator2);
 
-        jButton12.setText("Reset All");
-        jButton12.setFocusable(false);
-        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton12);
+        cmdResetAll.setText("Reset All");
+        cmdResetAll.setFocusable(false);
+        cmdResetAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdResetAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdResetAll);
         jToolBar1.add(jSeparator3);
 
-        jButton15.setText("Help");
-        jButton15.setFocusable(false);
-        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton15);
+        cmdHelp.setText("Help");
+        cmdHelp.setFocusable(false);
+        cmdHelp.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdHelp.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdHelp);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -785,29 +824,92 @@ public class LauchGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void cmdBrowseWebRootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBrowseWebRootActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_cmdBrowseWebRootActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void cmdBrowseClassPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBrowseClassPathActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_cmdBrowseClassPathActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void cmdLibraryPathActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdLibraryPathActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_cmdLibraryPathActionPerformed
 
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+    private void txtDisguisedExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDisguisedExtensionActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    }//GEN-LAST:event_txtDisguisedExtensionActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void cmdAdvanceDiskCacheSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdAdvanceDiskCacheSettingActionPerformed
         dlgAdvanceDiskCacheSettings.setVisible(true);
-    }//GEN-LAST:event_jButton7ActionPerformed
+        dlgAdvanceDiskCacheSettings.setLocationRelativeTo(this);
+    }//GEN-LAST:event_cmdAdvanceDiskCacheSettingActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+    private void cmdAdvanceDiskCacheResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdAdvanceDiskCacheResetActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton13ActionPerformed
+    }//GEN-LAST:event_cmdAdvanceDiskCacheResetActionPerformed
+
+    private void chkIsMemoryCacheEternalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkIsMemoryCacheEternalActionPerformed
+        if (chkIsMemoryCacheEternal.isSelected()) {
+            this.lbleMTLSeconds.setEnabled(false);
+            this.lbleITeconds.setEnabled(false);
+            this.lblMaxIdleTime.setEnabled(false);
+            this.lblMaxTimeToLive.setEnabled(false);
+            this.txtMaxMemoryCacheIdleTime.setEnabled(false);
+            this.txtMaxMemoryCacheTimeToLive.setEnabled(false);
+        } else {
+            this.lbleMTLSeconds.setEnabled(true);
+            this.lbleITeconds.setEnabled(true);
+            this.lblMaxIdleTime.setEnabled(true);
+            this.lblMaxTimeToLive.setEnabled(true);
+            this.txtMaxMemoryCacheIdleTime.setEnabled(true);
+            this.txtMaxMemoryCacheTimeToLive.setEnabled(true);
+        }
+    }//GEN-LAST:event_chkIsMemoryCacheEternalActionPerformed
+
+    private void chkUseDiskCacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUseDiskCacheActionPerformed
+
+        if (this.chkUseDiskCache.isSelected()) {
+            this.lblEnterDiskPath.setEnabled(true);
+            this.txtDiskPath.setEnabled(true);
+            this.chkSwapCacheToDisk.setEnabled(true);
+            this.cmdAdvanceDiskCacheSetting.setEnabled(true);
+            this.cmdBrowseDiskPath.setEnabled(true);
+        } else {
+            this.lblEnterDiskPath.setEnabled(false);
+            this.txtDiskPath.setEnabled(false);
+            this.chkSwapCacheToDisk.setEnabled(false);
+            this.cmdAdvanceDiskCacheSetting.setEnabled(false);
+            this.cmdBrowseDiskPath.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkUseDiskCacheActionPerformed
+
+    private void chkUseMemoryShrinkerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUseMemoryShrinkerActionPerformed
+        if (this.chkUseMemoryShrinker.isSelected()) {
+            this.lblShrinkerSec.setEnabled(true);
+            this.lblShrinkerInterval.setEnabled(true);
+            this.txtMemoryShrinkerInterval.setEnabled(true);
+        } else {
+            this.txtMemoryShrinkerInterval.setEnabled(false);
+            this.lblShrinkerSec.setEnabled(false);
+            this.lblShrinkerInterval.setEnabled(false);
+        }
+
+    }//GEN-LAST:event_chkUseMemoryShrinkerActionPerformed
+
+    private void chkSpoolToDiskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkSpoolToDiskActionPerformed
+        if (this.chkSpoolToDisk.isSelected()) {
+            this.lblSpoolChunkSize.setEnabled(true);
+            this.lblMaxSpoolPerRun.setEnabled(true);
+            this.txtMaxSpoolChunkSize.setEnabled(true);
+            this.txtMaxSpoolPerRun.setEnabled(true);
+        } else {
+            this.lblSpoolChunkSize.setEnabled(false);
+            this.lblMaxSpoolPerRun.setEnabled(false);
+            this.txtMaxSpoolChunkSize.setEnabled(false);
+            this.txtMaxSpoolPerRun.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkSpoolToDiskActionPerformed
 
     /**
      * @param args the command line arguments
@@ -820,7 +922,7 @@ public class LauchGUI extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -839,55 +941,49 @@ public class LauchGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new LauchGUI().setVisible(true);
+                LauchGUI lauchGUI = new LauchGUI();
+                lauchGUI.setLocationRelativeTo(null);
+                lauchGUI.setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField MaxRequestFileCacheSize;
+    private javax.swing.JComboBox cboDiskLimitType;
+    private javax.swing.JCheckBox chkDiskOptimizeOnShutdown;
+    private javax.swing.JCheckBox chkEnableErrorOutput;
+    private javax.swing.JCheckBox chkIsMemoryCacheEternal;
+    private javax.swing.JCheckBox chkSpoolToDisk;
+    private javax.swing.JCheckBox chkSwapCacheToDisk;
+    private javax.swing.JCheckBox chkUseDiskCache;
+    private javax.swing.JCheckBox chkUseMemoryShrinker;
+    private javax.swing.JButton cmdAddCacheServerAddress;
+    private javax.swing.JButton cmdAdvanceDiskCacheApply;
+    private javax.swing.JButton cmdAdvanceDiskCacheCancel;
+    private javax.swing.JButton cmdAdvanceDiskCacheReset;
+    private javax.swing.JButton cmdAdvanceDiskCacheSetting;
+    private javax.swing.JButton cmdBrowseClassPath;
+    private javax.swing.JButton cmdBrowseDiskPath;
+    private javax.swing.JButton cmdBrowseWebRoot;
+    private javax.swing.JButton cmdHelp;
+    private javax.swing.JButton cmdLibraryPath;
+    private javax.swing.JButton cmdOpen;
+    private javax.swing.JButton cmdResetAll;
+    private javax.swing.JButton cmdResetCacheConfig;
+    private javax.swing.JButton cmdRestBasicConfig;
+    private javax.swing.JButton cmdSave;
+    private javax.swing.JButton cmdStartServer;
     private javax.swing.JDialog dlgAdvanceDiskCacheSettings;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton15;
-    private javax.swing.JButton jButton16;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JCheckBox jCheckBox6;
-    private javax.swing.JCheckBox jCheckBox7;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -901,7 +997,6 @@ public class LauchGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -915,31 +1010,40 @@ public class LauchGUI extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField11;
-    private javax.swing.JTextField jTextField12;
-    private javax.swing.JTextField jTextField13;
-    private javax.swing.JTextField jTextField14;
-    private javax.swing.JTextField jTextField15;
-    private javax.swing.JTextField jTextField16;
-    private javax.swing.JTextField jTextField17;
-    private javax.swing.JTextField jTextField18;
-    private javax.swing.JTextField jTextField19;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField20;
-    private javax.swing.JTextField jTextField21;
-    private javax.swing.JTextField jTextField22;
-    private javax.swing.JTextField jTextField23;
-    private javax.swing.JTextField jTextField24;
     private javax.swing.JTextField jTextField25;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel lblEnterDiskPath;
+    private javax.swing.JLabel lblMaxIdleTime;
+    private javax.swing.JLabel lblMaxSpoolPerRun;
+    private javax.swing.JLabel lblMaxTimeToLive;
+    private javax.swing.JLabel lblShrinkerInterval;
+    private javax.swing.JLabel lblShrinkerSec;
+    private javax.swing.JLabel lblSpoolChunkSize;
+    private javax.swing.JLabel lbleITeconds;
+    private javax.swing.JLabel lbleMTLSeconds;
+    private javax.swing.JList lstCacheServerAddressess;
+    private javax.swing.JTextField txtCachePort;
+    private javax.swing.JTextField txtClassPath;
+    private javax.swing.JTextField txtDefaultIndexFileExtension;
+    private javax.swing.JTextField txtDisguisedExtension;
+    private javax.swing.JTextField txtDiskOptimizedAtRemoveCount;
+    private javax.swing.JTextField txtDiskPath;
+    private javax.swing.JTextField txtEnterCacheServerAddress;
+    private javax.swing.JTextField txtLibraryPath;
+    private javax.swing.JTextField txtMaxDiskKeySize;
+    private javax.swing.JTextField txtMaxDiskPurgatorySize;
+    private javax.swing.JTextField txtMaxDiskRecycleBinSize;
+    private javax.swing.JTextField txtMaxMemoryCacheIdleTime;
+    private javax.swing.JTextField txtMaxMemoryCacheObjects;
+    private javax.swing.JTextField txtMaxMemoryCacheSize;
+    private javax.swing.JTextField txtMaxMemoryCacheTimeToLive;
+    private javax.swing.JTextField txtMaxRemoteCacheHandlerThreads;
+    private javax.swing.JTextField txtMaxRemoteCacheSendTrails;
+    private javax.swing.JTextField txtMaxSpoolChunkSize;
+    private javax.swing.JTextField txtMaxSpoolPerRun;
+    private javax.swing.JTextField txtMemoryShrinkerInterval;
+    private javax.swing.JTextField txtServerHost;
+    private javax.swing.JTextField txtServerPort;
+    private javax.swing.JTextField txtWebRoot;
     // End of variables declaration//GEN-END:variables
 }

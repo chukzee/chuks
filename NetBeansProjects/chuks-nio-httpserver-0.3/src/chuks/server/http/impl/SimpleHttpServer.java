@@ -11,6 +11,7 @@ import chuks.server.SimpleServerConfigException;
 import chuks.server.cache.config.CacheProperties;
 import static chuks.server.http.impl.ServerCache.DEFAULT_REGION_NAME;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,7 +21,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.*;
 import java.util.logging.*;
@@ -528,155 +531,173 @@ public class SimpleHttpServer implements HttpServer {
             return new SimpleHttpServer(this);
         }
 
-        public HttpServer buildUsingConfig(String config_file) throws SimpleServerConfigException {
+        public HttpServer buildUsingConfig(Properties properties) {
 
-            try {
-                String type = ServerUtil.getFileType(config_file);
-                if (type.isEmpty()) {
-                    config_file += ".properties";
-                } else if (!type.equals("properties")) {
-                    throw new SimpleServerConfigException("invalid configuration file type - expected property file");
-                }
-
-                pConfig = new PropertiesConfiguration(config_file);
-                ServerConfigListener serverConfigListener = new ServerConfigListener();
-                pConfig.addConfigurationListener(serverConfigListener);
-                pConfig.addErrorListener(serverConfigListener);
-
-                String key;
-
-                key = configAttrBundle.getString(Attr.ServerHost.name());
-                if (pConfig.containsKey(key)) {
-                    host = pConfig.getString(key);
-                }
-
-                key = configAttrBundle.getString(Attr.ServerPort.name());
-                if (pConfig.containsKey(key)) {
-                    port = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.CachePort.name());
-                if (pConfig.containsKey(key)) {
-                    cache_port = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.WebRoot.name());
-                if (pConfig.containsKey(key)) {
-                    root_dir = pConfig.getString(key);
-                }
-
-                key = configAttrBundle.getString(Attr.ClassPath.name());
-                if (pConfig.containsKey(key)) {
-                    classPath = pConfig.getString(key);
-                }
-
-                key = configAttrBundle.getString(Attr.LibraryPath.name());
-                if (pConfig.containsKey(key)) {
-                    libraryPath = pConfig.getString(key);
-                }
-
-                key = configAttrBundle.getString(Attr.EnableErrorOutput.name());
-                if (pConfig.containsKey(key)) {
-                    enableErrorOutput = pConfig.getBoolean(key);
-                }
-
-                key = configAttrBundle.getString(Attr.EnableRemoteCache.name());
-                if (pConfig.containsKey(key)) {
-                    enableRemoteCache = pConfig.getBoolean(key);
-                }
-
-                key = configAttrBundle.getString(Attr.ExtensionDisguise.name());
-                if (pConfig.containsKey(key)) {
-                    disguised_server_code_file_ext = pConfig.getString(key);
-                }
-
-                key = configAttrBundle.getString(Attr.MaxRemoteCacheHandlerThreads.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.MAX_REMOTE_CACHE_HANDLER_THREADS = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.MaxSendRemoteCacheTrials.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.MAX_CACHE_SEND_TRIALS = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.MAX_MEMORY_CACHE_IDLE_TIME = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.MaxReqestCacheFileSize.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.MAX_REQUEST_CACHE_FILE_SIZE = pConfig.getInt(key);
-                }
-
-                key = configAttrBundle.getString(Attr.CacheServers.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.remoteCacheAddresses = pConfig.getStringArray(key);
-                }
-
-                key = configAttrBundle.getString(Attr.DefaultIndexFileExtension.name());
-                if (pConfig.containsKey(key)) {
-                    ServerConfig.DEFAULT_INDEX_FILE_EXTENSION = pConfig.getString(key);
-                }
-
-                /*
-                *Set the default cache properties
-                */
-                CacheProperties cacheProp = new CacheProperties();
-
-                cacheProp.setCacheRegionName(DEFAULT_REGION_NAME);
-                
-                cacheProp.setDistributedCache(this.enableRemoteCache);
-
-                key = configAttrBundle.getString(Attr.IsCacheEternal.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setEternal(pConfig.getBoolean(key));
-                }
-
-                key = configAttrBundle.getString(Attr.MaxCachedObjects.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setMaxCacheObjects(pConfig.getInt(key));
-                }
-
-                key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setMaxMemoryIdleTimeInSeconds(pConfig.getLong(key));
-                }
-                
-                key = configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setMaxSpoolPerRun(pConfig.getInt(key));
-                }
-                
-                key = configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setShrinkerIntervalInSeconds(pConfig.getLong(key));
-                }
-                
-                key = configAttrBundle.getString(Attr.CacheSpoolChunkSize.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setSpoolChunkSize(pConfig.getInt(key));
-                }
-                
-                key = configAttrBundle.getString(Attr.CacheTimeToLive.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setTimeToLiveInSeconds(pConfig.getLong(key));
-                }
-
-                key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
-                if (pConfig.containsKey(key)) {
-                    cacheProp.setUseMemoryShrinker(pConfig.getBoolean(key));
-                }
-
-                ServerCache.createDefaultRegion(cacheProp);
-
-            }catch (SimpleServerConfigException | ConfigurationException ex) {//do not use multi try catch
-                throw new SimpleServerConfigException(ex.getMessage());
+            /*String type = ServerUtil.getFileType(config_file);
+             if (type.isEmpty()) {
+             config_file += ".properties";
+             } else if (!type.equals("properties")) {
+             throw new SimpleServerConfigException("invalid configuration file type - expected property file");
+             }*/
+                //pConfig = new PropertiesConfiguration(config_file);
+            pConfig = new PropertiesConfiguration();
+            Set<Map.Entry<Object, Object>> en = properties.entrySet();
+            for (Map.Entry<Object, Object> entry : en) {
+                pConfig.setProperty((String) entry.getKey(), entry.getValue());
             }
+
+            ServerConfigListener serverConfigListener = new ServerConfigListener();
+            pConfig.addConfigurationListener(serverConfigListener);
+            pConfig.addErrorListener(serverConfigListener);
+
+            String key;
+
+            key = configAttrBundle.getString(Attr.ServerHost.name());
+            if (pConfig.containsKey(key)) {
+                host = pConfig.getString(key);
+            }
+
+            key = configAttrBundle.getString(Attr.ServerPort.name());
+            if (pConfig.containsKey(key)) {
+                port = pConfig.getInt(key);
+            }
+
+            key = configAttrBundle.getString(Attr.CachePort.name());
+            if (pConfig.containsKey(key)) {
+                cache_port = pConfig.getInt(key);
+            }
+
+            key = configAttrBundle.getString(Attr.WebRoot.name());
+            if (pConfig.containsKey(key)) {
+                root_dir = pConfig.getString(key);
+            }
+
+            key = configAttrBundle.getString(Attr.ClassPath.name());
+            if (pConfig.containsKey(key)) {
+                classPath = pConfig.getString(key);
+            }
+
+            key = configAttrBundle.getString(Attr.LibraryPath.name());
+            if (pConfig.containsKey(key)) {
+                libraryPath = pConfig.getString(key);
+            }
+
+            key = configAttrBundle.getString(Attr.EnableErrorOutput.name());
+            if (pConfig.containsKey(key)) {
+                enableErrorOutput = pConfig.getBoolean(key);
+            }
+
+            key = configAttrBundle.getString(Attr.EnableRemoteCache.name());
+            if (pConfig.containsKey(key)) {
+                enableRemoteCache = pConfig.getBoolean(key);
+            }
+
+            key = configAttrBundle.getString(Attr.ExtensionDisguise.name());
+            if (pConfig.containsKey(key)) {
+                disguised_server_code_file_ext = pConfig.getString(key);
+            }
+
+            key = configAttrBundle.getString(Attr.MaxRemoteCacheHandlerThreads.name());
+            if (pConfig.containsKey(key)) {
+                ServerConfig.MAX_REMOTE_CACHE_HANDLER_THREADS = pConfig.getInt(key);
+            }
+
+            key = configAttrBundle.getString(Attr.MaxSendRemoteCacheTrials.name());
+            if (pConfig.containsKey(key)) {
+                ServerConfig.MAX_CACHE_SEND_TRIALS = pConfig.getInt(key);
+            }
+
+            key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
+            if (pConfig.containsKey(key)) {
+                ServerConfig.MAX_MEMORY_CACHE_IDLE_TIME = pConfig.getInt(key);
+            }
+
+            key = configAttrBundle.getString(Attr.MaxReqestCacheFileSize.name());
+            if (pConfig.containsKey(key)) {
+                ServerConfig.MAX_REQUEST_CACHE_FILE_SIZE = pConfig.getInt(key);
+            }
+
+            key = configAttrBundle.getString(Attr.CacheServers.name());
+            if (pConfig.containsKey(key)) {
+                ServerConfig.remoteCacheAddresses = pConfig.getStringArray(key);
+            }
+
+            key = configAttrBundle.getString(Attr.DefaultIndexFileExtension.name());
+            if (pConfig.containsKey(key)) {
+                ServerConfig.DEFAULT_INDEX_FILE_EXTENSION = pConfig.getString(key);
+            }
+
+            /*
+             *Set the default cache properties
+             */
+            CacheProperties cacheProp = new CacheProperties();
+
+            cacheProp.setCacheRegionName(DEFAULT_REGION_NAME);
+
+            cacheProp.setDistributedCache(this.enableRemoteCache);
+
+            key = configAttrBundle.getString(Attr.IsCacheEternal.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setEternal(pConfig.getBoolean(key));
+            }
+
+            key = configAttrBundle.getString(Attr.MaxCachedObjects.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setMaxCacheObjects(pConfig.getInt(key));
+            }
+
+            key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setMaxMemoryIdleTimeInSeconds(pConfig.getLong(key));
+            }
+
+            key = configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setMaxSpoolPerRun(pConfig.getInt(key));
+            }
+
+            key = configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setShrinkerIntervalInSeconds(pConfig.getLong(key));
+            }
+
+            key = configAttrBundle.getString(Attr.CacheSpoolChunkSize.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setSpoolChunkSize(pConfig.getInt(key));
+            }
+
+            key = configAttrBundle.getString(Attr.CacheTimeToLive.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setTimeToLiveInSeconds(pConfig.getLong(key));
+            }
+
+            key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setUseMemoryShrinker(pConfig.getBoolean(key));
+            }
+
+            ServerCache.createDefaultRegion(cacheProp);
 
             return new SimpleHttpServer(this);
         }
+
+        public HttpServer buildUsingConfig(String config_file) throws SimpleServerConfigException, IOException {
+
+            String type = ServerUtil.getFileType(config_file);
+            if (type.isEmpty()) {
+                config_file += ".properties";
+            } else if (!type.equals("properties")) {
+                throw new SimpleServerConfigException("invalid configuration file type - expected property file");
+            }
+
+            Properties properties = new Properties();
+            try (FileInputStream fin = new FileInputStream(config_file)) {
+                properties.load(fin);
+            }
+
+            return buildUsingConfig(properties);
+        }
+
     }
 
 }
