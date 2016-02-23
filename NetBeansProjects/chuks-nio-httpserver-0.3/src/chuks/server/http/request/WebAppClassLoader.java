@@ -25,8 +25,9 @@ import java.util.zip.ZipEntry;
  */
 class WebAppClassLoader extends ClassLoader {
 
-    private Class<?> clp;
     private String classAbsoluteFileName;
+    private Bootstrap.ClassFinderListener listener;
+    private boolean isBoostrap;
 
     private WebAppClassLoader() {
     }
@@ -41,7 +42,6 @@ class WebAppClassLoader extends ClassLoader {
         return super.findLibrary(libname); //To change body of generated methods, choose Tools | Templates.
     }
 
-
     @Override
     protected URL findResource(String name) {
         //URL url = super.findResource(name);
@@ -51,20 +51,30 @@ class WebAppClassLoader extends ClassLoader {
     @Override
     protected Enumeration<URL> findResources(String name) throws IOException {
         Enumeration<URL> en = super.findResources(name);
-        
+
         return en;
     }
 
-    /**Finds the class with the specified name. 
-     * 
+    void flagOnBootstrap() {
+        isBoostrap = true;
+    }
+
+    void flagOffBootstrap() {
+        isBoostrap = false;
+    }
+
+    /**
+     * Finds the class with the specified name.
+     *
      * @param className
      * @return
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     @Override
     protected Class<?> findClass(String className) throws ClassNotFoundException {
-System.out.println(className);
+
         FileInputStream fis = null;
+        Class<?> cl = null;
         try {
 
             File f = new File(classAbsoluteFileName);
@@ -75,12 +85,17 @@ System.out.println(className);
                 try (DataInputStream dis = new DataInputStream(fis)) {
                     dis.readFully(buff);
                 }
-                return defineClass(className, buff, 0, buff.length);
+                cl = defineClass(className, buff, 0, buff.length);
             } else {
                 //search jars in the directory
-                return findClassInJar(className);
+                cl = findClassInJar(className);
             }
 
+            if (listener != null && isBoostrap) {
+                listener.classFound(className);
+            }
+
+            return cl;
         } catch (IOException ex) {
             Logger.getLogger(WebAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -146,9 +161,7 @@ System.out.println(className);
         return null;
     }
 
-    
-    
-    private URL findResourceInJar(String name){
+    private URL findResourceInJar(String name) {
 
         File class_path = new File(SimpleHttpServer.getClassPath());
         URL url = findResourcesInPath(name, class_path);//find in class path
@@ -162,7 +175,7 @@ System.out.println(className);
         return url;
     }
 
-    private URL findResourcesInPath(String name, File file){
+    private URL findResourcesInPath(String name, File file) {
 
         File[] files = file.listFiles(new FileFilter() {
             @Override
@@ -171,7 +184,6 @@ System.out.println(className);
             }
         });
 
-        
         for (File f : files) {
             JarFile jar_file = null;
             try {
@@ -184,7 +196,7 @@ System.out.println(className);
                 URL url = null;
                 try {
                     String jar_file_name = f.getPath().replace(SimpleHttpServer.fileSeparator(), '/');
-                    String url_path = "jar:file:///"+jar_file_name+".jar!/"+name;
+                    String url_path = "jar:file:///" + jar_file_name + ".jar!/" + name;
                     url = new URL(url_path);
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(WebAppClassLoader.class.getName()).log(Level.SEVERE, null, ex);
@@ -194,5 +206,9 @@ System.out.println(className);
         }
 
         return null;
+    }
+
+    void setFinderListener(Bootstrap.ClassFinderListener listener) {
+        this.listener = listener;
     }
 }

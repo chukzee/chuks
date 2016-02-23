@@ -36,9 +36,10 @@ final class ServerCache {
 
     static ServerCache cacheInstance;
     static ScheduledExecutorService execEvict;
-    static CompositeCache<Object, Object> jcsCache;
-    static ConcurrentHashMap<String, CompositeCache> jcsCacheRegions = new ConcurrentHashMap();
+    static CompositeCache<Object, Object> jcsDefaultCache;
     static IEntryAttributes defaultEntryAttr;
+    static CompositeCacheManager cMgr;
+    static String DEFAULT_REGION_NAME = "default";
 
     static {
         LRUOptimalCache = Collections.synchronizedMap(new LRUOptimalCache(1000));
@@ -67,14 +68,10 @@ final class ServerCache {
         try {
             CompositeCache cache;
 
-            if (rmtPack.getCacheRegionName() == null) {
-                cache = jcsCache;
+            if (rmtPack.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
+                cache = jcsDefaultCache;
             } else {
-                cache = jcsCacheRegions.get(rmtPack.getCacheRegionName());
-                if (cache == null) {
-                    //region not found
-                    return;
-                }
+                cache = cMgr.getCache(rmtPack.getCacheRegionName());
             }
 
             IEntryAttributes cache_prop = rmtPack.getAttributes();
@@ -95,30 +92,22 @@ final class ServerCache {
 
     static void removeRCE(RemoteCachePacket rmtPack) {
         CompositeCache cache;
-        if (rmtPack.getCacheRegionName() == null) {
-            cache = jcsCache;
+        if (rmtPack.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
+            cache = jcsDefaultCache;
         } else {
-            cache = jcsCacheRegions.get(rmtPack.getCacheRegionName());
-            if (cache == null) {
-                //region not found
-                return;
-            }
+            cache = cMgr.getCache(rmtPack.getCacheRegionName());
         }
-
+        
         cache.localRemove(rmtPack.getKey());
     }
 
     static void removeAllRCE(RemoteCachePacket rmtPack) {
         try {
             CompositeCache cache;
-            if (rmtPack.getCacheRegionName() == null) {
-                cache = jcsCache;
+            if (rmtPack.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
+                cache = jcsDefaultCache;
             } else {
-                cache = jcsCacheRegions.get(rmtPack.getCacheRegionName());
-                if (cache == null) {
-                    //region not found
-                    return;
-                }
+                cache = cMgr.getCache(rmtPack.getCacheRegionName());
             }
 
             cache.localRemoveAll();
@@ -134,21 +123,15 @@ final class ServerCache {
         cacheProp.setEternal(e_attr.isEternal());
         cacheProp.setTimeToLiveInSeconds(e_attr.getTimeToLiveInSeconds());
         cacheProp.setMaxMemoryIdleTimeInSeconds(e_attr.getMaxIdleTimeInSeconds());
-        return createRegion(cacheProp);
-    }
-
-    static CompositeCache createRegion(ICacheProperties cache_prop) {
-        CompositeCache ca = newRegion(cache_prop);
-        jcsCacheRegions.put(cache_prop.getCacheRegionName(), ca);
-        return ca;
+        return newRegion(cacheProp);
     }
 
     static void createDefaultRegion(ICacheProperties cache_prop) {
-        jcsCache = createRegion(cache_prop);
+        jcsDefaultCache = newRegion(cache_prop);
 
         defaultEntryAttr = new EntryAttributes();
 
-        IElementAttributes eattr = jcsCache.getElementAttributes();
+        IElementAttributes eattr = jcsDefaultCache.getElementAttributes();
         defaultEntryAttr.setDistributed(eattr.getIsRemote());
         defaultEntryAttr.setEternal(eattr.getIsEternal());
         defaultEntryAttr.setIsSpool(eattr.getIsSpool());
@@ -184,13 +167,12 @@ final class ServerCache {
         ccattr.setUseDisk(cache_prop.isUseDisk());
         ccattr.setUseMemoryShrinker(cache_prop.isUseMemoryShrinker());
 
-        CompositeCacheManager cMgr = CompositeCacheManager.getUnconfiguredInstance();
+        cMgr = CompositeCacheManager.getUnconfiguredInstance();
         cMgr.setDefaultCacheAttributes(ccattr);
         Properties p = new Properties();
 
-        p.setProperty("jcs.default", "DC");
         String suffix = "";
-        if (cache_prop.getCacheRegionName() == null) {
+        if (cache_prop.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
             suffix = "jcs.default";
         } else {
             suffix = "jcs.region." + cache_prop.getCacheRegionName();

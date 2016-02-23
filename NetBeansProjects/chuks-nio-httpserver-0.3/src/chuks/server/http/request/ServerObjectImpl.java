@@ -367,14 +367,15 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
             throw new IllegalArgumentException("Cache value must not be null");
         }
 
-        CacheElement ce = new CacheElement(jcsCache.getCacheName(), key, value);
-        IElementAttributes cattr = jcsCache.getElementAttributes();
+        CacheElement ce = new CacheElement(jcsDefaultCache.getCacheName(), key, value);
+        IElementAttributes cattr = jcsDefaultCache.getElementAttributes();
         ce.setElementAttributes(cattr);
-        jcsCache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
+        jcsDefaultCache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
 
         if (defaultEntryAttr.isDistributed()) {
             RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
                     SimpleHttpServer.getStrCacheSockAddr(), defaultEntryAttr);
+            rmtEntry.setCacheRegionName(jcsDefaultCache.getCacheName());
             TCPCacheTransport.enqueueCache(rmtEntry);
         }
 
@@ -398,15 +399,16 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
         elem_attr.setIsSpool(attr.isSpool());
         elem_attr.setIsEternal(attr.isEternal());
 
-        CacheElement ce = new CacheElement(jcsCache.getCacheName(), key, value);
+        CacheElement ce = new CacheElement(jcsDefaultCache.getCacheName(), key, value);
 
         ce.setElementAttributes(elem_attr);
 
-        jcsCache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
+        jcsDefaultCache.localUpdate(ce);//we are not intrested in JCS remote implementation - we've got ours
 
         if (attr.isDistributed()) {
             RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
                     SimpleHttpServer.getStrCacheSockAddr(), attr);
+            rmtEntry.setCacheRegionName(jcsDefaultCache.getCacheName());
             TCPCacheTransport.enqueueCache(rmtEntry);
         }
 
@@ -423,14 +425,11 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
             throw new IllegalArgumentException("Cache value must not be null");
         }
 
-        CompositeCache cache = null;
+        CompositeCache cache;
         if (region_name == null) {
-            cache = jcsCache;
+            cache = jcsDefaultCache;
         } else {
-            cache = jcsCacheRegions.get(region_name);
-        }
-        if (cache == null) {
-            return;
+            cache = cMgr.getCache(region_name);
         }
 
         CacheElement ce = new CacheElement(region_name, key, value);
@@ -459,12 +458,9 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
 
         CompositeCache cache;
         if (region_name == null) {
-            cache = jcsCache;
+            cache = jcsDefaultCache;
         } else {
-            cache = jcsCacheRegions.get(region_name);
-        }
-        if (cache == null) {
-            cache = createRegion(attr);
+            cache = cMgr.getCache(region_name);
         }
 
         ElementAttributes elem_attr = new ElementAttributes();
@@ -490,34 +486,33 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
 
     @Override
     public Object getCache(Serializable key) {
-        return jcsCache.localGet(key).getVal();//we are not intrested in JCS remote implementation - we've got ours
+        ICacheElement element = jcsDefaultCache.localGet(key);
+        return (element != null) ? element.getVal() : null;//we are not intrested in JCS remote implementation - we've got ours
     }
 
     @Override
     public Object getCache(String regon_name, Serializable key) {
-        CompositeCache cache = jcsCacheRegions.get(regon_name);
-        if (cache == null) {
-            return null;
-        }
-        return cache.localGet(key).getVal();//we are not intrested in JCS remote implementation - we've got ours
+        CompositeCache cache = cMgr.getCache(regon_name);
+        ICacheElement element = cache.localGet(key);
+        return (element != null) ? element.getVal() : null;//we are not intrested in JCS remote implementation - we've got ours
     }
 
     @Override
     public void createCacheRegion(String region_name, ICacheProperties config) {
-        createRegion(config);
+        newRegion(config);
     }
 
     @Override
     public Map getMatchingCache(String pattern) {
-        return getMatchingCache(jcsCache, pattern);
+        return getMatchingCache(jcsDefaultCache, pattern);
     }
 
     @Override
     public Map getMatchingCache(String region_name, String pattern) {
-        CompositeCache cache = jcsCacheRegions.get(region_name);
-        if (cache == null) {
-            return null;
+        if (region_name == null) {
+            return getMatchingCache(jcsDefaultCache, pattern);
         }
+        CompositeCache cache = cMgr.getCache(region_name);
         return getMatchingCache(cache, pattern);
     }
 
@@ -538,26 +533,16 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
 
     @Override
     public void removeCache(Serializable key) {
-        removeCache(jcsCache, key);
+        removeCache(jcsDefaultCache, key);
     }
 
     @Override
     public void removeCache(String region_name, Serializable key) {
         if (region_name == null) {
-            removeCache(jcsCache, key);
+            removeCache(jcsDefaultCache, key);
             return;
         }
-        CompositeCache cache = jcsCacheRegions.get(region_name);
-        if (cache == null) {
-            //here the region is not found so check the remote location and then remove if found.
-            RemoteCachePacket rmtEntry = new RemoteCachePacket(key,
-                    SimpleHttpServer.getStrCacheSockAddr());
-            rmtEntry.setCacheRegionName(region_name);
-            TCPCacheTransport.enqueueCache(rmtEntry);
-            return;
-        }
-
-        //here the region is found so remove both locally and remotely.
+        CompositeCache cache = cMgr.getCache(region_name); 
         removeCache(cache, key);
     }
 
@@ -571,26 +556,16 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
 
     @Override
     public void removeAllCache() throws IOException {
-        removeAllCache(jcsCache);
+        removeAllCache(jcsDefaultCache);
     }
 
     @Override
     public void removeAllCache(String region_name) throws IOException {
         if (region_name == null) {
-            removeAllCache(jcsCache);
+            removeAllCache(jcsDefaultCache);
             return;
         }
-        CompositeCache cache = jcsCacheRegions.get(region_name);
-        if (cache == null) {
-            //here the region is not found so check the remote location and then remove all if found.
-            RemoteCachePacket rmtEntry = new RemoteCachePacket(
-                    SimpleHttpServer.getStrCacheSockAddr());
-            rmtEntry.setCacheRegionName(region_name);
-            TCPCacheTransport.enqueueCache(rmtEntry);
-            return;
-        }
-
-        //here the region is found so remove all both locally and remotely.
+        CompositeCache cache = cMgr.getCache(region_name);
         removeAllCache(cache);
     }
 

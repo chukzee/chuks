@@ -9,6 +9,7 @@ import chuks.server.HttpServer;
 import chuks.server.SimpleHttpServerException;
 import chuks.server.SimpleServerConfigException;
 import chuks.server.cache.config.CacheProperties;
+import static chuks.server.http.request.ServerCache.DEFAULT_REGION_NAME;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class SimpleHttpServer implements HttpServer {
 
     static private String root_dir;
     static String classPath;
-    static private String libraryPath;
+    static String libraryPath;
     static private String disguised_server_code_file_ext = ServerConfig.SERVER_FILE_EXT;
     static private boolean enableErrorOuput;
     static private boolean isWindows;
@@ -176,7 +177,7 @@ public class SimpleHttpServer implements HttpServer {
             ServerHandler.getInstance().start();
             WebAppManager.getInstance().start();
             Bootstrap.getInstance().load();
-            
+
             if (enableRemoteCache) {
                 TCPCacheTransport cTran = TCPCacheTransport.getInstance();
                 cTran.start();
@@ -203,11 +204,11 @@ public class SimpleHttpServer implements HttpServer {
         return !ServerHandler.isRunning;
     }
 
-    private void finalizeOperation(){
+    private void finalizeOperation() {
         //save the load web app class names
-        
+
     }
-    
+
     private void checkConfig() throws SimpleServerConfigException {
 
         if (classPath == null || classPath.isEmpty()) {
@@ -614,22 +615,58 @@ public class SimpleHttpServer implements HttpServer {
                     ServerConfig.DEFAULT_INDEX_FILE_EXTENSION = pConfig.getString(key);
                 }
 
+                /*
+                *Set the default cache properties
+                */
                 CacheProperties cacheProp = new CacheProperties();
+
+                cacheProp.setCacheRegionName(DEFAULT_REGION_NAME);
                 
-                cacheProp.setCacheRegionName(null);//set to null to create default region
                 cacheProp.setDistributedCache(this.enableRemoteCache);
-                cacheProp.setEternal(pConfig.getBoolean(configAttrBundle.getString(Attr.IsCacheEternal.name())));
-                cacheProp.setMaxCacheObjects(pConfig.getInt(configAttrBundle.getString(Attr.MaxCachedObjects.name())));
-                cacheProp.setMaxMemoryIdleTimeInSeconds(pConfig.getLong(configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name())));
-                cacheProp.setMaxSpoolPerRun(pConfig.getInt(configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name())));
-                cacheProp.setShrinkerIntervalInSeconds(pConfig.getLong(configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name())));
-                cacheProp.setSpoolChunkSize(pConfig.getInt(configAttrBundle.getString(Attr.CacheSpoolChunkSize.name())));
-                cacheProp.setTimeToLiveInSeconds(pConfig.getLong(configAttrBundle.getString(Attr.CacheTimeToLive.name())));
-                cacheProp.setUseMemoryShrinker(pConfig.getBoolean(configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name())));
+
+                key = configAttrBundle.getString(Attr.IsCacheEternal.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setEternal(pConfig.getBoolean(key));
+                }
+
+                key = configAttrBundle.getString(Attr.MaxCachedObjects.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setMaxCacheObjects(pConfig.getInt(key));
+                }
+
+                key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setMaxMemoryIdleTimeInSeconds(pConfig.getLong(key));
+                }
+                
+                key = configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setMaxSpoolPerRun(pConfig.getInt(key));
+                }
+                
+                key = configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setShrinkerIntervalInSeconds(pConfig.getLong(key));
+                }
+                
+                key = configAttrBundle.getString(Attr.CacheSpoolChunkSize.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setSpoolChunkSize(pConfig.getInt(key));
+                }
+                
+                key = configAttrBundle.getString(Attr.CacheTimeToLive.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setTimeToLiveInSeconds(pConfig.getLong(key));
+                }
+
+                key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
+                if (pConfig.containsKey(key)) {
+                    cacheProp.setUseMemoryShrinker(pConfig.getBoolean(key));
+                }
 
                 ServerCache.createDefaultRegion(cacheProp);
-                
-            } catch (Exception ex) {//do not use multi try catch
+
+            }catch (SimpleServerConfigException | ConfigurationException ex) {//do not use multi try catch
                 throw new SimpleServerConfigException(ex.getMessage());
             }
 

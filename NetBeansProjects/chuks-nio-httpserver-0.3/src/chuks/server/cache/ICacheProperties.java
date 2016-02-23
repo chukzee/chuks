@@ -13,14 +13,15 @@ import java.io.Serializable;
  */
 public interface ICacheProperties extends Serializable {
 
-    enum DiskLimitType{
-        COUNT,SIZE
+    enum DiskLimitType {
+
+        COUNT, SIZE
     }
-    
+
     public void setTimeToLiveInSeconds(long seconds);
 
     public long getTimeToLiveInSeconds();
-    
+
     public void setEternal(boolean eternal);
 
     public boolean isEternal();
@@ -28,7 +29,6 @@ public interface ICacheProperties extends Serializable {
     public void setUseDiskCacheOnly(boolean spool);
 
     public boolean isUseDiskCacheOnly();
-
 
     /**
      * Gets the disk swap strategy property
@@ -166,34 +166,33 @@ public interface ICacheProperties extends Serializable {
      * @param spoolChunkSize
      */
     void setSpoolChunkSize(int spoolChunkSize);
-    
+
     void setDiskPath(String disk_path);
-    
+
     String getDiskPath();
-    
+
     void setDiskMaxPurgatorySize(int size);
-    
+
     int getDiskMaxPurgatorySize();
-    
+
     void setDiskMaxKeySize(int size);
-    
+
     int getDisMaxKeySize();
-    
+
     void setDiskOptimizeAtRemoveCount(int count);
-    
+
     int getDisOptimizeAtRemoveCount();
-    
+
     void setDiskOptimizeOnShutdown(boolean optimize);
-    
+
     boolean getDisOptimizeOnShutdown();
-    
+
     void setDiskMaxRecyleBinSize(int size);
-    
+
     int getDiskMaxRecyleBinSize();
-    
+
     void setDiskLimitType(DiskLimitType type);
 
     DiskLimitType getDiskLimitType();
 
-    
 }

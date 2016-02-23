@@ -36,14 +36,16 @@ import java.util.logging.Logger;
  */
 class WebAppManager implements Runnable {
 
-    
     /**
-     * Hold the initialized web apps (ie classes that implements SimpleServerApplication)
+     * Hold the initialized web apps (ie classes that implements
+     * SimpleServerApplication)
      */
     private static Map<String, SimpleServerApplication> webAppMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
-    
+
     /**
-     * Hold the Class object of the web apps (ie classes that implements SimpleServerApplication) loaded by the Bootstrap class during server start up
+     * Hold the Class object of the web apps (ie classes that implements
+     * SimpleServerApplication) loaded by the Bootstrap class during server
+     * start up
      */
     private static Map<String, Class> webAppClassObjectsMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
     //private static String classPath;
@@ -51,6 +53,7 @@ class WebAppManager implements Runnable {
     private static boolean isClassFilesChange;
     private static WebAppClassLoader lastClassLoader;
     private static SimpleHttpServerException initException;
+
     private final WatchService watcher;
     private final Map<WatchKey, Path> keys;
     private boolean trace = false;
@@ -155,13 +158,12 @@ class WebAppManager implements Runnable {
                     lastClassLoader = classLoader;
                     classLoader.setClassAbsoluteFileName(classAbsoluteFilename);
                     cl = classLoader.loadClass(className); //loadClass is already synchronized in ClassLoader so we are safe
-                     
+
                     /*similaryly use Class.forNam(...). except that Class.forName(...) 
                      *can be used for Class initialization( ie static initializtion) if the
                      *initialize parameter is set to true
                      c = Class.forName(className, false, classLoader);
                      */
-                    
                 }
             } catch (ClassNotFoundException ex) {
                 requestValidator.ensureResourceNotFound(ex);
@@ -203,7 +205,7 @@ class WebAppManager implements Runnable {
         return null;
     }
 
-    static boolean loadWebApp(String classAbsoluteFilename) {
+    static boolean loadWebApp(Bootstrap.ClassFinderListener listener,String classAbsoluteFilename, boolean isImplementor) {
         String className = classAbsoluteFilename.substring(getClassPath().length(), classAbsoluteFilename.length() - SERVER_FILE_EXT.length() - 1);
         className = className.replace(fileSeparator(), '.');
         synchronized (c_lock) {
@@ -218,10 +220,16 @@ class WebAppManager implements Runnable {
                     lastClassLoader = new WebAppClassLoader(WebAppManager.class.getClassLoader());
                 }
                 lastClassLoader.setClassAbsoluteFileName(classAbsoluteFilename);
+                lastClassLoader.setFinderListener(listener);
+                lastClassLoader.flagOnBootstrap();
                 Class<?> cl = lastClassLoader.loadClass(className);
-                webAppClassObjectsMap.put(className, cl);
+                lastClassLoader.flagOffBootstrap();
+                if (isImplementor) {
+                    webAppClassObjectsMap.put(className, cl);
+                }
                 //cl.newInstance();//Testing
-                //Logger.getLogger(WebAppManager.class.getName()).log(Level.INFO, "Loaded : {0}"+"."+SERVER_FILE_EXT, className);
+                //Logger.getLogger(WebAppManager.class.getName()).log(Level.INFO, "Loaded : {0}" + "." + SERVER_FILE_EXT, className);
+                //System.out.println("Loaded : "+className + "." + SERVER_FILE_EXT);
                 return true;
             } catch (Exception ex) {
                 Logger.getLogger(WebAppManager.class.getName()).log(Level.SEVERE, null, ex);

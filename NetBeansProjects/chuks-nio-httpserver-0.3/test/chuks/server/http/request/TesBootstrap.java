@@ -15,7 +15,8 @@ public class TesBootstrap {
 
     public static void main(String[] args) throws IOException {
         
-        SimpleHttpServer.classPath = "C:\\Users\\USER\\Documents\\NetBeansProjects\\APPIncidenceReport\\dist\\";
+        SimpleHttpServer.classPath = "C:\\Users\\USER\\Documents\\NetBeansProjects\\APPIncidenceReport\\build\\classes\\";
+        SimpleHttpServer.libraryPath = "C:\\Users\\USER\\Documents\\NetBeansProjects\\APPIncidenceReport\\dist\\lib\\";
         Bootstrap b = Bootstrap.getInstance();
         b.load();
     }
