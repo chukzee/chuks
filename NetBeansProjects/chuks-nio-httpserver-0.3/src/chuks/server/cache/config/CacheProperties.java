@@ -174,7 +174,7 @@ final public class CacheProperties implements ICacheProperties {
     }
 
     @Override
-    public int getDisMaxKeySize() {
+    public int getDiskMaxKeySize() {
         return diskMaxKeySize;
     }
 

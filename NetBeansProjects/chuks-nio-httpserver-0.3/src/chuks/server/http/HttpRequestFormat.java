@@ -5,7 +5,7 @@
  */
 package chuks.server.http;
 
-import chuks.server.http.request.Value;
+import chuks.server.http.impl.Value;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;

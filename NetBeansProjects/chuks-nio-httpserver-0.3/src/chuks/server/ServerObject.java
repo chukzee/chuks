@@ -4,7 +4,6 @@
  */
 package chuks.server;
 
-import chuks.server.cache.EntryType;
 import chuks.server.cache.ICacheProperties;
 import chuks.server.cache.IEntryAttributes;
 import chuks.server.http.sql.SQLResultSetHandler;

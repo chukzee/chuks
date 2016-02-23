@@ -177,7 +177,7 @@ public interface ICacheProperties extends Serializable {
 
     void setDiskMaxKeySize(int size);
 
-    int getDisMaxKeySize();
+    int getDiskMaxKeySize();
 
     void setDiskOptimizeAtRemoveCount(int count);
 

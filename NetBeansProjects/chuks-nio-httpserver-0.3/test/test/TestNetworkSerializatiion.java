@@ -5,8 +5,8 @@
  */
 package test;
 
-import chuks.server.http.request.ServerConfig;
-import chuks.server.http.request.SimpleHttpServer;
+import chuks.server.http.impl.ServerConfig;
+import chuks.server.http.impl.SimpleHttpServer;
 import chuks.server.util.ThreadUtil;
 import java.io.IOException;
 import java.io.InvalidClassException;

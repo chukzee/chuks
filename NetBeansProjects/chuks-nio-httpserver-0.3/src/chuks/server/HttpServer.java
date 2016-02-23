@@ -13,12 +13,20 @@ public interface HttpServer {
     /**Starts the server. if the server is already started
      * this method throws SimpleHttpServerException
      * 
+     * @return true if successful
      */
     boolean start();
     
-    /**Shutdown the server orderly release all resources
+    /**Shutdown the server orderly releasing all resources
      * 
+     * @return true if successful
      */
     boolean stop();
+
+    /**Tells if the server is running
+     * 
+     * @return 
+     */
+    public boolean isRunning();
     
 }

@@ -4,7 +4,7 @@
  */
 package chuks.server;
 
-import chuks.server.http.request.NameValue;
+import chuks.server.http.impl.NameValue;
 import java.util.Properties;
 
 /**

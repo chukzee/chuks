@@ -4,7 +4,7 @@
  */
 package test;
 
-import chuks.server.http.request.ServerConfig;
+import chuks.server.http.impl.ServerConfig;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

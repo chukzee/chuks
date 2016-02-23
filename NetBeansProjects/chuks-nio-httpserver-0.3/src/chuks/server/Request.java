@@ -4,7 +4,7 @@
  */
 package chuks.server;
 
-import chuks.server.http.request.Value;
+import chuks.server.http.impl.Value;
 
 /**
  *
