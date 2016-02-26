@@ -10,6 +10,7 @@ package chuks.server.http.impl;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public enum Attr {
+
     Header,
     ServerHost,
     ServerPort,
@@ -21,9 +22,8 @@ public enum Attr {
     EnableRemoteCache,
     MaxRemoteCacheHandlerThreads,
     DefaultIndexFileExtension,
-    
     //cache config attributes goes below
-    
+
     CachePort,
     CacheServers,
     MaxSendRemoteCacheTrials,
@@ -40,6 +40,14 @@ public enum Attr {
     SwapCacheToDisk,
     MaxCacheSize,
     MaxCachedObjects,
-    CacheDiskPath, 
-    
+    CacheDiskPath,
+    DiskCacheMaxPurgatorySize,
+    DiskCacheMaxKeySize,
+    DiskCacheOptimizeAtRemoveCount,
+    DiskCacheOptimizeOnShutdown,
+    DiskCacheMaxRecyleBinSize,
+    ClearDiskCacheOnStartup,
+    ShutdownSpoolTimeLimit,
+    DiskCacheLimitType,
+
 }

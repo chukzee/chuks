@@ -41,10 +41,14 @@ public interface ServerObject<T> {
     public void putCache(Serializable key, Serializable value, IEntryAttributes attr) throws IOException;
 
     public void putCache(String region_name, Serializable key, Serializable value, IEntryAttributes attr) throws IOException;
+    
+    public void dcou(Serializable key, Serializable value);
 
+    public void dcou(String region_name, Serializable key, Serializable value);
+    
     public Object getCache(Serializable key);
 
-    public Object getCache(String regon_name, Serializable key);
+    public Object getCache(String region_name, Serializable key);
 
     public Map getMatchingCache(String pattern);
     
@@ -52,11 +56,11 @@ public interface ServerObject<T> {
 
     public void removeCache(Serializable key);
 
-    public void removeCache(String regon_name, Serializable key);
+    public void removeCache(String region_name, Serializable key);
 
     public void removeAllCache() throws IOException ;
 
-    public void removeAllCache(String regon_name) throws IOException ;
+    public void removeAllCache(String region_name) throws IOException ;
     
     public HttpSession getSession();
 

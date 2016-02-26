@@ -4,6 +4,7 @@
  */
 package chuks.server.http.impl;
 
+import chuks.server.Distributed;
 import chuks.server.HttpSession;
 import chuks.server.JDBCSettings;
 import chuks.server.SimpleHttpServerException;
@@ -485,8 +486,8 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
-    public Object getCache(String regon_name, Serializable key) {
-        CompositeCache cache = cMgr.getCache(regon_name);
+    public Object getCache(String region_name, Serializable key) {
+        CompositeCache cache = cMgr.getCache(region_name);
         ICacheElement element = cache.localGet(key);
         return (element != null) ? element.getVal() : null;//we are not intrested in JCS remote implementation - we've got ours
     }
@@ -508,6 +509,35 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
         }
         CompositeCache cache = cMgr.getCache(region_name);
         return getMatchingCache(cache, pattern);
+    }
+
+    @Override
+    public void dcou(Serializable key, Serializable value) {
+        ICacheElement<Object, Object> element = jcsDefaultCache.localGet(key);
+        if (element != null) {
+            Distributed d = (Distributed) element.getVal();
+            d.distributedCall(value);
+        }
+        RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
+                SimpleHttpServer.getStrCacheSockAddr(), null);
+        rmtEntry.setCacheRegionName(jcsDefaultCache.getCacheName());
+        rmtEntry.distributedCall(true);
+        TCPCacheTransport.enqueueCache(rmtEntry);
+    }
+
+    @Override
+    public void dcou(String region_name, Serializable key, Serializable value) {
+        CompositeCache cache = cMgr.getCache(region_name);
+        ICacheElement element = cache.localGet(key);
+        if (element != null) {
+            Distributed d = (Distributed) element.getVal();
+            d.distributedCall(value);
+        }
+        RemoteCachePacket rmtEntry = new RemoteCachePacket(key, value,
+                SimpleHttpServer.getStrCacheSockAddr(), null);
+        rmtEntry.setCacheRegionName(region_name);
+        rmtEntry.distributedCall(true);
+        TCPCacheTransport.enqueueCache(rmtEntry);
     }
 
     private Map getMatchingCache(CompositeCache cache, String pattern) {
@@ -536,7 +566,7 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
             removeCache(jcsDefaultCache, key);
             return;
         }
-        CompositeCache cache = cMgr.getCache(region_name); 
+        CompositeCache cache = cMgr.getCache(region_name);
         removeCache(cache, key);
     }
 
@@ -570,4 +600,5 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
         rmtEntry.setCacheRegionName(cache.getCacheName());
         TCPCacheTransport.enqueueCache(rmtEntry);
     }
+
 }

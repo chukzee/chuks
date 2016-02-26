@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
@@ -33,6 +34,9 @@ final class CacheStreamHandler implements Runnable {
     ExtendedObjectInputStream objStreamIn;
     ObjectOutputStream objStreamOut;
     AtomicBoolean needObjStreamInit = new AtomicBoolean(true);//atomically flag initialization of object output stream
+    private boolean recoveryMode;
+    private int nextConnTry;
+    private boolean descendConnTry;
 
     CacheStreamHandler(String host, int port) {
         this.mode = CONNECT_MODE;
@@ -63,10 +67,14 @@ final class CacheStreamHandler implements Runnable {
         try {
 
             if (!checkConnect()) {
+                recoveryMode = true;
                 return;
             }
 
-            if (lastFailedCachePacket!=null) {
+            //at this point there is connection
+            recoveryMode = false;
+
+            if (lastFailedCachePacket != null) {
                 sendCache(lastFailedCachePacket);
                 return;
             }
@@ -91,12 +99,12 @@ final class CacheStreamHandler implements Runnable {
             Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             closeSocket();
-            if(isConnectionRefused(ex)){
-                PrintOnce.err("key1", "Could not connect to remote cache host - "+remoteHost+":"+remotePort);
+            if (isConnectionRefused(ex)) {
+                PrintOnce.err("key1", "Could not connect to remote cache host - " + remoteHost + ":" + remotePort);
                 PrintOnce.err("key2", "Connection attempts will continue...");
-            }else{
+            } else {
                 Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
-            } 
+            }
         } catch (Exception ex) {
             Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -164,25 +172,40 @@ final class CacheStreamHandler implements Runnable {
         }
     }
 
-    private boolean connecToRemoteServer() throws IOException {
+    private boolean connecToRemoteServer() {
 
         if (sock == null || sock.isClosed()) {
             sock = new Socket();
         }
 
         if (!sock.isConnected()) {
-            sock.connect(new InetSocketAddress(remoteHost, remotePort), ServerConfig.DEFAULT_SOCK_TIMEOUT);
-            sock.setSoTimeout(ServerConfig.DEFAULT_SOCK_TIMEOUT);
-            objStreamOut = new ObjectOutputStream(sock.getOutputStream());
-            needObjStreamInit.getAndSet(true);//atomically flag initialization of object output stream
-            
-            Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.INFO, "Connected to remote cache host - {0}:{1}", new Object[]{remoteHost, remotePort});
+            try {
+                sock.connect(new InetSocketAddress(remoteHost, remotePort), ServerConfig.DEFAULT_SOCK_TIMEOUT);
+                sock.setSoTimeout(ServerConfig.DEFAULT_SOCK_TIMEOUT);
+                objStreamOut = new ObjectOutputStream(sock.getOutputStream());
+                needObjStreamInit.getAndSet(true);//atomically flag initialization of object output stream
+                 
+                nextConnTry = 0;//initialize
+                descendConnTry=false;//initialize
+                
+                Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.INFO, "Connected to remote cache host - {0}:{1}", new Object[]{remoteHost, remotePort});
+
+                return true;
+            } catch (IOException ex) {
+                //Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
+                closeSocket();
+                System.err.println(ex.getMessage());
+            }
         }
-        return true;
+        return sock.isConnected();
     }
 
     private boolean checkConnect() throws IOException {
         if (mode == TCPCacheTransport.CONNECT_MODE) {
+            if (recoveryMode) {
+                waitForNextConnectionTime();
+            }
+
             return connecToRemoteServer();
             //return false;//TESTING!!!
         } else {
@@ -190,8 +213,8 @@ final class CacheStreamHandler implements Runnable {
         }
     }
 
-    boolean isClosed() {        
-        return sock==null || sock.isClosed();
+    boolean isClosed() {
+        return sock == null || sock.isClosed();
     }
 
     boolean isAcceptMode() {
@@ -215,6 +238,37 @@ final class CacheStreamHandler implements Runnable {
 
     private boolean isConnectionRefused(IOException ex) {
         return "Connection refused: connect".equals(ex.getMessage());
+    }
+
+    /**
+     * This method is used to control the frequency of connection attempt. After
+     * the first attempt, it waits for a specified time before resuming
+     * connection attempt. The time it waits increases linearly by a specified
+     * amount. After a specified maximum time is reached then the time begins to
+     * decrease to another specified amount before increase again. And the
+     * process continues in that fashion.
+     */
+    private void waitForNextConnectionTime() {
+
+        //check if wait time has reach maxinum
+        if (nextConnTry >= 60) {
+            //ok wait time has reach maximum so flag to decreas wait time
+            descendConnTry = true;
+        }
+
+        if (descendConnTry) {
+            nextConnTry -= 3; //decrease wait time by this specified amount
+            if (nextConnTry < 30) {
+                //flag to increase wait time
+                descendConnTry = false;
+            }
+        } else {
+            //increase wait time by specified amount
+            nextConnTry += 3;
+        }
+        ThreadUtil.sleep(nextConnTry * 1000);
+        
+        System.err.println("nextConnTry "+nextConnTry);
     }
 
     private class RecvHandler implements Runnable {
@@ -245,14 +299,19 @@ final class CacheStreamHandler implements Runnable {
                 RemoteCachePacket rmtPack = (RemoteCachePacket) obj;
 
                 //System.out.println("test received  value = " + rmtPack.getValue() );
-                if(rmtPack.isRemoveAllCache()){
+                if (rmtPack.isRemoveAllCache()) {
                     ServerCache.removeAllRCE(rmtPack);
-                }else if(rmtPack.isRemoveCache()){
+                } else if (rmtPack.isRemoveCache()) {
                     ServerCache.removeRCE(rmtPack);
-                }else{
+                } else if (rmtPack.isDistributedCall()) {
+                    //we want to be sure this distributedCall method does not block - if blocking is observer alarm should be made
+                    //because blocking of thid method will halt this thread and may cause serious problems
+                    Monitor.distributedCallBeginTime =System.nanoTime();
+                    ServerCache.distributedCallRCE(rmtPack);
+                    Monitor.distributedCallEndTime =System.nanoTime();
+                }  else {
                     ServerCache.putRCE(rmtPack);
                 }
-               
 
             } catch (NullPointerException ex) {
                 Logger.getLogger(CacheStreamHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -274,7 +333,7 @@ final class CacheStreamHandler implements Runnable {
 
         private void initOutStream() throws IOException {
             if (needObjStreamInit.get()) {
-                objStreamIn = new ExtendedObjectInputStream(sock.getInputStream(),delegatedClassLoader() );
+                objStreamIn = new ExtendedObjectInputStream(sock.getInputStream(), delegatedClassLoader());
                 needObjStreamInit.getAndSet(false);
             }
 

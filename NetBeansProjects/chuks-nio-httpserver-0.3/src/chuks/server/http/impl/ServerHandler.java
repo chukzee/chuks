@@ -36,7 +36,7 @@ class ServerHandler implements Runnable {
 
     static boolean isRunning;
     private static ServerHandler serverHandler;
-    final private static Object lock = new Object();
+    
     static ThreadPoolExecutor requestThreadPoolExecutor;
     static int corePoolSize = 2;
     static int maxPoolSize = 100;
@@ -58,7 +58,7 @@ class ServerHandler implements Runnable {
         if (serverHandler != null) {
             return serverHandler;
         }
-        synchronized (lock) {
+        synchronized (ServerHandler.class) {
             if (serverHandler == null) {
                 return serverHandler = new ServerHandler();
             }
@@ -97,7 +97,7 @@ class ServerHandler implements Runnable {
                     }
 
                     if (rejeceted_size > 0) {
-                        RequestTask rjtd = (RequestTask) rejectedTask.poll();//retrieve and remove - we re-execute this task
+                        RequestTask rjtd = (RequestTask) rejectedTask.poll();//retrieve and remove - we will re-execute this task
                         if (rjtd != null) {
                             //System.out.println("add back rejected "+rjtd);
                             tasks.offer(rjtd);//add back
@@ -156,13 +156,15 @@ class ServerHandler implements Runnable {
 
     void start() {
 
-        synchronized (lock) {
+        synchronized (ServerHandler.class) {
             if (isStarted) {
                 return;
             }
             isStarted = true;
         }
+        
         BlockingQueue<Runnable> connectionsQueue = new ArrayBlockingQueue(totalQueueSize);
+        
         requestThreadPoolExecutor
                 = new ThreadPoolExecutor(corePoolSize,
                         maxPoolSize, threadIdleTime,
@@ -196,9 +198,9 @@ class ServerHandler implements Runnable {
                         }
 
                         //REMOVE THIS IF BLOCK LATER - USED FO TESTING
-                        if (task.isContentFullyRead()) {//TESTING - REMOVE IF BLOCK LATER
+                        /*if (task.isContentFullyRead()) {//TESTING - REMOVE IF BLOCK LATER
                             //task.printTimeElapse();//TESTING
-                        }
+                        }*/
                     }
 
                 };

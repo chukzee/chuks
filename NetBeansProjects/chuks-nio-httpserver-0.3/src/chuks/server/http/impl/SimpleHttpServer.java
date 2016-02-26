@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -10,6 +10,7 @@ import chuks.server.SimpleHttpServerException;
 import chuks.server.SimpleServerConfigException;
 import chuks.server.cache.config.CacheProperties;
 import static chuks.server.http.impl.ServerCache.DEFAULT_REGION_NAME;
+import chuks.server.http.loadbalance.LoadBalanceStrategy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -49,6 +50,7 @@ public class SimpleHttpServer implements HttpServer {
     private static Path pathWebRoot;
     private static Path pathClassPath;
     private static String cache_host_ip;
+    private static LoadBalanceStrategy loadBalanceStrategy;
 
     public static SocketAddress getCacheSockAddress() {
         return cacheSockAddress;
@@ -61,6 +63,11 @@ public class SimpleHttpServer implements HttpServer {
     static private boolean enableErrorOuput;
     static private boolean isWindows;
     static private boolean enableRemoteCache;
+
+    static LoadBalanceStrategy getLoadBalanceStrategy() {
+        return loadBalanceStrategy;
+    }
+    
     private String configFileSaved;
 
     static {
@@ -628,7 +635,7 @@ public class SimpleHttpServer implements HttpServer {
             }
 
             /*
-             *Set the default cache properties
+             *Set the default basic cache properties
              */
             CacheProperties cacheProp = new CacheProperties();
 
@@ -674,6 +681,55 @@ public class SimpleHttpServer implements HttpServer {
             key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setUseMemoryShrinker(pConfig.getBoolean(key));
+            }
+
+            /*
+             *Set the default auxiliary cache properties
+             */
+            
+            key = configAttrBundle.getString(Attr.UseDiskCache.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setUseDiskCache(pConfig.getBoolean(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.CacheDiskPath.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setDiskPath(pConfig.getString(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.ClearDiskCacheOnStartup.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setClearDiskCacheOnStartup(pConfig.getBoolean(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.ShutdownSpoolTimeLimit.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setShutdownSpoolTimeLimit(pConfig.getLong(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheOptimizeOnShutdown.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setDiskOptimizeOnShutdown(pConfig.getBoolean(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheMaxRecyleBinSize.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setDiskMaxRecyleBinSize(pConfig.getInt(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheMaxKeySize.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setDiskMaxKeySize(pConfig.getInt(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheMaxPurgatorySize.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setDiskMaxPurgatorySize(pConfig.getInt(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheOptimizeAtRemoveCount.name());
+            if (pConfig.containsKey(key)) {
+                cacheProp.setDiskOptimizeAtRemoveCount(pConfig.getInt(key));
             }
 
             ServerCache.createDefaultRegion(cacheProp);

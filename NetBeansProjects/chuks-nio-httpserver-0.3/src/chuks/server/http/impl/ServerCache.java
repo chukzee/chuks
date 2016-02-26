@@ -5,6 +5,7 @@
  */
 package chuks.server.http.impl;
 
+import chuks.server.Distributed;
 import chuks.server.cache.ICacheProperties;
 import chuks.server.cache.IEntryAttributes;
 import chuks.server.cache.LRUOptimalCache;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
 import org.apache.commons.jcs.engine.CacheElement;
 import org.apache.commons.jcs.engine.CompositeCacheAttributes;
 import org.apache.commons.jcs.engine.ElementAttributes;
+import org.apache.commons.jcs.engine.behavior.ICacheElement;
 import org.apache.commons.jcs.engine.behavior.ICompositeCacheAttributes;
 import org.apache.commons.jcs.engine.behavior.IElementAttributes;
 import org.apache.commons.jcs.engine.control.CompositeCache;
@@ -90,6 +92,22 @@ final class ServerCache {
 
     }
 
+    static void distributedCallRCE(RemoteCachePacket rmtPack) {
+            CompositeCache cache;
+
+            if (rmtPack.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
+                cache = jcsDefaultCache;
+            } else {
+                cache = cMgr.getCache(rmtPack.getCacheRegionName());
+            }
+            
+        ICacheElement element = cache.localGet(rmtPack.getKey());
+        if(element!=null){
+            Distributed d = (Distributed) element.getVal();
+            d.distributedCall(rmtPack.getValue());
+        }
+    }
+
     static void removeRCE(RemoteCachePacket rmtPack) {
         CompositeCache cache;
         if (rmtPack.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
@@ -97,7 +115,7 @@ final class ServerCache {
         } else {
             cache = cMgr.getCache(rmtPack.getCacheRegionName());
         }
-        
+
         cache.localRemove(rmtPack.getKey());
     }
 
@@ -150,7 +168,7 @@ final class ServerCache {
         eattr.setMaxLife(cache_prop.getTimeToLiveInSeconds());//come back abeg o!!! -pls confirm if milliseconds
         eattr.setIsEternal(cache_prop.isEternal());
         //eattr.setSize() //come back
-        eattr.setIsSpool(cache_prop.isUseDiskCacheOnly());
+        eattr.setIsSpool(cache_prop.isUse_Disk_Cache_Only());
 
         ICompositeCacheAttributes.DiskUsagePattern disk_patttern;
         if (cache_prop.isDiskSwapStrategy()) {
@@ -164,44 +182,51 @@ final class ServerCache {
         ccattr.setMaxSpoolPerRun(cache_prop.getMaxSpoolPerRun());
         ccattr.setShrinkerIntervalSeconds(cache_prop.getShrinkerIntervalInSeconds());
         ccattr.setSpoolChunkSize(cache_prop.getSpoolChunkSize());
-        ccattr.setUseDisk(cache_prop.isUseDisk());
+        ccattr.setUseDisk(cache_prop.isUseDiskCache());
         ccattr.setUseMemoryShrinker(cache_prop.isUseMemoryShrinker());
 
         cMgr = CompositeCacheManager.getUnconfiguredInstance();
         cMgr.setDefaultCacheAttributes(ccattr);
         Properties p = new Properties();
 
-        String suffix = "";
+        String suffix;
         if (cache_prop.getCacheRegionName().equals(DEFAULT_REGION_NAME)) {
             suffix = "jcs.default";
         } else {
             suffix = "jcs.region." + cache_prop.getCacheRegionName();
         }
-        p.setProperty(suffix, "DC");
+
         p.setProperty(suffix + ".cacheattributes", "org.apache.commons.jcs.engine.CompositeCacheAttributes");
         p.setProperty(suffix + ".cacheattributes.MemoryCacheName", "org.apache.commons.jcs.engine.memory.lru.LRUMemoryCache");
         p.setProperty(suffix + ".elementattributes", "org.apache.commons.jcs.engine.ElementAttributes");
 
-        //Auxiliary configurable by user
-        p.setProperty("jcs.auxiliary.DC.attributes", "org.apache.commons.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes");
-        p.setProperty("jcs.auxiliary.DC", "org.apache.commons.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory");
-        p.setProperty("jcs.auxiliary.DC.attributes.DiskPath", String.valueOf(cache_prop.getDiskPath()));
-        p.setProperty("jcs.auxiliary.DC.attributes.MaxPurgatorySize", String.valueOf(cache_prop.getDiskMaxPurgatorySize()));
-        p.setProperty("jcs.auxiliary.DC.attributes.MaxKeySize", String.valueOf(cache_prop.getDiskMaxKeySize()));
-        p.setProperty("jcs.auxiliary.DC.attributes.OptimizeAtRemoveCount", String.valueOf(cache_prop.getDisOptimizeAtRemoveCount()));
-        p.setProperty("jcs.auxiliary.DC.attributes.OptimizeOnShutdown", String.valueOf(cache_prop.getDisOptimizeOnShutdown()));
-        p.setProperty("jcs.auxiliary.DC.attributes.MaxRecycleBinSize", String.valueOf(cache_prop.getDiskMaxRecyleBinSize()));
-        p.setProperty("jcs.auxiliary.DC.attributes.DiskLimitType", cache_prop.getDiskLimitType().name());
+        //-----Auxiliary configurable by user.------
+        //auiliary configuration is only necessary if UseDisk attribute is true
+        if (ccattr.isUseDisk()) {
+            p.setProperty(suffix, "DC");//compulsory
+            p.setProperty("jcs.auxiliary.DC.attributes", "org.apache.commons.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes");
+            p.setProperty("jcs.auxiliary.DC", "org.apache.commons.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory");
+            p.setProperty("jcs.auxiliary.DC.attributes.DiskPath", String.valueOf(cache_prop.getDiskPath()));
+            p.setProperty("jcs.auxiliary.DC.attributes.MaxPurgatorySize", String.valueOf(cache_prop.getDiskMaxPurgatorySize()));
+            p.setProperty("jcs.auxiliary.DC.attributes.MaxKeySize", String.valueOf(cache_prop.getDiskMaxKeySize()));
+            p.setProperty("jcs.auxiliary.DC.attributes.OptimizeAtRemoveCount", String.valueOf(cache_prop.getDisOptimizeAtRemoveCount()));
+            p.setProperty("jcs.auxiliary.DC.attributes.OptimizeOnShutdown", String.valueOf(cache_prop.isDistOptimizeOnShutdown()));
+            p.setProperty("jcs.auxiliary.DC.attributes.MaxRecycleBinSize", String.valueOf(cache_prop.getDiskMaxRecyleBinSize()));
+            p.setProperty("jcs.auxiliary.DC.attributes.DiskLimitType", cache_prop.getDiskLimitType().name());
+            p.setProperty("jcs.auxiliary.DC.attributes.ClearDiskOnStartup", String.valueOf(cache_prop.isClearDiskCacheOnStartup()));
+            p.setProperty("jcs.auxiliary.DC.attributes.ShutdownSpoolTimeLimit", String.valueOf(cache_prop.getShutdownSpoolTimeLimit()));
 
-        //Auxiliary configurable by server only        
-        p.setProperty("jcs.auxiliary.DC2.attributes.EventQueueType", "POOLED");
-        p.setProperty("jcs.auxiliary.DC2.attributes.EventQueuePoolName", "disk_cache_event_queue");
+            //Auxiliary configurable by server only        
+            p.setProperty("jcs.auxiliary.DC2.attributes.EventQueueType", "POOLED");
+            p.setProperty("jcs.auxiliary.DC2.attributes.EventQueuePoolName", "disk_cache_event_queue");
 
-        //Thread pool configurable by server only
-        p.setProperty("thread_pool.disk_cache_event_queue.useBoundary", "false");
-        p.setProperty("thread_pool.disk_cache_event_queue.minimumPoolSize", "1");
-        p.setProperty("thread_pool.disk_cache_event_queue.keepAliveTime", "3500");
-        p.setProperty("thread_pool.disk_cache_event_queue.startUpSize", "1");
+            //Thread pool configurable by server only
+            p.setProperty("thread_pool.disk_cache_event_queue.useBoundary", "false");
+            p.setProperty("thread_pool.disk_cache_event_queue.minimumPoolSize", "1");
+            p.setProperty("thread_pool.disk_cache_event_queue.keepAliveTime", "3500");
+            p.setProperty("thread_pool.disk_cache_event_queue.startUpSize", "1");            
+        }
+        
         cMgr.configure(p);
 
         //CacheAccess ca = JCS.defineRegion(cache_prop.getCacheRegionName());
@@ -211,5 +236,6 @@ final class ServerCache {
         cache.setElementAttributes(eattr);//important
         return cache;
     }
+
 
 }

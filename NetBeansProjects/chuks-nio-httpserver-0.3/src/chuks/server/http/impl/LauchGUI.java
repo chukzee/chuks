@@ -5,6 +5,17 @@
  */
 package chuks.server.http.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
@@ -42,7 +53,18 @@ public class LauchGUI extends javax.swing.JFrame {
         cmdAdvanceDiskCacheApply = new javax.swing.JButton();
         cmdAdvanceDiskCacheCancel = new javax.swing.JButton();
         cmdAdvanceDiskCacheReset = new javax.swing.JButton();
+        txtShutdownSpoolTimeLimit = new javax.swing.JTextField();
+        jLabel30 = new javax.swing.JLabel();
+        chkClearDiskCacheOnStartup = new javax.swing.JCheckBox();
         jComboBox1 = new javax.swing.JComboBox();
+        dlgRegisterClusterServers = new javax.swing.JDialog();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        lstRegisteredClusterServer = new javax.swing.JList();
+        jLabel8 = new javax.swing.JLabel();
+        cmdAddClusterServer = new javax.swing.JButton();
+        txtAddClusterServer = new javax.swing.JTextField();
+        cmdRemoveClusterServer = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -64,9 +86,10 @@ public class LauchGUI extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtDefaultIndexFileExtension = new javax.swing.JTextField();
         cmdRestBasicConfig = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel30 = new javax.swing.JLabel();
-        jTextField25 = new javax.swing.JTextField();
+        chkEnableLoadBalancing = new javax.swing.JCheckBox();
+        cboLoadBalanceStrategy = new javax.swing.JComboBox();
+        cmdRegisterClusters = new javax.swing.JButton();
+        lblLoadBalanceStrategy = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         lblMaxTimeToLive = new javax.swing.JLabel();
@@ -93,16 +116,16 @@ public class LauchGUI extends javax.swing.JFrame {
         lblSpoolChunkSize = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstCacheServerAddressess = new javax.swing.JList();
-        jLabel8 = new javax.swing.JLabel();
+        lblCachePort = new javax.swing.JLabel();
         txtCachePort = new javax.swing.JTextField();
         txtEnterCacheServerAddress = new javax.swing.JTextField();
         cmdAddCacheServerAddress = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        lblCacheServer = new javax.swing.JLabel();
+        lblCacheThreads = new javax.swing.JLabel();
         txtMaxRemoteCacheHandlerThreads = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
+        lblCacheSendTrials = new javax.swing.JLabel();
         txtMaxRemoteCacheSendTrails = new javax.swing.JTextField();
-        MaxRequestFileCacheSize = new javax.swing.JTextField();
+        txtMaxRequestFileCacheSize = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         chkUseDiskCache = new javax.swing.JCheckBox();
@@ -112,17 +135,26 @@ public class LauchGUI extends javax.swing.JFrame {
         chkSwapCacheToDisk = new javax.swing.JCheckBox();
         cmdAdvanceDiskCacheSetting = new javax.swing.JButton();
         cmdResetCacheConfig = new javax.swing.JButton();
+        chkEnableRemoteCache = new javax.swing.JCheckBox();
+        cmdRemoveCacheServerAddress = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        cmdStartServer = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         cmdOpen = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         cmdSave = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        jButton2 = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         cmdResetAll = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         cmdHelp = new javax.swing.JButton();
+        lblConfigFileOpened = new javax.swing.JLabel();
+        cmdChangeConfigFile = new javax.swing.JButton();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        cmdStartServer = new javax.swing.JButton();
 
         dlgAdvanceDiskCacheSettings.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         dlgAdvanceDiskCacheSettings.setTitle("Advace disk cache configuration");
@@ -158,42 +190,62 @@ public class LauchGUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel30.setText("shutdown spool time limit");
+
+        chkClearDiskCacheOnStartup.setText("Clear disk cache on startup");
+
         javax.swing.GroupLayout dlgAdvanceDiskCacheSettingsLayout = new javax.swing.GroupLayout(dlgAdvanceDiskCacheSettings.getContentPane());
         dlgAdvanceDiskCacheSettings.getContentPane().setLayout(dlgAdvanceDiskCacheSettingsLayout);
         dlgAdvanceDiskCacheSettingsLayout.setHorizontalGroup(
             dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
-                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtMaxDiskPurgatorySize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
-                        .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtMaxDiskRecycleBinSize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
-                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtMaxDiskKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel28, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(chkDiskOptimizeOnShutdown, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtMaxDiskPurgatorySize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtMaxDiskRecycleBinSize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtMaxDiskKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                                .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cboDiskLimitType, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
                         .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(cboDiskLimitType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtDiskOptimizedAtRemoveCount, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                            .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtDiskOptimizedAtRemoveCount, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                                    .addComponent(txtShutdownSpoolTimeLimit)))
+                            .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                                .addGap(141, 141, 141)
                                 .addComponent(cmdAdvanceDiskCacheApply)
                                 .addGap(18, 18, 18)
-                                .addComponent(cmdAdvanceDiskCacheCancel)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmdAdvanceDiskCacheReset)
-                .addContainerGap())
+                                .addComponent(cmdAdvanceDiskCacheCancel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmdAdvanceDiskCacheReset)))
+                        .addContainerGap(168, Short.MAX_VALUE))))
+            .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(chkClearDiskCacheOnStartup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(chkDiskOptimizeOnShutdown, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         dlgAdvanceDiskCacheSettingsLayout.setVerticalGroup(
             dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,22 +268,76 @@ public class LauchGUI extends javax.swing.JFrame {
                     .addComponent(txtDiskOptimizedAtRemoveCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtShutdownSpoolTimeLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel30))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel29)
                     .addComponent(cboDiskLimitType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
-                        .addGap(7, 7, 7)
-                        .addComponent(chkDiskOptimizeOnShutdown))
-                    .addGroup(dlgAdvanceDiskCacheSettingsLayout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cmdAdvanceDiskCacheApply)
-                            .addComponent(cmdAdvanceDiskCacheCancel)
-                            .addComponent(cmdAdvanceDiskCacheReset))))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(chkClearDiskCacheOnStartup)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkDiskOptimizeOnShutdown)
+                .addGap(18, 18, 18)
+                .addGroup(dlgAdvanceDiskCacheSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmdAdvanceDiskCacheApply)
+                    .addComponent(cmdAdvanceDiskCacheCancel)
+                    .addComponent(cmdAdvanceDiskCacheReset))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        dlgRegisterClusterServers.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        dlgRegisterClusterServers.setTitle("Register cluster servers");
+        dlgRegisterClusterServers.setSize(new java.awt.Dimension(625, 450));
+
+        jScrollPane2.setViewportView(lstRegisteredClusterServer);
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel8.setText("Register the cluster servers load balancer will redirect request to.");
+
+        cmdAddClusterServer.setText("Add");
+
+        cmdRemoveClusterServer.setText("Remove");
+
+        jLabel9.setText("Server url e.g www.exmaple.com");
+
+        javax.swing.GroupLayout dlgRegisterClusterServersLayout = new javax.swing.GroupLayout(dlgRegisterClusterServers.getContentPane());
+        dlgRegisterClusterServers.getContentPane().setLayout(dlgRegisterClusterServersLayout);
+        dlgRegisterClusterServersLayout.setHorizontalGroup(
+            dlgRegisterClusterServersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dlgRegisterClusterServersLayout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addGroup(dlgRegisterClusterServersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9)
+                    .addGroup(dlgRegisterClusterServersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(dlgRegisterClusterServersLayout.createSequentialGroup()
+                            .addComponent(txtAddClusterServer, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cmdAddClusterServer)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(cmdRemoveClusterServer))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+        dlgRegisterClusterServersLayout.setVerticalGroup(
+            dlgRegisterClusterServersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dlgRegisterClusterServersLayout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jLabel8)
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(dlgRegisterClusterServersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmdAddClusterServer)
+                    .addComponent(txtAddClusterServer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdRemoveClusterServer))
+                .addGap(37, 37, 37))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Server startup configuration");
@@ -287,7 +393,7 @@ public class LauchGUI extends javax.swing.JFrame {
             }
         });
 
-        chkEnableErrorOutput.setText("Enable Error output");
+        chkEnableErrorOutput.setText("Enable error output to web");
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("Default index file extension");
@@ -295,31 +401,27 @@ public class LauchGUI extends javax.swing.JFrame {
 
         cmdRestBasicConfig.setText("Reset");
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Http thread pool"));
+        chkEnableLoadBalancing.setText("Enable load balancing");
+        chkEnableLoadBalancing.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkEnableLoadBalancingStateChanged(evt);
+            }
+        });
 
-        jLabel30.setText("jLabel30");
+        cboLoadBalanceStrategy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Round robin" }));
+        cboLoadBalanceStrategy.setEnabled(false);
 
-        jTextField25.setText("jTextField25");
+        cmdRegisterClusters.setText("Register clusters");
+        cmdRegisterClusters.setEnabled(false);
+        cmdRegisterClusters.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdRegisterClustersActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField25, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 253, Short.MAX_VALUE))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(jTextField25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(75, Short.MAX_VALUE))
-        );
+        lblLoadBalanceStrategy.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblLoadBalanceStrategy.setText("Load balancing strategy");
+        lblLoadBalanceStrategy.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -327,32 +429,24 @@ public class LauchGUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                    .addComponent(lblLoadBalanceStrategy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
-                        .addGap(10, 10, 10)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(txtDefaultIndexFileExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addComponent(txtDisguisedExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(50, 50, 50)
-                                            .addComponent(chkEnableErrorOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))
-                                        .addComponent(txtWebRoot)
+                                        .addComponent(txtDisguisedExtension, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtWebRoot, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
                                         .addComponent(txtClassPath)
                                         .addComponent(txtLibraryPath))
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -363,13 +457,24 @@ public class LauchGUI extends javax.swing.JFrame {
                                     .addComponent(cmdRestBasicConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(cmdBrowseClassPath, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(cmdBrowseWebRoot, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cmdLibraryPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(0, 284, Short.MAX_VALUE))))))
+                                    .addComponent(cmdLibraryPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtDefaultIndexFileExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
+                                .addComponent(chkEnableErrorOutput)))
+                        .addGap(0, 276, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(chkEnableLoadBalancing, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cmdRegisterClusters, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+                                .addComponent(cboLoadBalanceStrategy, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(56, 56, 56)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtServerHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -394,18 +499,24 @@ public class LauchGUI extends javax.swing.JFrame {
                         .addComponent(txtLibraryPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(cmdLibraryPath))
                     .addComponent(jLabel5))
-                .addGap(21, 21, 21)
+                .addGap(22, 22, 22)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtDisguisedExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkEnableErrorOutput))
+                    .addComponent(txtDisguisedExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(txtDefaultIndexFileExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(63, Short.MAX_VALUE))
+                    .addComponent(txtDefaultIndexFileExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkEnableErrorOutput))
+                .addGap(18, 18, 18)
+                .addComponent(chkEnableLoadBalancing)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cboLoadBalanceStrategy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblLoadBalanceStrategy))
+                .addGap(18, 18, 18)
+                .addComponent(cmdRegisterClusters)
+                .addContainerGap(79, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Basic config.", jPanel1);
@@ -421,9 +532,9 @@ public class LauchGUI extends javax.swing.JFrame {
         lbleITeconds.setText("seconds");
 
         chkIsMemoryCacheEternal.setText("Is eternal");
-        chkIsMemoryCacheEternal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkIsMemoryCacheEternalActionPerformed(evt);
+        chkIsMemoryCacheEternal.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkIsMemoryCacheEternalStateChanged(evt);
             }
         });
 
@@ -468,16 +579,16 @@ public class LauchGUI extends javax.swing.JFrame {
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Memory cache attributes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         chkSpoolToDisk.setText("Spool to disk");
-        chkSpoolToDisk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkSpoolToDiskActionPerformed(evt);
+        chkSpoolToDisk.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkSpoolToDiskStateChanged(evt);
             }
         });
 
         chkUseMemoryShrinker.setText("Use shrinker");
-        chkUseMemoryShrinker.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkUseMemoryShrinkerActionPerformed(evt);
+        chkUseMemoryShrinker.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkUseMemoryShrinkerStateChanged(evt);
             }
         });
 
@@ -550,7 +661,7 @@ public class LauchGUI extends javax.swing.JFrame {
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
                     .addComponent(txtMaxMemoryCacheObjects, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -573,31 +684,48 @@ public class LauchGUI extends javax.swing.JFrame {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblShrinkerInterval)
                     .addComponent(txtMemoryShrinkerInterval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblShrinkerSec))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblShrinkerSec)))
         );
 
+        lstCacheServerAddressess.setEnabled(false);
         jScrollPane1.setViewportView(lstCacheServerAddressess);
 
-        jLabel8.setText("Cache port");
+        lblCachePort.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblCachePort.setText("Cache port");
+        lblCachePort.setEnabled(false);
+
+        txtCachePort.setEnabled(false);
+
+        txtEnterCacheServerAddress.setEnabled(false);
 
         cmdAddCacheServerAddress.setText("Add");
+        cmdAddCacheServerAddress.setEnabled(false);
 
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("Register cache servers - <host name>:<port number>");
+        lblCacheServer.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCacheServer.setText("Register cache servers - <host name>:<port number>");
+        lblCacheServer.setEnabled(false);
 
-        jLabel10.setText("Max. reomte cache handler threads");
+        lblCacheThreads.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblCacheThreads.setText("Max. reomte cache handler threads");
+        lblCacheThreads.setEnabled(false);
 
-        jLabel11.setText("Max. remote cache send trails");
+        txtMaxRemoteCacheHandlerThreads.setEnabled(false);
 
+        lblCacheSendTrials.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblCacheSendTrials.setText("Max. remote cache send trails");
+        lblCacheSendTrials.setEnabled(false);
+
+        txtMaxRemoteCacheSendTrails.setEnabled(false);
+
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel12.setText("Max. requested file cache size");
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Disk cache attributes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         chkUseDiskCache.setText("Use disk cache");
-        chkUseDiskCache.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkUseDiskCacheActionPerformed(evt);
+        chkUseDiskCache.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkUseDiskCacheStateChanged(evt);
             }
         });
 
@@ -636,7 +764,7 @@ public class LauchGUI extends javax.swing.JFrame {
                     .addComponent(chkUseDiskCache)
                     .addComponent(chkSwapCacheToDisk)
                     .addComponent(cmdAdvanceDiskCacheSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -659,6 +787,16 @@ public class LauchGUI extends javax.swing.JFrame {
 
         cmdResetCacheConfig.setText("Reset");
 
+        chkEnableRemoteCache.setText("Enable remote cache");
+        chkEnableRemoteCache.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkEnableRemoteCacheStateChanged(evt);
+            }
+        });
+
+        cmdRemoveCacheServerAddress.setText("Remove");
+        cmdRemoveCacheServerAddress.setEnabled(false);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -671,72 +809,83 @@ public class LauchGUI extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(MaxRequestFileCacheSize, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
+                                .addComponent(txtMaxRequestFileCacheSize, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(lblCacheSendTrials, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(lblCacheThreads, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(lblCachePort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(txtMaxRemoteCacheHandlerThreads, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                                     .addComponent(txtMaxRemoteCacheSendTrails, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                    .addComponent(txtCachePort, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))))
+                                    .addComponent(txtCachePort, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)))
+                            .addComponent(chkEnableRemoteCache))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cmdResetCacheConfig))
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(txtEnterCacheServerAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                        .addGap(10, 10, 10)
+                        .addComponent(lblCacheServer, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmdAddCacheServerAddress))
-                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(txtEnterCacheServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cmdAddCacheServerAddress)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cmdRemoveCacheServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chkEnableRemoteCache, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdResetCacheConfig)
+                    .addComponent(lblCacheServer))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
+                            .addComponent(lblCachePort)
                             .addComponent(txtCachePort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(txtMaxRemoteCacheHandlerThreads, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel9)
-                            .addComponent(cmdResetCacheConfig))
+                            .addComponent(lblCacheThreads)
+                            .addComponent(txtMaxRemoteCacheHandlerThreads, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtEnterCacheServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmdAddCacheServerAddress))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
+                            .addComponent(lblCacheSendTrials)
                             .addComponent(txtMaxRemoteCacheSendTrails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12)
-                            .addComponent(MaxRequestFileCacheSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtMaxRequestFileCacheSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtEnterCacheServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmdAddCacheServerAddress)
+                            .addComponent(cmdRemoveCacheServerAddress))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(5, 5, 5)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 19, Short.MAX_VALUE))
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(8, 8, 8))
         );
 
         jTabbedPane1.addTab("Cache config.", jPanel2);
@@ -745,33 +894,27 @@ public class LauchGUI extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 852, Short.MAX_VALUE)
+            .addGap(0, 844, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 454, Short.MAX_VALUE)
+            .addGap(0, 450, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Log", jPanel4);
+        jTabbedPane1.addTab("View Active Config.", jPanel4);
 
-        cmdStartServer.setText("Start Server");
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 844, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 450, Short.MAX_VALUE)
+        );
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cmdStartServer, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cmdStartServer)
-                .addContainerGap())
-        );
+        jTabbedPane1.addTab("Log", jPanel5);
 
         jToolBar1.setRollover(true);
 
@@ -779,6 +922,11 @@ public class LauchGUI extends javax.swing.JFrame {
         cmdOpen.setFocusable(false);
         cmdOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        cmdOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdOpenActionPerformed(evt);
+            }
+        });
         jToolBar1.add(cmdOpen);
         jToolBar1.add(jSeparator1);
 
@@ -787,6 +935,13 @@ public class LauchGUI extends javax.swing.JFrame {
         cmdSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(cmdSave);
+        jToolBar1.add(jSeparator4);
+
+        jButton2.setText("Save As");
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton2);
         jToolBar1.add(jSeparator2);
 
         cmdResetAll.setText("Reset All");
@@ -802,23 +957,61 @@ public class LauchGUI extends javax.swing.JFrame {
         cmdHelp.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(cmdHelp);
 
+        cmdChangeConfigFile.setText("Change");
+        cmdChangeConfigFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdChangeConfigFileActionPerformed(evt);
+            }
+        });
+
+        jLabel15.setText("Configuration file path");
+
+        jLabel16.setText("Down");
+
+        jLabel14.setText("Status :");
+
+        cmdStartServer.setText("Start Server");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jTabbedPane1)
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblConfigFileOpened, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmdChangeConfigFile)
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmdStartServer, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel15))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 849, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTabbedPane1)
-                .addContainerGap())
+                .addComponent(jLabel15)
+                .addGap(5, 5, 5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cmdStartServer)
+                        .addComponent(jLabel14)
+                        .addComponent(jLabel16))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblConfigFileOpened, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmdChangeConfigFile)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1))
         );
 
         pack();
@@ -841,15 +1034,53 @@ public class LauchGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_txtDisguisedExtensionActionPerformed
 
     private void cmdAdvanceDiskCacheSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdAdvanceDiskCacheSettingActionPerformed
-        dlgAdvanceDiskCacheSettings.setVisible(true);
         dlgAdvanceDiskCacheSettings.setLocationRelativeTo(this);
+        dlgAdvanceDiskCacheSettings.setVisible(true);
     }//GEN-LAST:event_cmdAdvanceDiskCacheSettingActionPerformed
 
     private void cmdAdvanceDiskCacheResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdAdvanceDiskCacheResetActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmdAdvanceDiskCacheResetActionPerformed
 
-    private void chkIsMemoryCacheEternalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkIsMemoryCacheEternalActionPerformed
+    private void cmdOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdOpenActionPerformed
+        File selectedFile = chooseConfigFile();
+        displayConfigOnControls(selectedFile);
+    }//GEN-LAST:event_cmdOpenActionPerformed
+
+    private void cmdChangeConfigFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdChangeConfigFileActionPerformed
+        File selectedFile = chooseConfigFile();
+        displayConfigOnControls(selectedFile);
+    }//GEN-LAST:event_cmdChangeConfigFileActionPerformed
+
+    private void chkEnableRemoteCacheStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkEnableRemoteCacheStateChanged
+        if (this.chkEnableRemoteCache.isSelected()) {
+            this.lblCachePort.setEnabled(true);
+            this.lblCacheSendTrials.setEnabled(true);
+            this.lblCacheServer.setEnabled(true);
+            this.lblCacheThreads.setEnabled(true);
+            this.txtCachePort.setEnabled(true);
+            this.txtEnterCacheServerAddress.setEnabled(true);
+            this.lstCacheServerAddressess.setEnabled(true);
+            this.txtMaxRemoteCacheSendTrails.setEnabled(true);
+            this.txtMaxRemoteCacheHandlerThreads.setEnabled(true);
+            this.cmdAddCacheServerAddress.setEnabled(true);
+            this.cmdRemoveCacheServerAddress.setEnabled(true);
+        } else {
+            this.lblCachePort.setEnabled(false);
+            this.lblCacheSendTrials.setEnabled(false);
+            this.lblCacheServer.setEnabled(false);
+            this.lblCacheThreads.setEnabled(false);
+            this.txtCachePort.setEnabled(false);
+            this.txtEnterCacheServerAddress.setEnabled(false);
+            this.lstCacheServerAddressess.setEnabled(false);
+            this.txtMaxRemoteCacheSendTrails.setEnabled(false);
+            this.txtMaxRemoteCacheHandlerThreads.setEnabled(false);
+            this.cmdAddCacheServerAddress.setEnabled(false);
+            this.cmdRemoveCacheServerAddress.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkEnableRemoteCacheStateChanged
+
+    private void chkIsMemoryCacheEternalStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkIsMemoryCacheEternalStateChanged
         if (chkIsMemoryCacheEternal.isSelected()) {
             this.lbleMTLSeconds.setEnabled(false);
             this.lbleITeconds.setEnabled(false);
@@ -865,9 +1096,36 @@ public class LauchGUI extends javax.swing.JFrame {
             this.txtMaxMemoryCacheIdleTime.setEnabled(true);
             this.txtMaxMemoryCacheTimeToLive.setEnabled(true);
         }
-    }//GEN-LAST:event_chkIsMemoryCacheEternalActionPerformed
 
-    private void chkUseDiskCacheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUseDiskCacheActionPerformed
+    }//GEN-LAST:event_chkIsMemoryCacheEternalStateChanged
+
+    private void chkSpoolToDiskStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkSpoolToDiskStateChanged
+        if (this.chkSpoolToDisk.isSelected()) {
+            this.lblSpoolChunkSize.setEnabled(true);
+            this.lblMaxSpoolPerRun.setEnabled(true);
+            this.txtMaxSpoolChunkSize.setEnabled(true);
+            this.txtMaxSpoolPerRun.setEnabled(true);
+        } else {
+            this.lblSpoolChunkSize.setEnabled(false);
+            this.lblMaxSpoolPerRun.setEnabled(false);
+            this.txtMaxSpoolChunkSize.setEnabled(false);
+            this.txtMaxSpoolPerRun.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkSpoolToDiskStateChanged
+
+    private void chkUseMemoryShrinkerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkUseMemoryShrinkerStateChanged
+        if (this.chkUseMemoryShrinker.isSelected()) {
+            this.lblShrinkerSec.setEnabled(true);
+            this.lblShrinkerInterval.setEnabled(true);
+            this.txtMemoryShrinkerInterval.setEnabled(true);
+        } else {
+            this.txtMemoryShrinkerInterval.setEnabled(false);
+            this.lblShrinkerSec.setEnabled(false);
+            this.lblShrinkerInterval.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkUseMemoryShrinkerStateChanged
+
+    private void chkUseDiskCacheStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkUseDiskCacheStateChanged
 
         if (this.chkUseDiskCache.isSelected()) {
             this.lblEnterDiskPath.setEnabled(true);
@@ -882,34 +1140,68 @@ public class LauchGUI extends javax.swing.JFrame {
             this.cmdAdvanceDiskCacheSetting.setEnabled(false);
             this.cmdBrowseDiskPath.setEnabled(false);
         }
-    }//GEN-LAST:event_chkUseDiskCacheActionPerformed
+    }//GEN-LAST:event_chkUseDiskCacheStateChanged
 
-    private void chkUseMemoryShrinkerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUseMemoryShrinkerActionPerformed
-        if (this.chkUseMemoryShrinker.isSelected()) {
-            this.lblShrinkerSec.setEnabled(true);
-            this.lblShrinkerInterval.setEnabled(true);
-            this.txtMemoryShrinkerInterval.setEnabled(true);
+    private void cmdRegisterClustersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRegisterClustersActionPerformed
+       dlgRegisterClusterServers.setLocationRelativeTo(this);
+        dlgRegisterClusterServers.setVisible(true);
+    }//GEN-LAST:event_cmdRegisterClustersActionPerformed
+
+    private void chkEnableLoadBalancingStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkEnableLoadBalancingStateChanged
+
+        if (this.chkEnableLoadBalancing.isSelected()) {
+            this.lblLoadBalanceStrategy.setEnabled(true);
+            this.cboLoadBalanceStrategy.setEnabled(true);
+            this.cmdRegisterClusters.setEnabled(true);
         } else {
-            this.txtMemoryShrinkerInterval.setEnabled(false);
-            this.lblShrinkerSec.setEnabled(false);
-            this.lblShrinkerInterval.setEnabled(false);
+            this.lblLoadBalanceStrategy.setEnabled(false);
+            this.cboLoadBalanceStrategy.setEnabled(false);
+            this.cmdRegisterClusters.setEnabled(false);
+        }
+        
+    }//GEN-LAST:event_chkEnableLoadBalancingStateChanged
+
+    private File chooseConfigFile() {
+
+        String suffix = ".properties";
+        JFileChooser f = new JFileChooser();
+        FileFilter filter = new FileFilter() {
+
+            @Override
+            public boolean accept(File f) {
+                String filename = f.getName();
+                if (f.isDirectory()) {
+                    return true;
+                }
+                if (filename.endsWith(suffix)) {
+                    return true;
+                }
+
+                return SimpleHttpServer.isWindows()
+                        && filename.substring(filename.length() - suffix.length()).equalsIgnoreCase(suffix);
+            }
+
+            @Override
+            public String getDescription() {
+                return "";
+            }
+        };
+
+        File fl = new File(System.getProperty("user.home"));//TODO : REMEMBER PREVIOUS DIRECTORY
+        if (fl.exists()) {
+            f.setCurrentDirectory(fl);
+        }
+        f.addChoosableFileFilter(filter);
+        f.showOpenDialog(this);
+
+        File selected_file = f.getSelectedFile();
+        if (selected_file != null) {
+            this.lblConfigFileOpened.setText(selected_file.getPath());
+            this.lblConfigFileOpened.setToolTipText(selected_file.getPath());
         }
 
-    }//GEN-LAST:event_chkUseMemoryShrinkerActionPerformed
-
-    private void chkSpoolToDiskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkSpoolToDiskActionPerformed
-        if (this.chkSpoolToDisk.isSelected()) {
-            this.lblSpoolChunkSize.setEnabled(true);
-            this.lblMaxSpoolPerRun.setEnabled(true);
-            this.txtMaxSpoolChunkSize.setEnabled(true);
-            this.txtMaxSpoolPerRun.setEnabled(true);
-        } else {
-            this.lblSpoolChunkSize.setEnabled(false);
-            this.lblMaxSpoolPerRun.setEnabled(false);
-            this.txtMaxSpoolChunkSize.setEnabled(false);
-            this.txtMaxSpoolPerRun.setEnabled(false);
-        }
-    }//GEN-LAST:event_chkSpoolToDiskActionPerformed
+        return selected_file;
+    }
 
     /**
      * @param args the command line arguments
@@ -949,16 +1241,20 @@ public class LauchGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField MaxRequestFileCacheSize;
     private javax.swing.JComboBox cboDiskLimitType;
+    private javax.swing.JComboBox cboLoadBalanceStrategy;
+    private javax.swing.JCheckBox chkClearDiskCacheOnStartup;
     private javax.swing.JCheckBox chkDiskOptimizeOnShutdown;
     private javax.swing.JCheckBox chkEnableErrorOutput;
+    private javax.swing.JCheckBox chkEnableLoadBalancing;
+    private javax.swing.JCheckBox chkEnableRemoteCache;
     private javax.swing.JCheckBox chkIsMemoryCacheEternal;
     private javax.swing.JCheckBox chkSpoolToDisk;
     private javax.swing.JCheckBox chkSwapCacheToDisk;
     private javax.swing.JCheckBox chkUseDiskCache;
     private javax.swing.JCheckBox chkUseMemoryShrinker;
     private javax.swing.JButton cmdAddCacheServerAddress;
+    private javax.swing.JButton cmdAddClusterServer;
     private javax.swing.JButton cmdAdvanceDiskCacheApply;
     private javax.swing.JButton cmdAdvanceDiskCacheCancel;
     private javax.swing.JButton cmdAdvanceDiskCacheReset;
@@ -966,20 +1262,27 @@ public class LauchGUI extends javax.swing.JFrame {
     private javax.swing.JButton cmdBrowseClassPath;
     private javax.swing.JButton cmdBrowseDiskPath;
     private javax.swing.JButton cmdBrowseWebRoot;
+    private javax.swing.JButton cmdChangeConfigFile;
     private javax.swing.JButton cmdHelp;
     private javax.swing.JButton cmdLibraryPath;
     private javax.swing.JButton cmdOpen;
+    private javax.swing.JButton cmdRegisterClusters;
+    private javax.swing.JButton cmdRemoveCacheServerAddress;
+    private javax.swing.JButton cmdRemoveClusterServer;
     private javax.swing.JButton cmdResetAll;
     private javax.swing.JButton cmdResetCacheConfig;
     private javax.swing.JButton cmdRestBasicConfig;
     private javax.swing.JButton cmdSave;
     private javax.swing.JButton cmdStartServer;
     private javax.swing.JDialog dlgAdvanceDiskCacheSettings;
+    private javax.swing.JDialog dlgRegisterClusterServers;
+    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
@@ -999,20 +1302,26 @@ public class LauchGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField25;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel lblCachePort;
+    private javax.swing.JLabel lblCacheSendTrials;
+    private javax.swing.JLabel lblCacheServer;
+    private javax.swing.JLabel lblCacheThreads;
+    private javax.swing.JLabel lblConfigFileOpened;
     private javax.swing.JLabel lblEnterDiskPath;
+    private javax.swing.JLabel lblLoadBalanceStrategy;
     private javax.swing.JLabel lblMaxIdleTime;
     private javax.swing.JLabel lblMaxSpoolPerRun;
     private javax.swing.JLabel lblMaxTimeToLive;
@@ -1022,6 +1331,8 @@ public class LauchGUI extends javax.swing.JFrame {
     private javax.swing.JLabel lbleITeconds;
     private javax.swing.JLabel lbleMTLSeconds;
     private javax.swing.JList lstCacheServerAddressess;
+    private javax.swing.JList lstRegisteredClusterServer;
+    private javax.swing.JTextField txtAddClusterServer;
     private javax.swing.JTextField txtCachePort;
     private javax.swing.JTextField txtClassPath;
     private javax.swing.JTextField txtDefaultIndexFileExtension;
@@ -1039,11 +1350,201 @@ public class LauchGUI extends javax.swing.JFrame {
     private javax.swing.JTextField txtMaxMemoryCacheTimeToLive;
     private javax.swing.JTextField txtMaxRemoteCacheHandlerThreads;
     private javax.swing.JTextField txtMaxRemoteCacheSendTrails;
+    private javax.swing.JTextField txtMaxRequestFileCacheSize;
     private javax.swing.JTextField txtMaxSpoolChunkSize;
     private javax.swing.JTextField txtMaxSpoolPerRun;
     private javax.swing.JTextField txtMemoryShrinkerInterval;
     private javax.swing.JTextField txtServerHost;
     private javax.swing.JTextField txtServerPort;
+    private javax.swing.JTextField txtShutdownSpoolTimeLimit;
     private javax.swing.JTextField txtWebRoot;
     // End of variables declaration//GEN-END:variables
+
+    private void displayConfigOnControls(File selectedFile) {
+
+        FileInputStream fin = null;
+        try {
+            ResourceBundle configAttrBundle = ServerConfig.getConfigAttrBundle();
+            Properties pConfig = new Properties();
+            fin = new FileInputStream(selectedFile);
+            pConfig.load(fin);
+            fin.close();
+            String key;
+            key = configAttrBundle.getString(Attr.ServerHost.name());
+            if (pConfig.containsKey(key)) {
+                this.txtServerHost.setText(pConfig.getProperty(key));
+            }
+            key = configAttrBundle.getString(Attr.ServerPort.name());
+            if (pConfig.containsKey(key)) {
+                this.txtServerPort.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric                
+            }
+            key = configAttrBundle.getString(Attr.CachePort.name());
+            if (pConfig.containsKey(key)) {
+                this.txtCachePort.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric                
+            }
+            key = configAttrBundle.getString(Attr.WebRoot.name());
+            if (pConfig.containsKey(key)) {
+                this.txtWebRoot.setText(pConfig.getProperty(key));
+            }
+            key = configAttrBundle.getString(Attr.ClassPath.name());
+            if (pConfig.containsKey(key)) {
+                this.txtClassPath.setText(pConfig.getProperty(key));
+            }
+            key = configAttrBundle.getString(Attr.LibraryPath.name());
+            if (pConfig.containsKey(key)) {
+                this.txtLibraryPath.setText(pConfig.getProperty(key));
+            }
+            key = configAttrBundle.getString(Attr.EnableErrorOutput.name());
+            if (pConfig.containsKey(key)) {
+                this.chkEnableErrorOutput.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            key = configAttrBundle.getString(Attr.EnableRemoteCache.name());
+            if (pConfig.containsKey(key)) {
+                this.chkEnableRemoteCache.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            key = configAttrBundle.getString(Attr.ExtensionDisguise.name());
+            if (pConfig.containsKey(key)) {
+                this.txtDisguisedExtension.setText(pConfig.getProperty(key));
+            }
+            key = configAttrBundle.getString(Attr.MaxRemoteCacheHandlerThreads.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxRemoteCacheHandlerThreads.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.MaxSendRemoteCacheTrials.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxRemoteCacheSendTrails.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxMemoryCacheIdleTime.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.MaxReqestCacheFileSize.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxRequestFileCacheSize.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.CacheServers.name());
+            if (pConfig.containsKey(key)) {
+                //come back a beg o!!!
+                String[] split = pConfig.getProperty(key).split(",");
+                int cancelled = 0;
+                for (int i = 0; i < split.length; i++) {
+                    split[i] = split[i].trim();
+                    if (split[i].isEmpty()) {
+                        cancelled++;
+                    }
+                }
+                String[] sp = new String[split.length - cancelled];
+                int index = -1;
+                for (int i = 0; i < split.length; i++) {
+                    if (split[i].isEmpty()) {
+                        continue;
+                    }
+                    index++;
+                    sp[index] = split[i];
+                }
+                this.lstCacheServerAddressess.setListData(sp);
+            }
+            key = configAttrBundle.getString(Attr.DefaultIndexFileExtension.name());
+            if (pConfig.containsKey(key)) {
+                this.txtDefaultIndexFileExtension.setText(pConfig.getProperty(key));
+            }   /*
+             *Set the default cache properties
+             */
+
+            key = configAttrBundle.getString(Attr.IsCacheEternal.name());
+            if (pConfig.containsKey(key)) {
+                this.chkIsMemoryCacheEternal.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            key = configAttrBundle.getString(Attr.MaxCachedObjects.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxMemoryCacheObjects.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.MaxMemoryCacheIdleTime.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxMemoryCacheIdleTime.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.MaxCacheSpoolPerRun.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxSpoolPerRun.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.MemoryCacheShrinkerInterval.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMemoryShrinkerInterval.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.CacheSpoolChunkSize.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxSpoolChunkSize.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.CacheTimeToLive.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxMemoryCacheTimeToLive.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            key = configAttrBundle.getString(Attr.UseMemoryCacheShrinker.name());
+            if (pConfig.containsKey(key)) {
+                this.chkUseMemoryShrinker.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            
+             /*
+             *Set the default auxiliary cache properties
+             */
+            
+            key = configAttrBundle.getString(Attr.UseDiskCache.name());
+            if (pConfig.containsKey(key)) {
+                this.chkUseDiskCache.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            
+            key = configAttrBundle.getString(Attr.CacheDiskPath.name());
+            if (pConfig.containsKey(key)) {
+                this.txtDiskPath.setText(pConfig.getProperty(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.ClearDiskCacheOnStartup.name());
+            if (pConfig.containsKey(key)) {
+                this.chkClearDiskCacheOnStartup.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            
+            key = configAttrBundle.getString(Attr.ShutdownSpoolTimeLimit.name());
+            if (pConfig.containsKey(key)) {
+                this.txtShutdownSpoolTimeLimit.setText(pConfig.getProperty(key));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheOptimizeOnShutdown.name());
+            if (pConfig.containsKey(key)) {
+                this.chkDiskOptimizeOnShutdown.setSelected(Boolean.valueOf(pConfig.getProperty(key)));
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheMaxRecyleBinSize.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxDiskRecycleBinSize.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheMaxKeySize.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxDiskKeySize.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheMaxPurgatorySize.name());
+            if (pConfig.containsKey(key)) {
+                this.txtMaxDiskPurgatorySize.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+            
+            key = configAttrBundle.getString(Attr.DiskCacheOptimizeAtRemoveCount.name());
+            if (pConfig.containsKey(key)) {
+                this.txtDiskOptimizedAtRemoveCount.setText(String.valueOf(Integer.valueOf(pConfig.getProperty(key))));//detect non-numeric
+            }
+           
+            
+        } catch (IOException ex) {
+            Logger.getLogger(LauchGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (fin != null) {
+                    fin.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(LauchGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
 }

@@ -15,7 +15,6 @@ final public class CacheProperties implements ICacheProperties {
 
     protected boolean useDiskSwapStrategy = true;
     protected int maxCacheObject = 1000;
-    protected boolean useDisk = true;
     private boolean useRemoteCache = false;
     private String regionName;
     private boolean useMemoryShrinker = false;
@@ -26,13 +25,16 @@ final public class CacheProperties implements ICacheProperties {
     private boolean eternal = false;
     private long timeToLive = -1;//default is -1 meaning forever
     private String diskPath;
-    private int diskMaxPurgatorySize = 10000;
-    private int diskMaxKeySize = 10000;
-    private int diskOptimizeAtRemoveCount = 300000;
+    private int diskMaxPurgatorySize = 5000;
+    private int diskMaxKeySize = 5000;
+    private int diskOptimizeAtRemoveCount = -1;
     private boolean diskOptimizeOnShutdown = true;
-    private int diskMaxRecyleBinSize = 500;
+    private int diskMaxRecyleBinSize = 5000;
     private DiskLimitType diskLimitType = DiskLimitType.COUNT;
     private boolean useDiskCacheOnly = false;
+    private boolean clearDiskCacheOnStartup = false;
+    private long shutdownSpoolTimeLimit = -1;
+    private boolean useDiskCache = false;
 
     public CacheProperties() {
 
@@ -51,11 +53,6 @@ final public class CacheProperties implements ICacheProperties {
     @Override
     public int getMaxCacheObjects() {
         return maxCacheObject;
-    }
-
-    @Override
-    public boolean isUseDisk() {
-        return this.useDisk;
     }
 
     @Override
@@ -149,6 +146,16 @@ final public class CacheProperties implements ICacheProperties {
     }
 
     @Override
+    public void setUseDiskCache(boolean useDiskCache) {
+         this.useDiskCache = useDiskCache;
+    }
+
+    @Override
+    public boolean isUseDiskCache() {
+         return useDiskCache;
+    }
+
+    @Override
     public void setDiskPath(String disk_path) {
         this.diskPath = disk_path;
     }
@@ -194,7 +201,7 @@ final public class CacheProperties implements ICacheProperties {
     }
 
     @Override
-    public boolean getDisOptimizeOnShutdown() {
+    public boolean isDistOptimizeOnShutdown() {
         return diskOptimizeOnShutdown;
     }
 
@@ -219,13 +226,33 @@ final public class CacheProperties implements ICacheProperties {
     }
 
     @Override
-    public void setUseDiskCacheOnly(boolean spool) {
+    public void setUse_Disk_Cache_Only(boolean spool) {
         useDiskCacheOnly = spool;
     }
 
     @Override
-    public boolean isUseDiskCacheOnly() {
+    public boolean isUse_Disk_Cache_Only() {
         return useDiskCacheOnly;
+    }
+
+    @Override
+    public void setClearDiskCacheOnStartup(boolean clear) {
+        clearDiskCacheOnStartup = clear;
+    }
+
+    @Override
+    public boolean isClearDiskCacheOnStartup() {
+        return clearDiskCacheOnStartup;
+    }
+
+    @Override
+    public void setShutdownSpoolTimeLimit(long limit) {
+        shutdownSpoolTimeLimit = limit;
+    }
+
+    @Override
+    public long getShutdownSpoolTimeLimit() {
+        return shutdownSpoolTimeLimit;
     }
 
 }

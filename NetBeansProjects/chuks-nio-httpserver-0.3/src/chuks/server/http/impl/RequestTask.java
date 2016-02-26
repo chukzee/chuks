@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.logging.*;
 import chuks.server.http.*;
+import static chuks.server.http.impl.SimpleHttpServer.getLoadBalanceStrategy;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -60,8 +61,8 @@ class RequestTask implements Runnable {
         this.sock = socket;
     }
 
-    void initialize(){
-        
+    void initialize() {
+
         carriageReturnIndex = -1;//ie \r
         newLineIndex = -1;//ie \n
         line_1_index = -1;//ie \r\n
@@ -70,7 +71,7 @@ class RequestTask implements Runnable {
         isAllHttpHeadersEnd = false;
         headers_collection_bytes = new byte[0];//if the buffer of the header is not in one read operation
         isOneOperationReadHeaders = true;//assuming true
-        request= null;
+        request = null;
         totalBytesRecieved = 0;
         headersLength = 0;
         boundary = null;
@@ -90,7 +91,7 @@ class RequestTask implements Runnable {
         deleteRequest = null;
         content_length = 0;
         requestCharSet = null;
-        isFormUrlEncoded=false;
+        isFormUrlEncoded = false;
         finished = false;
         //distBuff = ByteBuffer.allocate(512);//initialization not required
         is_buff_len_set = false;
@@ -98,7 +99,7 @@ class RequestTask implements Runnable {
         //isKeepAliveRequesConnection = false;//initialization not required 
 
     }
-    
+
     int read() {
         try {
             return byte_size_read = sock.read(distBuff);
@@ -108,10 +109,10 @@ class RequestTask implements Runnable {
         return -1;//signal end
     }
 
-    SocketChannel geChannel(){
+    SocketChannel geChannel() {
         return sock;
     }
-    
+
     boolean isContentFullyRead() {
         return finished;
     }
@@ -122,15 +123,25 @@ class RequestTask implements Runnable {
 
     @Override
     public void run() {
-        
+
         try {
             //REMIND: Denial of service DOS is possible here. So timing a connection is imperative - use Thread interrupt to exist the connection
-            
+
             analyzeHttpRecv(distBuff.array(), byte_size_read);
-            
+
             distBuff.clear();
             //testingToDisplayUploadedRate();//TO BE REMOVED ABEG O!!!
             if (isAllHttpHeadersEnd) {
+
+                if (ServerConfig.isLoadBalanceEnable()) {
+                    String redirectAddr = getLoadBalanceStrategy().getRedirectServerAddress();
+                    if (redirectAddr != null) {
+                        redirectRequest(redirectAddr);
+                        finished = true;
+                        isKeepAliveRequesConnection = false;//prevent keep alive
+                    }
+                }
+
                 if (!is_buff_len_set) {
                     //System.out.println(new String(distBuff.array()));
                     distBuff = ByteBuffer.allocate(bestBufferSize(content_length));
@@ -146,9 +157,7 @@ class RequestTask implements Runnable {
             Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HttpContentLengthException ex) {
-            Logger.getLogger(RequestTask.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SimpleHttpServerException ex) {
+        } catch (HttpContentLengthException | SimpleHttpServerException ex) {
             Logger.getLogger(RequestTask.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -307,10 +316,10 @@ class RequestTask implements Runnable {
 
         requestCharSet = request.getCharSet();
 
-        if(request.getConnection().equalsIgnoreCase("keep-alive")){
+        if (request.getConnection().equalsIgnoreCase("keep-alive")) {
             isKeepAliveRequesConnection = true;
         }
-        
+
         //more specific cache to improve performance may go here
     }
 
@@ -348,5 +357,17 @@ class RequestTask implements Runnable {
 
     boolean isKeepAliveConnection() {
         return isKeepAliveRequesConnection;
+    }
+
+    private void redirectRequest(String redirectAddr) {
+        try {
+            HttpResponseFormat response = new HttpResponseFormat();
+            response.setStatusCode_OK(HttpConstants.HTTP_1_1);
+            //response.setRidrect(redirectAddr)//Haba  find out abeg o!!!
+            sock.write(ByteBuffer.wrap(response.getReponse()));
+            sock.close();//come back to check for effect while writing
+        } catch (IOException ex) {
+            Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

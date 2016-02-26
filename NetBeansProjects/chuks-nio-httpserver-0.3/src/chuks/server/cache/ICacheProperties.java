@@ -26,10 +26,6 @@ public interface ICacheProperties extends Serializable {
 
     public boolean isEternal();
 
-    public void setUseDiskCacheOnly(boolean spool);
-
-    public boolean isUseDiskCacheOnly();
-
     /**
      * Gets the disk swap strategy property
      *
@@ -55,13 +51,6 @@ public interface ICacheProperties extends Serializable {
      * @return The maxObjects value
      */
     int getMaxCacheObjects();
-
-    /**
-     * Gets the useDisk property
-     * <p>
-     * @return The useDisk value
-     */
-    boolean isUseDisk();
 
     /**
      * Sets whether the cache is remote enabled
@@ -167,6 +156,14 @@ public interface ICacheProperties extends Serializable {
      */
     void setSpoolChunkSize(int spoolChunkSize);
 
+    public void setUse_Disk_Cache_Only(boolean spool);
+
+    public boolean isUse_Disk_Cache_Only();
+
+    void setUseDiskCache(boolean useDiskCache);
+
+    boolean isUseDiskCache();
+
     void setDiskPath(String disk_path);
 
     String getDiskPath();
@@ -185,13 +182,21 @@ public interface ICacheProperties extends Serializable {
 
     void setDiskOptimizeOnShutdown(boolean optimize);
 
-    boolean getDisOptimizeOnShutdown();
+    boolean isDistOptimizeOnShutdown();
 
     void setDiskMaxRecyleBinSize(int size);
 
     int getDiskMaxRecyleBinSize();
 
     void setDiskLimitType(DiskLimitType type);
+
+    void setClearDiskCacheOnStartup(boolean clear);
+
+    boolean isClearDiskCacheOnStartup();
+
+    void setShutdownSpoolTimeLimit(long limit);
+
+    long getShutdownSpoolTimeLimit();
 
     DiskLimitType getDiskLimitType();
 

@@ -35,6 +35,7 @@ class RemoteCachePacket<K, V> implements Serializable {
     private long last_update_time;
     private boolean remove;
     private boolean removeAll;
+    private boolean is_distributed_call;
 
     private RemoteCachePacket() {
     }
@@ -167,5 +168,14 @@ class RemoteCachePacket<K, V> implements Serializable {
 
     String getCacheRegionName() {
         return this.region_name;
+    }
+
+    void distributedCall(boolean is_distributed_call) {
+        this.is_distributed_call = is_distributed_call;
+    }
+    
+    
+    boolean isDistributedCall() {
+        return is_distributed_call;
     }
 }

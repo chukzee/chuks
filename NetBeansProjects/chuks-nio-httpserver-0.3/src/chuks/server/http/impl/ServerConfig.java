@@ -38,7 +38,6 @@ public abstract class ServerConfig {
     static int MAX_CACHE_SEND_TRIALS;//see resource bundle
     static int MAX_REMOTE_CACHE_HANDLER_THREADS;//see resource bundle
     static int MAX_MEMORY_CACHE_IDLE_TIME;//see resource bundle
-    static int MAX_DISK_CACHE_IDLE_TIME;//see resource bundle
 
     public static String[] remoteCacheAddresses = {};
 
@@ -50,6 +49,7 @@ public abstract class ServerConfig {
     final public static int DEFAULT_SOCK_TIMEOUT = 30000;
     static long MAX_REQUEST_CACHE_FILE_SIZE;
     static String DEFAULT_INDEX_FILE_EXTENSION;
+    private static String[] clutersServerAddresses = {};
 
     static {
 
@@ -61,7 +61,7 @@ public abstract class ServerConfig {
         MAX_REMOTE_CACHE_HANDLER_THREADS = Integer.parseInt(d.getString(Attr.MaxRemoteCacheHandlerThreads.name()));
         MAX_REQUEST_CACHE_FILE_SIZE = Integer.parseInt(d.getString(Attr.MaxReqestCacheFileSize.name()));
         DEFAULT_INDEX_FILE_EXTENSION = d.getString(Attr.DefaultIndexFileExtension.name());
-        
+
         if (DEFAULT_INDEX_FILE_EXTENSION == null) {
             DEFAULT_INDEX_FILE_EXTENSION = "";
         }
@@ -80,6 +80,10 @@ public abstract class ServerConfig {
 
     public static int getMaxCacheHandlerThreads() {
         return MAX_REMOTE_CACHE_HANDLER_THREADS;
+    }
+
+    public static String[] getClusterServersAddresses() {
+        return clutersServerAddresses;
     }
 
     public static ResourceBundle getConfigAttrBundle() {
@@ -188,6 +192,11 @@ public abstract class ServerConfig {
             }
             System.out.println(b.getString(kn) + " = " + comm + "\n");
         }
+    }
+
+    static boolean isLoadBalanceEnable() {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return false;
     }
 
 }
