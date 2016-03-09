@@ -1,0 +1,81 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.chuks.report.processor;
+
+import java.sql.SQLException;
+import javax.swing.JComponent;
+import com.chuks.report.processor.factory.TableFieldSource;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import com.chuks.report.processor.factory.TableFieldRenderer;
+
+/**
+ *
+ * @author USER
+ */
+public interface TableProcessor extends UIDBProcessor {
+
+    void columnsAsIs(boolean is_column_as_is);
+
+    boolean isColumnAsIs();
+
+    void displayToolbox(boolean isShow);
+    
+    void displayFind(boolean isShow);
+
+    void displayFilter(boolean isShow);
+    
+    void loadOnTable(JTable table, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException;
+
+    void loadOnTable(JTable table, Object[][] data, String... columns) throws SQLException;
+    
+    /**
+     *
+     * @param table
+     * @param inputCallBack
+     * @param updateFieldHandler
+     * @param deleteRowsHandler
+     * @param columnSources
+     * @throws java.sql.SQLException
+     */
+    void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
+    
+    /**
+     *
+     * @param table
+     * @param inputCallBack
+     * @param updateFieldHandler
+     * @param deleteRowsHandler
+     * @param mapper
+     * @throws java.sql.SQLException
+     */
+    void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldMapper mapper) throws SQLException ;
+    
+    /**
+     *
+     * @param container
+     * @param inputCallBack
+     * @param renderer
+     * @param updateFieldHandler
+     * @param columnSources
+     * @param deleteRowsHandler
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
+    
+    /**
+     *
+     * @param container
+     * @param inputCallBack
+     * @param renderer
+     * @param updateFieldHandler
+     * @param deleteRowHandler
+     * @param mapper
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException ;
+}
