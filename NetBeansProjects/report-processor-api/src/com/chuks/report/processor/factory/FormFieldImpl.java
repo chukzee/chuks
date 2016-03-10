@@ -6,11 +6,62 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.IFormField;
+import com.chuks.report.processor.Source;
+import java.util.Set;
+import javax.swing.JComponent;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public class FormFieldImpl implements IFormField{
+    private final String accessible_name;
+    private final Object old_value;
+    private final Object value;
+    private final JComponent comp;
+    private Source[] sources = new Source[0];
     
+    FormFieldImpl(String accessible_name, JComponent comp, Object old_value, Object value){
+        this.accessible_name =accessible_name;
+        this.old_value = old_value;
+        this.value = value;
+        this.comp = comp;
+    }
+
+    void setSources(Set srcs){
+       if(srcs==null)
+           return;
+       srcs.toArray(this.sources);
+    }
+    
+    void setSources(Source[] srcs){
+       if(srcs==null)
+           return;
+       this.sources = srcs;
+    }
+    
+    @Override
+    public Object getValue() {
+        return value;
+    }
+
+    @Override
+    public Object getOldValue() {
+        return old_value;
+    }
+
+    @Override
+    public String getAccessibleName() {
+        return accessible_name;
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return comp;
+    }
+
+    @Override
+    public Source[] sources() {
+        return sources;
+    }
 }

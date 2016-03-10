@@ -17,7 +17,7 @@ import java.util.Set;
 
 class TableFieldImpl implements ITableField{
     private final String name;
-    private Source[] sources = new Source[0];
+    private final Source[] sources = new Source[0];
     private Row row;
     private final Object old_value;
     private final Object value;

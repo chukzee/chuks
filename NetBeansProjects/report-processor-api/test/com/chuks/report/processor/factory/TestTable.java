@@ -104,7 +104,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 155, Short.MAX_VALUE)
+            .addGap(0, 144, Short.MAX_VALUE)
         );
 
         getContentPane().add(jPanel1);
@@ -119,7 +119,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 98, Short.MAX_VALUE)
+            .addGap(0, 102, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab2", jPanel2);
@@ -145,7 +145,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 121, Short.MAX_VALUE)
+            .addGap(0, 125, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab3", jPanel3);
@@ -202,7 +202,7 @@ public class TestTable extends javax.swing.JFrame {
                         }
                         return field.srcValueAt(0);
                     }
-                }, new UpdateFieldHandler() {
+                }, new UpdateTableHandler() {
 
                     @Override
                     public void doUpdate(ActionSQL a, TableFieldChange f) {

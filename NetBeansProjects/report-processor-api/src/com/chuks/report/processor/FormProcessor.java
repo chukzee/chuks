@@ -33,9 +33,9 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
 
     void bind(JLabel label, TextBindHandler handler);
 
-    Form loadOnForm(FormFieldMapper mapper, FormControl... controls) throws SQLException;
+    Form loadOnForm(FormFieldCallBack callBack, FormFieldMapper mapper, FormControl... controls) throws SQLException;
 
-    Form loadOnForm(FormFieldMapper mapper, JControllerPane controllers_pane) throws SQLException;
+    Form loadOnForm(FormFieldCallBack callBack, FormFieldMapper mapper, JControllerPane controllers_pane) throws SQLException;
 
     void showJNext(boolean display);
 

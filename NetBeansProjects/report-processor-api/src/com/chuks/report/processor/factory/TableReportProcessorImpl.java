@@ -37,7 +37,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override  //NOT YET TESTED
-    public void loadOnTable(JTable table, TableDataInputHandler dataInputHandler, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void loadOnTable(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         ReportTableModel tableModel = load0(table, dataInputHandler, updateFieldHandler, deleteRowHandler);
 
@@ -53,7 +53,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override  //NOT YET TESTED
-    public void loadOnTable(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void loadOnTable(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         if (container instanceof JTable) {
             throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");
@@ -80,7 +80,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     }
 
-    public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         TableDataInputImpl input = new TableDataInputImpl(jdbcSettings);//come back;
         input = (TableDataInputImpl) dataInputHandler.onInput(input);
@@ -92,8 +92,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
 
         List list = new ArrayList();
-        for (int i = 0; i < input.getData().length; i++) {
-            list.add(input.getData()[i]);
+        for (Object[] data : input.getData()) {
+            list.add(data);
         }
         ReportTableModel tableModel = new ReportTableModel(null,
                 updateFieldHandler, deleteRowHandler,
@@ -109,7 +109,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void loadOnTable(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         List<Object[]> list = new ArrayList();
         list.addAll(Arrays.asList(dbHelper.fetchArray()));
@@ -147,7 +147,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
         ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowHandler, columnSources);
         table.setModel(tableModel);
         setRowSorter(table);
@@ -155,17 +155,17 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
         loadOnTable(table, inputCallBack, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
-    public JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+    public JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
         return loadOnTable(container, inputCallBack, renderer, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
-    public JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, final TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    public JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, final TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
 
         if (container instanceof JTable) {
             throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");
@@ -311,10 +311,10 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         return -1;
     }
 
-    private ReportTableModel createTableModel(TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    private ReportTableModel createTableModel(TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
 
         if (inputCallBack == null) {
-            throw new NullPointerException("column input call back must not be null!");
+            throw new NullPointerException("Table field call back must not be null!");
         }
 
         //check is valid colum source names where provided
@@ -322,17 +322,16 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         for (int i = 0; i < columnSources.length; i++) {
             columns[i] = columnSources[i].fieldColumn();
             Object[] srcList = columnSources[i].getColumnSources().toArray();
-            for (int k = 0; k < srcList.length; k++) {
-                String col = (String) srcList[k];
+            for (Object srcList1 : srcList) {
+                String col = (String) srcList1;
                 String[] cols = dbHelper.getColumns(true); //get colums as they are. that is what we want here.
                 boolean found = false;
-                for (int n = 0; n < cols.length; n++) {
-                    if (cols[n].equalsIgnoreCase(col)) {
+                for (String col1 : cols) {
+                    if (col1.equalsIgnoreCase(col)) {
                         found = true;
                         break;
                     }
                 }
-
                 if (!found) {
                     throw new IllegalArgumentException("Missing column source. One or more columns source was not found. All column sources must be selected!");
                 }
@@ -358,7 +357,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     private List columnSourceList(Object[][] data, String[] colNames, TableFieldSource... columnSources) {
         List<Object[]> list = new ArrayList();
-        for (int row = 0; row < data.length; row++) {
+        for (Object[] data1 : data) {
             TableFieldGen[] cs = new TableFieldGen[columnSources.length];
             for (int j = 0; j < columnSources.length; j++) {
                 TableFieldSource new_col_src = new TableFieldSource();
@@ -367,9 +366,9 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 Object[] src_list = new_col_src.getColumnSources().toArray();
                 for (int k = 0; k < src_list.length; k++) {
                     String coln = (String) src_list[k];
-                    for (int col = 0; col < data[row].length; col++) {
+                    for (int col = 0; col < data1.length; col++) {
                         if (coln.equalsIgnoreCase(colNames[col])) {
-                            new_col_src.setValueAt(k, data[row][col]);
+                            new_col_src.setValueAt(k, data1[col]);
                             break;
                         }
                     }
@@ -713,7 +712,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private final ArrayList data = new ArrayList<>();
         private Object[][] backing_data;
         TableFieldCallBack inputCallBack;
-        private UpdateFieldHandler updateFieldHandler;
+        private UpdateTableHandler updateFieldHandler;
         private DeleteRowHandler deleteRowHandler;
         private String select_sql;
         private TableFieldSource[] fieldSources;
@@ -726,7 +725,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
 
         ReportTableModel(TableFieldCallBack inputCallBack,
-                UpdateFieldHandler updateFieldHandler,
+                UpdateTableHandler updateFieldHandler,
                 DeleteRowHandler deleteRowHandler,
                 String select_sql,
                 Map<String, Param> select_params,
@@ -763,9 +762,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
                 stmt = conn.prepareStatement(select_sql);
                 Set<Map.Entry<String, Param>> e = select_params.entrySet();
-                Iterator ie = e.iterator();
-                while (ie.hasNext()) {
-                    Map.Entry<String, Param> entry = (Map.Entry<String, Param>) ie.next();
+                for (Map.Entry<String, Param> entry : e) {
                     stmt.setObject(Integer.parseInt(entry.getKey()), entry.getValue().getValue());
                 }
                 rs = stmt.executeQuery();
