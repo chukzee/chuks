@@ -5,8 +5,6 @@
  */
 package com.chuks.report.processor;
 
-import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.text.SimpleDateFormat;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -18,29 +16,25 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import com.chuks.report.processor.entry.FieldType;
-import com.chuks.report.processor.sql.helper.DBDeletor;
-import com.chuks.report.processor.sql.helper.DBHelper;
-import com.chuks.report.processor.sql.helper.DBInsertor;
-import com.chuks.report.processor.sql.helper.DBSelector;
-import com.chuks.report.processor.sql.helper.DBUpdater;
+import com.chuks.report.processor.factory.ActionSQLImpl;
 import com.chuks.report.processor.util.JDBCSettings;
+import javax.swing.JDialog;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public abstract class AbstractUIDBProcessor<T> extends Validator implements UIDBProcessor{
+public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements UIDBProcessor, IValidator {
 
+    final private Validator validator = new Validator();
+    private boolean dataPollingEnabled;
+    private final float DEFAULT_POLL_INTERVAL = 10;//Seconds
+    private float dataPollingInterval = DEFAULT_POLL_INTERVAL;
 
-    public DBHelper dbHelper;
-    public JDBCSettings jdbcSettings;
-    public boolean isAutoCommit = true;
-    
-    public AbstractUIDBProcessor(JDBCSettings jdbcSettings){
-        this.jdbcSettings = jdbcSettings;
-        dbHelper = new DBHelper(this);
+    public AbstractUIDBProcessor(JDBCSettings jdbcSettings) {
+        super(jdbcSettings);
     }
-    
+
     @Override
     public void setDBSettings(JDBCSettings jdbcSettings) {
         this.jdbcSettings = jdbcSettings;
@@ -52,92 +46,103 @@ public abstract class AbstractUIDBProcessor<T> extends Validator implements UIDB
     }
 
     @Override
-    public void transactionBegins() throws SQLException{ 
-        isAutoCommit = false;
-        dbHelper.setAutoCommit(isAutoCommit);
+    public void setDataPollingEnabled(boolean isPoll) {
+        dataPollingEnabled = isPoll;
     }
 
     @Override
-    public void transactionEnds() throws SQLException{ 
-        isAutoCommit = true;
-        commit();//commit changes
-        dbHelper.setAutoCommit(isAutoCommit);
-        dbHelper.removeTransantionConnections();
+    public boolean getDataPollingEnabled() {
+        return dataPollingEnabled;
     }
 
     @Override
-    public void commit() throws SQLException{
-        dbHelper.commit();
+    public void setDataPollingInterval(float seconds) {
+        dataPollingInterval = seconds;
     }
 
     @Override
-    public void rollback() throws SQLException{
-        dbHelper.rollback();
+    public float getDataPollInterval() {
+        return dataPollingInterval;
     }
 
     @Override
-    public void close() throws SQLException{
-        dbHelper.close();
+    public void runAllValidations(boolean s) {
+        validator.runAllValidations(s);
     }
 
     @Override
-    public void rollback(Savepoint save_point) throws SQLException{
-        dbHelper.rollback(save_point);
+    public boolean isRunAllValidations() {
+        return validator.isRunAllValidations();
     }
 
     @Override
-    public Savepoint setSavepoint() throws SQLException{
-        return dbHelper.setSavepoint();
+    public boolean validateEmpty(JComponent... comps) {
+        return validator.validateEmpty(comps);
     }
 
     @Override
-    public Savepoint setSavepoint(String name) throws SQLException{
-        return dbHelper.setSavepoint(name);
+    public boolean validateEmpty(JDialog dialog) {
+        return validator.validateEmpty(dialog);
     }
 
     @Override
-    public DBDeletor deleteFrom(String table) throws SQLException {
-        return dbHelper.DBDeletor().from(table);
+    public boolean validateEmpty(ErrorCallBack errCall, JComponent... comps) {
+        return validator.validateEmpty(errCall, comps);
     }
 
     @Override
-    public DBSelector selectFrom(String table) throws SQLException {
-        return dbHelper.DBSelector().from(table);
+    public boolean validateEmpty(ErrorCallBack errCall, JDialog dialog) {
+        return validator.validateEmpty(errCall, dialog);
     }
 
     @Override
-    public DBSelector selectDistictFrom(String table) throws SQLException {
-        return dbHelper.DBSelectorDistinct().from(table);
+    public boolean validateNumeric(JComponent... comps) {
+        return validator.validateNumeric(comps);
     }
 
     @Override
-    public DBUpdater update(String table) throws SQLException {
-        return dbHelper.DBUpdater().table(table);
+    public boolean validateNumeric(JDialog dialog) {
+        return validator.validateNumeric(dialog);
     }
 
     @Override
-    public DBInsertor insert() {
-        return dbHelper.DBInsertor();
+    public boolean validateNumeric(ErrorCallBack errCall, JComponent... comps) {
+        return validator.validateNumeric(errCall, comps);
     }
 
     @Override
-    public DBUpdater update() {
-        return dbHelper.DBUpdater();
+    public boolean validateNumeric(ErrorCallBack errCall, JDialog dialog) {
+        return validator.validateNumeric(errCall, dialog);
     }
 
     @Override
-    public DBSelector select() {
-        return dbHelper.DBSelector();
+    public boolean validateNumber(JComponent... comps) {
+        return validator.validateNumber(comps);
     }
 
     @Override
-    public DBSelector selectDistinct() {
-        return dbHelper.DBSelectorDistinct();
+    public boolean validateNumber(JDialog dialog) {
+        return validator.validateNumber(dialog);
     }
 
     @Override
-    public DBDeletor delete() {
-        return dbHelper.DBDeletor();
+    public boolean validateNumber(ErrorCallBack errCall, JComponent... comps) {
+        return validator.validateNumber(errCall, comps);
+    }
+
+    @Override
+    public boolean validateNumber(ErrorCallBack errCall, JDialog dialog) {
+        return validator.validateNumber(errCall, dialog);
+    }
+
+    @Override
+    public boolean validateCustom(ValidationHandler vHandler, JComponent... comps) {
+        return validator.validateCustom(vHandler, comps);
+    }
+
+    @Override
+    public boolean validateCustom(ValidationHandler vHandler, JDialog dialog) {
+        return validator.validateCustom(vHandler, dialog);
     }
 
     @Override
@@ -154,9 +159,9 @@ public abstract class AbstractUIDBProcessor<T> extends Validator implements UIDB
         } else if (comp instanceof JLabel) {
             return convertTo(((JLabel) comp).getText(), type);
         } else if (comp instanceof JRadioButton) {
-            return convertTo(Boolean.valueOf(((JRadioButton) comp).isSelected()).toString(), type);//ok
+            return convertTo(Boolean.valueOf(((JRadioButton) comp).isSelected()).toString(), type);//ok - do not change
         } else if (comp instanceof JCheckBox) {
-            return convertTo(Boolean.valueOf(((JCheckBox) comp).isSelected()).toString(), type);//ok
+            return convertTo(Boolean.valueOf(((JCheckBox) comp).isSelected()).toString(), type);//ok - do not change
         } else if (comp instanceof JSpinner) {
             return convertTo(((JSpinner) comp).getValue().toString(), type);
         } else {
@@ -172,7 +177,7 @@ public abstract class AbstractUIDBProcessor<T> extends Validator implements UIDB
                 try {
                     return (T) Boolean.valueOf(str);
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of type " + type);
+                    throw new IllegalArgumentException("values " + str + " is not of type " + type);
                 }
             }
             case DATE_yyyy_MM_dd: {
@@ -180,7 +185,7 @@ public abstract class AbstractUIDBProcessor<T> extends Validator implements UIDB
                 try {
                     return (T) new SimpleDateFormat(format).parse(str);
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of date type with format " + format);
+                    throw new IllegalArgumentException("values " + str + " is not of date type with format " + format);
                 }
             }
             case DATE_yyyy_MM_dd_HH_mm_ss: {
@@ -188,35 +193,35 @@ public abstract class AbstractUIDBProcessor<T> extends Validator implements UIDB
                 try {
                     return (T) new SimpleDateFormat(format).parse(str);
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of date type with format " + format);
+                    throw new IllegalArgumentException("values " + str + " is not of date type with format " + format);
                 }
             }
             case DOUBLE: {
                 try {
                     return (T) Double.valueOf(str);
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of type " + type);
+                    throw new IllegalArgumentException("values " + str + " is not of type " + type);
                 }
             }
             case FLOAT: {
                 try {
                     return (T) Float.valueOf(str);
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of type " + type);
+                    throw new IllegalArgumentException("values " + str + " is not of type " + type);
                 }
             }
             case INTEGER: {
                 try {
                     return (T) Integer.valueOf(str);
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of type " + type);
+                    throw new IllegalArgumentException("values " + str + " is not of type " + type);
                 }
             }
             case STRING: {
                 try {
                     return (T) str;
                 } catch (Exception ex) {
-                    throw new IllegalArgumentException("values "+str+" is not of type " + type);
+                    throw new IllegalArgumentException("values " + str + " is not of type " + type);
                 }
             }
 

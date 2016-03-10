@@ -10,6 +10,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.chuks.report.processor.*;
 import com.chuks.report.processor.util.JDBCSettings;
+import java.awt.Component;
+import java.util.EventObject;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
 
 /**
  *
@@ -150,7 +159,7 @@ public class TestTable extends javax.swing.JFrame {
     private void cmdLoadOnTable1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdLoadOnTable1ActionPerformed
 
         try {
-
+            
             t.select()
                     .columns("ID", "CASH", "AMOUNT", "NAME", "AGE")
                     .from("test_table_1")
@@ -222,7 +231,24 @@ public class TestTable extends javax.swing.JFrame {
                 }, s1, s2);
 
                 t.close();
+                ListSelectionModel l = new DefaultListSelectionModel() ;
+                l.addListSelectionListener(new ListSelectionListener() {
 
+                    @Override
+                    public void valueChanged(ListSelectionEvent e) {
+                        //JTable table = (JTable) e.getSource();
+                        int selected_row = jTable1.getSelectedRow();
+                        if(selected_row==-1)
+                            return;
+                        System.out.println(selected_row);
+                        System.out.println("t v at "+jTable1.getValueAt(selected_row, 0));
+                        int m_r=jTable1.convertRowIndexToModel(selected_row);
+                        int m_c=jTable1.convertColumnIndexToModel(0);
+                        System.out.println("m v at "+jTable1.getModel().getValueAt(m_r, m_c));
+                    }
+                });
+                jTable1.setSelectionModel(l);
+                
             } catch (SQLException ex) {
                 Logger.getLogger(TestTable.class.getName()).log(Level.SEVERE, null, ex);
             }

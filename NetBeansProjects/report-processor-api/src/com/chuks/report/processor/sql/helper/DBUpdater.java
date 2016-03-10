@@ -5,6 +5,8 @@
  */
 package com.chuks.report.processor.sql.helper;
 
+import com.chuks.report.processor.AbstractUIDBProcessor;
+import com.chuks.report.processor.UIDBProcessor;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JComponent;
@@ -39,7 +41,14 @@ public class DBUpdater {
     }
 
     public DBUpdater set(String column, JComponent comp, FieldType field_ype) {
-        usms = usfs.set(field(column), dBHelper.prc.getValue(comp, field_ype));
+        UIDBProcessor d;
+        if (dBHelper.prc instanceof UIDBProcessor) {
+            d = (UIDBProcessor) dBHelper.prc;
+        } else {
+            d = new AbstractUIDBProcessor(null) {
+            };
+        }
+        usms = usfs.set(field(column), d.getValue(comp, field_ype));
         return this;
     }
 

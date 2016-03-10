@@ -5,6 +5,8 @@
  */
 package com.chuks.report.processor.sql.helper;
 
+import com.chuks.report.processor.AbstractUIDBProcessor;
+import com.chuks.report.processor.UIDBProcessor;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,7 +38,15 @@ public class DBInsertor {
     }
 
     public DBInsertor value(String column, JComponent comp, FieldType field_ype) {
-        mapComp.put(column, dbHelper.prc.getValue(comp, field_ype));
+        UIDBProcessor d;
+        if (dbHelper.prc instanceof UIDBProcessor) {
+            d = (UIDBProcessor) dbHelper.prc;
+        } else {
+            d = new AbstractUIDBProcessor(null) {
+            };
+        }
+        mapComp.put(column, d.getValue(comp, field_ype));
+
         return this;
     }
 
@@ -71,7 +81,7 @@ public class DBInsertor {
     }
 
     public void into(String table_name) throws SQLException {
-        
+
         dbHelper.conn = dbHelper.getConnection(dbHelper.prc.getDBSettings());
         dbHelper.conn.setAutoCommit(false);
         DSLContext dctx = DSL.using(dbHelper.conn);

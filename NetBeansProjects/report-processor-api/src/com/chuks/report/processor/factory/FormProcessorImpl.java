@@ -19,9 +19,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.AbstractUIDBProcessor;
+import com.chuks.report.processor.bind.ListBindHanler;
 import com.chuks.report.processor.FormFieldMapper;
 import com.chuks.report.processor.Form;
 import com.chuks.report.processor.FormProcessor;
+import com.chuks.report.processor.bind.TextBindHandler;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JTextField;
 
 
 /**
@@ -81,6 +86,26 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
     @Override
     public void showJReset(boolean display) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+    }
+
+    @Override
+    public void bind(JList list, ListBindHanler handler) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+    }
+
+    @Override
+    public void bind(JComboBox combo, ListBindHanler handler) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+    }
+
+    @Override
+    public void bind(JTextField textField, TextBindHandler handler) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+    }
+
+    @Override
+    public void bind(JLabel label, TextBindHandler handler) {
         System.err.println("REMIND: Auto generated method body is not yet implemented");
     }
 

@@ -34,6 +34,26 @@ public interface TableProcessor extends UIDBProcessor {
     /**
      *
      * @param table
+     * @param dataInputHandler
+     * @param updateFieldHandler
+     * @param deleteRowsHandler
+     * @throws java.sql.SQLException
+     */
+    void loadOnTable(JTable table, TableDataInputHandler dataInputHandler, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
+    
+    /**
+     *
+     * @param container
+     * @param dataInputHandler
+     * @param updateFieldHandler
+     * @param deleteRowsHandler
+     * @throws java.sql.SQLException
+     */
+    void loadOnTable(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
+    
+    /**
+     *
+     * @param table
      * @param inputCallBack
      * @param updateFieldHandler
      * @param deleteRowsHandler

@@ -8,6 +8,7 @@ package com.chuks.report.processor.factory;
 import com.chuks.report.processor.ITableField;
 import com.chuks.report.processor.Row;
 import com.chuks.report.processor.Source;
+import java.util.Set;
 
 /**
  *
@@ -15,47 +16,65 @@ import com.chuks.report.processor.Source;
  */
 
 class TableFieldImpl implements ITableField{
+    private final String name;
+    private Source[] sources = new Source[0];
+    private Row row;
+    private final Object old_value;
+    private final Object value;
+    private final int row_index;
+    private final int col_index;
 
+    TableFieldImpl(String name, Object old_value, Object value, int row_index, int col_index){
+        this.name =name;
+        this.old_value = old_value;
+        this.value = value;
+        this.row_index = row_index;
+        this.col_index = col_index;
+    }
+    
+    void setRow(Row row){
+        this.row = row;
+    }
+    
+    void setSource(Set srcSet){
+        if(srcSet==null)
+            return;
+        srcSet.toArray(sources);
+    }
+    
     @Override
     public Object getValue() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return null;
+        return value;
     }
 
     @Override
     public Object getOldValue() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return null;
+        return old_value;
     }
 
     @Override
     public String getName() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return null;
+        return name;
     }
 
     @Override
     public Source[] sources() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return null;
+        return sources;
     }
 
     @Override
     public Row getRow() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return null;
+        return row;
     }
 
     @Override
     public int rowIndex() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return 0;
+        return row_index;
     }
 
     @Override
     public int columIndex() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return 0;
+        return col_index;
     }
     
 }

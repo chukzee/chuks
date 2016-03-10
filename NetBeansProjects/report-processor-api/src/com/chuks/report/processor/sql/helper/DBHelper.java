@@ -4,6 +4,7 @@
  */
 package com.chuks.report.processor.sql.helper;
 
+import com.chuks.report.processor.ActionSQL;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -31,7 +32,7 @@ public class DBHelper {
 
     Connection conn;
     static Map<Integer, DataSource> weakDataSourceMap;
-    UIDBProcessor prc;
+    ActionSQL prc;
     SelectSelectStep<Record> glb_sss;
     Condition glb_condition;
     private boolean autoCommit = true;
@@ -41,6 +42,7 @@ public class DBHelper {
     static private final Map<Integer, Connection> transactConns = Collections.synchronizedMap(new HashMap());
     static private final Map<Integer, Connection> nonTranConns = Collections.synchronizedMap(new HashMap());
     private final int CONN_VALIDITY_TIMEOUT = 30000;
+    private JDBCSettings jdbc_setting;
 
     static {
         try {
@@ -50,7 +52,6 @@ public class DBHelper {
         }
     }
     
-    private JDBCSettings jdbc_setting;
 
     private String arrStrAppend(NameValue[] arr) {
         if (arr == null || arr.length == 0) {
@@ -169,7 +170,7 @@ public class DBHelper {
         return cols;
     }
 
-    public DBHelper(UIDBProcessor prc) {
+    public DBHelper(ActionSQL prc) {
         this.prc = prc;
     }
 

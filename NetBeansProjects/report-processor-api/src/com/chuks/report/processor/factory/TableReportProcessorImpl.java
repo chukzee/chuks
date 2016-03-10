@@ -36,19 +36,92 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         super(jdbcSettings);
     }
 
+    @Override  //NOT YET TESTED
+    public void loadOnTable(JTable table, TableDataInputHandler dataInputHandler, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+
+        ReportTableModel tableModel = load0(table, dataInputHandler, updateFieldHandler, deleteRowHandler);
+
+        if (tableModel == null) {
+            return;
+        }
+
+        table.setModel(tableModel);
+
+        setRowSorter(table);
+        relayoutTableReport(table);
+
+    }
+
+    @Override  //NOT YET TESTED
+    public void loadOnTable(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+
+        if (container instanceof JTable) {
+            throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");
+        }
+
+        //set the table parameter to null in the meantime. we shall create it later
+        ReportTableModel tableModel = load0(null, dataInputHandler, updateFieldHandler, deleteRowHandler);
+
+        if (tableModel == null) {
+            return;
+        }
+
+        //we promised to create the table later
+        JTable table = createTable(renderer, tableModel);//now create the table
+
+        table.setModel(tableModel);
+
+        JScrollPane scrollPane1 = new JScrollPane();
+        scrollPane1.setViewportView(table);
+        container.add(scrollPane1);
+
+        setRowSorter(table);
+        relayoutTableReport(table);
+
+    }
+
+    public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+
+        TableDataInputImpl input = new TableDataInputImpl(jdbcSettings);//come back;
+        input = (TableDataInputImpl) dataInputHandler.onInput(input);
+        this.setDataPollingEnabled(input.isPollingEnabled());
+        this.setDataPollingInterval(input.getPollingInterval());
+
+        if (input.getData() == null) {
+            return null;
+        }
+
+        List list = new ArrayList();
+        for (int i = 0; i < input.getData().length; i++) {
+            list.add(input.getData()[i]);
+        }
+        ReportTableModel tableModel = new ReportTableModel(null,
+                updateFieldHandler, deleteRowHandler,
+                dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
+                input.getDBSettings());
+
+        tableModel.setColumnNames(input.getColumnNames());
+        tableModel.setTableFieldSource(null);
+        tableModel.addRangeRowData(list);
+        tableModel.setDataInputHandler(dataInputHandler);
+
+        return tableModel;
+    }
+
     @Override
-    public void loadOnTable(JTable table, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException {
+    public void loadOnTable(JTable table, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         List<Object[]> list = new ArrayList();
         list.addAll(Arrays.asList(dbHelper.fetchArray()));
         ReportTableModel tableModel = new ReportTableModel(null, updateFieldHandler,
-                deleteRowsHandler, dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
+                deleteRowHandler, dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
                 dbHelper.getJdbcSetting());
         tableModel.setColumnNames(dbHelper.getColumns(isColumnAsIs));
         tableModel.setTableFieldSource(null);
         tableModel.addRangeRowData(list);
 
         table.setModel(tableModel);
+
         setRowSorter(table);
         relayoutTableReport(table);
     }
@@ -74,16 +147,16 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException {
-        ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowsHandler, columnSources);
+    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+        ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowHandler, columnSources);
         table.setModel(tableModel);
         setRowSorter(table);
         relayoutTableReport(table);
     }
 
     @Override
-    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldMapper mapper) throws SQLException {
-        loadOnTable(table, inputCallBack, updateFieldHandler, deleteRowsHandler, mapper.getFieldSources());
+    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+        loadOnTable(table, inputCallBack, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
@@ -100,6 +173,23 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         final ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowHandler, columnSources);
 
+        JTable table = createTable(renderer, tableModel);
+
+        table.setModel(tableModel);
+        setRowSorter(table);
+        JScrollPane scrollPane1 = new JScrollPane();
+        scrollPane1.setViewportView(table);
+        container.add(scrollPane1);
+        relayoutTableReport(table);
+        return table;
+    }
+
+    private JTable createTable(final TableFieldRenderer renderer, final ReportTableModel tableModel) {
+
+        if (renderer == null) {
+            return new JTable();
+        }
+
         JTable table = new JTable() {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
@@ -113,13 +203,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             }
 
         };
-
-        table.setModel(tableModel);
-        setRowSorter(table);
-        JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setViewportView(table);
-        container.add(scrollPane1);
-        relayoutTableReport(table);
         return table;
     }
 
@@ -144,7 +227,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 rmv = table;
             }
         } else {
-            throw new IllegalStateException("Not parent found - JTable must have a parent container!");
+            throw new IllegalStateException("No parent found - JTable must have a parent container!");
         }
 
         bounds = rmv.getBounds();
@@ -228,7 +311,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         return -1;
     }
 
-    private ReportTableModel createTableModel(TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException {
+    private ReportTableModel createTableModel(TableFieldCallBack inputCallBack, UpdateFieldHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
 
         if (inputCallBack == null) {
             throw new NullPointerException("column input call back must not be null!");
@@ -263,7 +346,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         List list = columnSourceList(data, colNames, columnSources);
 
         ReportTableModel tableModel = new ReportTableModel(inputCallBack,
-                updateFieldHandler, deleteRowsHandler,
+                updateFieldHandler, deleteRowHandler,
                 dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
                 dbHelper.getJdbcSetting());
 
@@ -359,7 +442,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             return;
         }
 
-        if (model.deleteRowsHandler == null) {
+        if (model.deleteRowHandler == null) {
             return;
         }
 
@@ -404,7 +487,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             return;
         }
 
-        if (model.deleteRowsHandler == null) {
+        if (model.deleteRowHandler == null) {
             return;
         }
 
@@ -439,15 +522,18 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         RowSelection r = new RowSelection() {
             private Object[][] selData;
             private ITableField[][] fields;
+            Row[] rows;
 
             @Override
             public Object[][] getData() {
                 if (selData == null) {
-                    int[] rows = table.getSelectedRows();
-                    selData = new Object[rows.length][table.getColumnCount()];
-                    for (int r = 0; r < rows.length; r++) {
-                        for (int col = 0; col < table.getColumnCount(); col++) {
-                            selData[r][col] = model.backing_data[rows[r]][col];
+                    int[] seleceted_rows = table.getSelectedRows();
+                    selData = new Object[seleceted_rows.length][table.getColumnCount()];
+                    for (int r = 0; r < seleceted_rows.length; r++) {
+                        for (int c = 0; c < table.getColumnCount(); c++) {
+                            int row = table.convertRowIndexToModel(seleceted_rows[r]);
+                            int col = table.convertColumnIndexToModel(c);
+                            selData[r][c] = model.backing_data[row][col];
                         }
                     }
                 }
@@ -455,12 +541,15 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             }
 
             @Override
-            public Object getValueAt(int index_of_selection, String columnName) {
-                int index = model.findColumn(columnName);
-                if (index < 0) {
+            public Object getValueAt(int index_of_row, String columnName) {
+                int col_index = model.findColumn(columnName);
+                if (col_index < 0) {
                     throw new java.lang.ArrayIndexOutOfBoundsException("specified column name not found - " + columnName);
                 }
-                return getData()[index_of_selection][index];
+
+                //int row = table.convertRowIndexToModel(index_of_row);//not required here
+                //int col = table.convertColumnIndexToModel(index);//not required here
+                return getData()[index_of_row][col_index];
             }
 
             @Override
@@ -470,43 +559,115 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
             @Override
             public ITableField[][] getFields() {
-                System.err.println("REMIND: Auto generated method body is not yet implemented");
-                return null;
+                if (selData == null) {
+                    getData();
+                }
+                if (fields == null) {
+                    fields = new ITableField[selData.length][selData[0].length];//please come back to comfirm
+                    int[] seleceted_rows = table.getSelectedRows();
+                    rows = new Row[seleceted_rows.length];//important! store the row
+
+                    for (int i = 0; i < seleceted_rows.length; i++) {
+                        RowImpl row = new RowImpl();
+                        for (int j = 0; j < selData[i].length; j++) {
+
+                            int row_index = table.convertRowIndexToModel(seleceted_rows[i]);//important!
+                            int col_index = table.convertColumnIndexToModel(j);//important!
+
+                            String name = model.getColumnName(col_index);
+                            Object old_value = model.getOldValueAt(row_index, col_index);
+                            Object value = model.getValueAt(row_index, col_index);
+
+                            TableFieldImpl f = new TableFieldImpl(name, old_value, value, row_index, col_index);
+                            f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col_index].getColumnSources() : null);
+                            f.setRow(row);
+                            row.setFields(fields[i]);
+                            fields[i][j] = f;
+                        }
+
+                        rows[i] = row;//important
+                    }
+                }
+
+                return fields;
             }
 
             @Override
             public Row[] getRows() {
-                
-                System.err.println("REMIND: Auto generated method body is not yet implemented");
-                return null;
+                if (rows == null) {
+                    getFields();
+                }
+                return rows;
             }
 
         };
 
-        model.deleteRowsHandler.doDelete(new ActionSQLImpl(dbHelper), r);
+        model.deleteRowHandler.doDelete(new ActionSQLImpl(dbHelper), r);
 
         model.refresh(table);
     }
 
-    private void performUpdateOperation(JTable table) {
-        TableReportProcessorImpl.ReportTableModel model = checkModel(table);
+    private void performUpdateOperation(final JTable table) {
+        final TableReportProcessorImpl.ReportTableModel model = checkModel(table);
         if (model != null) {
             return;
         }
 
         //perform the update operation
         TableFieldChange f = new TableFieldChange() {
+            TableFieldImpl[] fields;
 
             @Override
             public ITableField[] getChanges() {
-                System.err.println("REMIND: Auto generated method body is not yet implemented");
-                return null;
+                if (fields == null) {
+                    fields = new TableFieldImpl[model.oldFieldVal.size()];
+                    Set<Map.Entry<String, Object>> e = model.oldFieldVal.entrySet();
+                    Iterator<Map.Entry<String, Object>> itr = e.iterator();
+                    int i = -1;
+                    while (itr.hasNext()) {
+                        Map.Entry<String, Object> entry = itr.next();
+                        String key = entry.getKey();
+                        int index = key.indexOf('_');
+                        int row = table.convertRowIndexToModel(Integer.parseInt(key.substring(0, index)));//important!
+                        int col = table.convertColumnIndexToModel(Integer.parseInt(key.substring(index + 1)));//important!
+                        String name = model.getColumnName(col);
+                        Object old_value = model.getOldValueAt(row, col);
+                        Object value = model.getValueAt(row, col);
+                        TableFieldImpl f = new TableFieldImpl(name, old_value, value, row, col);
+                        f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col].getColumnSources() : null);
+                        i++;
+                        fields[i] = f;
+                    }
+
+                    for (i = 0; i < fields.length; i++) {
+                        //rowIndex is already converted. see above.
+                        int row = fields[i].rowIndex();//already the conversion - no need for calling table.convertRowIndexToModel() here 
+                        RowImpl rowImpl = new RowImpl();
+                        TableFieldImpl[] rowFieds = new TableFieldImpl[model.getColumnCount()];
+                        for (int c = 0; c < model.getColumnCount(); c++) {
+                            int col = table.convertColumnIndexToModel(c);//convert column index.
+                            String name = model.getColumnName(col);
+                            Object old_value = model.getOldValueAt(row, col);
+                            Object value = model.getValueAt(row, col);
+                            TableFieldImpl f = new TableFieldImpl(name, old_value, value, row, col);
+                            f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col].getColumnSources() : null);
+                            rowFieds[c] = f;
+                            rowImpl.setFields(rowFieds);
+                            fields[i].setRow(rowImpl);
+                        }
+
+                    }
+
+                }
+                return fields;
             }
 
             @Override
             public int count() {
-                System.err.println("REMIND: Auto generated method body is not yet implemented");
-                return 0;
+                if (fields == null) {
+                    getChanges();
+                }
+                return fields.length;
             }
 
         };
@@ -553,27 +714,33 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private Object[][] backing_data;
         TableFieldCallBack inputCallBack;
         private UpdateFieldHandler updateFieldHandler;
-        private DeleteRowHandler deleteRowsHandler;
+        private DeleteRowHandler deleteRowHandler;
         private String select_sql;
         private TableFieldSource[] fieldSources;
         private Map<String, Param> select_params;
         private JDBCSettings jdbc_settings;
+        private Map<String, Object> oldFieldVal = Collections.synchronizedMap(new HashMap());
+        private TableDataInputHandler dataInputHandler;
 
         private ReportTableModel() {
         }
 
         ReportTableModel(TableFieldCallBack inputCallBack,
                 UpdateFieldHandler updateFieldHandler,
-                DeleteRowHandler deleteRowsHandler,
+                DeleteRowHandler deleteRowHandler,
                 String select_sql,
                 Map<String, Param> select_params,
                 JDBCSettings jdbc_settings) {
             this.inputCallBack = inputCallBack;
             this.updateFieldHandler = updateFieldHandler;
-            this.deleteRowsHandler = deleteRowsHandler;
+            this.deleteRowHandler = deleteRowHandler;
             this.select_sql = select_sql;
             this.select_params = select_params;
             this.jdbc_settings = jdbc_settings;
+        }
+
+        private void setDataInputHandler(TableDataInputHandler dataInputHandler) {
+            this.dataInputHandler = dataInputHandler;
         }
 
         private void refresh(JTable table) {
@@ -682,6 +849,19 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             }
         }
 
+        TableFieldSource[] getFieldSources() {
+            return this.fieldSources;
+        }
+
+        Object getOldValueAt(int row, int col) {
+            return this.oldFieldVal.get(row + "_" + col);
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return true;
+        }
+
         @Override
         public int getColumnCount() {
             return columnNames.length;
@@ -715,18 +895,20 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (inputCallBack == null) {
-                ((Object[]) data.get(rowIndex))[columnIndex] = aValue;
-            } else {
-                ((TableFieldGen[]) data.get(rowIndex))[columnIndex] = (TableFieldGen) aValue;
+            String key = rowIndex + "_" + columnIndex;
+            if (!oldFieldVal.containsKey(key)) {
+                oldFieldVal.put(key, backing_data[rowIndex][columnIndex]);
             }
+
+            backing_data[rowIndex][columnIndex] = aValue;
 
             fireTableCellUpdated(rowIndex, columnIndex);
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            return getValueAt(0, columnIndex).getClass();
+            return Object.class;
+            //return getValueAt(0, columnIndex).getClass();
         }
 
         private void setTableFieldSource(TableFieldSource[] columnSources) {
@@ -737,6 +919,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             int size = data.size();
             data.clear();
             backing_data = null;//important!
+            oldFieldVal.clear();
+
             fireTableRowsDeleted(0, size - 1);
         }
 

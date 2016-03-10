@@ -7,10 +7,8 @@ package com.chuks.report.processor;
 
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import com.chuks.report.processor.sql.helper.DBDeletor;
-import com.chuks.report.processor.sql.helper.DBInsertor;
-import com.chuks.report.processor.sql.helper.DBSelector;
-import com.chuks.report.processor.sql.helper.DBUpdater;
+import com.chuks.report.processor.sql.helper.*;
+import com.chuks.report.processor.util.JDBCSettings;
 
 /**
  *
@@ -51,5 +49,7 @@ public interface ActionSQL {
     public DBSelector selectDistinct();
 
     public DBDeletor delete();
+
+    public JDBCSettings getDBSettings();
 
 }
