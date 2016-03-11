@@ -83,7 +83,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         TableDataInputImpl input = new TableDataInputImpl(jdbcSettings);//come back;
-        input = (TableDataInputImpl) dataInputHandler.onInput(input);
+        dataInputHandler.onInput(input);
         this.setDataPollingEnabled(input.isPollingEnabled());
         this.setDataPollingInterval(input.getPollingInterval());
 
@@ -317,7 +317,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             throw new NullPointerException("Table field call back must not be null!");
         }
 
-        //check is valid colum source names where provided
+        //check if valid column source names where provided
         String[] columns = new String[columnSources.length];
         for (int i = 0; i < columnSources.length; i++) {
             columns[i] = columnSources[i].fieldColumn();
@@ -885,8 +885,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 if (backing_data[row][col] != null) {
                     return backing_data[row][col];
                 }
-                TableFieldGen field = ((TableFieldGen[]) data.get(row))[col];
-                return backing_data[row][col] = inputCallBack.onBeforeAdd(field, row, col);
+                TableFieldGen fieldGen = ((TableFieldGen[]) data.get(row))[col];
+                return backing_data[row][col] = inputCallBack.onBeforeInput(fieldGen, row, col);
             }
         }
 

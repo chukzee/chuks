@@ -10,5 +10,5 @@ package com.chuks.report.processor;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public interface FormDataInputHandler {
-    FormDataInput onInput(FormDataInput input);
+    void onInput(FormDataInput input);
 }

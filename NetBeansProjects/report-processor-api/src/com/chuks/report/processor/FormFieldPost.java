@@ -9,8 +9,11 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface FormFieldChange {
+public interface FormFieldPost {
     
+    IFormField [] getNew();
     IFormField [] getChanges();
+    boolean isNewEntry();
+    boolean isUpdate();
     int count();
 }

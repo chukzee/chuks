@@ -15,17 +15,15 @@ import com.chuks.report.processor.form.controls.JControllerPane;
 import java.sql.SQLException;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.AbstractUIDBProcessor;
-import com.chuks.report.processor.FormDataInput;
 import com.chuks.report.processor.bind.ListBindHanler;
 import com.chuks.report.processor.FormFieldMapper;
 import com.chuks.report.processor.FormDataInputHandler;
 import com.chuks.report.processor.FormFieldCallBack;
+import com.chuks.report.processor.FormFieldGen;
 import com.chuks.report.processor.FormProcessor;
-import com.chuks.report.processor.UpdateFormHandler;
-import com.chuks.report.processor.bind.ListDataInput;
+import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
@@ -34,18 +32,15 @@ import com.chuks.report.processor.form.controls.JSave;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JButton;
+import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JList;
-import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.ListModel;
 import javax.swing.text.JTextComponent;
 
@@ -60,7 +55,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     }
 
     @Override
-    public void formLoad(FormDataInputHandler dataInputHandler, UpdateFormHandler updateFieldHandler, FormControl... controls) throws SQLException {
+    public void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException {
         DefaultFormModel formModel = new FormModelBuilder()
                 .setDataInputHandler(dataInputHandler)
                 .setUpdateFormHandler(updateFieldHandler)
@@ -69,7 +64,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     }
 
     @Override
-    public void formLoad(FormDataInputHandler dataInputHandler, UpdateFormHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException {
+    public void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException {
         DefaultFormModel formModel = new FormModelBuilder()
                 .setDataInputHandler(dataInputHandler)
                 .setUpdateFormHandler(updateFieldHandler)
@@ -78,7 +73,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     }
 
     @Override
-    public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, UpdateFormHandler updateFieldHandler, FormControl... controls) throws SQLException {
+    public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException {
         DefaultFormModel formModel = new FormModelBuilder()
                 .setFormFieldCallBack(callBack)
                 .setFormFieldMapper(mapper)
@@ -89,7 +84,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     }
 
     @Override
-    public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, UpdateFormHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException {
+    public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException {
         DefaultFormModel formModel = new FormModelBuilder()
                 .setFormFieldCallBack(callBack)
                 .setFormFieldMapper(mapper)
@@ -101,7 +96,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     @Override
     public void bind(JList list, ListBindHanler handler) {
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
-        input = (ListDataInputImpl) handler.data(input);
+        handler.data(input);
 
         if (input.getData() == null) {
             return;
@@ -115,7 +110,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     @Override
     public void bind(JComboBox combo, ListBindHanler handler) {
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
-        input = (ListDataInputImpl) handler.data(input);
+        handler.data(input);
 
         if (input.getData() == null) {
             return;
@@ -133,7 +128,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     @Override
     public void bind(JTextField textField, TextBindHandler handler) {
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
-        input = (TextDataInputImpl) handler.data(input);
+        handler.data(input);
 
         if (input.getData() == null) {
             return;
@@ -147,7 +142,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     @Override
     public void bind(JLabel label, TextBindHandler handler) {
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
-        input = (TextDataInputImpl) handler.data(input);
+        handler.data(input);
 
         if (input.getData() == null) {
             return;
@@ -161,7 +156,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     class FormModelBuilder {
 
         private FormDataInputHandler dataInputHandler;
-        private UpdateFormHandler updateFieldHandler;
+        private FormPostHandler updateFieldHandler;
         private FormControl[] controls;
         private JControllerPane controllers_pane;
         private FormFieldCallBack callBack;
@@ -172,7 +167,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return this;
         }
 
-        private FormModelBuilder setUpdateFormHandler(UpdateFormHandler updateFieldHandler) {
+        private FormModelBuilder setUpdateFormHandler(FormPostHandler updateFieldHandler) {
             this.updateFieldHandler = updateFieldHandler;
             return this;
         }
@@ -197,7 +192,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return this;
         }
 
-        private DefaultFormModel build() {
+        private DefaultFormModel build() throws SQLException {
             return new DefaultFormModel(this);
         }
 
@@ -213,12 +208,13 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private final FormFieldCallBack callBack;
         private final FormDataInputHandler dataInputHandler;
         private final FormFieldMapper mapper;
-        private final UpdateFormHandler updateFieldHandler;
+        private final FormPostHandler updateFieldHandler;
         private final String selectSQL;
         private final Map selectParam;
         private final JDBCSettings jdbc_settings;
+        String[] db_columns;
 
-        private DefaultFormModel(FormModelBuilder builder) {
+        private DefaultFormModel(FormModelBuilder builder) throws SQLException {
 
             this.callBack = builder.callBack;
             this.dataInputHandler = builder.dataInputHandler;
@@ -231,14 +227,16 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             selectSQL = dbHelper.getSelectSQL();
             selectParam = dbHelper.getSelectParams();
             jdbc_settings = dbHelper.getJdbcSetting();
-
-            if (mapper != null) {
+            db_columns = dbHelper.getColumns(true);
+            
+            if (callBack != null && mapper != null) {
                 fieldsComponents = mapper.getFields();
+                data = generateCallBackData();
             }
 
             if (dataInputHandler != null) {
                 FormDataInputImpl input = new FormDataInputImpl(jdbcSettings);
-                input = (FormDataInputImpl) dataInputHandler.onInput(input);
+                dataInputHandler.onInput(input);
                 data = input.getData();
                 fieldsComponents = input.getFieldComponents();
             }
@@ -252,7 +250,60 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             if (controllers_pane == null) {
                 return;
             }
+
             //TODO add the control to the controller pane
+        }
+
+        private Object[][] generateCallBackData() throws SQLException {
+            checkValidColumn();
+            return columnSourceData(data, db_columns);
+        }
+
+        private Object[][] columnSourceData(Object[][] data, String[] colNames) {
+
+            Object[][] new_data = new Object[data.length][] ;
+            JComponent[] fieldComps = mapper.getFields();
+            for (int i=0; i<data.length; i++) {
+                FormFieldGen[] cs = new FormFieldGen[mapper.count()];
+                for (int j = 0; j < cs.length; j++) {
+                    FormFieldSource new_col_src = new FormFieldSource(fieldComps[j], mapper.getSources(j));
+                    cs[j] = new_col_src;
+                    String[] src_arr = mapper.getSources(j);
+                    for (int k = 0; k < src_arr.length; k++) {
+                        String coln =  src_arr[k];
+                        for (int col = 0; col < data[i].length; col++) {
+                            if (coln.equalsIgnoreCase(colNames[col])) {
+                                new_col_src.setValueAt(k, data[i][col]);
+                                break;
+                            }
+                        }
+                    }
+                }
+                new_data[i]=cs;
+            }
+
+            return new_data;
+        }
+        
+        private void checkValidColumn() throws SQLException{
+            //check if valid column source names where provided
+            for(int i=0; i<mapper.count(); i++){
+                String[] fld_srcs = mapper.getSources(i);
+                for (String col : fld_srcs) {
+                    String[] cols = dbHelper.getColumns(true); //get colums as they are. that is what we want here.
+                    boolean found = false;
+                    for (String col1 : cols) {
+                        if (col1.equalsIgnoreCase(col)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        throw new IllegalArgumentException("Missing column source. One or more columns source was not found. All column sources must be selected!");
+                    }
+                }
+            }
+            
         }
 
         private void initControls() {
@@ -339,16 +390,18 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             if (controls == null) {
                 return;
             }
-
+            //we do not want any two control of same type e.g jNext1 and jNext2
             for (int i = 0; i < controls.length; i++) {
                 for (int k = 0; k < controls.length; k++) {
                     if (k == i) {
-                        continue;
+                        continue;//skip itself
                     }
-                    try {
+                    try {//check if it is its type and throw exception if true
                         controls[i].getClass().cast(controls[k]);
+                        //here it is its type so throw exception
                         throw new IllegalArgumentException("Form control duplicate detected! cannot repeat form control or its sub class - " + controls[i].getClass().getName());
                     } catch (ClassCastException ex) {
+                        //Good, not its type
                     }
                 }
             }
@@ -362,9 +415,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         void displayRecord(Object[] record_data) {
             for (int i = 0; i < this.fieldsComponents.length; i++) {
                 if (record_data != null) {
-                    setComponentData(fieldsComponents[i], record_data[i]);
+                    Object fieldValue = record_data[i];
+                    if(callBack!=null){
+                        FormFieldGen fieldGen = (FormFieldGen) record_data[i];
+                        fieldValue = callBack.onBeforeInput(fieldGen, record_index);
+                    }
+                    setComponentData(fieldsComponents[i], fieldValue);
                 } else {
-                    setComponentData(fieldsComponents[i], null);//reset the components using null                    
+                    setComponentData(fieldsComponents[i], null);//reset the field components using null                    
                 }
             }
         }
@@ -536,9 +594,9 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         JMoveTo getJMoveTo() {
-            for (int i = 0; i < controls.length; i++) {
-                if (controls[i] instanceof JMoveTo) {
-                    return (JMoveTo) controls[i];
+            for (FormControl control : controls) {
+                if (control instanceof JMoveTo) {
+                    return (JMoveTo) control;
                 }
             }
             return null;

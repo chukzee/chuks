@@ -17,11 +17,11 @@ import javax.swing.JComponent;
  */
 public class FormFieldMapper {
 
-    Map<JComponent, String[]> formFieldMap;
+    Map<JComponent, String[]> formFieldMap;//use LinkedHashMap for maintaining insert order - very important
 
     public void map(JComponent comp, String... db_columns) {
         if (formFieldMap == null) {
-            formFieldMap = new LinkedHashMap();
+            formFieldMap = new LinkedHashMap();//use LinkedHashMap for maintaining insert order - very important
         }
         formFieldMap.put(comp, db_columns);
     }

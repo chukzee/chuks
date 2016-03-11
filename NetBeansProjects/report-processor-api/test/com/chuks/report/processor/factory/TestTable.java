@@ -231,7 +231,7 @@ public class TestTable extends javax.swing.JFrame {
                  }*/
                 t.tableLoad(jTable1, new TableFieldCallBack() {
                     @Override
-                    public Object onBeforeAdd(TableFieldGen field, int row_index, int col_index) {
+                    public Object onBeforeInput(TableFieldGen field, int row_index, int col_index) {
                         //System.out.println("row_index "+row_index+" col_index "+col_index);
                         if (field.fieldColumn().equalsIgnoreCase("sum")) {
                             double cash = Double.parseDouble(field.srcValue("cash").toString());

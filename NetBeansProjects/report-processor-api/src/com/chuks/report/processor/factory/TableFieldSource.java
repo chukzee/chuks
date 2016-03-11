@@ -86,7 +86,7 @@ final public class TableFieldSource implements TableFieldGen {
     }
 
     @Override
-    public int length() {
+    public int srcCount() {
         return values.length;
     }
 

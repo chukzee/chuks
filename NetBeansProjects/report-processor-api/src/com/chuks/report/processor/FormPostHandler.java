@@ -9,7 +9,7 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface UpdateFormHandler {
+public interface FormPostHandler {
 
-    void doUpdate(ActionSQL a, FormFieldChange f);
+    void doPost(ActionSQL a, FormFieldPost f);
 }

@@ -11,6 +11,6 @@ package com.chuks.report.processor.bind;
  */
 public interface TextBindHandler {
        
-    TextDataInput data(TextDataInput input);
+    void data(TextDataInput input);
 
 }

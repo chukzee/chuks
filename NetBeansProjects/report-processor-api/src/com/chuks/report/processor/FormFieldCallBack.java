@@ -11,6 +11,6 @@ package com.chuks.report.processor;
  */
 public interface FormFieldCallBack {
 
-    Object onBeforeAdd(FormFieldGen source , int record_index);
+    Object onBeforeInput(FormFieldGen source , int record_index);
 
 }

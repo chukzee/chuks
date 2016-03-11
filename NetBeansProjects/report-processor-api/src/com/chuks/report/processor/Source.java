@@ -15,5 +15,5 @@ public interface Source {
 
     Object srcValue(String columnName);
 
-    int length();    
+    int srcCount();    
 }

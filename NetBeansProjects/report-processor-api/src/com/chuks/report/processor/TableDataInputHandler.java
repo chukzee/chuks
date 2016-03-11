@@ -11,6 +11,6 @@ package com.chuks.report.processor;
  */
 public interface TableDataInputHandler {
     
-    TableDataInput onInput(TableDataInput input);
+    void onInput(TableDataInput input);
     
 }

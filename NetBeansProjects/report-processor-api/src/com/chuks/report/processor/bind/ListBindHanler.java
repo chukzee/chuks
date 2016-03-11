@@ -14,5 +14,5 @@ import com.chuks.report.processor.DataPoll;
 
 public interface ListBindHanler extends DataPoll{
     
-    ListDataInput data(ListDataInput input);
+    void data(ListDataInput input);
 }
