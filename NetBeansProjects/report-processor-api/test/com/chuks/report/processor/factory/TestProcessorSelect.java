@@ -4,28 +4,14 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.factory.TableFieldRenderer;
-import com.chuks.report.processor.factory.TableFieldSource;
-import com.chuks.report.processor.factory.ProcessorFactory;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
-import javax.swing.RowSorter;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import com.chuks.report.processor.TableFieldCallBack;
 import com.chuks.report.processor.TableFieldGen;
@@ -79,7 +65,7 @@ public class TestProcessorSelect {
         TableFieldSource s2 = new TableFieldSource("SUM");
         s2.addSources("cash", "amount");
 
-        t.loadOnTable(panel, new TableFieldCallBack() {
+        t.tableLoad(panel, new TableFieldCallBack() {
             @Override
             public Object onBeforeAdd(TableFieldGen field, int row_index, int col_index) {
                 //System.out.println("row_index "+row_index+" col_index "+col_index);

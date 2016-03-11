@@ -12,7 +12,7 @@ import javax.swing.JLabel;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
         
-    public class JCounter extends JLabel implements FormControl{
+    final public class JCounter extends JLabel implements FormControl{
 
         
     }

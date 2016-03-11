@@ -27,9 +27,9 @@ public interface TableProcessor extends UIDBProcessor {
 
     void displayFilter(boolean isShow);
     
-    void loadOnTable(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException;
+    void tableLoad(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException;
 
-    void loadOnTable(JTable table, Object[][] data, String... columns) throws SQLException;
+    void tableLoad(JTable table, Object[][] data, String... columns) throws SQLException;
     
     /**
      *
@@ -39,7 +39,7 @@ public interface TableProcessor extends UIDBProcessor {
      * @param deleteRowsHandler
      * @throws java.sql.SQLException
      */
-    void loadOnTable(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
+    void tableLoad(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
     
     /**
      *
@@ -49,7 +49,7 @@ public interface TableProcessor extends UIDBProcessor {
      * @param deleteRowsHandler
      * @throws java.sql.SQLException
      */
-    void loadOnTable(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
+    void tableLoad(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
     
     /**
      *
@@ -60,7 +60,7 @@ public interface TableProcessor extends UIDBProcessor {
      * @param columnSources
      * @throws java.sql.SQLException
      */
-    void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
+    void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
     
     /**
      *
@@ -71,7 +71,7 @@ public interface TableProcessor extends UIDBProcessor {
      * @param mapper
      * @throws java.sql.SQLException
      */
-    void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldMapper mapper) throws SQLException ;
+    void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldMapper mapper) throws SQLException ;
     
     /**
      *
@@ -84,7 +84,7 @@ public interface TableProcessor extends UIDBProcessor {
      * @return 
      * @throws java.sql.SQLException
      */
-    JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
+    JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
     
     /**
      *
@@ -97,5 +97,5 @@ public interface TableProcessor extends UIDBProcessor {
      * @return 
      * @throws java.sql.SQLException
      */
-    JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException ;
+    JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException ;
 }

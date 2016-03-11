@@ -8,6 +8,7 @@ package com.chuks.report.processor;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.JComponent;
 
 /**
@@ -33,6 +34,13 @@ public class FormFieldMapper {
         Object[] comps = formFieldMap.keySet().toArray();
         
         return formFieldMap.get((JComponent)comps[field_index]);
+    }
+    
+    public JComponent[] getFields(){
+        Set<JComponent> keySet = formFieldMap.keySet();
+        JComponent[] fields = new JComponent[keySet.size()];
+        keySet.toArray(fields);
+        return fields;
     }
     
     public int count(){

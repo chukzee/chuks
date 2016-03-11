@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.form.controls;
+package com.chuks.report.processor;
 
-import javax.swing.JButton;
+import javax.swing.JComponent;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-final public class JPrevious extends JButton implements FormControl{
+public interface FormDataInput  extends DataPoll{
     
+    void setFieldComponents(JComponent... field_components);
+
+    void setData(Object[][] data);
 }

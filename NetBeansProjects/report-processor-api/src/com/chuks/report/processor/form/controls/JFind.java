@@ -11,7 +11,7 @@ import javax.swing.Box;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class JFind extends Box implements FormControl{
+final public class JFind extends Box implements FormControl{
 
     public JFind(int axis) {
         super(axis);

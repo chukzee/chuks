@@ -13,32 +13,18 @@ import com.chuks.report.processor.util.JDBCSettings;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 
-class ListDataInputImpl extends ActionSQLImpl implements ListDataInput{
+class ListDataInputImpl extends AbstractDataInput implements ListDataInput{
 
     ListDataInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     @Override
-    public void setPollingEnabled(boolean isPoll) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-    }
-
-    @Override
-    public boolean isPollingEnabled() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return false;
-    }
-
-    @Override
-    public void setPollingInterval(float seconds) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-    }
-
-    @Override
-    public float getPollingInterval() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        return 0;
+    public void setData(Object[] data) {
+        this.data = data;
     }
     
+    Object[] getData(){
+        return (Object[]) data;
+    }
 }

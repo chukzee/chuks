@@ -11,6 +11,6 @@ import javax.swing.JButton;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class JNext extends JButton implements FormControl{
+final public class JNext extends JButton implements FormControl{
     
 }

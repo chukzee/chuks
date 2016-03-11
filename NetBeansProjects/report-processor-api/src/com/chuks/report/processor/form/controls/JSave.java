@@ -11,6 +11,6 @@ import javax.swing.JButton;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
- public class JSave extends JButton implements FormControl{
+ final public class JSave extends JButton implements FormControl{
     
 }

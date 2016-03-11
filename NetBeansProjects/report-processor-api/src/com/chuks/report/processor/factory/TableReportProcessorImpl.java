@@ -37,7 +37,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override  //NOT YET TESTED
-    public void loadOnTable(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void tableLoad(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         ReportTableModel tableModel = load0(table, dataInputHandler, updateFieldHandler, deleteRowHandler);
 
@@ -53,7 +53,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override  //NOT YET TESTED
-    public void loadOnTable(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void tableLoad(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         if (container instanceof JTable) {
             throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");
@@ -100,7 +100,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
                 input.getDBSettings());
 
-        tableModel.setColumnNames(input.getColumnNames());
+        tableModel.setColumnNames(input.getColumns());
         tableModel.setTableFieldSource(null);
         tableModel.addRangeRowData(list);
         tableModel.setDataInputHandler(dataInputHandler);
@@ -109,7 +109,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void tableLoad(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         List<Object[]> list = new ArrayList();
         list.addAll(Arrays.asList(dbHelper.fetchArray()));
@@ -127,7 +127,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, Object[][] data, String... columns) {
+    public void tableLoad(JTable table, Object[][] data, String... columns) {
         if (columns.length < data.length) {
             //TODO
         } else if (columns.length > data.length) {
@@ -147,7 +147,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    public void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
         ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowHandler, columnSources);
         table.setModel(tableModel);
         setRowSorter(table);
@@ -155,17 +155,17 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void loadOnTable(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
-        loadOnTable(table, inputCallBack, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
+    public void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+        tableLoad(table, inputCallBack, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
-    public JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
-        return loadOnTable(container, inputCallBack, renderer, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
+    public JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+        return tableLoad(container, inputCallBack, renderer, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
-    public JTable loadOnTable(JComponent container, TableFieldCallBack inputCallBack, final TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    public JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, final TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
 
         if (container instanceof JTable) {
             throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");

@@ -60,6 +60,7 @@ public class TestTable extends javax.swing.JFrame {
         cmdLoadOnTable1 = new javax.swing.JButton();
         cmdLoadOnTable2 = new javax.swing.JButton();
         cmdLoadOnTable3 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
@@ -94,6 +95,23 @@ public class TestTable extends javax.swing.JFrame {
         });
         getContentPane().add(cmdLoadOnTable3);
 
+        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextField1FocusLost(evt);
+            }
+        });
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+        jTextField1.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
+            public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
+                jTextField1VetoableChange(evt);
+            }
+        });
+        getContentPane().add(jTextField1);
+
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("panel"));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -104,7 +122,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 144, Short.MAX_VALUE)
+            .addGap(0, 133, Short.MAX_VALUE)
         );
 
         getContentPane().add(jPanel1);
@@ -119,7 +137,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 102, Short.MAX_VALUE)
+            .addGap(0, 99, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab2", jPanel2);
@@ -145,7 +163,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 125, Short.MAX_VALUE)
+            .addGap(0, 122, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab3", jPanel3);
@@ -185,7 +203,7 @@ public class TestTable extends javax.swing.JFrame {
                  getContentPane().repaint();
                  return;
                  }*/
-                t.loadOnTable(jTable1, new TableFieldCallBack() {
+                t.tableLoad(jTable1, new TableFieldCallBack() {
                     @Override
                     public Object onBeforeAdd(TableFieldGen field, int row_index, int col_index) {
                         //System.out.println("row_index "+row_index+" col_index "+col_index);
@@ -267,6 +285,18 @@ public class TestTable extends javax.swing.JFrame {
 
     }//GEN-LAST:event_cmdLoadOnTable3ActionPerformed
 
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        System.out.println("jTextField1ActionPerformed");
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jTextField1VetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_jTextField1VetoableChange
+        System.out.println("jTextField1VetoableChange");
+    }//GEN-LAST:event_jTextField1VetoableChange
+
+    private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
+        System.out.println("jTextField1FocusLost");
+    }//GEN-LAST:event_jTextField1FocusLost
+
     /**
      * @param args the command line arguments
      */
@@ -313,5 +343,6 @@ public class TestTable extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

@@ -11,6 +11,6 @@ import javax.swing.JPanel;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class JControllerPane extends JPanel{
+final public class JControllerPane extends JPanel{
     
 }

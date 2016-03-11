@@ -17,18 +17,14 @@ import javax.swing.JTextField;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class JMoveTo extends Box implements FormControl {
+final public class JMoveTo extends Box implements FormControl {
 
-    private final JTextField txt;
-    private final JButton btn;
+    private JTextField txt;
+    private JButton btn;
     int indexComp = -1;
     
      public JMoveTo() {
         super(BoxLayout.LINE_AXIS);
-        txt = new JTextField();
-        btn = new JButton();
-        add(txt);
-        add(btn);
     }
     
     private JMoveTo(int axis) {
@@ -38,6 +34,8 @@ public class JMoveTo extends Box implements FormControl {
         btn = new JButton();
         add(txt);
         add(btn);
+        
+        
     }
 
    public void addButtonActionListener(ActionListener l){
@@ -81,6 +79,11 @@ public class JMoveTo extends Box implements FormControl {
     @Override
     final public void remove(int index) {
         super.remove(index);
+    }
+
+    public int getMoveToIndex() {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return Integer.parseInt(txt.getText());
     }
 
 }

@@ -32,23 +32,28 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
     void bind(JTextField textField, TextBindHandler handler);
 
     void bind(JLabel label, TextBindHandler handler);
+    
+    /**
+     *
+     * @param dataInputHandler
+     * @param updateFieldHandler
+     * @param controls
+     * @throws java.sql.SQLException
+     */
+    void formLoad(FormDataInputHandler dataInputHandler, UpdateFormHandler updateFieldHandler, FormControl... controls) throws SQLException ;
+    
 
-    Form loadOnForm(FormFieldCallBack callBack, FormFieldMapper mapper, FormControl... controls) throws SQLException;
+    /**
+     *
+     * @param dataInputHandler
+     * @param updateFieldHandler
+     * @param controllers_pane
+     * @throws java.sql.SQLException
+     */
+    void formLoad(FormDataInputHandler dataInputHandler, UpdateFormHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException ;
+    
+    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper,  UpdateFormHandler updateFieldHandler, FormControl... controls) throws SQLException;
 
-    Form loadOnForm(FormFieldCallBack callBack, FormFieldMapper mapper, JControllerPane controllers_pane) throws SQLException;
-
-    void showJNext(boolean display);
-
-    void showJPrevious(boolean display);
-
-    void showJMove(boolean display);
-
-    void showJCounter(boolean display);
-
-    void showJFind(boolean display);
-
-    void showJSave(boolean display);
-
-    void showJReset(boolean display);
+    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper,  UpdateFormHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
 
 }

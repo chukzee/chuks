@@ -14,7 +14,7 @@ import javax.swing.JComponent;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class FormFieldImpl implements IFormField{
+ class FormFieldImpl implements IFormField{
     private final String accessible_name;
     private final Object old_value;
     private final Object value;

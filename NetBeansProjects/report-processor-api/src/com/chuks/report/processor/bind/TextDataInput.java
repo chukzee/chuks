@@ -13,4 +13,5 @@ import com.chuks.report.processor.DataPoll;
  */
 public interface TextDataInput extends DataPoll {
 
+    void setData(Object data);
 }
