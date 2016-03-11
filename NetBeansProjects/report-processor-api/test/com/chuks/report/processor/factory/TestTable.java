@@ -57,16 +57,29 @@ public class TestTable extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jDialog1 = new javax.swing.JDialog();
         cmdLoadOnTable1 = new javax.swing.JButton();
         cmdLoadOnTable2 = new javax.swing.JButton();
         cmdLoadOnTable3 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
+        jMoveTo15 = new com.chuks.report.processor.form.controls.JMoveTo();
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jTable1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 643, Short.MAX_VALUE)
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
@@ -112,6 +125,19 @@ public class TestTable extends javax.swing.JFrame {
         });
         getContentPane().add(jTextField1);
 
+        javax.swing.GroupLayout jMoveTo15Layout = new javax.swing.GroupLayout(jMoveTo15);
+        jMoveTo15.setLayout(jMoveTo15Layout);
+        jMoveTo15Layout.setHorizontalGroup(
+            jMoveTo15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 580, Short.MAX_VALUE)
+        );
+        jMoveTo15Layout.setVerticalGroup(
+            jMoveTo15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 59, Short.MAX_VALUE)
+        );
+
+        getContentPane().add(jMoveTo15);
+
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("panel"));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -122,7 +148,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 133, Short.MAX_VALUE)
+            .addGap(0, 78, Short.MAX_VALUE)
         );
 
         getContentPane().add(jPanel1);
@@ -137,7 +163,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 99, Short.MAX_VALUE)
+            .addGap(0, 88, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab2", jPanel2);
@@ -163,7 +189,7 @@ public class TestTable extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 122, Short.MAX_VALUE)
+            .addGap(0, 111, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab3", jPanel3);
@@ -337,6 +363,22 @@ public class TestTable extends javax.swing.JFrame {
     private javax.swing.JButton cmdLoadOnTable1;
     private javax.swing.JButton cmdLoadOnTable2;
     private javax.swing.JButton cmdLoadOnTable3;
+    private javax.swing.JDialog jDialog1;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo1;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo10;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo11;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo12;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo13;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo14;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo15;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo2;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo3;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo4;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo5;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo6;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo7;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo8;
+    private com.chuks.report.processor.form.controls.JMoveTo jMoveTo9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

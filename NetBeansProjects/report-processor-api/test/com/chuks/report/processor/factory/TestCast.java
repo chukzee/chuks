@@ -27,5 +27,9 @@ public class TestCast {
         System.out.println("----------");
         System.out.println(jnext1.getText());
         System.out.println(jnext2.getText());
+        JNext jnext3 = null;
+        if(jnext3 instanceof JNext)
+        System.out.println(jnext3 instanceof JNext);
+        
     }
 }

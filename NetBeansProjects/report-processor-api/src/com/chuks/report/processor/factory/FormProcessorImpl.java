@@ -47,6 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ListModel;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -247,12 +248,13 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             initControllerPane();
         }
 
-        private void initControllerPane(){
-            if(controllers_pane==null)
+        private void initControllerPane() {
+            if (controllers_pane == null) {
                 return;
+            }
             //TODO add the control to the controller pane
         }
-        
+
         private void initControls() {
 
             //set action listeners of the components
@@ -325,7 +327,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 } else if (control instanceof JCounter) {
                     JCounter jcounter = (JCounter) control;
                     //COME BACK
-                }else {
+                } else {
                     throw new IllegalArgumentException("Component not supported!");
                 }
 
@@ -333,7 +335,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         private void checksControlRepitition() {
-            
+
             if (controls == null) {
                 return;
             }
@@ -342,10 +344,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 for (int k = 0; k < controls.length; k++) {
                     if (k == i) {
                         continue;
-                    }  
-                    try {           
+                    }
+                    try {
                         controls[i].getClass().cast(controls[k]);
-                        throw new IllegalArgumentException("Form control duplicate detected! cannot repeat form control or its sub class - "+controls[i].getClass().getName());
+                        throw new IllegalArgumentException("Form control duplicate detected! cannot repeat form control or its sub class - " + controls[i].getClass().getName());
                     } catch (ClassCastException ex) {
                     }
                 }
@@ -359,72 +361,77 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         void displayRecord(Object[] record_data) {
             for (int i = 0; i < this.fieldsComponents.length; i++) {
-                setComponentData(fieldsComponents[i], record_data[i]);
+                if (record_data != null) {
+                    setComponentData(fieldsComponents[i], record_data[i]);
+                } else {
+                    setComponentData(fieldsComponents[i], null);//reset the components using null                    
+                }
             }
         }
 
         void setComponentData(JComponent comp, Object compData) {
 
-            if (comp instanceof JPasswordField) {
-                ((JPasswordField) comp).setText(compData.toString());
-            } else if (comp instanceof JFormattedTextField) {
-                ((JFormattedTextField) comp).setText(compData.toString());
-            } else if (comp instanceof JTextField) {
-                ((JTextField) comp).setText(compData.toString());
-            } else if (comp instanceof JLabel) {
-                ((JLabel) comp).setText(compData.toString());
-            } else if (comp instanceof JButton) {
-                ((JButton) comp).setText(compData.toString());
+            String strData = compData != null ? compData.toString() : null; // null will clear the text.
+            if (comp instanceof JTextComponent) {//All components that extends JTextComponent.
+                ((JTextComponent) comp).setText(strData);
             } else if (comp instanceof JList) {
                 JList lst = (JList) comp;
-                ListModel m = lst.getModel();
-                boolean found = false;
-                List items = new ArrayList();
-                for (int i = 0; i < m.getSize(); i++) {
-                    if (m.getElementAt(i).equals(compData)) {
-                        found = true;
-                        items.add(compData);
+                if (compData != null) {
+                    ListModel m = lst.getModel();
+                    boolean found = false;
+                    List items = new ArrayList();
+                    for (int i = 0; i < m.getSize(); i++) {
+                        if (m.getElementAt(i).equals(compData)) {
+                            found = true;
+                            items.add(compData);
+                        }
                     }
-                }
-                if (found) {
-                    lst.setListData(items.toArray());
-                    lst.setSelectedValue(compData, true);
+
+                    if (found) {
+                        lst.setListData(items.toArray());
+                        lst.setSelectedValue(compData, true);
+                    } else {
+                        items.add(compData);//add since not found
+                        lst.setListData(items.toArray());
+                        lst.setSelectedValue(compData, true);
+                    }
                 } else {
-                    items.add(compData);//add since not found
-                    lst.setListData(items.toArray());
-                    lst.setSelectedValue(compData, true);
+                    lst.clearSelection();
                 }
-
             } else if (comp instanceof JComboBox) {
-
                 JComboBox cbo = (JComboBox) comp;
-                boolean found = false;
-                for (int i = 0; i < cbo.getItemCount(); i++) {
-                    if (cbo.getItemAt(i).equals(compData)) {
-                        found = true;
-                        break;
+                if (compData != null) {
+                    boolean found = false;
+                    for (int i = 0; i < cbo.getItemCount(); i++) {
+                        if (cbo.getItemAt(i).equals(compData)) {
+                            found = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!found) {
-                    cbo.addItem(compData);
+                    if (!found) {
+                        cbo.addItem(compData);
+                    }
+                    cbo.setSelectedItem(compData);
+                } else {
+                    cbo.setSelectedItem(null);//clear selection
                 }
-                cbo.setSelectedItem(compData);
-
-            } else if (comp instanceof JTextArea) {
-                ((JTextArea) comp).setText(compData.toString());
             } else if (comp instanceof JCheckBox) {
-                if (!(compData instanceof Boolean)) {
+                if (compData == null) {
+                    ((JCheckBox) comp).setSelected(false);
+                } else if (!(compData instanceof Boolean)) {//ok if compData is null - will not raise NullPointerException.
                     throw new IllegalArgumentException("Invalid data type for check box! expected Boolean - " + compData);
+                } else {
+                    ((JCheckBox) comp).setSelected(Boolean.parseBoolean(strData));
                 }
-                ((JCheckBox) comp).setSelected(Boolean.parseBoolean(compData.toString()));
             } else if (comp instanceof JRadioButton) {
-                if (!(compData instanceof JRadioButton)) {
-                    throw new IllegalArgumentException("Invalid data type for radio button! expected Boolean - " + compData);
+                if (compData == null) {
+                    ((JRadioButton) comp).setSelected(false);
+                } else if (!(compData instanceof Boolean)) {//ok if compData is null - will not raise NullPointerException.
+                    throw new IllegalArgumentException("Invalid data type for check box! expected Boolean - " + compData);
+                } else {
+                    ((JRadioButton) comp).setSelected(Boolean.parseBoolean(strData));
                 }
-                ((JRadioButton) comp).setSelected(Boolean.parseBoolean(compData.toString()));
-            } else if (comp instanceof JTextPane) {
-                ((JTextPane) comp).setText(compData.toString());
             } else {
                 throw new IllegalArgumentException("Form component not supported - " + comp.getClass().getName());
             }
@@ -504,7 +511,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         private void jresetAcitionPerform(ActionEvent e) {
-            //displayRecord(reset());
+            displayRecord(reset());//this will reset the form components
         }
 
         private void jsaveAcitionPerform(ActionEvent e) {
@@ -517,7 +524,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 return;
             }
 
-            displayRecord(moveTo(comp.getMoveToIndex()));
+            int move_index = comp.getMoveToIndex();
+            if (move_index < 0) {
+                return;//though negative do nothing. do not even reset! not your job.
+            }
+            displayRecord(moveTo(move_index));
         }
 
         private void jfindAcitionPerform(ActionEvent e) {
@@ -551,6 +562,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         public JComponent getFieldAt(int field_index) {
             return fieldsComponents[field_index];
+        }
+
+        private Object[] reset() {
+            this.record_index = -1;
+            return null;//force form components reset by returning null
         }
 
         private void saveRecord() {
