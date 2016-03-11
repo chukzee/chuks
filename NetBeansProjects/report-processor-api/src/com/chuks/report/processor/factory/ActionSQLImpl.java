@@ -19,8 +19,9 @@ import java.sql.Savepoint;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
- public class ActionSQLImpl implements ActionSQL{
-    protected boolean isAutoCommit;
+public class ActionSQLImpl implements ActionSQL {
+
+    protected boolean isAutoCommit = true;//default is true
     protected JDBCSettings jdbcSettings;
     protected DBHelper dbHelper;
 
@@ -33,15 +34,15 @@ import java.sql.Savepoint;
         this.jdbcSettings = dbHelper.getJdbcSetting();
         this.dbHelper = dbHelper;
     }
-    
+
     @Override
-    public void transactionBegins() throws SQLException{ 
+    public void transactionBegins() throws SQLException {
         isAutoCommit = false;
         dbHelper.setAutoCommit(isAutoCommit);
     }
 
     @Override
-    public void transactionEnds() throws SQLException{ 
+    public void transactionEnds() throws SQLException {
         isAutoCommit = true;
         commit();//commit changes
         dbHelper.setAutoCommit(isAutoCommit);
@@ -49,32 +50,32 @@ import java.sql.Savepoint;
     }
 
     @Override
-    public void commit() throws SQLException{
+    public void commit() throws SQLException {
         dbHelper.commit();
     }
 
     @Override
-    public void rollback() throws SQLException{
+    public void rollback() throws SQLException {
         dbHelper.rollback();
     }
 
     @Override
-    public void close() throws SQLException{
+    public void close() throws SQLException {
         dbHelper.close();
     }
 
     @Override
-    public void rollback(Savepoint save_point) throws SQLException{
+    public void rollback(Savepoint save_point) throws SQLException {
         dbHelper.rollback(save_point);
     }
 
     @Override
-    public Savepoint setSavepoint() throws SQLException{
+    public Savepoint setSavepoint() throws SQLException {
         return dbHelper.setSavepoint();
     }
 
     @Override
-    public Savepoint setSavepoint(String name) throws SQLException{
+    public Savepoint setSavepoint(String name) throws SQLException {
         return dbHelper.setSavepoint(name);
     }
 

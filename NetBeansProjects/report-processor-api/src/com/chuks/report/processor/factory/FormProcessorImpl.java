@@ -22,8 +22,10 @@ import com.chuks.report.processor.FormFieldMapper;
 import com.chuks.report.processor.FormDataInputHandler;
 import com.chuks.report.processor.FormFieldCallBack;
 import com.chuks.report.processor.FormFieldGen;
+import com.chuks.report.processor.FormFieldPost;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.FormPostHandler;
+import com.chuks.report.processor.IFormField;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
@@ -208,10 +210,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private final FormFieldCallBack callBack;
         private final FormDataInputHandler dataInputHandler;
         private final FormFieldMapper mapper;
-        private final FormPostHandler updateFieldHandler;
+        private final FormPostHandler formFieldsPostHandler;
         private final String selectSQL;
         private final Map selectParam;
-        private final JDBCSettings jdbc_settings;
+        private final JDBCSettings frm_jdbc_settings;
         String[] db_columns;
 
         private DefaultFormModel(FormModelBuilder builder) throws SQLException {
@@ -219,16 +221,16 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             this.callBack = builder.callBack;
             this.dataInputHandler = builder.dataInputHandler;
             this.mapper = builder.mapper;
-            this.updateFieldHandler = builder.updateFieldHandler;
+            this.formFieldsPostHandler = builder.updateFieldHandler;
             this.controls = builder.controls;
             this.controllers_pane = builder.controllers_pane;
 
             data = dbHelper.fetchArray();
             selectSQL = dbHelper.getSelectSQL();
             selectParam = dbHelper.getSelectParams();
-            jdbc_settings = dbHelper.getJdbcSetting();
+            frm_jdbc_settings = new JDBCSettings(dbHelper.getJdbcSetting());//we need to copy
             db_columns = dbHelper.getColumns(true);
-            
+
             if (callBack != null && mapper != null) {
                 fieldsComponents = mapper.getFields();
                 data = generateCallBackData();
@@ -261,16 +263,16 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         private Object[][] columnSourceData(Object[][] data, String[] colNames) {
 
-            Object[][] new_data = new Object[data.length][] ;
+            Object[][] new_data = new Object[data.length][];
             JComponent[] fieldComps = mapper.getFields();
-            for (int i=0; i<data.length; i++) {
+            for (int i = 0; i < data.length; i++) {
                 FormFieldGen[] cs = new FormFieldGen[mapper.count()];
                 for (int j = 0; j < cs.length; j++) {
                     FormFieldSource new_col_src = new FormFieldSource(fieldComps[j], mapper.getSources(j));
                     cs[j] = new_col_src;
                     String[] src_arr = mapper.getSources(j);
                     for (int k = 0; k < src_arr.length; k++) {
-                        String coln =  src_arr[k];
+                        String coln = src_arr[k];
                         for (int col = 0; col < data[i].length; col++) {
                             if (coln.equalsIgnoreCase(colNames[col])) {
                                 new_col_src.setValueAt(k, data[i][col]);
@@ -279,15 +281,15 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                         }
                     }
                 }
-                new_data[i]=cs;
+                new_data[i] = cs;
             }
 
             return new_data;
         }
-        
-        private void checkValidColumn() throws SQLException{
+
+        private void checkValidColumn() throws SQLException {
             //check if valid column source names where provided
-            for(int i=0; i<mapper.count(); i++){
+            for (int i = 0; i < mapper.count(); i++) {
                 String[] fld_srcs = mapper.getSources(i);
                 for (String col : fld_srcs) {
                     String[] cols = dbHelper.getColumns(true); //get colums as they are. that is what we want here.
@@ -303,7 +305,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     }
                 }
             }
-            
+
         }
 
         private void initControls() {
@@ -412,14 +414,30 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         }
 
+        Object getFieldValue(Object[] record_data, int field_index) {
+            Object fieldValue = record_data[field_index];
+            if (callBack != null) {
+                FormFieldGen fieldGen = (FormFieldGen) fieldValue;
+                fieldValue = callBack.onBeforeInput(fieldGen, record_index);
+            }
+
+            return fieldValue;
+        }
+
+        Object getFieldValue(Object value) {
+            Object fieldValue = value;
+            if (callBack != null) {
+                FormFieldGen fieldGen = (FormFieldGen) fieldValue;
+                fieldValue = callBack.onBeforeInput(fieldGen, record_index);
+            }
+
+            return fieldValue;
+        }
+
         void displayRecord(Object[] record_data) {
             for (int i = 0; i < this.fieldsComponents.length; i++) {
                 if (record_data != null) {
-                    Object fieldValue = record_data[i];
-                    if(callBack!=null){
-                        FormFieldGen fieldGen = (FormFieldGen) record_data[i];
-                        fieldValue = callBack.onBeforeInput(fieldGen, record_index);
-                    }
+                    Object fieldValue = getFieldValue(record_data[i]);
                     setComponentData(fieldsComponents[i], fieldValue);
                 } else {
                     setComponentData(fieldsComponents[i], null);//reset the field components using null                    
@@ -628,7 +646,52 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         private void saveRecord() {
-            System.err.println("REMIND: Auto generated method body is not yet implemented");
+
+            FormFieldPost post = new FormFieldPost() {
+                IFormField[] newEntries = new IFormField[0];
+                IFormField[] updateEntries = new IFormField[0];
+
+                @Override
+                public IFormField[] getNew() {
+                    if (!isNewEntry()) {
+                        return new IFormField[0];
+                    }
+                    //COME BACK TO FINISH
+
+                    return null;
+                }
+
+                @Override
+                public IFormField[] getChanges() {
+                    if (!isUpdate()) {
+                        return new IFormField[0];
+                    }
+                    //COME BACK TO FINISH
+                    return null;
+                }
+
+                @Override
+                public boolean isNewEntry() {
+                    return record_index == -1;
+                }
+
+                @Override
+                public boolean isUpdate() {
+                    return record_index > -1;
+                }
+
+                @Override
+                public int count() {
+                    int new_count = getNew().length;
+                    if (new_count > 0) {
+                        return new_count;
+                    } else {
+                        return getChanges().length;
+                    }
+                }
+            };
+
+            formFieldsPostHandler.doPost(new ActionSQLImpl(frm_jdbc_settings), post);
         }
     }
 

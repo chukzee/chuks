@@ -82,7 +82,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
-        TableDataInputImpl input = new TableDataInputImpl(jdbcSettings);//come back;
+        TableDataInputImpl input = new TableDataInputImpl(new JDBCSettings(jdbcSettings));//copy jdbcSettings 
         dataInputHandler.onInput(input);
         this.setDataPollingEnabled(input.isPollingEnabled());
         this.setDataPollingInterval(input.getPollingInterval());
@@ -98,7 +98,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         ReportTableModel tableModel = new ReportTableModel(null,
                 updateFieldHandler, deleteRowHandler,
                 dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
-                input.getDBSettings());
+                input.getDBSettings());//ok. input.getDBSettings() already copied jdbcSettings - see above!
 
         tableModel.setColumnNames(input.getColumns());
         tableModel.setTableFieldSource(null);
@@ -601,7 +601,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         };
 
-        model.deleteRowHandler.doDelete(new ActionSQLImpl(dbHelper), r);
+        model.deleteRowHandler.doDelete(new ActionSQLImpl(model.jdbc_settings), r);
 
         model.refresh(table);
     }
@@ -671,7 +671,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         };
 
-        model.updateFieldHandler.doUpdate(new ActionSQLImpl(dbHelper), f);
+        model.updateFieldHandler.doUpdate(new ActionSQLImpl(model.jdbc_settings), f);
         model.refresh(table);
 
     }
@@ -735,7 +735,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             this.deleteRowHandler = deleteRowHandler;
             this.select_sql = select_sql;
             this.select_params = select_params;
-            this.jdbc_settings = jdbc_settings;
+            this.jdbc_settings = new JDBCSettings(jdbc_settings);//we need to copy
         }
 
         private void setDataInputHandler(TableDataInputHandler dataInputHandler) {
