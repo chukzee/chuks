@@ -19,9 +19,10 @@ public interface FormFieldPost {
      * indicates the field objects are available otherwise false.
      * <br/>
      * Note unlike Table field update, this method returns all fields 
-     * in the field. It is upto to the client to post all fields or 
+     * in the form. It is upto the client to post all fields or 
      * only the changes made by comparing the old and new value of the 
-     * field or simply calling the <code>isUpdated()</code> of {@link IFormField}
+     * field or simply checking the return value of <code>isUpdated()</code>
+     * of {@link IFormField}
      * object
      * 
      * @return 
@@ -33,7 +34,7 @@ public interface FormFieldPost {
      * is at reset value of -1.
      * @return 
      */
-    boolean isNewEntry();
+    boolean isNew();
     
     /**
      * Returns true if the form fields is not on reset. ie the record index

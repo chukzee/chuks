@@ -793,13 +793,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
                 @Override
                 public IFormField[] getFormFields() {
+                    
                     if (!isUpdate()) {
                         return new IFormField[0];
                     }
                     if (updateEntries.length > 0) {
                         return updateEntries;//already have them
                     }
-                    //COME BACK TO FINISH
+                    
                     updateEntries = new FormFieldImpl[fieldsComponents.length];
                     for (int field_index = 0; field_index < updateEntries.length; field_index++) {
                         String accessible_name = fieldsComponents[field_index].getAccessibleContext().getAccessibleName();
@@ -808,7 +809,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                         updateEntries[field_index] = new FormFieldImpl(accessible_name, fieldsComponents[field_index], old_value, value);
                         if (callBack != null && old_value != null) {
                             FormFieldSource fieldSource = (FormFieldSource) old_value;
-                            updateEntries[field_index].setSources(fieldSource.getDBSrcColumns());//come back
+                            updateEntries[field_index].setSources(fieldSource.getDBSrcColumns());
                         }
 
                     }
@@ -816,7 +817,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
-                public boolean isNewEntry() {
+                public boolean isNew() {
                     return record_index == -1;
                 }
 

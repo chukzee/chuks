@@ -15,6 +15,15 @@ import java.sql.SQLException;
 public class Test {
  
     public static void main(String... args) throws ClassNotFoundException, SQLException, InterruptedException{
+        int n =4;
+        int m=3;
+
+        
+        System.out.println(n&m);
+        System.out.println(n&m);
+        
+        System.out.println("----------");
+        
         Class.forName("java.sql.Driver");
         MysqlDataSource d = new MysqlDataSource();
         d.setURL("jdbc:mysql://localhost:3306/autopolicedb");

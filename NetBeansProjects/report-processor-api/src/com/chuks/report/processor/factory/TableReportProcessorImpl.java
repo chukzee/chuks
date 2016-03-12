@@ -17,7 +17,12 @@ import javax.swing.*;
 import javax.swing.table.*;
 import org.jooq.Param;
 import com.chuks.report.processor.*;
+import com.chuks.report.processor.form.controls.JFind;
+import com.chuks.report.processor.form.controls.SearchObserver;
 import com.chuks.report.processor.util.JDBCSettings;
+import com.chuks.report.processor.util.SearchUtil;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  *
@@ -102,7 +107,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         tableModel.setColumnNames(input.getColumns());
         tableModel.setTableFieldSource(null);
-        tableModel.addRangeRowData(list);
+        tableModel.addAllData(list);
         tableModel.setDataInputHandler(dataInputHandler);
 
         return tableModel;
@@ -118,7 +123,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 dbHelper.getJdbcSetting());
         tableModel.setColumnNames(dbHelper.getColumns(isColumnAsIs));
         tableModel.setTableFieldSource(null);
-        tableModel.addRangeRowData(list);
+        tableModel.addAllData(list);
 
         table.setModel(tableModel);
 
@@ -139,7 +144,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         ReportTableModel tableModel = new ReportTableModel(null, null, null, null, null, null);
         tableModel.setColumnNames(columns);
         tableModel.setTableFieldSource(null);
-        tableModel.addRangeRowData(list);
+        tableModel.addAllData(list);
 
         table.setModel(tableModel);
         setRowSorter(table);
@@ -351,7 +356,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         tableModel.setColumnNames(columns);
         tableModel.setTableFieldSource(columnSources);
-        tableModel.addRangeRowData(list);
+        tableModel.addAllData(list);
         return tableModel;
     }
 
@@ -401,23 +406,15 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         table_toolbox.setSize(35, (int) table_box.getBounds().getWidth());
         table_toolbox.setBackground(Color.red);
 
-        JLabel lblFind = new JLabel("Find : ");
-        table_toolbox.add(lblFind);
-
-        JTextField txtFind = new JTextField();
-        txtFind.setSize(new Dimension(35, 120));
-        table_toolbox.add(txtFind);
+        //addFind(table, table_toolbox);
+        JFind find = new JFind();
+        find.setSearchObserver((SearchObserver) table.getModel(), table);
+        table_toolbox.add(find);
 
         table_toolbox.add(Box.createHorizontalStrut(20));
         //table_toolbox.add(Box.createHorizontalGlue());//Glue not working - i do not know why?
 
-        JLabel lblFilter = new JLabel("Filter : ");
-        table_toolbox.add(lblFilter);
-
-        JTextField txtFilter = new JTextField();
-        txtFilter.setSize(new Dimension(35, 120));
-
-        table_toolbox.add(txtFilter);
+        addFilter(table, table_toolbox);
 
         table_toolbox.add(Box.createHorizontalStrut(20));
 
@@ -432,6 +429,89 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         addUpdateButton(table, table_toolbox);
 
         table_box.add(table_toolbox);
+
+    }
+
+    /*
+     private void addFind(final JTable table, Box toolbox) {
+     Box findBox = Box.createHorizontalBox();
+     toolbox.add(findBox);
+
+     JLabel lblFind = new JLabel("Find: ");
+     findBox.add(lblFind);
+
+     final JComboBox cboFind = new JComboBox();
+     cboFind.setEditable(true);
+     cboFind.setSize(new Dimension(35, 120));
+     cboFind.setToolTipText("Press enter key to search");
+     findBox.add(cboFind);
+
+     final JToggleButton matchCase = new JToggleButton("C");
+     matchCase.setSize(new Dimension(35, 20));
+     matchCase.setToolTipText("Match case");
+     findBox.add(matchCase);
+
+     final JToggleButton wholeWord = new JToggleButton("W");
+     wholeWord.setSize(new Dimension(35, 20));
+     wholeWord.setToolTipText("Match whole word");
+     findBox.add(wholeWord);
+
+     //great trick!!! - and the action listener to the getEditor() only to avoid double call
+     cboFind.getEditor().addActionListener(new ActionListener() {
+
+     @Override
+     public void actionPerformed(ActionEvent e) {
+
+     System.out.println("listeners count "+cboFind.getActionListeners().length);
+                
+     //findInTable(table, wholeWord.isSelected(), matchCase.isSelected());
+     ReportTableModel model = (ReportTableModel) table.getModel();
+     Object search_obj = cboFind.getEditor().getItem();
+     if (search_obj == null) {
+     return;
+     }
+     String search_str = search_obj.toString();
+     if (!search_str.equals(model.lastSearchStr)) {
+     model.lastSearchIndex = -1;//reset to before start of row
+     }
+
+     boolean isContinueSearch = model.lastSearchIndex > -1;
+
+     model.lastSearchIndex += 1; //start search from next row
+
+     System.out.println("begin from " + model.lastSearchIndex);
+
+     model.lastSearchIndex = SearchUtil.find(model.backing_data, model.lastSearchIndex, search_str, matchCase.isSelected(), wholeWord.isSelected());
+     if (!search_str.equals(model.lastSearchStr)) {
+     cboFind.addItem(search_str);
+     }
+     model.lastSearchStr = search_str;
+
+     System.out.println(model.lastSearchIndex);
+
+     if (model.lastSearchIndex > -1) {
+     //come back
+     }
+
+     if (model.lastSearchIndex < 0 && isContinueSearch) {
+     System.err.println("finished search");
+     }
+     }
+     });
+
+     }
+     */
+    private void addFilter(final JTable table, Box toolbox) {
+
+        Box filterBox = Box.createHorizontalBox();
+        toolbox.add(filterBox);
+
+        JLabel lblFilter = new JLabel("Filter: ");
+        filterBox.add(lblFilter);
+
+        JTextField txtFilter = new JTextField();
+        txtFilter.setSize(new Dimension(35, 120));
+        filterBox.add(txtFilter);
 
     }
 
@@ -705,12 +785,12 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         isDisplayFilter = isShow;
     }
 
-    class ReportTableModel extends AbstractTableModel {
+    class ReportTableModel extends AbstractTableModel implements SearchObserver {
 
         private String[] columnNames = {};
 
         private final ArrayList data = new ArrayList<>();
-        private Object[][] backing_data;
+        private Object[][] backing_data = {};
         TableFieldCallBack inputCallBack;
         private UpdateTableHandler updateFieldHandler;
         private DeleteRowHandler deleteRowHandler;
@@ -720,6 +800,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private JDBCSettings model_jdbc_settings;
         private Map<String, Object> oldFieldVal = Collections.synchronizedMap(new HashMap());
         private TableDataInputHandler dataInputHandler;
+        private String lastSearchStr;
+        private int lastSearchIndex = -1; //before firs row
 
         private ReportTableModel() {
         }
@@ -730,13 +812,14 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 String select_sql,
                 Map<String, Param> select_params,
                 JDBCSettings jdbc_settings) {
-            
+
             this.inputCallBack = inputCallBack;
             this.updateFieldHandler = updateFieldHandler;
             this.deleteRowHandler = deleteRowHandler;
             this.select_sql = select_sql;
             this.select_params = select_params;
             this.model_jdbc_settings = new JDBCSettings(jdbc_settings);//we need to copy
+
         }
 
         private void setDataInputHandler(TableDataInputHandler dataInputHandler) {
@@ -744,9 +827,9 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
 
         private void refresh(JTable table) {
-            
+
             List freshData;
-            
+
             if (dataInputHandler == null) {
                 freshData = refreshUsingSql(table);
             } else {
@@ -758,13 +841,13 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             }
 
             clear();
-            addRangeRowData(freshData);
+            addAllData(freshData);
 
         }
 
         private List refreshUsingDataInputHandler() {
-            
-            TableDataInputImpl input = new TableDataInputImpl(model_jdbc_settings); 
+
+            TableDataInputImpl input = new TableDataInputImpl(model_jdbc_settings);
             dataInputHandler.onInput(input);
 
             if (input.getData() == null) {
@@ -863,20 +946,21 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             columnNames = columns;
         }
 
-        void insertRowData(int index, Object row) {
-            data.add(index, row);
-            fireTableRowsInserted(index, index);
-        }
-
-        void addRowData(Object row) {
-            data.add(row);
-            int index = data.size() - 1;
-            fireTableRowsInserted(index, index);
-        }
-
-        void addRangeRowData(List rows) {
+        void addAllData(List rows) {
+            backing_data = new Object[rows.size()][];
             for (int i = 0; i < rows.size(); i++) {
                 data.add(rows.get(i));
+                Object[] d = (Object[]) rows.get(i);
+                backing_data[i] = new Object[d.length];
+                for (int k = 0; k < d.length; k++) {
+                    if (inputCallBack == null) {
+                        backing_data[i][k] = d[k];
+                    } else {
+                        TableFieldGen fieldGen = ((TableFieldGen[]) d)[k];
+
+                        backing_data[i][k] = inputCallBack.onBeforeInput(fieldGen, i, k);
+                    }
+                }
                 fireTableRowsInserted(i, i);
             }
         }
@@ -911,18 +995,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         @Override
         public Object getValueAt(int row, int col) {
-            if (inputCallBack == null) {
-                return backing_data[row][col] = ((Object[]) data.get(row))[col];
-            } else {
-                if (backing_data == null) {
-                    backing_data = new Object[data.size()][columnNames.length];
-                }
-                if (backing_data[row][col] != null) {
-                    return backing_data[row][col];
-                }
-                TableFieldGen fieldGen = ((TableFieldGen[]) data.get(row))[col];
-                return backing_data[row][col] = inputCallBack.onBeforeInput(fieldGen, row, col);
-            }
+            return backing_data[row][col];
         }
 
         @Override
@@ -954,6 +1027,26 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             oldFieldVal.clear();
 
             fireTableRowsDeleted(0, size - 1);
+        }
+
+        @Override
+        public Object[][] searchedData() {
+            return backing_data;
+        }
+
+        @Override
+        public void foundSearch(JComponent source_component, String searchStr, int found_index) {
+            System.out.println("found " + searchStr + " at row" + found_index);
+        }
+
+        @Override
+        public void finishedSearch(JComponent source_component, String searchStr) {
+            System.out.println("finished search - " + searchStr);
+        }
+
+        @Override
+        public void notFound(JComponent source_component, String searchStr) {
+            System.out.println("not found - " + searchStr);
         }
 
     }

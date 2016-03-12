@@ -44,7 +44,8 @@ public interface IFormField {
     JComponent getComponent();
 
     /**
-     * The defined sources of this field
+     * The defined sources of this field. ie the database columns
+     * mapped to this field.
      * @return 
      */
     String[] sources();

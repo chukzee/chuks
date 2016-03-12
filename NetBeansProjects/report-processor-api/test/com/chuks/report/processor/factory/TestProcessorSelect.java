@@ -61,26 +61,26 @@ public class TestProcessorSelect {
 
         //t.loadOnTable(table);
         TableFieldSource s1 = new TableFieldSource("ADD");
-        s1.addSources("id", "age");
+        s1.addDBSources("id", "age");
         TableFieldSource s2 = new TableFieldSource("SUM");
-        s2.addSources("cash", "amount");
+        s2.addDBSources("cash", "amount");
 
         t.tableLoad(panel, new TableFieldCallBack() {
             @Override
             public Object onBeforeInput(TableFieldGen field, int row_index, int col_index) {
                 //System.out.println("row_index "+row_index+" col_index "+col_index);
                 if (field.fieldColumn().equalsIgnoreCase("sum")) {
-                    double cash = Double.parseDouble(field.srcValue("cash").toString());
-                    double amt = Double.parseDouble(field.srcValue("amount").toString());
+                    double cash = Double.parseDouble(field.dbSrcValue("cash").toString());
+                    double amt = Double.parseDouble(field.dbSrcValue("amount").toString());
                     return cash + amt;
                 }
 
                 if (field.fieldColumn().equalsIgnoreCase("add")) {
-                    double id = Double.parseDouble(field.srcValue("id").toString());
-                    double age = Double.parseDouble(field.srcValue("age").toString());
+                    double id = Double.parseDouble(field.dbSrcValue("id").toString());
+                    double age = Double.parseDouble(field.dbSrcValue("age").toString());
                     return id + age;
                 }
-                return field.srcValueAt(0);
+                return field.dbSrcValueAt(0);
             }
         },new TableFieldRenderer() {
 
@@ -99,7 +99,7 @@ public class TestProcessorSelect {
         //box.add(scrollPane1);
         /*Container cnt = table.getParent().getParent().getParent();
          Component[] comps = cnt.getComponents();
-         for(int i=0; i<comps.srcCount; i++){
+         for(int i=0; i<comps.dbSrcCount; i++){
          if(comps[i].equals(table.getParent().getParent())){
          System.out.println("position is "+i);
          }

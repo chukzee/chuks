@@ -5,16 +5,106 @@
  */
 package com.chuks.report.processor.form.controls;
 
+import com.chuks.report.processor.util.SearchUtil;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JToggleButton;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-final public class JFind extends Box implements FormControl{
+final public class JFind extends Box implements FormControl {
 
-    public JFind(int axis) {
-        super(axis);
+    private final JLabel lblFind;
+    private final JToggleButton matchCase;
+    private final JToggleButton wholeWord;
+    private SearchObserver searchObserver;
+    private int lastSearchIndex = -1;
+    private String lastSearchStr;
+    private JComponent source_component;
+
+    public JFind() {
+        super(BoxLayout.LINE_AXIS);
+
+        lblFind = new JLabel("Find: ");
+        add(lblFind);
+
+        final JComboBox cboFind = new JComboBox();
+        cboFind.setEditable(true);
+        cboFind.setSize(new Dimension(35, 120));
+        cboFind.setToolTipText("Press enter key to search");
+        add(cboFind);
+
+        matchCase = new JToggleButton("C");
+        matchCase.setSize(new Dimension(35, 20));
+        matchCase.setToolTipText("Match case");
+        add(matchCase);
+
+        wholeWord = new JToggleButton("W");
+        wholeWord.setSize(new Dimension(35, 20));
+        wholeWord.setToolTipText("Match whole word");
+        add(wholeWord);
+
+        //great trick!!! - and the action listener to the getEditor() only to avoid double call
+        cboFind.getEditor().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                //System.out.println("listeners count " + cboFind.getActionListeners().length);
+                //findInTable(table, wholeWord.isSelected(), matchCase.isSelected());
+                Object search_obj = cboFind.getEditor().getItem();
+                if (search_obj == null) {
+                    return;
+                }
+                String search_str = search_obj.toString();
+                if (!search_str.equals(lastSearchStr)) {
+                    lastSearchIndex = -1;//reset to before start of row
+                }
+
+                boolean isContinueSearch = lastSearchIndex > -1;
+
+                lastSearchIndex += 1; //start search from next row
+
+                System.out.println("begin from " + lastSearchIndex);
+
+                lastSearchIndex = SearchUtil.find(searchObserver.searchedData(), lastSearchIndex, search_str, matchCase.isSelected(), wholeWord.isSelected());
+                if (!search_str.equals(lastSearchStr)) {
+                    cboFind.addItem(search_str);
+                }
+                lastSearchStr = search_str;
+
+                System.out.println(lastSearchIndex);
+
+                if (lastSearchIndex > -1) {//search found
+                    searchObserver.foundSearch(source_component, lastSearchStr, lastSearchIndex);
+                }
+
+                if (lastSearchIndex < 0 && isContinueSearch) {
+                    searchObserver.finishedSearch(source_component, lastSearchStr);
+                }
+
+                if (lastSearchIndex < 0 && !isContinueSearch) {
+                    searchObserver.notFound(source_component, lastSearchStr);
+                }
+            }
+        });
+
     }
-    
+
+    public void setSearchObserver(SearchObserver searchObserver, JComponent source_component) {
+        this.searchObserver = searchObserver;
+        this.source_component = source_component;
+        lastSearchIndex = -1;
+        lastSearchStr = null;
+    }
+
 }

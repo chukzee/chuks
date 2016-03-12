@@ -22,7 +22,7 @@ import javax.swing.JTextField;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-final public class JMoveTo extends JPanel implements FormControl {
+final public class JMoveTo extends Box implements FormControl {
 
     
     /**extend JTextField to override <code>addActionListener()</code> method and prevent
@@ -73,15 +73,12 @@ final public class JMoveTo extends JPanel implements FormControl {
     int indexComp = -1;
 
     public JMoveTo() {
-        super(true);
+        super(BoxLayout.LINE_AXIS);
 
-        add(btn);
         add(txt);
+        add(btn);
 
-        txt.setBounds(0, 0, 40, 20);
-        btn.setBounds(40, 0, 50, 20);
-        btn.getInsets().set(0, 0, 0, 0);//not working
-        //this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));//not working, i do not know why.
+        btn.setSize(50, 20);
 
         txt.addFocusListener(new FocusAdapter() {
             private int num;
