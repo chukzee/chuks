@@ -19,6 +19,7 @@ import com.chuks.report.processor.entry.FieldType;
 import com.chuks.report.processor.factory.ActionSQLImpl;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JDialog;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -145,18 +146,38 @@ public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements 
         return validator.validateCustom(vHandler, dialog);
     }
 
+    protected Object getValue(JComponent comp) {
+
+        if (comp instanceof JPasswordField) {
+            return String.valueOf(((JPasswordField) comp).getPassword());
+        } else if (comp instanceof JTextComponent) {
+            return ((JTextComponent) comp).getText();
+        } else if (comp instanceof JComboBox) {
+            return ((JComboBox) comp).getSelectedItem();
+        }  else if (comp instanceof JLabel) {
+            return ((JLabel) comp).getText();
+        } else if (comp instanceof JRadioButton) {
+            return ((JRadioButton) comp).isSelected();
+        } else if (comp instanceof JCheckBox) {
+            return ((JCheckBox) comp).isSelected();
+        } else if (comp instanceof JSpinner) {
+            return ((JSpinner) comp).getValue();
+        } else {
+            throw new UnsupportedOperationException("Form component type not supported - " + comp.getName());
+
+        }
+    }
+    
     @Override
     public T getValue(JComponent comp, FieldType type) {
 
-        if (comp instanceof JTextField) {
-            return convertTo(((JTextField) comp).getText(), type);
-        } else if (comp instanceof JFormattedTextField) {
-            return convertTo(((JFormattedTextField) comp).getText(), type);
-        } else if (comp instanceof JPasswordField) {
+        if (comp instanceof JPasswordField) {//first check password since it extends JTextComponent, we should get the text in more secure way
             return convertTo(String.valueOf(((JPasswordField) comp).getPassword()), type);
+        }  else if (comp instanceof JTextComponent) {//ok, all component that extend JTextComponent e.g JTextField , JTextArea
+            return convertTo(((JTextComponent) comp).getText(), type);
         } else if (comp instanceof JComboBox) {
             return convertTo(((JComboBox) comp).getSelectedItem().toString(), type);
-        } else if (comp instanceof JLabel) {
+        } else if (comp instanceof JLabel) {//JLabel does not extend JTextComponent
             return convertTo(((JLabel) comp).getText(), type);
         } else if (comp instanceof JRadioButton) {
             return convertTo(Boolean.valueOf(((JRadioButton) comp).isSelected()).toString(), type);//ok - do not change

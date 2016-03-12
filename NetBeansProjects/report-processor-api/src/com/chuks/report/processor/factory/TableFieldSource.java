@@ -29,7 +29,7 @@ final public class TableFieldSource implements TableFieldGen {
         this.columnName = columnName;
     }
 
-    public void addSources(String... columnNames) {
+    public void addDBSources(String... columnNames) {
         for (int i = 0; i < columnNames.length; i++) {
             columnSources.add(columnNames[i].toUpperCase());//ensure unique entry by converting column name to uppercase
             flagChange.getAndSet(true);
@@ -41,11 +41,11 @@ final public class TableFieldSource implements TableFieldGen {
         return columnName;
     }
 
-    public void setColumnName(String columnName) {
+    public void setDBSrcColumn(String columnName) {
         this.columnName = columnName;
     }
 
-    Set<String> getColumnSources() {
+    Set<String> getDBSrcColumns() {
         return columnSources;
     }
 
@@ -56,20 +56,20 @@ final public class TableFieldSource implements TableFieldGen {
      *
      * @param columnSources
      */
-    void setColumnSources(Set columnSources) {
+    void setDBSrcColumns(Set columnSources) {
         this.columnSources = columnSources;
         flagChange.getAndSet(true);
     }
 
     @Override
-    public Object srcValueAt(int index) {
+    public Object dbSrcValueAt(int index) {
         return values[index];
     }
 
     @Override
-    public Object srcValue(String columnName) {
+    public Object dbSrcValue(String columnName) {
         for (int i = 0; i < values.length; i++) {
-            if (columnName.equalsIgnoreCase(getColumnAt(i))) {
+            if (columnName.equalsIgnoreCase(getDBSrcColumnAt(i))) {
                 return values[i];
             }
         }
@@ -77,7 +77,7 @@ final public class TableFieldSource implements TableFieldGen {
     }
 
     @Override
-    public String getColumnAt(int index) {
+    public String getDBSrcColumnAt(int index) {
         if (flagChange.get()) {
             backing_coln = columnSources.toArray();
             flagChange.getAndSet(false);
@@ -86,11 +86,11 @@ final public class TableFieldSource implements TableFieldGen {
     }
 
     @Override
-    public int srcCount() {
+    public int dbSrcCount() {
         return values.length;
     }
 
-    void setValueAt(int k, Object data) {
+    void setDBSrcValueAt(int k, Object data) {
         if (values.length == 0) {
             this.values = new Object[columnSources.size()];
         }
@@ -99,7 +99,7 @@ final public class TableFieldSource implements TableFieldGen {
 
     void copy(TableFieldSource columnSource) {
         columnName = columnSource.columnName;
-        for (String obj : columnSource.getColumnSources()) {
+        for (String obj : columnSource.getDBSrcColumns()) {
             columnSources.add(obj);
         }
         this.values = new Object[columnSources.size()];

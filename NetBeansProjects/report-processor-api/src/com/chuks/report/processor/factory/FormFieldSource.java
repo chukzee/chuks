@@ -15,8 +15,8 @@ import javax.swing.JComponent;
 final class FormFieldSource implements FormFieldGen {
 
     private final JComponent comp;
-    private final String[] sources;
-    Object[] values = {};
+    private final String[] sources;//names of database columns this field is derived from
+    private Object[] values = {};
 
     FormFieldSource(JComponent comp, String[] sources) {
         this.comp = comp;
@@ -32,16 +32,20 @@ final class FormFieldSource implements FormFieldGen {
     public String getAccessibleName() {
         return comp.getAccessibleContext().getAccessibleName();
     }
+    
+    String[] getDBSrcColumns() {
+        return sources;
+    }
 
     @Override
-    public Object srcValueAt(int index) {
+    public Object dbSrcValueAt(int index) {
         return values[index];
     }
 
     @Override
-    public Object srcValue(String columnName) {
+    public Object dbSrcValue(String dbColumnName) {
         for (int i = 0; i < values.length; i++) {
-            if (columnName.equalsIgnoreCase(sources[i])) {
+            if (dbColumnName.equalsIgnoreCase(sources[i])) {
                 return values[i];
             }
         }
@@ -49,15 +53,23 @@ final class FormFieldSource implements FormFieldGen {
     }
 
     @Override
-    public int srcCount() {
+    public int dbSrcCount() {
         return values.length;
     }
 
-    void setValueAt(int k, Object data) {
+    void setDBSrcValueAt(int k, Object data) {
         if (values.length == 0) {
             this.values = new Object[sources.length];
         }
         this.values[k] = data;
+    }
+
+    @Override
+    public String getDBSrcColumnAt(int index) {
+        if (index < 0) {
+            return null;
+        }
+        return sources[index];
     }
 
 }

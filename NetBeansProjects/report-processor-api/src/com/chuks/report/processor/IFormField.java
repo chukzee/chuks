@@ -26,6 +26,12 @@ public interface IFormField {
     Object getOldValue();
     
     /**
+     * Used to determine if the value of the field is changed since the last post or update. 
+     * @return 
+     */
+    boolean isUpdated();
+    
+    /**
      * The accessible name of this field component
      * @return 
      */
@@ -41,6 +47,6 @@ public interface IFormField {
      * The defined sources of this field
      * @return 
      */
-    Source[] sources();
+    String[] sources();
    
 }

@@ -27,7 +27,7 @@ public interface ITableField {
      * @return 
      */
     String getName();
-    Source[] sources();
+    String[] sources();
     Row getRow();
     int rowIndex();
     int columIndex();

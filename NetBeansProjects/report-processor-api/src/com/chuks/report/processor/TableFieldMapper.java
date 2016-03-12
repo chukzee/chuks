@@ -35,7 +35,7 @@ public class TableFieldMapper {
             Map.Entry<String, String[]> entry = ei.next();
             i++;
             sources[i] = new TableFieldSource(entry.getKey());
-            sources[i].addSources(entry.getValue());
+            sources[i].addDBSources(entry.getValue());
         }
         
        return sources; 

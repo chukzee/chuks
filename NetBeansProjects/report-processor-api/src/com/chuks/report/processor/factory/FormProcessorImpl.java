@@ -27,24 +27,31 @@ import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.IFormField;
 import com.chuks.report.processor.bind.TextBindHandler;
+import com.chuks.report.processor.event.FormActionListener;
 import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
 import com.chuks.report.processor.form.controls.JReset;
 import com.chuks.report.processor.form.controls.JSave;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.text.JTextComponent;
+import org.jooq.Param;
 
 /**
  *
@@ -213,8 +220,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private final FormPostHandler formFieldsPostHandler;
         private final String selectSQL;
         private final Map selectParam;
-        private final JDBCSettings frm_jdbc_settings;
+        private final JDBCSettings model_jdbc_settings;
         String[] db_columns;
+        private JMoveTo jMoveTo;
+        private JCounter jCounter;
 
         private DefaultFormModel(FormModelBuilder builder) throws SQLException {
 
@@ -228,7 +237,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             data = dbHelper.fetchArray();
             selectSQL = dbHelper.getSelectSQL();
             selectParam = dbHelper.getSelectParams();
-            frm_jdbc_settings = new JDBCSettings(dbHelper.getJdbcSetting());//we need to copy
+            model_jdbc_settings = new JDBCSettings(dbHelper.getJdbcSetting());//we need to copy
             db_columns = dbHelper.getColumns(true);
 
             if (callBack != null && mapper != null) {
@@ -258,10 +267,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         private Object[][] generateCallBackData() throws SQLException {
             checkValidColumn();
-            return columnSourceData(data, db_columns);
+            return fieldSourceData(data, db_columns);
         }
 
-        private Object[][] columnSourceData(Object[][] data, String[] colNames) {
+        private Object[][] fieldSourceData(Object[][] data, String[] colNames) {
 
             Object[][] new_data = new Object[data.length][];
             JComponent[] fieldComps = mapper.getFields();
@@ -275,7 +284,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                         String coln = src_arr[k];
                         for (int col = 0; col < data[i].length; col++) {
                             if (coln.equalsIgnoreCase(colNames[col])) {
-                                new_col_src.setValueAt(k, data[i][col]);
+                                new_col_src.setDBSrcValueAt(k, data[i][col]);
                                 break;
                             }
                         }
@@ -314,7 +323,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             for (FormControl control : controls) {
                 if (control instanceof JNext) {
                     JNext jnext = (JNext) control;
-                    jnext.addActionListener(new ActionListener() {
+                    jnext.addActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jnextAcitionPerform(e);
@@ -322,7 +331,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JPrevious) {
                     JPrevious jprevious = (JPrevious) control;
-                    jprevious.addActionListener(new ActionListener() {
+                    jprevious.addActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jpreviousAcitionPerform(e);
@@ -330,7 +339,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JFirst) {
                     JFirst jfirst = (JFirst) control;
-                    jfirst.addActionListener(new ActionListener() {
+                    jfirst.addActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jfirstAcitionPerform(e);
@@ -338,7 +347,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JLast) {
                     JLast jlast = (JLast) control;
-                    jlast.addActionListener(new ActionListener() {
+                    jlast.addActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jlastAcitionPerform(e);
@@ -346,7 +355,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JReset) {
                     JReset jreset = (JReset) control;
-                    jreset.addActionListener(new ActionListener() {
+                    jreset.addActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jresetAcitionPerform(e);
@@ -354,7 +363,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JSave) {
                     JSave jsave = (JSave) control;
-                    jsave.addActionListener(new ActionListener() {
+                    jsave.addActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jsaveAcitionPerform(e);
@@ -362,13 +371,13 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JMoveTo) {
                     JMoveTo jmoveTo = (JMoveTo) control;
-                    jmoveTo.addButtonActionListener(new ActionListener() {
+                    jmoveTo.addButtonActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jmoveToAcitionPerform(e);
                         }
                     });
-                    jmoveTo.addTextActionListener(new ActionListener() {
+                    jmoveTo.addTextActionListener(new FormActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             jmoveToAcitionPerform(e);
@@ -409,9 +418,103 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             }
         }
 
-        void refresh() {
-            //TOOD: Implementation
+        private boolean refresh() {
 
+            Object[][] freshData;
+
+            if (dataInputHandler == null) {
+                freshData = refreshUsingSql();
+            } else {
+                freshData = refreshUsingDataInputHandler();
+            }
+
+            return freshData != null;
+        }
+
+        private Object[][] refreshUsingDataInputHandler() {
+
+            FormDataInputImpl input = new FormDataInputImpl(model_jdbc_settings);
+            dataInputHandler.onInput(input);
+            return input.getData();
+        }
+
+        private Object[][] refreshUsingSql() {
+
+            Connection conn = null;
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            try {
+
+                conn = dbHelper.getConnection(model_jdbc_settings);
+
+                if (conn == null) {
+                    return null;
+                }
+                if (selectSQL == null || selectSQL.isEmpty()) {
+                    return null;
+                }
+
+                stmt = conn.prepareStatement(selectSQL);
+                Set<Map.Entry<String, Param>> e = selectParam.entrySet();
+                for (Map.Entry<String, Param> entry : e) {
+                    stmt.setObject(Integer.parseInt(entry.getKey()), entry.getValue().getValue());
+                }
+                rs = stmt.executeQuery();
+                ResultSetMetaData m = rs.getMetaData();
+                String[] db_cols = new String[m.getColumnCount()];
+                ArrayList<Object[]> l = new ArrayList();
+
+                while (rs.next()) {
+
+                    Object[] row = new Object[db_cols.length];
+                    for (int i = 0; i < db_cols.length; i++) {
+                        //set column name using getColumnLabel method which more apporiate just in case there is AS clause
+                        db_cols[i] = m.getColumnLabel(i + 1);//first column starts from 1, second from 2 and so on.
+
+                        //set db field value
+                        row[i] = rs.getObject(i + 1);//first column starts from 1, second from 2 and so on.
+                    }
+                    l.add(row);
+                }
+
+                Object[][] _data = new Object[l.size()][db_cols.length];
+                for (int i = 0; i < l.size(); i++) {
+                    _data[i] = l.get(i);
+                }
+
+                return fieldSourceData(_data, db_cols);
+
+            } catch (SQLException ex) {
+                String err_msg = "Failed to refresh table after operation!";
+                System.err.println(err_msg);
+                Logger.getLogger(FormProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
+                //use any of the form component to get the frame to display the message dialog
+                JOptionPane.showMessageDialog(fieldsComponents[0], err_msg, "Refresh Failed", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                if (rs != null) {
+                    try {
+                        rs.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FormProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            return null;
         }
 
         Object getFieldValue(Object[] record_data, int field_index) {
@@ -448,8 +551,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         void setComponentData(JComponent comp, Object compData) {
 
             String strData = compData != null ? compData.toString() : null; // null will clear the text.
-            if (comp instanceof JTextComponent) {//All components that extends JTextComponent.
+            if (comp instanceof JTextComponent) {//All components that extend JTextComponent.
                 ((JTextComponent) comp).setText(strData);
+            } else if (comp instanceof JLabel) {//JLabel does not extend JTextComponent.
+                ((JLabel) comp).setText(strData);
             } else if (comp instanceof JList) {
                 JList lst = (JList) comp;
                 if (compData != null) {
@@ -569,29 +674,37 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private void jnextAcitionPerform(ActionEvent e) {
             if (hasNext()) {
                 displayRecord(next());
+                updateJCounter();
             }
         }
 
         private void jpreviousAcitionPerform(ActionEvent e) {
             if (hasPrevious()) {
                 displayRecord(previous());
+                updateJCounter();
             }
         }
 
         private void jfirstAcitionPerform(ActionEvent e) {
             displayRecord(first());
+            updateJCounter();
         }
 
         private void jlastAcitionPerform(ActionEvent e) {
             displayRecord(last());
+            updateJCounter();
         }
 
         private void jresetAcitionPerform(ActionEvent e) {
             displayRecord(reset());//this will reset the form components
+            updateJCounter();
         }
 
         private void jsaveAcitionPerform(ActionEvent e) {
-            saveRecord();
+            if (saveRecord()) {
+                reset();//after every successful save, reset the form
+                updateJCounter();
+            }
         }
 
         private void jmoveToAcitionPerform(ActionEvent e) {
@@ -605,16 +718,44 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 return;//though negative do nothing. do not even reset! not your job.
             }
             displayRecord(moveTo(move_index));
+            updateJCounter();
         }
 
         private void jfindAcitionPerform(ActionEvent e) {
 
+            //TODO implementation
+            updateJCounter();//finally
+        }
+
+        private void updateJCounter() {
+            if (jCounter == null || data == null) {
+                return;//do nothing
+            }
+
+            jCounter.setRecordLabel(record_index + 1, data.length);
         }
 
         JMoveTo getJMoveTo() {
+            if (jMoveTo != null) {
+                return jMoveTo;
+            }
             for (FormControl control : controls) {
                 if (control instanceof JMoveTo) {
-                    return (JMoveTo) control;
+                    jMoveTo = (JMoveTo) control;
+                    return jMoveTo;
+                }
+            }
+            return null;
+        }
+
+        JCounter getJCounter() {
+            if (jCounter != null) {
+                return jCounter;
+            }
+            for (FormControl control : controls) {
+                if (control instanceof JCounter) {
+                    jCounter = (JCounter) control;
+                    return jCounter;
                 }
             }
             return null;
@@ -645,29 +786,33 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return null;//force form components reset by returning null
         }
 
-        private void saveRecord() {
+        private boolean saveRecord() {
 
             FormFieldPost post = new FormFieldPost() {
-                IFormField[] newEntries = new IFormField[0];
-                IFormField[] updateEntries = new IFormField[0];
+                FormFieldImpl[] updateEntries = new FormFieldImpl[0];
 
                 @Override
-                public IFormField[] getNew() {
-                    if (!isNewEntry()) {
-                        return new IFormField[0];
-                    }
-                    //COME BACK TO FINISH
-
-                    return null;
-                }
-
-                @Override
-                public IFormField[] getChanges() {
+                public IFormField[] getFormFields() {
                     if (!isUpdate()) {
                         return new IFormField[0];
                     }
+                    if (updateEntries.length > 0) {
+                        return updateEntries;//already have them
+                    }
                     //COME BACK TO FINISH
-                    return null;
+                    updateEntries = new FormFieldImpl[fieldsComponents.length];
+                    for (int field_index = 0; field_index < updateEntries.length; field_index++) {
+                        String accessible_name = fieldsComponents[field_index].getAccessibleContext().getAccessibleName();
+                        Object old_value = record_index > 0 ? getFieldValue(data[record_index], field_index) : null;
+                        Object value = getValue(fieldsComponents[field_index]);
+                        updateEntries[field_index] = new FormFieldImpl(accessible_name, fieldsComponents[field_index], old_value, value);
+                        if (callBack != null && old_value != null) {
+                            FormFieldSource fieldSource = (FormFieldSource) old_value;
+                            updateEntries[field_index].setSources(fieldSource.getDBSrcColumns());//come back
+                        }
+
+                    }
+                    return updateEntries;
                 }
 
                 @Override
@@ -682,17 +827,15 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
                 @Override
                 public int count() {
-                    int new_count = getNew().length;
-                    if (new_count > 0) {
-                        return new_count;
-                    } else {
-                        return getChanges().length;
-                    }
+                    return getFormFields().length;
                 }
+
             };
 
-            formFieldsPostHandler.doPost(new ActionSQLImpl(frm_jdbc_settings), post);
+            formFieldsPostHandler.doPost(new ActionSQLImpl(model_jdbc_settings), post);
+
+            return refresh();
+
         }
     }
-
 }

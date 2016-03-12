@@ -321,7 +321,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         String[] columns = new String[columnSources.length];
         for (int i = 0; i < columnSources.length; i++) {
             columns[i] = columnSources[i].fieldColumn();
-            Object[] srcList = columnSources[i].getColumnSources().toArray();
+            Object[] srcList = columnSources[i].getDBSrcColumns().toArray();
             for (Object srcList1 : srcList) {
                 String col = (String) srcList1;
                 String[] cols = dbHelper.getColumns(true); //get colums as they are. that is what we want here.
@@ -363,12 +363,12 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 TableFieldSource new_col_src = new TableFieldSource();
                 new_col_src.copy(columnSources[j]);
                 cs[j] = new_col_src;
-                Object[] src_list = new_col_src.getColumnSources().toArray();
+                Object[] src_list = new_col_src.getDBSrcColumns().toArray();
                 for (int k = 0; k < src_list.length; k++) {
                     String coln = (String) src_list[k];
                     for (int col = 0; col < data1.length; col++) {
                         if (coln.equalsIgnoreCase(colNames[col])) {
-                            new_col_src.setValueAt(k, data1[col]);
+                            new_col_src.setDBSrcValueAt(k, data1[col]);
                             break;
                         }
                     }
@@ -578,7 +578,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                             Object value = model.getValueAt(row_index, col_index);
 
                             TableFieldImpl f = new TableFieldImpl(name, old_value, value, row_index, col_index);
-                            f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col_index].getColumnSources() : null);
+                            f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col_index].getDBSrcColumns() : null);
                             f.setRow(row);
                             row.setFields(fields[i]);
                             fields[i][j] = f;
@@ -601,7 +601,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         };
 
-        model.deleteRowHandler.doDelete(new ActionSQLImpl(model.jdbc_settings), r);
+        model.deleteRowHandler.doDelete(new ActionSQLImpl(model.model_jdbc_settings), r);
 
         model.refresh(table);
     }
@@ -633,7 +633,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                         Object old_value = model.getOldValueAt(row, col);
                         Object value = model.getValueAt(row, col);
                         TableFieldImpl f = new TableFieldImpl(name, old_value, value, row, col);
-                        f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col].getColumnSources() : null);
+                        f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col].getDBSrcColumns() : null);
                         i++;
                         fields[i] = f;
                     }
@@ -649,7 +649,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                             Object old_value = model.getOldValueAt(row, col);
                             Object value = model.getValueAt(row, col);
                             TableFieldImpl f = new TableFieldImpl(name, old_value, value, row, col);
-                            f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col].getColumnSources() : null);
+                            f.setSource(model.getFieldSources() != null ? model.getFieldSources()[col].getDBSrcColumns() : null);
                             rowFieds[c] = f;
                             rowImpl.setFields(rowFieds);
                             fields[i].setRow(rowImpl);
@@ -671,7 +671,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         };
 
-        model.updateFieldHandler.doUpdate(new ActionSQLImpl(model.jdbc_settings), f);
+        model.updateFieldHandler.doUpdate(new ActionSQLImpl(model.model_jdbc_settings), f);
         model.refresh(table);
 
     }
@@ -717,7 +717,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private String select_sql;
         private TableFieldSource[] fieldSources;
         private Map<String, Param> select_params;
-        private JDBCSettings jdbc_settings;
+        private JDBCSettings model_jdbc_settings;
         private Map<String, Object> oldFieldVal = Collections.synchronizedMap(new HashMap());
         private TableDataInputHandler dataInputHandler;
 
@@ -730,12 +730,13 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 String select_sql,
                 Map<String, Param> select_params,
                 JDBCSettings jdbc_settings) {
+            
             this.inputCallBack = inputCallBack;
             this.updateFieldHandler = updateFieldHandler;
             this.deleteRowHandler = deleteRowHandler;
             this.select_sql = select_sql;
             this.select_params = select_params;
-            this.jdbc_settings = new JDBCSettings(jdbc_settings);//we need to copy
+            this.model_jdbc_settings = new JDBCSettings(jdbc_settings);//we need to copy
         }
 
         private void setDataInputHandler(TableDataInputHandler dataInputHandler) {
@@ -743,21 +744,57 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
 
         private void refresh(JTable table) {
+            
+            List freshData;
+            
+            if (dataInputHandler == null) {
+                freshData = refreshUsingSql(table);
+            } else {
+                freshData = refreshUsingDataInputHandler();
+            }
+
+            if (freshData == null) {
+                return;
+            }
+
+            clear();
+            addRangeRowData(freshData);
+
+        }
+
+        private List refreshUsingDataInputHandler() {
+            
+            TableDataInputImpl input = new TableDataInputImpl(model_jdbc_settings); 
+            dataInputHandler.onInput(input);
+
+            if (input.getData() == null) {
+                return null;
+            }
+
+            List list = new ArrayList();
+            for (Object[] data : input.getData()) {
+                list.add(data);
+            }
+            return list;
+        }
+
+        private List refreshUsingSql(JTable table) {
+
             Connection conn = null;
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
                 System.out.println("connecting...");
 
-                conn = dbHelper.getConnection(jdbc_settings);
+                conn = dbHelper.getConnection(model_jdbc_settings);
 
                 System.out.println("connected");
 
                 if (conn == null) {
-                    return;
+                    return null;
                 }
                 if (select_sql == null || select_sql.isEmpty()) {
-                    return;
+                    return null;
                 }
 
                 stmt = conn.prepareStatement(select_sql);
@@ -789,10 +826,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 }
 
                 List list = columnSourceList(_data, db_cols, fieldSources);
-
-                clear();
-                addRangeRowData(list);
-
+                return list;
             } catch (SQLException ex) {
                 String err_msg = "Failed to refresh table after operation!";
                 System.err.println(err_msg);
@@ -822,6 +856,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 }
             }
 
+            return null;
         }
 
         void setColumnNames(String... columns) {

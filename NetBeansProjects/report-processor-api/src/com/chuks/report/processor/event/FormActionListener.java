@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor;
+package com.chuks.report.processor.event;
+
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TableFieldGen extends Source{
-
-    String fieldColumn();
+public interface FormActionListener extends ActionListener {
 
 }

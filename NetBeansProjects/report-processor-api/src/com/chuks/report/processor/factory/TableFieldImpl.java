@@ -7,7 +7,6 @@ package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.ITableField;
 import com.chuks.report.processor.Row;
-import com.chuks.report.processor.Source;
 import java.util.Set;
 
 /**
@@ -17,7 +16,7 @@ import java.util.Set;
 
 class TableFieldImpl implements ITableField{
     private final String name;
-    private final Source[] sources = new Source[0];
+    private final String[] sources = new String[0];
     private Row row;
     private final Object old_value;
     private final Object value;
@@ -58,7 +57,7 @@ class TableFieldImpl implements ITableField{
     }
 
     @Override
-    public Source[] sources() {
+    public String[] sources() {
         return sources;
     }
 
