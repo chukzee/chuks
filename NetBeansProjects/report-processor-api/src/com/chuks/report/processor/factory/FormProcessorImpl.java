@@ -26,6 +26,7 @@ import com.chuks.report.processor.FormFieldPost;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.IFormField;
+import com.chuks.report.processor.TableFieldGen;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.event.FormActionListener;
 import com.chuks.report.processor.event.SearchObserver;
@@ -84,7 +85,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
     @Override
     public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException {
-        
+
         DefaultFormModel formModel = new FormModelBuilder()
                 .setFormFieldCallBack(callBack)
                 .setFormFieldMapper(mapper)
@@ -215,7 +216,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         JComponent[] fieldsComponents;
         private final JControllerPane controllers_pane;
         Object[][] data;
-        int record_index = -1;
+        private final int RESET_INDEX = -1;
+        int record_index = RESET_INDEX;
         private final FormFieldCallBack callBack;
         private final FormDataInputHandler dataInputHandler;
         private final FormFieldMapper mapper;
@@ -257,6 +259,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             checksControlRepitition();
             initControls();
             initControllerPane();
+
+            if (data!=null || data.length > 0) {
+                displayRecord(moveTo(0));//move to the first record
+                updateJCounter();
+            }
         }
 
         private void initControllerPane() {
@@ -430,6 +437,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 freshData = refreshUsingDataInputHandler();
             }
 
+            updateJCounter();
+
             return freshData != null;
         }
 
@@ -539,7 +548,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return fieldValue;
         }
 
-        void displayRecord(Object[] record_data) {
+        private void displayRecord(Object[] record_data) {
             for (int i = 0; i < this.fieldsComponents.length; i++) {
                 if (record_data != null) {
                     Object fieldValue = getFieldValue(record_data[i]);
@@ -620,35 +629,38 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             }
         }
 
-        boolean hasNext() {
+        private boolean hasNext() {
             return record_index < data.length - 1;
         }
 
-        boolean hasPrevious() {
+        private boolean hasPrevious() {
             return record_index > 0;
         }
 
-        Object[] next() {
+        private Object[] next() {
             ++record_index;
             return data[record_index];
         }
 
-        Object[] previous() {
+        private Object[] previous() {
             --record_index;
             return data[record_index];
         }
 
-        Object[] first() {
+        private Object[] first() {
             record_index = 0;
             return data[record_index];
         }
 
-        Object[] last() {
+        private Object[] last() {
             record_index = data.length - 1;
             return data[data.length - 1];
         }
 
-        Object[] moveTo(int index) {
+        private Object[] moveTo(int index) {
+            if (index >= data.length) {
+                return null;
+            }
             record_index = index;
             return data[record_index];
         }
@@ -657,15 +669,15 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return record_index;
         }
 
-        boolean isFirst() {
+        private boolean isFirst() {
             return record_index == 0;
         }
 
-        boolean isBeforeFirst() {
+        private boolean isBeforeFirst() {
             return record_index < 0;
         }
 
-        boolean isLast() {
+        private boolean isLast() {
             return record_index >= data.length - 1;
         }
 
@@ -788,7 +800,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         private Object[] reset() {
-            this.record_index = -1;
+            this.record_index = RESET_INDEX;
             return null;//force form components reset by returning null
         }
 
@@ -800,9 +812,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 @Override
                 public IFormField[] getFormFields() {
 
-                    if (!isUpdate()) {
-                        return new IFormField[0];
-                    }
+
                     if (updateEntries.length > 0) {
                         return updateEntries;//already have them
                     }
@@ -810,11 +820,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     updateEntries = new FormFieldImpl[fieldsComponents.length];
                     for (int field_index = 0; field_index < updateEntries.length; field_index++) {
                         String accessible_name = fieldsComponents[field_index].getAccessibleContext().getAccessibleName();
-                        Object old_value = record_index > 0 ? getFieldValue(data[record_index], field_index) : null;
+                        Object old_value = record_index > RESET_INDEX ? getFieldValue(data[record_index], field_index) : null;
                         Object value = getValue(fieldsComponents[field_index]);
                         updateEntries[field_index] = new FormFieldImpl(accessible_name, fieldsComponents[field_index], old_value, value);
                         if (callBack != null && old_value != null) {
-                            FormFieldSource fieldSource = (FormFieldSource) old_value;
+                            FormFieldSource fieldSource = (FormFieldSource) data[record_index][field_index];
                             updateEntries[field_index].setSources(fieldSource.getDBSrcColumns());
                         }
 
@@ -824,12 +834,12 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
                 @Override
                 public boolean isNew() {
-                    return record_index == -1;
+                    return record_index == RESET_INDEX;
                 }
 
                 @Override
                 public boolean isUpdate() {
-                    return record_index > -1;
+                    return record_index > RESET_INDEX;
                 }
 
                 @Override
@@ -847,7 +857,22 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         @Override
         public Object[][] searchedData() {
-            return data;
+            Object[][] backing_data = new Object[data.length][];
+            for (int i = 0; i < data.length; i++) {
+                
+                Object[] d =  data[i];
+                backing_data[i] = new Object[d.length];
+                for (int k = 0; k < d.length; k++) {
+                    if (callBack == null) {
+                        backing_data[i][k] = d[k];
+                    } else {
+                        FormFieldGen fieldGen = ((FormFieldGen[]) d)[k];
+                        backing_data[i][k] = callBack.onBeforeInput(fieldGen, i);
+                    }
+                }
+            }
+            
+            return backing_data;
         }
 
         @Override

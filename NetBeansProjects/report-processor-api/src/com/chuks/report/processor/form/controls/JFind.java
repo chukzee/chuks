@@ -67,6 +67,7 @@ final public class JFind extends Box implements FormControl {
                 }
                 String search_str = search_obj.toString();
                 if (!search_str.equals(lastSearchStr)) {
+                    searchCount = 0;
                     lastSearchIndex = -1;//reset to before start of row
                 }
 

@@ -619,7 +619,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     private void performUpdateOperation(final JTable table) {
         final TableReportProcessorImpl.ReportTableModel model = checkModel(table);
-        if (model != null) {
+        if (model == null) {
             return;
         }
 

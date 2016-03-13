@@ -72,7 +72,9 @@ public class TestFormProc extends javax.swing.JFrame {
 
                     @Override
                     public void doPost(ActionSQL a, FormFieldPost f) {
-
+                        f.getFormFields();
+                        System.out.println("is new = "+f.isNew());
+                        System.out.println("is update = "+f.isUpdate());
                     }
                 }, jCounter1, jFind1, jFirst1, jLast1, jMoveTo1, jNext1, jPrevious1, jReset1, jSave1);
     }
