@@ -19,11 +19,12 @@ public class TableFieldMapper {
 
     Map<String, String[]> tableFieldMap;
 
-    public void map(String fieldColumName, String... db_columns) {
+    public TableFieldMapper map(String fieldColumName, String... db_columns) {
         if (tableFieldMap == null) {
             tableFieldMap = new LinkedHashMap();
         }
         tableFieldMap.put(fieldColumName, db_columns);
+        return this;
     }
     
     public TableFieldSource[] getFieldSources(){

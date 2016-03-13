@@ -28,6 +28,7 @@ import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.IFormField;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.event.FormActionListener;
+import com.chuks.report.processor.event.SearchObserver;
 import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
 import com.chuks.report.processor.form.controls.JReset;
@@ -83,6 +84,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
     @Override
     public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException {
+        
         DefaultFormModel formModel = new FormModelBuilder()
                 .setFormFieldCallBack(callBack)
                 .setFormFieldMapper(mapper)
@@ -207,7 +209,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
     }
 
-    class DefaultFormModel {
+    class DefaultFormModel implements SearchObserver {
 
         FormControl[] controls;
         JComponent[] fieldsComponents;
@@ -385,10 +387,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     });
                 } else if (control instanceof JFind) {
                     JFind jfind = (JFind) control;
-                    //COME BACK
+                    jfind.setSearchObserver(this, jfind);
                 } else if (control instanceof JCounter) {
                     JCounter jcounter = (JCounter) control;
-                    //COME BACK
+                    //do nothing.
                 } else {
                     throw new IllegalArgumentException("Component not supported!");
                 }
@@ -721,14 +723,18 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             updateJCounter();
         }
 
-        private void jfindAcitionPerform(ActionEvent e) {
-
-            //TODO implementation
+        /**
+         * Called when the search is found.
+         *
+         * @param found_index
+         */
+        private void jfindAcitionPerform(int found_index) {
+            displayRecord(moveTo(found_index));
             updateJCounter();//finally
         }
 
         private void updateJCounter() {
-            if (jCounter == null || data == null) {
+            if (getJCounter() == null || data == null) {
                 return;//do nothing
             }
 
@@ -793,14 +799,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
                 @Override
                 public IFormField[] getFormFields() {
-                    
+
                     if (!isUpdate()) {
                         return new IFormField[0];
                     }
                     if (updateEntries.length > 0) {
                         return updateEntries;//already have them
                     }
-                    
+
                     updateEntries = new FormFieldImpl[fieldsComponents.length];
                     for (int field_index = 0; field_index < updateEntries.length; field_index++) {
                         String accessible_name = fieldsComponents[field_index].getAccessibleContext().getAccessibleName();
@@ -837,6 +843,28 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
             return refresh();
 
+        }
+
+        @Override
+        public Object[][] searchedData() {
+            return data;
+        }
+
+        @Override
+        public void foundSearch(JComponent source_component, String searchStr, int found_index) {
+            jfindAcitionPerform(found_index);
+        }
+
+        @Override
+        public void finishedSearch(JComponent source_component, String searchStr, int total_found) {
+            String match_str = total_found > 1 ? total_found + " matches" : total_found + " match";
+            JOptionPane.showMessageDialog(source_component, "Finished searching " + searchStr,
+                    "Finished - " + match_str, JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        @Override
+        public void notFound(JComponent source_component, String searchStr) {
+            JOptionPane.showMessageDialog(source_component, searchStr + " was not found.", "Not found", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

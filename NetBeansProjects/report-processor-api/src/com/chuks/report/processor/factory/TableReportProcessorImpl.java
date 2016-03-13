@@ -18,7 +18,7 @@ import javax.swing.table.*;
 import org.jooq.Param;
 import com.chuks.report.processor.*;
 import com.chuks.report.processor.form.controls.JFind;
-import com.chuks.report.processor.form.controls.SearchObserver;
+import com.chuks.report.processor.event.SearchObserver;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.util.SearchUtil;
 import java.awt.event.FocusEvent;
@@ -432,75 +432,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     }
 
-    /*
-     private void addFind(final JTable table, Box toolbox) {
-     Box findBox = Box.createHorizontalBox();
-     toolbox.add(findBox);
-
-     JLabel lblFind = new JLabel("Find: ");
-     findBox.add(lblFind);
-
-     final JComboBox cboFind = new JComboBox();
-     cboFind.setEditable(true);
-     cboFind.setSize(new Dimension(35, 120));
-     cboFind.setToolTipText("Press enter key to search");
-     findBox.add(cboFind);
-
-     final JToggleButton matchCase = new JToggleButton("C");
-     matchCase.setSize(new Dimension(35, 20));
-     matchCase.setToolTipText("Match case");
-     findBox.add(matchCase);
-
-     final JToggleButton wholeWord = new JToggleButton("W");
-     wholeWord.setSize(new Dimension(35, 20));
-     wholeWord.setToolTipText("Match whole word");
-     findBox.add(wholeWord);
-
-     //great trick!!! - and the action listener to the getEditor() only to avoid double call
-     cboFind.getEditor().addActionListener(new ActionListener() {
-
-     @Override
-     public void actionPerformed(ActionEvent e) {
-
-     System.out.println("listeners count "+cboFind.getActionListeners().length);
-                
-     //findInTable(table, wholeWord.isSelected(), matchCase.isSelected());
-     ReportTableModel model = (ReportTableModel) table.getModel();
-     Object search_obj = cboFind.getEditor().getItem();
-     if (search_obj == null) {
-     return;
-     }
-     String search_str = search_obj.toString();
-     if (!search_str.equals(model.lastSearchStr)) {
-     model.lastSearchIndex = -1;//reset to before start of row
-     }
-
-     boolean isContinueSearch = model.lastSearchIndex > -1;
-
-     model.lastSearchIndex += 1; //start search from next row
-
-     System.out.println("begin from " + model.lastSearchIndex);
-
-     model.lastSearchIndex = SearchUtil.find(model.backing_data, model.lastSearchIndex, search_str, matchCase.isSelected(), wholeWord.isSelected());
-     if (!search_str.equals(model.lastSearchStr)) {
-     cboFind.addItem(search_str);
-     }
-     model.lastSearchStr = search_str;
-
-     System.out.println(model.lastSearchIndex);
-
-     if (model.lastSearchIndex > -1) {
-     //come back
-     }
-
-     if (model.lastSearchIndex < 0 && isContinueSearch) {
-     System.err.println("finished search");
-     }
-     }
-     });
-
-     }
-     */
     private void addFilter(final JTable table, Box toolbox) {
 
         Box filterBox = Box.createHorizontalBox();
@@ -800,8 +731,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private JDBCSettings model_jdbc_settings;
         private Map<String, Object> oldFieldVal = Collections.synchronizedMap(new HashMap());
         private TableDataInputHandler dataInputHandler;
-        private String lastSearchStr;
-        private int lastSearchIndex = -1; //before firs row
 
         private ReportTableModel() {
         }
@@ -1013,7 +942,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             return Object.class;
-            //return getValueAt(0, columnIndex).getClass();
+            //return getValueAt(0, columnIndex).getClass();//NOT WHAT WE WANT!!!
         }
 
         private void setTableFieldSource(TableFieldSource[] columnSources) {
@@ -1036,17 +965,22 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         @Override
         public void foundSearch(JComponent source_component, String searchStr, int found_index) {
-            System.out.println("found " + searchStr + " at row" + found_index);
+            JTable table = (JTable) source_component;
+            table.changeSelection(table.convertRowIndexToView(found_index), 0, false, false);
         }
 
         @Override
-        public void finishedSearch(JComponent source_component, String searchStr) {
-            System.out.println("finished search - " + searchStr);
+        public void finishedSearch(JComponent source_component, String searchStr, int total_found) {
+            JTable table = (JTable) source_component;
+            String match_str = total_found > 1 ? total_found + " matches" : total_found + " match";
+            JOptionPane.showMessageDialog(table, "Finished searching " + searchStr,
+                    "Finished - " + match_str, JOptionPane.INFORMATION_MESSAGE);
         }
 
         @Override
         public void notFound(JComponent source_component, String searchStr) {
-            System.out.println("not found - " + searchStr);
+            JTable table = (JTable) source_component;
+            JOptionPane.showMessageDialog(table, searchStr + " was not found.", "Not found", JOptionPane.INFORMATION_MESSAGE);
         }
 
     }

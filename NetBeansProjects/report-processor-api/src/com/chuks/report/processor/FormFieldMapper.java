@@ -19,11 +19,12 @@ public class FormFieldMapper {
 
     Map<JComponent, String[]> formFieldMap;//use LinkedHashMap for maintaining insert order - very important
 
-    public void map(JComponent comp, String... db_columns) {
+    public FormFieldMapper map(JComponent comp, String... db_columns) {
         if (formFieldMap == null) {
             formFieldMap = new LinkedHashMap();//use LinkedHashMap for maintaining insert order - very important
         }
         formFieldMap.put(comp, db_columns);
+        return this;
     }
 
     public String[] getSources(int field_index) {

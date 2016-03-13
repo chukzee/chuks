@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.form.controls;
+package com.chuks.report.processor.event;
 
 import javax.swing.JComponent;
 
@@ -14,6 +14,6 @@ import javax.swing.JComponent;
 public interface SearchObserver {
      Object[][] searchedData();
      void foundSearch(JComponent source_component, String searchStr, int found_index);
-     void finishedSearch(JComponent source_component, String searchStr);
+     void finishedSearch(JComponent source_component, String searchStr, int total_found);
      void notFound(JComponent source_component, String searchStr);
 }

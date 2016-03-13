@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.form.controls;
 
+import com.chuks.report.processor.event.SearchObserver;
 import com.chuks.report.processor.util.SearchUtil;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -29,6 +30,7 @@ final public class JFind extends Box implements FormControl {
     private final JToggleButton wholeWord;
     private SearchObserver searchObserver;
     private int lastSearchIndex = -1;
+    private int searchCount;
     private String lastSearchStr;
     private JComponent source_component;
 
@@ -59,8 +61,6 @@ final public class JFind extends Box implements FormControl {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                //System.out.println("listeners count " + cboFind.getActionListeners().length);
-                //findInTable(table, wholeWord.isSelected(), matchCase.isSelected());
                 Object search_obj = cboFind.getEditor().getItem();
                 if (search_obj == null) {
                     return;
@@ -74,26 +74,28 @@ final public class JFind extends Box implements FormControl {
 
                 lastSearchIndex += 1; //start search from next row
 
-                System.out.println("begin from " + lastSearchIndex);
-
                 lastSearchIndex = SearchUtil.find(searchObserver.searchedData(), lastSearchIndex, search_str, matchCase.isSelected(), wholeWord.isSelected());
                 if (!search_str.equals(lastSearchStr)) {
                     cboFind.addItem(search_str);
+                    cboFind.setSelectedItem(search_str);
                 }
                 lastSearchStr = search_str;
 
-                System.out.println(lastSearchIndex);
-
                 if (lastSearchIndex > -1) {//search found
+                    searchCount++;
                     searchObserver.foundSearch(source_component, lastSearchStr, lastSearchIndex);
                 }
 
                 if (lastSearchIndex < 0 && isContinueSearch) {
-                    searchObserver.finishedSearch(source_component, lastSearchStr);
+                    searchObserver.finishedSearch(source_component, lastSearchStr, searchCount);
                 }
 
                 if (lastSearchIndex < 0 && !isContinueSearch) {
                     searchObserver.notFound(source_component, lastSearchStr);
+                }
+                
+                if (lastSearchIndex < 0) {
+                    searchCount = 0;//initialize search count
                 }
             }
         });
@@ -104,6 +106,7 @@ final public class JFind extends Box implements FormControl {
         this.searchObserver = searchObserver;
         this.source_component = source_component;
         lastSearchIndex = -1;
+        searchCount = 0;
         lastSearchStr = null;
     }
 

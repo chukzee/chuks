@@ -119,7 +119,9 @@ final public class JMoveTo extends Box implements FormControl {
         if (txt.getText().isEmpty()) {
             return -1;
         }
-        return Integer.parseInt(txt.getText());
+        int record_number = Integer.parseInt(txt.getText());
+        int record_index = record_number -1;
+        return record_index;
     }
 
     /*
