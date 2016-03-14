@@ -18,6 +18,9 @@ import javax.swing.JTextField;
 import com.chuks.report.processor.entry.FieldType;
 import com.chuks.report.processor.factory.ActionSQLImpl;
 import com.chuks.report.processor.util.JDBCSettings;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Window;
 import javax.swing.JDialog;
 import javax.swing.text.JTextComponent;
 
@@ -251,6 +254,30 @@ public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements 
 
         }
 
+    }
+
+    protected Component getFrame(JComponent comp) {
+        
+        if (comp == null) {
+            return null;
+        }
+        
+        Container parent = comp;
+        int count = 0;
+        while (true) {
+            Container p = parent.getParent();
+            if (p instanceof Window) {//Window will take care of Frame and Dialog since both extend Window class
+                return parent;
+            }
+            if (p == null) {
+                return comp;
+            }
+            count++;
+            if (count >= 100000) {
+                return comp;//SHOCKER!!!  - this should not happen!!!
+            }
+            parent = p;
+        }
     }
 
 }

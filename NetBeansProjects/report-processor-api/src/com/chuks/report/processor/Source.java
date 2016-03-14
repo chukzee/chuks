@@ -11,12 +11,14 @@ package com.chuks.report.processor;
  */
 public interface Source {
 
+    SourceMath math();
+
     Object dbSrcValueAt(int index);
 
     Object dbSrcValue(String dbColumnName);
 
     String getDBSrcColumnAt(int index);
 
-    int dbSrcCount();  
-    
+    int dbSrcCount();
+
 }

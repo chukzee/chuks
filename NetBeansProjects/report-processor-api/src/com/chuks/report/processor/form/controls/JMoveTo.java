@@ -24,10 +24,11 @@ import javax.swing.JTextField;
  */
 final public class JMoveTo extends Box implements FormControl {
 
-    
-    /**extend JTextField to override <code>addActionListener()</code> method and prevent
-     * problems arising from multiple use of form action listeners 
-     * by same control
+    private int num;
+    /**
+     * extend JTextField to override <code>addActionListener()</code> method and
+     * prevent problems arising from multiple use of form action listeners by
+     * same control
      */
     private JTextField txt = new JTextField() {
         @Override
@@ -47,9 +48,10 @@ final public class JMoveTo extends Box implements FormControl {
         }
     };
 
-    /**extend JButton to override <code>addActionListener()</code> method and prevent
-     * problems arising from multiple use of form action listeners 
-     * by same control
+    /**
+     * extend JButton to override <code>addActionListener()</code> method and
+     * prevent problems arising from multiple use of form action listeners by
+     * same control
      */
     private JButton btn = new JButton("Go") {
 
@@ -81,21 +83,12 @@ final public class JMoveTo extends Box implements FormControl {
         btn.setSize(50, 20);
 
         txt.addFocusListener(new FocusAdapter() {
-            private int num;
 
             @Override
             public void focusLost(FocusEvent e) {
-                try {
-                    int prev = num;
-                    num = Integer.parseInt(txt.getText());
-                    if (num < 0) {
-                        num = prev;
-                        txt.setText(String.valueOf(num));
-                    }
-                } catch (NumberFormatException ex) {
-                    txt.setText(String.valueOf(num));
-                }
+                validateText(txt.getText());
             }
+
         });
     }
 
@@ -115,13 +108,32 @@ final public class JMoveTo extends Box implements FormControl {
         txt.removeActionListener(l);
     }
 
+    private int validateText(String text) {
+        try {
+            int prev = num;
+            num = Integer.parseInt(txt.getText());
+            if (num < 0) {
+                num = prev;
+                txt.setText(String.valueOf(num));
+            }
+        } catch (NumberFormatException ex) {
+            txt.setText(String.valueOf(num));
+        }
+        return num;
+    }
+
     public int getMoveToIndex() {
         if (txt.getText().isEmpty()) {
             return -1;
         }
-        int record_number = Integer.parseInt(txt.getText());
-        int record_index = record_number -1;
+        int record_number = validateText(txt.getText());
+        int record_index = record_number - 1;
         return record_index;
+    }
+
+    public void setRecordNumber(int num) {
+        txt.setText(Integer.toString(num));
+        this.num = num;
     }
 
     /*

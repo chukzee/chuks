@@ -6,6 +6,7 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.FormFieldGen;
+import com.chuks.report.processor.SourceMath;
 import javax.swing.JComponent;
 
 /**
@@ -32,7 +33,7 @@ final class FormFieldSource implements FormFieldGen {
     public String getAccessibleName() {
         return comp.getAccessibleContext().getAccessibleName();
     }
-    
+
     String[] getDBSrcColumns() {
         return sources;
     }
@@ -42,6 +43,21 @@ final class FormFieldSource implements FormFieldGen {
         return values[index];
     }
 
+    /**
+     * This method returns the value of the specified database column this field
+     * is mapped to.
+     *
+     * <br/>
+     * This method must throw {@link IllegalArgumentException} if the specified
+     * database column name was not found. It is not proper to return null if
+     * not found because that could imply that the column exist and the value is
+     * null which in fact is a gross misleading assumption. The correct approach
+     * is to throw {@link IllegalArgumentException} if not found. Client is
+     * supposed to ensure the correct column name is passed as argument.
+     *
+     * @param dbColumnName name of the database column
+     * @return the value of the database column
+     */
     @Override
     public Object dbSrcValue(String dbColumnName) {
         for (int i = 0; i < values.length; i++) {
@@ -49,7 +65,9 @@ final class FormFieldSource implements FormFieldGen {
                 return values[i];
             }
         }
-        return null;
+
+        throw new IllegalArgumentException("Unknown databse column source! '" + dbColumnName + "' was not mapped to this field.");
+
     }
 
     @Override
@@ -70,6 +88,11 @@ final class FormFieldSource implements FormFieldGen {
             return null;
         }
         return sources[index];
+    }
+
+    @Override
+    public SourceMath math() {
+        return new SourceMathImpl(this);
     }
 
 }

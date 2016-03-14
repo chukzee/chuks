@@ -51,7 +51,7 @@ public class TestAction extends javax.swing.JFrame {
 
         jNext1.setText("jNext1");
 
-        jCounter1.setText("0 of 6");
+        jCounter1.setAppendedText("records");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

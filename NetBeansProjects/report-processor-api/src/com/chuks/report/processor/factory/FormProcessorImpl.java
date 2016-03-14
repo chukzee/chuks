@@ -26,6 +26,7 @@ import com.chuks.report.processor.FormFieldPost;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.IFormField;
+import com.chuks.report.processor.Option;
 import com.chuks.report.processor.TableFieldGen;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.event.FormActionListener;
@@ -34,6 +35,10 @@ import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
 import com.chuks.report.processor.form.controls.JReset;
 import com.chuks.report.processor.form.controls.JSave;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,8 +50,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
@@ -228,6 +235,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         String[] db_columns;
         private JMoveTo jMoveTo;
         private JCounter jCounter;
+        private JSave jSave;
 
         private DefaultFormModel(FormModelBuilder builder) throws SQLException {
 
@@ -260,7 +268,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             initControls();
             initControllerPane();
 
-            if (data!=null || data.length > 0) {
+            if (data != null || data.length > 0) {
                 displayRecord(moveTo(0));//move to the first record
                 updateJCounter();
             }
@@ -496,11 +504,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 return fieldSourceData(_data, db_cols);
 
             } catch (SQLException ex) {
-                String err_msg = "Failed to refresh table after operation!";
+                String err_msg = "Failed to refresh record after operation!";
                 System.err.println(err_msg);
                 Logger.getLogger(FormProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
                 //use any of the form component to get the frame to display the message dialog
-                JOptionPane.showMessageDialog(fieldsComponents[0], err_msg, "Refresh Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(getFrame(fieldsComponents[0]), err_msg, "Refresh Failed", JOptionPane.ERROR_MESSAGE);
             } finally {
                 if (stmt != null) {
                     try {
@@ -729,8 +737,15 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
             int move_index = comp.getMoveToIndex();
             if (move_index < 0) {
+                comp.setRecordNumber(1);//go to first record
                 return;//though negative do nothing. do not even reset! not your job.
             }
+
+            if (move_index > data.length - 1) {
+                comp.setRecordNumber(data.length);
+                return;
+            }
+
             displayRecord(moveTo(move_index));
             updateJCounter();
         }
@@ -779,6 +794,19 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return null;
         }
 
+        JSave getJSave() {
+            if (jSave != null) {
+                return jSave;
+            }
+            for (FormControl control : controls) {
+                if (control instanceof JSave) {
+                    jSave = (JSave) control;
+                    return jSave;
+                }
+            }
+            return null;
+        }
+
         public JComponent[] getAllFields() {
             return fieldsComponents;
         }
@@ -808,10 +836,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
             FormFieldPost post = new FormFieldPost() {
                 FormFieldImpl[] updateEntries = new FormFieldImpl[0];
+                private boolean is_refresh = true;//refresh by default
 
                 @Override
                 public IFormField[] getFormFields() {
-
 
                     if (updateEntries.length > 0) {
                         return updateEntries;//already have them
@@ -847,11 +875,123 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     return getFormFields().length;
                 }
 
+                private int getIntType(Option type) {
+                    switch (type) {
+                        case SUCCESS:
+                            return JOptionPane.INFORMATION_MESSAGE;//come to use custom later
+                        case INFO:
+                            return JOptionPane.INFORMATION_MESSAGE;
+                        case WARNING:
+                            return JOptionPane.WARNING_MESSAGE;
+                        case ERROR:
+                            return JOptionPane.ERROR_MESSAGE;
+                        default:
+                            return JOptionPane.INFORMATION_MESSAGE;
+                    }
+                }
+
+                @Override
+                public void alert(String message, String title) {
+                    JOptionPane.showMessageDialog(getFrame(getJSave()), message, title, JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                @Override
+                public void alert(String message, String title, Option type) {
+                    JOptionPane.showMessageDialog(getFrame(getJSave()), message, title, getIntType(type));
+                }
+
+                @Override
+                public void alert(String message, String title, Option type, Icon icon) {
+                    JOptionPane.showMessageDialog(getFrame(getJSave()), message, title, getIntType(type), icon);
+                }
+
+                @Override
+                public void alert(JComponent container, String message, String title) {
+                    JOptionPane.showMessageDialog(container, message, title, JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                @Override
+                public void alert(JComponent container, String message, String title, Option type) {
+                    JOptionPane.showMessageDialog(container, message, title, getIntType(type));
+                }
+
+                @Override
+                public void alert(JComponent container, String message, String title, Option type, Icon icon) {
+                    JOptionPane.showMessageDialog(container, message, title, getIntType(type), icon);
+                }
+
+                @Override
+                public void refresh(boolean is_refresh) {
+                    this.is_refresh = is_refresh;
+                }
+
+                @Override
+                public boolean isRefreshAllowed() {
+                    return is_refresh;
+                }
+
+                @Override
+                public Option comfirm(String message, String title, Option OptType) {
+                    int result = JOptionPane.showConfirmDialog(getFrame(getJSave()), message, title, getIntType(OptType));
+                    return getOpiton(result);
+                }
+
+                @Override
+                public Option comfirm(String message, String title, Option OptType, Option msg_type) {
+                    int result = JOptionPane.showConfirmDialog(getFrame(getJSave()), message, title, getIntType(OptType), getIntType(msg_type));
+                    return getOpiton(result);
+                }
+
+                @Override
+                public Option comfirm(String message, String title, Option OptType, Option msg_type, Icon icon) {
+                    int result = JOptionPane.showConfirmDialog(getFrame(getJSave()), message, title, getIntType(OptType), getIntType(msg_type), icon);
+                    return getOpiton(result);
+                }
+
+                @Override
+                public Option comfirm(JComponent container, String message, String title, Option OptType) {
+                    int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType));
+                    return getOpiton(result);
+                }
+
+                @Override
+                public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type) {
+                    int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type));
+                    return getOpiton(result);
+                }
+
+                @Override
+                public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type, Icon icon) {
+                    int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type), icon);
+                    return getOpiton(result);
+                }
+
+                private Option getOpiton(int result) {
+                    if (result == JOptionPane.YES_OPTION) {
+                        return Option.YES;
+                    }
+                    switch (result) {
+                        case JOptionPane.OK_OPTION:
+                            return Option.OK;
+                        case JOptionPane.NO_OPTION:
+                            return Option.NO;
+                        case JOptionPane.CANCEL_OPTION:
+                            return Option.CANCEL;
+                        case JOptionPane.CLOSED_OPTION:
+                            return Option.CLOSED;
+                    }
+                    return Option.CLOSED;
+                }
+
             };
 
             formFieldsPostHandler.doPost(new ActionSQLImpl(model_jdbc_settings), post);
 
-            return refresh();
+            if (post.isRefreshAllowed()) {
+                return refresh();
+            }
+
+            return true;
 
         }
 
@@ -859,8 +999,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         public Object[][] searchedData() {
             Object[][] backing_data = new Object[data.length][];
             for (int i = 0; i < data.length; i++) {
-                
-                Object[] d =  data[i];
+
+                Object[] d = data[i];
                 backing_data[i] = new Object[d.length];
                 for (int k = 0; k < d.length; k++) {
                     if (callBack == null) {
@@ -871,7 +1011,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     }
                 }
             }
-            
+
             return backing_data;
         }
 
@@ -883,13 +1023,13 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         @Override
         public void finishedSearch(JComponent source_component, String searchStr, int total_found) {
             String match_str = total_found > 1 ? total_found + " matches" : total_found + " match";
-            JOptionPane.showMessageDialog(source_component, "Finished searching " + searchStr,
+            JOptionPane.showMessageDialog(getFrame(source_component), "Finished searching " + searchStr,
                     "Finished - " + match_str, JOptionPane.INFORMATION_MESSAGE);
         }
 
         @Override
         public void notFound(JComponent source_component, String searchStr) {
-            JOptionPane.showMessageDialog(source_component, searchStr + " was not found.", "Not found", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(getFrame(source_component), searchStr + " was not found.", "Not found", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

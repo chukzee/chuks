@@ -11,6 +11,6 @@ package com.chuks.report.processor;
  */
 public interface UpdateTableHandler {
 
-    public void doUpdate(ActionSQL a, TableFieldChange f);
+    public void doUpdate(ActionSQL a, TableFieldUpdate f);
     
 }

@@ -9,7 +9,7 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface FormFieldPost {
+public interface FormFieldPost extends Feedback{
     
     /**Gets an array of field  objects representing the form fields.
      * It returns the fields if the record index is beyond the reset
@@ -49,4 +49,23 @@ public interface FormFieldPost {
      * @return 
      */
     int count();
+    
+    /**
+     * Call this method to cause the record to be refreshed after the
+     * {@link com.chuks.report.processor.FormPostHandler} is executed.
+     * The default implementation always refresh the records after the
+     * handler is executed. Setting this method to false may be
+     * useful in cases where an errors and the client does not which
+     * to refresh the record as it is meaningless
+     * @param is_refresh set to true to allow refresh otherwise false.
+     */
+    void refresh(boolean is_refresh);
+    
+        
+    /**
+     * Call this method to check whether records will be refreshed 
+     * after the {@link com.chuks.report.processor.FormPostHandler} is
+     * executed. The records are refresh by default.
+     */
+    boolean isRefreshAllowed();
 }

@@ -150,6 +150,9 @@
     <Component class="com.chuks.report.processor.form.controls.JFind" name="jFind1">
     </Component>
     <Component class="com.chuks.report.processor.form.controls.JCounter" name="jCounter1">
+      <Properties>
+        <Property name="appendedText" type="java.lang.String" value="entries"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField5">
     </Component>

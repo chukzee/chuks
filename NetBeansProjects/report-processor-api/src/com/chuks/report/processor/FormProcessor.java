@@ -36,13 +36,13 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
     /**
      *
      * @param dataInputHandler
-     * @param updateFieldHandler
+     * @param postFieldHandler
      * @param controls
      * @throws java.sql.SQLException
      */
-    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException ;
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler postFieldHandler, FormControl... controls) throws SQLException ;
     
-
+    
     /**
      *
      * @param dataInputHandler
@@ -53,7 +53,7 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
     void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException ;
     
     void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper,  FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException;
-
+    
     void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper,  FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
 
 }

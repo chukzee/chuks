@@ -135,7 +135,7 @@ public class TestTableProc extends javax.swing.JFrame {
                 }, new UpdateTableHandler() {
 
                     @Override
-                    public void doUpdate(ActionSQL a, TableFieldChange f) {
+                    public void doUpdate(ActionSQL a, TableFieldUpdate f) {
                         ITableField[] fd = f.getChanges();
                         
                     }

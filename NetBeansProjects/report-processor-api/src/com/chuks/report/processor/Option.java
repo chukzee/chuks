@@ -9,8 +9,19 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TableFieldChange {
-    
-    ITableField [] getChanges();
-    int count();
+public enum Option {
+
+    SUCCESS,
+    WARNING,
+    INFO,
+    ERROR,
+    OK,
+    OK_CANCEL,
+    YES,
+    NO,
+    CANCEL,
+    YES_NO,
+    YES_NO_CANCEL,
+    CLOSED,
+
 }

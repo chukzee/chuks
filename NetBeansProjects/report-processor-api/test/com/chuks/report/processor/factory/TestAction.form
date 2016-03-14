@@ -99,7 +99,7 @@
     </Component>
     <Component class="com.chuks.report.processor.form.controls.JCounter" name="jCounter1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="0 of 6"/>
+        <Property name="appendedText" type="java.lang.String" value="records"/>
       </Properties>
     </Component>
     <Component class="com.chuks.report.processor.form.controls.JFind" name="jFind1">
