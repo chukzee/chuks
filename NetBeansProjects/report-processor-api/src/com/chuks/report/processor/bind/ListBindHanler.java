@@ -5,14 +5,14 @@
  */
 package com.chuks.report.processor.bind;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.PollAttributes;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 
-public interface ListBindHanler extends DataPoll{
+public interface ListBindHanler extends PollAttributes{
     
     void data(ListDataInput input);
 }

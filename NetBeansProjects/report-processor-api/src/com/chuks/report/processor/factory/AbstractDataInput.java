@@ -5,25 +5,26 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.PollAttributes;
 import com.chuks.report.processor.util.JDBCSettings;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class AbstractDataInput <T>extends ActionSQLImpl implements DataPoll{
+public class AbstractDataInput extends ActionSQLImpl implements PollAttributes{
     
     private boolean pollingEnabled;
     private float pollingInterval;
-    protected T data;
+    protected Object data;
 
     public AbstractDataInput(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     
-    public void setData(T data) {
+    
+    public void setData(Object data) {
         this.data = data;
     }
     

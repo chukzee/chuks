@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.AbstractUIDBProcessor;
+import com.chuks.report.processor.DataPoll;
 import com.chuks.report.processor.bind.ListBindHanler;
 import com.chuks.report.processor.FormFieldMapper;
 import com.chuks.report.processor.FormDataInputHandler;
@@ -79,6 +80,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setUpdateFormHandler(updateFieldHandler)
                 .setFormControl(controls)
                 .build();
+
+        DataPollHandler.registerPoll(formModel);
     }
 
     @Override
@@ -88,6 +91,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setUpdateFormHandler(updateFieldHandler)
                 .setJControllerPane(controllers_pane)
                 .build();
+
+        DataPollHandler.registerPoll(formModel);
     }
 
     @Override
@@ -100,6 +105,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setFormControl(controls)
                 .build();
 
+        DataPollHandler.registerPoll(formModel);
     }
 
     @Override
@@ -110,6 +116,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setUpdateFormHandler(updateFieldHandler)
                 .setJControllerPane(controllers_pane)
                 .build();
+
+        DataPollHandler.registerPoll(formModel);
     }
 
     @Override
@@ -123,7 +131,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         list.setListData(input.getData());
 
-        //TODO data polling
+        input.setHandler(list, handler);
+
+        DataPollHandler.registerPoll(input);
+
     }
 
     @Override
@@ -141,11 +152,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             combo.addItem(data);
         }
 
-        //TODO data polling
+        input.setHandler(combo, handler);
+
+        DataPollHandler.registerPoll(input);
+
     }
 
     @Override
-    public void bind(JTextField textField, TextBindHandler handler) {
+    public void bind(JTextComponent textComp, TextBindHandler handler) {
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
@@ -153,9 +167,12 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             return;
         }
 
-        textField.setText(input.getData().toString());
+        textComp.setText(input.getData().toString());
 
-        //TODO data polling
+        input.setHandler(textComp, handler);
+
+        DataPollHandler.registerPoll(input);
+
     }
 
     @Override
@@ -169,7 +186,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         label.setText(input.getData().toString());
 
-        //TODO data polling
+        input.setHandler(label, handler);
+
+        DataPollHandler.registerPoll(input);
+
     }
 
     class FormModelBuilder {
@@ -217,9 +237,10 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
     }
 
-    class DefaultFormModel implements SearchObserver {
+    class DefaultFormModel implements SearchObserver, DataPoll {
 
-        FormControl[] controls;
+        private FormControl[] pane_controls;//controls in the controller pane
+        FormControl[] x_controls;//controls not in the controller pane
         JComponent[] fieldsComponents;
         private final JControllerPane controllers_pane;
         Object[][] data;
@@ -236,6 +257,9 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private JMoveTo jMoveTo;
         private JCounter jCounter;
         private JSave jSave;
+        private long next_poll_time;
+        private boolean dataPollEnabled;
+        private float dataPollInterval;
 
         private DefaultFormModel(FormModelBuilder builder) throws SQLException {
 
@@ -243,7 +267,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             this.dataInputHandler = builder.dataInputHandler;
             this.mapper = builder.mapper;
             this.formFieldsPostHandler = builder.updateFieldHandler;
-            this.controls = builder.controls;
+            this.x_controls = builder.controls;
             this.controllers_pane = builder.controllers_pane;
 
             data = dbHelper.fetchArray();
@@ -255,6 +279,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             if (callBack != null && mapper != null) {
                 fieldsComponents = mapper.getFields();
                 data = generateCallBackData();
+                this.dataPollEnabled = data_polling_enabled;
+                this.dataPollInterval = data_polling_interval;
             }
 
             if (dataInputHandler != null) {
@@ -262,11 +288,13 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 dataInputHandler.onInput(input);
                 data = input.getData();
                 fieldsComponents = input.getFieldComponents();
+                this.dataPollEnabled = input.isPollingEnabled();
+                this.dataPollInterval = input.getPollingInterval();
             }
 
             checksControlRepitition();
-            initControls();
             initControllerPane();
+            initControls();
 
             if (data != null || data.length > 0) {
                 displayRecord(moveTo(0));//move to the first record
@@ -279,7 +307,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 return;
             }
 
-            //TODO add the control to the controller pane
+            pane_controls = controllers_pane.getPaneControls();
+            //set action listeners of the controls in the controller pane
+            for (FormControl control : pane_controls) {
+                doControlInit(control);
+            }
         }
 
         private Object[][] generateCallBackData() throws SQLException {
@@ -335,99 +367,106 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         private void initControls() {
-
-            //set action listeners of the components
-            for (FormControl control : controls) {
-                if (control instanceof JNext) {
-                    JNext jnext = (JNext) control;
-                    jnext.addActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jnextAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JPrevious) {
-                    JPrevious jprevious = (JPrevious) control;
-                    jprevious.addActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jpreviousAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JFirst) {
-                    JFirst jfirst = (JFirst) control;
-                    jfirst.addActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jfirstAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JLast) {
-                    JLast jlast = (JLast) control;
-                    jlast.addActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jlastAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JReset) {
-                    JReset jreset = (JReset) control;
-                    jreset.addActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jresetAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JSave) {
-                    JSave jsave = (JSave) control;
-                    jsave.addActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jsaveAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JMoveTo) {
-                    JMoveTo jmoveTo = (JMoveTo) control;
-                    jmoveTo.addButtonActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jmoveToAcitionPerform(e);
-                        }
-                    });
-                    jmoveTo.addTextActionListener(new FormActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            jmoveToAcitionPerform(e);
-                        }
-                    });
-                } else if (control instanceof JFind) {
-                    JFind jfind = (JFind) control;
-                    jfind.setSearchObserver(this, jfind);
-                } else if (control instanceof JCounter) {
-                    JCounter jcounter = (JCounter) control;
-                    //do nothing.
-                } else {
-                    throw new IllegalArgumentException("Component not supported!");
-                }
-
+            if (x_controls == null) {
+                return;
             }
+            //set action listeners of the controls not in the controller pane
+            for (FormControl control : x_controls) {
+                doControlInit(control);
+            }
+        }
+
+        private void doControlInit(FormControl control) {
+
+            if (control instanceof JNext) {
+                JNext jnext = (JNext) control;
+                jnext.addActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jnextAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JPrevious) {
+                JPrevious jprevious = (JPrevious) control;
+                jprevious.addActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jpreviousAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JFirst) {
+                JFirst jfirst = (JFirst) control;
+                jfirst.addActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jfirstAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JLast) {
+                JLast jlast = (JLast) control;
+                jlast.addActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jlastAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JReset) {
+                JReset jreset = (JReset) control;
+                jreset.addActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jresetAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JSave) {
+                JSave jsave = (JSave) control;
+                jsave.addActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jsaveAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JMoveTo) {
+                JMoveTo jmoveTo = (JMoveTo) control;
+                jmoveTo.addButtonActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jmoveToAcitionPerform(e);
+                    }
+                });
+                jmoveTo.addTextActionListener(new FormActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        jmoveToAcitionPerform(e);
+                    }
+                });
+            } else if (control instanceof JFind) {
+                JFind jfind = (JFind) control;
+                jfind.setSearchObserver(this, jfind);
+            } else if (control instanceof JCounter) {
+                JCounter jcounter = (JCounter) control;
+                //do nothing.
+            } else {
+                throw new IllegalArgumentException("Component not supported!");
+            }
+
         }
 
         private void checksControlRepitition() {
 
-            if (controls == null) {
+            if (x_controls == null) {
                 return;
             }
             //we do not want any two control of same type e.g jNext1 and jNext2
-            for (int i = 0; i < controls.length; i++) {
-                for (int k = 0; k < controls.length; k++) {
+            for (int i = 0; i < x_controls.length; i++) {
+                for (int k = 0; k < x_controls.length; k++) {
                     if (k == i) {
                         continue;//skip itself
                     }
                     try {//check if it is its type and throw exception if true
-                        controls[i].getClass().cast(controls[k]);
+                        x_controls[i].getClass().cast(x_controls[k]);
                         //here it is its type so throw exception
-                        throw new IllegalArgumentException("Form control duplicate detected! cannot repeat form control or its sub class - " + controls[i].getClass().getName());
+                        throw new IllegalArgumentException("Form control duplicate detected! cannot repeat form control or its sub class - " + x_controls[i].getClass().getName());
                     } catch (ClassCastException ex) {
                         //Good, not its type
                     }
@@ -772,10 +811,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             if (jMoveTo != null) {
                 return jMoveTo;
             }
-            for (FormControl control : controls) {
-                if (control instanceof JMoveTo) {
-                    jMoveTo = (JMoveTo) control;
-                    return jMoveTo;
+            if (x_controls != null) {
+                for (FormControl control : x_controls) {
+                    if (control instanceof JMoveTo) {
+                        jMoveTo = (JMoveTo) control;
+                        return jMoveTo;
+                    }
+                }
+            }
+
+            if (pane_controls != null) {
+                for (FormControl control : pane_controls) {
+                    if (control instanceof JMoveTo) {
+                        jMoveTo = (JMoveTo) control;
+                        return jMoveTo;
+                    }
                 }
             }
             return null;
@@ -785,10 +835,22 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             if (jCounter != null) {
                 return jCounter;
             }
-            for (FormControl control : controls) {
-                if (control instanceof JCounter) {
-                    jCounter = (JCounter) control;
-                    return jCounter;
+
+            if (x_controls != null) {
+                for (FormControl control : x_controls) {
+                    if (control instanceof JCounter) {
+                        jCounter = (JCounter) control;
+                        return jCounter;
+                    }
+                }
+            }
+
+            if (pane_controls != null) {
+                for (FormControl control : pane_controls) {
+                    if (control instanceof JCounter) {
+                        jCounter = (JCounter) control;
+                        return jCounter;
+                    }
                 }
             }
             return null;
@@ -798,10 +860,22 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             if (jSave != null) {
                 return jSave;
             }
-            for (FormControl control : controls) {
-                if (control instanceof JSave) {
-                    jSave = (JSave) control;
-                    return jSave;
+
+            if (x_controls != null) {
+                for (FormControl control : x_controls) {
+                    if (control instanceof JSave) {
+                        jSave = (JSave) control;
+                        return jSave;
+                    }
+                }
+            }
+
+            if (pane_controls != null) {
+                for (FormControl control : pane_controls) {
+                    if (control instanceof JSave) {
+                        jSave = (JSave) control;
+                        return jSave;
+                    }
                 }
             }
             return null;
@@ -878,7 +952,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 private int getIntType(Option type) {
                     switch (type) {
                         case SUCCESS:
-                            return JOptionPane.INFORMATION_MESSAGE;//come to use custom later
+                            return JOptionPane.INFORMATION_MESSAGE;//come back to use custom later
                         case INFO:
                             return JOptionPane.INFORMATION_MESSAGE;
                         case WARNING:
@@ -1030,6 +1104,57 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         @Override
         public void notFound(JComponent source_component, String searchStr) {
             JOptionPane.showMessageDialog(getFrame(source_component), searchStr + " was not found.", "Not found", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        @Override
+        public void setNextPollTime(long next_poll_time) {
+            this.next_poll_time = next_poll_time;
+        }
+
+        @Override
+        public long getNextPollTime() {
+            return next_poll_time;
+        }
+
+        @Override
+        public void pollData() {
+
+        }
+
+        @Override
+        public void setPollingEnabled(boolean isPoll) {
+            dataPollEnabled = isPoll;
+        }
+
+        @Override
+        public boolean isPollingEnabled() {
+            return dataPollEnabled;
+        }
+
+        @Override
+        public void setPollingInterval(float seconds) {
+            dataPollInterval = seconds;
+        }
+
+        @Override
+        public float getPollingInterval() {
+            return dataPollInterval;
+        }
+
+        /**
+         * This method will pause the data poll if all the form component is not showing.
+         *
+         * @return
+         */
+        @Override
+        public boolean pause() {
+            //check if any of the form component is showing
+            for (JComponent fieldsComponent : fieldsComponents) {
+                if (fieldsComponent.isShowing()) {
+                    return false;//at least a component is showing so do not pause
+                }
+            }
+            return true;//all component is hidden so pause
         }
     }
 }

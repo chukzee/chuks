@@ -11,7 +11,7 @@ import javax.swing.JComponent;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface FormDataInput  extends DataPoll{
+public interface FormDataInput  extends PollAttributes{
     
     void setFieldComponents(JComponent... field_components);
 

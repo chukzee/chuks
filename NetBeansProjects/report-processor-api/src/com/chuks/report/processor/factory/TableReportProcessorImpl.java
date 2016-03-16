@@ -19,10 +19,8 @@ import org.jooq.Param;
 import com.chuks.report.processor.*;
 import com.chuks.report.processor.form.controls.JFind;
 import com.chuks.report.processor.event.SearchObserver;
+import com.chuks.report.processor.form.controls.JFilter;
 import com.chuks.report.processor.util.JDBCSettings;
-import com.chuks.report.processor.util.SearchUtil;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 /**
  *
@@ -33,9 +31,9 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     private boolean isColumnAsIs;
     static private List boxHashes = Collections.synchronizedList(new ArrayList());
     private Box table_toolbox;
-    private boolean isDisplayToolbox;
-    private boolean isDisplayFine;
-    private boolean isDisplayFilter;
+    private boolean isDisplayToolbox = true;
+    private boolean isDisplayFind = true;
+    private boolean isDisplayFilter = true;
 
     public TableReportProcessorImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
@@ -54,7 +52,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         setRowSorter(table);
         relayoutTableReport(table);
-
+        DataPollHandler.registerPoll(tableModel);
     }
 
     @Override  //NOT YET TESTED
@@ -82,15 +80,13 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         setRowSorter(table);
         relayoutTableReport(table);
-
+        DataPollHandler.registerPoll(tableModel);
     }
 
     public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
 
         TableDataInputImpl input = new TableDataInputImpl(new JDBCSettings(jdbcSettings));//copy jdbcSettings 
         dataInputHandler.onInput(input);
-        this.setDataPollingEnabled(input.isPollingEnabled());
-        this.setDataPollingInterval(input.getPollingInterval());
 
         if (input.getData() == null) {
             return null;
@@ -100,7 +96,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         for (Object[] data : input.getData()) {
             list.add(data);
         }
-        ReportTableModel tableModel = new ReportTableModel(null,
+        ReportTableModel tableModel = new ReportTableModel(table, null,
+                dataInputHandler,
                 updateFieldHandler, deleteRowHandler,
                 dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
                 input.getDBSettings());//ok. input.getDBSettings() already copied jdbcSettings - see above!
@@ -108,7 +105,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         tableModel.setColumnNames(input.getColumns());
         tableModel.setTableFieldSource(null);
         tableModel.addAllData(list);
-        tableModel.setDataInputHandler(dataInputHandler);
+        tableModel.setPollingEnabled(input.isPollingEnabled());
+        tableModel.setPollingInterval(input.getPollingInterval());
 
         return tableModel;
     }
@@ -118,7 +116,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         List<Object[]> list = new ArrayList();
         list.addAll(Arrays.asList(dbHelper.fetchArray()));
-        ReportTableModel tableModel = new ReportTableModel(null, updateFieldHandler,
+        ReportTableModel tableModel = new ReportTableModel(table, null, null, updateFieldHandler,
                 deleteRowHandler, dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
                 dbHelper.getJdbcSetting());
         tableModel.setColumnNames(dbHelper.getColumns(isColumnAsIs));
@@ -129,6 +127,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         setRowSorter(table);
         relayoutTableReport(table);
+        DataPollHandler.registerPoll(tableModel);
     }
 
     @Override
@@ -141,7 +140,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         List<Object[]> list = new ArrayList();
         list.addAll(Arrays.asList(data));
-        ReportTableModel tableModel = new ReportTableModel(null, null, null, null, null, null);
+        ReportTableModel tableModel = new ReportTableModel(null, null, null, null, null, null, null, null);
         tableModel.setColumnNames(columns);
         tableModel.setTableFieldSource(null);
         tableModel.addAllData(list);
@@ -149,6 +148,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         table.setModel(tableModel);
         setRowSorter(table);
         relayoutTableReport(table);
+        DataPollHandler.registerPoll(tableModel);
     }
 
     @Override
@@ -157,6 +157,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         table.setModel(tableModel);
         setRowSorter(table);
         relayoutTableReport(table);
+        DataPollHandler.registerPoll(tableModel);
     }
 
     @Override
@@ -180,12 +181,15 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         JTable table = createTable(renderer, tableModel);
 
+        tableModel.setModelTable(table);
+
         table.setModel(tableModel);
         setRowSorter(table);
         JScrollPane scrollPane1 = new JScrollPane();
         scrollPane1.setViewportView(table);
         container.add(scrollPane1);
         relayoutTableReport(table);
+        DataPollHandler.registerPoll(tableModel);
         return table;
     }
 
@@ -349,7 +353,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         List list = columnSourceList(data, colNames, columnSources);
 
-        ReportTableModel tableModel = new ReportTableModel(inputCallBack,
+        ReportTableModel tableModel = new ReportTableModel(null, inputCallBack, null,
                 updateFieldHandler, deleteRowHandler,
                 dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
                 dbHelper.getJdbcSetting());
@@ -402,19 +406,24 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     private void createToolbox(final JTable table, Box table_box) {
 
+        if (!isDisplayToolbox) {
+            return;
+        }
+
         table_toolbox = new Box(BoxLayout.LINE_AXIS);
         table_toolbox.setSize(35, (int) table_box.getBounds().getWidth());
         table_toolbox.setBackground(Color.red);
 
-        //addFind(table, table_toolbox);
         JFind find = new JFind();
         find.setSearchObserver((SearchObserver) table.getModel(), table);
         table_toolbox.add(find);
-
+        find.setVisible(isDisplayFind);
         table_toolbox.add(Box.createHorizontalStrut(20));
         //table_toolbox.add(Box.createHorizontalGlue());//Glue not working - i do not know why?
 
-        addFilter(table, table_toolbox);
+        JFilter filter = new JFilter();
+        table_toolbox.add(filter);
+        find.setVisible(isDisplayFilter);
 
         table_toolbox.add(Box.createHorizontalStrut(20));
 
@@ -429,20 +438,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         addUpdateButton(table, table_toolbox);
 
         table_box.add(table_toolbox);
-
-    }
-
-    private void addFilter(final JTable table, Box toolbox) {
-
-        Box filterBox = Box.createHorizontalBox();
-        toolbox.add(filterBox);
-
-        JLabel lblFilter = new JLabel("Filter: ");
-        filterBox.add(lblFilter);
-
-        JTextField txtFilter = new JTextField();
-        txtFilter.setSize(new Dimension(35, 120));
-        filterBox.add(txtFilter);
 
     }
 
@@ -736,58 +731,58 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 return is_refresh;
             }
 
-                @Override
-                public Option comfirm(String message, String title, Option OptType) {
-                    int result =  JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType));
-                    return getOpiton(result);
-                }
+            @Override
+            public Option comfirm(String message, String title, Option OptType) {
+                int result = JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType));
+                return getOpiton(result);
+            }
 
-                @Override
-                public Option comfirm(String message, String title, Option OptType, Option msg_type) {
-                    int result =  JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType),getIntType(msg_type));
-                    return getOpiton(result);
-                }
+            @Override
+            public Option comfirm(String message, String title, Option OptType, Option msg_type) {
+                int result = JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType), getIntType(msg_type));
+                return getOpiton(result);
+            }
 
-                @Override
-                public Option comfirm(String message, String title, Option OptType, Option msg_type, Icon icon) {
-                    int result =  JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType),getIntType(msg_type), icon);
-                    return getOpiton(result);
-                }
+            @Override
+            public Option comfirm(String message, String title, Option OptType, Option msg_type, Icon icon) {
+                int result = JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType), getIntType(msg_type), icon);
+                return getOpiton(result);
+            }
 
-                @Override
-                public Option comfirm(JComponent container, String message, String title, Option OptType) {
-                    int result =  JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType));
-                    return getOpiton(result);
-                }
+            @Override
+            public Option comfirm(JComponent container, String message, String title, Option OptType) {
+                int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType));
+                return getOpiton(result);
+            }
 
-                @Override
-                public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type) {
-                    int result =  JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType),getIntType(msg_type));
-                    return getOpiton(result);
-                }
+            @Override
+            public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type) {
+                int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type));
+                return getOpiton(result);
+            }
 
-                @Override
-                public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type, Icon icon) {
-                    int result =  JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType),getIntType(msg_type), icon);
-                    return getOpiton(result);
-                }
+            @Override
+            public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type, Icon icon) {
+                int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type), icon);
+                return getOpiton(result);
+            }
 
-                private Option getOpiton(int result) {
-                    if(result ==JOptionPane.YES_OPTION ){
-                        return Option.YES;
-                    }
-                    switch(result){
-                        case JOptionPane.OK_OPTION:
-                            return Option.OK;
-                        case JOptionPane.NO_OPTION:
-                            return Option.NO;
-                        case JOptionPane.CANCEL_OPTION:
-                            return Option.CANCEL;
-                        case JOptionPane.CLOSED_OPTION:
-                            return Option.CLOSED;
-                    }
-                    return Option.CLOSED;
+            private Option getOpiton(int result) {
+                if (result == JOptionPane.YES_OPTION) {
+                    return Option.YES;
                 }
+                switch (result) {
+                    case JOptionPane.OK_OPTION:
+                        return Option.OK;
+                    case JOptionPane.NO_OPTION:
+                        return Option.NO;
+                    case JOptionPane.CANCEL_OPTION:
+                        return Option.CANCEL;
+                    case JOptionPane.CLOSED_OPTION:
+                        return Option.CLOSED;
+                }
+                return Option.CLOSED;
+            }
 
         };
 
@@ -819,15 +814,35 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
     @Override
     public void displayFind(boolean isShow) {
-        isDisplayFine = isShow;
+        isDisplayFind = isShow;
+        if (table_toolbox == null) {
+            return;
+        }
+        Component[] comps = table_toolbox.getComponents();
+        for (Component comp : comps) {
+            if (comp instanceof JFind) {
+                comp.setVisible(isShow);
+                break;
+            }
+        }
     }
 
     @Override
     public void displayFilter(boolean isShow) {
         isDisplayFilter = isShow;
+        if (table_toolbox == null) {
+            return;
+        }
+        Component[] comps = table_toolbox.getComponents();
+        for (Component comp : comps) {
+            if (comp instanceof JFilter) {
+                comp.setVisible(isShow);
+                break;
+            }
+        }
     }
 
-    class ReportTableModel extends AbstractTableModel implements SearchObserver {
+    class ReportTableModel extends AbstractTableModel implements SearchObserver, DataPoll {
 
         private String[] columnNames = {};
 
@@ -842,30 +857,40 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private JDBCSettings model_jdbc_settings;
         private Map<String, Object> oldFieldVal = Collections.synchronizedMap(new HashMap());
         private TableDataInputHandler dataInputHandler;
+        private long next_poll_time;
+        boolean isDataPollEnabled;
+        float dataPollInterval;
+        private JTable model_table;
 
         private ReportTableModel() {
         }
 
-        ReportTableModel(TableFieldCallBack inputCallBack,
+        ReportTableModel(JTable model_table, TableFieldCallBack inputCallBack,
+                TableDataInputHandler dataInputHandler,
                 UpdateTableHandler updateFieldHandler,
                 DeleteRowHandler deleteRowHandler,
                 String select_sql,
                 Map<String, Param> select_params,
                 JDBCSettings jdbc_settings) {
 
+            this.model_table = model_table;
             this.inputCallBack = inputCallBack;
+            this.dataInputHandler = dataInputHandler;
             this.updateFieldHandler = updateFieldHandler;
             this.deleteRowHandler = deleteRowHandler;
             this.select_sql = select_sql;
             this.select_params = select_params;
             this.model_jdbc_settings = new JDBCSettings(jdbc_settings);//we need to copy
 
+            this.isDataPollEnabled = data_polling_enabled;
+            this.dataPollInterval = data_polling_interval;
+
         }
 
-        private void setDataInputHandler(TableDataInputHandler dataInputHandler) {
-            this.dataInputHandler = dataInputHandler;
+        private void setModelTable(JTable table) {
+            this.model_table = table;
         }
-
+        
         private void refresh(JTable table) {
 
             List freshData;
@@ -1092,6 +1117,54 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         public void notFound(JComponent source_component, String searchStr) {
             JTable table = (JTable) source_component;
             JOptionPane.showMessageDialog(getFrame(source_component), searchStr + " was not found.", "Not found", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        @Override
+        public void setNextPollTime(long next_poll_time) {
+            this.next_poll_time = next_poll_time;
+        }
+
+        @Override
+        public long getNextPollTime() {
+            return next_poll_time;
+        }
+
+        @Override
+        public void pollData() {
+
+        }
+
+        @Override
+        public void setPollingEnabled(boolean isPoll) {
+            isDataPollEnabled = isPoll;;
+        }
+
+        @Override
+        public boolean isPollingEnabled() {
+            return isDataPollEnabled;
+        }
+
+        @Override
+        public void setPollingInterval(float seconds) {
+            dataPollInterval = seconds;
+        }
+
+        @Override
+        public float getPollingInterval() {
+            return dataPollInterval;
+        }
+
+        /**
+         * This method will pause the data poll if the table is not showing.
+         *
+         * @return
+         */
+        @Override
+        public boolean pause() {
+            if (model_table == null) {
+                return true;
+            }
+            return !model_table.isShowing();
         }
 
     }

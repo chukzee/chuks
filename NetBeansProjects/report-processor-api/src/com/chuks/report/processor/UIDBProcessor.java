@@ -11,6 +11,7 @@ import com.chuks.report.processor.util.JDBCSettings;
 /**
  *
  * @author USER
+ * @param <T>
  */
 public interface UIDBProcessor<T> extends ActionSQL{
 

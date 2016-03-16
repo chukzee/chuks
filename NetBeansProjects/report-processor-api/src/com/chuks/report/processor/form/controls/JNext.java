@@ -15,6 +15,15 @@ import javax.swing.JButton;
  */
 final public class JNext extends JButton implements FormControl {
 
+    
+    public JNext(){
+        super();
+    }
+    
+    public JNext(String text){
+        super(text);
+    }
+    
     /**override <code>addActionListener()</code> method and prevent problems
      * arising from multiple use of form action listeners 
      * by same control

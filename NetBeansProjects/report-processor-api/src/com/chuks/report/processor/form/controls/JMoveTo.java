@@ -164,4 +164,11 @@ final public class JMoveTo extends Box implements FormControl {
      super.remove(index);
      }
      */
+
+    @Override
+    public void setToolTipText(String text) {
+        txt.setToolTipText(text);
+        btn.setToolTipText(text);
+        super.setToolTipText(text); //To change body of generated methods, choose Tools | Templates.
+    }
 }

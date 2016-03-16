@@ -5,13 +5,13 @@
  */
 package com.chuks.report.processor.bind;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.PollAttributes;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TextDataInput extends DataPoll {
+public interface TextDataInput extends PollAttributes {
 
     void setData(Object data);
 }

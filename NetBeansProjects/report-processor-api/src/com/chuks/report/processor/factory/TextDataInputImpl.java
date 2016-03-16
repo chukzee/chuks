@@ -5,26 +5,88 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.bind.TextDataInput;
 import com.chuks.report.processor.util.JDBCSettings;
+import javax.swing.JLabel;
+import javax.swing.text.JTextComponent;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
- class TextDataInputImpl extends AbstractDataInput implements TextDataInput{
-    private Object data;
+class TextDataInputImpl extends AbstractDataInput implements TextDataInput, DataPoll {
 
-     TextDataInputImpl(JDBCSettings jdbcSettings) {
+    private Object data;
+    private long next_poll_time;
+    private JTextComponent textComp;
+    private TextBindHandler handler;
+    private JLabel label;
+
+    TextDataInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
-    }         
+    }
 
     @Override
     public void setData(Object data) {
         this.data = data;
     }
-    
-    Object getData(){
+
+    Object getData() {
         return data;
+    }
+
+    @Override
+    public void setNextPollTime(long next_poll_time) {
+        this.next_poll_time = next_poll_time;;
+    }
+
+    @Override
+    public long getNextPollTime() {
+        return next_poll_time;
+    }
+
+    @Override
+    public void pollData() {
+        handler.data(this);
+
+        if (this.getData() == null) {
+            return;
+        }
+
+        if (label != null) {
+            label.setText(this.getData().toString());
+        }
+
+        if (textComp != null) {
+            textComp.setText(this.getData().toString());
+        }
+
+    }
+
+    void setHandler(JLabel label, TextBindHandler handler) {
+        this.label = label;
+        this.handler = handler;
+    }
+
+    void setHandler(JTextComponent textComp, TextBindHandler handler) {
+        this.textComp = textComp;
+        this.handler = handler;
+    }
+
+    /**
+     * This method will pause the data poll if the component is not showing
+     * @return 
+     */
+    @Override
+    public boolean pause() {
+        if (label != null) {
+            return !label.isShowing();
+        }
+        if (textComp != null) {
+            return !textComp.isShowing();
+        }
+        return true;
     }
 }

@@ -9,13 +9,13 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface DataPoll {
-    
-    void setPollingEnabled(boolean isPoll);
+public interface DataPoll extends PollAttributes {
 
-    boolean isPollingEnabled();
+    void setNextPollTime(long next_poll_time);
 
-    void setPollingInterval(float seconds);
+    long getNextPollTime();
 
-    float getPollingInterval();
+    boolean pause();
+
+    void pollData();
 }

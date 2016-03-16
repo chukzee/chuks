@@ -23,7 +23,7 @@ import javax.swing.JToggleButton;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-final public class JFind extends Box implements FormControl {
+final public class JFilter extends Box implements FormControl {
 
     private final JLabel lblFind;
     private final JToggleButton matchCase;
@@ -34,7 +34,7 @@ final public class JFind extends Box implements FormControl {
     private String lastSearchStr;
     private JComponent source_component;
 
-    public JFind() {
+    public JFilter() {
         super(BoxLayout.LINE_AXIS);
 
         lblFind = new JLabel("Find: ");

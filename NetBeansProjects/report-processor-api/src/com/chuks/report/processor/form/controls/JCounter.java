@@ -19,6 +19,7 @@ final public class JCounter extends JLabel implements FormControl {
     private int total_records;
     private String appended_text;
     final private String OF = " of ";
+    private String appended_text_plural;
 
     public JCounter() {
         setText(record_number + OF + total_records);
@@ -32,7 +33,14 @@ final public class JCounter extends JLabel implements FormControl {
             appended_text = "";//in case null
             space = "";
         }
-        this.setText(record_number + OF + total_records + space + appended_text);
+        String txt_append = appended_text;
+        if (this.total_records > 1) {
+            if (appended_text_plural != null && !appended_text_plural.isEmpty()) {
+                txt_append = appended_text_plural;
+            }
+        }
+
+        this.setText(record_number + OF + total_records + space + txt_append);
     }
 
     public int getRecordNumber() {
@@ -47,18 +55,27 @@ final public class JCounter extends JLabel implements FormControl {
         return this.appended_text;
     }
 
+    public String getAppendedTextPlural() {
+        return this.appended_text_plural;
+    }
+
     public void setAppendedText(String appended_text) {
         this.appended_text = appended_text;
+        setRecordLabel(record_number, total_records);
+    }
+
+    public void setAppendedTextPlural(String appended_text_plural) {
+        this.appended_text_plural = appended_text_plural;
         setRecordLabel(record_number, total_records);
     }
 
     @Override
     final public void setText(String text) {
         try {
-            
-            if(text==null || text.isEmpty())
+
+            if (text == null || text.isEmpty()) {
                 return;//do nothing
-            
+            }
             //validate format
             String[] split = text.split(" ");
 

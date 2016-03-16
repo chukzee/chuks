@@ -17,6 +17,7 @@ import com.chuks.report.processor.form.controls.JControllerPane;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -29,7 +30,7 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
 
     void bind(JComboBox combo, ListBindHanler handler);
 
-    void bind(JTextField textField, TextBindHandler handler);
+    void bind(JTextComponent textComp, TextBindHandler handler);
 
     void bind(JLabel label, TextBindHandler handler);
     

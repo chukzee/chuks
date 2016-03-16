@@ -15,6 +15,14 @@ import javax.swing.JButton;
  */
  final public class JSave extends JButton implements FormControl{
   
+    public JSave(){
+        super();
+    }
+    
+    public JSave(String text){
+        super(text);
+    }
+    
      /**override <code>addActionListener()</code> method and prevent problems
      * arising from multiple use of form action listeners 
      * by same control

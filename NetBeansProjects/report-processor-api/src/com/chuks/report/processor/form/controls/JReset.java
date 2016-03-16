@@ -15,6 +15,14 @@ import javax.swing.JButton;
  */
 final public class JReset extends JButton implements FormControl{
   
+    public JReset(){
+        super();
+    }
+    
+    public JReset(String text){
+        super(text);
+    }
+    
     /**override <code>addActionListener()</code> method and prevent problems
      * arising from multiple use of form action listeners 
      * by same control

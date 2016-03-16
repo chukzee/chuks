@@ -9,10 +9,14 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TableDataInput extends PollAttributes{
+public interface PollAttributes {
+    
+    void setPollingEnabled(boolean isPoll);
 
+    boolean isPollingEnabled();
 
-    void setColumns(String... column_names);
+    void setPollingInterval(float seconds);
 
-    void setData(Object[][] data);
+    float getPollingInterval();
+    
 }

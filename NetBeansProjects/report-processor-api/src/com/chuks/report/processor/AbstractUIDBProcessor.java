@@ -31,9 +31,9 @@ import javax.swing.text.JTextComponent;
 public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements UIDBProcessor, IValidator {
 
     final private Validator validator = new Validator();
-    private boolean dataPollingEnabled;
+    protected boolean data_polling_enabled;
     private final float DEFAULT_POLL_INTERVAL = 10;//Seconds
-    private float dataPollingInterval = DEFAULT_POLL_INTERVAL;
+    protected float data_polling_interval = DEFAULT_POLL_INTERVAL;
 
     public AbstractUIDBProcessor(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
@@ -51,22 +51,22 @@ public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements 
 
     @Override
     public void setDataPollingEnabled(boolean isPoll) {
-        dataPollingEnabled = isPoll;
+        data_polling_enabled = isPoll;
     }
 
     @Override
     public boolean getDataPollingEnabled() {
-        return dataPollingEnabled;
+        return data_polling_enabled;
     }
 
     @Override
     public void setDataPollingInterval(float seconds) {
-        dataPollingInterval = seconds;
+        data_polling_interval = seconds;
     }
 
     @Override
     public float getDataPollInterval() {
-        return dataPollingInterval;
+        return data_polling_interval;
     }
 
     @Override
