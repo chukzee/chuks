@@ -9,22 +9,24 @@ import com.chuks.report.processor.DataPoll;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class DataPollHandler implements Runnable {
+public class DataPollHandler extends SwingWorker<DataPoll, DataPoll> implements Runnable {
 
     static ArrayList<DataPoll> dataPollList = new ArrayList();
-    static ExecutorService pollExec;
+    //static ExecutorService pollExec;
     static private boolean stop;
-
+    static DataPollHandler  instance;
     private DataPollHandler() {
     }
 
@@ -33,9 +35,9 @@ public class DataPollHandler implements Runnable {
             return;
         }
         synchronized (DataPollHandler.class) {
-            if (pollExec == null) {
-                pollExec = Executors.newSingleThreadExecutor();
-                pollExec.execute(new DataPollHandler());
+            if(instance==null){
+                instance = new DataPollHandler();
+                instance.execute();
             }
         }
         //register for polling
@@ -43,35 +45,36 @@ public class DataPollHandler implements Runnable {
         setNextPollTime(poll);
     }
 
+    static private void setNextPollTime(DataPoll poll) {
+        long next_time = (long) (System.currentTimeMillis() + poll.getPollingInterval() * 1000);
+        poll.setNextPollTime(next_time);
+    }
+
     @Override
-    public void run() {
+    protected DataPoll doInBackground() throws Exception {
         while (!stop) {
             Iterator<DataPoll> i = dataPollList.iterator();
             while (i.hasNext()) {
                 final DataPoll poll = i.next();
 
                 if (poll.getNextPollTime() >= System.currentTimeMillis()) {
-                    try {
-                        SwingUtilities.invokeAndWait(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (poll.pause()) {
-                                    return;
-                                }
-                                poll.pollData();
-                                setNextPollTime(poll);
-                            }
-                        });
-                    } catch (InterruptedException | InvocationTargetException ex) {
-                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    this.publish(poll);
                 }
             }
         }
+
+        return null;
     }
 
-    static private void setNextPollTime(DataPoll poll) {
-        long next_time = (long) (System.currentTimeMillis() + poll.getPollingInterval() * 1000);
-        poll.setNextPollTime(next_time);
+    @Override
+    protected void process(List<DataPoll> chunks) {
+        for (DataPoll poll : chunks) {
+            if (poll.pause()) {
+                return;
+            }
+            poll.pollData();
+            setNextPollTime(poll);
+        }
     }
+
 }

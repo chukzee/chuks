@@ -423,8 +423,9 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         JFilter filter = new JFilter();
         table_toolbox.add(filter);
-        find.setVisible(isDisplayFilter);
-
+        filter.setVisible(isDisplayFilter);
+        filter.setTable(table);
+        
         table_toolbox.add(Box.createHorizontalStrut(20));
 
         addSelectButton(table, table_toolbox);
@@ -890,7 +891,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private void setModelTable(JTable table) {
             this.model_table = table;
         }
-        
+
         private void refresh(JTable table) {
 
             List freshData;
@@ -1131,7 +1132,12 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         @Override
         public void pollData() {
-
+            //COME BACK - SOME COMPLICATIONS EXIST ABEG O!!!
+            if (model_table != null) {
+                if(model_table.isEditing())
+                    return;//do not poll data when table cell is being edited
+                refresh(model_table);
+            }
         }
 
         @Override
@@ -1164,7 +1170,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             if (model_table == null) {
                 return true;
             }
-            return !model_table.isShowing();
+            return !model_table.isShowing()//pause if table is not showing
+                    ||model_table.isEditing();//also pause if a table cell is being edited
         }
 
     }

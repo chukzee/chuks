@@ -29,6 +29,8 @@ import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.IFormField;
 import com.chuks.report.processor.Option;
 import com.chuks.report.processor.TableFieldGen;
+import com.chuks.report.processor.ValidationHandler;
+import com.chuks.report.processor.Validator;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.event.FormActionListener;
 import com.chuks.report.processor.event.SearchObserver;
@@ -46,6 +48,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,6 +99,18 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     }
 
     @Override
+    public void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls) throws SQLException {
+        DefaultFormModel formModel = new FormModelBuilder()
+                .setDataInputHandler(dataInputHandler)
+                .setUpdateFormHandler(updateFieldHandler)
+                .setJControllerPane(controllers_pane)
+                .setFormControl(controls)
+                .build();
+
+        DataPollHandler.registerPoll(formModel);
+    }
+
+    @Override
     public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException {
 
         DefaultFormModel formModel = new FormModelBuilder()
@@ -115,6 +130,19 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setFormFieldMapper(mapper)
                 .setUpdateFormHandler(updateFieldHandler)
                 .setJControllerPane(controllers_pane)
+                .build();
+
+        DataPollHandler.registerPoll(formModel);
+    }
+
+    @Override
+    public void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls) throws SQLException {
+        DefaultFormModel formModel = new FormModelBuilder()
+                .setFormFieldCallBack(callBack)
+                .setFormFieldMapper(mapper)
+                .setUpdateFormHandler(updateFieldHandler)
+                .setJControllerPane(controllers_pane)
+                .setFormControl(controls)
                 .build();
 
         DataPollHandler.registerPoll(formModel);
@@ -484,7 +512,16 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 freshData = refreshUsingDataInputHandler();
             }
 
-            updateJCounter();
+            if (freshData != null) {
+                if (record_index > freshData.length - 1) {
+                    record_index = freshData.length - 1;
+                }
+
+                data = freshData;
+
+                displayRecord(moveTo(record_index));//move to the current record
+                updateJCounter();
+            }
 
             return freshData != null;
         }
@@ -705,7 +742,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         private Object[] moveTo(int index) {
-            if (index >= data.length) {
+            if (index >= data.length || index < 0) {
                 return null;
             }
             record_index = index;
@@ -764,6 +801,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private void jsaveAcitionPerform(ActionEvent e) {
             if (saveRecord()) {
                 reset();//after every successful save, reset the form
+                displayRecord(moveTo(record_index));
                 updateJCounter();
             }
         }
@@ -911,6 +949,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             FormFieldPost post = new FormFieldPost() {
                 FormFieldImpl[] updateEntries = new FormFieldImpl[0];
                 private boolean is_refresh = true;//refresh by default
+                Validator validator = new Validator();
 
                 @Override
                 public IFormField[] getFormFields() {
@@ -1057,6 +1096,92 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     return Option.CLOSED;
                 }
 
+                JComponent[] getComponentsByAccessNames(String... accessible_names) {
+                    if (accessible_names == null) {
+                        return new JComponent[0];
+                    }
+                    Set<JComponent> set = new HashSet();
+                    for (JComponent fieldsComponent : fieldsComponents) {
+                        for (String accessible_name : accessible_names) {
+                            if (accessible_name == null) {
+                                continue;
+                            }
+                            if (accessible_name.equals(fieldsComponent.getAccessibleContext().getAccessibleName())) {
+                                set.add(fieldsComponent);
+                            }
+                        }
+                    }
+
+                    JComponent[] comps = new JComponent[set.size()];
+                    set.toArray(comps);
+                    return comps;
+                }
+
+                @Override
+                public boolean validateAnyEmtpy() {
+                    return validator.validateEmpty(fieldsComponents);
+                }
+
+                @Override
+                public boolean validateEmtpy(String... accessible_names) {
+                    return validator.validateEmpty(getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateEmtpy(JComponent... comps) {
+                    return validator.validateEmpty(comps);
+                }
+
+                @Override
+                public boolean validateAnyNumeric() {
+                    return validator.validateNumeric(fieldsComponents);
+                }
+
+                @Override
+                public boolean validateNumeric(String... accessible_names) {
+                    return validator.validateNumeric(getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateNumeric(JComponent... comps) {
+                    return validator.validateNumeric(comps);
+                }
+
+                @Override
+                public boolean validateAnyNumber() {
+                    return validator.validateNumber(fieldsComponents);
+                }
+
+                @Override
+                public boolean validateNumber(String... accessible_names) {
+                    return validator.validateNumber(getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateNumber(JComponent... comp) {
+                    return validator.validateNumber(comp);
+                }
+
+                @Override
+                public boolean validateAnyCustom(ValidationHandler validationHandler) {
+                    return validator.validateCustom(validationHandler, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateCustom(ValidationHandler validationHandler, String... accessible_names) {
+                    return validator.validateCustom(validationHandler, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateCustom(ValidationHandler validationHandler, JComponent... comps) {
+                    return validator.validateCustom(validationHandler, comps);
+                }
+
+                @Override
+                public JComponent[] getComponents() {
+                    return fieldsComponents;
+                }
+
             };
 
             formFieldsPostHandler.doPost(new ActionSQLImpl(model_jdbc_settings), post);
@@ -1119,6 +1244,45 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         @Override
         public void pollData() {
 
+            Object[][] poll_data = null;
+            if (dataInputHandler != null) {
+                poll_data = refreshUsingDataInputHandler();
+            }
+
+            if (callBack != null) {
+                poll_data = refreshUsingSql();
+            }
+
+            boolean external_change = false;
+            for (int i = 0; i < data.length || i < poll_data.length; i++) {
+                for (int k = 0; k < data[i].length; k++) {
+                    Object cur_value = getFieldValue(data, k);
+                    Object poll_value = getFieldValue(poll_data, k);
+                    if (!cur_value.equals(poll_value)) {
+                        external_change = true;
+                        break;
+                    }
+                }
+            }
+
+            if (poll_data.length < data.length) {
+                external_change = true;
+            }
+
+            if (external_change) {
+                //TO BE TESTED!!!
+                JOptionPane.showMessageDialog(getFrame(fieldsComponents[0]), "Current form record(s) is being updated!\nThis may undo your last changes made before your last save operation.", "External Update", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            if (record_index > poll_data.length - 1) {
+                record_index = poll_data.length - 1;
+            }
+
+            data = poll_data;
+
+            displayRecord(moveTo(record_index));//move to the current record
+            updateJCounter();
+
         }
 
         @Override
@@ -1142,7 +1306,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         /**
-         * This method will pause the data poll if all the form component is not showing.
+         * This method will pause the data poll if all the form component is not
+         * showing.
          *
          * @return
          */
@@ -1156,5 +1321,6 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             }
             return true;//all component is hidden so pause
         }
+
     }
 }

@@ -33,7 +33,7 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
     void bind(JTextComponent textComp, TextBindHandler handler);
 
     void bind(JLabel label, TextBindHandler handler);
-    
+
     /**
      *
      * @param dataInputHandler
@@ -41,9 +41,8 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
      * @param controls
      * @throws java.sql.SQLException
      */
-    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler postFieldHandler, FormControl... controls) throws SQLException ;
-    
-    
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler postFieldHandler, FormControl... controls) throws SQLException;
+
     /**
      *
      * @param dataInputHandler
@@ -51,10 +50,14 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
      * @param controllers_pane
      * @throws java.sql.SQLException
      */
-    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException ;
-    
-    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper,  FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException;
-    
-    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper,  FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
+
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls) throws SQLException;
+
+    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException;
+
+    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
+
+    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls) throws SQLException;
 
 }
