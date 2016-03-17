@@ -75,6 +75,10 @@ public interface FormFieldPost extends Feedback {
     boolean isRefreshAllowed();
 
     JComponent[] getComponents();
+
+    void runAllValidations(boolean s);
+
+    boolean isRunAllValidations();
     
     boolean validateAnyEmtpy();
 
@@ -82,17 +86,35 @@ public interface FormFieldPost extends Feedback {
 
     boolean validateEmtpy(JComponent... comps);
 
+    boolean validateAnyEmtpy(ErrorCallBack errCall);
+
+    boolean validateEmtpy(ErrorCallBack errCall, String... accessible_name);
+
+    boolean validateEmtpy(ErrorCallBack errCall, JComponent... comps);
+
     boolean validateAnyNumeric();
 
     boolean validateNumeric(String... accessible_name);
 
     boolean validateNumeric(JComponent... comps);
 
+    boolean validateAnyNumeric(ErrorCallBack errCall);
+
+    boolean validateNumeric(ErrorCallBack errCall, String... accessible_name);
+
+    boolean validateNumeric(ErrorCallBack errCall, JComponent... comps);
+
     boolean validateAnyNumber();
 
     boolean validateNumber(String... accessible_name);
 
     boolean validateNumber(JComponent... comps);
+
+    boolean validateAnyNumber(ErrorCallBack errCall);
+
+    boolean validateNumber(ErrorCallBack errCall, String... accessible_name);
+
+    boolean validateNumber(ErrorCallBack errCall, JComponent... comps);
 
     boolean validateAnyCustom(ValidationHandler validationHandler);
 

@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.AbstractUIDBProcessor;
 import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.ErrorCallBack;
 import com.chuks.report.processor.bind.ListBindHanler;
 import com.chuks.report.processor.FormFieldMapper;
 import com.chuks.report.processor.FormDataInputHandler;
@@ -152,7 +153,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     public void bind(JList list, ListBindHanler handler) {
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
         handler.data(input);
-        
+
         Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
             if (fetch != null && fetch.length > 0) {
@@ -175,7 +176,6 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        
         Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
             if (fetch != null && fetch.length > 0) {
@@ -202,7 +202,6 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        
         Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
             if (fetch != null && fetch.length > 0) {
@@ -225,7 +224,6 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        
         Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
             if (fetch != null && fetch.length > 0) {
@@ -338,14 +336,15 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     FormDataInputImpl input = new FormDataInputImpl(jdbcSettings);
                     dataInputHandler.onInput(input);
 
+                    data = input.getData();//get data whether available or not
+
                     if (input.dbHelper != null) {//database is the source of data
-                        data = input.dbHelper.fetchArray();
+                        if (data == null || data.length == 0) {//lets try to fetch it to see if it is available
+                            data = input.dbHelper.fetchArray();
+                        }
                         selectSQL = input.dbHelper.getSelectSQL();
                         selectParam = input.dbHelper.getSelectParams();
                         model_jdbc_settings = new JDBCSettings(input.dbHelper.getJdbcSetting());//we need to copy                
-                    }
-                    if (data != null && data.length == 0) {//here perhaps database is not the source of data
-                        data = input.getData();
                     }
 
                     fieldsComponents = input.getFieldComponents();
@@ -1155,6 +1154,16 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
+                public void runAllValidations(boolean is_validate_all) {
+                    validator.runAllValidations(is_validate_all);
+                }
+
+                @Override
+                public boolean isRunAllValidations() {
+                    return validator.isRunAllValidations();
+                }
+
+                @Override
                 public boolean validateAnyEmtpy() {
                     return validator.validateEmpty(fieldsComponents);
                 }
@@ -1167,6 +1176,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 @Override
                 public boolean validateEmtpy(JComponent... comps) {
                     return validator.validateEmpty(comps);
+                }
+
+                @Override
+                public boolean validateAnyEmtpy(ErrorCallBack errCall) {
+                    return validator.validateEmpty(errCall, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateEmtpy(ErrorCallBack errCall, String... accessible_names) {
+                    return validator.validateEmpty(errCall, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateEmtpy(ErrorCallBack errCall, JComponent... comps) {
+                    return validator.validateEmpty(errCall, comps);
                 }
 
                 @Override
@@ -1185,6 +1209,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
+                public boolean validateAnyNumeric(ErrorCallBack errCall) {
+                    return validator.validateNumeric(errCall, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateNumeric(ErrorCallBack errCall, String... accessible_names) {
+                    return validator.validateNumeric(errCall, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateNumeric(ErrorCallBack errCall, JComponent... comps) {
+                    return validator.validateNumeric(errCall, comps);
+                }
+
+                @Override
                 public boolean validateAnyNumber() {
                     return validator.validateNumber(fieldsComponents);
                 }
@@ -1197,6 +1236,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 @Override
                 public boolean validateNumber(JComponent... comp) {
                     return validator.validateNumber(comp);
+                }
+
+                @Override
+                public boolean validateAnyNumber(ErrorCallBack errCall) {
+                    return validator.validateNumber(errCall, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateNumber(ErrorCallBack errCall, String... accessible_names) {
+                    return validator.validateNumber(errCall, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateNumber(ErrorCallBack errCall, JComponent... comp) {
+                    return validator.validateNumber(errCall, comp);
                 }
 
                 @Override
