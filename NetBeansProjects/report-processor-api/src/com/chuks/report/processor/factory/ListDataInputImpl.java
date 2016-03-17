@@ -29,7 +29,7 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     }
 
     @Override
-    public void setJDBCSettings(JDBCSettings settings){
+    public void setJDBCSettings(JDBCSettings settings) {
         this.jdbcSettings = settings;
         this.dbHelper = new DBHelper(this);
     }
@@ -58,8 +58,13 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
 
         handler.data(this);
 
+        Object[][] fetch = this.dbHelper.fetchArray();
         if (this.getData() == null) {
-            return;
+            if (fetch != null && fetch.length > 0) {
+                this.setData(fetch[0]);
+            } else {
+                return;
+            }
         }
 
         if (combo != null) {
@@ -73,7 +78,7 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
         if (list != null) {
             list.setListData(this.getData());
         }
-        
+
     }
 
     void setHandler(JList list, ListBindHanler handler) {
@@ -85,9 +90,11 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
         this.combo = combo;
         this.handler = handler;
     }
+
     /**
      * This method will pause the data poll if the component is not showing
-     * @return 
+     *
+     * @return
      */
     @Override
     public boolean pause() {

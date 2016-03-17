@@ -87,9 +87,14 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         TableDataInputImpl input = new TableDataInputImpl(new JDBCSettings(jdbcSettings));//copy jdbcSettings 
         dataInputHandler.onInput(input);
+        Object[][] fetch = input.dbHelper.fetchArray();
 
         if (input.getData() == null) {
-            return null;
+            if (fetch != null && fetch.length > 0) {
+                input.setData(fetch);
+            } else {
+                return null;
+            }
         }
 
         List list = new ArrayList();

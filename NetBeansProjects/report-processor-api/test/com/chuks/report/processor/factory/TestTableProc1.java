@@ -96,14 +96,17 @@ public class TestTableProc1 extends javax.swing.JFrame {
                 public void onInput(TableDataInput input) {
 
                     try {
-                        input.select()
+                        Object[][] data = input.select()
                                 .columns("ID", "CASH", "AMOUNT", "NAME", "AGE")
                                 .from("test_table_1")
                                 .where()
                                 .lessOrEqual("AGE", "250")
                                 .and()
-                                .greaterOrEqual("AGE", "0");
+                                .greaterOrEqual("AGE", "0")
+                                .fetchArray();
                         input.setColumns("the ID", "the CASH", "the AMOUNT", "the NAME", "the AGE");
+                        input.setData(data);
+                        
                     } catch (SQLException ex) {
                         Logger.getLogger(TestTableProc1.class.getName()).log(Level.SEVERE, null, ex);
                     }

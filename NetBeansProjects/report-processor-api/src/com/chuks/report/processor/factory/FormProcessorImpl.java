@@ -152,9 +152,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
     public void bind(JList list, ListBindHanler handler) {
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
         handler.data(input);
-
+        
+        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
-            return;
+            if (fetch != null && fetch.length > 0) {
+                input.setData(fetch[0]);
+            } else {
+                return;
+            }
         }
 
         list.setListData(input.getData());
@@ -170,8 +175,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
         handler.data(input);
 
+        
+        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
-            return;
+            if (fetch != null && fetch.length > 0) {
+                input.setData(fetch[0]);
+            } else {
+                return;
+            }
         }
 
         combo.removeAllItems();//first remove all previous items
@@ -191,8 +202,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
+        
+        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
-            return;
+            if (fetch != null && fetch.length > 0) {
+                input.setData(fetch[0][0]);
+            } else {
+                return;
+            }
         }
 
         textComp.setText(input.getData().toString());
@@ -208,8 +225,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
+        
+        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
-            return;
+            if (fetch != null && fetch.length > 0) {
+                input.setData(fetch[0][0]);
+            } else {
+                return;
+            }
         }
 
         label.setText(input.getData().toString());
