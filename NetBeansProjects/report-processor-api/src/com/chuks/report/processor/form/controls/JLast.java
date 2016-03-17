@@ -14,6 +14,7 @@ import javax.swing.JButton;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 final public class JLast extends JButton implements FormControl{
+    private boolean failed;
  
     
     public JLast(){
@@ -43,5 +44,21 @@ final public class JLast extends JButton implements FormControl{
         }
         super.addActionListener(l);
     }
-   
+
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+       
 }

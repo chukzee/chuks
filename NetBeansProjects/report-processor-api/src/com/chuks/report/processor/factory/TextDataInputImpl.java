@@ -8,6 +8,7 @@ package com.chuks.report.processor.factory;
 import com.chuks.report.processor.DataPoll;
 import com.chuks.report.processor.bind.TextBindHandler;
 import com.chuks.report.processor.bind.TextDataInput;
+import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
@@ -26,6 +27,12 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
 
     TextDataInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
+    }
+
+    @Override
+    public void setJDBCSettings(JDBCSettings settings){
+        this.jdbcSettings = settings;
+        this.dbHelper = new DBHelper(this);
     }
 
     @Override

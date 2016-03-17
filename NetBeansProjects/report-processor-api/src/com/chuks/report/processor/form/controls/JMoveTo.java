@@ -73,6 +73,7 @@ final public class JMoveTo extends Box implements FormControl {
     };
 
     int indexComp = -1;
+    private boolean failed;
 
     public JMoveTo() {
         super(BoxLayout.LINE_AXIS);
@@ -171,4 +172,21 @@ final public class JMoveTo extends Box implements FormControl {
         btn.setToolTipText(text);
         super.setToolTipText(text); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

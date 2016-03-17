@@ -5,15 +5,18 @@
  */
 package com.chuks.report.processor;
 
+import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JComponent;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface FormDataInput  extends PollAttributes{
+public interface FormDataInput  extends ActionSQL, PollAttributes{
     
     void setFieldComponents(JComponent... field_components);
 
     void setData(Object[][] data);
+    
+    void setJDBCSettings(JDBCSettings settings);
 }

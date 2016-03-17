@@ -5,14 +5,19 @@
  */
 package com.chuks.report.processor;
 
+import com.chuks.report.processor.util.JDBCSettings;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TableDataInput extends PollAttributes{
+public interface TableDataInput extends  ActionSQL,  PollAttributes{
 
 
     void setColumns(String... column_names);
 
     void setData(Object[][] data);
+    
+    void setJDBCSettings(JDBCSettings settings);
+
 }

@@ -5,13 +5,17 @@
  */
 package com.chuks.report.processor.bind;
 
+import com.chuks.report.processor.ActionSQL;
 import com.chuks.report.processor.PollAttributes;
+import com.chuks.report.processor.util.JDBCSettings;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TextDataInput extends PollAttributes {
+public interface TextDataInput extends ActionSQL, PollAttributes {
 
     void setData(Object data);
+
+    void setJDBCSettings(JDBCSettings settings);
 }

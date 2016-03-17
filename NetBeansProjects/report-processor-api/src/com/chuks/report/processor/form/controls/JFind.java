@@ -33,6 +33,7 @@ final public class JFind extends Box implements FormControl {
     private int searchCount;
     private String lastSearchStr;
     private JComponent source_component;
+    private boolean failed;
 
     public JFind() {
         super(BoxLayout.LINE_AXIS);
@@ -113,4 +114,20 @@ final public class JFind extends Box implements FormControl {
         lastSearchStr = null;
     }
 
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

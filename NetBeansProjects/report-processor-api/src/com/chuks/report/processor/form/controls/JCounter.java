@@ -20,6 +20,7 @@ final public class JCounter extends JLabel implements FormControl {
     private String appended_text;
     final private String OF = " of ";
     private String appended_text_plural;
+    private boolean failed;
 
     public JCounter() {
         setText(record_number + OF + total_records);
@@ -109,4 +110,20 @@ final public class JCounter extends JLabel implements FormControl {
         }
     }
 
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

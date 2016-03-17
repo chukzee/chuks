@@ -7,7 +7,6 @@ package com.chuks.report.processor;
 import java.sql.SQLException;
 import javax.swing.JComponent;
 import com.chuks.report.processor.factory.TableFieldSource;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import com.chuks.report.processor.factory.TableFieldRenderer;
 
@@ -37,19 +36,18 @@ public interface TableProcessor extends UIDBProcessor {
      * @param dataInputHandler
      * @param updateFieldHandler
      * @param deleteRowsHandler
-     * @throws java.sql.SQLException
      */
-    void tableLoad(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
+    void tableLoad(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler);
     
     /**
      *
      * @param container
      * @param dataInputHandler
+     * @param renderer
      * @param updateFieldHandler
      * @param deleteRowsHandler
-     * @throws java.sql.SQLException
      */
-    void tableLoad(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler) throws SQLException ;
+    void tableLoad(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler);
     
     /**
      *
@@ -58,9 +56,8 @@ public interface TableProcessor extends UIDBProcessor {
      * @param updateFieldHandler
      * @param deleteRowsHandler
      * @param columnSources
-     * @throws java.sql.SQLException
      */
-    void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
+    void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources);
     
     /**
      *
@@ -69,9 +66,8 @@ public interface TableProcessor extends UIDBProcessor {
      * @param updateFieldHandler
      * @param deleteRowsHandler
      * @param mapper
-     * @throws java.sql.SQLException
      */
-    void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldMapper mapper) throws SQLException ;
+    void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldMapper mapper);
     
     /**
      *
@@ -81,10 +77,9 @@ public interface TableProcessor extends UIDBProcessor {
      * @param updateFieldHandler
      * @param columnSources
      * @param deleteRowsHandler
-     * @return 
-     * @throws java.sql.SQLException
+     * @return
      */
-    JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources) throws SQLException ;
+    JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowsHandler, TableFieldSource... columnSources);
     
     /**
      *
@@ -94,8 +89,7 @@ public interface TableProcessor extends UIDBProcessor {
      * @param updateFieldHandler
      * @param deleteRowHandler
      * @param mapper
-     * @return 
-     * @throws java.sql.SQLException
+     * @return
      */
-    JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException ;
+    JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper);
 }

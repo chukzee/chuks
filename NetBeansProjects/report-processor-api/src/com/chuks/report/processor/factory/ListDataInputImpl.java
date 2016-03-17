@@ -8,6 +8,7 @@ package com.chuks.report.processor.factory;
 import com.chuks.report.processor.DataPoll;
 import com.chuks.report.processor.bind.ListBindHanler;
 import com.chuks.report.processor.bind.ListDataInput;
+import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JComboBox;
 import javax.swing.JList;
@@ -25,6 +26,12 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
 
     ListDataInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
+    }
+
+    @Override
+    public void setJDBCSettings(JDBCSettings settings){
+        this.jdbcSettings = settings;
+        this.dbHelper = new DBHelper(this);
     }
 
     @Override

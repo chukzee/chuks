@@ -6,17 +6,11 @@ package com.chuks.report.processor;
 
 import com.chuks.report.processor.bind.ListBindHanler;
 import com.chuks.report.processor.bind.TextBindHandler;
-import java.awt.Container;
-import java.sql.SQLException;
-import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import com.chuks.report.processor.form.controls.FormControl;
 import com.chuks.report.processor.form.controls.JControllerPane;
 import javax.swing.JComboBox;
 import javax.swing.JList;
-import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 /**
@@ -39,25 +33,23 @@ public interface FormProcessor<T> extends UIDBProcessor, IValidator {
      * @param dataInputHandler
      * @param postFieldHandler
      * @param controls
-     * @throws java.sql.SQLException
      */
-    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler postFieldHandler, FormControl... controls) throws SQLException;
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler postFieldHandler, FormControl... controls);
 
     /**
      *
      * @param dataInputHandler
      * @param updateFieldHandler
      * @param controllers_pane
-     * @throws java.sql.SQLException
      */
-    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane);
 
-    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls) throws SQLException;
+    void formLoad(FormDataInputHandler dataInputHandler, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls);
 
-    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, FormControl... controls) throws SQLException;
+    void formLoad(FormFieldCallBack callBack, FormPostHandler updateFieldHandler, FormFieldMapper mapper, FormControl... controls);
 
-    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, JControllerPane controllers_pane) throws SQLException;
+    void formLoad(FormFieldCallBack callBack, FormPostHandler updateFieldHandler, FormFieldMapper mapper, JControllerPane controllers_pane);
 
-    void formLoad(FormFieldCallBack callBack, FormFieldMapper mapper, FormPostHandler updateFieldHandler, JControllerPane controllers_pane, FormControl... controls) throws SQLException;
+    void formLoad(FormFieldCallBack callBack, FormPostHandler updateFieldHandler, FormFieldMapper mapper, JControllerPane controllers_pane, FormControl... controls);
 
 }

@@ -6,6 +6,8 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.ActionSQL;
+import com.chuks.report.processor.FormDataInput;
+import com.chuks.report.processor.FormDataInputHandler;
 import com.chuks.report.processor.FormFieldCallBack;
 import com.chuks.report.processor.FormFieldGen;
 import com.chuks.report.processor.FormFieldMapper;
@@ -31,75 +33,46 @@ public class TestFormProc1 extends javax.swing.JFrame {
     public TestFormProc1() {
         initComponents();
 
-        try {
-            initProcessor();
-        } catch (SQLException ex) {
-            Logger.getLogger(TestTableProc.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        initProcessor();
+        
     }
 
-    private void initProcessor() throws SQLException {
-        JDBCSettings jdbcSettings = new JDBCSettings("jdbc:mysql://localhost:3306/autopolicedb", "autopolice", "autopolicepass", null);
+    private void initProcessor(){
+        final JDBCSettings jdbcSettings = new JDBCSettings("jdbc:mysql://localhost:3306/autopolicedb", "autopolice", "autopolicepass", null);
 
-        f = ProcessorFactory.getFormProcessor(jdbcSettings);
-        f.select()
-                .columns("ID", "CASH", "AMOUNT", "NAME", "AGE")
-                .from("test_table_1")
-                .where()
-                .lessOrEqual("AGE", "250")
-                .and()
-                .greaterOrEqual("AGE", "0");
-        
-        
-       /* f.formLoad(new FormFieldCallBack() {
+        f = ProcessorFactory.getFormProcessor();
 
+        f.formLoad(new FormDataInputHandler() {
+            
             @Override
-            public Object onBeforeInput(FormFieldGen field, int record_index) {
-                
-                return null;
+            public void onInput(FormDataInput input) {
+                try {
+                    input.setJDBCSettings(jdbcSettings);
+                    input.select()
+                            .columns("ID", "CASH", "AMOUNT", "NAME", "AGE")
+                            .from("test_table_1")
+                            .where()
+                            .lessOrEqual("AGE", "250")
+                            .and()
+                            .greaterOrEqual("AGE", "0");
+                    
+                    //input.setData(data);
+                    input.setFieldComponents(jTextField1,jTextField2,jTextField3,jTextField4,jTextField5);
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(TestFormProc1.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }, new FormFieldMapper()
-                .map(jFind1, "")
-                .map(jFind1, "")
-                .map(jFind1, "a","b","c"), 
-        new FormPostHandler() {
+        }, new FormPostHandler() {
 
             @Override
             public void doPost(ActionSQL a, FormFieldPost f) {
-                
-            }
-        }, jFind1,jFirst1,jLast1);
-        */
-        
-        f.formLoad(new FormFieldCallBack() {
+                f.getFormFields();
+                System.out.println("is new = " + f.isNew());
+                System.out.println("is update = " + f.isUpdate());
 
-            @Override
-            public Object onBeforeInput(FormFieldGen field, int record_index) {
-                if("feild1".equals(field.getAccessibleName())){
-                    //do nothing for now
-                }else if(field.getComponent().equals(jTextField2)){                    
-                    //return Double.parseDouble(field.dbSrcValue("cash").toString())+Double.parseDouble(field.dbSrcValue("age").toString());
-                    return field.math().add("amount","cash");
-                }
-                System.out.println(field.dbSrcValueAt(0));
-                
-                return field.dbSrcValueAt(0);
             }
-        }, new FormFieldMapper()
-                .map(jTextField1, "ID")
-                .map(jTextField2, "cash","amount","age")
-                .map(jTextField3, "age")
-                .map(jTextField4, "name")
-                .map(jTextField5, "amount"), new FormPostHandler() {
-
-                    @Override
-                    public void doPost(ActionSQL a, FormFieldPost f) {
-                        f.getFormFields();
-                        System.out.println("is new = "+f.isNew());
-                        System.out.println("is update = "+f.isUpdate());
-                        
-                    }
-                },jControllerPane1);
+        }, jControllerPane1);
     }
 
     /**

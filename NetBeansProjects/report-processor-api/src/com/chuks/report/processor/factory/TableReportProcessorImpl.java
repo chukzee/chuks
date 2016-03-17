@@ -40,7 +40,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override  //NOT YET TESTED
-    public void tableLoad(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void tableLoad(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) {
 
         ReportTableModel tableModel = load0(table, dataInputHandler, updateFieldHandler, deleteRowHandler);
 
@@ -56,7 +56,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override  //NOT YET TESTED
-    public void tableLoad(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void tableLoad(JComponent container, TableDataInputHandler dataInputHandler, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) {
 
         if (container instanceof JTable) {
             throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");
@@ -83,7 +83,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         DataPollHandler.registerPoll(tableModel);
     }
 
-    public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) {
 
         TableDataInputImpl input = new TableDataInputImpl(new JDBCSettings(jdbcSettings));//copy jdbcSettings 
         dataInputHandler.onInput(input);
@@ -112,22 +112,26 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void tableLoad(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) throws SQLException {
+    public void tableLoad(JTable table, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) {
 
-        List<Object[]> list = new ArrayList();
-        list.addAll(Arrays.asList(dbHelper.fetchArray()));
-        ReportTableModel tableModel = new ReportTableModel(table, null, null, updateFieldHandler,
-                deleteRowHandler, dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
-                dbHelper.getJdbcSetting());
-        tableModel.setColumnNames(dbHelper.getColumns(isColumnAsIs));
-        tableModel.setTableFieldSource(null);
-        tableModel.addAllData(list);
+        try {
+            List<Object[]> list = new ArrayList();
+            list.addAll(Arrays.asList(dbHelper.fetchArray()));
+            ReportTableModel tableModel = new ReportTableModel(table, null, null, updateFieldHandler,
+                    deleteRowHandler, dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
+                    dbHelper.getJdbcSetting());
+            tableModel.setColumnNames(dbHelper.getColumns(isColumnAsIs));
+            tableModel.setTableFieldSource(null);
+            tableModel.addAllData(list);
 
-        table.setModel(tableModel);
+            table.setModel(tableModel);
 
-        setRowSorter(table);
-        relayoutTableReport(table);
-        DataPollHandler.registerPoll(tableModel);
+            setRowSorter(table);
+            relayoutTableReport(table);
+            DataPollHandler.registerPoll(tableModel);
+        } catch (SQLException ex) {
+            Logger.getLogger(TableReportProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -152,8 +156,11 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    public void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) {
         ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowHandler, columnSources);
+        if (tableModel == null) {
+            return;
+        }
         table.setModel(tableModel);
         setRowSorter(table);
         relayoutTableReport(table);
@@ -161,24 +168,26 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     }
 
     @Override
-    public void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+    public void tableLoad(JTable table, TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) {
         tableLoad(table, inputCallBack, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
-    public JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) throws SQLException {
+    public JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldMapper mapper) {
         return tableLoad(container, inputCallBack, renderer, updateFieldHandler, deleteRowHandler, mapper.getFieldSources());
     }
 
     @Override
-    public JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, final TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    public JTable tableLoad(JComponent container, TableFieldCallBack inputCallBack, final TableFieldRenderer renderer, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) {
 
         if (container instanceof JTable) {
             throw new IllegalArgumentException("Container type cannot be a JTable or its sub class!  You may use JPanel.");
         }
 
         final ReportTableModel tableModel = createTableModel(inputCallBack, updateFieldHandler, deleteRowHandler, columnSources);
-
+        if (tableModel == null) {
+            return new JTable();//empty table
+        }
         JTable table = createTable(renderer, tableModel);
 
         tableModel.setModelTable(table);
@@ -320,47 +329,51 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         return -1;
     }
 
-    private ReportTableModel createTableModel(TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) throws SQLException {
+    private ReportTableModel createTableModel(TableFieldCallBack inputCallBack, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler, TableFieldSource... columnSources) {
 
         if (inputCallBack == null) {
             throw new NullPointerException("Table field call back must not be null!");
         }
-
-        //check if valid column source names where provided
-        String[] columns = new String[columnSources.length];
-        for (int i = 0; i < columnSources.length; i++) {
-            columns[i] = columnSources[i].fieldColumn();
-            Object[] srcList = columnSources[i].getDBSrcColumns().toArray();
-            for (Object srcList1 : srcList) {
-                String col = (String) srcList1;
-                String[] cols = dbHelper.getColumns(true); //get colums as they are. that is what we want here.
-                boolean found = false;
-                for (String col1 : cols) {
-                    if (col1.equalsIgnoreCase(col)) {
-                        found = true;
-                        break;
+        ReportTableModel tableModel = null;
+        try {
+            //check if valid column source names where provided
+            String[] columns = new String[columnSources.length];
+            for (int i = 0; i < columnSources.length; i++) {
+                columns[i] = columnSources[i].fieldColumn();
+                Object[] srcList = columnSources[i].getDBSrcColumns().toArray();
+                for (Object srcList1 : srcList) {
+                    String col = (String) srcList1;
+                    String[] cols = dbHelper.getColumns(true); //get colums as they are. that is what we want here.
+                    boolean found = false;
+                    for (String col1 : cols) {
+                        if (col1.equalsIgnoreCase(col)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        throw new IllegalArgumentException("Missing column source. One or more columns source was not found. All column sources must be selected!");
                     }
                 }
-                if (!found) {
-                    throw new IllegalArgumentException("Missing column source. One or more columns source was not found. All column sources must be selected!");
-                }
             }
+
+            //add the respective column source values to the column
+            Object[][] data = dbHelper.fetchArray();
+            String[] colNames = dbHelper.getColumns(true);
+
+            List list = columnSourceList(data, colNames, columnSources);
+
+            tableModel = new ReportTableModel(null, inputCallBack, null,
+                    updateFieldHandler, deleteRowHandler,
+                    dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
+                    dbHelper.getJdbcSetting());
+
+            tableModel.setColumnNames(columns);
+            tableModel.setTableFieldSource(columnSources);
+            tableModel.addAllData(list);
+        } catch (SQLException ex) {
+            Logger.getLogger(TableReportProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        //add the respective column source values to the column
-        Object[][] data = dbHelper.fetchArray();
-        String[] colNames = dbHelper.getColumns(true);
-
-        List list = columnSourceList(data, colNames, columnSources);
-
-        ReportTableModel tableModel = new ReportTableModel(null, inputCallBack, null,
-                updateFieldHandler, deleteRowHandler,
-                dbHelper.getSelectSQL(), dbHelper.getSelectParams(),
-                dbHelper.getJdbcSetting());
-
-        tableModel.setColumnNames(columns);
-        tableModel.setTableFieldSource(columnSources);
-        tableModel.addAllData(list);
         return tableModel;
     }
 
@@ -425,7 +438,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         table_toolbox.add(filter);
         filter.setVisible(isDisplayFilter);
         filter.setTable(table);
-        
+
         table_toolbox.add(Box.createHorizontalStrut(20));
 
         addSelectButton(table, table_toolbox);
@@ -1134,8 +1147,9 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         public void pollData() {
             //COME BACK - SOME COMPLICATIONS EXIST ABEG O!!!
             if (model_table != null) {
-                if(model_table.isEditing())
+                if (model_table.isEditing()) {
                     return;//do not poll data when table cell is being edited
+                }
                 refresh(model_table);
             }
         }
@@ -1171,7 +1185,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 return true;
             }
             return !model_table.isShowing()//pause if table is not showing
-                    ||model_table.isEditing();//also pause if a table cell is being edited
+                    || model_table.isEditing();//also pause if a table cell is being edited
         }
 
     }

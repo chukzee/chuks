@@ -13,21 +13,23 @@ import javax.swing.JButton;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-final public class JFirst extends JButton implements FormControl{
-   
-    
-    public JFirst(){
+final public class JFirst extends JButton implements FormControl {
+
+    private boolean failed;
+
+    public JFirst() {
         super();
     }
-    
-    public JFirst(String text){
+
+    public JFirst(String text) {
         super(text);
     }
-    
-    /**override <code>addActionListener()</code> method and prevent problems
-     * arising from multiple use of form action listeners 
-     * by same control
-     * @param l 
+
+    /**
+     * override <code>addActionListener()</code> method and prevent problems
+     * arising from multiple use of form action listeners by same control
+     *
+     * @param l
      */
     @Override
     public void addActionListener(ActionListener l) {
@@ -43,5 +45,21 @@ final public class JFirst extends JButton implements FormControl{
         }
         super.addActionListener(l);
     }
- 
+
+    public void controlFailedState(boolean failed) {
+        if (failed) {
+            this.failed = failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (failed) {
+            super.setEnabled(false);
+            return;
+        }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -6,6 +6,7 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.*;
+import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
 
 /**
@@ -20,6 +21,12 @@ import com.chuks.report.processor.util.JDBCSettings;
         super(jdbcSettings);
     }
     
+    @Override
+    public void setJDBCSettings(JDBCSettings settings){
+        this.jdbcSettings = settings;
+        this.dbHelper = new DBHelper(this);
+    }
+
     @Override
     public void setColumns(String... column_names) {
       this.columnNames = column_names;

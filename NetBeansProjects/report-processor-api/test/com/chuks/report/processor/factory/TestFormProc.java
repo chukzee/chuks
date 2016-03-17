@@ -49,58 +49,37 @@ public class TestFormProc extends javax.swing.JFrame {
                 .lessOrEqual("AGE", "250")
                 .and()
                 .greaterOrEqual("AGE", "0");
-        
-        
-       /* f.formLoad(new FormFieldCallBack() {
 
+        f.formLoad(new FormFieldCallBack() {
             @Override
             public Object onBeforeInput(FormFieldGen field, int record_index) {
-                
-                return null;
+                if ("feild1".equals(field.getAccessibleName())) {
+                    //do nothing for now
+                } else if (field.getComponent().equals(jTextField2)) {
+                    //return Double.parseDouble(field.dbSrcValue("cash").toString())+Double.parseDouble(field.dbSrcValue("age").toString());
+                    return field.math().add("amount", "cash");
+                }
+                System.out.println(field.dbSrcValueAt(0));
+
+                return field.dbSrcValueAt(0);
             }
-        }, new FormFieldMapper()
-                .map(jFind1, "")
-                .map(jFind1, "")
-                .map(jFind1, "a","b","c"), 
-        new FormPostHandler() {
+        }, new FormPostHandler() {
 
             @Override
             public void doPost(ActionSQL a, FormFieldPost f) {
-                
-            }
-        }, jFind1,jFirst1,jLast1);
-        */
-        
-        f.formLoad(new FormFieldCallBack() {
+                f.getFormFields();
 
-            @Override
-            public Object onBeforeInput(FormFieldGen field, int record_index) {
-                if("feild1".equals(field.getAccessibleName())){
-                    //do nothing for now
-                }else if(field.getComponent().equals(jTextField2)){                    
-                    //return Double.parseDouble(field.dbSrcValue("cash").toString())+Double.parseDouble(field.dbSrcValue("age").toString());
-                    return field.math().add("amount","cash");
-                }
-                System.out.println(field.dbSrcValueAt(0));
-                
-                return field.dbSrcValueAt(0);
+                System.out.println("is new = " + f.isNew());
+                System.out.println("is update = " + f.isUpdate());
+
             }
         }, new FormFieldMapper()
                 .map(jTextField1, "ID")
-                .map(jTextField2, "cash","amount","age")
+                .map(jTextField2, "cash", "amount", "age")
                 .map(jTextField3, "age")
                 .map(jTextField4, "name")
-                .map(jTextField5, "amount"), new FormPostHandler() {
-
-                    @Override
-                    public void doPost(ActionSQL a, FormFieldPost f) {
-                        f.getFormFields();
-                        
-                        System.out.println("is new = "+f.isNew());
-                        System.out.println("is update = "+f.isUpdate());
-                        
-                    }
-                },jControllerPane1 , jReset2, jSave1);
+                .map(jTextField5, "amount")
+                , jControllerPane1, jReset2, jSave1);
     }
 
     /**

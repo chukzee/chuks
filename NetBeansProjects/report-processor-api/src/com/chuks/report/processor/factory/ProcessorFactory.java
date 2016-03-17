@@ -18,7 +18,15 @@ public class ProcessorFactory {
         return new UIProcessorFactory(dbsettings).getFormControlsProcessor();
     }
     
+    public static FormProcessor getFormProcessor(){
+        return new UIProcessorFactory(null).getFormControlsProcessor();
+    }
+    
     public static TableProcessor getTableProcessor(JDBCSettings dbsettings){
         return new UIProcessorFactory(dbsettings).getTableReportProcessor();
+    }
+    
+    public static TableProcessor getTableProcessor(){
+        return new UIProcessorFactory(null).getTableReportProcessor();
     }
 }

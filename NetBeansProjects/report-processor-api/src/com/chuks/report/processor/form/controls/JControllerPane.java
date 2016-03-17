@@ -23,6 +23,7 @@ final public class JControllerPane extends Box {
 
     List formControls = new ArrayList();
     Map compMap = new HashMap();
+    private boolean failed;
 
     //private static final String[] CONTROLS_NAMES ={}; 
     enum CONTROLS_NAMES {
@@ -416,4 +417,22 @@ final public class JControllerPane extends Box {
         }
         return false;
     }
+    
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }

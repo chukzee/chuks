@@ -10,5 +10,6 @@ package com.chuks.report.processor.form.controls;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public interface FormControl {
-    
+
+    void controlFailedState(boolean failed);
 }

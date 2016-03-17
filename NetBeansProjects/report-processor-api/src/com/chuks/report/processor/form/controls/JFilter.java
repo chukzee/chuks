@@ -34,6 +34,7 @@ final public class JFilter extends Box implements FormControl {
 
     private final JLabel lblFilter;
     private JTable table;
+    private boolean failed;
 
     public JFilter() {
         super(BoxLayout.LINE_AXIS);
@@ -78,4 +79,20 @@ final public class JFilter extends Box implements FormControl {
         this.table = table;
     }
 
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

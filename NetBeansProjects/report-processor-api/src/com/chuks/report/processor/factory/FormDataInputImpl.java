@@ -6,6 +6,7 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.FormDataInput;
+import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JComponent;
 
@@ -18,6 +19,12 @@ class FormDataInputImpl  extends AbstractDataInput implements FormDataInput{
 
     public FormDataInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
+    }
+    
+    @Override
+    public void setJDBCSettings(JDBCSettings settings){
+        this.jdbcSettings = settings;
+        this.dbHelper = new DBHelper(this);
     }
 
     JComponent[] getFieldComponents() {

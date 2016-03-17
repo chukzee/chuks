@@ -14,6 +14,7 @@ import javax.swing.JButton;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
  final public class JSave extends JButton implements FormControl{
+    private boolean failed;
   
     public JSave(){
         super();
@@ -42,5 +43,21 @@ import javax.swing.JButton;
         }
         super.addActionListener(l);
     }
-  
+
+    public void  controlFailedState(boolean failed){
+        if(failed){
+            this.failed= failed;
+            super.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+       if(failed){
+           super.setEnabled(false);
+           return;
+       }
+        super.setEnabled(enabled); //To change body of generated methods, choose Tools | Templates.
+    }
+      
 }
