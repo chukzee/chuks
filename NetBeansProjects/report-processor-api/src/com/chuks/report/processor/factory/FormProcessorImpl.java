@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.handler.DataPollHandler;
 import com.chuks.report.processor.form.controls.JFind;
 import com.chuks.report.processor.form.controls.JPrevious;
 import com.chuks.report.processor.form.controls.FormControl;
@@ -18,31 +19,26 @@ import javax.swing.JLabel;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.AbstractUIDBProcessor;
 import com.chuks.report.processor.DataPoll;
-import com.chuks.report.processor.ErrorCallBack;
-import com.chuks.report.processor.bind.ListBindHanler;
-import com.chuks.report.processor.FormFieldMapper;
-import com.chuks.report.processor.FormDataInputHandler;
-import com.chuks.report.processor.FormFieldCallBack;
-import com.chuks.report.processor.FormFieldGen;
-import com.chuks.report.processor.FormFieldPost;
+import com.chuks.report.processor.param.ErrorCallBack;
+import com.chuks.report.processor.handler.ListBindHanler;
+import com.chuks.report.processor.param.FormFieldMapper;
+import com.chuks.report.processor.handler.FormDataInputHandler;
+import com.chuks.report.processor.param.FormFieldCallBack;
+import com.chuks.report.processor.param.FormFieldGen;
+import com.chuks.report.processor.param.FormFieldPost;
 import com.chuks.report.processor.FormProcessor;
-import com.chuks.report.processor.FormPostHandler;
+import com.chuks.report.processor.handler.FormPostHandler;
 import com.chuks.report.processor.IFormField;
 import com.chuks.report.processor.Option;
-import com.chuks.report.processor.TableFieldGen;
-import com.chuks.report.processor.ValidationHandler;
+import com.chuks.report.processor.handler.ValidationHandler;
 import com.chuks.report.processor.Validator;
-import com.chuks.report.processor.bind.TextBindHandler;
+import com.chuks.report.processor.handler.TextBindHandler;
 import com.chuks.report.processor.event.FormActionListener;
 import com.chuks.report.processor.event.SearchObserver;
 import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
 import com.chuks.report.processor.form.controls.JReset;
 import com.chuks.report.processor.form.controls.JSave;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,11 +54,9 @@ import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.text.JTextComponent;
 import org.jooq.Param;
@@ -1288,9 +1282,9 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     }
 
                     IFormField[] fields = getFormFields();
-                    for (int i = 0; i < fields.length; i++) {
-                        if (accessible_name.equals(fields[i].getAccessibleName())) {
-                            return fields[i];
+                    for (IFormField field : fields) {
+                        if (accessible_name.equals(field.getAccessibleName())) {
+                            return field;
                         }
                     }
                     throw new IllegalArgumentException("accessible name must be known - " + accessible_name + " not found");
@@ -1302,9 +1296,9 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                         throw new NullPointerException("accessible name must not be null");
                     }
                     IFormField[] fields = getFormFields();
-                    for (int i = 0; i < fields.length; i++) {
-                        if (accessible_name.equals(fields[i].getAccessibleName())) {
-                            return fields[i].getValue();
+                    for (IFormField field : fields) {
+                        if (accessible_name.equals(field.getAccessibleName())) {
+                            return field.getValue();
                         }
                     }
                     throw new IllegalArgumentException("accessible name must be known - " + accessible_name + " not found");
@@ -1435,7 +1429,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         /**
-         * This method will pause the data poll if all the form component is not
+         * This method will pause the data poll if all the form components are not
          * showing.
          *
          * @return
@@ -1448,7 +1442,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     return false;//at least a component is showing so do not pause
                 }
             }
-            return true;//all component is hidden so pause
+            return true;//all components are hidden so pause
         }
 
         private void disableAllFormControls() {

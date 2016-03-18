@@ -9,7 +9,7 @@ import com.chuks.report.processor.SourceMath;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import com.chuks.report.processor.TableFieldGen;
+import com.chuks.report.processor.param.TableFieldGen;
 
 /**
  *

@@ -5,12 +5,12 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.ActionSQL;
-import com.chuks.report.processor.FormFieldCallBack;
-import com.chuks.report.processor.FormFieldGen;
-import com.chuks.report.processor.FormFieldMapper;
-import com.chuks.report.processor.FormFieldPost;
-import com.chuks.report.processor.FormPostHandler;
+import com.chuks.report.processor.param.ActionSQL;
+import com.chuks.report.processor.param.FormFieldCallBack;
+import com.chuks.report.processor.param.FormFieldGen;
+import com.chuks.report.processor.param.FormFieldMapper;
+import com.chuks.report.processor.param.FormFieldPost;
+import com.chuks.report.processor.handler.FormPostHandler;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.util.JDBCSettings;
 import java.sql.SQLException;

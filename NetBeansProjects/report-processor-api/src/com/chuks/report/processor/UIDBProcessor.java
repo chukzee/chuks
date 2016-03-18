@@ -4,6 +4,7 @@
  */
 package com.chuks.report.processor;
 
+import com.chuks.report.processor.param.ActionSQL;
 import javax.swing.JComponent;
 import com.chuks.report.processor.entry.FieldType;
 import com.chuks.report.processor.util.JDBCSettings;

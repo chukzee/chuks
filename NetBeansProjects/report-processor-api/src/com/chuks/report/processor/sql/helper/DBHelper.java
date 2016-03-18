@@ -4,7 +4,7 @@
  */
 package com.chuks.report.processor.sql.helper;
 
-import com.chuks.report.processor.ActionSQL;
+import com.chuks.report.processor.param.ActionSQL;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;

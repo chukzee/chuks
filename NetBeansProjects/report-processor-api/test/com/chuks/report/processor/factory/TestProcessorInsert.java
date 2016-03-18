@@ -8,7 +8,7 @@ import com.chuks.report.processor.factory.ProcessorFactory;
 import java.sql.SQLException;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
-import com.chuks.report.processor.ErrorCallBack;
+import com.chuks.report.processor.param.ErrorCallBack;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.entry.FieldType;
 import com.chuks.report.processor.util.JDBCSettings;

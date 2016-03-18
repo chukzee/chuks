@@ -5,6 +5,8 @@
  */
 package com.chuks.report.processor;
 
+import com.chuks.report.processor.param.ErrorCallBack;
+import com.chuks.report.processor.handler.ValidationHandler;
 import java.awt.Component;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;

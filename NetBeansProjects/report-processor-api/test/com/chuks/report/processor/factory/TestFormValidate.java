@@ -7,7 +7,7 @@ package com.chuks.report.processor.factory;
 import com.chuks.report.processor.factory.ProcessorFactory;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
-import com.chuks.report.processor.ErrorCallBack;
+import com.chuks.report.processor.param.ErrorCallBack;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.util.JDBCSettings;
 

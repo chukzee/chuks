@@ -7,7 +7,7 @@ package com.chuks.report.processor.factory;
 
 import java.awt.Component;
 import javax.swing.JTable;
-import com.chuks.report.processor.TableFieldGen;
+import com.chuks.report.processor.param.TableFieldGen;
 
 /**
  *

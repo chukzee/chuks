@@ -6,8 +6,8 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.DataPoll;
-import com.chuks.report.processor.bind.ListBindHanler;
-import com.chuks.report.processor.bind.ListDataInput;
+import com.chuks.report.processor.handler.ListBindHanler;
+import com.chuks.report.processor.param.ListDataInput;
 import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JComboBox;

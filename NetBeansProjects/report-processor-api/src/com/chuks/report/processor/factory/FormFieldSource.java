@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.FormFieldGen;
+import com.chuks.report.processor.param.FormFieldGen;
 import com.chuks.report.processor.SourceMath;
 import javax.swing.JComponent;
 

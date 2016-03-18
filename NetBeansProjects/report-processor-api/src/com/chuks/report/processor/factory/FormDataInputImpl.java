@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.FormDataInput;
+import com.chuks.report.processor.param.FormDataInput;
 import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JComponent;

@@ -13,8 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
-import com.chuks.report.processor.TableFieldCallBack;
-import com.chuks.report.processor.TableFieldGen;
+import com.chuks.report.processor.param.TableFieldCallBack;
+import com.chuks.report.processor.param.TableFieldGen;
 import com.chuks.report.processor.TableProcessor;
 import com.chuks.report.processor.util.JDBCSettings;
 

@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.param.TableDataInput;
 import com.chuks.report.processor.*;
 import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;

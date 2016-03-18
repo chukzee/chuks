@@ -4,6 +4,11 @@
  */
 package com.chuks.report.processor;
 
+import com.chuks.report.processor.param.TableFieldMapper;
+import com.chuks.report.processor.param.TableFieldCallBack;
+import com.chuks.report.processor.handler.DeleteRowHandler;
+import com.chuks.report.processor.handler.UpdateTableHandler;
+import com.chuks.report.processor.handler.TableDataInputHandler;
 import java.sql.SQLException;
 import javax.swing.JComponent;
 import com.chuks.report.processor.factory.TableFieldSource;

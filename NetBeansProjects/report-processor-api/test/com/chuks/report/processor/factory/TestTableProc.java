@@ -5,6 +5,12 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.param.ActionSQL;
+import com.chuks.report.processor.param.TableFieldUpdate;
+import com.chuks.report.processor.param.TableFieldGen;
+import com.chuks.report.processor.param.TableFieldCallBack;
+import com.chuks.report.processor.handler.DeleteRowHandler;
+import com.chuks.report.processor.handler.UpdateTableHandler;
 import com.chuks.report.processor.*;
 import com.chuks.report.processor.util.JDBCSettings;
 import java.sql.SQLException;
