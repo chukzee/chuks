@@ -5,15 +5,14 @@
  */
 package com.chuks.report.processor.handler;
 
-import com.chuks.report.processor.param.AreaChartInput;
+import com.chuks.report.processor.param.ChartInput;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
- * @param 
+ * @param <T>
  */
-public interface  AreaChartInputHandler extends ChatInputHandler <AreaChartInput>{
-   
-    @Override
-    void onShow(AreaChartInput input);
+public interface ChatInputHandler<T extends ChartInput> {
+    
+    void onShow(T input);
 }

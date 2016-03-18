@@ -11,8 +11,9 @@ import com.chuks.report.processor.param.BubbleChartInput;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface BubbleChartInputHandler {
+public interface BubbleChartInputHandler extends ChatInputHandler <BubbleChartInput>{
        
+    @Override
     void onShow(BubbleChartInput input);
 
 }

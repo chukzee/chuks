@@ -11,6 +11,7 @@ import com.chuks.report.processor.handler.BarChartInputHandler;
 import com.chuks.report.processor.ChartProcessor;
 import com.chuks.report.processor.handler.PieChartInputHandler;
 import com.chuks.report.processor.handler.BubbleChartInputHandler;
+import com.chuks.report.processor.handler.DataPollHandler;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.handler.ScatterChartInputHandler;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -20,47 +21,83 @@ import javafx.embed.swing.JFXPanel;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-
-class ChartProcessorImpl  extends AbstractUIDBProcessor implements ChartProcessor {
+class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor {
 
     public ChartProcessorImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     @Override
-    public void loadChart(PieChartInputHandler pieChartInputhandler, JFXPanel jfxPanel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+    public void loadChart(PieChartInputHandler handler, JFXPanel jfxPanel) {
+        PieChartInputImpl input = new PieChartInputImpl(jdbcSettings);
+        handler.onShow(input);
+
+        input.show();
+
+        input.setHandler(jfxPanel, handler);
+
+        DataPollHandler.registerPoll(input);
+
     }
 
     @Override
-    public void loadChart(BarChartInputHandler barChartInputhandler, JFXPanel jfxPanel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+    public void loadChart(BarChartInputHandler handler, JFXPanel jfxPanel) {
+        BarChartInputImpl input = new BarChartInputImpl(jdbcSettings);
+        handler.onShow(input);
+
+        input.show();
+
+        input.setHandler(jfxPanel, handler);
+
+        DataPollHandler.registerPoll(input);
     }
 
     @Override
-    public void loadChart(AreaChartInputHandler areaChartInputhandler, JFXPanel jfxPanel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+    public void loadChart(AreaChartInputHandler handler, JFXPanel jfxPanel) {
+        AreaChartInputImpl input = new AreaChartInputImpl(jdbcSettings);
+        handler.onShow(input);
+
+        input.show();
+
+        input.setHandler(jfxPanel, handler);
+
+        DataPollHandler.registerPoll(input);
     }
 
     @Override
-    public void loadChart(BubbleChartInputHandler bubbleChartInputhandler, JFXPanel jfxPanel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+    public void loadChart(BubbleChartInputHandler handler, JFXPanel jfxPanel) {
+        BubbleChartInputImpl input = new BubbleChartInputImpl(jdbcSettings);
+        handler.onShow(input);
+
+        input.show();
+
+        input.setHandler(jfxPanel, handler);
+
+        DataPollHandler.registerPoll(input);
     }
 
     @Override
-    public void loadChart(LineChartInputHandler lineChartInputhandler, JFXPanel jfxPanel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+    public void loadChart(LineChartInputHandler handler, JFXPanel jfxPanel) {
+        LineChartInputImpl input = new LineChartInputImpl(jdbcSettings);
+        handler.onShow(input);
+
+        input.show();
+
+        input.setHandler(jfxPanel, handler);
+
+        DataPollHandler.registerPoll(input);
     }
 
     @Override
-    public void loadChart(ScatterChartInputHandler scatterChartInputhandler, JFXPanel jfxPanel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+    public void loadChart(ScatterChartInputHandler handler, JFXPanel jfxPanel) {
+        ScatterChartInputImpl input = new ScatterChartInputImpl(jdbcSettings);
+        handler.onShow(input);
+
+        input.show();
+
+        input.setHandler(jfxPanel, handler);
+
+        DataPollHandler.registerPoll(input);
     }
-    
+
 }

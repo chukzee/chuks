@@ -9,6 +9,6 @@ package com.chuks.report.processor.param;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface LineChartInput {
+public interface LineChartInput  extends ChartInput{
     
 }

@@ -3,17 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.handler;
-
-import com.chuks.report.processor.param.AreaChartInput;
+package com.chuks.report.processor.factory;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
- * @param 
  */
-public interface  AreaChartInputHandler extends ChatInputHandler <AreaChartInput>{
-   
-    @Override
-    void onShow(AreaChartInput input);
+public enum AxisType {
+    NUMBER,
+    CATEGORY
 }

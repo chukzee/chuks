@@ -20,15 +20,15 @@ import javafx.embed.swing.JFXPanel;
  */
 public interface ChartProcessor<T> extends UIDBProcessor {
 
-    void loadChart(PieChartInputHandler pieChartInputhandler, JFXPanel jfxPanel);
+    void loadChart(PieChartInputHandler handler, JFXPanel jfxPanel);
 
-    void loadChart(BarChartInputHandler barChartInputhandler, JFXPanel jfxPanel);
+    void loadChart(BarChartInputHandler handler, JFXPanel jfxPanel);
 
-    void loadChart(AreaChartInputHandler areaChartInputhandler, JFXPanel jfxPanel);
+    void loadChart(AreaChartInputHandler handler, JFXPanel jfxPanel);
 
-    void loadChart(BubbleChartInputHandler bubbleChartInputhandler, JFXPanel jfxPanel);
+    void loadChart(BubbleChartInputHandler handler, JFXPanel jfxPanel);
 
-    void loadChart(LineChartInputHandler lineChartInputhandler, JFXPanel jfxPanel);
+    void loadChart(LineChartInputHandler handler, JFXPanel jfxPanel);
 
-    void loadChart(ScatterChartInputHandler scatterChartInputhandler, JFXPanel jfxPanel);
+    void loadChart(ScatterChartInputHandler handler, JFXPanel jfxPanel);
 }

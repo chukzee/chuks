@@ -11,8 +11,9 @@ import com.chuks.report.processor.param.PieChartInput;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface PieChartInputHandler {
+public interface PieChartInputHandler  extends ChatInputHandler <PieChartInput>{
        
+    @Override
     void onShow(PieChartInput input);
 
 }

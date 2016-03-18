@@ -29,6 +29,7 @@ import javax.swing.text.JTextComponent;
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
+ * @param <T>
  */
 public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements UIDBProcessor, IValidator {
 
@@ -39,6 +40,11 @@ public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements 
 
     public AbstractUIDBProcessor(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
+    }
+
+    public AbstractUIDBProcessor(JDBCSettings jdbcSettings, boolean data_polling_enabled) {
+        super(jdbcSettings);
+        this.data_polling_enabled = data_polling_enabled;
     }
 
     @Override

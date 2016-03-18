@@ -11,8 +11,9 @@ import com.chuks.report.processor.param.LineChartInput;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface LineChartInputHandler {
+public interface LineChartInputHandler extends ChatInputHandler <LineChartInput>{
         
+    @Override
     void onShow(LineChartInput input);
 
 }

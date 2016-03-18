@@ -11,7 +11,8 @@ import com.chuks.report.processor.param.BarChartInput;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface BarChartInputHandler {
+public interface BarChartInputHandler  extends ChatInputHandler <BarChartInput>{
     
+    @Override
     void onShow(BarChartInput input);
 }

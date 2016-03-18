@@ -5,34 +5,31 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.DataPoll;
-import com.chuks.report.processor.handler.PieChartInputHandler;
-import com.chuks.report.processor.param.PieChartInput;
+import com.chuks.report.processor.handler.BubbleChartInputHandler;
+import com.chuks.report.processor.param.BubbleChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
-import javafx.scene.chart.PieChart;
+import javafx.scene.chart.BubbleChart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
+class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleChartInput{
 
-class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput{
-    
-    public PieChartInputImpl(JDBCSettings jdbcSettings) {
+    public BubbleChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     @Override
     protected Parent getChart() {
-        return new PieChart();
+        return new BubbleChart(xAxis, yAxis);
     }
 
-    void setHandler(JFXPanel jfx_panel, PieChartInputHandler handler) {
-        jfxPanel = jfx_panel;
+    void setHandler(JFXPanel jfxPanel, BubbleChartInputHandler handler) {
+        this.jfxPanel = jfxPanel;
         this.handler = handler;
     }
-
     
 }

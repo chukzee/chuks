@@ -11,8 +11,9 @@ import com.chuks.report.processor.param.ScatterChartInput;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ScatterChartInputHandler {
+public interface ScatterChartInputHandler extends ChatInputHandler <ScatterChartInput>{
         
+    @Override
     void onShow(ScatterChartInput input);
 
 }
