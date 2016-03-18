@@ -30,26 +30,42 @@ public class DBSelector {
     UpdateSetMoreStep<Record> usms;
     boolean isDistinct;
     DBHelper dBHelper;
+    private String table_name;
+    private String[] columns;
+    private int set_columns;
+    private int from;
 
     private DBSelector() {
     }
 
-    public DBSelector(DBHelper dBHelper, boolean isDistinct) {
+    public DBSelector(DBHelper dBHelper, boolean isDistinct) throws SQLException {
         this.dBHelper = dBHelper;
         this.isDistinct = isDistinct;
-    }
-
-    public DBSelector columns(String... columns) throws SQLException {
         dBHelper.conn = dBHelper.getConnection(dBHelper.prc.getDBSettings());
         dctx = DSL.using(dBHelper.conn);
-        
+
+    }
+
+    private void setColumns() {
         if (isDistinct) {
             sss = dctx.selectDistinct(toFields(columns));
         } else {
             sss = dctx.select(toFields(columns));
         }
         dBHelper.glb_sss = sss;
+    }
 
+    public DBSelector columns(String... columns) throws SQLException {
+        set_columns++;
+        if (set_columns > 1) {
+            throw new SQLException("duplicate set of columns");
+        }
+        this.columns = columns;
+        if (table_name != null) {
+            setColumns();
+            sss.from(table_name);
+        }
+        
         return this;
     }
 
@@ -57,24 +73,32 @@ public class DBSelector {
         return new DBPartFormer(dBHelper, this);
     }
 
-    public DBSelector from(String table_name) {
-        sss.from(table_name);
+    public DBSelector from(String table_name) throws SQLException {
+        this.table_name = table_name;
+        from++;
+        if (from > 1) {
+            throw new SQLException("duplicate from clause");
+        }
+        if (columns != null) {
+            setColumns();
+            sss.from(table_name);
+        }
         return this;
     }
 
-    public JoinSelector newJoin(){
-       throw new UnsupportedOperationException("NOT YET IMPLEMENTED - Use from() method and pass the tables to join as parameters e.g table1 as t1, table2 as t2");
-       //return new JoinSelector();
+    public JoinSelector newJoin() {
+        throw new UnsupportedOperationException("NOT YET IMPLEMENTED - Use from() method and pass the tables to join as parameters e.g table1 as t1, table2 as t2");
+        //return new JoinSelector();
     }
-    
-    public DBSelector join(JoinSelector joinSelector) {        
-       throw new UnsupportedOperationException("NOT YET IMPLEMENTED - Use from() method and pass the tables to join as parameters e.g table1 as t1, table2 as t2");
+
+    public DBSelector join(JoinSelector joinSelector) {
+        throw new UnsupportedOperationException("NOT YET IMPLEMENTED - Use from() method and pass the tables to join as parameters e.g table1 as t1, table2 as t2");
         //return this;
     }
 
     public DBSelector on(String table_name) {
-       throw new UnsupportedOperationException("NOT YEY IMPLEMENT - Use from() method and pass the tables to join as parameters e.g table1 as t1, table2 as t2");
-       //return this;
+        throw new UnsupportedOperationException("NOT YEY IMPLEMENT - Use from() method and pass the tables to join as parameters e.g table1 as t1, table2 as t2");
+        //return this;
     }
 
     public DBSelector orderBy(String... columns) {
@@ -88,7 +112,7 @@ public class DBSelector {
             fields[i] = field(columns[i]);
         }
         sss.groupBy(fields);
-        
+
         return this;
     }
 
@@ -98,7 +122,7 @@ public class DBSelector {
     }
 
     public DBSelector having(String sql, Object... bindings) {
-        sss.having(sql,bindings);
+        sss.having(sql, bindings);
         return this;
     }
 
@@ -111,27 +135,27 @@ public class DBSelector {
         sss.limit(param(bindNumOfRows, numOfRows));
         return this;
     }
-    
+
     public DBSelector limit(int offset, int numOfRows) {
         sss.limit(offset, numOfRows);
         return this;
-    }  
-          
-    public DBSelector limit(int offset,String bindOffset,  int numOfRows) {
+    }
+
+    public DBSelector limit(int offset, String bindOffset, int numOfRows) {
         sss.limit(param(bindOffset, offset), numOfRows);
         return this;
-    }  
-          
-    public DBSelector limit(int offset,  int numOfRows, String bindNumOfRows) {
+    }
+
+    public DBSelector limit(int offset, int numOfRows, String bindNumOfRows) {
         sss.limit(offset, param(bindNumOfRows, numOfRows));
         return this;
-    }        
-          
-    public DBSelector limit(int offset, String bindOffset,  int numOfRows, String bindNumOfRows) {
+    }
+
+    public DBSelector limit(int offset, String bindOffset, int numOfRows, String bindNumOfRows) {
         sss.limit(param(bindOffset, offset), param(bindNumOfRows, numOfRows));
         return this;
-    }        
-        
+    }
+
     public Field[] toFields(String... columns) {
         Field[] fields = new Field[columns.length];
         for (int i = 0; i < columns.length; i++) {
@@ -149,8 +173,8 @@ public class DBSelector {
         Result rst = sss.fetch();
         return rst.intoArray();
     }
-    
-    class JoinSelector{
-        
+
+    class JoinSelector {
+
     }
 }

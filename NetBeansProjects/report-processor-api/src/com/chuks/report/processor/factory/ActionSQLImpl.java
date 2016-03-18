@@ -111,12 +111,12 @@ public class ActionSQLImpl implements ActionSQL {
     }
 
     @Override
-    public DBSelector select() {
+    public DBSelector select() throws SQLException{
         return dbHelper.DBSelector();
     }
 
     @Override
-    public DBSelector selectDistinct() {
+    public DBSelector selectDistinct() throws SQLException {
         return dbHelper.DBSelectorDistinct();
     }
 

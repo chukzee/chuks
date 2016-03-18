@@ -44,9 +44,9 @@ public interface ActionSQL {
 
     public DBUpdater update();
 
-    public DBSelector select();
+    public DBSelector select() throws SQLException;
 
-    public DBSelector selectDistinct();
+    public DBSelector selectDistinct() throws SQLException;
 
     public DBDeletor delete();
 

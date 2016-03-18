@@ -27,7 +27,7 @@ public class DBDeletor {
     }
     
     public DBDeletor from(String _table) throws SQLException{
-         dBHelper.conn = dBHelper.getConnection(dBHelper.prc.getDBSettings());
+        dBHelper.conn = dBHelper.getConnection(dBHelper.prc.getDBSettings());
         dctx = DSL.using(dBHelper.conn);
 
         dws = dctx.delete(table(_table));

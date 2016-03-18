@@ -182,11 +182,11 @@ public class DBHelper {
         return new DBUpdater(this);
     }
 
-    public DBSelector DBSelector() {
+    public DBSelector DBSelector() throws SQLException {
         return new DBSelector(this, false);
     }
 
-    public DBSelector DBSelectorDistinct() {
+    public DBSelector DBSelectorDistinct()  throws SQLException{
         return new DBSelector(this, true);
     }
 
