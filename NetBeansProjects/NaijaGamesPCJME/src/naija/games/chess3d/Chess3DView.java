@@ -164,21 +164,19 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         return tallestPieceHeight;
     }
 
-    public void initializeBoardPosition(BoardPosition board_position, Player... players) {
-        final ChessBoardPosition chess_board_position = (ChessBoardPosition) board_position;
+    public void initializeBoardPosition(final ChessBoardPosition board_position, Player... players) {
+        //final ChessBoardPosition chess_board_position = (ChessBoardPosition) board_position;
 
         app.enqueue(new Callable() {
             public Object call() throws Exception {
-                arrangePieceModels(chess_board_position);
+                arrangePieceModels(board_position);
                 return null;
             }
         });
     }
 
-    public void onRobotMove(BoardEvent event) {
+    public void onRobotMove(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         //animate piece while disabling piece picking
         handleMoveAnimation(e);
@@ -188,10 +186,8 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
 
     }
 
-    public void onRemotePlayerMove(BoardEvent event) {
+    public void onRemotePlayerMove(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         //animate piece while disabling piece picking
         handleMoveAnimation(e);
@@ -201,10 +197,8 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
 
     }
 
-    public void onLocalPlayerMove(BoardEvent event) {
+    public void onLocalPlayerMove(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         System.out.println("local player reply - " + e.getMoveNotation());
 
@@ -274,9 +268,8 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         this.animatePiece(rook_from_square, rook_to_square, null);
     }
 
-    public void onNextTurn(BoardEvent event) {
+    public void onNextTurn(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         System.out.println("onNextTurn");
         isStarted = true;
@@ -292,10 +285,8 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         }
     }
 
-    public void onGameOver(BoardEvent event) {
+    public void onGameOver(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         String msg = "";
 
@@ -340,11 +331,9 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
 
     }
 
-    public void onInvalidMove(BoardEvent event) {
+    public void onInvalidMove(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
 
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         int illegal_from_sq = e.getIllegalMoveFromSquare();
         int illegal_to_sq = e.getIllegalMoveToSquare();
@@ -358,10 +347,8 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
 
     }
 
-    public void onError(BoardEvent event) {
+    public void onError(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         //COME BACK FOR BETTER IMPLEMENTATION
         String msg = e.getMessage();
@@ -369,10 +356,8 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         System.err.println(msg);
     }
 
-    public void onInvalidTurn(BoardEvent event) {
+    public void onInvalidTurn(ChessBoardEvent e) {
         //REMIND: Use enqueue to modify the scene - by jME3  doc
-
-        ChessBoardEvent e = (ChessBoardEvent) event;
 
         String msg = "Not your turn! It's " + (e.getCurrentTurn() == Side.white ? "white's turn." : "black's turn.");
         System.out.println(msg);
