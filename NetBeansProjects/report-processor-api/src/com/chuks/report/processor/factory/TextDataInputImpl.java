@@ -58,9 +58,8 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
     public void pollData() {
         handler.data(this);
 
-        
-        Object[][] fetch = this.dbHelper.fetchArray();
         if (this.getData() == null) {
+            Object[][] fetch = this.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
                 this.setData(fetch[0][0]);
             } else {

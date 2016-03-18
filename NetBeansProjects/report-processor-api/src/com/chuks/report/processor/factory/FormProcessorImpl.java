@@ -154,8 +154,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
+            Object[][] fetch = input.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
                 input.setData(fetch[0]);
             } else {
@@ -176,8 +176,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         ListDataInputImpl input = new ListDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
+            Object[][] fetch = input.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
                 input.setData(fetch[0]);
             } else {
@@ -202,8 +202,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
+            Object[][] fetch = input.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
                 input.setData(fetch[0][0]);
             } else {
@@ -224,8 +224,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         TextDataInputImpl input = new TextDataInputImpl(jdbcSettings);
         handler.data(input);
 
-        Object[][] fetch = this.dbHelper.fetchArray();
         if (input.getData() == null) {
+            Object[][] fetch = input.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
                 input.setData(fetch[0][0]);
             } else {
@@ -566,6 +566,14 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
             FormDataInputImpl input = new FormDataInputImpl(model_jdbc_settings);
             dataInputHandler.onInput(input);
+
+            if (input.getData() == null) {
+                Object[][] fetch = input.dbHelper.fetchArray();
+                if (fetch != null && fetch.length > 0) {
+                    input.setData(fetch);
+                }
+            }
+
             return input.getData();
         }
 
@@ -1271,6 +1279,36 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 @Override
                 public JComponent[] getComponents() {
                     return fieldsComponents;
+                }
+
+                @Override
+                public IFormField field(String accessible_name) {
+                    if (accessible_name == null) {
+                        throw new NullPointerException("accessible name must not be null");
+                    }
+
+                    IFormField[] fields = getFormFields();
+                    for (int i = 0; i < fields.length; i++) {
+                        if (accessible_name.equals(fields[i].getAccessibleName())) {
+                            return fields[i];
+                        }
+                    }
+                    throw new IllegalArgumentException("accessible name must be known - " + accessible_name + " not found");
+                }
+
+                @Override
+                public Object value(String accessible_name) {
+                    if (accessible_name == null) {
+                        throw new NullPointerException("accessible name must not be null");
+                    }
+                    IFormField[] fields = getFormFields();
+                    for (int i = 0; i < fields.length; i++) {
+                        if (accessible_name.equals(fields[i].getAccessibleName())) {
+                            return fields[i].getValue();
+                        }
+                    }
+                    throw new IllegalArgumentException("accessible name must be known - " + accessible_name + " not found");
+
                 }
 
             };

@@ -21,8 +21,6 @@ public class AbstractDataInput extends ActionSQLImpl implements PollAttributes{
     public AbstractDataInput(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
-
-    
     
     public void setData(Object data) {
         this.data = data;

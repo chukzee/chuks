@@ -67,6 +67,10 @@ public interface FormFieldPost extends Feedback {
      */
     void refresh(boolean is_refresh);
 
+    IFormField field(String accessible_name);
+    
+    Object value(String accessible_name);
+    
     /**
      * Call this method to check whether records will be refreshed after the
      * {@link com.chuks.report.processor.FormPostHandler} is executed. The

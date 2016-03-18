@@ -14,6 +14,8 @@ import com.chuks.report.processor.FormFieldMapper;
 import com.chuks.report.processor.FormFieldPost;
 import com.chuks.report.processor.FormPostHandler;
 import com.chuks.report.processor.FormProcessor;
+import com.chuks.report.processor.Option;
+import com.chuks.report.processor.entry.FieldType;
 import com.chuks.report.processor.util.JDBCSettings;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -34,16 +36,16 @@ public class TestFormProc1 extends javax.swing.JFrame {
         initComponents();
 
         initProcessor();
-        
+
     }
 
-    private void initProcessor(){
+    private void initProcessor() {
         final JDBCSettings jdbcSettings = new JDBCSettings("jdbc:mysql://localhost:3306/autopolicedb", "autopolice", "autopolicepass", null);
 
         f = ProcessorFactory.getFormProcessor();
 
         f.formLoad(new FormDataInputHandler() {
-            
+
             @Override
             public void onInput(FormDataInput input) {
                 try {
@@ -55,10 +57,10 @@ public class TestFormProc1 extends javax.swing.JFrame {
                             .lessOrEqual("AGE", "250")
                             .and()
                             .greaterOrEqual("AGE", "0");
-                    
+
                     //input.setData(data);
-                    input.setFieldComponents(jTextField1,jTextField2,jTextField3,jTextField4,jTextField5);
-                    
+                    input.setFieldComponents(jTextField1, jTextField2, jTextField3, jTextField4, jTextField5);
+
                 } catch (SQLException ex) {
                     Logger.getLogger(TestFormProc1.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -67,10 +69,19 @@ public class TestFormProc1 extends javax.swing.JFrame {
 
             @Override
             public void doPost(ActionSQL a, FormFieldPost f) {
-                f.getFormFields();
-                System.out.println("is new = " + f.isNew());
-                System.out.println("is update = " + f.isUpdate());
 
+                try {
+                    a.update()
+                            .table("test_table_1")
+                            .set("ID", jTextField1, FieldType.STRING)
+                            .where()
+                            .equal("ID", 30)
+                            .executeUpdate();
+                    f.alert("Updated successfully", "Success");
+                } catch (SQLException ex) {
+                    Logger.getLogger(TestFormProc1.class.getName()).log(Level.SEVERE, null, ex);
+                    f.alert("Update failed!", "Failed", Option.ERROR);
+                }
             }
         }, jControllerPane1);
     }

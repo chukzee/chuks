@@ -57,9 +57,9 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     public void pollData() {
 
         handler.data(this);
-
-        Object[][] fetch = this.dbHelper.fetchArray();
+        
         if (this.getData() == null) {
+            Object[][] fetch = this.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
                 this.setData(fetch[0]);
             } else {
@@ -69,9 +69,8 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
 
         if (combo != null) {
             combo.removeAllItems();//first remove all previous items
-
-            for (Object data : this.getData()) {
-                combo.addItem(data);
+            for (Object _data : this.getData()) {
+                combo.addItem(_data);
             }
         }
 
