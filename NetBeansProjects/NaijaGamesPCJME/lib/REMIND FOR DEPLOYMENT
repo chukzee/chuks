@@ -1,0 +1,14 @@
+
+ABEG OOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+These two files lwjgl.dll and OpenAL32.dll is very very important! make sure the files
+are in the same folder/location of the main executable files (e.g MyGame.jar or MyGame.exe).
+This is extremely important otherwise the program will scratch silently to your dismay - VERY FRUSTRATING!
+
+I really do not know why this is so important but i observed that omitting the files can 
+cause unexcepted "silent" crash on startup especially at this line of code :
+
+Display.setLocation(window_x_loc, window_y_loc); see AbstractGameMain.java
+
+Wierd things happen when the above files are not put in the correct location as described above.
+

@@ -1,0 +1,6 @@
+Because jMonkey does not package the 
+blender files in the assets.jar during building,
+all the blender files including the models  
+and textures of other types will be packaged 
+under sub-packages of the package in which
+this README file is located.
