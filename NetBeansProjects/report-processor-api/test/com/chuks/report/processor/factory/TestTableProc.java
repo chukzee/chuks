@@ -96,9 +96,8 @@ public class TestTableProc extends javax.swing.JFrame {
     private void cmdLoadOnTable1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdLoadOnTable1ActionPerformed
               try {
             
-            t.select()
+            t.selectFrom("test_table_1")
                     .columns("ID", "CASH", "AMOUNT", "NAME", "AGE")
-                    .from("test_table_1")
                     .where()
                     .lessOrEqual("AGE", "250")
                     .and()
