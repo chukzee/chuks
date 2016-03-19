@@ -1,0 +1,800 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package naija.game.client.chess.algorithm;
+
+import naija.game.client.chess.board.Move;
+import naija.game.client.chess.board.Board;
+import naija.game.client.chess.board.EngineBoardAnalyzer;
+import naija.game.client.chess.board.Piece;
+import naija.game.client.chess.board.Constants;
+import naija.game.client.Side;
+
+/**
+ *
+ * @author Onyeka Alimele
+ */
+public class AlphaBetaNegaMax {
+
+
+    Move best_move;
+    private Move[] legalMoves;//use for commentary by comparing move values
+    private int search_depth;
+    EngineBoardAnalyzer engine_board_analyzer;
+    private Board board;
+
+    public AlphaBetaNegaMax() {
+    }
+
+    public Move searchBestMove(Board _board, int depth) {
+        
+        legalMoves = null;//initialize     
+        best_move = null;//initialize
+        node_count=0;    
+        prune_count=0;
+        System.out.println("INITIAL BOARD PRINT - "+_board);
+        //Move best_move=null;
+        Board internal_board=new Board(false);//empty board
+        internal_board.CopyBoard(_board);//use a copy
+        this.board=internal_board;
+        engine_board_analyzer= new EngineBoardAnalyzer(this.board);
+        
+        /*
+        long value = search(internal_board,  
+                           true,// is maximizer.
+                           Long.MIN_VALUE,//alpha value.
+                           Long.MAX_VALUE,//beta value.            
+                           -1, //depth : must first be initialize to -1.
+                           search_depth,//max search depth.
+                            -1);
+        
+         * 
+         */
+        this.search_depth=depth;        
+        int value=alphaBeta(depth, -Constants.INFINITY, Constants.INFINITY, -1);
+       System.out.println("value "+value );
+        System.out.println("nodes "+node_count );
+        System.out.println("prune_count "+prune_count );
+        
+        return best_move;
+    }
+    
+   //To be remove - used for testing
+    public static void main (String args[]) {
+        AlphaBetaNegaMax ab=new AlphaBetaNegaMax();
+
+        long time=System.nanoTime();        
+        //long value=ab.search(new Board(true),true, Long.MIN_VALUE, Long.MAX_VALUE, -1, 4 , -1);
+        ab.search_depth=7;
+
+        ab.board=new Board(true);
+        ab.engine_board_analyzer=new EngineBoardAnalyzer(ab.board);
+        int value=ab.alphaBeta(ab.search_depth, -Constants.INFINITY, Constants.INFINITY, -1);
+        long elapse = System.nanoTime() - time;
+        
+        System.out.println("value "+value );
+        System.out.println("eval count "+ab.eval_count );
+        System.out.println("nodes "+ab.node_count );
+        System.out.println("prune_count "+ab.prune_count );
+        System.out.println("move_length "+ab.move_max_length );        
+        System.out.println("best move "+ab.best_move.notation() );
+        System.out.println("code time "+elapse/1000000000.0 );
+    }
+
+
+    int[] getPieceValidSquare(Piece piece){
+        
+        switch(piece.piece_name){
+            case Constants.King: 
+                return engine_board_analyzer.getKingValidMoveSquares_1 (piece.Square, piece.Me());
+            case Constants.Queen: 
+                return engine_board_analyzer.getQueenValidMoveSquares_1 (piece.Square, piece.Me());
+            case Constants.Bishop: 
+                return engine_board_analyzer.getBishopValidMoveSquares_1 (piece.Square, piece.Me());                
+            case Constants.Rook: 
+                return engine_board_analyzer.getRookValidMoveSquares_1 (piece.Square, piece.Me());
+            case Constants.Knight: 
+                return engine_board_analyzer.getKnightValidMoveSquares_1 (piece.Square, piece.Me());
+            case Constants.Pawn: 
+                return engine_board_analyzer.getPawnValidMoveSquares_1 (piece.Square, piece.Me());                                
+        }
+
+        
+        return null;
+    }
+    
+    int prune_count;    
+    int node_count;    
+    int eval_count;
+    int move_max_length;
+    
+    static Move[] randomize(Move[] moves){
+        
+        Move[] random_moves = new Move[moves.length];
+        
+        for(int i=0; i<random_moves.length; i++)
+        {
+            random_moves[i]=null;//for javascript, c++ and maybe c#
+        }
+        
+        
+        for(int n=0; n<moves.length; n++){
+            
+            for(int i=0; i<moves.length; i++){
+                double random=Math.random();
+                int rand_index= (int)(random*moves.length);
+
+                if(random_moves[rand_index]==null){
+                   random_moves[rand_index]=moves[i];
+                }else{
+                    boolean is_assign=false;
+                    for(int k=rand_index; k>-1; k-- ){
+                        if(random_moves[k]==null){
+                            random_moves[k]=moves[i];
+                            is_assign=true;
+                            break;                        
+                        }
+                    }
+
+                    if(!is_assign){
+                        for(int k=0; k<moves.length; k++ ){
+                            if(random_moves[k]==null){
+                                random_moves[k]=moves[i];
+                                break;                        
+                            }
+                        }                    
+                    }
+                }                            
+            }
+            
+            //copy back an initialize for more shuffling
+            for(int i=0; i<moves.length; i++){                
+                moves[i]=null;//avoid reference - important
+                moves[i]=random_moves[i];
+                random_moves[i]=null;//avoid reference - important
+            }
+            
+        }
+
+        
+        return moves;
+    }
+  
+    
+    private Move[] insert(Move[]legal_moves, Move m,int insert_index){
+        Move [] mv=new Move[legal_moves.length + 1];
+        
+        if(insert_index==0)
+            mv[0]=m;
+
+        int move_index=legal_moves.length;//yes
+        for(int i=legal_moves.length-1; i>-1; i--){            
+            if(insert_index==move_index){
+                mv[move_index]=m;
+                i++;                
+            }else{
+                mv[move_index]=legal_moves[i];
+            }                  
+            move_index--;
+        }
+        
+        return mv;
+    }
+    
+    
+    private Move[] addToBottom(Move[]legal_moves, Move m){
+        Move [] mv=new Move[legal_moves.length + 1];
+        
+        mv[mv.length-1]=m;        
+        for(int i=legal_moves.length-1; i>-1; i--)
+            mv[i]=legal_moves[i];
+    
+        return mv;
+    }
+        
+    
+    Move[] MoveOrder(){
+        //Board board=analyzer.board;
+        Piece[] pieces= board.getAllPieces();
+
+        
+        int rated_value;
+        Move[] moves=new Move[0];
+        for(int i=0; i<32; i++){//Piece arrangement in the piece array may be zigzag because of FEN         
+
+            if(pieces[i].Me() != board.turn)//Piece arrangement in the piece array may be zigzag because of FEN         
+                continue;            
+            
+            if(pieces[i].Square == Constants.NOTHING)
+                continue;
+
+            int[] valid_square = getPieceValidSquare(pieces[i]);
+
+            for(int square=0; square<valid_square.length; square++){
+
+                int enpassant_capture_square=Constants.NOTHING;
+                int promotion_piece_rating=Constants.NOTHING;
+                boolean is_short_castle=false;
+                boolean is_long_castle=false;
+                rated_value=getPruneHelperValue(pieces[i], valid_square[square],
+                                        enpassant_capture_square,promotion_piece_rating);
+                int captured_id=board.getCapturedID(valid_square[square],enpassant_capture_square, 
+                                                    is_short_castle,is_long_castle);               
+                Move move = new Move(board.turn, -1, pieces[i].piece_name,
+                                  i, pieces[i].Square,valid_square[square],captured_id,
+                                  promotion_piece_rating, enpassant_capture_square,
+                                  is_short_castle,is_long_castle);  
+                move.preliminaryValue=rated_value;
+                boolean inserted=false;
+                //let the killer moves come first
+                for(int move_index=0; move_index<moves.length; move_index++){
+                    
+                        if(rated_value>=moves[move_index].preliminaryValue){
+                            moves=this.insert(moves, move, move_index);
+                            inserted=true;
+                            break;
+                        }
+
+                    
+                }
+                  
+                 
+                if(!inserted)
+                    moves=this.addToBottom(moves, move);//add to the bottom
+            }
+        }
+        
+        //moves=randomize(moves);//LATER USE ONE TIME RANDOM INDEX.
+        
+        return moves;
+    }
+    
+    int getPruneHelperValue(Piece piece, int to_square,
+                            int enpassant_capture_square,int promotion_piece_rating ){
+        
+        int total_cost=0;
+        int attack_cost=0;
+        int threat_cost=0;
+        
+        if(enpassant_capture_square!=-1){// is en passant capture
+            attack_cost=Constants.pawn_cost;
+        } 
+        
+        switch(promotion_piece_rating){
+            case Constants.RookPromotion:attack_cost=Constants.rook_cost;break;
+            case Constants.BishopPromotion:attack_cost=Constants.bishop_cost;break;
+            case Constants.KnightPromotion:attack_cost=Constants.knight_cost;break;    
+            case Constants.QueenPromotion:attack_cost=Constants.queen_cost;break;    
+        }
+           
+        Piece captured_piece=board.getPieceOnSquare(to_square);
+        
+        if(captured_piece!=null)
+            switch(captured_piece.piece_name){
+                case Constants.Pawn:attack_cost=Constants.pawn_cost;break;
+                case Constants.Rook:attack_cost=Constants.rook_cost;break;
+                case Constants.Bishop:attack_cost=Constants.bishop_cost;break;
+                case Constants.Knight:attack_cost=Constants.knight_cost;break;
+                case Constants.Queen:attack_cost=Constants.queen_cost;break;
+            }        
+        
+        
+        //Threat cost
+        if(engine_board_analyzer.canPieceBeAttacked(piece.ID, to_square))            
+            switch(piece.piece_name){
+                case Constants.Pawn:threat_cost=-Constants.pawn_cost;break;
+                case Constants.Rook:threat_cost=-Constants.rook_cost;break;
+                case Constants.Bishop:threat_cost=-Constants.bishop_cost;break;
+                case Constants.Knight:threat_cost=-Constants.knight_cost;break;    
+                case Constants.Queen:threat_cost=-Constants.queen_cost;break;    
+            }                
+
+        
+        total_cost=attack_cost+threat_cost;
+
+        return total_cost;
+    }    
+
+    int alphaBeta(int depth, int alpha, int beta,int piece_index)
+    {
+        
+        int value;
+        if(depth == 0/* || board.isEnded()*/)
+        {
+            //value = evaluate(board);
+            value = evaluateGamePosition(piece_index);
+            return value;
+        }
+        
+        
+        //board.getOrderedMoves();
+        Move[] legal_moves = MoveOrder();
+        int best = -Constants.INFINITY-1;
+        //int move; 
+        int node_turn=board.turn;
+        int next_turn=board.turn==Side.white?Side.black:Side.white;
+
+        if(move_max_length<legal_moves.length)//TESTING
+            move_max_length=legal_moves.length;//TESTING
+        
+        for (int i=0; i<legal_moves.length;i++)
+        {
+            //move = board.getNextMove();
+            
+            //nextBoard = board.makeMove(move);
+            board.MovePiece(legal_moves[i]);
+            board.turn=next_turn;//switch turn
+            //nextBoard=board;            
+            value = -alphaBeta(depth-1,-beta,-alpha, legal_moves[i].piece_index);
+            board.turn=node_turn;//switch back turn
+            board.UndoMove(legal_moves[i]);//chuks
+            if(value > best){
+                best = value;              
+                if(depth==search_depth) {            
+                    this.best_move = legal_moves[i]; // Current choice of move            
+                    //val = estimate();          
+                }
+            }else{
+                if(depth==search_depth)
+                   if(best_move == null)//get at least the first move in the move list.                        
+                      best_move = legal_moves[0];           
+            }
+            
+            if(best > alpha)
+                alpha = best;
+            if(best >= beta)
+                return best;//replaced break statement
+        }
+
+        return best;
+    }
+
+    public int evaluateGamePosition(int piece_index){
+        ++node_count;
+        int cost = 0;
+
+        int piece_evalute=evaluatePiecesOnBoardCost();        
+        int threat_attack_cost = possibleThreatCost(piece_index);
+
+
+        //cost= evalute;//TESTING!!! COMMENT HERE LATER
+        cost= piece_evalute + threat_attack_cost; // REMOVE COMMENT LATER
+//System.out.println(" evalute "+evalute+" threat_attack_cost "+threat_attack_cost+" cost "+cost);
+        //cost = is_maximizer? -cost: cost;//come back        
+//System.out.println("negated--is_maximizer "+is_maximizer+" evalute "+evalute+" threat_attack_cost "+threat_attack_cost+" cost "+cost);
+        return cost;        
+    }
+    
+
+    private int evaluatePiecesOnBoardCost(){
+        
+        int cost=0;
+       
+        //return positive cost if the player has more valuable piece and negative if otherwise.
+        
+        Piece[] pieces=board.getAllPieces();
+        for(int i=pieces.length -1; i>-1; i--){
+            
+            if(pieces[i].Square == Constants.NOTHING)
+                continue;
+            
+            if(pieces[i].Me()== board.turn){
+                //positive cost
+                switch(pieces[i].piece_name){
+                    case Constants.King : cost += Constants.king_cost; continue;
+                    case Constants.Queen : cost += Constants.queen_cost; continue;
+                    case Constants.Bishop : cost += Constants.bishop_cost; continue;
+                    case Constants.Knight : cost += Constants.knight_cost; continue;
+                    case Constants.Rook : cost += Constants.Rook; continue;
+                    case Constants.Pawn : cost += Constants.pawn_cost; continue;
+                }
+            }else{
+                //negative cost
+                switch(pieces[i].piece_name){
+                    case Constants.King : cost -= Constants.king_cost; continue;
+                    case Constants.Queen : cost -= Constants.queen_cost; continue;
+                    case Constants.Bishop : cost -= Constants.bishop_cost; continue;
+                    case Constants.Knight : cost -= Constants.knight_cost; continue;
+                    case Constants.Rook : cost -= Constants.Rook; continue;
+                    case Constants.Pawn : cost -= Constants.pawn_cost; continue;
+                }                
+            }
+        }
+        
+        //cost = !is_maximizer?cost:-cost;//come back
+        
+        
+        return cost;
+    }    
+    
+    private int possibleThreatCost(int piece_index ){
+        
+        Piece piece=board.getPieceByID(piece_index); //piece index and id is same                       
+        
+        /*leave out king check for now
+         * 
+         *  //king check
+         * if(piece.piece_name==Constants.King)
+            if(boardAnalyzer.canKingBeAttacked(nodeMove.piece_index))
+                return -Constants.knight_cost;  //negative cost                
+         * 
+         */
+        
+        int cost=0;
+        
+        //check major piece capture
+        if(engine_board_analyzer.canPieceBeAttacked(piece.ID, piece.Square)){
+            switch(piece.piece_name){
+                case Constants.Queen: cost= -Constants.queen_cost;break;  
+                case Constants.Bishop: cost= -Constants.bishop_cost;break;
+                case Constants.Rook: cost= -Constants.rook_cost;break;  
+                case Constants.Knight: cost= -Constants.knight_cost;break;   
+                case Constants.Pawn: cost= -Constants.pawn_cost;break;// omit pawn for performance reason  
+            }
+        }
+        
+        return cost;
+    }
+     
+    public static int test_dp;
+    
+    private Move[] testMove(){//TESTING !!!
+        
+        test_dp++;
+        
+        Move move1=new Move(1,0,'N',2,4,3,3,4,-1,false,false);
+
+
+        Move move2=new Move(1,0,'N',2,4,4,3,4,-1,false,false);
+      
+        Move[] legal_moves;
+        
+        if(test_dp == 1){
+            legal_moves = new Move[3];
+            legal_moves[0]=move1;
+            legal_moves[1]=move1;
+            legal_moves[2]=move1;
+        }else{
+            legal_moves = new Move[2];
+            legal_moves[0]=move1;
+            legal_moves[1]=move1;            
+        }
+        
+        return legal_moves;
+    }
+
+    public static int test_c;//TESTING !!!
+    public static int depth_0;//TESTING !!!
+    
+    private void initTest(int i){
+        test_c=0;
+        depth_0=i;
+    }
+    
+    private int testEvaluate1(){//TESTING !!!
+        
+        test_c++;
+
+        if(depth_0==0)
+        switch(test_c){
+            case 1:return 4;
+            case 2:return 6;                
+            case 3:return 7;
+            case 4:return 9;
+        }
+
+        if(depth_0==1)
+        switch(test_c){
+            case 1:return 1;
+            case 2:return 2;
+            case 3:return 0;
+            case 4:return 1;    
+        }
+        
+        if(depth_0==2)
+        switch(test_c){
+            case 1:return 8;
+            case 2:return 1;
+            case 3:return 9;
+            case 4:return 2;                    
+        }        
+        
+       return 0; 
+    }
+
+    
+    private int testEvaluate2(){//TESTING !!!
+
+        double rand =Math.random()*40.0;
+
+       return (int) rand; 
+       //return 0; 
+    }
+
+
+
+
+    public int RHS_EnpassantCapture(Piece pce) {
+        
+        if(pce.piece_name!=Constants.Pawn)
+            return Constants.NOTHING;
+
+        
+        if(pce.isWhite()){
+            
+            if(pce.Square <32 || pce.Square >39)//check if white piece is on its fifth rank.
+                return Constants.NOTHING;//not on the fifth rank so leave 
+            
+            if((pce.Square + 1)%8==0 ){//right edge square - ie square 7, 15, 23, 31, 39, 47, 55, 63.                
+                return Constants.NOTHING;//not required here                
+            }
+            
+                
+            int en_passant_square_RHS=pce.Square + 1;//square to the RHS
+            int RHS_capture_piece_id =board.Squares[en_passant_square_RHS];
+            Piece piece_RHS = board.getPieceByID(RHS_capture_piece_id); 
+            int to_square_RHS=en_passant_square_RHS + 8;
+            
+            if(board.Squares[to_square_RHS] == Constants.NOTHING)// check if to_square is empty
+                if(RHS_capture_piece_id != Constants.NOTHING)//check if adjacent square to the right is ocupied                         
+                    if(piece_RHS.piece_name==Constants.Pawn)
+                        if(piece_RHS.PawnDoubleStepMove)//pawn makes double step - ie first move                                
+                            if(piece_RHS.isBlack())
+                                return en_passant_square_RHS;//opponent piece square
+                
+            
+            
+        }else{ //is balck
+            
+            if(pce.Square < 24 || pce.Square >31)//check if black piece is on its fifth rank.
+                return Constants.NOTHING;//not on the fifth rank so leave
+            
+            
+            if((pce.Square + 1)%8==0 ){//right edge square - ie square 7, 15, 23, 31, 39, 47, 55, 63.                
+                return Constants.NOTHING;//not required here                
+            }
+            
+
+            int en_passant_square_RHS=pce.Square + 1;//square to the RHS
+            int RHS_capture_piece_id =board.Squares[en_passant_square_RHS];
+            Piece piece_RHS = board.getPieceByID(RHS_capture_piece_id);                 
+            int to_square_RHS=en_passant_square_RHS - 8;
+            
+            if(board.Squares[to_square_RHS] == Constants.NOTHING)// check if to_square is empty
+                if(RHS_capture_piece_id != Constants.NOTHING)//check if adjacent square to the right is ocupied                         
+                    if(piece_RHS.piece_name==Constants.Pawn)
+                        if(piece_RHS.PawnDoubleStepMove)//pawn makes double step - ie first move                                
+                            if(piece_RHS.isWhite())
+                                return en_passant_square_RHS;//opponent piece square
+                                    
+                        
+        }
+
+        return Constants.NOTHING;
+    }
+
+    public int LHS_EnpassantCapture(Piece pce) {
+        
+        if(pce.piece_name!=Constants.Pawn)
+            return Constants.NOTHING;
+
+        
+        if(pce.isWhite()){
+            
+            if(pce.Square <32 || pce.Square >39)//check if white piece is on its fifth rank.
+                return Constants.NOTHING;//not on the fifth rank so leave 
+            
+            if(pce.Square%8==0 ){//left edge square- ie square 0, 8, 16, 24, 32, 40, 48, 56.
+                return Constants.NOTHING;//not required here                                  
+            }
+                            
+            int en_passant_square_LHS=pce.Square - 1;//square to the LHS
+            int LHS_capture_piece_id =board.Squares[en_passant_square_LHS];
+            Piece piece_LHS = board.getPieceByID(LHS_capture_piece_id); 
+            int to_square_LHS=en_passant_square_LHS + 8;
+            
+            if(board.Squares[to_square_LHS] == Constants.NOTHING)// check if to_square is empty
+                if(LHS_capture_piece_id != Constants.NOTHING)//check if adjacent square to the left is ocupied                         
+                    if(piece_LHS.piece_name==Constants.Pawn)
+                        if(piece_LHS.PawnDoubleStepMove)//pawn makes double step - ie first move                                
+                            if(piece_LHS.isBlack())
+                                return en_passant_square_LHS;//opponent piece square
+            
+        }else{ //is balck
+            
+            if(pce.Square < 24 || pce.Square >31)//check if black piece is on its fifth rank.
+                return Constants.NOTHING;//not on the fifth rank so leave
+
+            if(pce.Square%8==0 ){//left edge square- ie square 0, 8, 16, 24, 32, 40, 48, 56.
+                return Constants.NOTHING;//not required here                                  
+            }            
+                            
+            int en_passant_square_LHS=pce.Square - 1;//square to the LHS
+            int LHS_capture_piece_id =board.Squares[en_passant_square_LHS];                
+            Piece piece_LHS = board.getPieceByID(LHS_capture_piece_id);                 
+            int to_square_LHS=en_passant_square_LHS - 8;
+            
+            if(board.Squares[to_square_LHS] == Constants.NOTHING)// check if to_square is empty
+                if(LHS_capture_piece_id != Constants.NOTHING)//check if adjacent square to the left is ocupied                         
+                    if(piece_LHS.piece_name==Constants.Pawn)
+                        if(piece_LHS.PawnDoubleStepMove)//pawn makes double step - ie first move                                        
+                            if(piece_LHS.isWhite())                                                                        
+                                return en_passant_square_LHS;//opponent piece square
+                            
+        }
+
+        return Constants.NOTHING;
+    }    
+  
+    
+    public boolean isShortCastle(Piece pce) {
+        
+        if(pce.piece_name != Constants.King)
+            return false;
+        
+        if(pce.isAlreadyCastle)//important - so that engine does not repeat castle
+            return false;        
+        
+        if(pce.hasPreviouslyMoved())
+            return false;        
+        
+        int king_to_square = Constants.NOTHING;
+        int rook_square = Constants.NOTHING;
+        
+        if(pce.isWhite()){   
+            
+            if(!board.canWhiteShortCastle)
+                return false;              
+            
+            if(board.getWhiteRookOnKingSide().hasPreviouslyMoved())
+                return false;          
+            
+            if(pce.Square != board.WHITE_king_ORIGIN_square ||
+               board.getWhiteRookOnKingSide().Square != board.WHITE_rook_ORIGIN_square_on_KING_side)
+                return false;
+
+            king_to_square= board.WHITE_KING_SHORT_CASTLE_SQUARE;
+            rook_square = board.getWhiteRookOnKingSide().Square;
+                    
+        }else{
+            
+            if(!board.canBlackShortCastle)
+                return false;             
+            
+            if(board.getBlackRookOnKingSide().hasPreviouslyMoved())
+                return false;            
+                        
+            if(pce.Square != board.BLACK_king_ORIGIN_square ||
+               board.getBlackRookOnKingSide().Square != board.BLACK_rook_ORIGIN_square_on_KING_side)
+                return false;            
+        
+            king_to_square= board.BLACK_KING_SHORT_CASTLE_SQUARE;
+            rook_square = board.getBlackRookOnKingSide().Square;
+                    
+        }        
+                
+        //check if all squares between rook and king is empty
+        
+        //COME BACK TO TEST FOR CORRECTNESS         
+        for(int sq=pce.Square + 1 ; sq < rook_square; sq++){
+           if(board.Squares[sq]!=Constants.NOTHING)
+            return false;
+        }
+                        
+        
+        
+        //check king check states all through
+        
+        //COME BACK TO TEST FOR CORRECTNESS
+        for(int sq=pce.Square; sq < king_to_square + 1; sq++){
+            if(engine_board_analyzer.canPieceBeAttacked(pce.ID, sq))//check attack at final square destination  sq_2
+            return false;  
+        }
+        
+        //------------------------------
+        
+        //finally
+        pce.isAlreadyCastle=true;
+        
+        return true;        
+    }
+
+    public boolean isLongCastle(Piece pce) {
+        if(pce.piece_name != Constants.King)
+            return false;
+        
+        if(pce.isAlreadyCastle)//important - so that engine does not repeat castle
+            return false;        
+        
+        if(pce.hasPreviouslyMoved())
+            return false;        
+
+        int king_to_square = Constants.NOTHING;
+        int rook_square = Constants.NOTHING;
+                
+        if(pce.isWhite()){
+                        
+            if(!board.canWhiteLongCastle)
+                return false;                          
+            
+            if(board.getWhiteRookOnQueenSide().hasPreviouslyMoved())
+                return false;
+                        
+            if(pce.Square != board.WHITE_king_ORIGIN_square ||
+               board.getWhiteRookOnQueenSide().Square != board.WHITE_rook_ORIGIN_square_on_QUEEN_side)
+                return false;    
+
+            king_to_square= board.WHITE_KING_LONG_CASTLE_SQUARE;
+            rook_square = board.getWhiteRookOnQueenSide().Square;
+            
+        }else{
+                        
+            if(!board.canBlackLongCastle)
+                return false;     
+            
+            if(board.getBlackRookOnQueenSide().hasPreviouslyMoved())
+                return false;            
+                                    
+            if(pce.Square != board.BLACK_king_ORIGIN_square ||
+               board.getBlackRookOnQueenSide().Square != board.BLACK_rook_ORIGIN_square_on_QUEEN_side)
+                return false;                
+            
+            king_to_square= board.BLACK_KING_LONG_CASTLE_SQUARE;
+            rook_square = board.getBlackRookOnQueenSide().Square;
+            
+        }
+
+        //check if all squares between rook and king is empty
+        
+        //COME BACK TO TEST FOR CORRECTNESS         
+        for(int sq=pce.Square - 1 ; sq > rook_square; sq--){
+           if(board.Squares[sq]!=Constants.NOTHING)
+            return false;
+        }        
+        
+        
+        //check king check states all through
+
+        //COME BACK TO TEST FOR CORRECTNESS
+        for(int sq=pce.Square; sq > king_to_square -1; sq--){
+            if(engine_board_analyzer.canPieceBeAttacked(pce.ID, sq))//check attack at final square destination  sq_2
+            return false;  
+        }
+        
+        
+        //finally
+        pce.isAlreadyCastle=true;
+        
+        return true;
+    }
+
+    private int PawnPromotion(Piece piece, int to_square, int promotion_piece_rating, int depth) {
+        
+        
+        if(piece.piece_name!=Constants.Pawn)
+            return Constants.NOTHING;//any number greater than 4
+        
+        if(piece.isWhite() &&  to_square < 56)
+            return Constants.NOTHING;//any number greater than 4
+        
+        if(piece.isBlack() &&  to_square > 7)
+            return Constants.NOTHING;//any number greater than 4
+                        
+        
+        if(depth==0){//the engine is configured here to promote to queen only
+           return Constants.QueenPromotion;//a number of 4
+        }
+        
+        promotion_piece_rating++;
+        
+        switch(promotion_piece_rating){            
+            case 1:return Constants.RookPromotion; //a number of 1
+            case 2:return Constants.BishopPromotion;//a number of 2
+            case 3:return Constants.KnightPromotion;//a number of 3               
+            case 4:return Constants.QueenPromotion;//a number of 4
+        }
+        
+        return Constants.NOTHING;//any number greater than 4
+    }
+}
