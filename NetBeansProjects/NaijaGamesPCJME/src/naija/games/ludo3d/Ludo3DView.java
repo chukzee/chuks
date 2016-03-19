@@ -6,11 +6,12 @@ package naija.games.ludo3d;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.renderer.Camera;
-import naija.game.client.BoardEvent;
-import naija.game.client.BoardPosition;
+import naija.game.client.event.GameEvent;
+import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.ludo.LudoBoardEvent;
 import naija.game.client.ludo.LudoBoardListener;
+import naija.game.client.ludo.LudoBoardPosition;
 import naija.games.View3D;
 
 /**
@@ -33,39 +34,39 @@ public class Ludo3DView  extends View3D implements LudoBoardListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void initializeBoardPosition(BoardPosition board_position, Player... players) {
+    public void initializeGamePosition(LudoBoardPosition board_position, Player... players) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onRobotMove(BoardEvent event) {
+    public void onRobotMove(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onRemotePlayerMove(BoardEvent event) {
+    public void onRemotePlayerMove(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onLocalPlayerMove(BoardEvent event) {
+    public void onLocalPlayerMove(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onNextTurn(BoardEvent event) {
+    public void onNextTurn(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onGameOver(BoardEvent event) {
+    public void onGameOver(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onInvalidMove(BoardEvent event) {
+    public void onInvalidMove(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onError(BoardEvent event) {
+    public void onError(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onInvalidTurn(BoardEvent event) {
+    public void onInvalidTurn(LudoBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

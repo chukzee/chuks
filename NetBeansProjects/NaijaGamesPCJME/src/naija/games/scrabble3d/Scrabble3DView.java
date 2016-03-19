@@ -6,11 +6,12 @@ package naija.games.scrabble3d;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.renderer.Camera;
-import naija.game.client.BoardEvent;
-import naija.game.client.BoardPosition;
+import naija.game.client.event.GameEvent;
+import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.scrabble.ScrabbleBoardEvent;
 import naija.game.client.scrabble.ScrabbleBoardListener;
+import naija.game.client.scrabble.ScrabbleBoardPosition;
 import naija.games.View3D;
 
 /**
@@ -33,39 +34,39 @@ public class Scrabble3DView   extends View3D implements ScrabbleBoardListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void initializeBoardPosition(BoardPosition board_position, Player... players) {
+    public void initializeGamePosition(ScrabbleBoardPosition board_position, Player... players) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onRobotMove(BoardEvent event) {
+    public void onRobotMove(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onRemotePlayerMove(BoardEvent event) {
+    public void onRemotePlayerMove(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onLocalPlayerMove(BoardEvent event) {
+    public void onLocalPlayerMove(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onNextTurn(BoardEvent event) {
+    public void onNextTurn(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onGameOver(BoardEvent event) {
+    public void onGameOver(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onInvalidMove(BoardEvent event) {
+    public void onInvalidMove(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onError(BoardEvent event) {
+    public void onError(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void onInvalidTurn(BoardEvent event) {
+    public void onInvalidTurn(ScrabbleBoardEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

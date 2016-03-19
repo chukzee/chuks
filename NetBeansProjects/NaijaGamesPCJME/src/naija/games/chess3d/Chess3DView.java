@@ -42,8 +42,8 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import naija.game.client.BoardEvent;
-import naija.game.client.BoardPosition;
+import naija.game.client.event.GameEvent;
+import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.Side;
 import naija.game.client.chess.ChessBoardEvent;
@@ -164,8 +164,7 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         return tallestPieceHeight;
     }
 
-    public void initializeBoardPosition(final ChessBoardPosition board_position, Player... players) {
-        //final ChessBoardPosition chess_board_position = (ChessBoardPosition) board_position;
+    public void initializeGamePosition(final ChessBoardPosition board_position, Player... players) {
 
         app.enqueue(new Callable() {
             public Object call() throws Exception {
