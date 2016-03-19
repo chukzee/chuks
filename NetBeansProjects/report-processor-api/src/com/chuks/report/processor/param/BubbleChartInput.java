@@ -9,6 +9,8 @@ package com.chuks.report.processor.param;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface BubbleChartInput  extends ChartInput{
+public interface BubbleChartInput  extends ChartXYInput ,  ActionSQL{
     
+    void plot(double x, double y);
+
 }

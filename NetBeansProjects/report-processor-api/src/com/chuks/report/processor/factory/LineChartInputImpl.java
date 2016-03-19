@@ -10,21 +10,27 @@ import com.chuks.report.processor.param.LineChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
+import javafx.scene.chart.Chart;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
  class LineChartInputImpl extends AbstractXYChartInputImpl implements LineChartInput{
+    private LineChart chart;
 
     public LineChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     @Override
-    protected Parent getChart() {
-        return new LineChart(xAxis, yAxis);
+    protected XYChart getChart() {
+        if (chart == null) {
+            chart = new LineChart(xAxis, yAxis);
+        }
+        return chart;
     }
 
     void setHandler(JFXPanel jfxPanel, LineChartInputHandler handler) {
@@ -32,4 +38,28 @@ import javafx.scene.chart.LineChart;
         this.handler = handler;
     }
     
+    @Override
+    public void plot(double x, double y){
+       plotImpl(x, y);
+    }
+    
+    @Override
+    public void plot(String x, double y){
+        plotImpl(x, y);
+    }
+    
+    @Override
+    public void plot(double x, String y){
+       plotImpl(x, y);
+    }
+    
+    @Override
+    public void plot(String x, String y){
+       plotImpl(x, y);
+    }
+
+    @Override
+    public void plotNewSeries(String seriesName) {
+        plotNewSeriesImpl(seriesName);
+    }
 }

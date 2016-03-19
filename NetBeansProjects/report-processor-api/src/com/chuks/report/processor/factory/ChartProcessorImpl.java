@@ -14,6 +14,9 @@ import com.chuks.report.processor.handler.BubbleChartInputHandler;
 import com.chuks.report.processor.handler.DataPollHandler;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.handler.ScatterChartInputHandler;
+import com.chuks.report.processor.param.AreaChartInput;
+import com.chuks.report.processor.param.BarChartInput;
+import com.chuks.report.processor.param.BubbleChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
 
@@ -62,6 +65,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         input.setHandler(jfxPanel, handler);
 
         DataPollHandler.registerPoll(input);
+        
     }
 
     @Override

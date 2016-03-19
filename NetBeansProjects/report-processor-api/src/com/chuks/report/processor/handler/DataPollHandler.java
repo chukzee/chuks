@@ -21,11 +21,13 @@ import javax.swing.SwingWorker;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class DataPollHandler extends SwingWorker<DataPoll, DataPoll> implements Runnable {
+public class DataPollHandler implements Runnable {
 
     static ArrayList<DataPoll> dataPollList = new ArrayList();
     static private boolean stop;
-    static DataPollHandler  instance;
+    static DataPollHandler instance;
+    static ExecutorService exec;
+
     private DataPollHandler() {
     }
 
@@ -34,46 +36,53 @@ public class DataPollHandler extends SwingWorker<DataPoll, DataPoll> implements 
             return;
         }
         synchronized (DataPollHandler.class) {
-            if(instance==null){
+            if (instance == null) {
                 instance = new DataPollHandler();
-                instance.execute();
+                exec = Executors.newSingleThreadExecutor();
+                exec.execute(instance);
             }
         }
         //register for polling
         dataPollList.add(poll);
-        setNextPollTime(poll);
+        setNextPollTime(poll , System.currentTimeMillis());
     }
 
-    static private void setNextPollTime(DataPoll poll) {
-        long next_time = (long) (System.currentTimeMillis() + poll.getPollingInterval() * 1000);
+    static private void setNextPollTime(DataPoll poll, long now) {
+        long increase = (long) (poll.getPollingInterval() * 1000);//important!
+        long next_time = now + increase;
         poll.setNextPollTime(next_time);
     }
 
     @Override
-    protected DataPoll doInBackground() throws Exception {
+    public void run() {
         while (!stop) {
             Iterator<DataPoll> i = dataPollList.iterator();
             while (i.hasNext()) {
                 final DataPoll poll = i.next();
+                long now = System.currentTimeMillis();
+                if (now >= poll.getNextPollTime()) {
+                    try {
+                        SwingUtilities.invokeAndWait(new Runnable() {
+                            
+                            @Override
+                            public void run() {
+                                if (poll.pause()) {
+                                    return;
+                                }
+                                poll.pollData();
+                            }
+                        });
+                        
+                        setNextPollTime(poll, now);
+                    } catch (InterruptedException | InvocationTargetException ex) {
+                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 
-                if (poll.getNextPollTime() >= System.currentTimeMillis()) {
-                    this.publish(poll);
                 }
+
             }
         }
 
-        return null;
-    }
-
-    @Override
-    protected void process(List<DataPoll> chunks) {
-        for (DataPoll poll : chunks) {
-            if (poll.pause()) {
-                return;
-            }
-            poll.pollData();
-            setNextPollTime(poll);
-        }
     }
 
 }

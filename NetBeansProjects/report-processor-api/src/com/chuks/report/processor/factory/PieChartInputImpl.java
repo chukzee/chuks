@@ -11,22 +11,27 @@ import com.chuks.report.processor.param.PieChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
+import javafx.scene.chart.Chart;
 import javafx.scene.chart.PieChart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
+class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput {
 
-class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput{
-    
+    private PieChart chart;
+
     public PieChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     @Override
-    protected Parent getChart() {
-        return new PieChart();
+    protected Chart getChart() {
+        if (chart == null) {
+            chart = new PieChart();
+        }
+        return chart;
     }
 
     void setHandler(JFXPanel jfx_panel, PieChartInputHandler handler) {
@@ -34,5 +39,9 @@ class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput{
         this.handler = handler;
     }
 
-    
+    @Override
+    public void addPie(String a, double b) {
+        plotImpl(a, b);
+    }
+
 }

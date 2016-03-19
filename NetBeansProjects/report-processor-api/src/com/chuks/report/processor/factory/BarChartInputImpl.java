@@ -14,26 +14,47 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
 import javafx.scene.chart.Axis;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.Chart;
+import javafx.scene.chart.XYChart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
- class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInput{
+class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInput {
+
+    private BarChart chart;
 
     public BarChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
     }
 
     @Override
-    protected Parent getChart() {
-        return new BarChart(xAxis,yAxis);
+    protected XYChart getChart() {
+        if (chart == null) {
+            chart = new BarChart(xAxis, yAxis);
+        }
+        return chart;
     }
 
     void setHandler(JFXPanel jfxPanel, BarChartInputHandler handler) {
         this.jfxPanel = jfxPanel;
-        this.handler = handler;       
+        this.handler = handler;
     }
 
+    @Override
+    public void plot(String x, double y) {
+        plotImpl(x, y);
+    }
+
+    @Override
+    public void plot(double x, String y) {
+        plotImpl(x, y);
+    }
+
+    @Override
+    public void plotNewSeries(String seriesName) {
+        plotNewSeriesImpl(seriesName);
+    }
 
 }

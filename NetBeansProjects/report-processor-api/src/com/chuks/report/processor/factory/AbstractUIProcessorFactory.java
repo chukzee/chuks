@@ -4,6 +4,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.ChartProcessor;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.TableProcessor;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -26,4 +27,7 @@ abstract class AbstractUIProcessorFactory {
     abstract public FormProcessor getFormControlsProcessor();
 
     abstract public TableProcessor getTableReportProcessor();
+    
+    abstract public ChartProcessor getChartReportProcessor();
+
 }

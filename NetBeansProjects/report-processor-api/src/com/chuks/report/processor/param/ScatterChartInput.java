@@ -9,6 +9,13 @@ package com.chuks.report.processor.param;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ScatterChartInput  extends ChartInput{
+public interface ScatterChartInput  extends ChartXYInput ,  ActionSQL{
+
+    void plot(double x, double y);
     
+    void plot(String x, double y);
+    
+    void plot(double x, String y);
+    
+    void plot(String x, String y);
 }

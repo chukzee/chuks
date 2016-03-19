@@ -4,6 +4,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.ChartProcessor;
 import com.chuks.report.processor.FormProcessor;
 import com.chuks.report.processor.TableProcessor;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -26,5 +27,10 @@ import com.chuks.report.processor.util.JDBCSettings;
     @Override
     public TableProcessor getTableReportProcessor() {
         return new TableReportProcessorImpl(jdbcSettings);
+    }
+
+    @Override
+    public ChartProcessor getChartReportProcessor() {
+        return new ChartProcessorImpl(jdbcSettings);
     }
 }
