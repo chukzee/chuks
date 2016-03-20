@@ -57,7 +57,7 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     public void pollData() {
 
         handler.data(this);
-        
+
         if (this.getData() == null) {
             Object[][] fetch = this.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
@@ -96,7 +96,7 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
      * @return
      */
     @Override
-    public boolean pause() {
+    public boolean pausePoll() {
         if (combo != null) {
             return !combo.isShowing();
         }
@@ -105,4 +105,10 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
         }
         return true;
     }
+
+    @Override
+    public boolean stopPoll() {
+        return false;
+    }
+
 }

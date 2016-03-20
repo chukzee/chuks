@@ -3,21 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor;
+package com.chuks.report.processor.chart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface DataPoll extends PollAttributes {
-
-    void setNextPollTime(long next_poll_time);
-
-    long getNextPollTime();
-
-    boolean pausePoll();
+public interface PieChartSettings  extends ChartSettings{
     
-    boolean stopPoll();
-
-    void pollData();
 }

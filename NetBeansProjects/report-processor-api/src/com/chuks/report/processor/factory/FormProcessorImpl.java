@@ -1435,16 +1435,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
          * @return
          */
         @Override
-        public boolean pause() {
+        public boolean pausePoll() {
             //check if any of the form component is showing
             for (JComponent fieldsComponent : fieldsComponents) {
                 if (fieldsComponent.isShowing()) {
-                    return false;//at least a component is showing so do not pause
+                    return false;//at least a component is showing so do not pausePoll
                 }
             }
-            return true;//all components are hidden so pause
+            return true;//all components are hidden so pausePoll
         }
 
+        @Override
+        public boolean stopPoll() {
+            return false;
+        }
+        
         private void disableAllFormControls() {
             if (controllers_pane != null) {
                 controllers_pane.controlFailedState(true);

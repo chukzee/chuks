@@ -5,16 +5,12 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.chart.BarChartSettings;
 import com.chuks.report.processor.handler.BarChartInputHandler;
 import com.chuks.report.processor.param.BarChartInput;
-import com.chuks.report.processor.param.PieChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.Parent;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.Chart;
 import javafx.scene.chart.XYChart;
 
 /**
@@ -25,8 +21,9 @@ class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInpu
 
     private BarChart chart;
 
-    public BarChartInputImpl(JDBCSettings jdbcSettings) {
+    public BarChartInputImpl(JDBCSettings jdbcSettings, BarChartSettings settings) {
         super(jdbcSettings);
+        this.settings = settings;
     }
 
     @Override

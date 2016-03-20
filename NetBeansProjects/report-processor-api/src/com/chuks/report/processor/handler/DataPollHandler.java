@@ -8,8 +8,11 @@ package com.chuks.report.processor.handler;
 import com.chuks.report.processor.DataPoll;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -23,7 +26,8 @@ import javax.swing.SwingWorker;
  */
 public class DataPollHandler implements Runnable {
 
-    static ArrayList<DataPoll> dataPollList = new ArrayList();
+    static ConcurrentHashMap m;
+    static List<DataPoll> dataPollList = Collections.synchronizedList(new LinkedList());
     static private boolean stop;
     static DataPollHandler instance;
     static ExecutorService exec;
@@ -44,7 +48,7 @@ public class DataPollHandler implements Runnable {
         }
         //register for polling
         dataPollList.add(poll);
-        setNextPollTime(poll , System.currentTimeMillis());
+        setNextPollTime(poll, System.currentTimeMillis());
     }
 
     static private void setNextPollTime(DataPoll poll, long now) {
@@ -56,25 +60,36 @@ public class DataPollHandler implements Runnable {
     @Override
     public void run() {
         while (!stop) {
-            Iterator<DataPoll> i = dataPollList.iterator();
-            while (i.hasNext()) {
-                final DataPoll poll = i.next();
+            Object[] polls = dataPollList.toArray();
+            for (int i = 0; i < polls.length; i++) {
+                final DataPoll poll = (DataPoll) polls[i];
                 long now = System.currentTimeMillis();
                 if (now >= poll.getNextPollTime()) {
                     try {
                         SwingUtilities.invokeAndWait(new Runnable() {
-                            
+
                             @Override
                             public void run() {
-                                if (poll.pause()) {
+
+                                if (poll.stopPoll()) {
+                                    dataPollList.remove(poll);//remove from this poll list
                                     return;
                                 }
+
+                                if (poll.pausePoll()) {
+                                    return;//skip poll for now
+                                }
+
                                 poll.pollData();
                             }
                         });
-                        
+
                         setNextPollTime(poll, now);
                     } catch (InterruptedException | InvocationTargetException ex) {
+                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (NullPointerException ex) {
+                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
                         Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
 

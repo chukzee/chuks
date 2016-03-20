@@ -14,9 +14,6 @@ import com.chuks.report.processor.handler.BubbleChartInputHandler;
 import com.chuks.report.processor.handler.DataPollHandler;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.handler.ScatterChartInputHandler;
-import com.chuks.report.processor.param.AreaChartInput;
-import com.chuks.report.processor.param.BarChartInput;
-import com.chuks.report.processor.param.BubbleChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
 
@@ -32,76 +29,63 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
 
     @Override
     public void loadChart(PieChartInputHandler handler, JFXPanel jfxPanel) {
-        PieChartInputImpl input = new PieChartInputImpl(jdbcSettings);
-        handler.onShow(input);
-
-        input.show();
-
+        PieChartSettingsImpl settings = new PieChartSettingsImpl();
+        PieChartInputImpl input = new PieChartInputImpl(jdbcSettings, settings);        
+        handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
-
+        input.show();
         DataPollHandler.registerPoll(input);
 
     }
 
     @Override
     public void loadChart(BarChartInputHandler handler, JFXPanel jfxPanel) {
-        BarChartInputImpl input = new BarChartInputImpl(jdbcSettings);
-        handler.onShow(input);
-
-        input.show();
-
+        BarChartSettingsImpl settings = new BarChartSettingsImpl();
+        BarChartInputImpl input = new BarChartInputImpl(jdbcSettings, settings);
+        handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
-
+        input.show();
         DataPollHandler.registerPoll(input);
     }
 
     @Override
     public void loadChart(AreaChartInputHandler handler, JFXPanel jfxPanel) {
-        AreaChartInputImpl input = new AreaChartInputImpl(jdbcSettings);
-        handler.onShow(input);
-
-        input.show();
-
+        AreaChartSettingsImpl settings = new AreaChartSettingsImpl();
+        AreaChartInputImpl input = new AreaChartInputImpl(jdbcSettings, settings);
+        handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
-
+        input.show();
         DataPollHandler.registerPoll(input);
         
     }
 
     @Override
     public void loadChart(BubbleChartInputHandler handler, JFXPanel jfxPanel) {
-        BubbleChartInputImpl input = new BubbleChartInputImpl(jdbcSettings);
-        handler.onShow(input);
-
-        input.show();
-
+        BubbleChartSettingsImpl settings = new BubbleChartSettingsImpl();
+        BubbleChartInputImpl input = new BubbleChartInputImpl(jdbcSettings, settings);
+        handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
-
+        input.show();
         DataPollHandler.registerPoll(input);
     }
 
     @Override
     public void loadChart(LineChartInputHandler handler, JFXPanel jfxPanel) {
-        LineChartInputImpl input = new LineChartInputImpl(jdbcSettings);
-        handler.onShow(input);
-
-        input.show();
-
+        LineChartSettingsImpl settings = new LineChartSettingsImpl();
+        LineChartInputImpl input = new LineChartInputImpl(jdbcSettings, settings);
+        handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
-
+        input.show();
         DataPollHandler.registerPoll(input);
     }
 
     @Override
     public void loadChart(ScatterChartInputHandler handler, JFXPanel jfxPanel) {
-        ScatterChartInputImpl input = new ScatterChartInputImpl(jdbcSettings);
-        handler.onShow(input);
-
-        input.show();
-
+        ScatterChartSettingsImpl settings = new ScatterChartSettingsImpl();
+        ScatterChartInputImpl input = new ScatterChartInputImpl(jdbcSettings,settings);
+        handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
-
+        input.show();
         DataPollHandler.registerPoll(input);
-    }
-
+    }    
 }

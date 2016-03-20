@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.chart.BubbleChartSettings;
 import com.chuks.report.processor.handler.BubbleChartInputHandler;
 import com.chuks.report.processor.param.BubbleChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -21,9 +22,9 @@ import javafx.scene.chart.XYChart;
 class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleChartInput {
     private BubbleChart chart;
 
-    public BubbleChartInputImpl(JDBCSettings jdbcSettings) {
+    public BubbleChartInputImpl(JDBCSettings jdbcSettings, BubbleChartSettings settings) {
         super(jdbcSettings);
-
+        this.settings = settings;
     }
 
     @Override

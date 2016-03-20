@@ -1193,13 +1193,18 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
          * @return
          */
         @Override
-        public boolean pause() {
+        public boolean pausePoll() {
             if (model_table == null) {
                 return true;
             }
             return !model_table.isShowing()//pause if table is not showing
-                    || model_table.isEditing();//also pause if a table cell is being edited
+                    || model_table.isEditing();//also pausePoll if a table cell is being edited
         }
 
+        @Override
+        public boolean stopPoll() {
+            return false;
+        }
+        
     }
 }

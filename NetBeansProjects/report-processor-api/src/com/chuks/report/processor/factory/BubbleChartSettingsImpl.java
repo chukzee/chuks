@@ -3,18 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.handler;
+package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.chart.BubbleChartSettings;
-import com.chuks.report.processor.param.BubbleChartInput;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface BubbleChartInputHandler extends ChatInputHandler<BubbleChartInput, BubbleChartSettings> {
+class BubbleChartSettingsImpl  extends AbstractXYChartSettingsImpl implements BubbleChartSettings{
 
-    @Override
-    void onShow(BubbleChartInput input, BubbleChartSettings settings);
-
+    
 }

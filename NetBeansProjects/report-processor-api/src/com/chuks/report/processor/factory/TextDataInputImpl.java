@@ -30,7 +30,7 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
     }
 
     @Override
-    public void setJDBCSettings(JDBCSettings settings){
+    public void setJDBCSettings(JDBCSettings settings) {
         this.jdbcSettings = settings;
         this.dbHelper = new DBHelper(this);
     }
@@ -89,10 +89,11 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
 
     /**
      * This method will pause the data poll if the component is not showing
-     * @return 
+     *
+     * @return
      */
     @Override
-    public boolean pause() {
+    public boolean pausePoll() {
         if (label != null) {
             return !label.isShowing();
         }
@@ -101,4 +102,10 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
         }
         return true;
     }
+
+    @Override
+    public boolean stopPoll() {
+        return false;
+    }
+
 }

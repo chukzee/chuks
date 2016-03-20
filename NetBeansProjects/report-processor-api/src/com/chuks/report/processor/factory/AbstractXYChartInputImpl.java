@@ -5,8 +5,10 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.chart.ChartXYSettings;
 import com.chuks.report.processor.param.ChartXYInput;
 import com.chuks.report.processor.util.JDBCSettings;
+import com.sun.javafx.application.PlatformImpl;
 import java.util.LinkedList;
 import java.util.List;
 import javafx.scene.Group;
@@ -30,6 +32,7 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
     private boolean x_axis_category;
     private int plot_count;
     List<XYChart.Series> seriesList = new LinkedList();
+    protected ChartXYSettings settings;
 
     public AbstractXYChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);
@@ -111,17 +114,33 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
         xAxis.setLabel(axisX_label);
         yAxis.setLabel(axisY_label);
 
+        if (scene == null) {
+            scene = new Scene(new Group(), jfxPanel.getWidth(), jfxPanel.getHeight());
+            jfxPanel.setScene(scene);
+        } else {
+            ((Group) scene.getRoot()).getChildren().clear();
+        }
+
         XYChart chart = this.getChart();
         chart.setTitle(chart_title);
+        chart.getData().clear();//important! clear previous if any
         chart.getData().addAll(seriesList.toArray());
 
-        Scene scene = new Scene(new Group(), jfxPanel.getWidth(), jfxPanel.getHeight());
         ((Group) scene.getRoot()).getChildren().add(getChart());
-        jfxPanel.setScene(scene);
+
     }
 
     @Override
     protected abstract XYChart getChart();
+
+    @Override
+    final protected void initializes() {
+        //initialize control variables
+        seriesList.clear();
+        plot_count = 0;
+        x_axis_category = false;
+        y_axis_category = false;
+    }
 
     protected Axis getAxisX() {
         return xAxis;
@@ -131,4 +150,5 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
         return yAxis;
     }
 
+    
 }

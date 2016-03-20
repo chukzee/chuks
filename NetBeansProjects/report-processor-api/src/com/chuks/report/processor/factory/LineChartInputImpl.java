@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.chart.LineChartSettings;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.param.LineChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -21,8 +22,9 @@ import javafx.scene.chart.XYChart;
  class LineChartInputImpl extends AbstractXYChartInputImpl implements LineChartInput{
     private LineChart chart;
 
-    public LineChartInputImpl(JDBCSettings jdbcSettings) {
+    public LineChartInputImpl(JDBCSettings jdbcSettings, LineChartSettings settings) {
         super(jdbcSettings);
+        this.settings = settings;
     }
 
     @Override

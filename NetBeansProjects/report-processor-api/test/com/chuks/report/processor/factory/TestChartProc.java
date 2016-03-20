@@ -6,12 +6,9 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.ChartProcessor;
-import com.chuks.report.processor.handler.AreaChartInputHandler;
-import com.chuks.report.processor.handler.BarChartInputHandler;
-import com.chuks.report.processor.handler.PieChartInputHandler;
-import com.chuks.report.processor.param.AreaChartInput;
-import com.chuks.report.processor.param.BarChartInput;
-import com.chuks.report.processor.param.PieChartInput;
+import com.chuks.report.processor.chart.*;
+import com.chuks.report.processor.handler.*;
+import com.chuks.report.processor.param.*;
 
 /**
  *
@@ -24,7 +21,7 @@ public class TestChartProc extends javax.swing.JFrame {
      */
     public TestChartProc() {
         initComponents();
-        initChartProcessor();
+        
     }
 
     /**
@@ -37,32 +34,295 @@ public class TestChartProc extends javax.swing.JFrame {
     private void initComponents() {
 
         jFXPanel1 = new javafx.embed.swing.JFXPanel();
+        cmdPieChart = new javax.swing.JButton();
+        cmdBarChart = new javax.swing.JButton();
+        cmdLineChart = new javax.swing.JButton();
+        cmdAreaChart = new javax.swing.JButton();
+        cmdBubbleChart = new javax.swing.JButton();
+        cmdScatterChart = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        cmdPieChart.setText("Pie chart");
+        cmdPieChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdPieChartActionPerformed(evt);
+            }
+        });
+
+        cmdBarChart.setText("Bar chart");
+        cmdBarChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdBarChartActionPerformed(evt);
+            }
+        });
+
+        cmdLineChart.setText("Line chart");
+        cmdLineChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdLineChartActionPerformed(evt);
+            }
+        });
+
+        cmdAreaChart.setText("Area chart");
+        cmdAreaChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdAreaChartActionPerformed(evt);
+            }
+        });
+
+        cmdBubbleChart.setText("Bubble chart");
+        cmdBubbleChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdBubbleChartActionPerformed(evt);
+            }
+        });
+
+        cmdScatterChart.setText("Scatter chart");
+        cmdScatterChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdScatterChartActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 456, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(cmdPieChart)
+                .addGap(18, 18, 18)
+                .addComponent(cmdBarChart)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cmdLineChart)
+                .addGap(18, 18, 18)
+                .addComponent(cmdAreaChart)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cmdBubbleChart)
+                .addGap(18, 18, 18)
+                .addComponent(cmdScatterChart)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 393, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmdPieChart)
+                    .addComponent(cmdBarChart)
+                    .addComponent(cmdLineChart)
+                    .addComponent(cmdAreaChart)
+                    .addComponent(cmdBubbleChart)
+                    .addComponent(cmdScatterChart))
+                .addContainerGap(459, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(51, Short.MAX_VALUE)
+                    .addComponent(jFXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmdPieChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdPieChartActionPerformed
+        
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new PieChartInputHandler() {
+
+            @Override
+            public void onShow(PieChartInput input, PieChartSettings settings) {
+                
+                /*input.plotNewSeries("series 1");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+                
+                input.plotNewSeries("series 2");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+
+                input.setChartTitle("Test Chart");
+                
+                input.setLabelAxisX("The x axis");
+                input.setLabelAxisY("The y axis");
+                        */
+                input.addPie("aaa", 10);
+                input.addPie("bbb", 30);
+                input.addPie("ccc", 60);
+                input.addPie("ddd", 20);
+                
+                //input.setPollingEnabled(false);
+
+            }
+        }, jFXPanel1);
+    }//GEN-LAST:event_cmdPieChartActionPerformed
+
+    int increase1 = 0;
+    int increase2 = 0;
+    
+    private void cmdBarChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBarChartActionPerformed
+        
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new BarChartInputHandler() {
+
+            @Override
+            public void onShow(BarChartInput input, BarChartSettings settings) {
+                increase1++;
+                increase2 +=2;
+                input.plotNewSeries("series 1");
+                input.plot("a", 1+increase1);
+                input.plot("b", 2+increase2);
+                input.plot("c", 3);
+                
+                input.plotNewSeries("series 2");
+                input.plot("a", 1);
+                input.plot("b", 2+ increase1);
+                input.plot("c", 3);
+
+                input.setChartTitle("Test Chart");
+                
+                input.setLabelAxisX("The x axis");
+                input.setLabelAxisY("The y axis");
+                        
+                
+                
+                //input.setPollingEnabled(false);
+
+            }
+        }, jFXPanel1);
+    }//GEN-LAST:event_cmdBarChartActionPerformed
+
+    private void cmdLineChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdLineChartActionPerformed
+                
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new LineChartInputHandler() {
+
+            @Override
+            public void onShow(LineChartInput input, LineChartSettings settings) {
+                
+                input.plotNewSeries("series 1");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+                
+                input.plotNewSeries("series 2");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+
+                input.setChartTitle("Test Chart");
+                
+                input.setLabelAxisX("The x axis");
+                input.setLabelAxisY("The y axis");
+                        
+                
+                
+                //input.setPollingEnabled(false);
+
+            }
+        }, jFXPanel1);
+    }//GEN-LAST:event_cmdLineChartActionPerformed
+
+    private void cmdAreaChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdAreaChartActionPerformed
+                
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new AreaChartInputHandler() {
+
+            @Override
+            public void onShow(AreaChartInput input, AreaChartSettings settings) {
+                
+                input.plotNewSeries("series 1");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+                
+                input.plotNewSeries("series 2");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+
+                input.setChartTitle("Test Chart");
+                
+                input.setLabelAxisX("The x axis");
+                input.setLabelAxisY("The y axis");
+                        
+                
+                
+                //input.setPollingEnabled(false);
+
+            }
+        }, jFXPanel1);
+    }//GEN-LAST:event_cmdAreaChartActionPerformed
+
+    private void cmdBubbleChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBubbleChartActionPerformed
+                
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new BubbleChartInputHandler() {
+
+            @Override
+            public void onShow(BubbleChartInput input, BubbleChartSettings settings) {
+                
+                input.plotNewSeries("series 1");
+                input.plot(1, 1);
+                input.plot(2, 2);
+                input.plot(3, 3);
+                
+                input.plotNewSeries("series 2");
+                input.plot(2, 1);
+                input.plot(3, 2);
+                input.plot(4, 3);
+
+                input.setChartTitle("Test Chart");
+                
+                input.setLabelAxisX("The x axis");
+                input.setLabelAxisY("The y axis");
+                        
+                
+                
+                //input.setPollingEnabled(false);
+
+            }
+        }, jFXPanel1);
+    }//GEN-LAST:event_cmdBubbleChartActionPerformed
+
+    private void cmdScatterChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdScatterChartActionPerformed
+                
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new ScatterChartInputHandler() {
+
+            @Override
+            public void onShow(ScatterChartInput input, ScatterChartSettings settings) {
+                
+                input.plotNewSeries("series 1");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+                
+                input.plotNewSeries("series 2");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+
+                input.setChartTitle("Test Chart");
+                
+                input.setLabelAxisX("The x axis");
+                input.setLabelAxisY("The y axis");
+                        
+                
+                
+                //input.setPollingEnabled(false);
+
+            }
+        }, jFXPanel1);
+    }//GEN-LAST:event_cmdScatterChartActionPerformed
 
     /**
      * @param args the command line arguments
@@ -97,40 +357,14 @@ public class TestChartProc extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cmdAreaChart;
+    private javax.swing.JButton cmdBarChart;
+    private javax.swing.JButton cmdBubbleChart;
+    private javax.swing.JButton cmdLineChart;
+    private javax.swing.JButton cmdPieChart;
+    private javax.swing.JButton cmdScatterChart;
     private javafx.embed.swing.JFXPanel jFXPanel1;
     // End of variables declaration//GEN-END:variables
 
-    private void initChartProcessor() {
-
-        ChartProcessor c = ProcessorFactory.getChartProcessor();
-        c.loadChart(new PieChartInputHandler() {
-
-            @Override
-            public void onShow(PieChartInput input) {
-                /*input.plotNewSeries("series 1");
-                input.plot("a", 1);
-                input.plot("b", 2);
-                input.plot("c", 3);
-                
-                input.plotNewSeries("series 2");
-                input.plot("a", 1);
-                input.plot("b", 2);
-                input.plot("c", 3);
-
-                input.setChartTitle("Test Chart");
-                
-                input.setLabelAxisX("The x axis");
-                input.setLabelAxisY("The y axis");
-                        */
-                input.addPie("aaa", 10);
-                input.addPie("bbb", 30);
-                input.addPie("ccc", 60);
-                input.addPie("ddd", 20);
-                
-                //input.setPollingEnabled(false);
-
-                System.out.println("chuks coding");
-            }
-        }, jFXPanel1);
-    }
+    
 }

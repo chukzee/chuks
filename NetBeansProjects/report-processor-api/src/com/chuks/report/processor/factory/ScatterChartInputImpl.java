@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.chart.ScatterChartSettings;
 import com.chuks.report.processor.handler.ScatterChartInputHandler;
 import com.chuks.report.processor.param.ScatterChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -21,8 +22,9 @@ import javafx.scene.chart.XYChart;
  class ScatterChartInputImpl extends AbstractXYChartInputImpl implements ScatterChartInput{
     private ScatterChart chart;
 
-    public ScatterChartInputImpl(JDBCSettings jdbcSettings) {
+    public ScatterChartInputImpl(JDBCSettings jdbcSettings, ScatterChartSettings settings) {
         super(jdbcSettings);
+        this.settings = settings;
     }
 
     @Override

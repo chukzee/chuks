@@ -3,18 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.handler;
+package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.chart.ScatterChartSettings;
-import com.chuks.report.processor.param.ScatterChartInput;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ScatterChartInputHandler extends ChatInputHandler<ScatterChartInput, ScatterChartSettings> {
-
-    @Override
-    void onShow(ScatterChartInput input, ScatterChartSettings settings);
-
+class ScatterChartSettingsImpl  extends AbstractXYChartSettingsImpl implements ScatterChartSettings{
+    
 }

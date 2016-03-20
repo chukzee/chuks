@@ -6,6 +6,7 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.chart.PieChartSettings;
 import com.chuks.report.processor.handler.PieChartInputHandler;
 import com.chuks.report.processor.param.PieChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -22,8 +23,9 @@ class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput 
 
     private PieChart chart;
 
-    public PieChartInputImpl(JDBCSettings jdbcSettings) {
+    public PieChartInputImpl(JDBCSettings jdbcSettings, PieChartSettings settings) {
         super(jdbcSettings);
+        this.settings = settings;
     }
 
     @Override

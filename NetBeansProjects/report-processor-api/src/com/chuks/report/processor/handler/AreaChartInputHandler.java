@@ -5,15 +5,14 @@
  */
 package com.chuks.report.processor.handler;
 
+import com.chuks.report.processor.chart.AreaChartSettings;
 import com.chuks.report.processor.param.AreaChartInput;
 
 /**
  *
- * @author Chuks Alimele<chuksalimele at yahoo.com>
- * @param 
- */
-public interface  AreaChartInputHandler extends ChatInputHandler <AreaChartInput>{
+ * @author Chuks Alimele<chuksalimele at yahoo.com> */
+public interface  AreaChartInputHandler extends ChatInputHandler <AreaChartInput, AreaChartSettings>{
    
     @Override
-    void onShow(AreaChartInput input);
+    void onShow(AreaChartInput input, AreaChartSettings settings);
 }

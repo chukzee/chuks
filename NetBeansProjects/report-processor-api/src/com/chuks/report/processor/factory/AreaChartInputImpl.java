@@ -5,6 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
+import com.chuks.report.processor.chart.AreaChartSettings;
 import com.chuks.report.processor.handler.AreaChartInputHandler;
 import com.chuks.report.processor.param.AreaChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
@@ -20,11 +21,10 @@ import javafx.scene.chart.XYChart;
  */
  class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartInput{
     private AreaChart chart;
-
-     //ObservableList list = new ObservableArrayList();
      
-    public AreaChartInputImpl(JDBCSettings jdbcSettings) {
+    public AreaChartInputImpl(JDBCSettings jdbcSettings, AreaChartSettings settings) {
         super(jdbcSettings);
+        this.settings =settings;
     }
 
     @Override
