@@ -12,5 +12,5 @@ package com.chuks.report.processor.param;
 public interface BubbleChartInput  extends ChartXYInput ,  ActionSQL{
     
     void plot(double x, double y);
-
+    void plot(double x, double y, double radius);
 }

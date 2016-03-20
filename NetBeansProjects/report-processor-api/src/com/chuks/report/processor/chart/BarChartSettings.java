@@ -11,4 +11,5 @@ package com.chuks.report.processor.chart;
  */
 public interface BarChartSettings  extends ChartXYSettings{
     
+    void setBarGap(int gap);
 }

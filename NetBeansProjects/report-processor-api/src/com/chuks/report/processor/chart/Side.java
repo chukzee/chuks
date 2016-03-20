@@ -3,18 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.param;
+package com.chuks.report.processor.chart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ChartXYInput extends ChartInput {
-
-    void plotNewSeries(String seriesName);
-
-    void setLabelX(String xAxisLabel);
-
-    void setLabelY(String yAxisLabel);
-
+public enum Side {
+    TOP,
+    BOTTOM,
+    LEFT,
+    RIGHT
+    
 }

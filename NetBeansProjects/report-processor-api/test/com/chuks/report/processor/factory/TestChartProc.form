@@ -28,7 +28,9 @@
               <Component id="cmdPieChart" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="cmdBarChart" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="cmdStackedBarChart" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="cmdLineChart" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="cmdAreaChart" min="-2" max="-2" attributes="0"/>
@@ -41,7 +43,7 @@
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jFXPanel1" pref="587" max="32767" attributes="0"/>
+                  <Component id="jFXPanel1" pref="706" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -58,6 +60,7 @@
                   <Component id="cmdAreaChart" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cmdBubbleChart" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cmdScatterChart" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cmdStackedBarChart" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="459" max="32767" attributes="0"/>
           </Group>
@@ -124,6 +127,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdScatterChartActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="cmdStackedBarChart">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Stacked bar chart"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdStackedBarChartActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

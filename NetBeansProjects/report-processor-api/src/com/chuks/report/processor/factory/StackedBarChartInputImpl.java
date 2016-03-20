@@ -5,24 +5,24 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.chart.BubbleChartSettings;
-import com.chuks.report.processor.handler.BubbleChartInputHandler;
-import com.chuks.report.processor.param.BubbleChartInput;
+import com.chuks.report.processor.chart.*;
+import com.chuks.report.processor.handler.*;
+import com.chuks.report.processor.param.*;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.Parent;
-import javafx.scene.chart.BubbleChart;
-import javafx.scene.chart.Chart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleChartInput {
-    private BubbleChart chart;
+class StackedBarChartInputImpl extends AbstractXYChartInputImpl implements StackedBarChartInput {
 
-    public BubbleChartInputImpl(JDBCSettings jdbcSettings, BubbleChartSettings settings) {
+    private StackedBarChart chart;
+
+    public StackedBarChartInputImpl(JDBCSettings jdbcSettings, StackedBarChartSettings settings) {
         super(jdbcSettings);
         this.settings = settings;
     }
@@ -30,24 +30,24 @@ class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleCha
     @Override
     protected XYChart getChart() {
         if (chart == null) {
-            chart = new BubbleChart(xAxis, yAxis);//BubbleChart does not use a Category Axis.  Both X and Y axes should be of type NumberAxis.
+            chart = new StackedBarChart(xAxis, yAxis);
         }
         return chart;
     }
 
-    void setHandler(JFXPanel jfxPanel, BubbleChartInputHandler handler) {
+    void setHandler(JFXPanel jfxPanel, StackedBarChartInputHandler handler) {
         this.jfxPanel = jfxPanel;
         this.handler = handler;
     }
 
     @Override
-    public void plot(double x, double y) {
+    public void plot(String x, double y) {
         plotImpl(x, y);
     }
 
     @Override
-    public void plot(double x, double y, double radius) {
-        plotImpl(x, y, radius);
+    public void plot(double x, String y) {
+        plotImpl(x, y);
     }
 
     @Override

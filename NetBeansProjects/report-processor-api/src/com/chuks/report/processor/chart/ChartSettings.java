@@ -5,10 +5,18 @@
  */
 package com.chuks.report.processor.chart;
 
+import javafx.scene.effect.Effect;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public interface ChartSettings {
     
+    void setChartTitle(String chart_title);
+    void setLegendSide(Side side);
+    void setEffect(Effect effect);
+    void setStyle(String css_path);
+
+
 }

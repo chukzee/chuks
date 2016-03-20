@@ -19,18 +19,21 @@ import javafx.scene.chart.XYChart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
- class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartInput{
+class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartInput {
+
     private AreaChart chart;
-     
+
     public AreaChartInputImpl(JDBCSettings jdbcSettings, AreaChartSettings settings) {
         super(jdbcSettings);
-        this.settings =settings;
+        this.settings = settings;
     }
 
     @Override
     protected XYChart getChart() {
-        if(chart==null)
+        
+        if (chart == null) {
             chart = new AreaChart(xAxis, yAxis);
+        }
         return chart;
     }
 
@@ -38,30 +41,30 @@ import javafx.scene.chart.XYChart;
         this.jfxPanel = jfxPanel;
         this.handler = handler;
     }
-    
+
     @Override
     public void plot(double x, double y) {
-         plotImpl(x, y);
+        plotImpl(x, y);
     }
-    
+
     @Override
-    public void plot(String x, double y){
-         plotImpl(x, y); 
+    public void plot(String x, double y) {
+        plotImpl(x, y);
     }
-    
+
     @Override
-    public void plot(double x, String y){
-        plotImpl(x, y); 
+    public void plot(double x, String y) {
+        plotImpl(x, y);
     }
-    
+
     @Override
-    public void plot(String x, String y){
-        plotImpl(x, y); 
+    public void plot(String x, String y) {
+        plotImpl(x, y);
     }
 
     @Override
     public void plotNewSeries(String seriesName) {
-         plotNewSeriesImpl(seriesName);
+        plotNewSeriesImpl(seriesName);
     }
 
 }

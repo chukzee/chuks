@@ -9,12 +9,11 @@ package com.chuks.report.processor.param;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ChartXYInput extends ChartInput {
+public interface StackedBarChartInput extends ChartXYInput ,  ActionSQL{
 
-    void plotNewSeries(String seriesName);
-
-    void setLabelX(String xAxisLabel);
-
-    void setLabelY(String yAxisLabel);
-
+    
+    void plot(String x, double y);
+    
+    void plot(double x, String y);
+    
 }

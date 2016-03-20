@@ -39,12 +39,12 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
     }
 
     @Override
-    public void setLabelAxisX(String axis_label) {
+    public void setLabelX(String axis_label) {
         this.axisX_label = axis_label;
     }
 
     @Override
-    public void setLabelAxisY(String axis_label) {
+    public void setLabelY(String axis_label) {
         this.axisY_label = axis_label;
     }
 
@@ -54,8 +54,8 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
         this.seriesList.add(series);
     }
 
-    @Override
-    protected void plotImpl(Object x, Object y) {
+    void validatePlot(Object x, Object y){
+        
         if (this.seriesList.isEmpty()) {
             plotNewSeriesImpl("");
         }
@@ -91,12 +91,20 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
             }
         }
 
-        System.out.println(x + "  " + y);
-
+        plot_count++;        
+    }
+    
+    @Override
+    protected void plotImpl(Object x, Object y) {
+        validatePlot(x, y);
         seriesList.get(seriesList.size() - 1).getData().add(new XYChart.Data(x, y));
-        plot_count++;
     }
 
+    protected void plotImpl(Object x, Object y, Object extraValue){
+        validatePlot(x, y);
+        seriesList.get(seriesList.size() - 1).getData().add(new XYChart.Data(x, y, extraValue));        
+    } 
+    
     @Override
     final protected void generateChartView() {
         if (x_axis_category) {

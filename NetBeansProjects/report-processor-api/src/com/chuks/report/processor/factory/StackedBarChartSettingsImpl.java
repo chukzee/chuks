@@ -5,13 +5,13 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.chart.BarChartSettings;
+import com.chuks.report.processor.chart.*;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class BarChartSettingsImpl  extends AbstractXYChartSettingsImpl implements BarChartSettings{
+class StackedBarChartSettingsImpl  extends AbstractXYChartSettingsImpl implements StackedBarChartSettings{
 
     @Override
     public void setBarGap(int gap) {

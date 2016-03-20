@@ -11,6 +11,7 @@ import com.chuks.report.processor.handler.ScatterChartInputHandler;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.handler.PieChartInputHandler;
 import com.chuks.report.processor.handler.BarChartInputHandler;
+import com.chuks.report.processor.handler.StackedBarChartInputHandler;
 import javafx.embed.swing.JFXPanel;
 
 /**
@@ -23,6 +24,8 @@ public interface ChartProcessor<T> extends UIDBProcessor {
     void loadChart(PieChartInputHandler handler, JFXPanel jfxPanel);
 
     void loadChart(BarChartInputHandler handler, JFXPanel jfxPanel);
+
+    void loadChart(StackedBarChartInputHandler handler, JFXPanel jfxPanel);
 
     void loadChart(AreaChartInputHandler handler, JFXPanel jfxPanel);
 

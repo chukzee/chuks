@@ -216,27 +216,40 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
 
         }
     }
+    static boolean isFXStarted = false;
 
     public void show() {
 
-        final AbstractChartInputImpl aThis = this;
 
-        PlatformImpl.startup(new Runnable() {
+        if (!isFXStarted) {
+            PlatformImpl.startup(new ShowChartView(this));
+            isFXStarted = true;
+        } else {
+            PlatformImpl.runAndWait(new ShowChartView(this));
+        }
 
-            @Override
-            public void run() {
-                lock.lock();
-                try {
-                    chartToPanelMapping.put(jfxPanel.hashCode(), aThis.hashCode());//mapping the chart to the panel
-                    syncGenerateChartView();
-                } finally {
-                    lock.unlock();
-                }
+        Platform.setImplicitExit(false);
 
+    }
+
+    class ShowChartView implements Runnable {
+        private final AbstractChartInputImpl chartInputImpl;
+        private ShowChartView(AbstractChartInputImpl chartInputImpl ){
+            this.chartInputImpl = chartInputImpl;
+        }
+
+        @Override
+        public void run() {
+            
+            lock.lock();
+            try {
+                chartToPanelMapping.put(jfxPanel.hashCode(), chartInputImpl.hashCode());//mapping the chart to the panel
+                syncGenerateChartView();
+            } finally {
+                lock.unlock();
             }
 
-        });
-        Platform.setImplicitExit(false);
+        }
 
     }
 }
