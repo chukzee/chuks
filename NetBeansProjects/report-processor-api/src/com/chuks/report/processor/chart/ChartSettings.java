@@ -17,6 +17,7 @@ public interface ChartSettings {
     void setLegendSide(Side side);
     void setEffect(Effect effect);
     void setStyle(String css_path);
+    void setAnimated(boolean animated);
 
 
 }

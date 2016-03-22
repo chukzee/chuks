@@ -10,7 +10,6 @@ import com.chuks.report.processor.DataPoll;
 import com.chuks.report.processor.chart.ChartSettings;
 import com.chuks.report.processor.handler.ChatInputHandler;
 import com.chuks.report.processor.param.ChartInput;
-import com.chuks.report.processor.param.ChartXYInput;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.sun.javafx.application.PlatformImpl;
 import java.util.HashMap;
@@ -18,20 +17,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.Chart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 /**
  *
@@ -43,15 +46,18 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
     protected JFXPanel jfxPanel;
     private long next_poll_time;
     protected ChatInputHandler handler;
-    List<PieChart.Data> data = new LinkedList();
+    private final List<PieChart.Data> data = new LinkedList();
     private ObservableList<PieChart.Data> pieChartData;
     protected Scene scene;
     protected ChartSettings settings;
     static Map<Integer, Integer> chartToPanelMapping = new HashMap();
     static ReentrantLock lock = new ReentrantLock();
+    private Label pie_caption;
+    private String pieValueSuffix = "";
 
     public AbstractChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings, true);//enable data polling
+
     }
 
     @Override
@@ -168,33 +174,46 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
         return data_polling_interval;
     }
 
-    Label pie_caption;
-
     protected void generateChartView() {
-
-        if (scene == null) {
-            scene = new Scene(new Group(), jfxPanel.getWidth(), jfxPanel.getHeight());
-        } else {
-            ((Group) scene.getRoot()).getChildren().clear();
-        }
 
         PieChart chart = (PieChart) this.getChart();
         chart.setTitle(chart_title);
-        pieChartData
-                = FXCollections.observableArrayList(data);
+        pieChartData = FXCollections.observableArrayList(data);
 
-        chart.getData().clear();//important! clear previous data if any
-        chart.setData(pieChartData);
+        if (scene == null) {
+            scene = new Scene(new Group(), jfxPanel.getWidth(), jfxPanel.getHeight());
+            createPieCaption();
+            ((Group) scene.getRoot()).getChildren().add(getChart());
+            ((Group) scene.getRoot()).getChildren().add(pie_caption);
 
-        createPiecCaption();
-        ((Group) scene.getRoot()).getChildren().add(getChart());
-        ((Group) scene.getRoot()).getChildren().add(pie_caption);
+            chart.setData(pieChartData);
 
-        jfxPanel.setScene(scene);
-        setPieCaptionEvent(chart);
+            jfxPanel.setScene(scene);
+            setDefaultPieEvent(chart);
+        } else {
+            ObservableList<PieChart.Data> prev_data = chart.getData();
+            int max_len = Math.max(prev_data.size(), pieChartData.size());
+            for (int i = 0; i < max_len; i++) {
+
+                if (i >= pieChartData.size()) {
+                    prev_data.remove(i, max_len);//remove the rest
+                    break;
+                } else if (i >= prev_data.size()) {
+                    prev_data.add(i, pieChartData.get(i));
+                } else if (pieChartData.get(i).getName().equals(prev_data.get(i).getName())) {
+                    prev_data.get(i).setPieValue(pieChartData.get(i).getPieValue());
+                } else {
+                    prev_data.get(i).setName(pieChartData.get(i).getName());
+                    prev_data.get(i).setPieValue(pieChartData.get(i).getPieValue());
+                }
+            }
+
+            setDefaultPieEvent(chart);
+        }
+
     }
 
-    void createPiecCaption() {
+    private void createPieCaption() {
         if (pie_caption == null) {
             pie_caption = new Label("");
             pie_caption.setTextFill(Color.FLORALWHITE);
@@ -202,45 +221,48 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
         }
     }
 
-    void setPieCaptionEvent(PieChart chart) {
-        for (final PieChart.Data _data : chart.getData()) {
-            _data.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED,
-                    new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent e) {
-                            pie_caption.setTranslateX(e.getSceneX());
-                            pie_caption.setTranslateY(e.getSceneY());
-                            pie_caption.setText(String.valueOf(_data.getPieValue()) + "%");
-                        }
-                    });
+    HashMap<Integer, DefaultPieMouseEventHandler> regHandler = new HashMap();
+
+    private void setDefaultPieEvent(PieChart chart) {
+        for (final PieChart.Data pieData : chart.getData()) {
+
+            Node node = pieData.getNode();
+            int node_hash = node.hashCode();
+            if (regHandler.containsKey(node_hash)) {//remove previous DefaultPieMouseEventHandler
+                node.removeEventHandler(MouseEvent.MOUSE_PRESSED, regHandler.get(node_hash));
+                regHandler.remove(node_hash);
+            }
+            DefaultPieMouseEventHandler evtHndler = new DefaultPieMouseEventHandler(pieData);
+            pieData.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED, evtHndler);
+            regHandler.put(node.hashCode(), evtHndler);
 
         }
     }
-    static boolean isFXStarted = false;
 
     public void show() {
 
-
-        if (!isFXStarted) {
-            PlatformImpl.startup(new ShowChartView(this));
-            isFXStarted = true;
-        } else {
-            PlatformImpl.runAndWait(new ShowChartView(this));
+        //JFXPanel initalization automatically starts the FX runtime, so check if it is null
+        if (jfxPanel == null) {
+            throw new IllegalStateException(jfxPanel.getClass().getName() + " must not be null.");
         }
+
+        PlatformImpl.runAndWait(new ShowChartView(this));
 
         Platform.setImplicitExit(false);
 
     }
 
     class ShowChartView implements Runnable {
+
         private final AbstractChartInputImpl chartInputImpl;
-        private ShowChartView(AbstractChartInputImpl chartInputImpl ){
+
+        private ShowChartView(AbstractChartInputImpl chartInputImpl) {
             this.chartInputImpl = chartInputImpl;
         }
 
         @Override
         public void run() {
-            
+
             lock.lock();
             try {
                 chartToPanelMapping.put(jfxPanel.hashCode(), chartInputImpl.hashCode());//mapping the chart to the panel
@@ -249,6 +271,45 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
                 lock.unlock();
             }
 
+        }
+
+    }
+
+    class DefaultPieMouseEventHandler implements EventHandler<MouseEvent> {
+
+        private final PieChart.Data pieData;
+
+        private DefaultPieMouseEventHandler(PieChart.Data pieData) {
+            this.pieData = pieData;
+        }
+
+        @Override
+        public void handle(MouseEvent e) {
+            pie_caption.setTranslateX(e.getSceneX());
+            pie_caption.setTranslateY(e.getSceneY());
+            pie_caption.setText(String.valueOf(pieData.getPieValue()) + pieValueSuffix);
+
+            Bounds b1 = pieData.getNode().getBoundsInLocal();
+            double newX = (b1.getWidth()) / 2 + b1.getMinX();
+            double newY = (b1.getHeight()) / 2 + b1.getMinY();
+            // Make sure pie wedge location is reset
+            pieData.getNode().setTranslateX(0);
+            pieData.getNode().setTranslateY(0);
+            TranslateTransition tt = new TranslateTransition(
+                    Duration.millis(1500), pieData.getNode());
+            tt.setByX(newX);
+            tt.setByY(newY);
+            tt.setAutoReverse(true);
+            tt.setCycleCount(2);
+            tt.play();
+
+            TranslateTransition tt2 = new TranslateTransition(
+                    Duration.millis(1500), pie_caption);
+            tt2.setByX(newX);
+            tt2.setByY(newY);
+            tt2.setAutoReverse(true);
+            tt2.setCycleCount(2);
+            tt2.play();
         }
 
     }

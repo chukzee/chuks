@@ -38,5 +38,11 @@ abstract class AbstractChartSettingsImpl implements ChartSettings{
         System.err.println("REMIND: Auto generated method body is not yet implemented");
         
     }
+
+    @Override
+    public void setAnimated(boolean animated) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        
+    }
     
 }

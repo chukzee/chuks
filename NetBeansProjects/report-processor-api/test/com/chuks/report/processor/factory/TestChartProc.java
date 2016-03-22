@@ -21,7 +21,7 @@ public class TestChartProc extends javax.swing.JFrame {
      */
     public TestChartProc() {
         initComponents();
-        
+
     }
 
     /**
@@ -142,34 +142,24 @@ public class TestChartProc extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    int pie_increase = 0;
+    boolean flag;
     private void cmdPieChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdPieChartActionPerformed
-        
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new PieChartInputHandler() {
 
             @Override
             public void onShow(PieChartInput input, PieChartSettings settings) {
-                
-                /*input.plotNewSeries("series 1");
-                input.plot("a", 1);
-                input.plot("b", 2);
-                input.plot("c", 3);
-                
-                input.plotNewSeries("series 2");
-                input.plot("a", 1);
-                input.plot("b", 2);
-                input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
-                
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
-                        */
-                input.addPie("aaa", 10);
-                input.addPie("bbb", 30);
-                input.addPie("ccc", 60);
-                input.addPie("ddd", 20);
-                
+                input.plot("aaa", 10 + (pie_increase += 5));
+                input.plot("bbb", 30);
+                input.plot("ccc", 60);
+                if (flag) {
+                    input.plot("ddd", 20 + (pie_increase += 2));
+                    input.plot("eee", 12 + (pie_increase += 4));
+                }
+                flag = !flag;
                 //input.setPollingEnabled(false);
 
             }
@@ -178,188 +168,172 @@ public class TestChartProc extends javax.swing.JFrame {
 
     int increase1 = 0;
     int increase2 = 0;
-    
+
     private void cmdBarChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBarChartActionPerformed
-        
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new BarChartInputHandler() {
 
             @Override
             public void onShow(BarChartInput input, BarChartSettings settings) {
                 increase1++;
-                increase2 +=2;
+                increase2 += 2;
                 input.plotNewSeries("series 1");
-                input.plot("a", 1+increase1);
-                input.plot("b", 2+increase2);
+                input.plot("a", 1 + increase1);
+                input.plot("b", 2 + increase2);
                 input.plot("c", 3);
-                
+
                 input.plotNewSeries("series 2");
                 input.plot("a", 1);
-                input.plot("b", 2+ increase1);
+                input.plot("b", 2 + increase1);
                 input.plot("c", 3);
 
                 input.setChartTitle("Test Chart");
-                
+
                 input.setLabelX("The x axis");
                 input.setLabelY("The y axis");
-                
-                //input.setPollingEnabled(false);
 
+                //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
     }//GEN-LAST:event_cmdBarChartActionPerformed
 
     private void cmdLineChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdLineChartActionPerformed
-                
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new LineChartInputHandler() {
 
             @Override
             public void onShow(LineChartInput input, LineChartSettings settings) {
-                
+
                 input.plotNewSeries("series 1");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
-                
+
                 input.plotNewSeries("series 2");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
 
                 input.setChartTitle("Test Chart");
-                
+
                 input.setLabelX("The x axis");
                 input.setLabelY("The y axis");
-                        
-                
-                
-                //input.setPollingEnabled(false);
 
+                //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
     }//GEN-LAST:event_cmdLineChartActionPerformed
 
     private void cmdAreaChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdAreaChartActionPerformed
-                
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new AreaChartInputHandler() {
 
             @Override
             public void onShow(AreaChartInput input, AreaChartSettings settings) {
-                
+
                 input.plotNewSeries("series 1");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
-                
+
                 input.plotNewSeries("series 2");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
 
                 input.setChartTitle("Test Chart");
-                
+
                 input.setLabelX("The x axis");
                 input.setLabelY("The y axis");
-                        
-                
-                
-                //input.setPollingEnabled(false);
 
+                //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
     }//GEN-LAST:event_cmdAreaChartActionPerformed
 
     private void cmdBubbleChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBubbleChartActionPerformed
-                
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new BubbleChartInputHandler() {
 
             @Override
             public void onShow(BubbleChartInput input, BubbleChartSettings settings) {
-                
+
                 input.plotNewSeries("series 1");
                 input.plot(1, 1);
                 input.plot(2, 2);
                 input.plot(3, 3);
-                
+
                 input.plotNewSeries("series 2");
                 input.plot(2, 1);
                 input.plot(3, 2);
                 input.plot(4, 3);
 
                 input.setChartTitle("Test Chart");
-                
+
                 input.setLabelX("The x axis");
                 input.setLabelY("The y axis");
-                        
-                
-                
-                //input.setPollingEnabled(false);
 
+                //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
     }//GEN-LAST:event_cmdBubbleChartActionPerformed
 
     private void cmdScatterChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdScatterChartActionPerformed
-                
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new ScatterChartInputHandler() {
 
             @Override
             public void onShow(ScatterChartInput input, ScatterChartSettings settings) {
-                
+
                 input.plotNewSeries("series 1");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
-                
+
                 input.plotNewSeries("series 2");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
 
                 input.setChartTitle("Test Chart");
-                
+
                 input.setLabelX("The x axis");
                 input.setLabelY("The y axis");
-                        
-                
-                
-                //input.setPollingEnabled(false);
 
+                //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
     }//GEN-LAST:event_cmdScatterChartActionPerformed
 
     private void cmdStackedBarChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdStackedBarChartActionPerformed
-                
+
         ChartProcessor c = ProcessorFactory.getChartProcessor();
         c.loadChart(new StackedBarChartInputHandler() {
 
             @Override
             public void onShow(StackedBarChartInput input, StackedBarChartSettings settings) {
-                
+
                 input.plotNewSeries("series 1");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
-                
+
                 input.plotNewSeries("series 2");
                 input.plot("a", 1);
                 input.plot("b", 2);
                 input.plot("c", 3);
 
                 input.setChartTitle("Test Chart");
-                
+
                 input.setLabelX("The x axis");
                 input.setLabelY("The y axis");
-                        
-                
-                
-                //input.setPollingEnabled(false);
 
+                //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
     }//GEN-LAST:event_cmdStackedBarChartActionPerformed
@@ -407,5 +381,4 @@ public class TestChartProc extends javax.swing.JFrame {
     private javafx.embed.swing.JFXPanel jFXPanel1;
     // End of variables declaration//GEN-END:variables
 
-    
 }

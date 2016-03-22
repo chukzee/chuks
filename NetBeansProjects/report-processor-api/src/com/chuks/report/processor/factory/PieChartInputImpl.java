@@ -42,7 +42,7 @@ class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput 
     }
 
     @Override
-    public void addPie(String a, double b) {
+    public void plot(String a, double b) {
         plotImpl(a, b);
     }
 

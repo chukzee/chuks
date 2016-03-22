@@ -11,5 +11,5 @@ package com.chuks.report.processor.param;
  */
 public interface PieChartInput  extends ChartInput ,  ActionSQL{
     
-    void addPie(String a, double b);
+    void plot(String a, double b);
 }
