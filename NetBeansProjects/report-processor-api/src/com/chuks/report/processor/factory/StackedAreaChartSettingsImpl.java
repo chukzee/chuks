@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.chart;
+package com.chuks.report.processor.factory;
+
+import com.chuks.report.processor.chart.*;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ScatterChartSettings  extends XYChartSettings{
+class StackedAreaChartSettingsImpl extends AbstractXYChartSettingsImpl implements StackedAreaChartSettings{
+
     
 }

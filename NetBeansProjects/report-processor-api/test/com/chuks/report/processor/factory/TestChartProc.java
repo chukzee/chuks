@@ -41,6 +41,7 @@ public class TestChartProc extends javax.swing.JFrame {
         cmdBubbleChart = new javax.swing.JButton();
         cmdScatterChart = new javax.swing.JButton();
         cmdStackedBarChart = new javax.swing.JButton();
+        cmdStackedAreaChart = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -93,6 +94,13 @@ public class TestChartProc extends javax.swing.JFrame {
             }
         });
 
+        cmdStackedAreaChart.setText("Stacked area chart");
+        cmdStackedAreaChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdStackedAreaChartActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -108,7 +116,9 @@ public class TestChartProc extends javax.swing.JFrame {
                 .addComponent(cmdLineChart)
                 .addGap(18, 18, 18)
                 .addComponent(cmdAreaChart)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmdStackedAreaChart)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmdBubbleChart)
                 .addGap(18, 18, 18)
                 .addComponent(cmdScatterChart)
@@ -116,7 +126,7 @@ public class TestChartProc extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
+                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 831, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
@@ -130,7 +140,8 @@ public class TestChartProc extends javax.swing.JFrame {
                     .addComponent(cmdAreaChart)
                     .addComponent(cmdBubbleChart)
                     .addComponent(cmdScatterChart)
-                    .addComponent(cmdStackedBarChart))
+                    .addComponent(cmdStackedBarChart)
+                    .addComponent(cmdStackedAreaChart))
                 .addContainerGap(459, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -338,6 +349,35 @@ public class TestChartProc extends javax.swing.JFrame {
         }, jFXPanel1);
     }//GEN-LAST:event_cmdStackedBarChartActionPerformed
 
+    private void cmdStackedAreaChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdStackedAreaChartActionPerformed
+        
+        ChartProcessor c = ProcessorFactory.getChartProcessor();
+        c.loadChart(new StackedAreaChartInputHandler() {
+
+            @Override
+            public void onShow(StackedAreaChartInput input, StackedAreaChartSettings settings) {
+
+                input.plotNewSeries("series 1");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+
+                input.plotNewSeries("series 2");
+                input.plot("a", 1);
+                input.plot("b", 2);
+                input.plot("c", 3);
+
+                input.setChartTitle("Test Chart");
+
+                input.setLabelX("The x axis");
+                input.setLabelY("The y axis");
+
+                //input.setPollingEnabled(false);
+            }
+        }, jFXPanel1);
+        
+    }//GEN-LAST:event_cmdStackedAreaChartActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -377,6 +417,7 @@ public class TestChartProc extends javax.swing.JFrame {
     private javax.swing.JButton cmdLineChart;
     private javax.swing.JButton cmdPieChart;
     private javax.swing.JButton cmdScatterChart;
+    private javax.swing.JButton cmdStackedAreaChart;
     private javax.swing.JButton cmdStackedBarChart;
     private javafx.embed.swing.JFXPanel jFXPanel1;
     // End of variables declaration//GEN-END:variables

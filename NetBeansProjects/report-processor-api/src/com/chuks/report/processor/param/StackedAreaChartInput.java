@@ -9,7 +9,8 @@ package com.chuks.report.processor.param;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ScatterChartInput  extends XYChartInput ,  ActionSQL{
+public interface StackedAreaChartInput extends XYChartInput ,  ActionSQL{
+
 
     void plot(double x, double y);
     
@@ -18,4 +19,5 @@ public interface ScatterChartInput  extends XYChartInput ,  ActionSQL{
     void plot(double x, String y);
     
     void plot(String x, String y);
+    
 }

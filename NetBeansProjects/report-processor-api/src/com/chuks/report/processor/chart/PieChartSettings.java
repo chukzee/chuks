@@ -11,4 +11,5 @@ package com.chuks.report.processor.chart;
  */
 public interface PieChartSettings  extends ChartSettings{
     
+    void setPieValueSuffix(String pie_value_suffix);
 }

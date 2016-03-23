@@ -12,11 +12,11 @@ import com.chuks.report.processor.chart.*;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class StackedBarChartSettingsImpl  extends AbstractXYChartSettingsImpl implements StackedBarChartSettings{
+    private int bar_gap;
 
     @Override
     public void setBarGap(int gap) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.bar_gap = gap;
     }
 
     

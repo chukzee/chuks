@@ -5,10 +5,9 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.chart.ChartXYSettings;
-import com.chuks.report.processor.param.ChartXYInput;
+import com.chuks.report.processor.chart.XYChartSettings;
+import com.chuks.report.processor.param.XYChartInput;
 import com.chuks.report.processor.util.JDBCSettings;
-import com.sun.javafx.application.PlatformImpl;
 import java.util.LinkedList;
 import java.util.List;
 import javafx.scene.Group;
@@ -22,7 +21,7 @@ import javafx.scene.chart.XYChart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implements ChartXYInput {
+abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implements XYChartInput {
 
     protected Axis xAxis;
     protected Axis yAxis;
@@ -32,7 +31,7 @@ abstract class AbstractXYChartInputImpl extends AbstractChartInputImpl implement
     private boolean x_axis_category;
     private int plot_count;
     List<XYChart.Series> seriesList = new LinkedList();
-    protected ChartXYSettings settings;
+    protected XYChartSettings settings;
 
     public AbstractXYChartInputImpl(JDBCSettings jdbcSettings) {
         super(jdbcSettings);

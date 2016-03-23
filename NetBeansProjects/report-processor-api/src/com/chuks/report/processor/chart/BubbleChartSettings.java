@@ -9,6 +9,6 @@ package com.chuks.report.processor.chart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface BubbleChartSettings  extends ChartXYSettings{
+public interface BubbleChartSettings  extends XYChartSettings{
     
 }

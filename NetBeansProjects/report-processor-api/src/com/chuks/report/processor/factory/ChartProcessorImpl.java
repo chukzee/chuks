@@ -14,6 +14,7 @@ import com.chuks.report.processor.handler.BubbleChartInputHandler;
 import com.chuks.report.processor.handler.DataPollHandler;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.handler.ScatterChartInputHandler;
+import com.chuks.report.processor.handler.StackedAreaChartInputHandler;
 import com.chuks.report.processor.handler.StackedBarChartInputHandler;
 import com.chuks.report.processor.util.JDBCSettings;
 import javafx.embed.swing.JFXPanel;
@@ -36,7 +37,6 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         input.setHandler(jfxPanel, handler);
         input.show();
         DataPollHandler.registerPoll(input);
-
     }
 
     @Override
@@ -67,7 +67,16 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         input.setHandler(jfxPanel, handler);
         input.show();
         DataPollHandler.registerPoll(input);
-        
+    }
+
+    @Override
+    public void loadChart(StackedAreaChartInputHandler handler, JFXPanel jfxPanel) {
+        StackedAreaChartSettingsImpl settings = new StackedAreaChartSettingsImpl();
+        StackedAreaChartInputImpl input = new StackedAreaChartInputImpl(jdbcSettings, settings);
+        handler.onShow(input, settings);
+        input.setHandler(jfxPanel, handler);
+        input.show();
+        DataPollHandler.registerPoll(input);
     }
 
     @Override

@@ -9,7 +9,7 @@ package com.chuks.report.processor.param;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface LineChartInput  extends ChartXYInput ,  ActionSQL{
+public interface LineChartInput  extends XYChartInput ,  ActionSQL{
 
     void plot(double x, double y);
     

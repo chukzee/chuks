@@ -9,6 +9,6 @@ package com.chuks.report.processor.chart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ScatterChartSettings  extends XYChartSettings{
+public interface StackedAreaChartSettings extends XYChartSettings{
     
 }

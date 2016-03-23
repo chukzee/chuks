@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.chart.ChartXYSettings;
+import com.chuks.report.processor.chart.XYChartSettings;
 import com.chuks.report.processor.chart.Side;
 import javafx.scene.paint.Color;
 
@@ -13,174 +13,175 @@ import javafx.scene.paint.Color;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
- abstract class AbstractXYChartSettingsImpl extends AbstractChartSettingsImpl implements ChartXYSettings{
+abstract class AbstractXYChartSettingsImpl extends AbstractChartSettingsImpl implements XYChartSettings {
+
+    private Side side_x = Side.BOTTOM;
+    private Side side_y = Side.LEFT;
+    private String xAxisLabel = "";
+    private String yAxisLabel = "";
+    private int x_lower_bound;
+    private int y_lower_bound;
+    private int x_upper_bound;
+    private int y_upper_bound;
+    private int x_tick_unit;
+    private int y_tick_unit;
+    private int x_minor_tick_count;
+    private int y_minor_tick_count;
+    private boolean is_tick_label_visible = true;
+    private int x_tick_length;
+    private int y_tick_length;
+    private int x_minor_tick_length;
+    private int y_minor_tick_length;
+    private boolean vertical_grid_lines_visible = true;
+    private boolean horizontal_grid_lines_visible = true;
+    private Color x_tick_label_fill_color;
+    private Color y_tick_label_fill_color;
+    private int x_tick_label_gap;
+    private int y_tick_label_gap;
+    private int x_tick_label_rotation;
+    private int y_tick_label_rotation;
+    private int category_gap;
+    private boolean x_animated = true;
+    private boolean y_animated = true;
 
     @Override
     public void setSideX(Side side) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.side_x = side;
     }
 
     @Override
     public void setSideY(Side side) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.side_y = side;
     }
 
     @Override
     public void setLabelX(String xAxisLabel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.xAxisLabel = xAxisLabel;
     }
 
     @Override
     public void setLabelY(String yAxisLabel) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.yAxisLabel = yAxisLabel;
     }
 
     @Override
     public void setLowerBoundX(int x_lower_bound) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_lower_bound = x_lower_bound;
     }
 
     @Override
     public void setLowerBoundY(int y_lower_bound) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_lower_bound = y_lower_bound;
     }
 
     @Override
     public void setUpperBoundX(int x_upper_bound) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_upper_bound = x_upper_bound;
     }
 
     @Override
     public void setUpperBoundY(int y_upper_bound) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_upper_bound = y_upper_bound;
     }
 
     @Override
     public void setTickUnitX(int x_tick_unit) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_tick_unit = x_tick_unit;
     }
 
     @Override
     public void setTickUnitY(int y_tick_unit) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_tick_unit = y_tick_unit;
     }
 
     @Override
     public void setMinorTickCountX(int x_minor_tick_count) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_minor_tick_count = x_minor_tick_count;
     }
 
     @Override
     public void setMinorTickCountY(int y_minor_tick_count) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_minor_tick_count = y_minor_tick_count;
     }
 
     @Override
     public void setTickLabelIsVisible(boolean is_tick_label_visible) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.is_tick_label_visible = is_tick_label_visible;
     }
 
     @Override
     public void setTickLengthX(int x_tick_length) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_tick_length = x_tick_length;
     }
 
     @Override
     public void setTickLengthY(int y_tick_length) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_tick_length = y_tick_length;
     }
 
     @Override
     public void setMinorTickLengthX(int x_minor_tick_length) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_minor_tick_length = x_minor_tick_length;
     }
 
     @Override
     public void setMinorTickLengthY(int y_minor_tick_length) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_minor_tick_length = y_minor_tick_length;
     }
 
     @Override
     public void setVerticalGridLinesVisible(boolean visible) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        vertical_grid_lines_visible = visible;
     }
 
     @Override
     public void setHorizontalGridLinesVisible(boolean visible) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        horizontal_grid_lines_visible = visible;
     }
 
     @Override
     public void setTickLabelFillX(Color color) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        x_tick_label_fill_color = color;
     }
 
     @Override
     public void setTickLabelFillY(Color color) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        y_tick_label_fill_color = color;
     }
 
     @Override
     public void setTickLabelGapX(int x_gap) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        x_tick_label_gap = x_gap;
     }
 
     @Override
     public void setTickLabelGapY(int y_gap) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        y_tick_label_gap = y_gap;
     }
 
     @Override
     public void setTickLabelRotationX(int x_rotation) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        x_tick_label_rotation = x_rotation;
     }
 
     @Override
     public void setTickLabelRotationY(int y_rotation) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        y_tick_label_rotation = y_rotation;
     }
 
     @Override
     public void setCategoryGap(int gap) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        category_gap = gap;
     }
 
     @Override
     public void setAnimatedX(boolean x_animated) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.x_animated = x_animated;
     }
 
     @Override
     public void setAnimatedY(boolean y_animated) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.y_animated = y_animated;
     }
-    
+
 }

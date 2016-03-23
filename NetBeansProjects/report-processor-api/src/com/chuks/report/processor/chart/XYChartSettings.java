@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ChartXYSettings extends ChartSettings{
+public interface XYChartSettings extends ChartSettings{
     
     void setSideX(Side side);
     void setSideY(Side side);

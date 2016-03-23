@@ -9,7 +9,7 @@ package com.chuks.report.processor.chart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface BarChartSettings  extends ChartXYSettings{
+public interface BarChartSettings  extends XYChartSettings{
     
     void setBarGap(int gap);
 }

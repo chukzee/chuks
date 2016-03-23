@@ -9,6 +9,6 @@ package com.chuks.report.processor.chart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface LineChartSettings  extends ChartXYSettings{
+public interface LineChartSettings  extends XYChartSettings{
     
 }

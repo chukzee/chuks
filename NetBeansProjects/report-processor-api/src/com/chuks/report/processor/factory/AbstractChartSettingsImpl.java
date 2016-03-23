@@ -14,35 +14,35 @@ import javafx.scene.effect.Effect;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 abstract class AbstractChartSettingsImpl implements ChartSettings{
+    private String chart_title;
+    private Side legend_side;
+    private Effect effect;
+    private String style_css_path;
+    private boolean is_animated;
 
     @Override
     public void setChartTitle(String chart_title) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.chart_title = chart_title;        
     }
 
     @Override
     public void setLegendSide(Side side) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        legend_side = side;
     }
 
     @Override
     public void setEffect(Effect effect) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.effect = effect;        
     }
 
     @Override
     public void setStyle(String css_path) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.style_css_path = css_path;
     }
 
     @Override
     public void setAnimated(boolean animated) {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
-        
+        this.is_animated=animated;
     }
     
 }
