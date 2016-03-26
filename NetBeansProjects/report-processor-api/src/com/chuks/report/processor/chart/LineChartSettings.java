@@ -5,15 +5,17 @@
  */
 package com.chuks.report.processor.chart;
 
+import javafx.scene.chart.LineChart.SortingPolicy;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public interface LineChartSettings extends XYChartSettings {
 
-    void setAxisSortingPolicy(boolean value);
+    void setAxisSortingPolicy(SortingPolicy value);
 
-    boolean getAxisSortingPolicy();
+    SortingPolicy getAxisSortingPolicy();
 
     void setCreateSymbols(boolean value);
 

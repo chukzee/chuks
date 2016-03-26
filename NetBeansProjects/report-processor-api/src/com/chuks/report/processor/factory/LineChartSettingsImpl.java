@@ -6,22 +6,23 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.chart.LineChartSettings;
+import javafx.scene.chart.LineChart.SortingPolicy;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class LineChartSettingsImpl  extends AbstractXYChartSettingsImpl implements LineChartSettings{
-    private boolean axis_sorting_policy;
+    private SortingPolicy axis_sorting_policy;
     private boolean create_symbols;
 
     @Override
-    public void setAxisSortingPolicy(boolean value) {
+    public void setAxisSortingPolicy(SortingPolicy value) {
         axis_sorting_policy = value;
     }
 
     @Override
-    public boolean getAxisSortingPolicy() {
+    public SortingPolicy getAxisSortingPolicy() {
         return axis_sorting_policy;
     }
 

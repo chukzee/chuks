@@ -11,7 +11,7 @@ package com.chuks.report.processor.chart;
  */
 public interface StackedBarChartSettings extends XYChartSettings {
 
-    void setBarGap(int gap);
+    void setCategoryGap(double gap);
 
-    int getBarGap();
+    double getCategoryGap();
 }

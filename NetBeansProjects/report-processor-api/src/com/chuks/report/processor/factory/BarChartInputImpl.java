@@ -20,9 +20,11 @@ import javafx.scene.chart.XYChart;
 class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInput {
 
     private BarChart chart;
+    private BarChartSettings bar_chart_settings;
 
     public BarChartInputImpl(JDBCSettings jdbcSettings, BarChartSettings settings) {
         super(jdbcSettings, settings);
+        this.bar_chart_settings = settings;
     }
 
     @Override
@@ -36,8 +38,11 @@ class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInpu
     @Override
     protected void setChatProperties() {
         super.setChatProperties(); 
+
+        chart = (BarChart) getChart();
+        chart.setBarGap(bar_chart_settings.getBarGap());
+        chart.setCategoryGap(bar_chart_settings.getCategoryGap());
         
-        //TODO set other below
     }
 
     void setHandler(JFXPanel jfxPanel, BarChartInputHandler handler) {

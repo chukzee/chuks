@@ -21,9 +21,11 @@ import javafx.scene.chart.XYChart;
 class StackedBarChartInputImpl extends AbstractXYChartInputImpl implements StackedBarChartInput {
 
     private StackedBarChart chart;
+    private StackedBarChartSettings stack_bar_chart_settings;
 
     public StackedBarChartInputImpl(JDBCSettings jdbcSettings, StackedBarChartSettings settings) {
         super(jdbcSettings, settings);
+        this.stack_bar_chart_settings = settings;
     }
 
     @Override
@@ -34,14 +36,13 @@ class StackedBarChartInputImpl extends AbstractXYChartInputImpl implements Stack
         return chart;
     }
 
-    
     @Override
     protected void setChatProperties() {
-        super.setChatProperties(); 
-        
-        //TODO set other below
-    }
+        super.setChatProperties();
 
+        chart = (StackedBarChart) getChart();
+        chart.setCategoryGap(stack_bar_chart_settings.getCategoryGap());
+    }
 
     void setHandler(JFXPanel jfxPanel, StackedBarChartInputHandler handler) {
         this.jfxPanel = jfxPanel;

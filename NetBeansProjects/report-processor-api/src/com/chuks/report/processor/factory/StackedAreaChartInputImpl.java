@@ -20,9 +20,11 @@ import javafx.scene.chart.XYChart;
 class StackedAreaChartInputImpl extends AbstractXYChartInputImpl implements StackedAreaChartInput {
 
     private StackedAreaChart chart;
+    private final StackedAreaChartSettings stacked_area_chart_settings;
 
     public StackedAreaChartInputImpl(JDBCSettings jdbcSettings, StackedAreaChartSettings settings) {
         super(jdbcSettings, settings);
+        stacked_area_chart_settings = settings;
     }
 
     @Override
@@ -38,7 +40,8 @@ class StackedAreaChartInputImpl extends AbstractXYChartInputImpl implements Stac
     protected void setChatProperties() {
         super.setChatProperties(); 
         
-        //TODO set other below
+        chart = (StackedAreaChart)getChart();
+        chart.setCreateSymbols(stacked_area_chart_settings.getCreateSymbols());
     }
 
     void setHandler(JFXPanel jfxPanel, StackedAreaChartInputHandler handler) {

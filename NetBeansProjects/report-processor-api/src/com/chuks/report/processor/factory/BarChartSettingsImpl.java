@@ -12,26 +12,26 @@ import com.chuks.report.processor.chart.BarChartSettings;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class BarChartSettingsImpl  extends AbstractXYChartSettingsImpl implements BarChartSettings{
-    private int bar_gap;
-    private int category_gap;
+    private double bar_gap;
+    private double category_gap;
 
     @Override
-    public void setBarGap(int gap) {
+    public void setBarGap(double gap) {
         this.bar_gap = gap;
     }
 
     @Override
-    public int getBarGap() {
+    public double getBarGap() {
         return bar_gap;
     }
 
     @Override
-    public void setCategoryGap(int gap) {
+    public void setCategoryGap(double gap) {
         category_gap = gap;
     }
 
     @Override
-    public int getCategoryGap() {
+    public double getCategoryGap() {
         return category_gap;
     }
 

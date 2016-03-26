@@ -53,7 +53,7 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
     static Map<Integer, Integer> chartToPanelMapping = new HashMap();
     static ReentrantLock lock = new ReentrantLock();
     private Label pie_caption;
-    private String pieValueSuffix = "";
+    protected String pieValueSuffix = "";
 
     public AbstractChartInputImpl(JDBCSettings jdbcSettings, ChartSettings settings) {
         super(jdbcSettings, true);//enable data polling

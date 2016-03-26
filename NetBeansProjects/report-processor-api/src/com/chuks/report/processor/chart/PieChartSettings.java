@@ -23,9 +23,9 @@ public interface PieChartSettings  extends ChartSettings{
     
     double getLabelLineLength();
 
-    void setLabelsVisible(double value);
+    void setLabelsVisible(boolean value);
 
-    double getLabelsVisible();
+    boolean getLabelsVisible();
     
     void setStartAngle(double value);
 

@@ -22,9 +22,10 @@ import javafx.scene.chart.PieChart;
 class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput {
 
     private PieChart chart;
-
+    private PieChartSettings pie_chart_settings;
     public PieChartInputImpl(JDBCSettings jdbcSettings, PieChartSettings settings) {
         super(jdbcSettings, settings);
+        pie_chart_settings = settings;
     }
 
     @Override
@@ -39,7 +40,13 @@ class PieChartInputImpl extends AbstractChartInputImpl implements PieChartInput 
     protected void setChatProperties() {
         super.setChatProperties(); 
         
-        //TODO set other below
+        chart = (PieChart) getChart();
+        chart.setClockwise(pie_chart_settings.getClockwise());
+        chart.setLabelLineLength(pie_chart_settings.getLabelLineLength());
+        chart.setLabelsVisible(pie_chart_settings.getLabelsVisible());
+        chart.setStartAngle(pie_chart_settings.getStartAngle());
+        this.pieValueSuffix = pie_chart_settings.getPieValueSuffix();
+
     }
 
     void setHandler(JFXPanel jfx_panel, PieChartInputHandler handler) {

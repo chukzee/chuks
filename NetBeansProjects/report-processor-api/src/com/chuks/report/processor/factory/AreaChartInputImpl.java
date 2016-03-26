@@ -22,9 +22,11 @@ import javafx.scene.chart.XYChart;
 class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartInput {
 
     private AreaChart chart;
+    private AreaChartSettings area_chart_settings;
 
     public AreaChartInputImpl(JDBCSettings jdbcSettings, AreaChartSettings settings) {
         super(jdbcSettings, settings);
+        area_chart_settings = settings;
     }
 
     @Override
@@ -40,7 +42,8 @@ class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartIn
     protected void setChatProperties() {
         super.setChatProperties(); 
         
-        //TODO set other below
+        chart = (AreaChart)getChart();
+        chart.setCreateSymbols(area_chart_settings.getCreateSymbols());
     }
 
     void setHandler(JFXPanel jfxPanel, AreaChartInputHandler handler) {

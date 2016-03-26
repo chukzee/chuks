@@ -9,8 +9,9 @@ package com.chuks.report.processor.chart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface AreaChartSettings extends XYChartSettings{
-    
+public interface AreaChartSettings extends XYChartSettings {
+
     void setCreateSymbols(boolean value);
+
     boolean getCreateSymbols();
 }

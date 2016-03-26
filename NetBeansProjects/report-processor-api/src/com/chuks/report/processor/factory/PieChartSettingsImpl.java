@@ -15,7 +15,7 @@ class PieChartSettingsImpl extends AbstractChartSettingsImpl implements PieChart
     private String pie_value_suffix = "";
     private boolean clockwise;
     private double label_line_length;
-    private double labels_visible;
+    private boolean labels_visible;
     private double start_angle;
 
     @Override
@@ -49,12 +49,12 @@ class PieChartSettingsImpl extends AbstractChartSettingsImpl implements PieChart
     }
 
     @Override
-    public void setLabelsVisible(double value) {
+    public void setLabelsVisible(boolean value) {
         labels_visible = value;
     }
 
     @Override
-    public double getLabelsVisible() {
+    public boolean getLabelsVisible() {
         return labels_visible;
     }
 

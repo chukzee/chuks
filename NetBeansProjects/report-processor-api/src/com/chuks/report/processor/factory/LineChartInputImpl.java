@@ -21,9 +21,10 @@ import javafx.scene.chart.XYChart;
  */
  class LineChartInputImpl extends AbstractXYChartInputImpl implements LineChartInput{
     private LineChart chart;
-
+    private LineChartSettings line_chart_settings;
     public LineChartInputImpl(JDBCSettings jdbcSettings, LineChartSettings settings) {
         super(jdbcSettings, settings);
+        this.line_chart_settings = settings;
     }
 
     @Override
@@ -32,6 +33,15 @@ import javafx.scene.chart.XYChart;
             chart = new LineChart(xAxis, yAxis);
         }
         return chart;
+    }
+
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        chart = (LineChart) getChart();
+        chart.setAxisSortingPolicy(line_chart_settings.getAxisSortingPolicy());
+        chart.setCreateSymbols(line_chart_settings.getCreateSymbols());
+        
     }
 
     void setHandler(JFXPanel jfxPanel, LineChartInputHandler handler) {
