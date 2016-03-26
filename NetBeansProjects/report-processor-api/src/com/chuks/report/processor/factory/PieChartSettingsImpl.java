@@ -13,10 +13,10 @@ import com.chuks.report.processor.chart.PieChartSettings;
  */
 class PieChartSettingsImpl extends AbstractChartSettingsImpl implements PieChartSettings{
     private String pie_value_suffix = "";
-    private boolean clockwise;
-    private double label_line_length;
-    private boolean labels_visible;
-    private double start_angle;
+    private boolean clockwise = true;
+    private double label_line_length = 20d;
+    private boolean labels_visible = true;
+    private double start_angle; //defaults to zero
 
     @Override
     public void setPieValueSuffix(String pie_value_suffix) {

@@ -12,8 +12,8 @@ import com.chuks.report.processor.chart.BarChartSettings;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class BarChartSettingsImpl  extends AbstractXYChartSettingsImpl implements BarChartSettings{
-    private double bar_gap;
-    private double category_gap;
+    private double bar_gap = 4;
+    private double category_gap = 10;
 
     @Override
     public void setBarGap(double gap) {

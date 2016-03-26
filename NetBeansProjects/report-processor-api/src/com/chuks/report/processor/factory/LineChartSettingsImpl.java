@@ -13,8 +13,8 @@ import javafx.scene.chart.LineChart.SortingPolicy;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class LineChartSettingsImpl  extends AbstractXYChartSettingsImpl implements LineChartSettings{
-    private SortingPolicy axis_sorting_policy;
-    private boolean create_symbols;
+    private SortingPolicy axis_sorting_policy = SortingPolicy.X_AXIS;
+    private boolean create_symbols = true;
 
     @Override
     public void setAxisSortingPolicy(SortingPolicy value) {

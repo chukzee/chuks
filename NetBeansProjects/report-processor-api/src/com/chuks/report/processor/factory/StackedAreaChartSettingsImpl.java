@@ -13,7 +13,7 @@ import com.chuks.report.processor.chart.*;
  */
 class StackedAreaChartSettingsImpl extends AbstractXYChartSettingsImpl implements StackedAreaChartSettings{
 
-    private boolean create_symbols;
+    private boolean create_symbols = true;
 
     @Override
     public void setCreateSymbols(boolean value) {

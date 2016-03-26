@@ -12,7 +12,7 @@ import com.chuks.report.processor.chart.AreaChartSettings;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class AreaChartSettingsImpl extends AbstractXYChartSettingsImpl implements AreaChartSettings{
-    private boolean create_symbols;
+    private boolean create_symbols = true;
 
     @Override
     public void setCreateSymbols(boolean value) {

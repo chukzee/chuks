@@ -12,7 +12,7 @@ import com.chuks.report.processor.chart.*;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class StackedBarChartSettingsImpl  extends AbstractXYChartSettingsImpl implements StackedBarChartSettings{
-    private double category_gap;
+    private double category_gap = 10;
 
     @Override
     public void setCategoryGap(double gap) {

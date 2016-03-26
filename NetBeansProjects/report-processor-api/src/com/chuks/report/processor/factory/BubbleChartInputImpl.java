@@ -38,7 +38,7 @@ class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleCha
     protected void setChatProperties() {
         super.setChatProperties(); 
         
-        //TODO set other below
+        //TODO set other below - for now nothing in the case of BubbleChart - see javafx
     }
 
     void setHandler(JFXPanel jfxPanel, BubbleChartInputHandler handler) {
@@ -60,5 +60,4 @@ class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleCha
     public void plotNewSeries(String seriesName) {
         plotNewSeriesImpl(seriesName);
     }
-
 }
