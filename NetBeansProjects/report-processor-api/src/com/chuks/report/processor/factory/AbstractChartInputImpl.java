@@ -6,7 +6,7 @@
 package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.AbstractUIDBProcessor;
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.DataPull;
 import com.chuks.report.processor.chart.ChartSettings;
 import com.chuks.report.processor.handler.ChatInputHandler;
 import com.chuks.report.processor.param.ChartInput;
@@ -26,6 +26,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
+import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -40,9 +41,8 @@ import javafx.util.Duration;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements ChartInput, DataPoll {
+abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements ChartInput, DataPull {
 
-    protected String chart_title;
     protected JFXPanel jfxPanel;
     private long next_poll_time;
     protected ChatInputHandler handler;
@@ -55,18 +55,9 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
     private Label pie_caption;
     private String pieValueSuffix = "";
 
-    public AbstractChartInputImpl(JDBCSettings jdbcSettings) {
+    public AbstractChartInputImpl(JDBCSettings jdbcSettings, ChartSettings settings) {
         super(jdbcSettings, true);//enable data polling
-
-    }
-
-    @Override
-    public void setChartTitle(String title) {
-        this.chart_title = title;
-    }
-
-    public String getChartTitle() {
-        return this.chart_title;
+        this.settings = settings;
     }
 
     public void setChartPanel(JFXPanel jfxPanel) {
@@ -83,23 +74,39 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
         data.add(new PieChart.Data((String) a, (double) b));
     }
 
+    protected void setChatProperties() {
+        Chart chart = this.getChart();
+
+        chart.setTitle(settings.getChartTitle());
+        chart.setTitleSide(settings.getChartTitleSide());
+        chart.setLegendSide(settings.getLegendSide());
+        chart.setLegendVisible(settings.getLegendVisible());
+        chart.setAnimated(settings.getAnimated());
+        if (settings.getEffect() != null) {
+            chart.setEffect(settings.getEffect());
+        }
+        if (settings.getStyle() != null) {
+            chart.setStyle(settings.getStyle());
+        }
+    }
+
     @Override
-    public void setNextPollTime(long next_poll_time) {
+    public void setNextPullTime(long next_poll_time) {
         this.next_poll_time = next_poll_time;
     }
 
     @Override
-    public long getNextPollTime() {
+    public long getNextPullTime() {
         return next_poll_time;
     }
 
     @Override
-    public boolean pausePoll() {
+    public boolean pausePull() {
         return !jfxPanel.isShowing();
     }
 
     @Override
-    public boolean stopPoll() {
+    public boolean stopPull() {
         lock.lock();
         try {
             return !isChartStillMappedToPanel();
@@ -115,7 +122,7 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
     }
 
     @Override
-    final public void pollData() {
+    final public void pullData() {
 
         if (jfxPanel.getScene() == null) {
             return;//scene not ready
@@ -155,29 +162,29 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
     }
 
     @Override
-    public void setPollingEnabled(boolean isPoll) {
-        data_polling_enabled = isPoll;
+    public void setPullingEnabled(boolean isPull) {
+        data_polling_enabled = isPull;
     }
 
     @Override
-    public boolean isPollingEnabled() {
+    public boolean isPullingEnabled() {
         return data_polling_enabled;
     }
 
     @Override
-    public void setPollingInterval(float seconds) {
+    public void setPullingInterval(float seconds) {
         data_polling_interval = seconds;
     }
 
     @Override
-    public float getPollingInterval() {
+    public float getPullingInterval() {
         return data_polling_interval;
     }
 
     protected void generateChartView() {
 
         PieChart chart = (PieChart) this.getChart();
-        chart.setTitle(chart_title);
+        setChatProperties();
         pieChartData = FXCollections.observableArrayList(data);
 
         if (scene == null) {

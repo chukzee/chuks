@@ -23,8 +23,7 @@ import javafx.scene.chart.XYChart;
     private LineChart chart;
 
     public LineChartInputImpl(JDBCSettings jdbcSettings, LineChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
     }
 
     @Override

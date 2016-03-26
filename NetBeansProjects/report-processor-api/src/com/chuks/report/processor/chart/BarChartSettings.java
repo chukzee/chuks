@@ -12,4 +12,10 @@ package com.chuks.report.processor.chart;
 public interface BarChartSettings  extends XYChartSettings{
     
     void setBarGap(int gap);
+    
+    int getBarGap();
+
+    void setCategoryGap(int gap);
+
+    int getCategoryGap();
 }

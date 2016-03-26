@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.param;
 
-import com.chuks.report.processor.PollAttributes;
+import com.chuks.report.processor.PullAttributes;
 import com.chuks.report.processor.util.JDBCSettings;
 import javax.swing.JComponent;
 
@@ -13,7 +13,7 @@ import javax.swing.JComponent;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface FormDataInput  extends ActionSQL, PollAttributes{
+public interface FormDataInput  extends ActionSQL, PullAttributes{
     
     void setFieldComponents(JComponent... field_components);
 

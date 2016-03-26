@@ -24,8 +24,7 @@ class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartIn
     private AreaChart chart;
 
     public AreaChartInputImpl(JDBCSettings jdbcSettings, AreaChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
     }
 
     @Override
@@ -35,6 +34,13 @@ class AreaChartInputImpl extends AbstractXYChartInputImpl implements AreaChartIn
             chart = new AreaChart(xAxis, yAxis);
         }
         return chart;
+    }
+
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        
+        //TODO set other below
     }
 
     void setHandler(JFXPanel jfxPanel, AreaChartInputHandler handler) {

@@ -9,15 +9,15 @@ package com.chuks.report.processor;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface DataPoll extends PollAttributes {
+public interface DataPull extends PullAttributes {
 
-    void setNextPollTime(long next_poll_time);
+    void setNextPullTime(long next_pull_time);
 
-    long getNextPollTime();
+    long getNextPullTime();
 
-    boolean pausePoll();
+    boolean pausePull();
     
-    boolean stopPoll();
+    boolean stopPull();
 
-    void pollData();
+    void pullData();
 }

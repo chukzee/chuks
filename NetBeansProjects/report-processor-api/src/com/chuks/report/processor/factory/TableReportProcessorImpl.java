@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.handler.DataPollHandler;
+import com.chuks.report.processor.handler.DataPullHandler;
 import com.chuks.report.processor.param.TableFieldGen;
 import com.chuks.report.processor.param.TableFieldUpdate;
 import com.chuks.report.processor.param.TableFieldMapper;
@@ -60,7 +60,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         setRowSorter(table);
         relayoutTableReport(table);
-        DataPollHandler.registerPoll(tableModel);
+        DataPullHandler.registerPoll(tableModel);
     }
 
     @Override  //NOT YET TESTED
@@ -88,7 +88,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
         setRowSorter(table);
         relayoutTableReport(table);
-        DataPollHandler.registerPoll(tableModel);
+        DataPullHandler.registerPoll(tableModel);
     }
 
     public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) {
@@ -118,8 +118,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         tableModel.setColumnNames(input.getColumns());
         tableModel.setTableFieldSource(null);
         tableModel.addAllData(list);
-        tableModel.setPollingEnabled(input.isPollingEnabled());
-        tableModel.setPollingInterval(input.getPollingInterval());
+        tableModel.setPullingEnabled(input.isPullingEnabled());
+        tableModel.setPullingInterval(input.getPullingInterval());
 
         return tableModel;
     }
@@ -141,7 +141,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
 
             setRowSorter(table);
             relayoutTableReport(table);
-            DataPollHandler.registerPoll(tableModel);
+            DataPullHandler.registerPoll(tableModel);
         } catch (SQLException ex) {
             Logger.getLogger(TableReportProcessorImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -165,7 +165,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         table.setModel(tableModel);
         setRowSorter(table);
         relayoutTableReport(table);
-        DataPollHandler.registerPoll(tableModel);
+        DataPullHandler.registerPoll(tableModel);
     }
 
     @Override
@@ -177,7 +177,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         table.setModel(tableModel);
         setRowSorter(table);
         relayoutTableReport(table);
-        DataPollHandler.registerPoll(tableModel);
+        DataPullHandler.registerPoll(tableModel);
     }
 
     @Override
@@ -211,7 +211,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         scrollPane1.setViewportView(table);
         container.add(scrollPane1);
         relayoutTableReport(table);
-        DataPollHandler.registerPoll(tableModel);
+        DataPullHandler.registerPoll(tableModel);
         return table;
     }
 
@@ -869,7 +869,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
     }
 
-    class ReportTableModel extends AbstractTableModel implements SearchObserver, DataPoll {
+    class ReportTableModel extends AbstractTableModel implements SearchObserver, DataPull {
 
         private String[] columnNames = {};
 
@@ -1147,62 +1147,62 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
 
         @Override
-        public void setNextPollTime(long next_poll_time) {
+        public void setNextPullTime(long next_poll_time) {
             this.next_poll_time = next_poll_time;
         }
 
         @Override
-        public long getNextPollTime() {
+        public long getNextPullTime() {
             return next_poll_time;
         }
 
         @Override
-        public void pollData() {
+        public void pullData() {
             //COME BACK - SOME COMPLICATIONS EXIST ABEG O!!!
             if (model_table != null) {
                 if (model_table.isEditing()) {
-                    return;//do not poll data when table cell is being edited
+                    return;//do not pull data when table cell is being edited
                 }
                 refresh(model_table);
             }
         }
 
         @Override
-        public void setPollingEnabled(boolean isPoll) {
-            isDataPollEnabled = isPoll;;
+        public void setPullingEnabled(boolean isPull) {
+            isDataPollEnabled = isPull;;
         }
 
         @Override
-        public boolean isPollingEnabled() {
+        public boolean isPullingEnabled() {
             return isDataPollEnabled;
         }
 
         @Override
-        public void setPollingInterval(float seconds) {
+        public void setPullingInterval(float seconds) {
             dataPollInterval = seconds;
         }
 
         @Override
-        public float getPollingInterval() {
+        public float getPullingInterval() {
             return dataPollInterval;
         }
 
         /**
-         * This method will pause the data poll if the table is not showing.
+         * This method will pause the data pull if the table is not showing.
          *
          * @return
          */
         @Override
-        public boolean pausePoll() {
+        public boolean pausePull() {
             if (model_table == null) {
                 return true;
             }
             return !model_table.isShowing()//pause if table is not showing
-                    || model_table.isEditing();//also pausePoll if a table cell is being edited
+                    || model_table.isEditing();//also pausePull if a table cell is being edited
         }
 
         @Override
-        public boolean stopPoll() {
+        public boolean stopPull() {
             return false;
         }
         

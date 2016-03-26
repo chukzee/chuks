@@ -6,14 +6,14 @@
 package com.chuks.report.processor.param;
 
 import com.chuks.report.processor.param.ActionSQL;
-import com.chuks.report.processor.PollAttributes;
+import com.chuks.report.processor.PullAttributes;
 import com.chuks.report.processor.util.JDBCSettings;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ListDataInput extends ActionSQL, PollAttributes{
+public interface ListDataInput extends ActionSQL, PullAttributes{
     
     void setData(Object[] data);
     

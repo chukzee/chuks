@@ -22,8 +22,7 @@ class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInpu
     private BarChart chart;
 
     public BarChartInputImpl(JDBCSettings jdbcSettings, BarChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
     }
 
     @Override
@@ -32,6 +31,13 @@ class BarChartInputImpl extends AbstractXYChartInputImpl implements BarChartInpu
             chart = new BarChart(xAxis, yAxis);
         }
         return chart;
+    }
+
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        
+        //TODO set other below
     }
 
     void setHandler(JFXPanel jfxPanel, BarChartInputHandler handler) {

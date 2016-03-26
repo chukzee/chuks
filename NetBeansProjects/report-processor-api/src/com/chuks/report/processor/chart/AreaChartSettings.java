@@ -11,4 +11,6 @@ package com.chuks.report.processor.chart;
  */
 public interface AreaChartSettings extends XYChartSettings{
     
+    void setCreateSymbols(boolean value);
+    boolean getCreateSymbols();
 }

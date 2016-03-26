@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.DataPull;
 import com.chuks.report.processor.handler.ListBindHanler;
 import com.chuks.report.processor.param.ListDataInput;
 import com.chuks.report.processor.sql.helper.DBHelper;
@@ -17,7 +17,7 @@ import javax.swing.JList;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class ListDataInputImpl extends AbstractDataInput implements ListDataInput, DataPoll {
+class ListDataInputImpl extends AbstractDataInput implements ListDataInput, DataPull {
 
     private ListBindHanler handler;
     private JComboBox combo;
@@ -44,17 +44,17 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     }
 
     @Override
-    public void setNextPollTime(long next_poll_time) {
+    public void setNextPullTime(long next_poll_time) {
         this.next_poll_time = next_poll_time;
     }
 
     @Override
-    public long getNextPollTime() {
+    public long getNextPullTime() {
         return next_poll_time;
     }
 
     @Override
-    public void pollData() {
+    public void pullData() {
 
         handler.data(this);
 
@@ -91,12 +91,12 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     }
 
     /**
-     * This method will pause the data poll if the component is not showing
+     * This method will pause the data pull if the component is not showing
      *
      * @return
      */
     @Override
-    public boolean pausePoll() {
+    public boolean pausePull() {
         if (combo != null) {
             return !combo.isShowing();
         }
@@ -107,7 +107,7 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     }
 
     @Override
-    public boolean stopPoll() {
+    public boolean stopPull() {
         return false;
     }
 

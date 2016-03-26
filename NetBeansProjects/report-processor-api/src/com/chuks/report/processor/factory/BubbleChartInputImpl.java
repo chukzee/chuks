@@ -23,8 +23,7 @@ class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleCha
     private BubbleChart chart;
 
     public BubbleChartInputImpl(JDBCSettings jdbcSettings, BubbleChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
     }
 
     @Override
@@ -33,6 +32,13 @@ class BubbleChartInputImpl extends AbstractXYChartInputImpl implements BubbleCha
             chart = new BubbleChart(xAxis, yAxis);//BubbleChart does not use a Category Axis.  Both X and Y axes should be of type NumberAxis.
         }
         return chart;
+    }
+
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        
+        //TODO set other below
     }
 
     void setHandler(JFXPanel jfxPanel, BubbleChartInputHandler handler) {

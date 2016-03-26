@@ -6,14 +6,14 @@
 package com.chuks.report.processor.handler;
 
 import com.chuks.report.processor.param.ListDataInput;
-import com.chuks.report.processor.PollAttributes;
+import com.chuks.report.processor.PullAttributes;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 
-public interface ListBindHanler extends PollAttributes{
+public interface ListBindHanler extends PullAttributes{
     
     void data(ListDataInput input);
 }

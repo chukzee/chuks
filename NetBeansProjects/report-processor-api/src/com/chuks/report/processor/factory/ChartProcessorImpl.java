@@ -11,7 +11,7 @@ import com.chuks.report.processor.handler.BarChartInputHandler;
 import com.chuks.report.processor.ChartProcessor;
 import com.chuks.report.processor.handler.PieChartInputHandler;
 import com.chuks.report.processor.handler.BubbleChartInputHandler;
-import com.chuks.report.processor.handler.DataPollHandler;
+import com.chuks.report.processor.handler.DataPullHandler;
 import com.chuks.report.processor.handler.LineChartInputHandler;
 import com.chuks.report.processor.handler.ScatterChartInputHandler;
 import com.chuks.report.processor.handler.StackedAreaChartInputHandler;
@@ -36,7 +36,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -46,7 +46,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -56,7 +56,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -66,7 +66,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -76,7 +76,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -86,7 +86,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -96,7 +96,7 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }
 
     @Override
@@ -106,6 +106,6 @@ class ChartProcessorImpl extends AbstractUIDBProcessor implements ChartProcessor
         handler.onShow(input, settings);
         input.setHandler(jfxPanel, handler);
         input.show();
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
     }    
 }

@@ -3,16 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chuks.report.processor.chart;
+package com.chuks.report.processor;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public enum Side {
-    TOP,
-    BOTTOM,
-    LEFT,
-    RIGHT
+public interface PullAttributes {
+    
+    void setPullingEnabled(boolean isPull);
+
+    boolean isPullingEnabled();
+
+    void setPullingInterval(float seconds);
+
+    float getPullingInterval();
     
 }

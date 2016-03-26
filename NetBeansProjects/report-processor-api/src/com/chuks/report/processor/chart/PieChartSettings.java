@@ -12,4 +12,23 @@ package com.chuks.report.processor.chart;
 public interface PieChartSettings  extends ChartSettings{
     
     void setPieValueSuffix(String pie_value_suffix);
+
+    String getPieValueSuffix();
+    
+    void setClockwise(boolean value);
+
+    boolean getClockwise();
+    
+    void setLabelLineLength(double value);
+    
+    double getLabelLineLength();
+
+    void setLabelsVisible(double value);
+
+    double getLabelsVisible();
+    
+    void setStartAngle(double value);
+
+    double getStartAngle();
+    
 }

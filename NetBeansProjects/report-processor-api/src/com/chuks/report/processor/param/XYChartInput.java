@@ -13,8 +13,4 @@ public interface XYChartInput extends ChartInput {
 
     void plotNewSeries(String seriesName);
 
-    void setLabelX(String xAxisLabel);
-
-    void setLabelY(String yAxisLabel);
-
 }

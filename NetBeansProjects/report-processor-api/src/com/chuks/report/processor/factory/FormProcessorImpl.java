@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.handler.DataPollHandler;
+import com.chuks.report.processor.handler.DataPullHandler;
 import com.chuks.report.processor.form.controls.JFind;
 import com.chuks.report.processor.form.controls.JPrevious;
 import com.chuks.report.processor.form.controls.FormControl;
@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import com.chuks.report.processor.util.JDBCSettings;
 import com.chuks.report.processor.AbstractUIDBProcessor;
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.DataPull;
 import com.chuks.report.processor.param.ErrorCallBack;
 import com.chuks.report.processor.handler.ListBindHanler;
 import com.chuks.report.processor.param.FormFieldMapper;
@@ -79,7 +79,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setFormControl(controls)
                 .build();
 
-        DataPollHandler.registerPoll(formModel);
+        DataPullHandler.registerPoll(formModel);
     }
 
     @Override
@@ -90,7 +90,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setJControllerPane(controllers_pane)
                 .build();
 
-        DataPollHandler.registerPoll(formModel);
+        DataPullHandler.registerPoll(formModel);
     }
 
     @Override
@@ -102,7 +102,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setFormControl(controls)
                 .build();
 
-        DataPollHandler.registerPoll(formModel);
+        DataPullHandler.registerPoll(formModel);
     }
 
     @Override
@@ -115,7 +115,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setFormControl(controls)
                 .build();
 
-        DataPollHandler.registerPoll(formModel);
+        DataPullHandler.registerPoll(formModel);
     }
 
     @Override
@@ -127,7 +127,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setJControllerPane(controllers_pane)
                 .build();
 
-        DataPollHandler.registerPoll(formModel);
+        DataPullHandler.registerPoll(formModel);
     }
 
     @Override
@@ -140,7 +140,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 .setFormControl(controls)
                 .build();
 
-        DataPollHandler.registerPoll(formModel);
+        DataPullHandler.registerPoll(formModel);
     }
 
     @Override
@@ -161,7 +161,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         input.setHandler(list, handler);
 
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
 
     }
 
@@ -187,7 +187,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         input.setHandler(combo, handler);
 
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
 
     }
 
@@ -209,7 +209,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         input.setHandler(textComp, handler);
 
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
 
     }
 
@@ -231,7 +231,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         input.setHandler(label, handler);
 
-        DataPollHandler.registerPoll(input);
+        DataPullHandler.registerPoll(input);
 
     }
 
@@ -280,7 +280,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
     }
 
-    class DefaultFormModel implements SearchObserver, DataPoll {
+    class DefaultFormModel implements SearchObserver, DataPull {
 
         private FormControl[] pane_controls;//controls in the controller pane
         FormControl[] x_controls;//controls not in the controller pane
@@ -342,8 +342,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     }
 
                     fieldsComponents = input.getFieldComponents();
-                    this.dataPollEnabled = input.isPollingEnabled();
-                    this.dataPollInterval = input.getPollingInterval();
+                    this.dataPollEnabled = input.isPullingEnabled();
+                    this.dataPollInterval = input.getPullingInterval();
                 }
 
                 checksControlRepitition();
@@ -1355,17 +1355,17 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         @Override
-        public void setNextPollTime(long next_poll_time) {
+        public void setNextPullTime(long next_poll_time) {
             this.next_poll_time = next_poll_time;
         }
 
         @Override
-        public long getNextPollTime() {
+        public long getNextPullTime() {
             return next_poll_time;
         }
 
         @Override
-        public void pollData() {
+        public void pullData() {
 
             Object[][] poll_data = null;
             if (dataInputHandler != null) {
@@ -1409,44 +1409,44 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         @Override
-        public void setPollingEnabled(boolean isPoll) {
-            dataPollEnabled = isPoll;
+        public void setPullingEnabled(boolean isPull) {
+            dataPollEnabled = isPull;
         }
 
         @Override
-        public boolean isPollingEnabled() {
+        public boolean isPullingEnabled() {
             return dataPollEnabled;
         }
 
         @Override
-        public void setPollingInterval(float seconds) {
+        public void setPullingInterval(float seconds) {
             dataPollInterval = seconds;
         }
 
         @Override
-        public float getPollingInterval() {
+        public float getPullingInterval() {
             return dataPollInterval;
         }
 
         /**
-         * This method will pause the data poll if all the form components are not
+         * This method will pause the data pull if all the form components are not
          * showing.
          *
          * @return
          */
         @Override
-        public boolean pausePoll() {
+        public boolean pausePull() {
             //check if any of the form component is showing
             for (JComponent fieldsComponent : fieldsComponents) {
                 if (fieldsComponent.isShowing()) {
-                    return false;//at least a component is showing so do not pausePoll
+                    return false;//at least a component is showing so do not pausePull
                 }
             }
-            return true;//all components are hidden so pausePoll
+            return true;//all components are hidden so pausePull
         }
 
         @Override
-        public boolean stopPoll() {
+        public boolean stopPull() {
             return false;
         }
         

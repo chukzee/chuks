@@ -23,8 +23,7 @@ class StackedBarChartInputImpl extends AbstractXYChartInputImpl implements Stack
     private StackedBarChart chart;
 
     public StackedBarChartInputImpl(JDBCSettings jdbcSettings, StackedBarChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
     }
 
     @Override
@@ -34,6 +33,15 @@ class StackedBarChartInputImpl extends AbstractXYChartInputImpl implements Stack
         }
         return chart;
     }
+
+    
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        
+        //TODO set other below
+    }
+
 
     void setHandler(JFXPanel jfxPanel, StackedBarChartInputHandler handler) {
         this.jfxPanel = jfxPanel;

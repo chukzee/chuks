@@ -5,12 +5,11 @@
  */
 package com.chuks.report.processor.param;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.DataPull;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface ChartInput extends DataPoll{
-    void setChartTitle(String chart_title);
+public interface ChartInput extends DataPull{
 }

@@ -22,8 +22,7 @@ class StackedAreaChartInputImpl extends AbstractXYChartInputImpl implements Stac
     private StackedAreaChart chart;
 
     public StackedAreaChartInputImpl(JDBCSettings jdbcSettings, StackedAreaChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
     }
 
     @Override
@@ -33,6 +32,13 @@ class StackedAreaChartInputImpl extends AbstractXYChartInputImpl implements Stac
             chart = new StackedAreaChart(xAxis, yAxis);
         }
         return chart;
+    }
+
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        
+        //TODO set other below
     }
 
     void setHandler(JFXPanel jfxPanel, StackedAreaChartInputHandler handler) {

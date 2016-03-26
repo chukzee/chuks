@@ -58,8 +58,8 @@ public abstract class AbstractUIDBProcessor<T> extends ActionSQLImpl implements 
     }
 
     @Override
-    public void setDataPollingEnabled(boolean isPoll) {
-        data_polling_enabled = isPoll;
+    public void setDataPollingEnabled(boolean isPull) {
+        data_polling_enabled = isPull;
     }
 
     @Override

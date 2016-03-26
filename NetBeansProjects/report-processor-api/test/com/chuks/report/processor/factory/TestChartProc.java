@@ -9,6 +9,7 @@ import com.chuks.report.processor.ChartProcessor;
 import com.chuks.report.processor.chart.*;
 import com.chuks.report.processor.handler.*;
 import com.chuks.report.processor.param.*;
+import javafx.geometry.Side;
 
 /**
  *
@@ -199,11 +200,11 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot("b", 2 + increase1);
                 input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
-
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
+                settings.setLegendSide(Side.LEFT);
                 //input.setPollingEnabled(false);
             }
         }, jFXPanel1);
@@ -227,10 +228,10 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot("b", 2);
                 input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
 
                 //input.setPollingEnabled(false);
             }
@@ -255,10 +256,10 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot("b", 2);
                 input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
 
                 //input.setPollingEnabled(false);
             }
@@ -283,10 +284,10 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot(3, 2);
                 input.plot(4, 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
 
                 //input.setPollingEnabled(false);
             }
@@ -311,10 +312,10 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot("b", 2);
                 input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
 
                 //input.setPollingEnabled(false);
             }
@@ -339,10 +340,10 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot("b", 2);
                 input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
 
                 //input.setPollingEnabled(false);
             }
@@ -367,10 +368,10 @@ public class TestChartProc extends javax.swing.JFrame {
                 input.plot("b", 2);
                 input.plot("c", 3);
 
-                input.setChartTitle("Test Chart");
+                settings.setChartTitle("Test Chart");
 
-                input.setLabelX("The x axis");
-                input.setLabelY("The y axis");
+                settings.setLabelX("The x axis");
+                settings.setLabelY("The y axis");
 
                 //input.setPollingEnabled(false);
             }

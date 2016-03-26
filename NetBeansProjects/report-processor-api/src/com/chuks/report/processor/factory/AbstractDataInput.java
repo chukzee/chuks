@@ -5,14 +5,14 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.PollAttributes;
+import com.chuks.report.processor.PullAttributes;
 import com.chuks.report.processor.util.JDBCSettings;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class AbstractDataInput extends ActionSQLImpl implements PollAttributes{
+public class AbstractDataInput extends ActionSQLImpl implements PullAttributes{
     
     private boolean pollingEnabled;
     private float pollingInterval;
@@ -27,22 +27,22 @@ public class AbstractDataInput extends ActionSQLImpl implements PollAttributes{
     }
     
     @Override
-    public void setPollingEnabled(boolean isPoll) {
-        this.pollingEnabled = isPoll;
+    public void setPullingEnabled(boolean isPull) {
+        this.pollingEnabled = isPull;
     }
 
     @Override
-    public boolean isPollingEnabled() {
+    public boolean isPullingEnabled() {
         return pollingEnabled;
     }
 
     @Override
-    public void setPollingInterval(float seconds) {
+    public void setPullingInterval(float seconds) {
         this.pollingInterval = seconds;
     }
 
     @Override
-    public float getPollingInterval() {
+    public float getPullingInterval() {
         return pollingInterval;
     }
 }

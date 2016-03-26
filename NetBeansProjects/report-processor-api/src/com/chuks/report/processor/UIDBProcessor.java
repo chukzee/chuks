@@ -26,9 +26,9 @@ public interface UIDBProcessor<T> extends ActionSQL{
      * Determines whether data polling should be activated. that is change
      * made to the data base will be reflected. if activated, a default 
      * polling interval based on the implementation is used.
-     * @param isPoll 
+     * @param isPull 
      */
-    void setDataPollingEnabled(boolean isPoll);
+    void setDataPollingEnabled(boolean isPull);
     
     /**
      * Used to check whether data polling is activated. 

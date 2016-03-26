@@ -10,5 +10,9 @@ package com.chuks.report.processor.chart;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public interface StackedAreaChartSettings extends XYChartSettings{
-    
+
+    void setCreateSymbols(boolean value);
+
+    boolean getCreateSymbols();
+        
 }

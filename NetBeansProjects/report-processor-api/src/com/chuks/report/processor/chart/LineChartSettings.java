@@ -9,6 +9,13 @@ package com.chuks.report.processor.chart;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface LineChartSettings  extends XYChartSettings{
-    
+public interface LineChartSettings extends XYChartSettings {
+
+    void setAxisSortingPolicy(boolean value);
+
+    boolean getAxisSortingPolicy();
+
+    void setCreateSymbols(boolean value);
+
+    boolean getCreateSymbols();
 }

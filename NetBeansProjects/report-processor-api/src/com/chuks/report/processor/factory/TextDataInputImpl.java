@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.factory;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.DataPull;
 import com.chuks.report.processor.handler.TextBindHandler;
 import com.chuks.report.processor.param.TextDataInput;
 import com.chuks.report.processor.sql.helper.DBHelper;
@@ -17,7 +17,7 @@ import javax.swing.text.JTextComponent;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class TextDataInputImpl extends AbstractDataInput implements TextDataInput, DataPoll {
+class TextDataInputImpl extends AbstractDataInput implements TextDataInput, DataPull {
 
     private Object data;
     private long next_poll_time;
@@ -45,17 +45,17 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
     }
 
     @Override
-    public void setNextPollTime(long next_poll_time) {
+    public void setNextPullTime(long next_poll_time) {
         this.next_poll_time = next_poll_time;;
     }
 
     @Override
-    public long getNextPollTime() {
+    public long getNextPullTime() {
         return next_poll_time;
     }
 
     @Override
-    public void pollData() {
+    public void pullData() {
         handler.data(this);
 
         if (this.getData() == null) {
@@ -88,12 +88,12 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
     }
 
     /**
-     * This method will pause the data poll if the component is not showing
+     * This method will pause the data pull if the component is not showing
      *
      * @return
      */
     @Override
-    public boolean pausePoll() {
+    public boolean pausePull() {
         if (label != null) {
             return !label.isShowing();
         }
@@ -104,7 +104,7 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
     }
 
     @Override
-    public boolean stopPoll() {
+    public boolean stopPull() {
         return false;
     }
 

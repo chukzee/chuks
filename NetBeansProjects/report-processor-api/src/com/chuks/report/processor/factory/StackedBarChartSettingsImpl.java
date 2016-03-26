@@ -19,5 +19,10 @@ class StackedBarChartSettingsImpl  extends AbstractXYChartSettingsImpl implement
         this.bar_gap = gap;
     }
 
+    @Override
+    public int getBarGap() {
+        return bar_gap;
+    }
+
     
 }

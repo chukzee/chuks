@@ -23,8 +23,14 @@ import javafx.scene.chart.XYChart;
     private ScatterChart chart;
 
     public ScatterChartInputImpl(JDBCSettings jdbcSettings, ScatterChartSettings settings) {
-        super(jdbcSettings);
-        this.settings = settings;
+        super(jdbcSettings, settings);
+    }
+
+    @Override
+    protected void setChatProperties() {
+        super.setChatProperties(); 
+        
+        //TODO set other below
     }
 
     @Override

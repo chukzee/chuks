@@ -5,14 +5,14 @@
  */
 package com.chuks.report.processor.param;
 
-import com.chuks.report.processor.PollAttributes;
+import com.chuks.report.processor.PullAttributes;
 import com.chuks.report.processor.util.JDBCSettings;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface TableDataInput extends  ActionSQL,  PollAttributes{
+public interface TableDataInput extends  ActionSQL,  PullAttributes{
 
 
     void setColumns(String... column_names);

@@ -5,7 +5,7 @@
  */
 package com.chuks.report.processor.handler;
 
-import com.chuks.report.processor.DataPoll;
+import com.chuks.report.processor.DataPull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,37 +21,37 @@ import javax.swing.SwingUtilities;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class DataPollHandler implements Runnable {
+public class DataPullHandler implements Runnable {
 
     static ConcurrentHashMap m;
-    static List<DataPoll> dataPollList = Collections.synchronizedList(new LinkedList());
+    static List<DataPull> dataPollList = Collections.synchronizedList(new LinkedList());
     static private boolean stop;
-    static DataPollHandler instance;
+    static DataPullHandler instance;
     static ExecutorService exec;
 
-    private DataPollHandler() {
+    private DataPullHandler() {
     }
 
-    public static void registerPoll(DataPoll poll) {
-        if (!poll.isPollingEnabled()) {
+    public static void registerPoll(DataPull pull) {
+        if (!pull.isPullingEnabled()) {
             return;
         }
-        synchronized (DataPollHandler.class) {
+        synchronized (DataPullHandler.class) {
             if (instance == null) {
-                instance = new DataPollHandler();
+                instance = new DataPullHandler();
                 exec = Executors.newSingleThreadExecutor();
                 exec.execute(instance);
             }
         }
         //register for polling
-        dataPollList.add(poll);
-        setNextPollTime(poll, System.currentTimeMillis());
+        dataPollList.add(pull);
+        setNextPollTime(pull, System.currentTimeMillis());
     }
 
-    static private void setNextPollTime(DataPoll poll, long now) {
-        long increase = (long) (poll.getPollingInterval() * 1000);//important!
+    static private void setNextPollTime(DataPull pull, long now) {
+        long increase = (long) (pull.getPullingInterval() * 1000);//important!
         long next_time = now + increase;
-        poll.setNextPollTime(next_time);
+        pull.setNextPullTime(next_time);
     }
 
     @Override
@@ -59,35 +59,35 @@ public class DataPollHandler implements Runnable {
         while (!stop) {
             Object[] polls = dataPollList.toArray();
             for (int i = 0; i < polls.length; i++) {
-                final DataPoll poll = (DataPoll) polls[i];
+                final DataPull pull = (DataPull) polls[i];
                 long now = System.currentTimeMillis();
-                if (now >= poll.getNextPollTime()) {
+                if (now >= pull.getNextPullTime()) {
                     try {
                         SwingUtilities.invokeAndWait(new Runnable() {
 
                             @Override
                             public void run() {
 
-                                if (poll.stopPoll()) {
-                                    dataPollList.remove(poll);//remove from this poll list
+                                if (pull.stopPull()) {
+                                    dataPollList.remove(pull);//remove from this pull list
                                     return;
                                 }
 
-                                if (poll.pausePoll()) {
-                                    return;//skip poll for now
+                                if (pull.pausePull()) {
+                                    return;//skip pull for now
                                 }
 
-                                poll.pollData();
+                                pull.pullData();
                             }
                         });
 
-                        setNextPollTime(poll, now);
+                        setNextPollTime(pull, now);
                     } catch (InterruptedException | InvocationTargetException ex) {
-                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(DataPullHandler.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (NullPointerException ex) {
-                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(DataPullHandler.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (Exception ex) {
-                        Logger.getLogger(DataPollHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(DataPullHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
                 }

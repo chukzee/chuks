@@ -13,10 +13,59 @@ import com.chuks.report.processor.chart.PieChartSettings;
  */
 class PieChartSettingsImpl extends AbstractChartSettingsImpl implements PieChartSettings{
     private String pie_value_suffix = "";
+    private boolean clockwise;
+    private double label_line_length;
+    private double labels_visible;
+    private double start_angle;
 
     @Override
     public void setPieValueSuffix(String pie_value_suffix) {
         this.pie_value_suffix = pie_value_suffix;
+    }
+
+    @Override
+    public String getPieValueSuffix() {
+        return pie_value_suffix;
+    }
+
+    @Override
+    public void setClockwise(boolean value) {
+        clockwise=value;
+    }
+
+    @Override
+    public boolean getClockwise() {
+        return clockwise;
+    }
+
+    @Override
+    public void setLabelLineLength(double value) {
+        label_line_length = value;
+    }
+
+    @Override
+    public double getLabelLineLength() {
+        return label_line_length;
+    }
+
+    @Override
+    public void setLabelsVisible(double value) {
+        labels_visible = value;
+    }
+
+    @Override
+    public double getLabelsVisible() {
+        return labels_visible;
+    }
+
+    @Override
+    public void setStartAngle(double value) {
+        start_angle = value;
+    }
+
+    @Override
+    public double getStartAngle() {
+        return start_angle;
     }
 
   
