@@ -43,7 +43,7 @@ class ServerHandler implements Runnable {
     static int threadIdleTime = 30;//in seconds
     static int totalQueueSize = 5000;//come back
     private static boolean isStarted;
-    private static final LinkedBlockingQueue<RequestTask> tasks
+    static final LinkedBlockingQueue<RequestTask> tasks
             = new LinkedBlockingQueue();//we prefer LinkedBlockingQueue to ConcurrentLinkedQueue in this case because of size computation in ConcurrentLinkedQueue. see size method of ConcurrentLinkedQueue
 
     private static final LinkedBlockingQueue<Runnable> rejectedTask
@@ -135,11 +135,11 @@ class ServerHandler implements Runnable {
 
             }
         } catch (UnknownHostException ex) {
-            Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerHandler.class.getName()).log(Level.SEVERE, null, ex);
             isRunning = false;
             requestThreadPoolExecutor.shutdownNow();
         } catch (IOException ex) {
-            Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerHandler.class.getName()).log(Level.SEVERE, null, ex);
             isRunning = false;
             requestThreadPoolExecutor.shutdownNow();
         }
@@ -197,7 +197,7 @@ class ServerHandler implements Runnable {
                             task.close();
                         }
 
-                        //REMOVE THIS IF BLOCK LATER - USED FO TESTING
+                        //REMOVE THIS IF BLOCK LATER - USED FOR TESTING
                         /*if (task.isContentFullyRead()) {//TESTING - REMOVE IF BLOCK LATER
                             //task.printTimeElapse();//TESTING
                         }*/

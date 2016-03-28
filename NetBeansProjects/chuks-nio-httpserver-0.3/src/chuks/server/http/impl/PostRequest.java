@@ -54,22 +54,22 @@ class PostRequest extends RequestValidator {
     private File tmpFile;
     private FileOutputStream finTmp;
 
-    PostRequest(HttpRequestFormat request, SocketChannel out, RequestTask handler) throws UnsupportedEncodingException {
-        super(request, out);
-        this.hasBoundary = handler.hasBoundary;
-        this.boundary = handler.boundary;
-        this.headersLength = handler.headersLength;
-        this.final_boundary_end = handler.final_boundary_end;
-        this.sub_boundary_end = handler.sub_boundary_end;
-        this.final_boundary_end_length = handler.final_boundary_end_length;
-        this.sub_boundary_end_length = handler.sub_boundary_end_length;
-        this.content_length = handler.content_length;
-        this.isFormUrlEncoded = handler.isFormUrlEncoded;
+    PostRequest(RequestTask task) throws UnsupportedEncodingException {
+        super(task);
+        this.hasBoundary = task.hasBoundary;
+        this.boundary = task.boundary;
+        this.headersLength = task.headersLength;
+        this.final_boundary_end = task.final_boundary_end;
+        this.sub_boundary_end = task.sub_boundary_end;
+        this.final_boundary_end_length = task.final_boundary_end_length;
+        this.sub_boundary_end_length = task.sub_boundary_end_length;
+        this.content_length = task.content_length;
+        this.isFormUrlEncoded = task.isFormUrlEncoded;
 
     }
 
     private PostRequest() throws UnsupportedEncodingException {
-        super(null, null);
+        super(null);
     }
 
     @Override
@@ -361,7 +361,7 @@ class PostRequest extends RequestValidator {
         do {
             long elapse = System.currentTimeMillis() - time;
             if (elapse > MAX_CREATE_TIME) {
-                throw new SimpleHttpServerException("Creating temporaryt file timed out! duration " + MAX_CREATE_TIME + "ms");
+                throw new SimpleHttpServerException("Creating temporary file timed out! duration " + MAX_CREATE_TIME + "ms");
             }
             time = System.currentTimeMillis();
             String filename = ServerConfig.TEMP_DIR + time + suffix;

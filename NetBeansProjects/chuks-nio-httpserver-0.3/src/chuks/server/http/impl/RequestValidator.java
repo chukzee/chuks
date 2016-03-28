@@ -8,6 +8,7 @@ import chuks.server.http.HttpConstants;
 import chuks.server.http.HttpRequestFormat;
 import chuks.server.http.HttpResponseFormat;
 import chuks.server.HttpFileObject;
+import chuks.server.HttpSession;
 import chuks.server.SimpleHttpServerException;
 import chuks.server.SimpleServerApplication;
 import static chuks.server.http.impl.ServerConfig.DEFAULT_INDEX_FILE_EXTENSION;
@@ -48,16 +49,17 @@ abstract class RequestValidator {
     protected long requestedFileSize;
     private boolean isPossiblyClassFile;
     private RequestFileCacheEntry requestFileCache;
+    private HttpSessionImpl httpSession;
 
-    RequestValidator(HttpRequestFormat request, SocketChannel out) throws UnsupportedEncodingException {
-        this.out = out;
-        this.request = request;
+    RequestValidator(RequestTask task) throws UnsupportedEncodingException {
+        this.out = task.sock;
+        this.request = task.request;
         this.requestedURIFileName = request.getURIFileName();
+        this.httpSession = task.httpSession;
     }
 
     protected void sendResponse(HttpResponseFormat response) {
         try {
-
             out.write(ByteBuffer.wrap(response.getReponse()));
         } catch (IOException ex) {
             Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,7 +114,7 @@ abstract class RequestValidator {
         sendResponse(response);
     }
 
-    //REMIND: SCAN WEB ROOT FILES TO WHILE CACHING
+    //REMIND: SCAN WEB ROOT FILES WHILE CACHING
     private boolean checkRequestRepositry() {
 
         if (requestedURIFileName.isEmpty()
@@ -124,7 +126,7 @@ abstract class RequestValidator {
                 isPossiblyClassFile = true;
                 return true;
             }
-            
+
         } else {
             requestedFilePath = SimpleHttpServer.getWebRoot()
                     + requestedURIFileName.replace('/', SimpleHttpServer.fileSeparator());//change the url seperator to that of the OS file seperator
@@ -240,9 +242,7 @@ abstract class RequestValidator {
 
         //We promised to  treat the case of isPossiblyClassFile seperately.
         //At this point it is possibly a class file (server app file). 
-        ServerObjectImpl serverObj
-                = new ServerObjectImpl(request.getCookiesPair(),
-                        request.getCookieSessionToken());
+        ServerObjectImpl serverObj = new ServerObjectImpl();
 
         SimpleServerApplication server_app = WebAppManager.getWebApp(requestedFilePath, this, serverObj);
 
@@ -253,7 +253,7 @@ abstract class RequestValidator {
         try {
 
             if (server_app.startSession()) {
-                //come back for implementation
+                httpSession.setSession(request.getCookiesPair(), request.getCookieSessionToken());
             }
 
             server_app.onRequest(reqestObj, serverObj);
@@ -267,8 +267,6 @@ abstract class RequestValidator {
         StringBuilder echo = serverObj.getHtml();
         byte[] pdf = serverObj.getPdf();
         Exception error = serverObj.getError();
-
-        cookie = serverObj.getSessionCookies();
 
         if (error != null) {
             handleReceiverError(error, echo);
@@ -338,7 +336,7 @@ abstract class RequestValidator {
 
             response.setMessageBody(response_body);
 
-            //now send the headers
+            //now send
             out.write(ByteBuffer.wrap(response.getReponse()));
 
         } catch (IOException ex) {

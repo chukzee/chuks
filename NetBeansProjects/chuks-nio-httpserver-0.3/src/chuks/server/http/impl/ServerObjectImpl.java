@@ -8,6 +8,7 @@ import chuks.server.Distributed;
 import chuks.server.HttpSession;
 import chuks.server.JDBCSettings;
 import chuks.server.SimpleHttpServerException;
+import chuks.server.api.html.TagCreator;
 import chuks.server.cache.ICacheProperties;
 import chuks.server.cache.IEntryAttributes;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
@@ -56,15 +57,10 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     private StringBuilder html_buff;
     private byte[] pdf_buff;
     private Exception exception;
-    private final Map<String, String> cookieMap;
     private HttpSession session;
-    private final String sessionID;
-    static private Map<Integer, DataSource> weakDataSourceMap;//REMIND: synchronization
+    static private Map<Integer, DataSource> weakDataSourceMap;
 
-    ServerObjectImpl(Map cookieMap, String sessionID) {
-        this.cookieMap = cookieMap;
-        this.sessionID = sessionID;
-
+    ServerObjectImpl() {
     }
 
     @Override
@@ -81,6 +77,16 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
             html_buff = new StringBuilder();
         }
         html_buff.append(echo);
+    }
+
+    @Override
+    public void echo(String session_id, String echo) {
+        EventPacketHandler.enqueueEventPacket(session_id, "text/html", echo.getBytes());
+    }
+
+    @Override
+    public void echo(String session_id, JSONObject echo) {
+        EventPacketHandler.enqueueEventPacket(session_id, "text/html", echo.toString().getBytes());
     }
 
     StringBuilder getHtml() {
@@ -149,26 +155,50 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
+    public void pdf(String session_id, byte[] pdf_data) {
+        EventPacketHandler.enqueueEventPacket(session_id, "application/pdf", pdf_data);
+    }
+
+    @Override
+    public void pdf(String session_id, File pdf_fle) {
+
+        FileInputStream fin = null;
+        try {
+            fin = new FileInputStream(pdf_fle);
+            byte[] _pdf_buff = new byte[(int) pdf_fle.length()];
+            int byteRead = fin.read(_pdf_buff);
+            int offset = 0;
+            while (byteRead > -1) {
+                byteRead = fin.read(_pdf_buff, offset, byteRead);
+                offset += byteRead;
+            }
+            EventPacketHandler.enqueueEventPacket(session_id, "application/pdf", _pdf_buff);
+        } catch (IOException ex) {
+            exception = new SimpleHttpServerException(ex.getMessage());
+        } finally {
+            try {
+                if (fin != null) {
+                    fin.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ServerObjectImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
+
+    @Override
     public void outputErrorToWeb(Exception ex) {
         exception = ex;
+    }
+
+    void setSession(HttpSession session) {
+        this.session = session;
     }
 
     @Override
     public HttpSession getSession() {
         return session;
-    }
-
-    StringBuilder getSessionCookies() {
-        Set<Map.Entry<String, String>> s = cookieMap.entrySet();
-        Iterator<Map.Entry<String, String>> i = s.iterator();
-        StringBuilder cookie = new StringBuilder();
-        cookie.append("sessionToken").append("=").append(sessionID).append("; ");
-        while (i.hasNext()) {
-            Map.Entry<String, String> e = i.next();
-            cookie.append(e.getKey()).append("=").append(e.getValue()).append("; ");
-        }
-
-        return cookie;
     }
 
     /**
@@ -207,7 +237,9 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
         //
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
 
-        poolableConnectionFactory.setPoolStatements(true);//chuks added
+        //NOTE: this will always remain as false since the DB server always do prepared statement optimization as long as the connection is still open.
+        poolableConnectionFactory.setPoolStatements(false);//chuks set back to false - i observe some issues when it was set as true. this will always remain as false since the DB server always do prepared statement optimization as long as the connection is still open.
+
 
         //
         // Now we'll need a ObjectPool that serves as the
@@ -226,81 +258,6 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
         // passing in the object pool we created.
         //
         return new PoolingDataSource<>(connectionPool);
-    }
-
-    /**
-     *
-     * @deprecated jdbc connection pool did not work for me - I have switched to
-     * Apache.
-     *
-     * @param bind_name
-     * @param host
-     * @param port
-     * @param dbname
-     * @param username
-     * @param password
-     * @return
-     */
-    private DataSource initJNDIDatasource(String bind_name,
-            String host,
-            int port,
-            String dbname,
-            String username,
-            String password) {
-
-        File[] roots = File.listRoots();
-
-        Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
-        env.put(Context.PROVIDER_URL, "file:" + "/jdbc/");
-        Context ctx = null;
-        DataSource ds = null;
-        try {
-
-            ctx = new InitialContext(env);
-            ds = (DataSource) ctx.lookup(bind_name);
-
-        } catch (NameNotFoundException ex) {
-            File f = new File(roots[0] + "jdbc" + "/");
-
-            if (!f.isDirectory()) {
-                boolean result = f.mkdir();
-
-                System.out.println(result);
-
-                try {
-                    ctx = new InitialContext(env);
-                    System.err.println("created path: " + roots[0] + "jdbc" + "/");
-                } catch (NamingException ex1) {
-                    Logger.getLogger(DataSource.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            MysqlDataSource mysql_ds = new MysqlDataSource();//using database for connection pooling
-            mysql_ds.setServerName(host);
-            mysql_ds.setPort(port);//default is 3306
-            mysql_ds.setDatabaseName(dbname);
-            mysql_ds.setUser(username);
-            mysql_ds.setPassword(password);
-            ds = mysql_ds;
-
-            try {
-                ctx.rebind(bind_name, ds);
-                System.err.println("created bind for " + bind_name);
-            } catch (NamingException ex1) {
-                Logger.getLogger(ServerObjectImpl.class.getName()).log(Level.SEVERE, null, ex1);
-            }
-        } catch (NamingException ex) {
-            Logger.getLogger(ServerObjectImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (ctx != null) {
-                try {
-                    ctx.close();
-                } catch (NamingException ex) {
-                }
-            }
-        }
-
-        return ds;
     }
 
     @Override
@@ -410,7 +367,7 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
-    public void putCache(String region_name, Serializable key, Serializable value) throws IOException {
+    public void putRgnCache(String region_name, Serializable key, Serializable value) throws IOException {
 
         if (key == null) {
             throw new IllegalArgumentException("Cache key must not be null");
@@ -441,7 +398,7 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
-    public void putCache(String region_name, Serializable key, Serializable value, IEntryAttributes attr) throws IOException {
+    public void putRgnCache(String region_name, Serializable key, Serializable value, IEntryAttributes attr) throws IOException {
 
         if (key == null) {
             throw new IllegalArgumentException("Cache key must not be null");
@@ -486,7 +443,7 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
-    public Object getCache(String region_name, Serializable key) {
+    public Object getRgnCache(String region_name, Serializable key) {
         CompositeCache cache = cMgr.getCache(region_name);
         ICacheElement element = cache.localGet(key);
         return (element != null) ? element.getVal() : null;//we are not intrested in JCS remote implementation - we've got ours
@@ -561,7 +518,7 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
-    public void removeCache(String region_name, Serializable key) {
+    public void removeRgnCache(String region_name, Serializable key) {
         if (region_name == null) {
             removeCache(jcsDefaultCache, key);
             return;
@@ -584,7 +541,7 @@ class ServerObjectImpl<K, V> extends AbstractServerObject {
     }
 
     @Override
-    public void removeAllCache(String region_name) throws IOException {
+    public void removeAllRgnCache(String region_name) throws IOException {
         if (region_name == null) {
             removeAllCache(jcsDefaultCache);
             return;

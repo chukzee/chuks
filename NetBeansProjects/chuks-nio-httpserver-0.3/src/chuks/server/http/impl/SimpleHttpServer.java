@@ -185,6 +185,7 @@ public class SimpleHttpServer implements HttpServer {
             checkConfig();
             ServerHandler.isRunning = true;
             ServerHandler.getInstance().start();
+            EventPacketHandler.getInstance().start();
             WebAppManager.getInstance().start();
             Bootstrap.getInstance().load();
 

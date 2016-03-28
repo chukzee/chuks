@@ -4,6 +4,7 @@
  */
 package chuks.server.http.impl;
 
+import chuks.server.HttpSession;
 import chuks.server.SimpleHttpServerException;
 import java.io.*;
 import java.net.Socket;
@@ -13,6 +14,7 @@ import static chuks.server.http.impl.SimpleHttpServer.getLoadBalanceStrategy;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.List;
 
 /**
  *
@@ -28,7 +30,7 @@ class RequestTask implements Runnable {
     private boolean isAllHttpHeadersEnd;
     private byte[] headers_collection_bytes = new byte[0];//if the buffer of the header is not in one read operation
     private boolean isOneOperationReadHeaders = true;//assuming true
-    private HttpRequestFormat request;
+    HttpRequestFormat request;
     private int totalBytesRecieved;
     int headersLength;
     StringBuilder boundary;
@@ -37,7 +39,7 @@ class RequestTask implements Runnable {
     char[] sub_boundary_end;
     int final_boundary_end_length;
     int sub_boundary_end_length;
-    private SocketChannel sock;
+    SocketChannel sock;
     StringBuffer content_headers = null;
     StringBuffer form_data_value = null;
     byte[] formDataBuffer = null;
@@ -53,9 +55,11 @@ class RequestTask implements Runnable {
     ByteBuffer distBuff = ByteBuffer.allocate(512);
     private boolean is_buff_len_set;
     private int byte_size_read = -1;
-    private boolean isKeepAliveRequesConnection;
+    private boolean isKeepAliveRequestConnection;
 
     long time1 = System.nanoTime();//TESTING
+    private List<EventPacket> eventPack;
+    HttpSessionImpl httpSession;
 
     public RequestTask(SocketChannel socket) {
         this.sock = socket;
@@ -138,9 +142,13 @@ class RequestTask implements Runnable {
                     if (redirectAddr != null) {
                         redirectRequest(redirectAddr);
                         finished = true;
-                        isKeepAliveRequesConnection = false;//prevent keep alive
+                        isKeepAliveRequestConnection = false;//prevent keep alive
+                        return;
                     }
                 }
+
+                //create the http session object required for reference later
+                httpSession = new HttpSessionImpl();//important
 
                 if (!is_buff_len_set) {
                     //System.out.println(new String(distBuff.array()));
@@ -150,6 +158,11 @@ class RequestTask implements Runnable {
                 if (totalBytesRecieved >= headersLength + content_length) {
                     //System.out.println("over");
                     finished = true;
+                }
+
+                //send server event packet
+                if (eventPack != null) {
+                    sendEventPacket();
                 }
             }
 
@@ -173,8 +186,12 @@ class RequestTask implements Runnable {
         }
 
     }
-
-    private void handleUnknownRequest() {
+ 
+    private void handleUnknownRequest() throws IOException {
+        HttpResponseFormat response = new HttpResponseFormat();
+        response.setStatusCode_NotImplemented(request.getProtocolVersion());
+        sock.write(ByteBuffer.wrap(response.getReponse()));
+        finished=true; // force task to be terminated
     }
 
     private void handleRequest(byte[] arr, int offset, int size) throws UnsupportedEncodingException, IOException, SimpleHttpServerException {
@@ -182,31 +199,31 @@ class RequestTask implements Runnable {
         switch (request.Method()) {
             case HttpConstants.GET_METHOD:
                 if (getRequest == null) {
-                    getRequest = new GetRequest(request, sock, this);
+                    getRequest = new GetRequest(this);
                 }
                 this.getRequest.validateRequest(arr, offset, size);
                 break;
             case HttpConstants.POST_METHOD:
                 if (postRequest == null) {
-                    postRequest = new PostRequest(request, sock, this);
+                    postRequest = new PostRequest(this);
                 }
                 this.postRequest.validateRequest(arr, offset, size);
                 break;
             case HttpConstants.HEAD_METHOD:
                 if (headRequest == null) {
-                    headRequest = new HeadRequest(request, sock, this);
+                    headRequest = new HeadRequest(this);
                 }
                 this.putRequest.validateRequest(arr, offset, size);
                 break;
             case HttpConstants.PUT_METHOD:
                 if (putRequest == null) {
-                    putRequest = new PutRequest(request, sock, this);
+                    putRequest = new PutRequest(this);
                 }
                 this.putRequest.validateRequest(arr, offset, size);
                 break;
             case HttpConstants.DELETE_METHOD:
                 if (deleteRequest == null) {
-                    deleteRequest = new DeleteRequest(request, sock, this);
+                    deleteRequest = new DeleteRequest(this);
                 }
                 this.deleteRequest.validateRequest(arr, offset, size);
                 break;
@@ -317,7 +334,7 @@ class RequestTask implements Runnable {
         requestCharSet = request.getCharSet();
 
         if (request.getConnection().equalsIgnoreCase("keep-alive")) {
-            isKeepAliveRequesConnection = true;
+            isKeepAliveRequestConnection = true;
         }
 
         //more specific cache to improve performance may go here
@@ -356,18 +373,59 @@ class RequestTask implements Runnable {
     }
 
     boolean isKeepAliveConnection() {
-        return isKeepAliveRequesConnection;
+        return isKeepAliveRequestConnection;
     }
 
     private void redirectRequest(String redirectAddr) {
         try {
+            //NOT FULLY IMPLEMENTED - COME BACK ABEG O!!!
+            System.err.println("redirectRequest - NOT FULLY IMPLEMENTED - COME BACK ABEG O!!!");
             HttpResponseFormat response = new HttpResponseFormat();
-            response.setStatusCode_OK(HttpConstants.HTTP_1_1);
+            response.setStatusCode_Redirect(HttpConstants.HTTP_1_1);//come back
             //response.setRidrect(redirectAddr)//Haba  find out abeg o!!!
             sock.write(ByteBuffer.wrap(response.getReponse()));
             sock.close();//come back to check for effect while writing
         } catch (IOException ex) {
-            Logger.getLogger(SimpleHttpServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RequestTask.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    String getSessionID() {
+        return httpSession.getID();
+    }
+
+    void setEventPacket(List q) {
+
+        if (eventPack == null) {
+            eventPack = q;
+        } else {
+            eventPack.addAll(q);
+        }
+
+    }
+
+    private void sendEventPacket() throws IOException {
+
+        for (int i = 0; i < eventPack.size(); i++) {
+            
+            EventPacket pack = eventPack.remove(i);
+            
+
+            HttpResponseFormat response = new HttpResponseFormat();
+            response.setStatusCode_OK(HttpConstants.HTTP_1_1);
+            response.setConnection("open");
+            response.setContentType(pack.getContentType());
+
+            //Now if the request contains Origin header
+            //the followiing access control must be set
+            //otherwise the browse will ignore the server reponse 
+            response.setAccessControlAllowOrigin(request.getOrigin());//only this domain is allowed access to the requested resources.
+            //response.setAccessControlAllowOrigin("*");//this will allow cross domain resource sharing - full access
+
+            response.setMessageBody(pack.getData());
+
+            //now send
+            sock.write(ByteBuffer.wrap(response.getReponse()));
         }
     }
 }

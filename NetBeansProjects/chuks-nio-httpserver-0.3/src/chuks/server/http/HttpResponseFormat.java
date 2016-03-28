@@ -112,6 +112,10 @@ public class HttpResponseFormat {
         setStatusLine(htttp_protocol_version+" 200 OK");
     }
 
+    public void setStatusCode_Redirect(String htttp_protocol_version) {
+        setStatusLine(htttp_protocol_version+" 307 Redirect");//abeg come back - not concluded
+    }
+
     public void setStatusCode_FileNotFound(String htttp_protocol_version) {
         setStatusLine(htttp_protocol_version+" 404 File Not Found");
     }

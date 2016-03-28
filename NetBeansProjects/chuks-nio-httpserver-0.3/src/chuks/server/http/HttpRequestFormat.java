@@ -83,7 +83,7 @@ public class HttpRequestFormat {
         }
     }
     
-    public Map getCookiesPair(){
+     public Map getCookiesPair(){
         return cookiePair;
     }
 

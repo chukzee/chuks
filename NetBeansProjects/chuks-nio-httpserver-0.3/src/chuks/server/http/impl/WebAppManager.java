@@ -187,7 +187,7 @@ class WebAppManager implements Runnable {
                 //invalid fresh copy since the class of freshCopy and sr must be the same
                 //and the objects must not be equal.
                 initException = new SimpleHttpServerException("incorrectly initialized " + classAbsoluteFilename + " - expected: new " + sr.getClass().getName() + "()");
-                sr.onError(new ServerObjectImpl(null, null), initException);//notify error 
+                sr.onError(new ServerObjectImpl(), initException);//notify error 
                 throw initException;
             }
 

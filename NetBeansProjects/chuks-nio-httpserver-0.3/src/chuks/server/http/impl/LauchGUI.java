@@ -1163,7 +1163,7 @@ public class LauchGUI extends javax.swing.JFrame {
 
     private File chooseConfigFile() {
 
-        String suffix = ".properties";
+        final String suffix = ".properties";
         JFileChooser f = new JFileChooser();
         FileFilter filter = new FileFilter() {
 

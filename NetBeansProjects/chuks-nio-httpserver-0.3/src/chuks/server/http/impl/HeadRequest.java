@@ -4,9 +4,7 @@
  */
 package chuks.server.http.impl;
 
-import chuks.server.http.HttpRequestFormat;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.SocketChannel;
 
 /**
  *
@@ -14,8 +12,8 @@ import java.nio.channels.SocketChannel;
  */
 class HeadRequest extends RequestValidator{
 
-    HeadRequest(HttpRequestFormat request, SocketChannel out, RequestTask handler) throws UnsupportedEncodingException{
-        super(request, out);
+    HeadRequest(RequestTask task) throws UnsupportedEncodingException{
+        super(task);
     }
     
     @Override

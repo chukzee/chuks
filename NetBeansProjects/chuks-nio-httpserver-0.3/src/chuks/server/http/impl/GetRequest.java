@@ -22,9 +22,9 @@ class GetRequest extends RequestValidator {
 
     private final int headersLength;
 
-    GetRequest(HttpRequestFormat request, SocketChannel out, RequestTask handler) throws UnsupportedEncodingException {
-        super(request, out);
-        this.headersLength = handler.headersLength;
+    GetRequest(RequestTask task) throws UnsupportedEncodingException {
+        super(task);
+        this.headersLength = task.headersLength;
     }
 
     @Override
