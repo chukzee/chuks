@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Traysa</title>
+
+
+</head>
+
+<body>
+<div><p>my name is amos</p></div>
+</body>
+<script type="text/javascript" src="TestJS.js"></script>
+<script type="text/javascript">
+
+alert(Math.pow(2, 3));
+
+var g = [2];
+
+if(g==null || g[1]==undefined){
+	alert(g[1]);
+}
+var arr = ["2","4",6];
+
+alert(arr.length);
+
+var b = null;
+
+if(b==null){
+alert(b)
+}
+
+function Nd(){
+	this.n1 = "2";
+	this.n2 = null;
+}
+
+function Test(t1, t2){
+this.t1=t1;
+this.t2=t2;
+}
+
+alert("w");
+
+var v1 = new Test("me1","you1");
+var v2 = new Test("me2","you2");
+
+//alert(ar.length);
+
+var t = new Test("me","you");
+
+var tt = new Test();
+//tt.t1 = "chuks";
+//t.t1 = tt;
+t.t2 = new Nd();
+var j = JSON.stringify(t);
+alert(j);
+var n = JSON.parse(j);
+
+alert(n.t2.n1);
+
+n.t2.n1 = "3222222";
+alert(n.t2.n1);
+
+var c = JSON.stringify(n);
+alert(c)
+if(n.t2.n2==null){
+	alert(n.t2.n2);
+}
+
+
+</script>
+
+</body>
+
+</html>
