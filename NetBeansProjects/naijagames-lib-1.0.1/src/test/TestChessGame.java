@@ -36,7 +36,10 @@ public class TestChessGame {
     public static void main(String[] args){
             
             //internet connection
-            IConnection webCon = new WebConnection();//using internet connection           
+            WebConnection webCon = new WebConnection("localhost", 88);//using internet connection   
+            webCon.useProxy(true);
+            webCon.proxyHost("127.0.0.1");
+            webCon.proxyPort(8080);
             ChessGameClientFactory  cfac= new ChessGameClientFactory(webCon);//factory for implementing chess game clients
             GameClient gclient = GameClientFactory.createGameClient(cfac);            
             //add social networks
@@ -51,7 +54,7 @@ public class TestChessGame {
             gclient.start();//start the game client - client connects and starts internal processing
 
             //bluetooth connection
-            IConnection blCon = new BluetoothConnection();//using bluetooth connection  
+            BluetoothConnection blCon = new BluetoothConnection("the bluetooth localhost", 000000);//using bluetooth connection  
             ChessGameClientFactory  cfac1= new ChessGameClientFactory(blCon);//factory for implementing chess game clients
             GameClient gclient1 = GameClientFactory.createGameClient(cfac1);
             gclient1.start();//start the game client - client connects and starts internal processing
@@ -60,11 +63,13 @@ public class TestChessGame {
             
             //first build the game
             ChessBoardListener listener = null;
-            Game game1 = new Chess.ChessBuilder(listener).setBoardPosition(new ChessBoardPosition()).
-                                blackPlayer(new LocalUser()).
-                                whitePlayer(new RemoteUser()).                    
-                                score(new Score(0f,1f)).
-                                timeControl(null).build();//building the chess game
+            Game game1 = new Chess.ChessBuilder(listener)
+                                .setBoardPosition(new ChessBoardPosition())
+                                .blackPlayer(new LocalUser())
+                                .whitePlayer(new RemoteUser())                  
+                                .score(new Score(0f,1f))
+                                .timeControl(null)
+                                .build();//building the chess game
             
             int session_id1 =1;//unique session id
             Date session_start_time1 = null;

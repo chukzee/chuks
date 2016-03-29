@@ -5,12 +5,22 @@
  */
 package naija.game.client;
 
+import java.io.IOException;
+import twitter4j.JSONObject;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface IConnection {
- 
-    boolean connect(String host_name, int port);
+public interface IConnection{
+   
+   void connect();
+
     void disconnect();
+
+    JSONObject sendRequest(RequestPacket requestPacket);
+
+    public String getHost();
+
+    public int getPort();
 }

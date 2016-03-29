@@ -14,10 +14,9 @@ import naija.game.client.AbstractGameClient;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class LudoGameClient extends AbstractGameClient {
-    IConnection conn;
     
     LudoGameClient (IConnection conn){
-        this.conn = conn;
+        super(conn);
     }
     
 }

@@ -15,10 +15,9 @@ import naija.game.client.AbstractGameClient;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class WhotGameClient extends AbstractGameClient {
-    IConnection conn;
     
     WhotGameClient (IConnection conn){
-        this.conn = conn;
+        super(conn);
     }
     
 }

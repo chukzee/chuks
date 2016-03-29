@@ -13,10 +13,9 @@ import naija.game.client.AbstractGameClient;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class DraftGameClient extends AbstractGameClient {
-    IConnection conn;
     
     DraftGameClient (IConnection conn){
-        this.conn = conn;
+        super(conn);
     }
     
 }

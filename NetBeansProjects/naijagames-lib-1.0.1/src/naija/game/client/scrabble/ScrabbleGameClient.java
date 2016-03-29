@@ -14,10 +14,9 @@ import naija.game.client.AbstractGameClient;
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 class ScrabbleGameClient extends AbstractGameClient {
-    IConnection conn;
     
     ScrabbleGameClient (IConnection conn){
-        this.conn = conn;
+        super(conn);
     }
     
 }

@@ -8,6 +8,7 @@ package naija.game.client;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class GameSession implements Session {
 
-    List<Spectator> spectators = Collections.synchronizedList(new ArrayList<Spectator>());
+    List<Spectator> spectators = Collections.synchronizedList(new LinkedList<Spectator>());
     private int room_id;
     private Date session_start_time;
     private Date session_end_time;

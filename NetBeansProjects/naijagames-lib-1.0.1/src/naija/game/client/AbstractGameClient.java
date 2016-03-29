@@ -5,86 +5,107 @@
  */
 package naija.game.client;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import twitter4j.JSONException;
+import twitter4j.JSONObject;
 
 /**
  *
  * @author USER
  */
-public abstract class AbstractGameClient implements GameClient{
-    
-    List<Session> sessionList = Collections.synchronizedList(new ArrayList<Session>());
-    List<SocialNetwork> socalNetworkList = Collections.synchronizedList(new ArrayList<SocialNetwork>());
+public abstract class AbstractGameClient implements GameClient {
+
+    List<Session> sessionList = Collections.synchronizedList(new LinkedList<Session>());
+    List<SocialNetwork> socalNetworkList = Collections.synchronizedList(new LinkedList<SocialNetwork>());
+    List<RequestPacket> requestPackList = Collections.synchronizedList(new LinkedList<RequestPacket>());
     GameClientHandler handler = new GameClientHandler();
     Thread clientThread;
-    private boolean isRunning;
-    
+    protected boolean isRunning;
+    protected IConnection conn;
+
+    public AbstractGameClient(IConnection conn) {
+        this.conn = conn;
+    }
+
     @Override
-    public void start(){
-        if(clientThread==null){
+    final public void start() {
+        if (clientThread == null) {
             clientThread = new Thread(handler);
             clientThread.start();
             isRunning = true;
         }
     }
-    
+
     @Override
-    public void stop(){
+    final public void stop() {
         isRunning = false;
     }
-    
+
     @Override
     public boolean addSocailNetwork(SocialNetwork socail_network) {
         return socalNetworkList.add(socail_network);
     }
-    
+
     @Override
     public boolean removeSocailNetwork(SocialNetwork socail_network) {
         return socalNetworkList.remove(socail_network);
     }
-             
+
     @Override
-    public boolean addSession(Session session){
+    public boolean addSession(Session session) {
         return sessionList.add(session);
     }
-    
+
     @Override
-    public boolean removeSession(Session session){
+    public boolean removeSession(Session session) {
         return sessionList.remove(session);
     }
-    
+
     @Override
-    public int sessionCount(){
+    public int sessionCount() {
         return sessionList.size();
     }
-    
-    class GameClientHandler implements Runnable{
+
+    class GameClientHandler implements Runnable {
 
         @Override
         public void run() {
-            
-            while(isRunning){
+
+
+
+            while (isRunning) {
                 //do the various task here
-                
-                
+                JSONObject json = sendRequest();
+
                 //handle session
                 handleSessiions();
                 handleSocailNetwork();
             }
-            
+
         }
 
         private void handleSessiions() {
-            
         }
 
         private void handleSocailNetwork() {
-
         }
-        
+
+        private JSONObject sendRequest() {
+             RequestPacket requestPack = requestPackList.remove(requestPackList.size() - 1);
+            return conn.sendRequest(requestPack);
+        }
+
     }
-    
 }
