@@ -7,9 +7,8 @@ package chuks.server;
 /**
  *
  * @author USER
- * @param <T>
  */
-public interface SimpleServerApplication <T>{
+public interface WebApplication{
     
     /**This is the first method called upon any request.It is 
      * the beginning of the life cycle of this class<br/>
@@ -25,7 +24,7 @@ public interface SimpleServerApplication <T>{
      * @return 
      * @throws java.lang.Exception 
      */
-    T initialize(ServerObject so) throws Exception;
+    WebApplication initialize(ServerObject so) throws Exception;
     
     /**This method is only called once through out the life time of the web app.
      * Once called, it will never be called again upon any request.

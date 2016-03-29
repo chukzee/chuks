@@ -5,7 +5,7 @@
 package chuks.server.http.impl;
 
 import chuks.server.SimpleHttpServerException;
-import chuks.server.SimpleServerApplication;
+import chuks.server.WebApplication;
 import static chuks.server.http.impl.SimpleHttpServer.*;
 import static chuks.server.http.impl.ServerConfig.*;
 import chuks.server.util.ThreadUtil;
@@ -38,13 +38,13 @@ class WebAppManager implements Runnable {
 
     /**
      * Hold the initialized web apps (ie classes that implements
-     * SimpleServerApplication)
+     * WebApplication)
      */
-    private static Map<String, SimpleServerApplication> webAppMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
+    private static Map<String, WebApplication> webAppMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
 
     /**
      * Hold the Class object of the web apps (ie classes that implements
-     * SimpleServerApplication) loaded by the Bootstrap class during server
+     * WebApplication) loaded by the Bootstrap class during server
      * start up
      */
     private static Map<String, Class> webAppClassObjectsMap = new HashMap(); //no need for synchronized collection here since the access  is in synchronized block - see implementation below
@@ -93,17 +93,17 @@ class WebAppManager implements Runnable {
         new Thread(serverAppManager).start();
     }
 
-    static SimpleServerApplication getWebApp(String classAbsoluteFilename, RequestValidator requestValidator, ServerObjectImpl serverObj) {
+    static WebApplication getWebApp(String classAbsoluteFilename, RequestValidator requestValidator, ServerObjectImpl serverObj) {
 
         String className = classAbsoluteFilename.substring(getClassPath().length(), classAbsoluteFilename.length() - SERVER_FILE_EXT.length() - 1);
         className = className.replace(fileSeparator(), '.');//Yes - replace all occurence of OS file seperator with '.' . Yes replace() does replace all the char occurence - see doc 
-        SimpleServerApplication ssr;
+        WebApplication ssr;
         try {
             synchronized (c_lock) {
                 if (!isClassFilesChange) {
                     ssr = webAppMap.get(className);
                     if (ssr != null) {
-                        return (SimpleServerApplication) ssr.initialize(serverObj);//return fresh copy - that which has not been used.
+                        return (WebApplication) ssr.initialize(serverObj);//return fresh copy - that which has not been used.
                     }
 
                     if (lastClassLoader == null) {
@@ -131,15 +131,15 @@ class WebAppManager implements Runnable {
         return ssr;
     }
 
-    static private SimpleServerApplication checkFileSystem(String className, String classAbsoluteFilename, WebAppClassLoader classLoader, RequestValidator requestValidator, ServerObjectImpl serverObj) {
+    static private WebApplication checkFileSystem(String className, String classAbsoluteFilename, WebAppClassLoader classLoader, RequestValidator requestValidator, ServerObjectImpl serverObj) {
 
         //check the cache once more if you were a waiter during lock
         //because we want to try as much as possible
         //to skip the reload of the class and java reflection below which altogether is expensive.
-        SimpleServerApplication ssr = webAppMap.get(className);//check cache again
+        WebApplication ssr = webAppMap.get(className);//check cache again
         if (ssr != null) {
             try {
-                return (SimpleServerApplication) ssr.initialize(serverObj);//return fresh copy - that which has not been used.
+                return (WebApplication) ssr.initialize(serverObj);//return fresh copy - that which has not been used.
             } catch (Exception ex) {
                 requestValidator.handleReceiverError(ex, null);
                 return null;
@@ -170,12 +170,12 @@ class WebAppManager implements Runnable {
                 return null;
             }
 
-            SimpleServerApplication sr = (SimpleServerApplication) cl.newInstance();
+            WebApplication sr = (WebApplication) cl.newInstance();
             //store a fresh copy in the map rather than use reflection next time
-            SimpleServerApplication freshCopy;
+            WebApplication freshCopy;
             try {
-                freshCopy = (SimpleServerApplication) sr.initialize(serverObj); // initialize() should return a fresh copy
-                freshCopy.callOnce(serverObj);//called only once for the entire exist of the SimpleServerApplication Class
+                freshCopy = (WebApplication) sr.initialize(serverObj); // initialize() should return a fresh copy
+                freshCopy.callOnce(serverObj);//called only once for the entire exist of the WebApplication Class
             } catch (Exception ex) {
                 requestValidator.handleReceiverError(ex, null);
                 return null;

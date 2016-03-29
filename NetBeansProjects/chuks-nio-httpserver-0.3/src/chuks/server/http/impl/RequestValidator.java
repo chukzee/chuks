@@ -10,7 +10,7 @@ import chuks.server.http.HttpResponseFormat;
 import chuks.server.HttpFileObject;
 import chuks.server.HttpSession;
 import chuks.server.SimpleHttpServerException;
-import chuks.server.SimpleServerApplication;
+import chuks.server.WebApplication;
 import static chuks.server.http.impl.ServerConfig.DEFAULT_INDEX_FILE_EXTENSION;
 import java.io.File;
 import java.io.FileInputStream;
@@ -244,20 +244,20 @@ abstract class RequestValidator {
         //At this point it is possibly a class file (server app file). 
         ServerObjectImpl serverObj = new ServerObjectImpl();
 
-        SimpleServerApplication server_app = WebAppManager.getWebApp(requestedFilePath, this, serverObj);
+        WebApplication web_app = WebAppManager.getWebApp(requestedFilePath, this, serverObj);
 
-        if (server_app == null) {//now we             
+        if (web_app == null) {//now we             
             return;
         }
 
         try {
 
-            if (server_app.startSession()) {
+            if (web_app.startSession()) {
                 httpSession.setSession(request.getCookiesPair(), request.getCookieSessionToken());
             }
 
-            server_app.onRequest(reqestObj, serverObj);
-            server_app.onFinish(serverObj);
+            web_app.onRequest(reqestObj, serverObj);
+            web_app.onFinish(serverObj);
 
         } catch (UnsupportedOperationException ex) {
             handleReceiverError(ex, null);//show the user that he omitted a method implementation

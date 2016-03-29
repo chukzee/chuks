@@ -5,7 +5,7 @@
  */
 package chuks.server.http.impl;
 
-import chuks.server.SimpleServerApplication;
+import chuks.server.WebApplication;
 import static chuks.server.http.impl.SimpleHttpServer.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +31,7 @@ class Bootstrap {
     private static boolean done;
     private static String[] classesFilenames = {};
     static private int loaded;
-    static Class webAppInterface = SimpleServerApplication.class;
+    static Class webAppInterface = WebApplication.class;
     
     static ClassFinderListener listener = new ClassFinderListener(){
             @Override
@@ -213,7 +213,7 @@ class Bootstrap {
         if (interfaces != null && interfaces.length > 0) {
             for (String _interface : interfaces) {
                 if (_interface.equals(webAppInterface.getName().replace('.', '/'))) {
-                    reader.accept(visitor, ClassReader.EXPAND_FRAMES);//visit implementor of SimpleServerApplication
+                    reader.accept(visitor, ClassReader.EXPAND_FRAMES);//visit implementor of WebApplication
                     return;
                 }
             }
@@ -229,12 +229,12 @@ class Bootstrap {
         if (interfaces != null && interfaces.length > 0) {
             for (String _interface : interfaces) {
                 if (_interface.equals(webAppInterface.getName().replace('.', '/'))) {
-                    return doClassLoad(absoluteClassFile, true);//implementor SimpleServerApplication
+                    return doClassLoad(absoluteClassFile, true);//implementor WebApplication
                 }
             }
         } else {
             //System.out.println("non-implementor = "+className);
-            return doClassLoad(absoluteClassFile, false);// non-implementor of SimpleServerApplication
+            return doClassLoad(absoluteClassFile, false);// non-implementor of WebApplication
         }
 
         return false;

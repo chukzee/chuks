@@ -4,15 +4,7 @@
  */
 package chuks.server.http.impl;
 
-import chuks.server.SimpleServerApplication;
-import chuks.server.http.HttpRequestFormat;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.SocketChannel;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  *
