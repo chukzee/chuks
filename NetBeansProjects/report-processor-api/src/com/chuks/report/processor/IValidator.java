@@ -7,6 +7,7 @@ package com.chuks.report.processor;
 
 import com.chuks.report.processor.param.ErrorCallBack;
 import com.chuks.report.processor.handler.ValidationHandler;
+import java.awt.Color;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 
@@ -46,6 +47,6 @@ public interface IValidator {
 
     boolean validateCustom(ValidationHandler vHandler, JComponent... comps);
 
-    boolean validateCustom(ValidationHandler vHandler, JDialog dialog);
+    boolean validateCustom(ValidationHandler vHandler, JDialog dialog);   
     
 }

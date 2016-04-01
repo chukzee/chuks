@@ -94,7 +94,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     public ReportTableModel load0(JTable table, TableDataInputHandler dataInputHandler, UpdateTableHandler updateFieldHandler, DeleteRowHandler deleteRowHandler) {
 
         TableDataInputImpl input = new TableDataInputImpl(new JDBCSettings(jdbcSettings));//copy jdbcSettings 
-        dataInputHandler.onInput(input);
+        dataInputHandler.doInput(input);
         Object[][] fetch = input.dbHelper.fetchArray();
 
         if (input.getData() == null) {
@@ -734,17 +734,17 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             }
 
             @Override
-            public void alert(JComponent container, String message, String title) {
+            public void alert(Component container, String message, String title) {
                 JOptionPane.showMessageDialog(container, message, title, JOptionPane.INFORMATION_MESSAGE);
             }
 
             @Override
-            public void alert(JComponent container, String message, String title, Option type) {
+            public void alert(Component container, String message, String title, Option type) {
                 JOptionPane.showMessageDialog(container, message, title, getIntType(type));
             }
 
             @Override
-            public void alert(JComponent container, String message, String title, Option type, Icon icon) {
+            public void alert(Component container, String message, String title, Option type, Icon icon) {
                 JOptionPane.showMessageDialog(container, message, title, getIntType(type), icon);
             }
 
@@ -777,19 +777,19 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             }
 
             @Override
-            public Option comfirm(JComponent container, String message, String title, Option OptType) {
+            public Option comfirm(Component container, String message, String title, Option OptType) {
                 int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType));
                 return getOpiton(result);
             }
 
             @Override
-            public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type) {
+            public Option comfirm(Component container, String message, String title, Option OptType, Option msg_type) {
                 int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type));
                 return getOpiton(result);
             }
 
             @Override
-            public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type, Icon icon) {
+            public Option comfirm(Component container, String message, String title, Option OptType, Option msg_type, Icon icon) {
                 int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type), icon);
                 return getOpiton(result);
             }
@@ -940,7 +940,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         private List refreshUsingDataInputHandler() {
 
             TableDataInputImpl input = new TableDataInputImpl(model_jdbc_settings);
-            dataInputHandler.onInput(input);
+            dataInputHandler.doInput(input);
 
             if (input.getData() == null) {
                 return null;
@@ -1050,7 +1050,7 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                     } else {
                         TableFieldGen fieldGen = ((TableFieldGen[]) d)[k];
 
-                        backing_data[i][k] = inputCallBack.onBeforeInput(fieldGen, i, k);
+                        backing_data[i][k] = inputCallBack.doInput(fieldGen, i, k);
                     }
                 }
                 fireTableRowsInserted(i, i);

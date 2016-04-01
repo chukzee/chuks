@@ -7,6 +7,7 @@ package com.chuks.report.processor.factory;
 
 import com.chuks.report.processor.Source;
 import com.chuks.report.processor.SourceMath;
+import java.util.Date;
 
 /**
  *
@@ -240,6 +241,96 @@ class SourceMathImpl implements SourceMath {
         }
         ans = val;
         return this;
+    }
+
+    @Override
+    public Date ansDate() {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public long ansTime() {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return 0;
+    }
+
+    @Override
+    public SourceMath dateAdd(String date_column, long milli_seconds) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateDiff(String date_column1, String date_column2) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateDayOfWeek(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateDayOfMonth(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateDayOfYear(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateTime(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateMonth(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateWeekOfMonth(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateWeekOfYear(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath dateYear(String date_column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath toWords(long number) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath toWords(double number) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
+    }
+
+    @Override
+    public SourceMath toWords(String column) {
+        System.err.println("REMIND: Auto generated method body is not yet implemented");
+        return null;
     }
 
 }

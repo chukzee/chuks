@@ -39,12 +39,16 @@ import com.chuks.report.processor.form.controls.JFirst;
 import com.chuks.report.processor.form.controls.JLast;
 import com.chuks.report.processor.form.controls.JReset;
 import com.chuks.report.processor.form.controls.JSave;
+import com.chuks.report.processor.param.ErrorAlert;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -277,7 +281,6 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private DefaultFormModel build() {
             return new DefaultFormModel(this);
         }
-
     }
 
     class DefaultFormModel implements SearchObserver, DataPull {
@@ -303,6 +306,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private long next_poll_time;
         private boolean dataPollEnabled;
         private float dataPollInterval;
+        private Map<Integer, Color> intialCompForeground = new HashMap();
+        private Map<Integer, Color> intialCompBackground = new HashMap();
 
         private DefaultFormModel(FormModelBuilder builder) {
             try {
@@ -328,7 +333,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
                 if (dataInputHandler != null) {
                     FormDataInputImpl input = new FormDataInputImpl(jdbcSettings);
-                    dataInputHandler.onInput(input);
+                    dataInputHandler.doInput(input);
 
                     data = input.getData();//get data whether available or not
 
@@ -349,6 +354,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 checksControlRepitition();
                 initControllerPane();
                 initControls();
+                initValidationColor();
 
                 if (data != null || data.length > 0) {
                     displayRecord(moveTo(0));//move to the first record
@@ -370,6 +376,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             for (FormControl control : pane_controls) {
                 doControlInit(control);
             }
+        }
+
+        private void initValidationColor() {
+            for (int i = 0; i < fieldsComponents.length; i++) {
+                intialCompBackground.put(fieldsComponents[i].hashCode(), fieldsComponents[i].getBackground());
+                intialCompForeground.put(fieldsComponents[i].hashCode(), fieldsComponents[i].getForeground());
+            }
+        }
+
+        private Color getInitialCompentBackground(Component comp) {
+            return intialCompBackground.remove(comp.hashCode());
+        }
+
+        private Color getInitialCompentForeground(Component comp) {
+            return intialCompForeground.remove(comp.hashCode());
         }
 
         private Object[][] generateCallBackData(String[] db_columns) throws SQLException {
@@ -559,7 +580,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         private Object[][] refreshUsingDataInputHandler() {
 
             FormDataInputImpl input = new FormDataInputImpl(model_jdbc_settings);
-            dataInputHandler.onInput(input);
+            dataInputHandler.doInput(input);
 
             if (input.getData() == null) {
                 Object[][] fetch = input.dbHelper.fetchArray();
@@ -654,7 +675,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             Object fieldValue = record_data[field_index];
             if (callBack != null) {
                 FormFieldGen fieldGen = (FormFieldGen) fieldValue;
-                fieldValue = callBack.onBeforeInput(fieldGen, record_index);
+                fieldValue = callBack.doInput(fieldGen, record_index);
             }
 
             return fieldValue;
@@ -664,7 +685,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             Object fieldValue = value;
             if (callBack != null) {
                 FormFieldGen fieldGen = (FormFieldGen) fieldValue;
-                fieldValue = callBack.onBeforeInput(fieldGen, record_index);
+                fieldValue = callBack.doInput(fieldGen, record_index);
             }
 
             return fieldValue;
@@ -838,9 +859,11 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
         private void jsaveAcitionPerform(ActionEvent e) {
             if (saveRecord()) {
-                reset();//after every successful save, reset the form
-                displayRecord(moveTo(record_index));
-                updateJCounter();
+                if (reset_form_after_save) {
+                    reset();//reset the form
+                    displayRecord(moveTo(record_index));
+                    updateJCounter();
+                }
             }
         }
 
@@ -981,13 +1004,50 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
             this.record_index = RESET_INDEX;
             return null;//force form components reset by returning null
         }
+        boolean reset_form_after_save;
 
         private boolean saveRecord() {
-
+            
             FormFieldPost post = new FormFieldPost() {
                 FormFieldImpl[] updateEntries = new FormFieldImpl[0];
                 private boolean is_refresh = true;//refresh by default
-                Validator validator = new Validator();
+                private Color bgColor;
+                private Color fgColor;
+                Validator validator = new Validator() {
+                    @Override
+                    protected void setComponentForeground(JComponent comp, boolean is_valid) {
+                        Color fg_color = intialCompForeground.get(comp.hashCode());
+                        if (fg_color == null) {
+                            return;
+                        }
+                        if (is_valid) {
+                            comp.setForeground(fg_color);
+                        } else {
+                            if (fgColor != null) {
+                                comp.setForeground(fgColor);
+                            }
+                        }
+                    }
+
+                    @Override
+                    protected void setComponentBackground(JComponent comp, boolean is_valid) {
+                        Color bg_color = intialCompBackground.get(comp.hashCode());
+                        if (bg_color == null) {
+                            return;
+                        }
+                        if (is_valid) {
+                            comp.setBackground(bg_color);
+                        } else {
+                            if (bgColor != null) {
+                                comp.setBackground(bgColor);
+                            }
+                        }
+                    }
+                };
+
+                {
+                    reset_form_after_save = false;
+                }
 
                 @Override
                 public IFormField[] getFormFields() {
@@ -1057,17 +1117,17 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
-                public void alert(JComponent container, String message, String title) {
+                public void alert(Component container, String message, String title) {
                     JOptionPane.showMessageDialog(container, message, title, JOptionPane.INFORMATION_MESSAGE);
                 }
 
                 @Override
-                public void alert(JComponent container, String message, String title, Option type) {
+                public void alert(Component container, String message, String title, Option type) {
                     JOptionPane.showMessageDialog(container, message, title, getIntType(type));
                 }
 
                 @Override
-                public void alert(JComponent container, String message, String title, Option type, Icon icon) {
+                public void alert(Component container, String message, String title, Option type, Icon icon) {
                     JOptionPane.showMessageDialog(container, message, title, getIntType(type), icon);
                 }
 
@@ -1100,19 +1160,19 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
-                public Option comfirm(JComponent container, String message, String title, Option OptType) {
+                public Option comfirm(Component container, String message, String title, Option OptType) {
                     int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType));
                     return getOpiton(result);
                 }
 
                 @Override
-                public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type) {
+                public Option comfirm(Component container, String message, String title, Option OptType, Option msg_type) {
                     int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type));
                     return getOpiton(result);
                 }
 
                 @Override
-                public Option comfirm(JComponent container, String message, String title, Option OptType, Option msg_type, Icon icon) {
+                public Option comfirm(Component container, String message, String title, Option OptType, Option msg_type, Icon icon) {
                     int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type), icon);
                     return getOpiton(result);
                 }
@@ -1196,6 +1256,27 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
+                public boolean validateAlertAnyEmtpy() {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be empty!");
+                    return validator.validateEmpty(errAlert, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateAlertEmtpy(String... accessible_names) {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be empty!");                    
+                    return validator.validateEmpty(errAlert, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateAlertEmtpy(JComponent... comps) {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be empty!");                    
+                    return validator.validateEmpty(errAlert, comps);
+                }
+
+                @Override
                 public boolean validateAnyNumeric() {
                     return validator.validateNumeric(fieldsComponents);
                 }
@@ -1226,6 +1307,27 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
 
                 @Override
+                public boolean validateAlertAnyNumeric() {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field must be numeric!");
+                    return validator.validateEmpty(errAlert, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateAlertNumeric(String... accessible_names) {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be empty!");                    
+                    return validator.validateEmpty(errAlert, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateAlertNumeric(JComponent... comps) {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be empty!");                    
+                    return validator.validateEmpty(errAlert, comps);
+                }
+
+                @Override
                 public boolean validateAnyNumber() {
                     return validator.validateNumber(fieldsComponents);
                 }
@@ -1253,6 +1355,27 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 @Override
                 public boolean validateNumber(ErrorCallBack errCall, JComponent... comp) {
                     return validator.validateNumber(errCall, comp);
+                }
+
+                @Override
+                public boolean validateAlertAnyNumber() {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field must be a number!");
+                    return validator.validateEmpty(errAlert, fieldsComponents);
+                }
+
+                @Override
+                public boolean validateAlertNumber(String... accessible_names) {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be a number!");                    
+                    return validator.validateEmpty(errAlert, getComponentsByAccessNames(accessible_names));
+                }
+
+                @Override
+                public boolean validateAlertNumber(JComponent... comps) {
+                    ErrorAlert errAlert = new ErrorAlert(this);
+                    errAlert.setMsgAppend("field cannot be a number!");                    
+                    return validator.validateEmpty(errAlert, comps);
                 }
 
                 @Override
@@ -1305,6 +1428,21 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
 
                 }
 
+                @Override
+                public void reset() {
+                    reset_form_after_save = true;
+                }
+
+                @Override
+                public void setErrorIndicator(Color bgColor) {
+                    this.bgColor = bgColor;
+                }
+
+                @Override
+                public void setErrorIndicator(Color bgColor, Color fgColor) {
+                    this.bgColor = bgColor;
+                    this.fgColor = fgColor;
+                }
             };
 
             formFieldsPostHandler.doPost(new ActionSQLImpl(model_jdbc_settings), post);
@@ -1329,7 +1467,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                         backing_data[i][k] = d[k];
                     } else {
                         FormFieldGen fieldGen = ((FormFieldGen[]) d)[k];
-                        backing_data[i][k] = callBack.onBeforeInput(fieldGen, i);
+                        backing_data[i][k] = callBack.doInput(fieldGen, i);
                     }
                 }
             }
@@ -1429,8 +1567,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         }
 
         /**
-         * This method will pause the data pull if all the form components are not
-         * showing.
+         * This method will pause the data pull if all the form components are
+         * not showing.
          *
          * @return
          */
@@ -1449,7 +1587,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         public boolean stopPull() {
             return false;
         }
-        
+
         private void disableAllFormControls() {
             if (controllers_pane != null) {
                 controllers_pane.controlFailedState(true);
@@ -1460,6 +1598,5 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                 }
             }
         }
-
     }
 }

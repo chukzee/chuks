@@ -11,5 +11,5 @@ package com.chuks.report.processor.param;
  */
 public interface TableFieldCallBack {
     
-    Object onBeforeInput(TableFieldGen source, int row_index, int col_index);
+    Object doInput(TableFieldGen source, int row_index, int col_index);
 }

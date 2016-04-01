@@ -99,7 +99,7 @@ public class TestTableProc1 extends javax.swing.JFrame {
             t.tableLoad(jTable1, new TableDataInputHandler() {
 
                 @Override
-                public void onInput(TableDataInput input) {
+                public void doInput(TableDataInput input) {
 
                     try {
                         Object[][] data = input.select()

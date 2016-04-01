@@ -66,7 +66,7 @@ final class FormFieldSource implements FormFieldGen {
             }
         }
 
-        throw new IllegalArgumentException("Unknown databse column source! '" + dbColumnName + "' was not mapped to this field.");
+        throw new IllegalArgumentException("Unknown databse column source! '" + dbColumnName + "' was not mapped to this " + comp.getName() + " field" + (getAccessibleName() == null ? " - No accessible name! Specify accessible name to help detect the affected field." : " with accessible name " + getAccessibleName()));
 
     }
 
@@ -94,5 +94,4 @@ final class FormFieldSource implements FormFieldGen {
     public SourceMath math() {
         return new SourceMathImpl(this);
     }
-
 }

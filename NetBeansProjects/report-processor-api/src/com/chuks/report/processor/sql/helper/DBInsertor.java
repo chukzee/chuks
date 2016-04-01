@@ -80,10 +80,9 @@ public class DBInsertor {
         return this;
     }
 
-    public void into(String table_name) throws SQLException {
+    public int into(String table_name) throws SQLException {
 
         dbHelper.conn = dbHelper.getConnection(dbHelper.prc.getDBSettings());
-        dbHelper.conn.setAutoCommit(false);
         DSLContext dctx = DSL.using(dbHelper.conn);
 
         InsertSetStep<Record> iss = dctx.insertInto(table(table_name));
@@ -97,7 +96,6 @@ public class DBInsertor {
             isms = iss.set(field(column), value);
         }
 
-        isms.execute();
-        //dbHelper.conn.commit();
+        return isms.execute();        
     }
 }

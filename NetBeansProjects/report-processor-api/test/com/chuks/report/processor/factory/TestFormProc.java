@@ -12,7 +12,9 @@ import com.chuks.report.processor.param.FormFieldMapper;
 import com.chuks.report.processor.param.FormFieldPost;
 import com.chuks.report.processor.handler.FormPostHandler;
 import com.chuks.report.processor.FormProcessor;
+import com.chuks.report.processor.IFormField;
 import com.chuks.report.processor.util.JDBCSettings;
+import java.awt.Color;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +54,7 @@ public class TestFormProc extends javax.swing.JFrame {
 
         f.formLoad(new FormFieldCallBack() {
             @Override
-            public Object onBeforeInput(FormFieldGen field, int record_index) {
+            public Object doInput(FormFieldGen field, int record_index) {
                 if ("feild1".equals(field.getAccessibleName())) {
                     //do nothing for now
                 } else if (field.getComponent().equals(jTextField2)) {
@@ -64,13 +66,20 @@ public class TestFormProc extends javax.swing.JFrame {
                 return field.dbSrcValueAt(0);
             }
         }, new FormPostHandler() {
-
             @Override
             public void doPost(ActionSQL a, FormFieldPost f) {
-                f.getFormFields();
+                IFormField[] fd = f.getFormFields();
 
                 System.out.println("is new = " + f.isNew());
                 System.out.println("is update = " + f.isUpdate());
+
+                f.runAllValidations(true);
+                f.setErrorIndicator(Color.yellow);
+                if (!f.validateAnyEmtpy()) {
+                    f.refresh(false);//do not refresh
+                    return;
+                }
+                //f.reset();
 
             }
         }, new FormFieldMapper()
@@ -78,8 +87,7 @@ public class TestFormProc extends javax.swing.JFrame {
                 .map(jTextField2, "cash", "amount", "age")
                 .map(jTextField3, "age")
                 .map(jTextField4, "name")
-                .map(jTextField5, "amount")
-                , jControllerPane1, jReset2, jSave1);
+                .map(jTextField5, "amount"), jControllerPane1, jReset2, jSave1);
     }
 
     /**
@@ -193,7 +201,6 @@ public class TestFormProc extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.chuks.report.processor.form.controls.JControllerPane jControllerPane1;
     private com.chuks.report.processor.form.controls.JReset jReset2;

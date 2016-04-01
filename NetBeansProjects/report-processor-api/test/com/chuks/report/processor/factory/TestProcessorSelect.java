@@ -67,7 +67,7 @@ public class TestProcessorSelect {
 
         t.tableLoad(panel, new TableFieldCallBack() {
             @Override
-            public Object onBeforeInput(TableFieldGen field, int row_index, int col_index) {
+            public Object doInput(TableFieldGen field, int row_index, int col_index) {
                 //System.out.println("row_index "+row_index+" col_index "+col_index);
                 if (field.fieldColumn().equalsIgnoreCase("sum")) {
                     double cash = Double.parseDouble(field.dbSrcValue("cash").toString());

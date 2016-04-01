@@ -5,6 +5,8 @@
  */
 package com.chuks.report.processor;
 
+import java.util.Date;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
@@ -12,6 +14,10 @@ package com.chuks.report.processor;
 public interface SourceMath {
 
     double ans();
+    
+    Date ansDate();
+
+    long ansTime();
 
     int ansInt();
 
@@ -59,4 +65,29 @@ public interface SourceMath {
 
     SourceMath mult(SourceMath prev, String... columns);
 
+    SourceMath dateAdd(String date_column, long milli_seconds);
+
+    SourceMath dateDiff(String date_column1, String date_column2);
+
+    SourceMath dateDayOfWeek(String date_column);
+    
+    SourceMath dateDayOfMonth(String date_column);
+    
+    SourceMath dateDayOfYear(String date_column);
+
+    SourceMath dateTime(String date_column);
+
+    SourceMath dateMonth(String date_column);
+    
+    SourceMath dateWeekOfMonth(String date_column);
+
+    SourceMath dateWeekOfYear(String date_column);
+    
+    SourceMath dateYear(String date_column);
+    
+    SourceMath toWords(long number);
+    
+    SourceMath toWords(double number);
+
+    SourceMath toWords(String column);
 }

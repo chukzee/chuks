@@ -7,6 +7,7 @@ package com.chuks.report.processor;
 
 import com.chuks.report.processor.param.ErrorCallBack;
 import com.chuks.report.processor.handler.ValidationHandler;
+import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -21,14 +22,18 @@ import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 import org.jdesktop.swingx.JXDatePicker;
 
-
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class Validator implements IValidator{
+public class Validator implements IValidator {
+
     private boolean isRunAllVaidation;
-      @Override
+
+    public Validator() {
+    }
+
+    @Override
     public void runAllValidations(boolean isRunAllVaidation) {
         this.isRunAllVaidation = isRunAllVaidation;
     }
@@ -36,6 +41,26 @@ public class Validator implements IValidator{
     @Override
     public boolean isRunAllValidations() {
         return isRunAllVaidation;
+    }
+
+    /**
+     * Subclass can override this method to change the component foreground if
+     * the validation fails or succeeds.
+     * The default implementation does nothing
+     *
+     * @param comp
+     */
+    protected void setComponentForeground(JComponent comp, boolean is_valid) {
+    }
+
+    /**
+     * Subclass can override this method to change the component background if
+     * the validation fails or succeeds.
+     * The default implementation does nothing
+     *
+     * @param comp
+     */
+    protected void setComponentBackground(JComponent comp, boolean is_valid) {
     }
 
     class NumericValidationHandler implements ValidationHandler {
@@ -162,6 +187,8 @@ public class Validator implements IValidator{
             }
 
             if (!validateEntry0(vHandler, errCall, comp)) {
+                setComponentBackground(comp, false);
+                setComponentForeground(comp, false);
                 is_valid = false;
                 if (errCall != null) {
                     errCall.onError(comp, comp.getAccessibleContext().getAccessibleName());
@@ -169,6 +196,9 @@ public class Validator implements IValidator{
                 if (!isRunAllVaidation) {
                     return is_valid;
                 }
+            } else {
+                setComponentBackground(comp, true);
+                setComponentForeground(comp, true);
             }
         }
 
@@ -217,7 +247,7 @@ public class Validator implements IValidator{
             JTextArea txa = (JTextArea) comp;
             value = txa.getText();
 
-        }  else if (comp instanceof JScrollPane) {
+        } else if (comp instanceof JScrollPane) {
             //search the component in a scroll pane
             JScrollPane s = (JScrollPane) comp;
             for (int k = 0; k < s.getComponentCount(); k++) {
@@ -261,5 +291,4 @@ public class Validator implements IValidator{
 
         return jcomps;
     }
-  
 }

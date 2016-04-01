@@ -11,6 +11,6 @@ package com.chuks.report.processor.param;
  */
 public interface FormFieldCallBack {
 
-    Object onBeforeInput(FormFieldGen field , int record_index);
+    Object doInput(FormFieldGen field , int record_index);
 
 }

@@ -5,8 +5,8 @@
  */
 package com.chuks.report.processor;
 
+import java.awt.Component;
 import javax.swing.Icon;
-import javax.swing.JComponent;
 
 /**
  *
@@ -51,7 +51,7 @@ public interface Feedback {
     void alert(String message, String title, Option type, Icon icon);
 
     /**
-     * This method takes a {@link javax.swing.JComponent} object which the
+     * This method takes a {@link java.awt.Component} object which the
      * internal {@link javax.swing.JOptionPane} uses as the parent component
      * (Frame) to display an {@link com.chuks.report.processor.Feedback.INFO}
      * alert message.
@@ -60,10 +60,10 @@ public interface Feedback {
      * @param message the message to display
      * @param title the title of the message
      */
-    void alert(JComponent container, String message, String title);
+    void alert(Component container, String message, String title);
 
     /**
-     * This method takes a {@link javax.swing.JComponent} object which the
+     * This method takes a {@link java.awt.Component} object which the
      * internal {@link javax.swing.JOptionPane} uses as the parent component
      * (Frame) to display an alert message base on the type specified.
      *
@@ -72,10 +72,10 @@ public interface Feedback {
      * @param title the title of the message
      * @param type type of the message to display
      */
-    void alert(JComponent container, String message, String title, Option type);
+    void alert(Component container, String message, String title, Option type);
 
     /**
-     * This method takes a {@link javax.swing.JComponent} object which the
+     * This method takes a {@link java.awt.Component} object which the
      * internal {@link javax.swing.JOptionPane} uses as the parent component
      * (Frame) to display an alert message base on the type specified.
      *
@@ -85,7 +85,7 @@ public interface Feedback {
      * @param type type of the message to display
      * @param icon custom icon to display
      */
-    void alert(JComponent container, String message, String title, Option type, Icon icon);
+    void alert(Component container, String message, String title, Option type, Icon icon);
 
     
     /**
@@ -126,7 +126,7 @@ public interface Feedback {
     Option comfirm(String message, String title, Option opt_type, Option msg_type, Icon icon);
 
     /**
-     * This method takes a {@link javax.swing.JComponent} object which the
+     * This method takes a {@link java.awt.Component} object which the
      * internal {@link javax.swing.JOptionPane} uses as the parent component
      * (Frame) to display a {@link com.chuks.report.processor.Feedback.INFO}
      * confirmation message.
@@ -137,10 +137,10 @@ public interface Feedback {
      * @param opt_type the type of option e.g Option.YES_NO, Option.YES_NO_CANCEL , Option.OK, Option.OK_CANCEL
      * @return the option chosen e.g Option.YES, Option.NO, Option.OK, Option.CANCEL
      */
-    Option comfirm(JComponent container, String message, String title, Option opt_type);
+    Option comfirm(Component container, String message, String title, Option opt_type);
 
     /**
-     * This method takes a {@link javax.swing.JComponent} object which the
+     * This method takes a {@link java.awt.Component} object which the
      * internal {@link javax.swing.JOptionPane} uses as the parent component
      * (Frame) to display a confirmation message base on the type specified.
      *
@@ -151,10 +151,10 @@ public interface Feedback {
      * @param opt_type the type of option e.g Option.YES_NO, Option.YES_NO_CANCEL , Option.OK, Option.OK_CANCEL
      * @return the option chosen e.g Option.YES, Option.NO, Option.OK, Option.CANCEL 
      */
-    Option comfirm(JComponent container, String message, String title, Option opt_type, Option msg_type);
+    Option comfirm(Component container, String message, String title, Option opt_type, Option msg_type);
 
     /**
-     * This method takes a {@link javax.swing.JComponent} object which the
+     * This method takes a {@link java.awt.Component} object which the
      * internal {@link javax.swing.JOptionPane} uses as the parent component
      * (Frame) to display a confirmation message base on the type specified.
      *
@@ -166,5 +166,5 @@ public interface Feedback {
      * @param opt_type the type of option e.g Option.YES_NO, Option.YES_NO_CANCEL , Option.OK, Option.OK_CANCEL 
      * @return the option chosen e.g Option.YES, Option.NO, Option.OK, Option.CANCEL 
      */
-    Option comfirm(JComponent container, String message, String title, Option opt_type, Option msg_type,  Icon icon);
+    Option comfirm(Component container, String message, String title, Option opt_type, Option msg_type,  Icon icon);
 }

@@ -47,7 +47,7 @@ public class TestFormProc1 extends javax.swing.JFrame {
         f.formLoad(new FormDataInputHandler() {
 
             @Override
-            public void onInput(FormDataInput input) {
+            public void doInput(FormDataInput input) {
                 try {
                     input.setJDBCSettings(jdbcSettings);
                     input.select()

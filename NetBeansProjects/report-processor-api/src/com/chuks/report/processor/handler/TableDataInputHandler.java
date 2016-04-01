@@ -13,6 +13,6 @@ import com.chuks.report.processor.param.TableDataInput;
  */
 public interface TableDataInputHandler {
     
-    void onInput(TableDataInput input);
+    void doInput(TableDataInput input);
     
 }
