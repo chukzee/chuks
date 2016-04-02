@@ -232,7 +232,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                     }
                 };
             }
-
         };
         return table;
     }
@@ -486,7 +485,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             public void actionPerformed(ActionEvent e) {
                 performDeleteOperation(table);
             }
-
         });
 
     }
@@ -551,10 +549,11 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         }
 
         //perform the delete operation
-        RowSelection r = new RowSelection() {
+        TableRowDelete r = new TableRowDelete() {
             private Object[][] selData;
             private ITableField[][] fields;
             Row[] rows;
+            private boolean is_refresh = true;//refresh by default
 
             @Override
             public Object[][] getData() {
@@ -632,11 +631,120 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 return rows;
             }
 
+            private int getIntType(Option type) {
+                switch (type) {
+                    case SUCCESS:
+                        return JOptionPane.INFORMATION_MESSAGE;//come to use custom later
+                    case INFO:
+                        return JOptionPane.INFORMATION_MESSAGE;
+                    case WARNING:
+                        return JOptionPane.WARNING_MESSAGE;
+                    case ERROR:
+                        return JOptionPane.ERROR_MESSAGE;
+                    default:
+                        return JOptionPane.INFORMATION_MESSAGE;
+                }
+            }
+
+            @Override
+            public void alert(String message, String title) {
+                JOptionPane.showMessageDialog(getFrame(table), message, title, JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void alert(String message, String title, Option type) {
+                JOptionPane.showMessageDialog(getFrame(table), message, title, getIntType(type));
+            }
+
+            @Override
+            public void alert(String message, String title, Option type, Icon icon) {
+                JOptionPane.showMessageDialog(getFrame(table), message, title, getIntType(type), icon);
+            }
+
+            @Override
+            public void alert(Component container, String message, String title) {
+                JOptionPane.showMessageDialog(container, message, title, JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void alert(Component container, String message, String title, Option type) {
+                JOptionPane.showMessageDialog(container, message, title, getIntType(type));
+            }
+
+            @Override
+            public void alert(Component container, String message, String title, Option type, Icon icon) {
+                JOptionPane.showMessageDialog(container, message, title, getIntType(type), icon);
+            }
+
+            @Override
+            public void refresh(boolean is_refresh) {
+                this.is_refresh = is_refresh;
+            }
+
+            @Override
+            public boolean isRefreshAllowed() {
+                return is_refresh;
+            }
+
+            @Override
+            public Option comfirm(String message, String title, Option OptType) {
+                int result = JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType));
+                return getOpiton(result);
+            }
+
+            @Override
+            public Option comfirm(String message, String title, Option OptType, Option msg_type) {
+                int result = JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType), getIntType(msg_type));
+                return getOpiton(result);
+            }
+
+            @Override
+            public Option comfirm(String message, String title, Option OptType, Option msg_type, Icon icon) {
+                int result = JOptionPane.showConfirmDialog(getFrame(table), message, title, getIntType(OptType), getIntType(msg_type), icon);
+                return getOpiton(result);
+            }
+
+            @Override
+            public Option comfirm(Component container, String message, String title, Option OptType) {
+                int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType));
+                return getOpiton(result);
+            }
+
+            @Override
+            public Option comfirm(Component container, String message, String title, Option OptType, Option msg_type) {
+                int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type));
+                return getOpiton(result);
+            }
+
+            @Override
+            public Option comfirm(Component container, String message, String title, Option OptType, Option msg_type, Icon icon) {
+                int result = JOptionPane.showConfirmDialog(container, message, title, getIntType(OptType), getIntType(msg_type), icon);
+                return getOpiton(result);
+            }
+
+            private Option getOpiton(int result) {
+                if (result == JOptionPane.YES_OPTION) {
+                    return Option.YES;
+                }
+                switch (result) {
+                    case JOptionPane.OK_OPTION:
+                        return Option.OK;
+                    case JOptionPane.NO_OPTION:
+                        return Option.NO;
+                    case JOptionPane.CANCEL_OPTION:
+                        return Option.CANCEL;
+                    case JOptionPane.CLOSED_OPTION:
+                        return Option.CLOSED;
+                }
+                return Option.CLOSED;
+            }
         };
 
         model.deleteRowHandler.doDelete(new ActionSQLImpl(model.model_jdbc_settings), r);
 
-        model.refresh(table);
+        if (r.isRefreshAllowed()) {
+            model.refresh(table);
+        }
     }
 
     private void performUpdateOperation(final JTable table) {
@@ -810,7 +918,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
                 }
                 return Option.CLOSED;
             }
-
         };
 
         model.updateFieldHandler.doUpdate(new ActionSQLImpl(model.model_jdbc_settings), f);
@@ -872,7 +979,6 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
     class ReportTableModel extends AbstractTableModel implements SearchObserver, DataPull {
 
         private String[] columnNames = {};
-
         private final ArrayList data = new ArrayList<>();
         private Object[][] backing_data = {};
         TableFieldCallBack inputCallBack;
@@ -1205,6 +1311,5 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
         public boolean stopPull() {
             return false;
         }
-        
     }
 }

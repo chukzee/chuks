@@ -6,7 +6,7 @@
 package com.chuks.report.processor.handler;
 
 import com.chuks.report.processor.param.ActionSQL;
-import com.chuks.report.processor.RowSelection;
+import com.chuks.report.processor.TableRowDelete;
 
 /**
  *
@@ -14,6 +14,6 @@ import com.chuks.report.processor.RowSelection;
  */
 public interface DeleteRowHandler {
     
-   void doDelete(ActionSQL a, RowSelection r);
+   void doDelete(ActionSQL a, TableRowDelete r);
     
 }

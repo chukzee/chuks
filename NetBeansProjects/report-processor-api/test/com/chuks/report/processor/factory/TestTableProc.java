@@ -148,7 +148,7 @@ public class TestTableProc extends javax.swing.JFrame {
                 }, new DeleteRowHandler() {
 
                     @Override
-                    public void doDelete(ActionSQL a, RowSelection r) {
+                    public void doDelete(ActionSQL a, TableRowDelete r) {
                         try {
                             for (int i = 0; i < r.count(); i++) {
                                 
@@ -159,6 +159,7 @@ public class TestTableProc extends javax.swing.JFrame {
                                 
                             }
                             a.close();
+                            
                         } catch (SQLException ex) {
                             Logger.getLogger(TestTableProc.class.getName()).log(Level.SEVERE, null, ex);
                         }
