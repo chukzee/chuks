@@ -51,7 +51,6 @@ public class DBHelper {
             Logger.getLogger(DBHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 
     private String arrStrAppend(NameValue[] arr) {
         if (arr == null || arr.length == 0) {
@@ -110,9 +109,9 @@ public class DBHelper {
                 d.setPassword(jdbc_setting.getPassword());
                 ds = d;
             }
-            
+
             Connection _conn = ds.getConnection();
-            
+
             _conn.setAutoCommit(autoCommit);
 
             if (!autoCommit) {//transaction
@@ -120,7 +119,7 @@ public class DBHelper {
             } else {
                 nonTranConns.put(hash, _conn);
             }
-            
+
             return _conn;//connect
         } catch (SQLException ex) {
             Logger.getLogger(DBHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -140,10 +139,10 @@ public class DBHelper {
         return glb_sss.fetchArrays();
     }
 
-    public JDBCSettings getJdbcSetting(){
+    public JDBCSettings getJdbcSetting() {
         return this.jdbc_setting;
     }
-    
+
     public String getSelectSQL() {
         return glb_sss == null ? null : this.glb_sss.getSQL();
     }
@@ -153,6 +152,9 @@ public class DBHelper {
     }
 
     public String[] getColumns(boolean isColumnAsIs) throws SQLException {
+        if (glb_sss == null) {
+            return new String[0];
+        }
         ResultSetMetaData m = glb_sss.fetchResultSet().getMetaData();
 
         String[] cols = new String[m.getColumnCount()];
@@ -186,7 +188,7 @@ public class DBHelper {
         return new DBSelector(this, false);
     }
 
-    public DBSelector DBSelectorDistinct()  throws SQLException{
+    public DBSelector DBSelectorDistinct() throws SQLException {
         return new DBSelector(this, true);
     }
 
@@ -254,5 +256,4 @@ public class DBHelper {
         //just clear the map but do not null out. if other transactions remain, the connection will be got from pool
         transactConns.clear();
     }
-
 }

@@ -31,20 +31,26 @@ public class FormFieldMapper {
         if (formFieldMap == null || formFieldMap.size() < 1 || field_index >= formFieldMap.size()) {
             return new String[0];
         }
-        
+
         Object[] comps = formFieldMap.keySet().toArray();
-        
-        return formFieldMap.get((JComponent)comps[field_index]);
+
+        return formFieldMap.get((JComponent) comps[field_index]);
     }
-    
-    public JComponent[] getFields(){
+
+    public JComponent[] getFields() {
+        if (formFieldMap == null) {
+            return new JComponent[0];
+        }
         Set<JComponent> keySet = formFieldMap.keySet();
         JComponent[] fields = new JComponent[keySet.size()];
         keySet.toArray(fields);
         return fields;
     }
-    
-    public int count(){
+
+    public int count() {
+        if (formFieldMap == null) {
+            return 0;
+        }
         return formFieldMap.size();
     }
 }

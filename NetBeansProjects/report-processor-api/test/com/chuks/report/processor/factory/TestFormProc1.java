@@ -58,7 +58,7 @@ public class TestFormProc1 extends javax.swing.JFrame {
                             .and()
                             .greaterOrEqual("AGE", "0");
 
-                    //input.setData(data);
+                    
                     input.setFieldComponents(jTextField1, jTextField2, jTextField3, jTextField4, jTextField5);
 
                 } catch (SQLException ex) {

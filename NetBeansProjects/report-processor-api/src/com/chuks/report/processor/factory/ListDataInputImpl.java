@@ -10,6 +10,7 @@ import com.chuks.report.processor.handler.ListBindHanler;
 import com.chuks.report.processor.param.ListDataInput;
 import com.chuks.report.processor.sql.helper.DBHelper;
 import com.chuks.report.processor.util.JDBCSettings;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 
@@ -39,6 +40,30 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
         this.data = data;
     }
 
+    @Override
+    public void setData(List data) {
+        this.data = data.toArray();
+    }
+
+    @Override
+    public void setData(Object data) {
+        if (data instanceof Object[][]) {
+            Object[][] t_arr = (Object[][]) data;
+            Object[] arr = new Object[t_arr.length];
+            for (int i = 0; i < t_arr.length; i++) {
+                arr[i] = t_arr[i][0];
+            }
+            this.data = arr;
+        }else if (data instanceof Object[]){
+            setData((Object[])data);
+        }else if (data instanceof List){
+            setData((List)data);
+        }else{
+            throw new IllegalArgumentException("data must be a one or two dimensional array or a list!");
+        }
+        
+    }
+
     Object[] getData() {
         return (Object[]) data;
     }
@@ -61,7 +86,11 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
         if (this.getData() == null) {
             Object[][] fetch = this.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
-                this.setData(fetch[0]);
+                Object[] _data = new Object[fetch.length];
+                for (int i = 0; i < fetch.length; i++) {
+                    _data[i] = fetch[i][0];
+                }
+                this.setData(_data);
             } else {
                 return;
             }
@@ -110,5 +139,4 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     public boolean stopPull() {
         return false;
     }
-
 }
