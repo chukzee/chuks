@@ -28,21 +28,21 @@ public class WebConnection implements IConnection, IProxy {
 
     private String host = "";
     private int port;
-    final private String REQUEST_METHOD = "POST";
-    private String DEFAULT_REMOTE_PATH = "";
+    final private String REQUEST_METHOD = "GET";
+    String DEFAULT_REMOTE_PATH = "";
     private HttpURLConnection conn;
     private String PROTOCOL = "http://";
     private String proxy_host = "";
     private int proxy_port = -1;
     private boolean use_proxy;
-    private int DEFAULT_SOCKET_TIMEOUT;
+    private int DEFAULT_SOCKET_TIMEOUT = 3000;
 
     public WebConnection(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    HttpURLConnection getHttpConnection(RequestPacket requestPack) throws IOException {
+    void getHttpConnectionInstance(RequestPacket requestPack) throws IOException {
         URL url = requestUrl(requestPack);
         Proxy proxy;
         if (use_proxy) {
@@ -50,8 +50,18 @@ public class WebConnection implements IConnection, IProxy {
         } else {
             proxy = Proxy.NO_PROXY;
         }
-
-        return (HttpURLConnection) url.openConnection(proxy);
+        //if (conn == null) {
+            
+            conn = (HttpURLConnection) url.openConnection(proxy);
+            conn.setDoInput(true); // Allow Inputs
+            conn.setDoOutput(true); // Allow Outputs
+            conn.setUseCaches(false); // Don't use a Cached Copy
+            conn.setRequestMethod(REQUEST_METHOD);
+            conn.setConnectTimeout(DEFAULT_SOCKET_TIMEOUT);
+            
+        //}
+        
+        
     }
 
     @Override
@@ -59,17 +69,12 @@ public class WebConnection implements IConnection, IProxy {
         try {
             if (conn == null) {
                 RequestPacket requestPack = new RequestPacket(DEFAULT_REMOTE_PATH);
-                conn = getHttpConnection(requestPack);
-                conn.setDoInput(true); // Allow Inputs
-                conn.setDoOutput(true); // Allow Outputs
-                conn.setUseCaches(false); // Don't use a Cached Copy
-                conn.setRequestMethod(REQUEST_METHOD);
-                conn.setConnectTimeout(DEFAULT_SOCKET_TIMEOUT);
+                getHttpConnectionInstance(requestPack);
             }
             conn.connect();
         } catch (IOException ex) {
-            conn=null;
             Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
+            close();
         }
 
     }
@@ -95,14 +100,9 @@ public class WebConnection implements IConnection, IProxy {
     public JSONObject sendRequest(RequestPacket requestPacket) {
         try {
 
-            conn = getHttpConnection(requestPacket);
-            conn.setDoInput(true); // Allow Inputs
-            conn.setDoOutput(true); // Allow Outputs
-            conn.setUseCaches(false); // Don't use a Cached Copy
-            conn.setRequestMethod(REQUEST_METHOD);
-            conn.addRequestProperty("Keep-Alive", "true");//come back
-            conn.setConnectTimeout(DEFAULT_SOCKET_TIMEOUT);
+            getHttpConnectionInstance(requestPacket);
             connect();
+            
             int serverResponseCode = conn.getResponseCode();
             if (serverResponseCode != 200) {
                 return null;
@@ -110,9 +110,13 @@ public class WebConnection implements IConnection, IProxy {
             byte[] b = new byte[conn.getContentLength()];//calling getContentLength() will automatically send the request
             DataInputStream din = new DataInputStream(conn.getInputStream());
             din.readFully(b);
+            
             return new JSONObject(new String(b));
 
-        } catch (IOException | JSONException ex) {
+        } catch (IOException ex) {
+            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
+            close();
+        } catch (JSONException ex) {
             Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -159,5 +163,20 @@ public class WebConnection implements IConnection, IProxy {
     @Override
     public void proxyPort(int proxy_port) {
         this.proxy_port = proxy_port;
+    }
+
+    @Override
+    public void close() {
+        try {
+            conn.getInputStream().close();
+        } catch (IOException ex1) {
+            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex1);
+        }
+        try {
+            conn.getOutputStream().close();
+        } catch (IOException ex1) {
+            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex1);
+        }
+        conn = null;
     }
 }

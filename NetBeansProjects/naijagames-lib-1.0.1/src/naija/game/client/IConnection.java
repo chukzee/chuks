@@ -12,11 +12,13 @@ import twitter4j.JSONObject;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface IConnection{
-   
-   void connect();
+public interface IConnection {
+
+    void connect();
 
     void disconnect();
+
+    void close();
 
     JSONObject sendRequest(RequestPacket requestPacket);
 
