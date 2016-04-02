@@ -155,7 +155,7 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
         if (input.getData() == null) {
             Object[][] fetch = input.dbHelper.fetchArray();
             if (fetch != null && fetch.length > 0) {
-                input.setData(fetch);
+                input.setData(fetch); 
             } else {
                 return;
             }
@@ -329,8 +329,8 @@ class FormProcessorImpl<T> extends AbstractUIDBProcessor implements FormProcesso
                     }
                     fieldsComponents = mapper.getFields();
                     data = generateCallBackData(db_columns);
-                    this.dataPollEnabled = data_polling_enabled;
-                    this.dataPollInterval = data_polling_interval;
+                    this.dataPollEnabled = data_pulling_enabled;
+                    this.dataPollInterval = data_pulling_interval;
                 }
 
                 if (dataInputHandler != null) {

@@ -163,22 +163,22 @@ abstract class AbstractChartInputImpl extends AbstractUIDBProcessor implements C
 
     @Override
     public void setPullingEnabled(boolean isPull) {
-        data_polling_enabled = isPull;
+        data_pulling_enabled = isPull;
     }
 
     @Override
     public boolean isPullingEnabled() {
-        return data_polling_enabled;
+        return data_pulling_enabled;
     }
 
     @Override
     public void setPullingInterval(float seconds) {
-        data_polling_interval = seconds;
+        data_pulling_interval = seconds;
     }
 
     @Override
     public float getPullingInterval() {
-        return data_polling_interval;
+        return data_pulling_interval;
     }
 
     protected void generateChartView() {

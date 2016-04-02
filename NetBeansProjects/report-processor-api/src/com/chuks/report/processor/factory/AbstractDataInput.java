@@ -14,8 +14,9 @@ import com.chuks.report.processor.util.JDBCSettings;
  */
 public class AbstractDataInput extends ActionSQLImpl implements PullAttributes{
     
-    private boolean pollingEnabled;
-    private float pollingInterval;
+    private boolean pullingEnabled;
+    private int DEFAULT_PULLING_INTERVAL = 10;//seconds
+    private float pullingInterval = DEFAULT_PULLING_INTERVAL;
     protected Object data;
 
     public AbstractDataInput(JDBCSettings jdbcSettings) {
@@ -28,21 +29,21 @@ public class AbstractDataInput extends ActionSQLImpl implements PullAttributes{
     
     @Override
     public void setPullingEnabled(boolean isPull) {
-        this.pollingEnabled = isPull;
+        this.pullingEnabled = isPull;
     }
 
     @Override
     public boolean isPullingEnabled() {
-        return pollingEnabled;
+        return pullingEnabled;
     }
 
     @Override
     public void setPullingInterval(float seconds) {
-        this.pollingInterval = seconds;
+        this.pullingInterval = seconds;
     }
 
     @Override
     public float getPullingInterval() {
-        return pollingInterval;
+        return pullingInterval;
     }
 }

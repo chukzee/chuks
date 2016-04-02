@@ -56,15 +56,14 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
 
     @Override
     public void pullData() {
+
         handler.data(this);
 
-        if (this.getData() == null) {
-            Object[][] fetch = this.dbHelper.fetchArray();
-            if (fetch != null && fetch.length > 0) {
-                this.setData(fetch[0][0]);
-            } else {
-                return;
-            }
+        Object[][] fetch = this.dbHelper.fetchArray();
+        if (fetch != null && fetch.length > 0) {
+            this.setData(fetch[0][0]);
+        } else {
+            return;
         }
 
         if (label != null) {
@@ -107,5 +106,4 @@ class TextDataInputImpl extends AbstractDataInput implements TextDataInput, Data
     public boolean stopPull() {
         return false;
     }
-
 }

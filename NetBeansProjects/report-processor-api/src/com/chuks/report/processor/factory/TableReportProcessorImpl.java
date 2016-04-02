@@ -909,8 +909,8 @@ class TableReportProcessorImpl<T> extends AbstractUIDBProcessor implements Table
             this.select_params = select_params;
             this.model_jdbc_settings = new JDBCSettings(jdbc_settings);//we need to copy
 
-            this.isDataPollEnabled = data_polling_enabled;
-            this.dataPollInterval = data_polling_interval;
+            this.isDataPollEnabled = data_pulling_enabled;
+            this.dataPollInterval = data_pulling_interval;
 
         }
 

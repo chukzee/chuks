@@ -36,11 +36,6 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     }
 
     @Override
-    public void setData(Object[] data) {
-        this.data = data;
-    }
-
-    @Override
     public void setData(List data) {
         this.data = data.toArray();
     }
@@ -54,14 +49,14 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
                 arr[i] = t_arr[i][0];
             }
             this.data = arr;
-        }else if (data instanceof Object[]){
-            setData((Object[])data);
-        }else if (data instanceof List){
-            setData((List)data);
-        }else{
+        } else if (data instanceof Object[]) {
+            setData((Object[]) data);
+        } else if (data instanceof List) {
+            setData((List) data);
+        } else {
             throw new IllegalArgumentException("data must be a one or two dimensional array or a list!");
         }
-        
+
     }
 
     Object[] getData() {
@@ -81,19 +76,14 @@ class ListDataInputImpl extends AbstractDataInput implements ListDataInput, Data
     @Override
     public void pullData() {
 
+
         handler.data(this);
 
-        if (this.getData() == null) {
-            Object[][] fetch = this.dbHelper.fetchArray();
-            if (fetch != null && fetch.length > 0) {
-                Object[] _data = new Object[fetch.length];
-                for (int i = 0; i < fetch.length; i++) {
-                    _data[i] = fetch[i][0];
-                }
-                this.setData(_data);
-            } else {
-                return;
-            }
+        Object[][] fetch = this.dbHelper.fetchArray();
+        if (fetch != null && fetch.length > 0) {
+            this.setData(fetch);
+        } else {
+            return;
         }
 
         if (combo != null) {

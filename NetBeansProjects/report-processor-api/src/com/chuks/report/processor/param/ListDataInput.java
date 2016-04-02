@@ -17,13 +17,6 @@ import java.util.List;
 public interface ListDataInput extends ActionSQL, PullAttributes {
 
     /**
-     * Set an array of data
-     *
-     * @param data
-     */
-    void setData(Object[] data);
-
-    /**
      * Set a list of data
      *
      * @param data
