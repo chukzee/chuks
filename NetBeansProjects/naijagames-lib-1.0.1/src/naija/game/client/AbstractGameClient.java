@@ -87,7 +87,8 @@ public abstract class AbstractGameClient implements GameClient {
 
             while (isRunning) {
                 //do the various task here
-                JSONObject json = sendRequest();
+                sendRequest();
+                receiveResponse();
 
                 //handle session
                 handleSessiions();
@@ -102,11 +103,13 @@ public abstract class AbstractGameClient implements GameClient {
         private void handleSocailNetwork() {
         }
 
-        private JSONObject sendRequest() {
-             RequestPacket requestPack = requestPackList.remove(requestPackList.size() - 1);
+        private boolean sendRequest() {
+            RequestPacket requestPack = requestPackList.remove(requestPackList.size() - 1);
             return conn.sendRequest(requestPack);
         }
 
+        private JSONObject receiveResponse() {
+            return conn.receiveResponse();
+        }
     }
-    
 }

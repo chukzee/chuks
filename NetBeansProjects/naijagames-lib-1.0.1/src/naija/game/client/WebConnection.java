@@ -5,18 +5,29 @@
  */
 package naija.game.client;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpClientConnection;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
+import org.apache.http.conn.ConnectionRequest;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
@@ -30,60 +41,39 @@ public class WebConnection implements IConnection, IProxy {
     private int port;
     final private String REQUEST_METHOD = "GET";
     String DEFAULT_REMOTE_PATH = "";
-    private HttpURLConnection conn;
     private String PROTOCOL = "http://";
     private String proxy_host = "";
     private int proxy_port = -1;
     private boolean use_proxy;
     private int DEFAULT_SOCKET_TIMEOUT = 3000;
+    private long NO_EXPIRY = -1;
+    private final BasicHttpClientConnectionManager connMrg = new BasicHttpClientConnectionManager();
+    private final HttpClientContext context = HttpClientContext.create();
+    HttpRoute route;
+    private HttpClientConnection conn;
 
     public WebConnection(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    void getHttpConnectionInstance(RequestPacket requestPack) throws IOException {
-        URL url = requestUrl(requestPack);
-        Proxy proxy;
-        if (use_proxy) {
-            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxy_host, proxy_port));
-        } else {
-            proxy = Proxy.NO_PROXY;
-        }
-        //if (conn == null) {
-            
-            conn = (HttpURLConnection) url.openConnection(proxy);
-            conn.setDoInput(true); // Allow Inputs
-            conn.setDoOutput(true); // Allow Outputs
-            conn.setUseCaches(false); // Don't use a Cached Copy
-            conn.setRequestMethod(REQUEST_METHOD);
-            conn.setConnectTimeout(DEFAULT_SOCKET_TIMEOUT);
-            
-        //}
-        
-        
-    }
-
     @Override
-    public void connect() {
+    public boolean connect() {
         try {
-            if (conn == null) {
-                RequestPacket requestPack = new RequestPacket(DEFAULT_REMOTE_PATH);
-                getHttpConnectionInstance(requestPack);
-            }
-            conn.connect();
-        } catch (IOException ex) {
+            creatRoute();
+            // Request new connection. This can be a long process
+            ConnectionRequest connRequest = connMrg.requestConnection(route, null);
+            // Wait for connection up to 10 sec
+            conn = connRequest.get(10, TimeUnit.SECONDS);
+            return true;
+        } catch (InterruptedException | ExecutionException | ConnectionPoolTimeoutException ex) {
             Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
-            close();
         }
-
+        return false;
     }
 
     @Override
     public void disconnect() {
-        if (conn != null) {
-            conn.disconnect();
-        }
     }
 
     @Override
@@ -97,29 +87,44 @@ public class WebConnection implements IConnection, IProxy {
     }
 
     @Override
-    public JSONObject sendRequest(RequestPacket requestPacket) {
-        try {
+    public boolean sendRequest(RequestPacket requestPacket) {
 
-            getHttpConnectionInstance(requestPacket);
-            connect();
-            
-            int serverResponseCode = conn.getResponseCode();
-            if (serverResponseCode != 200) {
-                return null;
-            }
-            byte[] b = new byte[conn.getContentLength()];//calling getContentLength() will automatically send the request
-            DataInputStream din = new DataInputStream(conn.getInputStream());
-            din.readFully(b);
-            
-            return new JSONObject(new String(b));
-
-        } catch (IOException ex) {
-            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
-            close();
-        } catch (JSONException ex) {
-            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
+        if (!connect()) {//connect if not connected already
+            return false;
         }
-        return null;
+
+        try {
+            // If not open
+            if (!conn.isOpen()) {
+                // establish connection based on its route info
+                connMrg.connect(conn, route, 1000, context);
+                // and mark it as route complete
+                connMrg.routeComplete(conn, route, context);
+            }
+
+            // Do useful things with the connection
+            URL url = requestUrl(requestPacket);
+            HttpGet httpGet = new HttpGet(url.getPath());
+            httpGet.addHeader("Host", url.getHost());
+            httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:43.0) Gecko/20100101 Firefox/43.0");
+            httpGet.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            httpGet.addHeader("Accept-Language", "en-US,en;q=0.5");
+            httpGet.addHeader("Accept-Encoding", "gzip, deflate");
+            httpGet.addHeader("Connection", "Keep-Alive");
+
+            conn.sendRequestHeader(httpGet);
+
+            conn.flush();
+            //System.out.println(conn);
+            //System.out.println(httpGet.toString());
+            return true;
+        } catch (IOException | HttpException ex) {
+            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            //release connection to the manager so that it can be reused.
+            connMrg.releaseConnection(conn, null, NO_EXPIRY, TimeUnit.MINUTES);
+        }
+        return false;
     }
 
     private URL requestUrl(RequestPacket requestPack) throws MalformedURLException, UnsupportedEncodingException {
@@ -167,16 +172,51 @@ public class WebConnection implements IConnection, IProxy {
 
     @Override
     public void close() {
-        try {
-            conn.getInputStream().close();
-        } catch (IOException ex1) {
-            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex1);
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (IOException ex) {
+                Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        try {
-            conn.getOutputStream().close();
-        } catch (IOException ex1) {
-            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex1);
+    }
+
+    private void creatRoute() {
+        if (use_proxy) {
+
+            if (route == null
+                    || route.getProxyHost() == null
+                    || route.getProxyHost().getPort() != port
+                    || (!route.getProxyHost().getAddress().getHostAddress().equals(proxy_host)
+                    && !route.getProxyHost().getAddress().getHostName().equals(proxy_host))) {
+                route = new HttpRoute(new HttpHost(host, port), new HttpHost(proxy_host, proxy_port));
+            }
+        } else {
+            if (route == null || route.getProxyHost() != null) {
+                route = new HttpRoute(new HttpHost(host, port));
+            }
         }
-        conn = null;
+    }
+
+    @Override
+    public JSONObject receiveResponse() {
+        try {
+            if (!conn.isOpen()
+                    || !conn.isResponseAvailable(500)//block block for long but just half a second
+                    ) {
+                return null;
+            }
+
+            HttpResponse response = conn.receiveResponseHeader();
+            conn.receiveResponseEntity(response);
+            HttpEntity ent = response.getEntity();
+            String str_response = EntityUtils.toString(ent, "UTF-8");
+
+            return new JSONObject(str_response);
+
+        } catch (HttpException | IOException | JSONException ex) {
+            Logger.getLogger(WebConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

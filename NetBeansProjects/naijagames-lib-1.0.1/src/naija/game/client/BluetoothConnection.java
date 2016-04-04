@@ -21,7 +21,7 @@ public class BluetoothConnection implements IConnection{
     }
     
     @Override
-    public void connect() {
+    public boolean connect() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -31,7 +31,7 @@ public class BluetoothConnection implements IConnection{
     }
 
     @Override
-    public JSONObject sendRequest(RequestPacket requestPacket) {
+    public boolean sendRequest(RequestPacket requestPacket) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -47,6 +47,11 @@ public class BluetoothConnection implements IConnection{
 
     @Override
     public void close() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JSONObject receiveResponse() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

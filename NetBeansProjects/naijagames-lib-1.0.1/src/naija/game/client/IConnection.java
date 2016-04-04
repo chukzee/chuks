@@ -14,15 +14,17 @@ import twitter4j.JSONObject;
  */
 public interface IConnection {
 
-    void connect();
+    boolean connect();
 
     void disconnect();
 
     void close();
 
-    JSONObject sendRequest(RequestPacket requestPacket);
+    boolean sendRequest(RequestPacket requestPacket);
 
     public String getHost();
 
     public int getPort();
+
+    public JSONObject receiveResponse();
 }
