@@ -30,7 +30,6 @@ public abstract class ServerConfig {
     final private static String resourceConfigAttr = "resources.configAttributes";
     final private static String resourceConfigComments = "resources.configComments";
     final private static String resourceConfigDefaults = "resources.configDefaults";
-
     final public static String FILE_SEPARATOR = "/";
     final public static String SERVER_FILE_EXT = "class";//this server uses java class extension
     final public static String TEMP_DIR;
@@ -38,14 +37,11 @@ public abstract class ServerConfig {
     static int MAX_CACHE_SEND_TRIALS;//see resource bundle
     static int MAX_REMOTE_CACHE_HANDLER_THREADS;//see resource bundle
     static int MAX_MEMORY_CACHE_IDLE_TIME;//see resource bundle
-
     public static String[] remoteCacheAddresses = {};
-
     /**
      * more comprehensive configuration properties
      */
     static PropertiesConfiguration propertiesConfig;
-
     final public static int DEFAULT_SOCK_TIMEOUT = 30000;
     static long MAX_REQUEST_CACHE_FILE_SIZE;
     static String DEFAULT_INDEX_FILE_EXTENSION;
@@ -193,10 +189,13 @@ public abstract class ServerConfig {
             System.out.println(b.getString(kn) + " = " + comm + "\n");
         }
     }
-
+    
+    static boolean printed_reminder;
     static boolean isLoadBalancingEnabled() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented - isLoadBalancingEnabled()");
+        if (!printed_reminder) {
+            System.err.println("REMIND: Auto generated method body is not yet implemented - isLoadBalancingEnabled()");
+            printed_reminder = true;
+        }
         return false;
     }
-
 }

@@ -174,7 +174,7 @@ class PostRequest extends RequestValidator {
                     String dp_split_trim = dp_split[k].trim();
                     String dp_lower_case = dp_split_trim.toLowerCase();
 
-                    /*//NOTE NECESSARY
+                    /*//NOT NECESSARY
                      * if (k == 0 && !dp_lower_case.equals("form-data")) {
                      //first attribute must be form-data. 
                      break;
@@ -358,21 +358,24 @@ class PostRequest extends RequestValidator {
         boolean isCreated;
         File file;
         long time = Long.MAX_VALUE;
-        int MAX_CREATE_TIME = 30000;//
+        int MAX_CREATE_TIME = 30000;//max time to spend in tring to create the file.
         do {
             long elapse = System.currentTimeMillis() - time;
             if (elapse > MAX_CREATE_TIME) {
                 throw new SimpleHttpServerException("Creating temporary file timed out! duration " + MAX_CREATE_TIME + "ms");
             }
             time = System.currentTimeMillis();
-            String filename = ServerConfig.TEMP_DIR + time + suffix;
+            String prefix = "chuks_hs_";
+            StringBuilder builder = new StringBuilder();
+            String filename = builder.append(ServerConfig.TEMP_DIR).append(prefix).append(time).append(suffix).toString();
             file = new File(filename);
-            isCreated = file.createNewFile();
+            isCreated = file.createNewFile();//create file only if it does not exist already
             if (!isCreated) {
                 //try again by appending random number
-                filename = ServerConfig.TEMP_DIR + time + ServerUtil.randomNextLong() + suffix;
+                builder = new StringBuilder();
+                filename = builder.append(ServerConfig.TEMP_DIR).append(prefix).append(time).append(ServerUtil.randomNextLong()).append(suffix).toString();
                 file = new File(filename);
-                isCreated = file.createNewFile();
+                isCreated = file.createNewFile();//create file only if it does not exist already
             }
         } while (!isCreated);
 
