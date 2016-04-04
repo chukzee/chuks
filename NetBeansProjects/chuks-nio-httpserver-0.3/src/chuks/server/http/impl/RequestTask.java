@@ -64,7 +64,7 @@ class RequestTask implements Runnable {
 
     void initialize() {
 
-        
+
         isAllHttpHeadersEnd = false;
         request = null;
         totalBytesRecieved = 0;
@@ -89,7 +89,7 @@ class RequestTask implements Runnable {
         isFormUrlEncoded = false;
         finished = false;
         //distBuff = ByteBuffer.allocate(512);//initialization not required
-        is_buff_len_set = false;        
+        is_buff_len_set = false;
         //isKeepAliveRequesConnection = false;//initialization not required 
         eventPack = null;
         httpSession = null;
@@ -209,6 +209,10 @@ class RequestTask implements Runnable {
 
     private void handleRequest(byte[] arr, int offset, int size) throws UnsupportedEncodingException, IOException, SimpleHttpServerException {
 
+        if (size == 0) {//avoid this! causes some problems - like duplicate request!
+            return;//leave here!
+        }
+
         switch (request.Method()) {
             case HttpConstants.GET_METHOD:
                 if (getRequest == null) {
@@ -252,7 +256,7 @@ class RequestTask implements Runnable {
         if (isAllHttpHeadersEnd) {
             int prev_size_recv_after_header = size_recv_after_header;
             size_recv_after_header += current_read_size;
-            
+
             if (size_recv_after_header <= content_len_remain) {
                 handleRequest(arr, 0, current_read_size);//uncoment later
 
@@ -343,19 +347,19 @@ class RequestTask implements Runnable {
             handleRequest(http_headers_bytes, headersLength, headersLength + content_length);//uncoment later
             isAllHttpHeadersEnd = false;//there are still more to go!
             content_len_remain = 0;
-            
+
             /*System.out.println("----- MULTI REQUEST---------");
              * System.out.println(new String(http_headers_bytes));
              * System.out.println("----------------------------");
              * System.out.println("----- MULTI REQUEST CONTENT---------");
              * System.out.println(new String(http_headers_bytes, 0, headersLength + content_length));
              * System.out.println("----------------------------");*/
-            
+
         } else {
             hasMutiRequest = false;
-            content_len_remain = headersLength + content_length - http_headers_bytes.length;            
+            content_len_remain = headersLength + content_length - http_headers_bytes.length;
             handleRequest(http_headers_bytes, headersLength, http_headers_bytes.length);//uncoment later
-            
+
             /*System.out.println("----- NOT MULTI REQUEST---------");
              * System.out.println(new String(http_headers_bytes));
              * System.out.println("--------------------------------");
