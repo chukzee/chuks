@@ -22,14 +22,8 @@ import java.util.List;
  */
 class RequestTask implements Runnable {
 
-    private int carriageReturnIndex = -1;//ie \r
-    private int newLineIndex = -1;//ie \n
-    private int line_1_index = -1;//ie \r\n
-    private int line_2_index = -1;//ie \r\n        
-    private int requestIndex = -1;
     private boolean isAllHttpHeadersEnd;
-    private byte[] headers_collection_bytes = new byte[0];//if the buffer of the header is not in one read operation
-    private boolean isOneOperationReadHeaders = true;//assuming true
+    private byte[] http_headers_bytes = new byte[0];
     HttpRequestFormat request;
     private int totalBytesRecieved;
     int headersLength;
@@ -52,14 +46,17 @@ class RequestTask implements Runnable {
     String requestCharSet;
     boolean isFormUrlEncoded;
     private boolean finished;
-    ByteBuffer distBuff = ByteBuffer.allocate(512);
+    ByteBuffer distBuff = ByteBuffer.allocate(512);//CHANGE BACK TO 512 A BEG O!!!
     private boolean is_buff_len_set;
-    private int byte_size_read = -1;
-    private boolean isKeepAliveRequestConnection;
-
+    boolean isKeepAliveRequestConnection;
     long time1 = System.nanoTime();//TESTING
     private List<EventPacket> eventPack;
     HttpSessionImpl httpSession;
+    int current_read_size;
+    boolean hasMutiRequest;
+    private int request_length;
+    private int content_len_remain;
+    private int size_recv_after_header;
 
     public RequestTask(SocketChannel socket) {
         this.sock = socket;
@@ -67,14 +64,8 @@ class RequestTask implements Runnable {
 
     void initialize() {
 
-        carriageReturnIndex = -1;//ie \r
-        newLineIndex = -1;//ie \n
-        line_1_index = -1;//ie \r\n
-        line_2_index = -1;//ie \r\n        
-        requestIndex = -1;
+        
         isAllHttpHeadersEnd = false;
-        headers_collection_bytes = new byte[0];//if the buffer of the header is not in one read operation
-        isOneOperationReadHeaders = true;//assuming true
         request = null;
         totalBytesRecieved = 0;
         headersLength = 0;
@@ -98,15 +89,27 @@ class RequestTask implements Runnable {
         isFormUrlEncoded = false;
         finished = false;
         //distBuff = ByteBuffer.allocate(512);//initialization not required
-        is_buff_len_set = false;
-        byte_size_read = -1;
+        is_buff_len_set = false;        
         //isKeepAliveRequesConnection = false;//initialization not required 
+        eventPack = null;
+        httpSession = null;
+        request_length = 0;
+        //http_headers_bytes = null;//important! initialization not required
+        //multi_request_read_offset = 0;//important! initialization not required 
+        //current_read_size = -1;//important! initialization not required 
+        //multi_request_length = 0;//important! initialization not required 
+        //hasMutiRequest =false;//important! initialization not required 
 
     }
 
     int read() {
         try {
-            return byte_size_read = sock.read(distBuff);
+            if (hasMutiRequest) {
+                return current_read_size;//don't read until all requests are consumed
+            }
+            current_read_size = sock.read(distBuff);
+            totalBytesRecieved += current_read_size;
+            return current_read_size;
         } catch (IOException ex) {
             Logger.getLogger(RequestTask.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -124,6 +127,7 @@ class RequestTask implements Runnable {
     void printTimeElapse() {//TESTING
         System.out.println("elapse " + (System.nanoTime() - time1) / Math.pow(10.0, 9));
     }
+    int test_count;
 
     @Override
     public void run() {
@@ -131,13 +135,22 @@ class RequestTask implements Runnable {
         try {
             //REMIND: Denial of service DOS is possible here. So timing a connection is imperative - use Thread interrupt to exist the connection
 
-            analyzeHttpRecv(distBuff.array(), byte_size_read);
+            analyzeHttpRecv(distBuff.array());
+
+            if (hasMutiRequest) {
+                if (!isKeepAliveRequestConnection) {
+                    finished = true;//multi request is only permitted in keep alive connection
+                }
+                return;
+            }
 
             distBuff.clear();
+
             //testingToDisplayUploadedRate();//TO BE REMOVED ABEG O!!!
+
             if (isAllHttpHeadersEnd) {
 
-                if (ServerConfig.isLoadBalanceEnable()) {
+                if (ServerConfig.isLoadBalancingEnabled()) {
                     String redirectAddr = getLoadBalanceStrategy().getRedirectServerAddress();
                     if (redirectAddr != null) {
                         redirectRequest(redirectAddr);
@@ -151,14 +164,14 @@ class RequestTask implements Runnable {
                 httpSession = new HttpSessionImpl();//important
 
                 if (!is_buff_len_set) {
-                    //System.out.println(new String(distBuff.array()));
+
+                    //System.out.println(new String(distBuff.array(), 0, byte_size_read));
+                    //System.out.println("test count " + test_count);
+
                     distBuff = ByteBuffer.allocate(bestBufferSize(content_length));
                     is_buff_len_set = true;
                 }
-                if (totalBytesRecieved >= headersLength + content_length) {
-                    //System.out.println("over");
-                    finished = true;
-                }
+
 
                 //send server event packet
                 if (eventPack != null) {
@@ -186,12 +199,12 @@ class RequestTask implements Runnable {
         }
 
     }
- 
+
     private void handleUnknownRequest() throws IOException {
         HttpResponseFormat response = new HttpResponseFormat();
         response.setStatusCode_NotImplemented(request.getProtocolVersion());
         sock.write(ByteBuffer.wrap(response.getReponse()));
-        finished=true; // force task to be terminated
+        finished = true; // force task to be terminated
     }
 
     private void handleRequest(byte[] arr, int offset, int size) throws UnsupportedEncodingException, IOException, SimpleHttpServerException {
@@ -233,86 +246,125 @@ class RequestTask implements Runnable {
 
     }
 
-    private void analyzeHttpRecv(byte[] arr, int size) throws HttpContentLengthException, UnsupportedEncodingException, IOException, SimpleHttpServerException {
+    void analyzeHttpRecv(byte[] arr) throws HttpContentLengthException, UnsupportedEncodingException, IOException, SimpleHttpServerException {
 
-        totalBytesRecieved += size;
-
+        int offset = 0;
         if (isAllHttpHeadersEnd) {
-            handleRequest(arr, 0, size);
-            return;
+            int prev_size_recv_after_header = size_recv_after_header;
+            size_recv_after_header += current_read_size;
+            
+            if (size_recv_after_header <= content_len_remain) {
+                handleRequest(arr, 0, current_read_size);//uncoment later
+
+                /*System.out.println("-----  CONTENT CONSUMED STILL MAY REMAIN ---------");
+                 * System.out.println(new String(arr, 0, current_read_size));
+                 * System.out.println("-----------------------------------");*/
+
+                return;
+            }
+            //At this point it appears to be multi-requests on same connection - i.e another request follows afterwards
+            int size = content_len_remain - prev_size_recv_after_header;
+            handleRequest(arr, 0, size);//uncoment later
+            http_headers_bytes = new byte[0];//initialize
+            offset = size;//set the offset to the start of the a headers
+
+            /*System.out.println("-----  CONTENT CONSUMED WITH EXCESS ---------");
+             * System.out.println(new String(arr, 0, size));
+             * System.out.println("-----------------------------------");*/
+
         }
 
-        //long time1 = System.nanoTime();
-        if (!this.isAllHttpHeadersEnd) {
-            for (int i = 0; i < size; i++) {
 
-                requestIndex++;
-
-                if (arr[i] != '\r' && arr[i] != '\n') {
-                    line_1_index = -1;
-                    line_2_index = -1;
-                    continue;
+        if (hasMutiRequest) {
+            //extract the remaining request part
+            byte[] r = new byte[http_headers_bytes.length - request_length];
+            System.arraycopy(http_headers_bytes, request_length, r, 0, r.length);
+            http_headers_bytes = r;
+        } else {
+            byte[] r = new byte[http_headers_bytes.length + current_read_size - offset];
+            int index = offset - 1;
+            for (int i = 0; i < r.length; i++) {
+                if (i < http_headers_bytes.length) {
+                    r[i] = http_headers_bytes[i];
+                } else {
+                    r[i] = arr[++index];
                 }
+            }
 
-                if (arr[i] == '\r') {
-                    this.carriageReturnIndex = requestIndex;
-                    continue;
+            http_headers_bytes = r;
+        }
+
+        headersLength = 0;
+        isAllHttpHeadersEnd = false;
+        size_recv_after_header = 0;
+
+        for (int i = 0; i < http_headers_bytes.length; i++) {
+
+            if (i > 2
+                    && http_headers_bytes[i - 3] == '\r'
+                    && http_headers_bytes[i - 2] == '\n'
+                    && http_headers_bytes[i - 1] == '\r'
+                    && http_headers_bytes[i] == '\n') {
+                if (headersLength == 0) {
+                    headersLength = i + 1;
                 }
-
-                if (arr[i] == '\n') {
-                    this.newLineIndex = requestIndex;
-                }
-
-                if (carriageReturnIndex > -1 && newLineIndex - carriageReturnIndex == 1) {
-                    if (line_1_index == -1) {
-                        line_1_index = newLineIndex;
-                        continue;
-                    }
-
-                    if (line_2_index == -1) {
-                        line_2_index = newLineIndex;
-                        if (line_2_index - line_1_index == 2) {
-                            this.isAllHttpHeadersEnd = true;
-                            headersLength = line_2_index + 1;
-                            break;
-                        }
-                    }
-                }
+                isAllHttpHeadersEnd = true;
 
             }
         }
 
         if (!isAllHttpHeadersEnd) {
-            isOneOperationReadHeaders = false;
+            hasMutiRequest = false;
+
+            /*System.out.println("-----  INCOMPLETE HEADERS ---------");
+             * System.out.println(new String(http_headers_bytes, 0, http_headers_bytes.length));
+             * System.out.println("-----------------------------------");*/
+
+            return;
         }
 
-        if (!isOneOperationReadHeaders) {
-            byte[] r = new byte[this.headers_collection_bytes.length + size];
-            int index = -1;
-            for (int i = 0; i < r.length; i++) {
-                if (i < headers_collection_bytes.length) {
-                    r[i] = headers_collection_bytes[i];
-                } else {
-                    index++;
-                    r[i] = arr[index];
-                }
-            }
+        //get content length
 
-            headers_collection_bytes = r;
+        //REMIND: CONSIDER UNKNOWN CONTENT LENGTH LIKE IN CASE OF CHUNK TRASNFER
+        request = new HttpRequestFormat();
+
+        request.setRequest(new String(http_headers_bytes, 0, http_headers_bytes.length));//uncoment later
+        content_length = request.getContentLength();//uncoment later
+        cahcheRequestProperties();//uncoment later
+
+        //content_length = 11;//TESTING ABEG O!!! REMOVE LATER ABEG O!!!
+
+        request_length = headersLength + content_length;
+
+        if (http_headers_bytes.length > request_length) {
+
+            hasMutiRequest = true;
+            //consume the request
+            handleRequest(http_headers_bytes, headersLength, headersLength + content_length);//uncoment later
+            isAllHttpHeadersEnd = false;//there are still more to go!
+            content_len_remain = 0;
+            
+            /*System.out.println("----- MULTI REQUEST---------");
+             * System.out.println(new String(http_headers_bytes));
+             * System.out.println("----------------------------");
+             * System.out.println("----- MULTI REQUEST CONTENT---------");
+             * System.out.println(new String(http_headers_bytes, 0, headersLength + content_length));
+             * System.out.println("----------------------------");*/
+            
+        } else {
+            hasMutiRequest = false;
+            content_len_remain = headersLength + content_length - http_headers_bytes.length;            
+            handleRequest(http_headers_bytes, headersLength, http_headers_bytes.length);//uncoment later
+            
+            /*System.out.println("----- NOT MULTI REQUEST---------");
+             * System.out.println(new String(http_headers_bytes));
+             * System.out.println("--------------------------------");
+             * System.out.println("-----NOT MULTI REQUEST CONTENT PART SIZE---------");
+             * System.out.println(new String(http_headers_bytes, 0, http_headers_bytes.length));
+             * System.out.println("----------------------------");*/
         }
 
-        //System.out.println("ELASPSE REQEST " + (System.nanoTime() - time1) / Math.pow(10.0, 9));
-        if (request == null && isAllHttpHeadersEnd) {
-            request = new HttpRequestFormat();
-            if (isOneOperationReadHeaders) {
-                request.setRequest(new String(arr, 0, size));
-            } else {//multiple read operation lead to the ends of all headers
-                request.setRequest(new String(headers_collection_bytes));
-            }
-            content_length = request.getContentLength();
-            cahcheRequestProperties();
-            handleRequest(arr, headersLength, size);
-        }
+        //System.out.println(headersLength);
 
     }
 
@@ -391,6 +443,9 @@ class RequestTask implements Runnable {
     }
 
     String getSessionID() {
+        if (httpSession == null) {
+            return null;
+        }
         return httpSession.getID();
     }
 
@@ -407,9 +462,9 @@ class RequestTask implements Runnable {
     private void sendEventPacket() throws IOException {
 
         for (int i = 0; i < eventPack.size(); i++) {
-            
+
             EventPacket pack = eventPack.remove(i);
-            
+
 
             HttpResponseFormat response = new HttpResponseFormat();
             response.setStatusCode_OK(HttpConstants.HTTP_1_1);

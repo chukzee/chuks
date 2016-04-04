@@ -50,12 +50,14 @@ abstract class RequestValidator {
     private boolean isPossiblyClassFile;
     private RequestFileCacheEntry requestFileCache;
     private HttpSessionImpl httpSession;
+    private final boolean isKeepAliveConnection;
 
     RequestValidator(RequestTask task) throws UnsupportedEncodingException {
         this.out = task.sock;
         this.request = task.request;
         this.requestedURIFileName = request.getURIFileName();
         this.httpSession = task.httpSession;
+        this.isKeepAliveConnection = task.isKeepAliveRequestConnection;
     }
 
     protected void sendResponse(HttpResponseFormat response) {
@@ -175,8 +177,7 @@ abstract class RequestValidator {
         requestedFileSize = requested_file.length();//important
         if (!requested_file.exists()) {
             //save in cache
-            RequestFileCacheEntry cache
-                    = new RequestFileCacheEntry(requested_file_path, RequestFileInfo.FILE_NOT_FOUND);
+            RequestFileCacheEntry cache = new RequestFileCacheEntry(requested_file_path, RequestFileInfo.FILE_NOT_FOUND);
             ServerCache.LRUOptimalCache.put(cache.filePath, cache);
             this.handleFileNotFound(requestedURIFileName);
             return false;
@@ -187,8 +188,7 @@ abstract class RequestValidator {
         content_type = ServerUtil.getContentType(requestedFilePath);
         if (content_type == null) {
             //save in cache
-            RequestFileCacheEntry cache
-                    = new RequestFileCacheEntry(requested_file_path, RequestFileInfo.FILE_TYPE_NOT_SUPPORTED);
+            RequestFileCacheEntry cache = new RequestFileCacheEntry(requested_file_path, RequestFileInfo.FILE_TYPE_NOT_SUPPORTED);
             ServerCache.LRUOptimalCache.put(cache.filePath, cache);
             handleFileTypeNotSupported(requestedURIFileName);
             return false;
@@ -197,8 +197,7 @@ abstract class RequestValidator {
         //check if the content is forbidden
         if (isContentForbidden(ServerUtil.getFileType(requestedFilePath))) {
             //save in cache
-            RequestFileCacheEntry cache
-                    = new RequestFileCacheEntry(requested_file_path, RequestFileInfo.FORBIDDEN);
+            RequestFileCacheEntry cache = new RequestFileCacheEntry(requested_file_path, RequestFileInfo.FORBIDDEN);
             ServerCache.LRUOptimalCache.put(cache.filePath, cache);
             handleForbidden();
             return false;
@@ -227,7 +226,7 @@ abstract class RequestValidator {
 
     }
 
-    protected void notifyServerApp(RequestObject reqestObj) throws UnsupportedEncodingException {
+    protected void notifyWebApp(RequestObject reqestObj) throws UnsupportedEncodingException {
 
         if (!checkRequestRepositry()) {
             return;
@@ -246,7 +245,7 @@ abstract class RequestValidator {
 
         WebApplication web_app = WebAppManager.getWebApp(requestedFilePath, this, serverObj);
 
-        if (web_app == null) {//now we             
+        if (web_app == null) {
             return;
         }
 
@@ -311,8 +310,7 @@ abstract class RequestValidator {
             sendResponseFile(content_type, getCookie());//caching is handled in the method
         } else {
             //save in cache
-            RequestFileCacheEntry cache
-                    = new RequestFileCacheEntry(Paths.get(requestedFilePath), RequestFileInfo.FILE_NOT_FOUND);
+            RequestFileCacheEntry cache = new RequestFileCacheEntry(Paths.get(requestedFilePath), RequestFileInfo.FILE_NOT_FOUND);
             ServerCache.LRUOptimalCache.put(cache.filePath, cache);
             handleFileNotFound(requestedURIFileName);
         }
@@ -323,7 +321,7 @@ abstract class RequestValidator {
         try {
             HttpResponseFormat response = new HttpResponseFormat();
             response.setStatusCode_OK(HttpConstants.HTTP_1_1);
-            response.setConnection("open");
+            response.setConnection(isKeepAliveConnection ? "open" : "close");
             response.setContentType(content_type);
             if (cookie != null) {
                 response.setCookie(cookie.toString());
@@ -353,7 +351,7 @@ abstract class RequestValidator {
 
             HttpResponseFormat response = new HttpResponseFormat();
             response.setStatusCode_OK(HttpConstants.HTTP_1_1);
-            response.setConnection("open");
+            response.setConnection(isKeepAliveConnection ? "open" : "close");
             response.setContentType(content_type);
             if (cookie != null) {
                 response.setCookie(cookie.toString());
@@ -386,8 +384,7 @@ abstract class RequestValidator {
                 byte[] file_data = Files.readAllBytes(FileSystems.getDefault().getPath(requestedFilePath));
 
                 //save in cache
-                RequestFileCacheEntry cache
-                        = new RequestFileCacheEntry(Paths.get(requestedFilePath), RequestFileInfo.FILE_FOUND, content_type, file_data);
+                RequestFileCacheEntry cache = new RequestFileCacheEntry(Paths.get(requestedFilePath), RequestFileInfo.FILE_FOUND, content_type, file_data);
                 ServerCache.LRUOptimalCache.put(cache.filePath, cache);
 
                 //now send the response
@@ -537,6 +534,5 @@ abstract class RequestValidator {
         public InputStream getContentInputStream() throws IOException {
             return new FileInputStream(path);
         }
-
     }
 }

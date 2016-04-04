@@ -23,7 +23,7 @@ public class HttpRequestFormat {
     private char[] request_line;
     private int request_line_len;
     int method = HttpConstants.UNKNWON_METHOD;
-    private int content_length = -1;
+    private int content_length = -1;//unknown
     private boolean isChunkedTransferEncoding;
     private boolean isChunkTranKnown;
     private StringBuilder boundary;
@@ -158,7 +158,7 @@ public class HttpRequestFormat {
 
     public Map createParametersMap(byte[] request, int header_len) throws UnsupportedEncodingException {
 
-        if (content_length != request.length - header_length) {
+        if (content_length != request.length - header_len) {
             return null;
         }
 

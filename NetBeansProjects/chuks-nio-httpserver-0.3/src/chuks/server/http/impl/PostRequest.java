@@ -75,7 +75,7 @@ class PostRequest extends RequestValidator {
     @Override
     void validateRequest(byte[] recv, int offset, int size) throws UnsupportedEncodingException, IOException, SimpleHttpServerException {
 
-        if (request.isChunkedTransferEncoding() && content_length > 0) {
+    if (request.isChunkedTransferEncoding() && content_length > 0) {
             //it is illegal to set both chunk transfer encode and content length
             handleBadRequest();
         } else if (content_length > 0) {
@@ -307,6 +307,7 @@ class PostRequest extends RequestValidator {
         }
 
         System.arraycopy(arr, 0, RequestData, request_data_length, size);
+        
         request_data_length += size;
 
         if (request_data_length == RequestData.length) {
@@ -327,7 +328,7 @@ class PostRequest extends RequestValidator {
 
         //finally
         if (isDoneAnalyze) {
-
+            
             Map param_map = request.createParametersMap(RequestData, headersLength);
             RequestObject req = new RequestObject();
             req.setPostUrl(param_map);
@@ -337,7 +338,7 @@ class PostRequest extends RequestValidator {
             fieldMap = null;//gc it
             fileObjMap = null;//gc it
 
-            notifyServerApp(req);
+            notifyWebApp(req);
 
         }
 

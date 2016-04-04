@@ -194,8 +194,8 @@ public abstract class ServerConfig {
         }
     }
 
-    static boolean isLoadBalanceEnable() {
-        System.err.println("REMIND: Auto generated method body is not yet implemented");
+    static boolean isLoadBalancingEnabled() {
+        System.err.println("REMIND: Auto generated method body is not yet implemented - isLoadBalancingEnabled()");
         return false;
     }
 

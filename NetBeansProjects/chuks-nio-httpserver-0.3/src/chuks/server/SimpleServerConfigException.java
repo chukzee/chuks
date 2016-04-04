@@ -13,5 +13,9 @@ public class SimpleServerConfigException extends Exception {
     public SimpleServerConfigException(String string) {
         super(string);
     }
+
+    public SimpleServerConfigException(String message, Throwable cause) {
+        super(message, cause);
+    }
     
 }

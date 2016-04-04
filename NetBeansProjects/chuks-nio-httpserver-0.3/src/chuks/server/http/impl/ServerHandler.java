@@ -91,7 +91,8 @@ class ServerHandler implements Runnable {
                             socket.configureBlocking(false);
                             RequestTask requestTask = new RequestTask(socket);
                             tasks.offer(requestTask);//add - prefer the method offer() to add()
-                            //System.out.println(socket);//TESTING!!! - TO BE REMOVED
+                            
+                            System.out.println(socket);//TESTING!!! - TO BE REMOVED
                         }
 
                     }
@@ -190,7 +191,7 @@ class ServerHandler implements Runnable {
                         if (!task.isContentFullyRead()) {
                             tasks.offer(task);//put back but to the tail - NOTE we prefer the method offer() to add()
                         } else if (task.isKeepAliveConnection()) {
-                            //System.out.println("task.isKeepAliveConnection()");
+                            System.out.println("task.isKeepAliveConnection()");
                             task.initialize();//first initialize necessary variables
                             tasks.offer(task);//put back but to the tail - NOTE we prefer the method offer() to add()                            
                         } else {

@@ -29,7 +29,7 @@ class GetRequest extends RequestValidator {
         
         //System.out.println("TEST GET REQUEST OPTIMIZATION : " + (System.nanoTime() - time) / Math.pow(10.0, 9));
         
-        notifyServerApp(req); 
+        notifyWebApp(req); 
         
         //System.out.println("TEST GET2 REQUEST OPTIMIZATION : " + (System.nanoTime() - time) / Math.pow(10.0, 9));
         

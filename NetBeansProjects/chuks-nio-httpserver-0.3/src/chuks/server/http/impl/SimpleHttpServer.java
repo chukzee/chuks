@@ -44,7 +44,6 @@ public class SimpleHttpServer implements HttpServer {
     private static char FileSeparator = '\\';//but will be set automatically based on the OS anyway
     static int cache_port;
     static SocketAddress cacheSockAddress;
-
     static String host;
     static private int port;
     private static Path pathWebRoot;
@@ -55,7 +54,6 @@ public class SimpleHttpServer implements HttpServer {
     public static SocketAddress getCacheSockAddress() {
         return cacheSockAddress;
     }
-
     static private String root_dir;
     static String classPath;
     static String libraryPath;
@@ -67,7 +65,6 @@ public class SimpleHttpServer implements HttpServer {
     static LoadBalanceStrategy getLoadBalanceStrategy() {
         return loadBalanceStrategy;
     }
-    
     private String configFileSaved;
 
     static {
@@ -222,7 +219,6 @@ public class SimpleHttpServer implements HttpServer {
 
     private void finalizeOperation() {
         //save the load web app class names
-
     }
 
     private void checkConfig() throws SimpleServerConfigException {
@@ -285,7 +281,7 @@ public class SimpleHttpServer implements HttpServer {
         try {
             cache_host_ip = InetAddress.getByName(host).getHostAddress();
         } catch (UnknownHostException ex) {
-            throw new SimpleServerConfigException(ex.getMessage());
+            throw new SimpleServerConfigException(ex.getMessage(), ex);
         }
 
         if (cache_port == port) {
@@ -294,7 +290,7 @@ public class SimpleHttpServer implements HttpServer {
         try {
             ServerConfig.remoteCacheAddresses = ServerUtil.validateCacheAdresses(ServerConfig.remoteCacheAddresses);
         } catch (SimpleHttpServerException ex) {
-            throw new SimpleServerConfigException(ex.getMessage());
+            throw new SimpleServerConfigException(ex.getMessage(), ex);
         }
 
         int cancelled = 0;
@@ -318,7 +314,7 @@ public class SimpleHttpServer implements HttpServer {
                     }
                 }
             } catch (UnknownHostException ex) {
-                throw new SimpleServerConfigException(ex.getMessage());
+                throw new SimpleServerConfigException(ex.getMessage(), ex);
             }
         }
 
@@ -341,7 +337,7 @@ public class SimpleHttpServer implements HttpServer {
             try {
                 ServerConfig.propertiesConfig.getLayout().save(new FileWriter(configFileSaved));
             } catch (IOException | ConfigurationException ex) {
-                throw new SimpleServerConfigException(ex.getMessage());
+                throw new SimpleServerConfigException(ex.getMessage(), ex);
             }
         }
     }
@@ -360,7 +356,6 @@ public class SimpleHttpServer implements HttpServer {
         PropertiesConfigurationLayout pConfigLayout = new PropertiesConfigurationLayout(pConfig);
         ResourceBundle configAttrBundle = ServerConfig.getConfigAttrBundle();
         ResourceBundle configCommentsBundle = ServerConfig.getConfigCommentsBundle();
-
         private String configFileToSave;
         private boolean overwriteConfigFile;
         private int cache_port;
@@ -470,9 +465,9 @@ public class SimpleHttpServer implements HttpServer {
 
         /**
          * Used to hide or disguise the extension of the server code file. Any
-         * resource with this <code>disguised_ext</code> extension will be
-         * treated as the main server extension which is 'class' represent java
-         * class file.<br>
+         * resource with this
+         * <code>disguised_ext</code> extension will be treated as the main
+         * server extension which is 'class' represent java class file.<br>
          * Setting empty string or null is valid, it simply hides the extension.
          * <p>
          * NOTE: Care must be taken to avoid setting extension of known or
@@ -531,7 +526,7 @@ public class SimpleHttpServer implements HttpServer {
                         pConfig.save(f);
                         configFileSaved = f.getPath();
                     } catch (ConfigurationException ex) {
-                        throw new SimpleServerConfigException(ex.getMessage());
+                        throw new SimpleServerConfigException(ex.getMessage(), ex);
                     }
                 }
             }
@@ -547,7 +542,7 @@ public class SimpleHttpServer implements HttpServer {
              } else if (!type.equals("properties")) {
              throw new SimpleServerConfigException("invalid configuration file type - expected property file");
              }*/
-                //pConfig = new PropertiesConfiguration(config_file);
+            //pConfig = new PropertiesConfiguration(config_file);
             pConfig = new PropertiesConfiguration();
             Set<Map.Entry<Object, Object>> en = properties.entrySet();
             for (Map.Entry<Object, Object> entry : en) {
@@ -687,47 +682,47 @@ public class SimpleHttpServer implements HttpServer {
             /*
              *Set the default auxiliary cache properties
              */
-            
+
             key = configAttrBundle.getString(Attr.UseDiskCache.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setUseDiskCache(pConfig.getBoolean(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.CacheDiskPath.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setDiskPath(pConfig.getString(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.ClearDiskCacheOnStartup.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setClearDiskCacheOnStartup(pConfig.getBoolean(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.ShutdownSpoolTimeLimit.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setShutdownSpoolTimeLimit(pConfig.getLong(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.DiskCacheOptimizeOnShutdown.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setDiskOptimizeOnShutdown(pConfig.getBoolean(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.DiskCacheMaxRecyleBinSize.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setDiskMaxRecyleBinSize(pConfig.getInt(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.DiskCacheMaxKeySize.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setDiskMaxKeySize(pConfig.getInt(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.DiskCacheMaxPurgatorySize.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setDiskMaxPurgatorySize(pConfig.getInt(key));
             }
-            
+
             key = configAttrBundle.getString(Attr.DiskCacheOptimizeAtRemoveCount.name());
             if (pConfig.containsKey(key)) {
                 cacheProp.setDiskOptimizeAtRemoveCount(pConfig.getInt(key));
@@ -754,7 +749,5 @@ public class SimpleHttpServer implements HttpServer {
 
             return buildUsingConfig(properties);
         }
-
     }
-
 }
