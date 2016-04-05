@@ -259,6 +259,10 @@ public class Chess implements Game, Runnable {
             return this;
         }
 
+        public ChessBuilder whitePlayer(WhiteChessPlayer white_player) {
+            this.white_player = white_player;
+            return this;
+        }
         public ChessBuilder blackPlayer(RemoteUser user) {
             this.black_player = new ChessPlayer(user, false);
             return this;
@@ -274,7 +278,12 @@ public class Chess implements Game, Runnable {
             return this;
         }
 
-        public ChessBuilder setBoardPosition(ChessBoardPosition board_position) {
+        public ChessBuilder blackPlayer(BlackChessPlayer black_player) {
+            this.black_player = black_player;
+            return this;
+        }
+
+        public ChessBuilder boardPosition(ChessBoardPosition board_position) {
             this.board_position = board_position;
             return this;
         }

@@ -8,6 +8,6 @@ package naija.game.client.event;
  *
  * @author USER
  */
-abstract public class GameEvent {
+public class FriendRequestEvent {
     
 }

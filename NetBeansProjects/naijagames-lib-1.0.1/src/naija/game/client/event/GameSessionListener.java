@@ -5,10 +5,6 @@
  */
 package naija.game.client.event;
 
-import naija.game.client.ChatMessage;
-import naija.game.client.CommentMessage;
-import naija.game.client.Session;
-import naija.game.client.Spectator;
 
 /**
  *
@@ -16,9 +12,9 @@ import naija.game.client.Spectator;
  */
 public interface GameSessionListener {
     
-    void onGameStart(Session session);
-    void onGameEnd(Session session);
-    void onGameResume(Session session);
-    void onSpectatorJoinSession(Spectator spectator);
-    void onSpectatorLeaveSession(Spectator spectator);
+    void onStartGameSession(GameSessionEvent event);
+    void onEndGameSession(GameSessionEvent event);
+    void onResumeGameSession(GameSessionEvent event);
+    void onSpectatorJoinSession(GameSessionEvent event);
+    void onSpectatorLeaveSession(GameSessionEvent event);
 }

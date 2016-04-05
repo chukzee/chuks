@@ -7,6 +7,7 @@ package naija.game.client.solitaire;
 
 import naija.game.client.IConnection;
 import naija.game.client.AbstractGameClient;
+import naija.game.client.GameName;
 
 /**
  *
@@ -18,4 +19,8 @@ class SolitaireGameClient extends AbstractGameClient {
         super(conn);
     }
     
+    @Override
+    public GameName getGameName() {
+        return GameName.solitaire;
+    }
 }

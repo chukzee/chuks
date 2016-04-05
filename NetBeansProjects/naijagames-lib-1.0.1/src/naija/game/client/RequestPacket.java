@@ -13,8 +13,9 @@ import java.util.List;
  */
 public class RequestPacket {
 
-    List<NameValue>  nameValuelist = new LinkedList();
+    private List<NameValue>  nameValuelist = new LinkedList();
     private String remotePath = "";
+    private String name;
 
     public RequestPacket(String remotePath) {
         this.remotePath = remotePath;
@@ -32,5 +33,20 @@ public class RequestPacket {
         return remotePath;
     }
 
-    
+    /**
+     * Get the accesible name of this request packet
+     * @return 
+     */
+    public String getName(){
+        return name;
+    }
+
+    /**
+     * Set the accesible name of this request packet.
+     * @return 
+     */
+    public void setName(String name){
+        this.name = name;
+    }
+        
 }

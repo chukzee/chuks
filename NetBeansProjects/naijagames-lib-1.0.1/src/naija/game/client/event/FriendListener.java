@@ -12,6 +12,11 @@ import naija.game.client.UserInfo;
  */
 public interface FriendListener {
     
-    void onFriend(UserInfo user);
-    void onFriendRequest(UserInfo user);
+    void onFriendOnline(FriendEvent event);
+    void onFriendOffline(FriendEvent event);
+    void onFriendIdle(FriendEvent event);
+    void onFriendPlayGame(FriendEvent event);
+    void onFriendAdded(FriendEvent event);
+    void onFriendRemove(FriendEvent event);
+    void onFriendNotify(FriendEvent event);
 }

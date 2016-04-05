@@ -7,6 +7,7 @@ package naija.game.client.draft;
 
 import naija.game.client.IConnection;
 import naija.game.client.AbstractGameClient;
+import naija.game.client.GameName;
 
 /**
  *
@@ -16,6 +17,12 @@ class DraftGameClient extends AbstractGameClient {
     
     DraftGameClient (IConnection conn){
         super(conn);
+    }
+
+    
+    @Override
+    public GameName getGameName() {
+        return GameName.draft;
     }
     
 }

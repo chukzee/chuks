@@ -11,20 +11,20 @@ package naija.game.client;
  */
 public abstract class Spectator extends UserInfo{
      
-    Session current_session;
-    Session last_session;
-    public void joinSession(Session session){
+    GameSession current_session;
+    GameSession last_session;
+    public void joinSession(GameSession session){
         session.addSpectator(this);
         this.current_session = session;
     }
   
-    public void leaveSession(Session session){
+    public void leaveSession(GameSession session){
         session.removeSpectator(this);
         last_session = session;
         current_session = null;
     }    
     
-    public Session getSpectatorCurrentSession(){
+    public GameSession getSpectatorCurrentSession(){
         return current_session;
     }
 }

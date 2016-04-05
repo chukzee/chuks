@@ -5,12 +5,21 @@
  */
 package naija.game.client;
 
+import java.util.Properties;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
 public class LocalUser extends UserInfo{
         
+    public LocalUser(){
+        
+    }
+   
+    public LocalUser(String username){
+        setUsername(username);
+    }
    
     public UserInfo getInfo(){
         return this;
@@ -34,4 +43,8 @@ public class LocalUser extends UserInfo{
      
     }
     
+    public static void main(String... ar){
+        Properties p = System.getProperties();
+        System.out.println(System.getProperty("user.variant"));
+    }
 }

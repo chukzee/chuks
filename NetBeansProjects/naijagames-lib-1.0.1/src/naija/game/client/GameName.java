@@ -2,12 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package naija.game.client.event;
+package naija.game.client;
 
 /**
  *
  * @author USER
  */
-abstract public class GameEvent {
-    
+public enum GameName {
+    chess,
+    draft,
+    scrabble,
+    ludo,
+    whot,
+    solitaire
 }

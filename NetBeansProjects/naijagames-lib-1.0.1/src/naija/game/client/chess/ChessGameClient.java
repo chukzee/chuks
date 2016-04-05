@@ -7,6 +7,7 @@ package naija.game.client.chess;
 
 import naija.game.client.IConnection;
 import naija.game.client.AbstractGameClient;
+import naija.game.client.GameName;
 
 /**
  *
@@ -15,5 +16,10 @@ import naija.game.client.AbstractGameClient;
 class ChessGameClient extends AbstractGameClient {
     ChessGameClient (IConnection conn){
         super(conn);
+    }
+
+    @Override
+    public GameName getGameName() {
+        return GameName.chess;
     }
 }

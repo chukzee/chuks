@@ -53,9 +53,10 @@ public class Board {
     public int BLACK_rook_ORIGIN_square_on_QUEEN_side = 56;//by default for castle - come back for Chess960 variant
 
     public int hashKey = 0;
-    private String strFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";//traditionaly initial position
-    public final int NORMAL_CHESS = 100;
-    public final int CHESS960 = 200;
+    public static final String DEFAUT_CHESS_BOARD_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";//traditionaly initial position
+    private String strFEN = DEFAUT_CHESS_BOARD_POSITION;//traditionaly initial position
+    public static final int NORMAL_CHESS = 100;
+    public static final int CHESS960 = 200;
     private int chessVariant = NORMAL_CHESS;//by default
     public String all_moves="";
     private String strWhiteShortCastle="K";//used for FEN

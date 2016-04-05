@@ -12,8 +12,9 @@ import naija.game.client.BluetoothConnection;
 import naija.game.client.Game;
 import naija.game.client.AbstractGameClient;
 import naija.game.client.GameClient;
-import naija.game.client.GameClientFactory;
-import naija.game.client.GameSession;
+import naija.game.client.ClientFactory;
+import naija.game.client.GameName;
+import naija.game.client.GameSessionImpl;
 import naija.game.client.chess.Chess;
 import naija.game.client.chess.ChessBoardListener;
 import naija.game.client.chess.ChessGameClientFactory;
@@ -22,7 +23,7 @@ import naija.game.client.IConnection;
 import naija.game.client.LocalUser;
 import naija.game.client.RemoteUser;
 import naija.game.client.Score;
-import naija.game.client.Session;
+import naija.game.client.GameSession;
 import naija.game.client.Spectator;
 import naija.game.client.WebConnection;
 import naija.game.client.chess.board.ChessBoardPosition;
@@ -41,7 +42,7 @@ public class TestChessGame {
             webCon.proxyHost("127.0.0.1");
             webCon.proxyPort(8080);
             ChessGameClientFactory  cfac= new ChessGameClientFactory(webCon);//factory for implementing chess game clients
-            GameClient gclient = GameClientFactory.createGameClient(cfac);            
+            GameClient gclient = ClientFactory.createGameClient(cfac);            
             //add social networks
             String token= "y4j2GE3E33GS4s3k";//acces token value
             long exipry = 284028402944924L;//access token expiry time
@@ -52,11 +53,11 @@ public class TestChessGame {
             long userDd = 48577778939L;//the authenitcating user id
             gclient.addSocailNetwork(new TwitterSocialNetwork(token, secret, userDd));
             gclient.start();//start the game client - client connects and starts internal processing
-
+            
             //bluetooth connection
             BluetoothConnection blCon = new BluetoothConnection("the bluetooth localhost", 000000);//using bluetooth connection  
             ChessGameClientFactory  cfac1= new ChessGameClientFactory(blCon);//factory for implementing chess game clients
-            GameClient gclient1 = GameClientFactory.createGameClient(cfac1);
+            GameClient gclient1 = ClientFactory.createGameClient(cfac1);
             gclient1.start();//start the game client - client connects and starts internal processing
             
             //to add session for each chess game - for example we will add two sessions below
@@ -64,7 +65,7 @@ public class TestChessGame {
             //first build the game
             ChessBoardListener listener = null;
             Game game1 = new Chess.ChessBuilder(listener)
-                                .setBoardPosition(new ChessBoardPosition())
+                                .boardPosition(new ChessBoardPosition())
                                 .blackPlayer(new LocalUser())
                                 .whitePlayer(new RemoteUser())                  
                                 .score(new Score(0f,1f))
@@ -74,13 +75,13 @@ public class TestChessGame {
             int session_id1 =1;//unique session id
             Date session_start_time1 = null;
             Date session_end_time1 = null;
-            Session session1 = new GameSession(game1, session_id1, session_start_time1,  session_end_time1);
+            GameSession session1 = null; // see GameSessionImpl(...) construction
 
             Game game2 = null;//see example of how to build the chess game in the case of game1 above
             int session_id2 =2;//unique session id
             Date session_start_time2 = null;
             Date session_end_time2 = null;
-            Session session2 = new GameSession(game2, session_id2, session_start_time2,  session_end_time2);
+            GameSession session2 = null; // see GameSessionImpl(...) construction
                       
             //adding the sessions to the game client
             gclient.addSession(session1);

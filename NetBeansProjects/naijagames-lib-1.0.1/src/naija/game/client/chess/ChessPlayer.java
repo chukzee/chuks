@@ -39,19 +39,19 @@ public class ChessPlayer implements Player {
     private ChessPlayer() {
     }
 
-    ChessPlayer(LocalUser user, boolean is_white) {
+    public ChessPlayer(LocalUser user, boolean is_white) {
         this.is_white = is_white;
         side = is_white ? Side.white : Side.black;
         this.local_user = user;
     }
 
-    ChessPlayer(RemoteUser user, boolean is_white) {
+    public ChessPlayer(RemoteUser user, boolean is_white) {
         this.is_white = is_white;
         side = is_white ? Side.white : Side.black;
         this.remote_user = user;
     }
 
-    ChessPlayer(Robot robot, boolean is_white) {
+    public ChessPlayer(Robot robot, boolean is_white) {
         this.is_white = is_white;
         this.robot = robot;
     }

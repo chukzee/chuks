@@ -9,7 +9,7 @@ package naija.game.client;
  *
  * @author USER
  */
-public class GameClientFactory {
+public class ClientFactory {
     
     public static GameClient createGameClient(AbstractGameClientFactory factory){
         return factory.createGameClient();

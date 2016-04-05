@@ -8,6 +8,7 @@ package naija.game.client.ludo;
 import naija.game.client.draft.*;
 import naija.game.client.IConnection;
 import naija.game.client.AbstractGameClient;
+import naija.game.client.GameName;
 
 /**
  *
@@ -18,5 +19,10 @@ class LudoGameClient extends AbstractGameClient {
     LudoGameClient (IConnection conn){
         super(conn);
     }
-    
+
+
+    @Override
+    public GameName getGameName() {
+        return GameName.ludo;
+    }    
 }

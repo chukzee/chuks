@@ -11,5 +11,35 @@ import naija.game.client.ChatMessage;
  * @author USER
  */
 public interface ChatListener {
-    void onChat(ChatMessage chat_message);
+    
+    /**
+     * Fires when a chat message arrives from the server.
+     * @param event 
+     */
+    void onChatMesage(ChatEvent event);
+    
+    /**
+     * Fires when a chat message sent to the server.
+     * @param event 
+     */
+    void onChatSent(ChatEvent event);
+    
+    /**
+     * Fires when a collection of chat messages is received from the server.
+     * Useful for populating a chat view.
+     * @param event 
+     */
+    void onChatHistory(ChatEvent event);
+    
+     /**
+     * Fires when a chat begins between two users.
+     * @param event 
+     */
+    void onChatBegins(ChatEvent event);
+    
+     /**
+     * Fires when a user discontinues an ongoing chat session.
+     * @param event 
+     */
+    void onChatEnds(ChatEvent event);
 }
