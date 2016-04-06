@@ -13,6 +13,8 @@ import de.lessvoid.nifty.layout.manager.VerticalLayout;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.tools.SizeValue;
 import java.util.Date;
+import naija.game.client.event.ChatEvent;
+import naija.game.client.event.ChatListener;
 import naija.games.gui.builder.ChatmatePanelDefinitionBuilder;
 import naija.games.gui.builder.ChatterPanelDefinitionBuilder;
 
@@ -20,7 +22,7 @@ import naija.games.gui.builder.ChatterPanelDefinitionBuilder;
  *
  * @author USER
  */
-public class ChatControl {
+public class ChatControl implements ChatListener {
 
     static private ChatControl chatControl;
     static final private Object lock = new Object();
@@ -73,29 +75,49 @@ public class ChatControl {
 
     public void addLocalMessage(String message_id, final String msg, final String full_name, final Date date, final String photo_filename) {
         ControlBuilder chatterBuilder = new ControlBuilder(message_id, chatter_pnl) {
-                                  {
-                                      parameter("full_name", full_name);
-                                      parameter("chat_message", msg);
-                                      parameter("message_time", date == null ? "" : date.toString());
-                                      parameter("photo_filename", photo_filename);
-                                  }
-                              };
-        
+            {
+                parameter("full_name", full_name);
+                parameter("chat_message", msg);
+                parameter("message_time", date == null ? "" : date.toString());
+                parameter("photo_filename", photo_filename);
+            }
+        };
+
         this.ScrollPanelControl.addElement(chatterBuilder, nifty, screen);
     }
 
     public void addRemoteMessage(String message_id, final String msg, final String full_name, final Date date, final String photo_filename) {
-        
+
         ControlBuilder chatmateBuilder = new ControlBuilder(message_id, chatmate_pnl) {
-                                  {
-                                      parameter("full_name", full_name);
-                                      parameter("chat_message", msg);
-                                      parameter("message_time", date == null ? "" : date.toString());
-                                      parameter("photo_filename", photo_filename);
-                                  }
-                              };
-        
+            {
+                parameter("full_name", full_name);
+                parameter("chat_message", msg);
+                parameter("message_time", date == null ? "" : date.toString());
+                parameter("photo_filename", photo_filename);
+            }
+        };
+
         this.ScrollPanelControl.addElement(chatmateBuilder, nifty, screen);
 
+    }
+
+    @Override
+    public void onChatMesage(ChatEvent event) {
+    }
+
+    @Override
+    public void onChatSent(ChatEvent event) {
+    }
+
+    @Override
+    public void onChatHistory(ChatEvent event) {
+    }
+
+    @Override
+    public void onChatEnds(ChatEvent event) {
+    }
+
+    @Override
+    public void onChatBegins(ChatEvent event) {
     }
 }

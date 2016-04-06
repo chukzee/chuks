@@ -13,7 +13,7 @@ import com.jme3.cinematic.events.MotionTrack;
 import com.jme3.math.Spline.SplineType;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-import naija.game.client.chess.PieceName;
+import naija.game.client.PieceName;
 import naija.game.client.chess.board.Constants;
 import static naija.games.chess3d.ChessSound.SELF_MOVE_SOUND;
 

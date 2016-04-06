@@ -5,9 +5,6 @@
 package naija.games.whot3d;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.renderer.Camera;
-import naija.game.client.event.GameEvent;
-import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.whot.WhotEvent;
 import naija.game.client.whot.WhotGamePosition;

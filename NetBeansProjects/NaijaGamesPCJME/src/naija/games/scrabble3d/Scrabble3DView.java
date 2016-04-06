@@ -5,20 +5,18 @@
 package naija.games.scrabble3d;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.renderer.Camera;
-import naija.game.client.event.GameEvent;
-import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.scrabble.ScrabbleBoardEvent;
 import naija.game.client.scrabble.ScrabbleBoardListener;
 import naija.game.client.scrabble.ScrabbleBoardPosition;
+import naija.games.Game3DView;
 import naija.games.View3D;
 
 /**
  *
  * @author USER
  */
-public class Scrabble3DView   extends View3D implements ScrabbleBoardListener {
+public class Scrabble3DView   extends View3D implements Game3DView, ScrabbleBoardListener {
 
     private Scrabble3DView() {
         super(null, null);

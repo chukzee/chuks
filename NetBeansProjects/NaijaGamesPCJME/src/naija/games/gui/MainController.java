@@ -9,40 +9,28 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.EndNotify;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.builder.ControlBuilder;
-import de.lessvoid.nifty.builder.ControlDefinitionBuilder;
 import de.lessvoid.nifty.builder.EffectBuilder;
-import de.lessvoid.nifty.builder.ImageBuilder;
 import de.lessvoid.nifty.builder.PanelBuilder;
-import de.lessvoid.nifty.builder.TextBuilder;
-import de.lessvoid.nifty.controls.Label;
-import de.lessvoid.nifty.controls.NiftyControl;
 import de.lessvoid.nifty.controls.button.builder.ButtonBuilder;
-import de.lessvoid.nifty.controls.label.LabelControl;
 import de.lessvoid.nifty.controls.label.builder.LabelBuilder;
-import de.lessvoid.nifty.controls.listbox.ListBoxControl;
-import de.lessvoid.nifty.controls.scrollpanel.builder.ScrollPanelBuilder;
 import de.lessvoid.nifty.controls.textfield.builder.TextFieldBuilder;
 import de.lessvoid.nifty.elements.Element;
-import de.lessvoid.nifty.layout.manager.HorizontalLayout;
-import de.lessvoid.nifty.layout.manager.VerticalLayout;
-import de.lessvoid.nifty.screen.DefaultScreenController;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import de.lessvoid.nifty.tools.Color;
 import de.lessvoid.nifty.tools.SizeValue;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import naija.games.gui.builder.ChatterPanelDefinitionBuilder;
-import naija.games.gui.builder.FriendListItemDefinitionBuilder;
+import naija.game.client.GameClient;
+import naija.games.AbstractGameMain;
 import naija.games.gui.control.FriendsControl;
-import naija.games.gui.builder.FriendsHeaderDefinitionBuilder;
 import naija.games.gui.builder.LeftPanelBuilder;
 import naija.games.gui.builder.RightPanelBuilder;
 import naija.games.gui.control.ChatControl;
 import naija.games.gui.control.CommentControl;
-import naija.games.gui.control.ScrollPanelControl;
+import naija.games.gui.control.FriendRequestControl;
+import naija.games.gui.control.LiveGamesControl;
+import naija.games.gui.control.TournamentsControl;
 
 public class MainController extends AbstractAppState implements ScreenController {
 
@@ -89,6 +77,10 @@ public class MainController extends AbstractAppState implements ScreenController
     public void onEndScreen() {
     }
 
+    GameClient getGameClient() {
+        return ((AbstractGameMain) app).getGameClient();
+    }
+
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         this.app = app;
@@ -112,6 +104,8 @@ public class MainController extends AbstractAppState implements ScreenController
         this.chatInputPanel = createChatInputPanel("chat_input_panel", true);
         this.commentsAreaPanel = createCommentsAreaPanel("comments_area_panel", false);
         this.commentsInputPanel = createCommentsInputPanel("comments_input_panel", false);
+
+        creatGameViewControls();//RECENTLY ADDED THIS LINE - NOT YET TESTED
 
         testFriendsPanelContents();//TESTING
         testChatMessageContents();//TESTING
@@ -356,6 +350,26 @@ public class MainController extends AbstractAppState implements ScreenController
         return element;
     }
 
+    void creatGameViewControls() {
+
+        FriendsControl friendsControl = FriendsControl.getInstance(nifty, screen, friendsPanel);
+        FriendRequestControl friendsRequestControl = FriendRequestControl.getInstance(nifty, screen, friendsPanel);
+        ChatControl chatControl = ChatControl.getInstance(nifty, screen, chatAreaPanel);
+        CommentControl commentControl = CommentControl.getInstance(nifty, screen, chatAreaPanel);
+        TournamentsControl tournamentControl = TournamentsControl.getInstance(nifty, screen, chatAreaPanel);
+        LiveGamesControl liveGamesControl = LiveGamesControl.getInstance(nifty, screen, chatAreaPanel);
+
+        GameClient gc_client = getGameClient();
+        
+        //add the respective listeners
+        gc_client.addChatListener(chatControl);
+        gc_client.addCommentListener(commentControl);
+        gc_client.addFriendListener(friendsControl);
+        gc_client.addFriendRequestListener(friendsRequestControl);
+        gc_client.addTournamentListener(tournamentControl);
+        gc_client.addGameSessionListener(liveGamesControl);
+    }
+
     void testFriendsPanelContents() {
 
 
@@ -393,19 +407,19 @@ public class MainController extends AbstractAppState implements ScreenController
                 try {
                     Thread.sleep(20000);
                     System.out.println("adding new chat message");
-                
+
                     chatControl.addLocalMessage("msg6", "this is message from ororo ino", "ororo ino", new Date(), "naija/games/images/BVN_54.png");
-                
+
                     Thread.sleep(5000);
                     System.out.println("adding new chat message");
 
                     chatControl.addLocalMessage("msg7", "this is message from ororo7 ino", "ororo7 ino", new Date(), "naija/games/images/BVN_54.png");
-                
+
                     Thread.sleep(5000);
                     System.out.println("adding new chat message");
 
                     chatControl.addLocalMessage("msg8", "this is message from ororo8 ino", "ororo8 ino", new Date(), "naija/games/images/BVN_54.png");
-                
+
                 } catch (InterruptedException ex) {
                     Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                 }

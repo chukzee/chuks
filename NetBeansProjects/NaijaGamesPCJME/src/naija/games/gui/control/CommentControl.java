@@ -15,6 +15,9 @@ import de.lessvoid.nifty.layout.manager.VerticalLayout;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.tools.SizeValue;
 import java.util.Date;
+import naija.game.client.event.ChatEvent;
+import naija.game.client.event.CommentEvent;
+import naija.game.client.event.CommentListener;
 import naija.games.gui.builder.ChatmatePanelDefinitionBuilder;
 import naija.games.gui.builder.ChatterPanelDefinitionBuilder;
 import naija.games.gui.builder.CommentMainDefinitionBuilder;
@@ -24,7 +27,7 @@ import naija.games.gui.builder.CommentReplyDefinitionBuilder;
  *
  * @author USER
  */
-public class CommentControl {
+public class CommentControl implements CommentListener{
 
     static private CommentControl chatControl;
     static final private Object lock = new Object();
@@ -169,4 +172,33 @@ public class CommentControl {
                 .build(nifty, screen, reply_container);
         
     }
+
+    @Override
+    public void onCommentMesage(CommentEvent event) {
+    }
+
+    @Override
+    public void onCommentReply(CommentEvent event) {
+    }
+
+    @Override
+    public void onCommentSent(CommentEvent event) {
+    }
+
+    @Override
+    public void onCommentEdited(CommentEvent event) {
+    }
+
+    @Override
+    public void onCommentHistory(CommentEvent event) {
+    }
+    
+    @Override
+    public void onCommentLiked(CommentEvent event) {
+    }
+
+    @Override
+    public void onCommentDisliked(CommentEvent event) {
+    }
+
 }

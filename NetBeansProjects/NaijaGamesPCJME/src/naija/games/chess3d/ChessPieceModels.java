@@ -7,7 +7,7 @@ package naija.games.chess3d;
 import com.jme3.asset.AssetManager;
 import com.jme3.math.FastMath;
 import com.jme3.scene.Spatial;
-import naija.game.client.chess.PieceName;
+import naija.game.client.PieceName;
 import static naija.games.chess3d.ChessModelType.PIECES_A;
 import static naija.games.chess3d.ChessModelType.PIECES_B;
 import static naija.games.chess3d.ChessModelType.PIECES_C;

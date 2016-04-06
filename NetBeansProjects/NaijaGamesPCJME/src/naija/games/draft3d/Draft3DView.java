@@ -5,14 +5,11 @@
 package naija.games.draft3d;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.renderer.Camera;
-import com.jme3.scene.Node;
-import naija.game.client.event.GameEvent;
-import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.draft.DraftBoardEvent;
 import naija.game.client.draft.DraftBoardListener;
 import naija.game.client.draft.DraftBoardPosition;
+import naija.games.Game3DView;
 import naija.games.View3D;
 
 
@@ -20,7 +17,7 @@ import naija.games.View3D;
  *
  * @author USER
  */
-public class Draft3DView extends View3D implements DraftBoardListener {
+public class Draft3DView extends View3D implements Game3DView,  DraftBoardListener {
 
     private Draft3DView() {
         super(null, null);

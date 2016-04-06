@@ -5,9 +5,6 @@
 package naija.games.solitaire3d;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.renderer.Camera;
-import naija.game.client.event.GameEvent;
-import naija.game.client.GamePosition;
 import naija.game.client.Player;
 import naija.game.client.solitaire.SolitaireEvent;
 import naija.game.client.solitaire.SolitaireGamePosition;
@@ -69,4 +66,5 @@ public class Solitaire3DView   extends View3D implements SolitaireListener {
     public void onInvalidTurn(SolitaireEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

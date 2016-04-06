@@ -20,6 +20,8 @@ import de.lessvoid.nifty.spi.render.RenderFont;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import naija.game.client.event.FriendEvent;
+import naija.game.client.event.FriendListener;
 import naija.games.gui.builder.FriendListItemDefinitionBuilder;
 import naija.games.gui.builder.FriendsHeaderDefinitionBuilder;
 
@@ -27,7 +29,7 @@ import naija.games.gui.builder.FriendsHeaderDefinitionBuilder;
  *
  * @author USER
  */
-public class FriendsControl{
+public class FriendsControl implements FriendListener{
 
     static private FriendsControl friendsControl;
     static final private Object lock = new Object();
@@ -150,6 +152,27 @@ public class FriendsControl{
         //TODO: to be fully implemented
 
         this.friendMap.clear();
+    }
+
+    public void onFriendOnline(FriendEvent event) {
+    }
+
+    public void onFriendOffline(FriendEvent event) {
+    }
+
+    public void onFriendIdle(FriendEvent event) {
+    }
+
+    public void onFriendPlayGame(FriendEvent event) {
+    }
+
+    public void onFriendAdded(FriendEvent event) {
+    }
+
+    public void onFriendRemove(FriendEvent event) {
+    }
+
+    public void onFriendNotify(FriendEvent event) {
     }
 
 }

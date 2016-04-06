@@ -44,20 +44,22 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import naija.game.client.event.GameEvent;
 import naija.game.client.GamePosition;
+import naija.game.client.GameSession;
 import naija.game.client.Player;
 import naija.game.client.Side;
 import naija.game.client.chess.ChessBoardEvent;
 import naija.game.client.chess.ChessBoardListener;
 import naija.game.client.chess.ChessPlayer;
-import naija.game.client.chess.PieceName;
-import static naija.game.client.chess.PieceName.bishop;
-import static naija.game.client.chess.PieceName.knight;
-import static naija.game.client.chess.PieceName.queen;
-import static naija.game.client.chess.PieceName.rook;
+import naija.game.client.PieceName;
+import static naija.game.client.PieceName.bishop;
+import static naija.game.client.PieceName.knight;
+import static naija.game.client.PieceName.queen;
+import static naija.game.client.PieceName.rook;
 import naija.game.client.chess.board.ChessBoardPosition;
 import naija.game.client.chess.board.Constants;
 import naija.game.client.chess.board.PieceDescription;
 import naija.game.client.chess.util.ChessUtil;
+import naija.games.Game3DView;
 import static naija.games.chess3d.ChessModelType.PIECES_A;
 import static naija.games.chess3d.ChessModelType.PIECES_B;
 
@@ -65,8 +67,8 @@ import static naija.games.chess3d.ChessModelType.PIECES_B;
  *
  * @author USER
  */
-public class Chess3DView extends View3D implements ChessBoardListener, ActionListener {
-
+public class Chess3DView extends View3D implements Game3DView, ChessBoardListener, ActionListener {
+   
     private String white_texture_file;
     private String black_texture_file;
     private ColorRGBA white_color_name;
@@ -118,6 +120,7 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
     static private Spatial board_base;
     private ChessPieceModels models;
     private DirectionalLight modelLight;
+    private GameSession game_session;
 
     private Chess3DView() {
         super(null, null);
@@ -136,6 +139,7 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         board_model_name = builder.board_model_name;
         piece_model_type = builder.piece_model_type;
         board_base_model_type = builder.board_base_model_type;
+        game_session = builder.game_session;
 
         createView(builder.app);
         inputManager = builder.app.getInputManager();
@@ -1330,6 +1334,7 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
         private SimpleApplication app;
         private ChessModelType piece_model_type = ChessModelType.PIECES_A; //default
         private ChessModelType board_base_model_type = ChessModelType.BOARD_BASE_A;//default
+        private GameSession game_session;
 
         public Builder whitePieceTexture(String texture_file) {
             this.white_texture_file = texture_file;
@@ -1376,13 +1381,19 @@ public class Chess3DView extends View3D implements ChessBoardListener, ActionLis
             return this;
         }
 
-        public Builder SimpleApplication(SimpleApplication app) {
+        public Builder simpleApplication(SimpleApplication app) {
             this.app = app;
             return this;
         }
 
+        public Builder gameSession(GameSession gameSession) {
+            this.game_session = gameSession;
+            return this;
+        }
+        
         public Chess3DView build() {
             return new Chess3DView(this);
         }
+
     }
 }
