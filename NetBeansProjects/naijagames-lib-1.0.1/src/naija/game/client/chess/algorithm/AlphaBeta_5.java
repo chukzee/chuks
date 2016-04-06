@@ -4,10 +4,10 @@
  */
 package naija.game.client.chess.algorithm;
 
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.BoardAnalyzer;
-import naija.game.client.chess.board.ChessMove;
+import naija.game.client.chess.board.ChessBoardMove;
 import naija.game.client.chess.board.EngineBoardAnalyzer;
 import naija.game.client.chess.board.Piece;
 import naija.game.client.chess.board.Constants;
@@ -20,8 +20,8 @@ import naija.game.client.Side;
 public class AlphaBeta_5 {
 
 
-    Move best_move;
-    Move[] legal_moves;//use for commentary by comparing move values
+    ChessMove best_move;
+    ChessMove[] legal_moves;//use for commentary by comparing move values
     private Board board;
     EngineBoardAnalyzer engine_board_analyzer;
     TransPositionTable ttHashTable=new TransPositionTable();
@@ -30,7 +30,7 @@ public class AlphaBeta_5 {
     public AlphaBeta_5() {
     }
 
-    public Move searchBestMove(Board _board, int search_depth) {
+    public ChessMove searchBestMove(Board _board, int search_depth) {
    
         legal_moves =null;//initialize
         best_move = null;//initialize
@@ -137,15 +137,15 @@ public class AlphaBeta_5 {
         return indices;
     }        
     
-    private Move[] addToMoves(Move[]legal_moves, Move m){
-        Move [] mv=new Move[legal_moves.length + 1];
+    private ChessMove[] addToMoves(ChessMove[]legal_moves, ChessMove m){
+        ChessMove [] mv=new ChessMove[legal_moves.length + 1];
         
         mv[mv.length-1]=m;
         
         for(int i=legal_moves.length-1; i>-1; i--)//check for correctness later - come back
             mv[i]=legal_moves[i];
 
-        legal_moves=new Move[mv.length];
+        legal_moves=new ChessMove[mv.length];
         
         for(int i=mv.length-1; i>-1; i--)
             legal_moves[i]=mv[i];        
@@ -176,7 +176,7 @@ public class AlphaBeta_5 {
             int piece_start_index;
             int piece_len;
             int[] random_indices = null;
-            legal_moves = new Move[0];
+            legal_moves = new ChessMove[0];
       
             int king_square_loc = node_turn==Side.white ? 
                                    board.getWhiteKing().Square:
@@ -339,7 +339,7 @@ public class AlphaBeta_5 {
                     if(is_maximizer){
                         
                         if(n_depth==0){                           
-                           Move m = new Move(node_turn, value, pieces[p_index].piece_name,
+                           ChessMove m = new ChessMove(node_turn, value, pieces[p_index].piece_name,
                                                      p_index, from_square,to_square,capture_id,
                                                      promotion_piece_rating, enpassant_capture_square,
                                                      is_short_castle,is_long_castle);    
@@ -502,24 +502,24 @@ public class AlphaBeta_5 {
      
     public static int test_dp;
     
-    private Move[] testMove(){//TESTING !!!
+    private ChessMove[] testMove(){//TESTING !!!
         
         test_dp++;
         
-        Move move1=new Move(1,0,'N',2,4,3,3,4,-1,false,false);
+        ChessMove move1=new ChessMove(1,0,'N',2,4,3,3,4,-1,false,false);
 
 
-        Move move2=new Move(1,0,'N',2,4,4,3,4,-1,false,false);
+        ChessMove move2=new ChessMove(1,0,'N',2,4,4,3,4,-1,false,false);
       
-        Move[] legal_moves;
+        ChessMove[] legal_moves;
         
         if(test_dp == 1){
-            legal_moves = new Move[3];
+            legal_moves = new ChessMove[3];
             legal_moves[0]=move1;
             legal_moves[1]=move1;
             legal_moves[2]=move1;
         }else{
-            legal_moves = new Move[2];
+            legal_moves = new ChessMove[2];
             legal_moves[0]=move1;
             legal_moves[1]=move1;            
         }

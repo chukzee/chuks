@@ -5,16 +5,16 @@
  */
 package naija.game.client;
 
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class RemoteUser extends UserInfo{
+public class RemoteUser extends User{
     
     
-    public UserInfo getInfo(){
+    public User getInfo(){
         return this;
     }
     
@@ -24,7 +24,7 @@ public class RemoteUser extends UserInfo{
     }
     
     
-    public Move nextMove(){
+    public ChessMove nextMove(){
        
         return null;
     }    

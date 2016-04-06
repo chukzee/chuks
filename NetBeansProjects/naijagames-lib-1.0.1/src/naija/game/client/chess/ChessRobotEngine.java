@@ -5,17 +5,17 @@
  */
 package naija.game.client.chess;
 
+import naija.game.client.RobotEngine;
 import naija.game.client.chess.algorithm.*;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.EngineBoardAnalyzer;
-import naija.game.client.chess.board.Move;
 import naija.game.client.Side;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class RobotEngine {
+public class ChessRobotEngine implements RobotEngine <Board>{
 
     int side = -1;
     private final ChessPlayer player;
@@ -25,7 +25,7 @@ public class RobotEngine {
 
     private int last_turn;
     private boolean isNewBoard;
-    private Move best_move;
+    private ChessMove best_move;
 
     int test_count;
     private AlphaBeta_3 alphaBeta_3;
@@ -38,7 +38,7 @@ public class RobotEngine {
     int algorithm;
     int search_depth;
     
-    RobotEngine(Board board, ChessPlayer player, int search_depth, int algorithm) {
+    ChessRobotEngine(Board board, ChessPlayer player, int search_depth, int algorithm) {
         currentBoardPosition = board;
         isNewBoard = true;
         this.player = player;
@@ -48,14 +48,14 @@ public class RobotEngine {
         this.search_depth = search_depth;
     }
 
-    private Move bestMove(Board board, int turn, int search_depth, int algorithm) {
+    private ChessMove bestMove(Board board, int turn, int search_depth, int algorithm) {
         currentBoardPosition = board;
         currentBoardPosition.turn = turn;
         isNewBoard = true;
         return bestMove(turn, search_depth, algorithm);
     }
 
-    private Move bestMove(int turn, int search_depth, int algorithm) {
+    private ChessMove bestMove(int turn, int search_depth, int algorithm) {
 
         if (turn < Side.white) {
             System.err.println("Invalid parameter: turn must be  1 (ie white) or 2 (ie black)!");
@@ -123,14 +123,16 @@ public class RobotEngine {
         return best_move;
     }
 
-    boolean isGameOver() {
+    @Override
+    public boolean isGameOver() {
        return player.is_game_over;
     }
 
-    void nextReply(Board board) {
+    @Override
+    public void nextReply(Board board) {
         if (currentBoardPosition.turn == side) {
             //get the best move
-            Move move = bestMove(board, side, search_depth, algorithm);
+            ChessMove move = bestMove(board, side, search_depth, algorithm);
             if (move == null) {
                 //here most likely the game is over
                 return;

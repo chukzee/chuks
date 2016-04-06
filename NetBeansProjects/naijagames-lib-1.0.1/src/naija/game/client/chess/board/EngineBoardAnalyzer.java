@@ -6,8 +6,8 @@
 package naija.game.client.chess.board;
 
 import naija.game.client.Side;
-import naija.game.client.chess.board.ChessMove.Castle;
-import naija.game.client.chess.board.ChessMove.EnPassant;
+import naija.game.client.chess.board.ChessBoardMove.Castle;
+import naija.game.client.chess.board.ChessBoardMove.EnPassant;
 //import util.Approx;
 
 
@@ -3646,7 +3646,7 @@ public class EngineBoardAnalyzer{
         return real_valid;
     }
     
-    ChessMove inspectOpponentKing(ChessMove new_move, int[] unresolved_valid_pos ,int to_square, int piece_side){
+    ChessBoardMove inspectOpponentKing(ChessBoardMove new_move, int[] unresolved_valid_pos ,int to_square, int piece_side){
 
         //check if opponent king is in check (under attack)      
        
@@ -5347,7 +5347,7 @@ public class EngineBoardAnalyzer{
         
         System.out.println("--------valid piece position test ---getKnightValidSquares-------------");
 
-        ChessMove new_move=new ChessMove();
+        ChessBoardMove new_move=new ChessBoardMove();
 
         for(int i=0; i<c.getKnightMoveAnalysis(new_move,48 ,-1, Side.black,-1,-1).getValidSquares().length; i++)
             System.out.println(c.getKnightMoveAnalysis(new_move,48,-1,Side.black,-1,-1).getValidSquares()[i]);        

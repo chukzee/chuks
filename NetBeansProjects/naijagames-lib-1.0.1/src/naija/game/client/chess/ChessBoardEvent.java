@@ -8,7 +8,6 @@ package naija.game.client.chess;
 import naija.game.client.event.GameEvent;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.Constants;
-import naija.game.client.chess.board.Move;
 import naija.game.client.Side;
 
 /**
@@ -32,7 +31,7 @@ public class ChessBoardEvent extends GameEvent{
     private boolean is_fifty_move_rule;
     private boolean is_three_fold_repetition;
     private boolean is_insufficient_material;
-    private Move move;
+    private ChessMove move;
     private int illegal_from_square = -1;
     private int illegal_to_square = -1;
     private Board board;
@@ -57,7 +56,7 @@ public class ChessBoardEvent extends GameEvent{
         this.illegal_to_square = illegal_to_square;
     }
 
-    ChessBoardEvent(ChessPlayer player, int turn, Board board, Move move) {
+    ChessBoardEvent(ChessPlayer player, int turn, Board board, ChessMove move) {
         this.turn = turn;
         this.player = player;
         this.board = board;
@@ -77,7 +76,7 @@ public class ChessBoardEvent extends GameEvent{
         
     }
 
-    ChessBoardEvent(Move move) {
+    ChessBoardEvent(ChessMove move) {
         this.move = move;
     }
         

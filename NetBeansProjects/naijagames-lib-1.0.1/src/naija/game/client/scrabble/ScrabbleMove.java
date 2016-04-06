@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package naija.game.client.ludo;
+package naija.game.client.scrabble;
 
-import naija.game.client.scrabble.*;
-import naija.game.client.Spectator;
+import naija.game.client.BoardMove;
 
 /**
  *
- * @author USER
+ * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class LoduSpectator extends Spectator{
+public class ScrabbleMove extends BoardMove{
     
 }

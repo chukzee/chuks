@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package naija.game.client.scrabble;
+package naija.game.client.solitaire;
+
+import naija.game.client.CardMove;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class Move {
+public class SolitaireMove extends CardMove{
     
 }

@@ -8,7 +8,6 @@ package naija.game.client;
  *
  * @author USER
  */
-public interface GameSessionFocus {
+public class CardMove {
     
-    void showGame(GameSession session);
 }

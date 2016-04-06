@@ -4,10 +4,10 @@
  */
 package naija.game.client.chess.algorithm;
 
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.BoardAnalyzer;
-import naija.game.client.chess.board.ChessMove;
+import naija.game.client.chess.board.ChessBoardMove;
 import naija.game.client.chess.board.EngineBoardAnalyzer;
 import naija.game.client.chess.board.Piece;
 import naija.game.client.chess.board.Constants;
@@ -20,8 +20,8 @@ import naija.game.client.Side;
 public class AlphaBeta_3 {
 
 
-    Move best_move;
-    Move[] legal_moves;//use for commentary by comparing move values
+    ChessMove best_move;
+    ChessMove[] legal_moves;//use for commentary by comparing move values
     private Board board;
     EngineBoardAnalyzer engine_board_analyzer;
     TransPositionTable ttHashTable=new TransPositionTable();
@@ -30,7 +30,7 @@ public class AlphaBeta_3 {
     public AlphaBeta_3() {
     }
 
-    public Move searchBestMove(Board _board, int search_depth) {
+    public ChessMove searchBestMove(Board _board, int search_depth) {
     
         legal_moves =null;//initialize
         best_move = null;//initialize
@@ -153,7 +153,7 @@ public class AlphaBeta_3 {
                 }                            
             }
             
-            //copy back an initialize for more shuffling
+            //copy back and initialize for more shuffling
             for(int i=0; i<indices.length; i++){                
                 indices[i]=-1;//avoid reference - important
                 indices[i]=random_indices[i];
@@ -166,12 +166,12 @@ public class AlphaBeta_3 {
         return indices;
     }        
     
-    private Move[] addToMoves(Move[]legal_moves, Move m){
+    private ChessMove[] addToMoves(ChessMove[]legal_moves, ChessMove m){
         if(legal_moves==null){
-            return new Move[]{m};
+            return new ChessMove[]{m};
         }
             
-        Move [] mv=new Move[legal_moves.length + 1];
+        ChessMove [] mv=new ChessMove[legal_moves.length + 1];
         
         mv[mv.length-1]=m;
         
@@ -310,7 +310,7 @@ public class AlphaBeta_3 {
                     if(is_maximizer){
                         
                         if(n_depth==0){                           
-                           Move m = new Move(node_turn, value, pieces[p_index].piece_name,
+                           ChessMove m = new ChessMove(node_turn, value, pieces[p_index].piece_name,
                                                      p_index, from_square,to_square,capture_id,
                                                      promotion_piece_rating, enpassant_capture_square,
                                                      is_short_castle,is_long_castle);    
@@ -473,24 +473,24 @@ public class AlphaBeta_3 {
      
     public static int test_dp;
     
-    private Move[] testMove(){//TESTING !!!
+    private ChessMove[] testMove(){//TESTING !!!
         
         test_dp++;
         
-        Move move1=new Move(1,0,'N',2,4,3,3,4,-1,false,false);
+        ChessMove move1=new ChessMove(1,0,'N',2,4,3,3,4,-1,false,false);
 
 
-        Move move2=new Move(1,0,'N',2,4,4,3,4,-1,false,false);
+        ChessMove move2=new ChessMove(1,0,'N',2,4,4,3,4,-1,false,false);
       
-        Move[] legal_moves;
+        ChessMove[] legal_moves;
         
         if(test_dp == 1){
-            legal_moves = new Move[3];
+            legal_moves = new ChessMove[3];
             legal_moves[0]=move1;
             legal_moves[1]=move1;
             legal_moves[2]=move1;
         }else{
-            legal_moves = new Move[2];
+            legal_moves = new ChessMove[2];
             legal_moves[0]=move1;
             legal_moves[1]=move1;            
         }

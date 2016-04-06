@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observer;
 
 /**
  *
@@ -18,7 +19,7 @@ import java.util.List;
 public class GameSessionImpl implements GameSession {
 
     List<Spectator> spectators = Collections.synchronizedList(new LinkedList<Spectator>());
-    private int session_id;
+    private String session_id;
     private Date session_start_time;
     private Date session_end_time;
     private GameName game_name;
@@ -32,7 +33,7 @@ public class GameSessionImpl implements GameSession {
 
     }
 
-    public GameSessionImpl(int session_id, Date session_start_time,
+    public GameSessionImpl(String session_id, Date session_start_time,
             Date session_end_time, GameName game_name,
             Score score, Player[] players,
             String time_control, String game_position, int game_variant) {
@@ -68,7 +69,7 @@ public class GameSessionImpl implements GameSession {
     }
 
     @Override
-    public int getSessionID() {
+    public String getSessionID() {
         return this.session_id;
     }
 
@@ -131,6 +132,5 @@ public class GameSessionImpl implements GameSession {
     public boolean isLocalSession() {
         return false;
     }
-    
     
 }

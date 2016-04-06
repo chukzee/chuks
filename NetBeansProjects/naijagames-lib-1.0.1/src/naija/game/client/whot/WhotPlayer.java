@@ -6,90 +6,61 @@
 package naija.game.client.whot;
 
 
+import naija.game.client.AbstractCardPlayer;
+import naija.game.client.CardName;
 import naija.game.client.Robot;
 import naija.game.client.Player;
 import naija.game.client.LocalUser;
 import naija.game.client.RemoteUser;
-import naija.game.client.UserInfo;
+import naija.game.client.User;
 import naija.game.client.Side;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class WhotPlayer implements Player {
+public class WhotPlayer extends AbstractCardPlayer<WhotMove> {
 
     private LocalUser local_user;
     private RemoteUser remote_user;
     private Robot robot;
     private int side;
     boolean is_game_over;
-    private Move move_to_send;
+    private WhotMove move_to_send;
 
-    private WhotPlayer() {
+    public WhotPlayer(LocalUser local_user) {
+        super(local_user);
     }
 
-    WhotPlayer(LocalUser user) {
-        this.local_user = user;
+    public WhotPlayer(RemoteUser remote_user) {
+        super(remote_user);
     }
 
-    WhotPlayer(RemoteUser user) {
-        this.remote_user = user;
-    }
-
-    WhotPlayer(Robot robot) {
-        this.robot = robot;
+    public WhotPlayer(Robot robot) {
+        super(robot);
     }
 
     @Override
-    public UserInfo getInfo() {
-        if (local_user != null) {
-            return local_user.getInfo();
-        }
-
-        if (remote_user != null) {
-            return remote_user.getInfo();
-        }
-
-        return null;
-    }
-
-    public boolean isHuman() {
-        return robot == null;
-    }
-
-    public boolean isRobot() {
-        return robot != null;
-    }
-
-    void robotMove(Move move) {
+    public void robotMove(WhotMove move) {
 
     }
 
-    public void remoteMove(Move move) {
+    @Override
+    public void remoteMove(WhotMove move) {
 
     }
 
-    public void localMove(int from_square, int to_square) {
+    @Override
+    public void localMove(CardName name) {
 
     }
 
-    private boolean checkGameOver(Move move, int next_turn) {
+    private boolean checkGameOver(WhotMove move, int next_turn) {
 
         return false;
     }
 
-    @Override
-    public boolean isRemotePlayer() {
-        return remote_user != null;
-    }
-
-    @Override
-    public boolean isLocalPlayer() {
-        return local_user != null;
-    }
-
-    private void setOpponentMove(Move move) {
+    private void setOpponentMove(WhotMove move) {
         this.move_to_send = move;
     }
 

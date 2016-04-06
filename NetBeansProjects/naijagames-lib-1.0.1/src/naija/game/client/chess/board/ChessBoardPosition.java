@@ -7,7 +7,7 @@ package naija.game.client.chess.board;
 
 import naija.game.client.GamePosition;
 import naija.game.client.Side;
-import naija.game.client.chess.PieceName;
+import naija.game.client.PieceName;
 
 /**
  *

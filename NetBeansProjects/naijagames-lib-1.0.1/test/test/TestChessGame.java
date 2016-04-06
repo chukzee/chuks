@@ -62,16 +62,7 @@ public class TestChessGame {
             
             //to add session for each chess game - for example we will add two sessions below
             
-            //first build the game
-            ChessBoardListener listener = null;
-            Game game1 = new Chess.ChessBuilder(listener)
-                                .boardPosition(new ChessBoardPosition())
-                                .blackPlayer(new LocalUser())
-                                .whitePlayer(new RemoteUser())                  
-                                .score(new Score(0f,1f))
-                                .timeControl(null)
-                                .build();//building the chess game
-            
+            //first create the session
             int session_id1 =1;//unique session id
             Date session_start_time1 = null;
             Date session_end_time1 = null;
@@ -82,7 +73,18 @@ public class TestChessGame {
             Date session_start_time2 = null;
             Date session_end_time2 = null;
             GameSession session2 = null; // see GameSessionImpl(...) construction
-                      
+            
+            //next build the game with the session id pass to is.
+            ChessBoardListener listener = null;
+            Game game1 = new Chess.ChessBuilder(session1.getSessionID(), listener)
+                                .boardPosition(new ChessBoardPosition())
+                                .blackPlayer(new LocalUser())
+                                .whitePlayer(new RemoteUser())                  
+                                .score(new Score(0f,1f))
+                                .timeControl(null)
+                                .build();//building the chess game
+            
+            
             //adding the sessions to the game client
             gclient.addSession(session1);
             gclient.addSession(session2);          

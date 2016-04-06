@@ -8,7 +8,7 @@ package naija.game.client.chess.board;
  *
  * @author Engr. Chuks
  */
-public class ChessMove {
+public class ChessBoardMove {
     private int [] valid_squares;
     private boolean is_move_valid;
     private Castle castle=new Castle(); 

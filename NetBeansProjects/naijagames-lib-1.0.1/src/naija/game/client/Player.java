@@ -12,9 +12,11 @@ package naija.game.client;
  */
 public interface Player{
     
-    public UserInfo getInfo();
+    public User getInfo();
     public boolean isHuman();
     public boolean isRobot();
     public boolean isRemotePlayer();
     public boolean isLocalPlayer();
+
+    public boolean sameAs(User user);
 }

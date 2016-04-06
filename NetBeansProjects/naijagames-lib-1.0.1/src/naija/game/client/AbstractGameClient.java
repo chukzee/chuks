@@ -258,7 +258,7 @@ public abstract class AbstractGameClient implements GameClient {
     void fireStartGameSession(GameSessionEvent event) {
         for (int i = 0; i < gameSessionListenerList.size(); i++) {
             try {
-                gameSessionListenerList.get(i).onStartGameSession(event);
+                gameSessionListenerList.get(i).onSessionGameStarts(event);
             } catch (Exception ex) {
                 Logger.getLogger(AbstractGameClient.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -268,7 +268,7 @@ public abstract class AbstractGameClient implements GameClient {
     void fireEndGameSession(GameSessionEvent event) {
         for (int i = 0; i < gameSessionListenerList.size(); i++) {
             try {
-                gameSessionListenerList.get(i).onEndGameSession(event);
+                gameSessionListenerList.get(i).onSessionGameEnds(event);
             } catch (Exception ex) {
                 Logger.getLogger(AbstractGameClient.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -278,7 +278,7 @@ public abstract class AbstractGameClient implements GameClient {
     void fireResumeGameSession(GameSessionEvent event) {
         for (int i = 0; i < gameSessionListenerList.size(); i++) {
             try {
-                gameSessionListenerList.get(i).onResumeGameSession(event);
+                gameSessionListenerList.get(i).onSessionGameResume(event);
             } catch (Exception ex) {
                 Logger.getLogger(AbstractGameClient.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -288,7 +288,7 @@ public abstract class AbstractGameClient implements GameClient {
     void fireSpectatorJoinSession(GameSessionEvent event) {
         for (int i = 0; i < gameSessionListenerList.size(); i++) {
             try {
-                gameSessionListenerList.get(i).onSpectatorJoinSession(event);
+                gameSessionListenerList.get(i).onSessionSpecatorJoin(event);
             } catch (Exception ex) {
                 Logger.getLogger(AbstractGameClient.class.getName()).log(Level.SEVERE, null, ex);                
             }
@@ -298,7 +298,7 @@ public abstract class AbstractGameClient implements GameClient {
     void fireSpectatorLeaveSession(GameSessionEvent event) {
         for (int i = 0; i < gameSessionListenerList.size(); i++) {
             try {
-                gameSessionListenerList.get(i).onSpectatorLeaveSession(event);
+                gameSessionListenerList.get(i).onSessionSpectatorLeave(event);
             } catch (Exception ex) {    
                 Logger.getLogger(AbstractGameClient.class.getName()).log(Level.SEVERE, null, ex);
             }

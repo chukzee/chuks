@@ -4,7 +4,7 @@
  */
 package naija.game.client.chess.algorithm;
 
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.EngineBoardAnalyzer;
 import naija.game.client.chess.board.Piece;
@@ -18,8 +18,8 @@ import naija.game.client.Side;
 public class AlphaBetaNegaMax {
 
 
-    Move best_move;
-    private Move[] legalMoves;//use for commentary by comparing move values
+    ChessMove best_move;
+    private ChessMove[] legalMoves;//use for commentary by comparing move values
     private int search_depth;
     EngineBoardAnalyzer engine_board_analyzer;
     private Board board;
@@ -27,7 +27,7 @@ public class AlphaBetaNegaMax {
     public AlphaBetaNegaMax() {
     }
 
-    public Move searchBestMove(Board _board, int depth) {
+    public ChessMove searchBestMove(Board _board, int depth) {
         
         legalMoves = null;//initialize     
         best_move = null;//initialize
@@ -109,9 +109,9 @@ public class AlphaBetaNegaMax {
     int eval_count;
     int move_max_length;
     
-    static Move[] randomize(Move[] moves){
+    static ChessMove[] randomize(ChessMove[] moves){
         
-        Move[] random_moves = new Move[moves.length];
+        ChessMove[] random_moves = new ChessMove[moves.length];
         
         for(int i=0; i<random_moves.length; i++)
         {
@@ -162,8 +162,8 @@ public class AlphaBetaNegaMax {
     }
   
     
-    private Move[] insert(Move[]legal_moves, Move m,int insert_index){
-        Move [] mv=new Move[legal_moves.length + 1];
+    private ChessMove[] insert(ChessMove[]legal_moves, ChessMove m,int insert_index){
+        ChessMove [] mv=new ChessMove[legal_moves.length + 1];
         
         if(insert_index==0)
             mv[0]=m;
@@ -183,8 +183,8 @@ public class AlphaBetaNegaMax {
     }
     
     
-    private Move[] addToBottom(Move[]legal_moves, Move m){
-        Move [] mv=new Move[legal_moves.length + 1];
+    private ChessMove[] addToBottom(ChessMove[]legal_moves, ChessMove m){
+        ChessMove [] mv=new ChessMove[legal_moves.length + 1];
         
         mv[mv.length-1]=m;        
         for(int i=legal_moves.length-1; i>-1; i--)
@@ -194,13 +194,13 @@ public class AlphaBetaNegaMax {
     }
         
     
-    Move[] MoveOrder(){
+    ChessMove[] MoveOrder(){
         //Board board=analyzer.board;
         Piece[] pieces= board.getAllPieces();
 
         
         int rated_value;
-        Move[] moves=new Move[0];
+        ChessMove[] moves=new ChessMove[0];
         for(int i=0; i<32; i++){//Piece arrangement in the piece array may be zigzag because of FEN         
 
             if(pieces[i].Me() != board.turn)//Piece arrangement in the piece array may be zigzag because of FEN         
@@ -221,7 +221,7 @@ public class AlphaBetaNegaMax {
                                         enpassant_capture_square,promotion_piece_rating);
                 int captured_id=board.getCapturedID(valid_square[square],enpassant_capture_square, 
                                                     is_short_castle,is_long_castle);               
-                Move move = new Move(board.turn, -1, pieces[i].piece_name,
+                ChessMove move = new ChessMove(board.turn, -1, pieces[i].piece_name,
                                   i, pieces[i].Square,valid_square[square],captured_id,
                                   promotion_piece_rating, enpassant_capture_square,
                                   is_short_castle,is_long_castle);  
@@ -309,7 +309,7 @@ public class AlphaBetaNegaMax {
         
         
         //board.getOrderedMoves();
-        Move[] legal_moves = MoveOrder();
+        ChessMove[] legal_moves = MoveOrder();
         int best = -Constants.INFINITY-1;
         //int move; 
         int node_turn=board.turn;
@@ -439,24 +439,24 @@ public class AlphaBetaNegaMax {
      
     public static int test_dp;
     
-    private Move[] testMove(){//TESTING !!!
+    private ChessMove[] testMove(){//TESTING !!!
         
         test_dp++;
         
-        Move move1=new Move(1,0,'N',2,4,3,3,4,-1,false,false);
+        ChessMove move1=new ChessMove(1,0,'N',2,4,3,3,4,-1,false,false);
 
 
-        Move move2=new Move(1,0,'N',2,4,4,3,4,-1,false,false);
+        ChessMove move2=new ChessMove(1,0,'N',2,4,4,3,4,-1,false,false);
       
-        Move[] legal_moves;
+        ChessMove[] legal_moves;
         
         if(test_dp == 1){
-            legal_moves = new Move[3];
+            legal_moves = new ChessMove[3];
             legal_moves[0]=move1;
             legal_moves[1]=move1;
             legal_moves[2]=move1;
         }else{
-            legal_moves = new Move[2];
+            legal_moves = new ChessMove[2];
             legal_moves[0]=move1;
             legal_moves[1]=move1;            
         }

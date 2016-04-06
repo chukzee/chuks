@@ -13,10 +13,11 @@ import naija.game.client.Score;
  */
 public class GameSessionEvent {
 
-    private int session_id;
+    private String session_id;
     private String gameName;
     private Player[] players;
     private Player winner;
+    private Player player_who_moved;
     private Score score;
     private int specatorsCount;
     private int playersCount;
@@ -25,16 +26,15 @@ public class GameSessionEvent {
     private long gameStartTime;
     private long gameEndTime;
     private boolean isGameEnd;
+    private String moveNotation;
+    private String currentGamePosition;
 
-    public GameSessionEvent(int session_id, String gameName, Player[] players,
-            Player winner, Score score, int specatorsCount, int playersCount,
-            String[] newSpecatorsJoin, String[] specatorsJoinLeaves,
-            long gameStartTime, long gameEndTime, boolean isGameEnd) {
-        
+    public GameSessionEvent(String session_id, String gameName, Player[] players, Player winner, Player player_who_moved, Score score, int specatorsCount, int playersCount, String[] newSpecatorsJoin, String[] specatorsJoinLeaves, long gameStartTime, long gameEndTime, boolean isGameEnd, String moveNotation, String currentGamePosition) {
         this.session_id = session_id;
         this.gameName = gameName;
         this.players = players;
         this.winner = winner;
+        this.player_who_moved = player_who_moved;
         this.score = score;
         this.specatorsCount = specatorsCount;
         this.playersCount = playersCount;
@@ -43,9 +43,11 @@ public class GameSessionEvent {
         this.gameStartTime = gameStartTime;
         this.gameEndTime = gameEndTime;
         this.isGameEnd = isGameEnd;
+        this.moveNotation = moveNotation;
+        this.currentGamePosition = currentGamePosition;
     }
 
-    public int getSessionID() {
+    public String getSessionID() {
         return session_id;
     }
 
@@ -88,4 +90,17 @@ public class GameSessionEvent {
     public boolean isGameEnd() {
         return isGameEnd;
     }
+    
+    public String currentGamePosition(){
+        return currentGamePosition;
+    }
+    
+    public String geMoveNotation(){
+        return moveNotation;
+    }
+
+    public Player getPlayerWhoMoved() {
+        return player_who_moved;
+    }
+    
 }

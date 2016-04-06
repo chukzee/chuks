@@ -9,7 +9,7 @@ package naija.game.client;
  *
  * @author USER
  */
-public class UserInfo  implements ParticipantInfo{
+public class User  implements IUser{
     private String username="";
     private String password="";
     private String first_name="";
@@ -25,6 +25,9 @@ public class UserInfo  implements ParticipantInfo{
     
     @Override
     public void setUsername(String username){
+        if(username==null)
+            throw new IllegalArgumentException("username cannot be null");
+        
         this.username = username;
     }
     

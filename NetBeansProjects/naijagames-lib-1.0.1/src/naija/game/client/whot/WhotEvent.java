@@ -6,7 +6,7 @@
 package naija.game.client.whot;
 
 import naija.game.client.chess.board.Board;
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.event.GameEvent;
 
 /**
@@ -30,7 +30,7 @@ public class WhotEvent extends GameEvent{
     private boolean is_fifty_move_rule;
     private boolean is_three_fold_repetition;
     private boolean is_insufficient_material;
-    private Move move;
+    private ChessMove move;
     private int illegal_from_square = -1;
     private int illegal_to_square = -1;
     private Board board;
@@ -55,7 +55,7 @@ public class WhotEvent extends GameEvent{
         this.illegal_to_square = illegal_to_square;
     }
 
-    WhotEvent(WhotPlayer player, int turn, Board board, Move move) {
+    WhotEvent(WhotPlayer player, int turn, Board board, ChessMove move) {
         this.turn = turn;
         this.player = player;
         this.board = board;
@@ -75,7 +75,7 @@ public class WhotEvent extends GameEvent{
         
     }
 
-    WhotEvent(Move move) {
+    WhotEvent(ChessMove move) {
         this.move = move;
     }
         

@@ -4,7 +4,7 @@
  */
 package naija.game.client.chess.algorithm;
 
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.EngineBoardAnalyzer;
 
@@ -14,8 +14,8 @@ import naija.game.client.chess.board.EngineBoardAnalyzer;
  */
 public class IterativeDeepening {
     
-    Move best_move;
-    Move[] legal_moves;//use for commentary by comparing move values
+    ChessMove best_move;
+    ChessMove[] legal_moves;//use for commentary by comparing move values
     private Board board;
     EngineBoardAnalyzer engine_board_analyzer;
     TransPositionTable ttHashTable=new TransPositionTable();

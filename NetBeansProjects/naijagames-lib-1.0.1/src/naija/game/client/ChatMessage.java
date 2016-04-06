@@ -15,19 +15,19 @@ public class ChatMessage {
     
     boolean isBroadcastMsg;
     private String message="";
-    UserInfo from_user;
-    UserInfo to_user;
+    User from_user;
+    User to_user;
     Date message_time;
     
     public void setIsBroadcast(boolean is_broadcast){
         this.isBroadcastMsg = is_broadcast;
     }    
     
-    public void setFromUser(UserInfo user){
+    public void setFromUser(User user){
         from_user = user;
     }
     
-    public void setToUser(UserInfo user){
+    public void setToUser(User user){
         to_user = user;
     }
     
@@ -39,11 +39,11 @@ public class ChatMessage {
         return isBroadcastMsg;
     }
      
-    public UserInfo getFromUser(){
+    public User getFromUser(){
         return from_user;
     }
     
-    public UserInfo getToUser(){
+    public User getToUser(){
         return to_user;
     }
     

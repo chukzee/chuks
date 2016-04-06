@@ -4,6 +4,8 @@
  */
 package naija.game.client.chess.board;
 
+import naija.game.client.GameBase;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.Side;
 import java.text.NumberFormat;
 import java.util.Random;
@@ -12,7 +14,7 @@ import java.util.Random;
  *
  * @author Onyeka Alimele
  */
-public class Board {
+public class Board implements GameBase{
     
     public Piece[] PIECES_BY_ID=new Piece[0];
     public Piece[] black_pieces=new Piece[0];
@@ -1459,12 +1461,12 @@ public class Board {
                               promotion_piece_rating);
     }    
 
-    public void MoveInternal(Move move){        
+    public void MoveInternal(ChessMove move){        
         MoveByNotation(move.notation());
     }
     
 
-    public int MovePiece(Move move){        
+    public int MovePiece(ChessMove move){        
         
         if(move.piece_index == -1)//yes -1, this is a special case. PLEASE DO NOT CHANGE THIS
             move.piece_index=Squares[move.from_square];
@@ -1646,7 +1648,7 @@ public class Board {
                  promotion_piece_rating);        
     }
     
-    public void UndoMove (Move move){
+    public void UndoMove (ChessMove move){
         UndoMove( move.piece_index, move.capture_id,  move.from_square,  move.to_square,
                          move.enpassant_capture_square,  move.is_short_castle,
                          move.is_long_castle,  move.promotion_piece_rating);

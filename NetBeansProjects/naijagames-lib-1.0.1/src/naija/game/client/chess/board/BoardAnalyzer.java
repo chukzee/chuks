@@ -4,16 +4,17 @@
  */
 package naija.game.client.chess.board;
 
+import naija.game.client.GameAnalyzer;
 import naija.game.client.Side;
-import naija.game.client.chess.board.ChessMove.Castle;
-import naija.game.client.chess.board.ChessMove.EnPassant;
+import naija.game.client.chess.board.ChessBoardMove.Castle;
+import naija.game.client.chess.board.ChessBoardMove.EnPassant;
 //import util.Approx;
 
 /**
  *
  * @author Engr. Chuks
  */
-public class BoardAnalyzer {
+public class BoardAnalyzer extends GameAnalyzer{
 
     private int white_move_count_without_capture_and_pawn_move;
     private int black_move_count_without_capture_and_pawn_move;
@@ -626,7 +627,7 @@ public class BoardAnalyzer {
 
         int king_square_pos = king_piece.getPieceSquarePosition();
 
-        ChessMove chess_move = new ChessMove();
+        ChessBoardMove chess_move = new ChessBoardMove();
 
         for (int i = 0; i < pieces.length; i++) {
 
@@ -1089,7 +1090,7 @@ public class BoardAnalyzer {
 
     private boolean hasAnyLegalMove(int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
-        ChessMove move = new ChessMove();//A new or different ChessMove object must be used in this method
+        ChessBoardMove move = new ChessBoardMove();//A new or different ChessBoardMove object must be used in this method
         int piece_square_pos = -1;
         //Re touched block of code      
         Piece[] pieces = board.getAllPieces();
@@ -1137,18 +1138,18 @@ public class BoardAnalyzer {
     }
 
     //Re touched
-    public ChessMove.Castle isCastlingAllow(ChessMove.Castle castle, Piece king_piece, int from_square, int to_square) {
+    public ChessBoardMove.Castle isCastlingAllow(ChessBoardMove.Castle castle, Piece king_piece, int from_square, int to_square) {
 
         //check for any right to castle
         if (king_piece.isWhite()) {
             if (!board.canWhiteShortCastle && !board.canWhiteLongCastle) {
-                castle = new ChessMove().getCastle();
+                castle = new ChessBoardMove().getCastle();
                 String msg = "Cannot castle - no castle rights";
                 castle.setInvalidCastleMessage(msg);
             }
         } else {
             if (!board.canBlackShortCastle && !board.canBlackLongCastle) {
-                castle = new ChessMove().getCastle();
+                castle = new ChessBoardMove().getCastle();
                 String msg = "Cannot castle - no castle rights";
                 castle.setInvalidCastleMessage(msg);
             }
@@ -1377,13 +1378,13 @@ public class BoardAnalyzer {
         if (castle.isKingSideCastle()) {
             if (king_piece.isWhite()) {
                 if (!board.canWhiteShortCastle) {
-                    castle = new ChessMove().getCastle();
+                    castle = new ChessBoardMove().getCastle();
                     String msg = "Cannot castle - no right to castle short";
                     castle.setInvalidCastleMessage(msg);
                 }
             } else {
                 if (!board.canBlackShortCastle) {
-                    castle = new ChessMove().getCastle();
+                    castle = new ChessBoardMove().getCastle();
                     String msg = "Cannot castle - no right to castle short";
                     castle.setInvalidCastleMessage(msg);
                 }
@@ -1391,13 +1392,13 @@ public class BoardAnalyzer {
         } else if (castle.isQueenSideCastle()) {//must use else if - important!!!
             if (king_piece.isWhite()) {
                 if (!board.canWhiteLongCastle) {
-                    castle = new ChessMove().getCastle();
+                    castle = new ChessBoardMove().getCastle();
                     String msg = "Cannot castle - no right to castle long";
                     castle.setInvalidCastleMessage(msg);
                 }
             } else {
                 if (!board.canBlackLongCastle) {
-                    castle = new ChessMove().getCastle();
+                    castle = new ChessBoardMove().getCastle();
                     String msg = "Cannot castle - no right to castle long";
                     castle.setInvalidCastleMessage(msg);
                 }
@@ -1407,7 +1408,7 @@ public class BoardAnalyzer {
         return castle;
     }
 
-    public ChessMove.Castle isCastlingAllow_1(ChessMove.Castle castle, Piece king_piece, int from_square, int to_square) {
+    public ChessBoardMove.Castle isCastlingAllow_1(ChessBoardMove.Castle castle, Piece king_piece, int from_square, int to_square) {
 
         int castle_options = 0;
 
@@ -1719,7 +1720,7 @@ public class BoardAnalyzer {
      *not required. 
      * 
      */
-    public ChessMove getPieceMoveAnalysis(ChessMove new_move,
+    public ChessBoardMove getPieceMoveAnalysis(ChessBoardMove new_move,
             char peice_name,
             int piece_side,
             boolean is_first_move,
@@ -1759,7 +1760,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    public ChessMove getPieceMoveAnalysis(ChessMove new_move, Piece piece, int piece_side) {
+    public ChessBoardMove getPieceMoveAnalysis(ChessBoardMove new_move, Piece piece, int piece_side) {
         return getPieceMoveAnalysis(new_move, piece.piece_name, piece.Me(), piece.isFirstMove(), piece.getPieceSquarePosition(), -1);
     }
 
@@ -1839,7 +1840,7 @@ public class BoardAnalyzer {
         return false;
     }
 
-    public ChessMove getKnightMoveAnalysis(ChessMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
+    public ChessBoardMove getKnightMoveAnalysis(ChessBoardMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
         new_move.setIsValidMove(true);// first assumed valid - validation analysis will reveal if it is valid or not        
 
@@ -2013,7 +2014,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    public ChessMove getKingMoveAnalysis(ChessMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
+    public ChessBoardMove getKingMoveAnalysis(ChessBoardMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
         new_move.setIsValidMove(true);// first assumed valid - validation analysis will reveal if it is valid or not
 
@@ -2247,7 +2248,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    public ChessMove getRookMoveAnalysis(ChessMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
+    public ChessBoardMove getRookMoveAnalysis(ChessBoardMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
         new_move.setIsValidMove(true);// first assumed valid - validation analysis will reveal if it is valid or not        
 
@@ -2339,7 +2340,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    public ChessMove getQueenMoveAnalysis(ChessMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
+    public ChessBoardMove getQueenMoveAnalysis(ChessBoardMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
         new_move.setIsValidMove(true);// first assumed valid - validation analysis will reveal if it is valid or not
 
@@ -2496,7 +2497,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    public ChessMove getBishopMoveAnalysis(ChessMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
+    public ChessBoardMove getBishopMoveAnalysis(ChessBoardMove new_move, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
         new_move.setIsValidMove(true);// first assumed valid - validation analysis will reveal if it is valid or not
 
@@ -2587,7 +2588,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    public ChessMove getPawnMoveAnalysis(ChessMove new_move, int from_square, int to_square, int piece_side, boolean has_en_passant, int piece_virtual_id, int piece_virtual_square_position) {
+    public ChessBoardMove getPawnMoveAnalysis(ChessBoardMove new_move, int from_square, int to_square, int piece_side, boolean has_en_passant, int piece_virtual_id, int piece_virtual_square_position) {
 
         int[] unresolved_valid_pos = null;
 
@@ -2859,7 +2860,7 @@ public class BoardAnalyzer {
         return new_move;
     }
 
-    ChessMove inspectOpponentKing(ChessMove new_move, int[] unresolved_valid_pos, int to_square, int piece_side) {
+    ChessBoardMove inspectOpponentKing(ChessBoardMove new_move, int[] unresolved_valid_pos, int to_square, int piece_side) {
 
         //check if opponent king is in check (under attack)      
         int opponent_king_pos = -1;
@@ -2928,7 +2929,7 @@ public class BoardAnalyzer {
      *
      * @return
      */
-    ChessMove inspectOwnKing(ChessMove new_move, char piece_name, int[] unresolved_valid_pos, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
+    ChessBoardMove inspectOwnKing(ChessBoardMove new_move, char piece_name, int[] unresolved_valid_pos, int from_square, int to_square, int piece_side, int piece_virtual_id, int piece_virtual_square_position) {
 
         int num_cancelled = 0;
 
@@ -4416,7 +4417,7 @@ public class BoardAnalyzer {
 
         System.out.println("--------valid piece position test ---getKnightValidSquares-------------");
 
-        ChessMove new_move = new ChessMove();
+        ChessBoardMove new_move = new ChessBoardMove();
 
         for (int i = 0; i < c.getKnightMoveAnalysis(new_move, 48, -1, Side.black, -1, -1).getValidSquares().length; i++) {
             System.out.println(c.getKnightMoveAnalysis(new_move, 48, -1, Side.black, -1, -1).getValidSquares()[i]);

@@ -11,11 +11,15 @@ package naija.game.client;
  */
 public interface Game {
 
+    String getSessionID();
+
     boolean isRobotVsRobot();
 
     boolean isHumanVsRobot();
 
     public Player[] getPlayers();
+
+    public Player getPlayer(int player_index);
 
     public String getInitialBoardPosition();
 
@@ -24,5 +28,15 @@ public interface Game {
     public String getTimeControl();
 
     public int getAlgorithm();
+
+    /**
+     * This method gets the last known move number of the game. The benefit of
+     * the method is that it can help to check for missing moves by comparing
+     * the move number returned by this method with some other.
+     *
+     * @return last move number
+     */
+    public int getNextExpectedMoveNumber();
     
+    public void destroy();
 }

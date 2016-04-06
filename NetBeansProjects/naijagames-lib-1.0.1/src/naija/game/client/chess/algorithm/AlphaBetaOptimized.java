@@ -4,10 +4,10 @@
  */
 package naija.game.client.chess.algorithm;
 
-import naija.game.client.chess.board.Move;
+import naija.game.client.chess.ChessMove;
 import naija.game.client.chess.board.Board;
 import naija.game.client.chess.board.BoardAnalyzer;
-import naija.game.client.chess.board.ChessMove;
+import naija.game.client.chess.board.ChessBoardMove;
 import naija.game.client.chess.board.EngineBoardAnalyzer;
 import naija.game.client.chess.board.Piece;
 import naija.game.client.chess.board.Constants;
@@ -20,8 +20,8 @@ import naija.game.client.Side;
 public class AlphaBetaOptimized {
  
     
-    Move best_move;
-    private Move[] legalMoves;//use for commentary by comparing move values
+    ChessMove best_move;
+    private ChessMove[] legalMoves;//use for commentary by comparing move values
     private Board board;
     EngineBoardAnalyzer engine_board_analyzer;
     TransPositionTable ttHashTable=new TransPositionTable();
@@ -30,7 +30,7 @@ public class AlphaBetaOptimized {
     public AlphaBetaOptimized() {
     }
 
-    public Move searchBestMove(Board board, int search_depth) {
+    public ChessMove searchBestMove(Board board, int search_depth) {
         
         legalMoves = null;//initialize
         best_move = null;//initialize
@@ -66,7 +66,7 @@ public class AlphaBetaOptimized {
         return best_move;
     }
    
-    Move[] trimMoves(Move[] moves){
+    ChessMove[] trimMoves(ChessMove[] moves){
         
         
         int count = 0;
@@ -75,7 +75,7 @@ public class AlphaBetaOptimized {
                 count++;
         }
         
-        Move[] mv = new Move[count];
+        ChessMove[] mv = new ChessMove[count];
         int index =-1;
         for(int i=0; i<count; i++){
             if(moves[i]!=null){
@@ -246,10 +246,10 @@ public class AlphaBetaOptimized {
     }
 
     
-    Move[] increaseMoveLengthTo(Move[] sMoves , int new_len){
+    ChessMove[] increaseMoveLengthTo(ChessMove[] sMoves , int new_len){
         
         
-        Move[] moves=new Move[new_len];
+        ChessMove[] moves=new ChessMove[new_len];
         
         for(int i=0; i<sMoves.length;i++)
             moves[i]=sMoves[i];
@@ -517,19 +517,19 @@ public class AlphaBetaOptimized {
                         
                     if(n_depth==0){                                                      
                         if(legalMoves==null)
-                            legalMoves= new Move[moves.length];
+                            legalMoves= new ChessMove[moves.length];
                         
                         if(legalMoves.length < moves.length){
                             legalMoves = increaseMoveLengthTo(legalMoves,  moves.length);
                         }
                         
-                        this.legalMoves[i] = new Move(moves[i],node_turn,value,caputre_id,piece_name,-1);//used for chess commentary by comparing moves value                           
+                        this.legalMoves[i] = new ChessMove(moves[i],node_turn,value,caputre_id,piece_name,-1);//used for chess commentary by comparing moves value                           
     
                         if(best_move == null)//get at least the first move in the move list                        
                             best_move = legalMoves[0];                   
                         
                         if(value > pre_value){
-                           best_move=new Move(moves[i],node_turn,value,caputre_id,piece_name,-1);
+                           best_move=new ChessMove(moves[i],node_turn,value,caputre_id,piece_name,-1);
                         }                           
                     }
                     
@@ -668,24 +668,24 @@ public class AlphaBetaOptimized {
      
     public static int test_dp;
     
-    private Move[] testMove(){//TESTING !!!
+    private ChessMove[] testMove(){//TESTING !!!
         
         test_dp++;
         
-        Move move1=new Move(1,0,'N',2,4,3,3,4,-1,false,false);
+        ChessMove move1=new ChessMove(1,0,'N',2,4,3,3,4,-1,false,false);
 
 
-        Move move2=new Move(1,0,'N',2,4,4,3,4,-1,false,false);
+        ChessMove move2=new ChessMove(1,0,'N',2,4,4,3,4,-1,false,false);
       
-        Move[] legal_moves;
+        ChessMove[] legal_moves;
         
         if(test_dp == 1){
-            legal_moves = new Move[3];
+            legal_moves = new ChessMove[3];
             legal_moves[0]=move1;
             legal_moves[1]=move1;
             legal_moves[2]=move1;
         }else{
-            legal_moves = new Move[2];
+            legal_moves = new ChessMove[2];
             legal_moves[0]=move1;
             legal_moves[1]=move1;            
         }

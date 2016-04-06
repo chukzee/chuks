@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package naija.game.client.draft;
+package naija.game.client.ludo;
+
+import naija.game.client.BoardMove;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class Move {
+public class LudoMove extends BoardMove{
     
 }

@@ -9,7 +9,7 @@ package naija.game.client;
  *
  * @author USER
  */
-public abstract class Spectator extends UserInfo{
+public abstract class Spectator extends User{
      
     GameSession current_session;
     GameSession last_session;

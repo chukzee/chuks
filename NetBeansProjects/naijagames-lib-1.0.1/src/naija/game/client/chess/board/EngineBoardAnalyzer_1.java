@@ -6,8 +6,8 @@
 package naija.game.client.chess.board;
 
 import naija.game.client.Side;
-import naija.game.client.chess.board.ChessMove.Castle;
-import naija.game.client.chess.board.ChessMove.EnPassant;
+import naija.game.client.chess.board.ChessBoardMove.Castle;
+import naija.game.client.chess.board.ChessBoardMove.EnPassant;
 //import util.Approx;
 
 

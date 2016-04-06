@@ -9,6 +9,6 @@ package naija.game.client.draft;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-class BoardAnalyzer {
+class DraftBoardAnalyzer {
     
 }

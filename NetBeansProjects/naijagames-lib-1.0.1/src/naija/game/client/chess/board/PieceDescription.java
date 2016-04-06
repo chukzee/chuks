@@ -5,7 +5,7 @@
  */
 package naija.game.client.chess.board;
 
-import naija.game.client.chess.PieceName;
+import naija.game.client.PieceName;
 
 /**
  *

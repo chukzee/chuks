@@ -5,15 +5,19 @@
  */
 package naija.game.client.chess;
 
+import naija.game.client.PieceName;
+import naija.game.client.AbstractBoardPlayer;
+import naija.game.client.BoardMove;
+import naija.game.client.GameAnalyzer;
+import naija.game.client.GameMove;
 import naija.game.client.Robot;
 import naija.game.client.Player;
 import naija.game.client.LocalUser;
 import naija.game.client.RemoteUser;
-import naija.game.client.UserInfo;
+import naija.game.client.User;
 import naija.game.client.chess.board.BoardAnalyzer;
-import naija.game.client.chess.board.ChessMove;
+import naija.game.client.chess.board.ChessBoardMove;
 import naija.game.client.chess.board.Constants;
-import naija.game.client.chess.board.Move;
 import naija.game.client.chess.board.Piece;
 import naija.game.client.Side;
 
@@ -21,54 +25,39 @@ import naija.game.client.Side;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class ChessPlayer implements Player {
+public class ChessPlayer extends AbstractBoardPlayer <ChessMove>{
 
-    private LocalUser local_user;
-    private RemoteUser remote_user;
-    private Robot robot;
     private boolean is_white;
     private int side;
     private Chess chess;
     boolean is_game_over;
-    private Move move_to_send;
+    private ChessMove move_to_send;
     private boolean isShortCastleBeginByKing;
     private boolean isLongCastleBeginByKing;
-    private ChessMove.Castle castle;
+    private ChessBoardMove.Castle castle;
     private boolean isCastleInProgress;
 
-    private ChessPlayer() {
-    }
-
     public ChessPlayer(LocalUser user, boolean is_white) {
+        super(user);
         this.is_white = is_white;
         side = is_white ? Side.white : Side.black;
-        this.local_user = user;
+        
     }
 
     public ChessPlayer(RemoteUser user, boolean is_white) {
+        super(user);
         this.is_white = is_white;
         side = is_white ? Side.white : Side.black;
-        this.remote_user = user;
+        
     }
 
     public ChessPlayer(Robot robot, boolean is_white) {
+        super(robot);
         this.is_white = is_white;
-        this.robot = robot;
+        
     }
 
-    @Override
-    public UserInfo getInfo() {
-        if (local_user != null) {
-            return local_user.getInfo();
-        }
-
-        if (remote_user != null) {
-            return remote_user.getInfo();
-        }
-
-        return null;
-    }
-
+    
     public boolean isWhite() {
         return this.is_white;
     }
@@ -77,15 +66,9 @@ public class ChessPlayer implements Player {
         this.chess = chess;
     }
 
-    public boolean isHuman() {
-        return robot == null;
-    }
 
-    public boolean isRobot() {
-        return robot != null;
-    }
-
-    void robotMove(Move move) {
+    @Override
+    public void robotMove(ChessMove move) {
 
         if (is_game_over) {
             return;
@@ -117,8 +100,9 @@ public class ChessPlayer implements Player {
         }
 
     }
-
-    public void remoteMove(Move move) {
+    
+    @Override
+    public void remoteMove(ChessMove move) {
 
         if (is_game_over) {
             return;
@@ -151,8 +135,9 @@ public class ChessPlayer implements Player {
 
     }
 
+    @Override
     public void localMove(PieceName name, int from_square, int to_square) {
-            
+
         chess.setRobotEngineWait(true);//robot engine must wait for the local player to finish move
 
         if (is_game_over) {
@@ -176,7 +161,7 @@ public class ChessPlayer implements Player {
 
         BoardAnalyzer analyzer = chess.getBoardAnalyzer();
 
-        ChessMove new_move = new ChessMove();
+        ChessBoardMove new_move = new ChessBoardMove();
         Piece inb_piece = chess.getBoard().getPieceOnSquare(from_square);
 
         int turn = chess.getBoard().turn;
@@ -203,7 +188,7 @@ public class ChessPlayer implements Player {
         }
 
         //create move object
-        Move move = new Move(turn,
+        ChessMove move = new ChessMove(turn,
                 -1,//move_value - not required
                 inb_piece.piece_name,
                 inb_piece.ID,
@@ -218,7 +203,7 @@ public class ChessPlayer implements Player {
         boolean is_castle_completion = false;
 
         if (isShortCastleBeginByKing) {
-            int required_rook_to_square = castle.getRightRookCastleSquarePositon();;
+            int required_rook_to_square = castle.getRightRookCastleSquarePositon();
             if (name != PieceName.rook
                     || required_rook_to_square != to_square) {
                 String msg = "short castle - requires rook move to " + required_rook_to_square;
@@ -227,12 +212,12 @@ public class ChessPlayer implements Player {
             }
             is_castle_completion = true;
             isShortCastleBeginByKing = false;
-            isCastleInProgress = false;            
-            chess.getBoardListener().onShortCastleEndByRook(new ChessBoardEvent(this, side, chess.getBoard(), move));            
+            isCastleInProgress = false;
+            chess.getBoardListener().onShortCastleEndByRook(new ChessBoardEvent(this, side, chess.getBoard(), move));
         }
 
         if (isLongCastleBeginByKing) {
-            int required_rook_to_square = castle.getLeftRookCastleSquarePositon();;
+            int required_rook_to_square = castle.getLeftRookCastleSquarePositon();
             if (name != PieceName.rook
                     || required_rook_to_square != to_square) {
                 String msg = "long castle - requires rook move to " + required_rook_to_square;
@@ -251,7 +236,7 @@ public class ChessPlayer implements Player {
         }
 
         //chess move object of board analyzer
-        ChessMove chess_move = chess.getBoardAnalyzer().getPieceMoveAnalysis(new_move,
+        ChessBoardMove chess_move = chess.getBoardAnalyzer().getPieceMoveAnalysis(new_move,
                 inb_piece.piece_name,
                 inb_piece.Me(),
                 inb_piece.isFirstMove(),
@@ -311,12 +296,12 @@ public class ChessPlayer implements Player {
             //fire event of next turn
             chess.getBoardListener().onNextTurn(new ChessBoardEvent(turnPlayer, next_turn));
         }
-        
+
         //must be set at the last point here
         chess.setRobotEngineWait(false);//alright robot can now resume detecting internal board turn 
     }
-
-    private boolean checkGameOver(BoardAnalyzer analyzer, Move move, int next_turn) {
+    
+    private boolean checkGameOver(BoardAnalyzer analyzer, ChessMove move, int next_turn) {
         boolean is_checkmate = analyzer.isCheckmate(next_turn, -1, -1);//come back            
         boolean is_stalement = analyzer.isStalemate(next_turn, -1, -1);//come back
         boolean is_fifty_move_rule = analyzer.isFiftyMoveRule();
@@ -359,18 +344,11 @@ public class ChessPlayer implements Player {
         return false;
     }
 
-    @Override
-    public boolean isRemotePlayer() {
-        return remote_user != null;
-    }
-
-    @Override
-    public boolean isLocalPlayer() {
-        return local_user != null;
-    }
-
-    private void setOpponentMove(Move move) {
+   
+    private void setOpponentMove(ChessMove move) {
         this.move_to_send = move;
     }
+ 
 
+   
 }

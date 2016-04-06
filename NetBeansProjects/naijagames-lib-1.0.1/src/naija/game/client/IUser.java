@@ -9,7 +9,7 @@ package naija.game.client;
  *
  * @author USER
  */
-public interface ParticipantInfo {
+public interface IUser {
     public void setUsername(String username);
     public void setPassword(String password);
     public void setFirstNmae(String first_name);

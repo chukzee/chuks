@@ -5,10 +5,13 @@
  */
 package naija.game.client.ludo;
 
+import naija.game.client.scrabble.*;
+import naija.game.client.Spectator;
+
 /**
  *
- * @author Chuks Alimele<chuksalimele at yahoo.com>
+ * @author USER
  */
-class BoardAnalyzer {
+public class LudoSpectator extends Spectator{
     
 }

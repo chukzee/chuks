@@ -4,7 +4,7 @@
  */
 package naija.game.client.event;
 
-import naija.game.client.UserInfo;
+import naija.game.client.User;
 
 /**
  *

@@ -2,15 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package naija.game.client.chess.board;
+package naija.game.client.chess;
 
+import naija.game.client.BoardMove;
+import naija.game.client.chess.board.Constants;
 import naija.game.client.chess.board.Constants;
 
 /**
  *
  * @author Onyeka Alimele
  */
-public class Move {
+public class ChessMove extends BoardMove{
 
   public int turn;  
   public char piece_name=0;
@@ -26,7 +28,7 @@ public class Move {
   public int capture_id=Constants.NOTHING;
 
   
-  public Move(int bit_move, int turn,int move_val, int capture_id, char piece_name, int piece_index){
+  public ChessMove(int bit_move, int turn,int move_val, int capture_id, char piece_name, int piece_index){
       
             int from_sq = bit_move & Constants.FROM_SQUARE_MASK;                        
             
@@ -59,7 +61,7 @@ public class Move {
                        long_castle==1);     
   } 
     
-  public Move(int turn,
+  public ChessMove(int turn,
               long move_value,
               char piece_name ,
               int piece_index, 
@@ -87,7 +89,7 @@ public class Move {
 
   
   
-    private Move() {
+    private ChessMove() {
         
     }
 

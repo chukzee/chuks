@@ -12,22 +12,36 @@ import java.util.Date;
  * @author USER
  */
 public interface GameSession {
-    
+
     GameName getGameName();
-    int getSessionID();
+
+    String getSessionID();
+
     Date getSessionStartTime();
+
     Date getSessionEndTime();
+
     void addSpectator(Spectator spectator);
+
     void removeSpectator(Spectator spectator);
+
     Spectator[] getSpectators();
+
     Player[] getPlayers();
+
     Player getPlayer(int player_index);
+
     int playersCount();
+
     int spectatorsCount();
+
     Score getScore();
+
     String getGamePosition();
+
     String TimeControl();
+
     int getGameVariant();
+
     boolean isLocalSession();
-    
 }
