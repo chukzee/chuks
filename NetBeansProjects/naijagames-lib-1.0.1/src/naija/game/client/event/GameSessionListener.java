@@ -40,7 +40,7 @@ public interface GameSessionListener {
      * Fires when a spectator joins a game session to watch game
      * @param event 
      */
-    void onSessionSpecatorJoin(GameSessionEvent event);
+    void onSessionSpectatorJoin(GameSessionEvent event);
 
     /**
      * Fires when a spectator leaves a game session 

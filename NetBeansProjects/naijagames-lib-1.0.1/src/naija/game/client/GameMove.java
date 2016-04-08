@@ -8,6 +8,6 @@ package naija.game.client;
  *
  * @author USER
  */
-public class GameMove {
-    
+public interface GameMove {
+     String notation();
 }

@@ -27,21 +27,21 @@ public class DraftPlayer extends AbstractBoardPlayer<DraftMove> {
     boolean is_game_over;
     private DraftMove move_to_send;
     
-    DraftPlayer(LocalUser user, boolean is_white) {
+    public DraftPlayer(LocalUser user, boolean is_white) {
         super(user);
         this.is_white = is_white;
         side = is_white ? Side.white : Side.black;
         
     }
 
-    DraftPlayer(RemoteUser user, boolean is_white) {
+    public DraftPlayer(RemoteUser user, boolean is_white) {
         super(user);
         this.is_white = is_white;
         side = is_white ? Side.white : Side.black;
         
     }
 
-    DraftPlayer(Robot robot, boolean is_white) {
+    public DraftPlayer(Robot robot, boolean is_white) {
         super(robot);
         this.is_white = is_white;
         

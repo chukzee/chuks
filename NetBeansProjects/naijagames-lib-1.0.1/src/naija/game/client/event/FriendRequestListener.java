@@ -4,8 +4,6 @@
  */
 package naija.game.client.event;
 
-import naija.game.client.User;
-
 /**
  *
  * @author USER

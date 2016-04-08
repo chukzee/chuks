@@ -27,4 +27,6 @@ public interface IConnection {
     public int getPort();
 
     public JSONObject receiveResponse();
+
+    public boolean isConnected();
 }

@@ -11,6 +11,11 @@ import naija.game.client.CardMove;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class WhotMove extends CardMove{
+public class WhotMove implements CardMove{
+
+    @Override
+    public String notation() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

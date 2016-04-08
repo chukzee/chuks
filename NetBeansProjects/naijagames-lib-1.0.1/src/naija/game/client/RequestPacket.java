@@ -13,10 +13,50 @@ import java.util.List;
  */
 public class RequestPacket {
 
-    private List<NameValue>  nameValuelist = new LinkedList();
+    private List<NameValue> nameValuelist = new LinkedList();
     private String remotePath = "";
     private String name;
+    private String host;
+    private int port = -1;
 
+    /**
+     * Use this constructor to specify the host and port to send the packet
+     *
+     * @param remote_host the remote port
+     * @param remote_port the remote port
+     * @param remotePath the remote path name
+     */
+    public RequestPacket(String remote_host, int remote_port, String remotePath) {
+        this.host = remote_host;
+        this.port = remote_port;
+        this.remotePath = remotePath;
+    }
+
+    /**
+     *
+     * Use this constructor to specify the remote address to send the packet.
+     * The http default port will be used if not specified in the address.
+     *
+     * @param remoteAddr the remote address - uses default http port if not specify in the address
+     * @param remotePath the remote path name
+     */
+    public RequestPacket(String remoteAddr, String remotePath) {
+        String[] addr_split = remoteAddr.split(":");
+        host = addr_split[0].trim();
+        if(addr_split.length>1){
+            port = Integer.parseInt(addr_split[1].trim());
+        }else{
+            port = 80;//default
+        }
+        this.remotePath = remotePath;
+    }
+
+    /**
+     * Use this constructor when the host and port to send the packet to should
+     * be determined by the {@link naija.game.client.GameClient}.
+     *
+     * @param remotePath the remote path name
+     */
     public RequestPacket(String remotePath) {
         this.remotePath = remotePath;
     }
@@ -25,28 +65,37 @@ public class RequestPacket {
         nameValuelist.add(new NameValue(name, value));
     }
 
-    public List<NameValue>  getCommandList() {
+    public List<NameValue> getCommandList() {
         return nameValuelist;
     }
 
-    public String getPath(){
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getPath() {
         return remotePath;
     }
 
     /**
      * Get the accesible name of this request packet
-     * @return 
+     *
+     * @return
      */
-    public String getName(){
+    public String getName() {
         return name;
     }
 
     /**
      * Set the accesible name of this request packet.
-     * @return 
+     *
+     * @return
      */
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
-        
 }

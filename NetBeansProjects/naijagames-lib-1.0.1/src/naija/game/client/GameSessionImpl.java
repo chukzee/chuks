@@ -18,36 +18,16 @@ import java.util.Observer;
  */
 public class GameSessionImpl implements GameSession {
 
-    List<Spectator> spectators = Collections.synchronizedList(new LinkedList<Spectator>());
-    private String session_id;
-    private Date session_start_time;
-    private Date session_end_time;
-    private GameName game_name;
-    private Score score;
-    private Player[] players;
-    private String time_control;
-    private String game_position;
-    private int game_variant;
-
-    private GameSessionImpl() {
-
-    }
-
-    public GameSessionImpl(String session_id, Date session_start_time,
-            Date session_end_time, GameName game_name,
-            Score score, Player[] players,
-            String time_control, String game_position, int game_variant) {
-        
-        this.session_id = session_id;
-        this.session_start_time = session_start_time;
-        this.session_end_time = session_end_time;
-        this.game_name = game_name;
-        this.score = score;
-        this.players = players;
-        this.time_control = time_control;
-        this.game_position = game_position;
-        this.game_variant = game_variant;
-    }
+    protected List<Spectator> spectators = Collections.synchronizedList(new LinkedList<Spectator>());
+    protected String session_id;
+    protected Date session_start_time;
+    protected Date session_end_time;
+    protected String game_name;
+    protected Score score;
+    protected Player[] players;
+    protected String time_control;
+    protected String game_position;
+    protected int game_variant;
 
     @Override
     public void addSpectator(Spectator spectator) {
@@ -114,7 +94,7 @@ public class GameSessionImpl implements GameSession {
     }
 
     @Override
-    public GameName getGameName() {
+    public String getGameName() {
         return game_name;
     }
 

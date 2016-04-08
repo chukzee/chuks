@@ -17,16 +17,6 @@ public class RemoteUser extends User{
     public User getInfo(){
         return this;
     }
-    
-    public ChatMessage nextChatMessage(){
-       
-        return null;
-    }
-    
-    
-    public ChessMove nextMove(){
-       
-        return null;
-    }    
+        
         
 }

@@ -14,5 +14,9 @@ public enum GameName {
     scrabble,
     ludo,
     whot,
-    solitaire
+    solitaire;
+    
+    private GameName() {
+        
+    }
 }

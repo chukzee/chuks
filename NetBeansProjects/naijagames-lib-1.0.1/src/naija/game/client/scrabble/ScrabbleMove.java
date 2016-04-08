@@ -11,6 +11,11 @@ import naija.game.client.BoardMove;
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class ScrabbleMove extends BoardMove{
+public class ScrabbleMove implements BoardMove{
+
+    @Override
+    public String notation() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

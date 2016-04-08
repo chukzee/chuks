@@ -33,18 +33,18 @@ public interface TournamentListener {
     void onTournamentEnds(TournamentEvent event);
 
     /**
-     * Fires when a game in the tournament starts
+     * Fires when the first game in the tournament official starts
      *
      * @param event
      */
-    void onTournamentGameStart(TournamentEvent event);
+    void onTournamentFirstGameStarts(TournamentEvent event);
 
     /**
-     * Fires when a game in the tournament ends
+     * Fires when the first game in the tournament ends
      *
      * @param event
      */
-    void onTournamentGameEnd(TournamentEvent event);
+    void onTournamentFirstGameEnds(TournamentEvent event);
 
     /**
      * Fires when the next round of a tournament begin. The next round second,

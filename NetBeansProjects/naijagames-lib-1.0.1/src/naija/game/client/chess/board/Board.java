@@ -23,7 +23,7 @@ public class Board implements GameBase{
     public int[] Squares=new int[64];
 
     private int total_squares = 64;
-    private int NOTHING = Constants.NOTHING;
+    static private int NOTHING = Constants.NOTHING;
     int white_king_index=NOTHING;
     int black_king_index=NOTHING;
     int white_rook_on_king_side_index=NOTHING;
@@ -904,7 +904,7 @@ public class Board implements GameBase{
         return side==Side.white?WHITE_rook_ORIGIN_square_on_QUEEN_side:BLACK_rook_ORIGIN_square_on_QUEEN_side;
     } 
     
-    int columLabelToIndex(char column_label){
+    static int columLabelToIndex(char column_label){
         if(column_label=='a')
             return 0;
         else if(column_label=='b')
@@ -925,7 +925,7 @@ public class Board implements GameBase{
         return -1;
     }
 
-    int charDigit(char row_label){
+    static int charDigit(char row_label){
 
         if(row_label=='0')
             return 0;        
@@ -951,7 +951,7 @@ public class Board implements GameBase{
         return -1;
     }
     
-    int rowLabelToIndex(char row_label){
+    static int rowLabelToIndex(char row_label){
 
         if(row_label=='1')
             return 0;        
@@ -973,7 +973,7 @@ public class Board implements GameBase{
         return -1;
     }
     
-    private int Square(String label){
+    static private int Square(String label){
         
         //COME BACK TO CHECK FOR CORRECTNESS
         
@@ -1016,7 +1016,7 @@ public class Board implements GameBase{
 
 
         //Check what castle needs to be disabled
-        if(this.isShortCastle(move_notation)){
+        if(isShortCastle(move_notation)){
             if(turn==Side.white){
                 this.getWhiteKing().isAlreadyCastle=true;//disable further castle
                 this.getWhiteKing().setHasPreviouslyMoved(true);//disable further castle                                
@@ -1037,7 +1037,7 @@ public class Board implements GameBase{
                 canBlackLongCastle = false;                
             }
             
-        }else if(this.isLongCastle(move_notation)){
+        }else if(isLongCastle(move_notation)){
             if(turn==Side.white){
                 this.getWhiteKing().isAlreadyCastle=true;//disable further castle
                 this.getWhiteKing().setHasPreviouslyMoved(true);//disable further castle                                
@@ -1138,7 +1138,7 @@ public class Board implements GameBase{
         
     }
     
-    public int getFromSquare(String move_notation){
+    public static int getFromSquare(String move_notation){
         if(isShortCastle(move_notation) || isLongCastle(move_notation))
             return NOTHING;
         
@@ -1151,7 +1151,7 @@ public class Board implements GameBase{
         if(is_enpassant)
             str_notation=move_notation.substring(0, len-4); //minus en passant suffix 'e.p.' 
         
-        String part_1 = "";
+        String part_1;
         
         if(str_notation.indexOf('-')>-1){//e.g e2-e4        
             split=str_notation.split("-");            
@@ -1179,7 +1179,7 @@ public class Board implements GameBase{
         return Square(part_1);   
     }
     
-    private String removePromoStr(String move_notation){
+    static private String removePromoStr(String move_notation){
         int len=move_notation.length();
         if(len>3)
             if(move_notation.indexOf('(')>-1 && move_notation.indexOf(')')>-1 ){
@@ -1196,11 +1196,11 @@ public class Board implements GameBase{
         return "";//means error
     }
     
-    public int getToSquare(String move_notation){
+    public static int getToSquare(String move_notation){
         if(isShortCastle(move_notation) || isLongCastle(move_notation))
             return NOTHING;        
         
-        String[] split=null;
+        String[] split;
         int len=move_notation.length();
         String str_notation=move_notation;
         boolean is_enpassant = isEnpassant(move_notation);
@@ -1213,7 +1213,7 @@ public class Board implements GameBase{
             str_notation=removePromoStr(move_notation);
         }        
         
-        String part_2 = "";
+        String part_2;
         
         if(str_notation.indexOf('-')>-1){        
             split=str_notation.split("-");            
@@ -1231,6 +1231,7 @@ public class Board implements GameBase{
         return Square(part_2);
     }
     
+    //DONOT USE THIS METHOD - COME BACK
     public int getCapturedPieceID(String move_notation){
         if(isShortCastle(move_notation) || isLongCastle(move_notation))
             return NOTHING;            
@@ -1272,19 +1273,19 @@ public class Board implements GameBase{
         return piece_id;
     }
     
-    public boolean isShortCastle(String move_notation){
+    static public boolean isShortCastle(String move_notation){
         return move_notation.equals("0-0");
     }
     
-    public boolean isLongCastle(String move_notation){
+    static public boolean isLongCastle(String move_notation){
         return move_notation.equals("0-0-0");
     }
             
-    public boolean isEnpassant(String move_notation){
+    static public boolean isEnpassant(String move_notation){
         return move_notation.endsWith("e.p.");//not completed
     }
             
-    public boolean isPawnPromotion(String move_notation){
+    static public boolean isPawnPromotion(String move_notation){
         
         String str_part_2=move_notation;
         
@@ -1371,7 +1372,7 @@ public class Board implements GameBase{
                                 PIECES_BY_ID[black_king_index].Square - 1;
     }
 
-    public char getPromotionPieceName(String move_notation){
+    public static char getPromotionPieceName(String move_notation){
         
         if(!isPawnPromotion(move_notation))
             return (char) NOTHING;//no promotion piece
@@ -1402,7 +1403,7 @@ public class Board implements GameBase{
         return (char) NOTHING;
     }
     
-    int getPromotionPieceRating(String move_notation){
+    public static int getPromotionPieceRating(String move_notation){
         
         char piece_name= getPromotionPieceName(move_notation);
         
@@ -1907,7 +1908,7 @@ public class Board implements GameBase{
         return str_board;
     }
 
-    boolean isColumnLabel(char c){
+    public static boolean isColumnLabel(char c){
         
         switch(c){
             case 'a':return true;
@@ -1924,7 +1925,7 @@ public class Board implements GameBase{
     }
     
     
-    boolean isRowLabel(char c){
+    public static boolean isRowLabel(char c){
         
         switch(c){
             case '1':return true;
@@ -1942,7 +1943,7 @@ public class Board implements GameBase{
 
     
     
-    boolean isPieceName(char c){
+    public static boolean isPieceName(char c){
         
         switch(c){
             case 'K':return true;

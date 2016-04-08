@@ -10,6 +10,7 @@ import naija.game.client.event.CommentListener;
 import naija.game.client.event.FriendListener;
 import naija.game.client.event.FriendRequestListener;
 import naija.game.client.event.GameListener;
+import naija.game.client.event.GameClientListener;
 import naija.game.client.event.GameSessionListener;
 import naija.game.client.event.TournamentListener;
 
@@ -31,6 +32,10 @@ public interface GameClient {
 
     boolean removeGameSessionListener(GameSessionListener listener);
 
+    boolean addGameClientListener(GameClientListener listener);
+
+    boolean removeGameClientListener(GameClientListener listener);
+    
     boolean addChatListener(ChatListener listener);
 
     boolean removeChatListener(ChatListener listener);
@@ -56,4 +61,5 @@ public interface GameClient {
     boolean removeSocailNetwork(SocialNetwork socail_network);
 
     int sessionCount();
+
 }

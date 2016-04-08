@@ -219,4 +219,9 @@ public class WebConnection implements IConnection, IProxy {
         }
         return null;
     }
+
+    @Override
+    public boolean isConnected() {
+        return conn != null && conn.isOpen();
+    }
 }

@@ -8,6 +8,6 @@ package naija.game.client;
  *
  * @author USER
  */
-public class CardMove {
+public interface CardMove extends GameMove{
     
 }

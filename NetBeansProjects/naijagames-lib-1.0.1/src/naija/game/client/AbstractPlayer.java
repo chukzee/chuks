@@ -4,13 +4,12 @@
  */
 package naija.game.client;
 
-
 /**
  *
  * @author USER
  */
-abstract public class AbstractPlayer<E extends GameAnalyzer, T extends GameMove> implements Player{
-    
+abstract public class AbstractPlayer<E extends GameAnalyzer, T extends GameMove> implements Player {
+
     private LocalUser local_user;
     private RemoteUser remote_user;
     private Robot robot;
@@ -67,5 +66,12 @@ abstract public class AbstractPlayer<E extends GameAnalyzer, T extends GameMove>
     public boolean sameAs(User user) {
         return this.getInfo() != null && this.getInfo().getUsername().equals(user.getUsername());
     }
-    
+
+    @Override
+    public boolean sameAs(Player player) {
+        if (player.getInfo() == null) {
+            return false;
+        }
+        return this.getInfo() != null && this.getInfo().getUsername().equals(player.getInfo().getUsername());
+    }
 }

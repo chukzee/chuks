@@ -19,4 +19,5 @@ public interface Player{
     public boolean isLocalPlayer();
 
     public boolean sameAs(User user);
+    public boolean sameAs(Player player);
 }

@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public interface GameSession {
 
-    GameName getGameName();
+    String getGameName();
 
     String getSessionID();
 

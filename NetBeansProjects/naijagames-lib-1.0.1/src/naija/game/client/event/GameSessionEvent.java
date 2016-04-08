@@ -13,39 +13,21 @@ import naija.game.client.Score;
  */
 public class GameSessionEvent {
 
-    private String session_id;
-    private String gameName;
-    private Player[] players;
-    private Player winner;
-    private Player player_who_moved;
-    private Score score;
-    private int specatorsCount;
-    private int playersCount;
-    private String[] newSpecatorsJoin;
-    private String[] specatorsJoinLeaves;
-    private long gameStartTime;
-    private long gameEndTime;
-    private boolean isGameEnd;
-    private String moveNotation;
-    private String currentGamePosition;
-
-    public GameSessionEvent(String session_id, String gameName, Player[] players, Player winner, Player player_who_moved, Score score, int specatorsCount, int playersCount, String[] newSpecatorsJoin, String[] specatorsJoinLeaves, long gameStartTime, long gameEndTime, boolean isGameEnd, String moveNotation, String currentGamePosition) {
-        this.session_id = session_id;
-        this.gameName = gameName;
-        this.players = players;
-        this.winner = winner;
-        this.player_who_moved = player_who_moved;
-        this.score = score;
-        this.specatorsCount = specatorsCount;
-        this.playersCount = playersCount;
-        this.newSpecatorsJoin = newSpecatorsJoin;
-        this.specatorsJoinLeaves = specatorsJoinLeaves;
-        this.gameStartTime = gameStartTime;
-        this.gameEndTime = gameEndTime;
-        this.isGameEnd = isGameEnd;
-        this.moveNotation = moveNotation;
-        this.currentGamePosition = currentGamePosition;
-    }
+    protected String session_id;
+    protected String gameName;
+    protected Player[] players;
+    protected Player winner;
+    protected Player player_who_moved;
+    protected Score score;
+    protected int specatorsCount;
+    protected int playersCount;
+    protected String[] newSpecatorsJoin;
+    protected String[] specatorsLeaves;
+    protected long gameStartTime;
+    protected long gameEndTime;
+    protected boolean isGameEnd;
+    protected String moveNotation;
+    protected String currentGamePosition;
 
     public String getSessionID() {
         return session_id;
@@ -75,8 +57,8 @@ public class GameSessionEvent {
         return newSpecatorsJoin;
     }
 
-    public String[] getSpecatorsJoinLeaves() {
-        return specatorsJoinLeaves;
+    public String[] getSpecatorsLeave() {
+        return specatorsLeaves;
     }
 
     public long getGameStartTime() {

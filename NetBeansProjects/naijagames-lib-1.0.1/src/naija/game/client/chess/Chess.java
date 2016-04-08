@@ -19,7 +19,6 @@ import naija.game.client.chess.board.BoardAnalyzer;
 import naija.game.client.Side;
 import naija.game.client.chess.board.ChessBoardPosition;
 
-
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
@@ -33,7 +32,73 @@ public class Chess extends GameImpl {
     private ChessBoardListener boardListener;
     private ChessPlayer[] players;
     final private Object lock = new Object();
-  
+
+
+    private Chess() {
+    }
+
+    private Chess(ChessBuilder chessBuilder) {
+
+
+        this.session_id = chessBuilder.session_id;
+        this.boardListener = chessBuilder.boardListener;
+        this.white_player = chessBuilder.white_player;
+        this.black_player = chessBuilder.black_player;
+        this.game_position = chessBuilder.board_position;
+        this.score = chessBuilder.score;
+        this.time_control = chessBuilder.time_control;
+        this.algorithm = chessBuilder.algorithm;
+        this.search_depth = chessBuilder.search_depth;
+        this.game_variant = chessBuilder.chess_variant;
+
+        if (boardListener == null) {
+            throw new NullPointerException("board listener cannot be null!");
+        } else {
+            boardListener.initializeGamePosition(chessBuilder.board_position, new Player[]{white_player, black_player});
+        }
+
+        if (game_position == null && game_variant == 0) {
+            gameBase = new Board(true);//default gameBase setup - normal chess
+            //OK, player's turn will be set AUTOMATICALLY to white in the gameBase constructor which is the default
+        } else if (game_position == null && game_variant != 0) {
+            gameBase = new Board(game_variant);//setup default gameBase based on the specified chess game_variant e.g Chess960
+            //OK, player's turn will be set AUTOMATICALLY to white in the gameBase constructor which is the default
+        } else if (game_position != null && game_variant != 0) {
+            gameBase = new Board(game_position.toString(), game_variant);//setup gameBase postion using specified ches game_variant
+            //OK, player's turn will be set AUTOMATICALLY in the gameBase constructor using the gameBase position
+        } else if (game_position != null && game_variant == 0) {
+            gameBase = new Board(game_position.toString());//setup gameBase position using normal chess
+            //OK, player's turn will be set AUTOMATICALLY in the gameBase constructor using the gameBase position
+        } else {
+            throw new IllegalStateException("could not setup internal board! - invalid setup parameter");
+        }
+
+        board_analyzer = new BoardAnalyzer((Board) gameBase);
+
+        if (white_player.isRobot() && black_player.isRobot()) {
+            //computer vs computer
+            robotEngineA = new ChessRobotEngine((Board) gameBase, white_player, search_depth, algorithm);
+            robotEngineB = new ChessRobotEngine((Board) gameBase, black_player, search_depth, algorithm);
+            isRobotVsRobot = true;
+            startEngine();
+        }
+
+        if ((white_player.isHuman() && black_player.isRobot())
+                || (white_player.isRobot() && black_player.isHuman())) {
+            //computer vs human
+            ChessPlayer player = white_player.isRobot() ? white_player : black_player;
+            robotEngineA = new ChessRobotEngine((Board) gameBase, player, search_depth, algorithm);
+            isHumanVsRobot = true;
+            startEngine();//
+        }
+
+        //fire onNextTurn event to kick off the game
+        ChessPlayer turn_player = ((Board) gameBase).turn == Side.white ? white_player : black_player;
+        boardListener.onNextTurn(new ChessBoardEvent(turn_player, ((Board) gameBase).turn));
+
+        isReady = true;
+    }
+
     @Override
     public boolean isRobotVsRobot() {
         return isRobotVsRobot;
@@ -67,74 +132,9 @@ public class Chess extends GameImpl {
         }
         return players[player_index];
     }
-    
-    private Chess(){ 
-    }
-    
-    private Chess(ChessBuilder chessBuilder) {
-
-                
-        this.session_id = chessBuilder.session_id;
-        this.boardListener = chessBuilder.boardListener;
-        this.white_player = chessBuilder.white_player;
-        this.black_player = chessBuilder.black_player;
-        this.game_position = chessBuilder.board_position;
-        this.score = chessBuilder.score;
-        this.time_control = chessBuilder.time_control;
-        this.algorithm = chessBuilder.algorithm;
-        this.search_depth = chessBuilder.search_depth;
-        this.game_variant = chessBuilder.chess_variant;
-
-        if (boardListener == null) {
-            throw new NullPointerException("board listener cannot be null!");
-        }else{
-            boardListener.initializeGamePosition(chessBuilder.board_position, new Player[]{white_player, black_player});
-        }
-
-        if (game_position == null && game_variant == 0) {
-            gameBase = new Board(true);//default gameBase setup - normal chess
-            //OK, player's turn will be set AUTOMATICALLY to white in the gameBase constructor which is the default
-        } else if (game_position == null && game_variant != 0) {
-            gameBase = new Board(game_variant);//setup default gameBase based on the specified chess game_variant e.g Chess960
-            //OK, player's turn will be set AUTOMATICALLY to white in the gameBase constructor which is the default
-        } else if (game_position != null && game_variant != 0) {
-            gameBase = new Board(game_position.toString(), game_variant);//setup gameBase postion using specified ches game_variant
-            //OK, player's turn will be set AUTOMATICALLY in the gameBase constructor using the gameBase position
-        } else if (game_position != null && game_variant == 0) {
-            gameBase = new Board(game_position.toString());//setup gameBase position using normal chess
-            //OK, player's turn will be set AUTOMATICALLY in the gameBase constructor using the gameBase position
-        } else {
-            throw new IllegalStateException("could not setup internal board! - invalid setup parameter");
-        }
-
-        board_analyzer = new BoardAnalyzer((Board)gameBase);
-
-        if (white_player.isRobot() && black_player.isRobot()) {
-            //computer vs computer
-            robotEngineA = new ChessRobotEngine((Board)gameBase, white_player, search_depth, algorithm);
-            robotEngineB = new ChessRobotEngine((Board)gameBase, black_player, search_depth, algorithm);
-            isRobotVsRobot = true;
-            startEngine();
-        }
-
-        if ((white_player.isHuman() && black_player.isRobot())
-                || (white_player.isRobot() && black_player.isHuman())) {
-            //computer vs human
-            ChessPlayer player = white_player.isRobot() ? white_player : black_player;
-            robotEngineA = new ChessRobotEngine((Board)gameBase, player, search_depth, algorithm);
-            isHumanVsRobot = true;
-            startEngine();//
-        }
-
-        //fire onNextTurn event to kick off the game
-        ChessPlayer turn_player = ((Board)gameBase).turn == Side.white ? white_player : black_player;
-        boardListener.onNextTurn(new ChessBoardEvent(turn_player, ((Board)gameBase).turn));
-
-        isReady = true;
-    }
 
     Board getBoard() {
-        return (Board)gameBase;
+        return (Board) gameBase;
     }
 
     BoardAnalyzer getBoardAnalyzer() {
@@ -166,7 +166,7 @@ public class Chess extends GameImpl {
         private int chess_variant;
         private final String session_id;
 
-        public ChessBuilder(String session_id , ChessBoardListener boardListener) {
+        public ChessBuilder(String session_id, ChessBoardListener boardListener) {
             this.boardListener = boardListener;
             this.session_id = session_id;
         }
@@ -190,6 +190,7 @@ public class Chess extends GameImpl {
             this.white_player = white_player;
             return this;
         }
+
         public ChessBuilder blackPlayer(RemoteUser user) {
             this.black_player = new ChessPlayer(user, false);
             return this;
@@ -252,6 +253,5 @@ public class Chess extends GameImpl {
 
             return chess;
         }
-
     }
 }

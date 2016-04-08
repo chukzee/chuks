@@ -11,44 +11,35 @@ import java.util.Date;
  *
  * @author USER
  */
-public class ChatMessage {
-    
-    boolean isBroadcastMsg;
-    private String message="";
+public class ChatMessage extends AbstractMessage {
+
     User from_user;
     User to_user;
-    Date message_time;
-    
-    public void setIsBroadcast(boolean is_broadcast){
-        this.isBroadcastMsg = is_broadcast;
-    }    
-    
-    public void setFromUser(User user){
-        from_user = user;
+
+    public ChatMessage(User from_user, User to_user, String message_id, String message, Date message_time, String subject_icon_url) {
+        super(message_id, message, message_time, subject_icon_url);
+        this.from_user = from_user;
+        this.to_user = to_user;
     }
+
     
-    public void setToUser(User user){
-        to_user = user;
-    }
-    
-    public void setMessageTime(Date msg_time){
-        message_time = msg_time;
-    }
-                    
-    public boolean isBroadcast(){
-        return isBroadcastMsg;
-    }
-     
-    public User getFromUser(){
+
+    /**
+     * Sets the user who sent the message
+     *
+     * @param user
+     */
+    public User getFromUser() {
         return from_user;
     }
-    
-    public User getToUser(){
+
+    /**
+     * Sets the user to whom the message was sent. if null is returned then it
+     * can be interpreted as a broadcast message such as comment message.
+     *
+     * @param user
+     */
+    public User getToUser() {
         return to_user;
     }
-    
-    public Date getMessageTime(){
-        return message_time;
-    }
-    
 }

@@ -12,8 +12,13 @@ import java.util.Date;
  */
 public class LocalGameSession extends GameSessionImpl{
 
-    public LocalGameSession(GameName game_name, Player local_player, Player robot_player,String time_control, Score score, String game_position, int game_variant) {
-        super(null, new Date(), null, game_name, score, new Player[]{local_player, robot_player}, time_control, game_position, game_variant);
+    public LocalGameSession(String game_name, Player local_player, Player robot_player,String time_control, Score score, String game_position, int game_variant) {
+        this.game_name = game_name;
+        players = new Player[]{local_player, robot_player};
+        this.time_control = time_control;
+        this.score = score;
+        this.game_position = game_position;
+        this.game_variant = game_variant;
     }
 
     @Override
