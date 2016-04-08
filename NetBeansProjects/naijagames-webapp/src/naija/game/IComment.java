@@ -5,21 +5,22 @@
  */
 package naija.game;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface IComment {
+public interface IComment extends Serializable{
 
+    void addReply(IComment comment);
+    
+    List<IComment> getReplys();
+    
     void setCommentSerialNo(long sn);
 
     long getCommentSerialNo();
-
-    void setReplySerialNo(long sn);
-
-    long getReplySerialNo();
-    
-    boolean isReply();
     
     void setMessage(String msg);
 

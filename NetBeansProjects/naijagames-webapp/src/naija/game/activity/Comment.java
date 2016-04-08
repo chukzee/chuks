@@ -5,6 +5,9 @@
  */
 package naija.game.activity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import naija.game.IComment;
 
 /**
@@ -14,7 +17,6 @@ import naija.game.IComment;
 public class Comment implements IComment {
 
     private long comment_sn;
-    private long reply_sn = 0;//0 means not a reply - default
     private String msg;
     private String username;
     private String first_name;
@@ -23,30 +25,16 @@ public class Comment implements IComment {
     private int likes;
     private int dislikes;
     private String formatedTime;
-
+    private List<IComment> replys = Collections.synchronizedList(new ArrayList());
+    
     @Override
     public void setCommentSerialNo(long sn) {
         comment_sn = sn;
     }
-
+    
     @Override
     public long getCommentSerialNo() {
         return comment_sn;
-    }
-
-    @Override
-    public void setReplySerialNo(long sn) {
-        reply_sn = sn;
-    }
-
-    @Override
-    public long getReplySerialNo() {
-        return reply_sn;
-    }
-
-    @Override
-    public boolean isReply() {
-        return reply_sn > 0;
     }
 
     @Override
@@ -137,6 +125,16 @@ public class Comment implements IComment {
     @Override
     public String getCommentTime() {
         return formatedTime;
+    }
+
+    @Override
+    public void addReply(IComment comment) {
+        replys.add(comment);
+    }
+
+    @Override
+    public List<IComment> getReplys() {
+        return replys;
     }
 
 }

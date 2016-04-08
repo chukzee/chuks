@@ -5,13 +5,15 @@
  */
 package naija.game.info;
 
+import chuks.server.Distributed;
 import java.io.Serializable;
+import naija.game.Move;
 
 /**
  *
  * @author USER
  */
-public class GameInfo  implements Serializable{
+public class GameInfo  implements Distributed{
     private String gameId;
     private String whitePlayer;//for board game like chess and draft
     private String blackPlayer;//for board game like chess and draft
@@ -20,6 +22,7 @@ public class GameInfo  implements Serializable{
     private long timeBegin;
     private long timeEnd;
     private String winner;
+    private String game_name;
 
     public String getGameId() {
         return gameId;
@@ -97,6 +100,23 @@ public class GameInfo  implements Serializable{
 
     public void setWinner(String winner) {
         this.winner = winner;
+    }
+
+    public void setGameName(String game_name) {
+        this.game_name = game_name;
+    }
+    
+    public String getGameName() {
+        return game_name;
+    }
+
+    @Override
+    public void distributedCall(Object obj) {
+        if(obj instanceof Move){
+            //update thd game info score using this move object
+            Move move = (Move) obj;
+            
+        }
     }
  
 }

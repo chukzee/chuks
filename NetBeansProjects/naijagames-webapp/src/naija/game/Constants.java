@@ -3,12 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package naija.game.activity;
+package naija.game;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class GameCommentStack {
+public enum Constants {
     
+    chess,
+    draft,
+    scrabble,
+    ludo,
+    solitaire,
+    whot,
 }

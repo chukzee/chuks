@@ -5,30 +5,44 @@
  */
 package naija.game;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public interface IChat {
-    
-    void setChatSerialNo(long sn);
-   
-    long getChatSerialNo();
+public interface IChat extends Serializable {
 
-    void setMessage(String msg);
-    
-    String getMessage();
+    void setChatSerialNo(long sn);
+
+    long getChatSerialNo();
     
     void setUsername(String username);
-    
+
     String getUsername();
-    
+
     void setFirstName(String first_name);
-    
+
     String getFirstName();
-    
-    void setLastName(String first_name);
-    
+
+    void setLastName(String last_name);
+
     String getLastName();
+
+    void setImageUrl(String img_url);
     
+    String getImageUrl();
+
+    void setChatmate(String chatmate_username);
+
+    String getChatmate();
+
+    void setMessage(String msg);
+
+    String getMessage();
+
+    void setMessageTime(String formattedTime);
+
+    String getMessageTime();
+
 }
