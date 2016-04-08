@@ -8,12 +8,14 @@ package com.chuks.report.processor.factory;
 import com.chuks.report.processor.event.FormActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 /**
  *
  * @author Chuks Alimele<chuksalimele at yahoo.com>
  */
-public class TestAction extends javax.swing.JFrame {
+public class TestAction extends javax.swing.JFrame implements WindowListener{
 
     /**
      * Creates new form TestAction
@@ -176,4 +178,33 @@ int i;
     private com.chuks.report.processor.form.controls.JMoveTo jMoveTo1;
     private com.chuks.report.processor.form.controls.JNext jNext1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+        
+    }
 }
