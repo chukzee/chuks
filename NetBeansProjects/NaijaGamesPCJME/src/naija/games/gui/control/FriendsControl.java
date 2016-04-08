@@ -154,6 +154,10 @@ public class FriendsControl implements FriendListener{
         this.friendMap.clear();
     }
 
+    public void onFriends(FriendEvent event) {
+        
+    }
+
     public void onFriendOnline(FriendEvent event) {
     }
 
@@ -173,6 +177,18 @@ public class FriendsControl implements FriendListener{
     }
 
     public void onFriendNotify(FriendEvent event) {
+    }
+
+    public void onFriendPlayRequest(FriendEvent event) {
+    }
+
+    public void onFriendPlayRequestSent(FriendEvent event) {
+    }
+
+    public void onFriendPlayRequestAccepted(FriendEvent event) {
+    }
+
+    public void onFriendPlayRequestRejected(FriendEvent event) {
     }
 
 }

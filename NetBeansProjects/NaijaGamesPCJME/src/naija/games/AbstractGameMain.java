@@ -21,11 +21,13 @@ import naija.game.client.LocalGameSession;
 import naija.game.client.LocalUser;
 import naija.game.client.Player;
 import naija.game.client.Score;
+import naija.game.client.ServerAlertMessage;
 import naija.game.client.TwitterSocialNetwork;
-import naija.game.client.User;
 import naija.game.client.WebConnection;
 import naija.game.client.event.GameSessionEvent;
 import naija.game.client.event.GameSessionListener;
+import naija.game.client.event.GameClientEvent;
+import naija.game.client.event.GameClientListener;
 import org.lwjgl.opengl.Display;
 
 /**
@@ -35,7 +37,7 @@ import org.lwjgl.opengl.Display;
  */
 public abstract class AbstractGameMain
         extends SimpleApplication
-        implements GameSessionListener {
+        implements GameClientListener, GameSessionListener {
 
     private static double device_width;
     private static double device_height;
@@ -138,15 +140,16 @@ public abstract class AbstractGameMain
         gclient.addSocailNetwork(new TwitterSocialNetwork(token, secret, userDd));
 
         //add listeners
+        gclient.addGameClientListener(this);
         gclient.addGameSessionListener(this);
 
-        //start the game client - it is safe to start here is network process run in backgroud threads
+        //start the game client - it is safe to start here since network process run in backgroud threads
         gclient.start();//start the game client - client connects and starts internal processing
 
     }
 
     final public void startupGameView() {
-        LocalGameSession locaGameSession = new LocalGameSession(getGameName(),
+        LocalGameSession locaGameSession = new LocalGameSession(getGameName().name(),
                 geDefaultLocalPlayer(), getDefaultRobotPlayer(),
                 getDefaultTimeControl(), getDefaultScore(),
                 getDefaultGamePosition(), getDefaultGameVariant());
@@ -179,21 +182,41 @@ public abstract class AbstractGameMain
 
     public abstract int getDefaultGameVariant();
 
-    /**f
-     * Subclass should implement this method to update the
-     * game position of the current game in view.
-     * @param event 
+    /**
+     *
+     * Subclass should implement this method to update the game position of the
+     * current game in view.
+     *
+     * @param event
      */
     public abstract void updateGamePosition(GameSessionEvent event);
 
+    public void onClientConnected(GameClientEvent event) {
+        System.out.println("client connected");
+        //TODO: Better notification of connection e.g display in status bar
+    }
+
+    public void onClientDisconnected(GameClientEvent event) {
+        System.out.println("client disconnected");
+        //TODO: Better notification of disconnection e.g display in status bar
+    }
+
+    public void onClientServerAlert(GameClientEvent event) {
+        ServerAlertMessage severMsg = event.geServerAlertMessage();
+        System.out.println("server alert message arrive " + severMsg.getMessage());
+        //TODO: Better notification of server alert message e.g display in system tray or message box as the case may be.
+    }
+
+    public void onClientUserInfo(GameClientEvent event) {
+        localUser = event.getClientUserInfo();
+    }
+
     @Override
     public void onSessionGameStarts(GameSessionEvent event) {
-        
     }
 
     @Override
     public void onSessionGameEnds(GameSessionEvent event) {
-        
     }
 
     @Override
@@ -207,27 +230,26 @@ public abstract class AbstractGameMain
         if (event.geMoveNotation() == null) {
             return;
         }
-        
+        //TODO: consider game events such is penalty , draw offer e.t.c
+
         //At this point it is a move event 
 
         //check if the local user move was sent by the server. this can happen when move update request is sent by the client
-        if(event.getPlayerWhoMoved().sameAs(localUser)){
+        if (event.getPlayerWhoMoved().sameAs(localUser)) {
             return;//no need to play this move. local user moves are played before being sent to the server.
         }
 
-        
+
         //At this point it is a move event of the local user opponent or a remote player
 
         updateGamePosition(event);
     }
 
     @Override
-    public void onSessionSpecatorJoin(GameSessionEvent event) {
-        
+    public void onSessionSpectatorJoin(GameSessionEvent event) {
     }
 
     @Override
     public void onSessionSpectatorLeave(GameSessionEvent event) {
-        
     }
 }

@@ -49,10 +49,10 @@ public class TournamentsControl implements TournamentListener{
     public void onTournamentEnds(TournamentEvent event) {
     }
 
-    public void onTournamentGameStart(TournamentEvent event) {
+    public void onTournamentFirstGameStarts(TournamentEvent event) {
     }
 
-    public void onTournamentGameEnd(TournamentEvent event) {
+    public void onTournamentFirstGameEnds(TournamentEvent event) {
     }
 
     public void onTournamentNextRound(TournamentEvent event) {

@@ -148,8 +148,9 @@ public class ChessMain extends AbstractGameMain {
      * the current game position which can obtained from the. To detect missing
      * move compare the move number of move obtained from
      * {@link naija.game.client.event.GameSessionEvent} with the last locally
-     * known move number. A move number dedviation beyound one step is an indication
-     * of missing move {@link naija.game.client.event.GameSessionEvent} object.
+     * known move number. A move number dedviation beyound one step is an
+     * indication of missing move
+     * {@link naija.game.client.event.GameSessionEvent} object.
      *
      * @param event
      */
@@ -157,9 +158,11 @@ public class ChessMain extends AbstractGameMain {
     public void updateGamePosition(GameSessionEvent event) {
         ChessPlayer player_1 = (ChessPlayer) current_game.getPlayer(0);
         ChessPlayer player_2 = (ChessPlayer) current_game.getPlayer(1);
-
-
         
-
+        if (event.getPlayerWhoMoved().sameAs(player_1)) {
+            player_1.remoteMove(new ChessMove(event.geMoveNotation()));
+        } else if (event.getPlayerWhoMoved().sameAs(player_2)) {
+            player_2.remoteMove(new ChessMove(event.geMoveNotation()));
+        }
     }
 }

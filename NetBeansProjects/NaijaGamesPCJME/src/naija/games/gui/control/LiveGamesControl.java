@@ -56,7 +56,7 @@ public class LiveGamesControl implements GameSessionListener{
     }
 
     @Override
-    public void onSessionSpecatorJoin(GameSessionEvent event) {
+    public void onSessionSpectatorJoin(GameSessionEvent event) {
     }
 
     @Override
