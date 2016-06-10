@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Administrator</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    </head>
+    <body>
+        <div data-role="header" style="overflow:hidden;">
+            <h1>MercyApp</h1>
+            <a href="#home-page-admin-left-nav-panel" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-btn-icon-notext ui-icon-bars menu-fixed">Menu</a>
+            <!--<a href="#" data-icon="gear" class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-gear">Options</a>-->
+            <div class="ui-btn ui-btn-inline ui-btn-right ui-mini ui-corner-all">
+                <img class="user-profile-photo" src="_assets/img/lumia_800.png" width="45" height="45" alt="User"/>
+            </div>
+            <div data-role="navbar" class="home-page-nav">
+                <ul>
+                    <li><a href="#" data-icon="home" >Home</a></li>
+                    <li><a href="#" data-icon="user" >Profile</a></li>
+                    <li><a href="#" data-icon="gear" >Options</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+
+        <div id="home-page-admin-content" data-name="churchapp-news-content" class="ui-content"></div>
+
+
+        <div data-role="panel" class="churchapp-left-panel" data-display="overlay" id="home-page-admin-left-nav-panel" >
+
+            <div class="churchapp-left-panel-header" >
+                <div>
+                    <img class="header-parish-photo" src="img/RccgImg.gif" width="80" height="80" alt="Parish Photo N/A"/>
+                </div>
+                <span class="header-parish-name">Name of parish goes here</span>
+            </div>
+            
+            <ul data-role="listview" class="home_left_menu_above">
+                <li><a href="#">My profile</a></li>
+            </ul>
+
+            <div class="home_left_menu_below">
+
+                <div data-role="collapsible" data-inset="false">
+                    <h3>Configuration</h3>
+
+                    <div data-role="listview">
+                        <ul data-role="listview">
+                            <li><a href="authorization.html" data-transition="slide">Authorization</a></li>
+                            <li><a href="news-post.html">News Post</a></li>
+                            <li><a href="department.html">Department</a></li>
+                            <li><a href="designation.html">Designation</a></li>
+                            <li><a href="monetary.html">Monetary</a></li>
+                        </ul>
+                        <!--Church Structure collapsible menu start-->
+                        <div data-role="collapsible" data-inset="false" class="home_menu_adjust">
+                            <h3>Church Structure</h3>
+                            <ul data-role="listview">
+                                <li><a href="register-parish.html">Register Parish</a></li>
+                                <li><a href="update-parish.html">Update Parish</a></li>
+                            </ul>
+                        </div>
+
+                        <!--Activities collapsible menu start-->
+                        <div data-role="collapsible" data-inset="false" class="home_menu_adjust">
+                            <h3>Activities </h3>
+                            <ul data-role="listview">
+                                <li><a href="service.html">Service</a></li>
+                                <li><a href="events.html">Events</a></li>
+                            </ul>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div data-role="collapsible" data-inset="false">
+                    <h3>Entry/Record</h3>
+                    <div data-role="listview">
+                        <ul data-role="listview">
+                            <li><a href="daily-activities-schedule.html">Daily Activities Schedule</a></li>
+                            <li><a href="membership.html">Membership</a></li>
+                        </ul>
+                        <!--Income Summary collapsible menu start-->
+                        <div data-role="collapsible" data-inset="false" class="home_menu_adjust">
+                            <h3>Income Summary</h3>
+                            <ul data-role="listview">
+                                <li><a href="service-income.html">Service Income</a></li>
+                                <li><a href="daily-income.html">Daily Income</a></li>
+                            </ul>
+                        </div>
+
+                        <!--Events collapsible menu start-->
+                        <div data-role="collapsible" data-inset="false" class="home_menu_adjust">
+                            <h3>Events</h3>
+                            <ul data-role="listview">
+                                <li><a href="birthday.html">Birthday</a></li>
+                                <li><a href="wedding.html">Wedding</a></li>
+                                <li><a href="child-dedication.html">Child Dedication</a></li>
+                                <li><a href="member-thanksgiving.html">Member Thanksgiving</a></li>
+                            </ul>
+                        </div>
+
+                        <!--Weekly Activities  collapsible menu start-->
+                        <div data-role="collapsible" data-inset="false" class="home_menu_adjust">
+                            <h3>Weekly Activities</h3>
+                            <ul data-role="listview">
+                                <li><a href="home-fellowship.html">Home Fellowship</a></li>
+                                <li><a href="digging-deep.html">Digging Deep</a></li>
+                                <li><a href="faith-clinic.html">Faith Clinic</a></li>
+                                <li><a href="rehearsal.html">Rehearsal</a></li>
+                            </ul>
+                        </div>
+
+
+                        <!--Monthly Activities  collapsible menu start-->
+                        <div data-role="collapsible" data-inset="false" class="home_menu_adjust">
+                            <h3>Monthly Activities</h3>
+                            <ul data-role="listview">
+                                <li><a href="general-thanksgiving.html">General Thanksgiving  </a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div><!-- /panel -->
+
+
+    </body>
+</html>
