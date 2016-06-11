@@ -18,16 +18,22 @@ function updateBank($app) {
     if ($bank_name === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
+    try {
 
-    $stmt = $app->sqlUpdate("add_bank", "BANK_NAME=?", "BANK_NAME=? AND ENTRY_USER_ID=?", array($bank_name, $bank_name, $app->userSession->getSessionUsername()));
 
-    if ($stmt->rowCount() > 0) {
-        $app->sendSuccessJSON("Bank name updated successfully!", null);
-        $stmt->closeCursor();
-        return;
-    } else {
-        //check if the reason is because the user was not the one who added the bank in the first place.
-        //to know that we can check if the bank name exists
-        $app->handleUnauthorizedOperation("add_bank", "BANK_NAME", "BANK_NAME =?", array($bank_name));
+        $stmt = $app->sqlUpdate("add_bank", "BANK_NAME=?", "BANK_NAME=? AND ENTRY_USER_ID=?", array($bank_name, $bank_name, $app->userSession->getSessionUsername()));
+
+        if ($stmt->rowCount() > 0) {
+            $app->sendSuccessJSON("Bank name updated successfully!", null);
+            $stmt->closeCursor();
+            return;
+        } else {
+            //check if the reason is because the user was not the one who added the bank in the first place.
+            //to know that we can check if the bank name exists
+            $app->handleUnauthorizedOperation("add_bank", "BANK_NAME", "BANK_NAME =?", array($bank_name));
+        }
+    } catch (Exception $exc) {
+        return $app->sendErrorJSON("Please try again!");
     }
+
 }

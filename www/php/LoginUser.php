@@ -21,36 +21,53 @@ function loginUser($app) {
 
         $stmt = $app->sqlSelect("register", "*", "BINARY USERNAME =? AND BINARY PASSWORD=SHA($password) AND BINARY DEPARTMENT=? AND BINARY ROLE=?", array($username, $group, $role));
 
-        $row = $stmt->fetch(PDO::FETCH_OBJ);
-        
-        if ($stmt->rowCount() > 0) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $user = new User();
-            $user->home_page = $row->$column_name = "PARISH_SN";
-            $user->first_name = $row->$column_name = "PARISH_SN";
-            $user->last_name = $row->$column_name = "PARISH_SN";
-            $user->middle_name = $row->$column_name = "PARISH_SN";
-            $user->dob = $row->$column_name = "PARISH_SN";
-            $user->birth_day = $row->$column_name = "PARISH_SN";
-            $user->age_range = $row->$column_name = "PARISH_SN";
-            $user->sex = $row->$column_name = "PARISH_SN";
-            $user->address = $row->$column_name = "PARISH_SN";
-            $user->email = $row->$column_name = "PARISH_SN";
-            $user->verified_email = $row->$column_name = "PARISH_SN";
-            $user->phone_numbers = $row->$column_name = "PARISH_SN";
-            $user->date_converted = $row->$column_name = "PARISH_SN";
-            $user->membership_date = $row->$column_name = "PARISH_SN";
-            $user->photo_url = $row->$column_name = "PARISH_SN";
-            $user->designation = $row->$column_name = "PARISH_SN";
-            $user->dept = $row->$column_name = "PARISH_SN";
-            $user->group = $row->$column_name = "PARISH_SN";
-            $user->role = $row->$column_name = "PARISH_SN";
-            $user->uneditable_features = $row->$column_name = "PARISH_SN";
-            $user->unviewable_features = $row->$column_name = "PARISH_SN";
-            $user->parish = $row->$column_name = "PARISH_SN";
-            $user->area = $row->$column_name = "PARISH_SN";
-            $user->zone = $row->$column_name = "PARISH_SN";
-            $user->province = $row->$column_name = "PARISH_SN";
-            $user->region = $row->$column_name = "PARISH_SN";
+            $user->firstName = $row["FIRST_NAME"];
+            $user->lastName = $row["LAST_NAME"];
+            $user->middleName = $row["MIDDLE_NAME"];
+            $user->dob = $row["DOB"];
+            $user->birthday = $row["BIRTH_DAY"];
+            $user->ageRange = $row["AGE_RANGE"];
+            $user->sex = $row["SEX"];
+            $user->address = $row["ADDRESS"];
+            $user->email = $row["EMAIL"];
+            $user->verifiedEmail = $row["VERIFIED_EMAIL"];
+            $user->phoneNumbers = $row["PHONE_NUMBERS"];
+            $user->dateconverted = $row["DATE_CONVERTED"];
+            $user->membershipDate = $row["MEMBERSHIP_DATE"];
+            $user->photoUrl = $row["PROFILE_PHOTO"];
+            $user->designation = $row["DESIGNATION"];
+            $user->dept = $row["DEPARTMENT"];
+            $user->group = $row["GROUP"];
+            $user->role = $row["ROLE"];
+            $user->uneditableFeatures = $row["UNEDITABLE_FEATURES"];
+            $user->unviewableFeatures = $row["UNVIEWABLE_FEATURES"];
+            
+            $parish_sn = $row["PARISH_SN"];
+
+            $stmt2 = $app->sqlSelect("parish_register", "*", "PARISH_SN =?", array($parish_sn));
+
+            if ($row2 = $stmt2->fetch(PDO::FETCH_ASSOC)) {
+                $user->parishName = $row2["PARISH_NAME"];
+                $user->parishAddress = $row2["PARISH_ADDRESS"];
+                $user->parishLogitutude = $row2["LONGITUDE"];
+                $user->parishLatitude = $row2["LATITUDE"];
+                $user->area = $row2["UNDER_AREA"];
+                $user->zone = $row2["UNDER_ZONE"];
+                $user->province = $row2["UNDER_PROVINCE"];
+                $user->region = $row2["UNDER_REGION"];
+                $user->national = $row2["UNDER_NATIONAL"];
+            }
+            $data = array();
+            $data["user"] = $user;
+            
+            $data["carouselImages"] = array(); //come back
+            $data["newsContent"] = array(); //come back
+            
+            $app->sendSuccessJSON("Successfully!", $data);
         } else {
             $app->sendErrorJSON("Invalid username or pasword or access level!");
         }

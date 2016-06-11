@@ -2,7 +2,7 @@
 
 session_start();//come back
 
-include 'db-config.php';
+include 'app-config.php';
 
 class AppUtil {
 
@@ -320,32 +320,35 @@ class TableView {
 
 class User {
 
-    public $home_page;
-    public $first_name;
-    public $last_name;
-    public $middle_name;
+    public $firstName;
+    public $lastName;
+    public $middleName;
     public $dob;
-    public $birth_day;
-    public $age_range;
+    public $birthday;
+    public $ageRange;
     public $sex;
     public $address;
     public $email;
-    public $verified_email;
-    public $phone_numbers;
-    public $date_converted;
-    public $membership_date;
-    public $photo_url;
+    public $verifiedEmail;
+    public $phoneNumbers;
+    public $dateConverted;
+    public $membershipDate;
+    public $photoUrl;
     public $designation;
     public $dept;
     public $group;
     public $role;
-    public $uneditable_features;
-    public $unviewable_features;
-    public $parish;
+    public $uneditableFeatures;
+    public $unviewableFeatures;
+    public $parishAddress;
+    public $parishName;
+    public $parishLogitutude;
+    public $parishLatitude;
     public $area;
     public $zone;
     public $province;
     public $region;
+    public $national;
 
     public function __construct() {
         

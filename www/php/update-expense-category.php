@@ -18,17 +18,21 @@ function updateExpenseCategory($app) {
     if ($category === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
+    try {
 
-    $stmt = $app->sqlUpdate("add_expense_category", "EXPENSE_CATEGORY=?", "EXPENSE_CATEGORY=? AND ENTRY_USER_ID=?", array($category, $category, $app->userSession->getSessionUsername()));
 
-    if ($stmt->rowCount() > 0) {
-        $app->sendSuccessJSON("Expense category updated successfully!", null);
-        $stmt->closeCursor();
-        return;
-    } else {
-        //check if the reason is because the user was not the one who added the record in the first place.
-        //to know that we can check if the record exists
-        $app->handleUnauthorizedOperation("add_expense_category", "EXPENSE_CATEGORY", "EXPENSE_CATEGORY =?", array($category));
-        
+        $stmt = $app->sqlUpdate("add_expense_category", "EXPENSE_CATEGORY=?", "EXPENSE_CATEGORY=? AND ENTRY_USER_ID=?", array($category, $category, $app->userSession->getSessionUsername()));
+
+        if ($stmt->rowCount() > 0) {
+            $app->sendSuccessJSON("Expense category updated successfully!", null);
+            $stmt->closeCursor();
+            return;
+        } else {
+            //check if the reason is because the user was not the one who added the record in the first place.
+            //to know that we can check if the record exists
+            $app->handleUnauthorizedOperation("add_expense_category", "EXPENSE_CATEGORY", "EXPENSE_CATEGORY =?", array($category));
+        }
+    } catch (Exception $exc) {
+        return $app->sendErrorJSON("Please try again!");
     }
 }

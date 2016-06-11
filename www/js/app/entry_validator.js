@@ -200,10 +200,23 @@ $(document).ready(function () {
                 ChurchApp.post(form.action,
                         {
                             parish_sn: $("#assign-to-parish-name").val(),
-                            username:ChurchApp.SignUpInfo.username,
+                            username: ChurchApp.SignUpInfo.username,
+                            first_name: ChurchApp.SignUpInfo.firstName,
+                            last_name: ChurchApp.SignUpInfo.lastName,
+                            email: ChurchApp.SignUpInfo.email,
                         },
                         function (data) {//done
+
                             alert(data);
+
+                            var json = JSON.parse(data);
+
+                            if (json.status === "success") {
+                                ChurchApp.verifyUserEmail(json.data);
+                            } else {
+                                ChurchApp.alertResponse(json, true);
+                            }
+
                         },
                         function (data, r, error) {//fail
 
@@ -508,15 +521,16 @@ $(document).ready(function () {
 
                 ChurchApp.postForm(form,
                         function (data) {//done
-                            //priviledgeGroup
-                            if (data.status === "success") {
-                                ChurchApp.loadHomePageByPriviledge(data);
-                            } else {
-                                ChurchApp.alertResponse(data, true);
+                            var json = JSON.parse(data);
 
-                                ChurchApp.loadHomePageByPriviledge(//TESTING!!!
+                            if (json.status === "success") {
+                                ChurchApp.loginByPriviledge(json.data);
+                            } else {
+                                ChurchApp.alertResponse(data, false);
+
+                                ChurchApp.loginByPriviledge(//TESTING!!!
                                         {
-                                            priviledgeGroup: "Admin", //TESTING!!!
+                                            user: {group: "Admin", role: "super"}, //TESTING!!!
                                             carouselImages: ["img/Chrysanthemum.jpg", "img/Desert.jpg"], //images                                          
                                             newsContent: newsContentTest()//TESTING!!!
                                         });
