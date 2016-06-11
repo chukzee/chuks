@@ -133,11 +133,11 @@ class AppUtil {
         if ($condition_expression != null && $condition_expression != '') {
             $where_clause = " WHERE " . $condition_expression;
         }
-
+ 
         $stmt = $this->conn->prepare("UPDATE " . $table
                 . " SET "
                 . $set_clause
-                . $condition_expression);
+                . $where_clause);
 
         $stmt->execute($params_array);
 
@@ -153,7 +153,7 @@ class AppUtil {
         }
 
         $stmt = $this->conn->prepare("DELETE FROM " . $table
-                . $condition_expression);
+                . $where_clause);
 
         $stmt->execute($params_array);
 

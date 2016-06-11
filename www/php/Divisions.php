@@ -27,11 +27,13 @@ function divisions($app) {
                 . " FROM "
                 . " parish_register"
                 . " WHERE "
-                . " PARISH_NAME !='' AND PARISH_NAME != NULL");
+                . " PARISH_NAME !='' AND PARISH_NAME !='NULL'");
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute(array());
+        
         $d = new Divison();
-        while ($stmt->rowCount() > 0) {
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $d->national = addUnique($d->national, $row["UNDER_NATIONAL"]);
             $d->region = addUnique($d->region, $row["UNDER_REGION"]);
             $d->province = addUnique($d->province, $row["UNDER_PROVINCE"]);
@@ -40,11 +42,9 @@ function divisions($app) {
         }
         $stmt->closeCursor();
         $app->sendSuccessJSON("Successful!", $d);
-        
     } catch (Exception $exc) {
         $app->sendErrorJSON("Please try again later! ");
     }
-
 }
 
 function addUnique($cont, $c) {

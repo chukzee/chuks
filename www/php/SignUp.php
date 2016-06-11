@@ -4,9 +4,21 @@ include './base/app-util-base.php';
 
 $app = new AppUtil();
 
-signUpUser($app);
+class SignUpInfo{
+    public $username='';
+    public $firstName='';
+    public $lastName='';
+    public $email='';
+    
+    public function __construct(){
+        
+    }
+    
+}
 
-function signUpUser($app) {
+signUp($app);
+
+function signUp($app) {
 
     try {
         $first_name = $app->getInputPOST('txt_sign_up_first_name');
@@ -52,7 +64,12 @@ function signUpUser($app) {
         $stmt2->execute(array($first_name, $last_name, $email, $username, $empty_parish_name_sn));
 
         if ($stmt2->rowCount() > 0) {
-            $app->sendSuccessJSON("Registration was successful!", null);
+            $signUpInfo = new SignUpInfo();
+            $signUpInfo->username = $username;
+            $signUpInfo->firstName = $first_name;
+            $signUpInfo->lastName = $last_name;
+            $signUpInfo->email = $email;
+            $app->sendSuccessJSON("Registration was successful!", $signUpInfo);
             $stmt2->closeCursor();
             return;
         }

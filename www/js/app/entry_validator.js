@@ -36,6 +36,7 @@ ChurchApp.onDynamicPageLoaded(function (selector) {
 
 
 $(document).ready(function () {
+
     $("#btn_next_parish_question").on("click", function () {
 
         if (document.getElementById('radio-choice-v-2a').checked
@@ -49,86 +50,52 @@ $(document).ready(function () {
 
             document.getElementById("assign-to-parish-note").innerHTML = "If your selections above are correct your parish will be enlisted in the dropdown list below. Otherwise your parish is not yet registered with our service, so please check back later.";
 
-            $("#assign-to-parish-select").show();
+            $("#assign-to-parish-explain").show();
+
+            $("#assign-to-parish-under-national-cont").show();
+            $("#assign-to-parish-under-region-cont").show();
+            $("#assign-to-parish-under-province-cont").show();
+            $("#assign-to-parish-under-zone-cont").show();
+            $("#assign-to-parish-under-area-cont").show();
+
+            ChurchApp.enableFindParishes = false;//disable for now - we don't want unnecessary requests sent to the server. 
+
+            ChurchApp.comboBoxClear("assign-to-parish-under-national");
+            ChurchApp.comboBoxClear("assign-to-parish-under-region");
+            ChurchApp.comboBoxClear("assign-to-parish-under-province");
+            ChurchApp.comboBoxClear("assign-to-parish-under-zone");
+            ChurchApp.comboBoxClear("assign-to-parish-under-area");
+            ChurchApp.comboBoxClear("assign-to-parish-name");
 
             if (document.getElementById('radio-choice-v-2a').checked) {
 
-                $("#assign-to-parish-select").hide();
-
-                document.getElementById("assign-to-parish-note").innerHTML = "If your parish is not enlisted in the drop-down list below then it is not yet registered with our service, so please check back later.";
-
-                $("#assign-to-parish-under-national-cont").hide();
-                $("#assign-to-parish-under-national").val("");
+                document.getElementById("assign-to-parish-note").innerHTML = "If your selection above is correct your parish will be enlisted in the drop-down list below. Otherwise your parish is not yet registered with our service, so please check back later.";
 
                 $("#assign-to-parish-under-region-cont").hide();
-                $("#assign-to-parish-under-region").val("");
-
                 $("#assign-to-parish-under-province-cont").hide();
-                $("#assign-to-parish-under-province").val("");
-
                 $("#assign-to-parish-under-zone-cont").hide();
-                $("#assign-to-parish-under-zone").val("");
-
                 $("#assign-to-parish-under-area-cont").hide();
-                $("#assign-to-parish-under-area").val("");
 
             } else if (document.getElementById('radio-choice-v-2b').checked) {
 
-                document.getElementById("assign-to-parish-note").innerHTML = "If your selection above is correct your parish will be enlisted in the drop-down list below. Otherwise your parish is not yet registered with our service, so please check back later.";
-
-                $("#assign-to-parish-under-national-cont").show();
-
-                $("#assign-to-parish-under-region-cont").hide();
-                $("#assign-to-parish-under-region").val("");
-
                 $("#assign-to-parish-under-province-cont").hide();
-                $("#assign-to-parish-under-province").val("");
-
                 $("#assign-to-parish-under-zone-cont").hide();
-                $("#assign-to-parish-under-zone").val("");
-
                 $("#assign-to-parish-under-area-cont").hide();
-                $("#assign-to-parish-under-area").val("");
 
             } else if (document.getElementById('radio-choice-v-2c').checked) {
-                $("#assign-to-parish-under-national-cont").show();
-                $("#assign-to-parish-under-region-cont").show();
-
-                $("#assign-to-parish-under-province-cont").hide();
-                $("#assign-to-parish-under-province").val("");
 
                 $("#assign-to-parish-under-zone-cont").hide();
-                $("#assign-to-parish-under-zone").val("");
-
                 $("#assign-to-parish-under-area-cont").hide();
-                $("#assign-to-parish-under-area").val("");
 
             } else if (document.getElementById('radio-choice-v-2d').checked) {
-                $("#assign-to-parish-under-national-cont").show();
-                $("#assign-to-parish-under-region-cont").show();
-                $("#assign-to-parish-under-province-cont").show();
 
-                $("#assign-to-parish-under-zone-cont").hide();
-                $("#assign-to-parish-under-zone").val("");
 
                 $("#assign-to-parish-under-area-cont").hide();
-                $("#assign-to-parish-under-area").val("");
 
             } else if (document.getElementById('radio-choice-v-2e').checked) {
-                $("#assign-to-parish-under-national-cont").show();
-                $("#assign-to-parish-under-region-cont").show();
-                $("#assign-to-parish-under-province-cont").show();
-                $("#assign-to-parish-under-zone-cont").show();
-
-                $("#assign-to-parish-under-area-cont").hide();
-                $("#assign-to-parish-under-area").val("");
-
+                //do nothing.
             } else if (document.getElementById('radio-choice-v-2f').checked) {
-                $("#assign-to-parish-under-national-cont").show();
-                $("#assign-to-parish-under-region-cont").show();
-                $("#assign-to-parish-under-province-cont").show();
-                $("#assign-to-parish-under-zone-cont").show();
-                $("#assign-to-parish-under-area-cont").show();
+                //do nothing also.
             }
 
             $(":mobile-pagecontainer").pagecontainer("change", "#assign-to-parish-question-page", {
@@ -140,13 +107,16 @@ $(document).ready(function () {
 
             ChurchApp.post("php/Divisions.php", "",
                     function (data) {
+                        alert(data);
                         var json = JSON.parse(data);
+
                         if (json.status === "success") {
-                            ChurchApp.comboxPopulate("assign-to-parish-under-national", json.data.national);
-                            ChurchApp.comboxPopulate("assign-to-parish-under-region", json.data.region);
-                            ChurchApp.comboxPopulate("assign-to-parish-under-province", json.data.province);
-                            ChurchApp.comboxPopulate("assign-to-parish-under-zone", json.data.zone);
-                            ChurchApp.comboxPopulate("assign-to-parish-under-area", json.data.area);
+                            ChurchApp.enableFindParishes = true; //enable
+                            ChurchApp.comboBoxPopulate("assign-to-parish-under-national", json.data.national);
+                            ChurchApp.comboBoxPopulate("assign-to-parish-under-region", json.data.region);
+                            ChurchApp.comboBoxPopulate("assign-to-parish-under-province", json.data.province);
+                            ChurchApp.comboBoxPopulate("assign-to-parish-under-zone", json.data.zone);
+                            ChurchApp.comboBoxPopulate("assign-to-parish-under-area", json.data.area);
                         } else {
                             ChurchApp.alertResponse(json);
                         }
@@ -160,32 +130,25 @@ $(document).ready(function () {
         }
     });
 
+
     $("#assign-to-parish-under-national").on("change", function () {
-        
-        var data = $("#assign-to-parish-form").serialize();
-        ChurchApp.post("php/FindParishs.php",data,
-                function (data) {
-
-                },
-                function (data, r, error) {
-
-                });
+        ChurchApp.parishesOnDivisionChange();
     });
 
     $("#assign-to-parish-under-region").on("change", function () {
-
+        ChurchApp.parishesOnDivisionChange();
     });
 
     $("#assign-to-parish-under-province").on("change", function () {
-
+        ChurchApp.parishesOnDivisionChange();
     });
 
     $("#assign-to-parish-under-zone").on("change", function () {
-
+        ChurchApp.parishesOnDivisionChange();
     });
 
     $("#assign-to-parish-under-area").on("change", function () {
-
+        ChurchApp.parishesOnDivisionChange();
     });
 
     /**
@@ -234,7 +197,11 @@ $(document).ready(function () {
             },
             submitHandler: function (form) {
 
-                ChurchApp.postForm(form,
+                ChurchApp.post(form.action,
+                        {
+                            parish_sn: $("#assign-to-parish-name").val(),
+                            username:ChurchApp.SignUpInfo.username,
+                        },
                         function (data) {//done
                             alert(data);
                         },
@@ -501,16 +468,18 @@ $(document).ready(function () {
             },
             //submit sign up form
             submitHandler: function (form) {
-                var full_name = $("#txt_sign_up_first_name").val() + " " + $("#txt_sign_up_last_name").val();
+
                 ChurchApp.postForm(form,
                         function (data) {//done
                             var json = JSON.parse(data);
                             if (json.status === "success") {
-                                ChurchApp.assignParishToUser(
-                                        {
-                                            fullName: full_name,
-                                            stepsAwayFromCompleteSignup: "Thank you! You are few steps alway from completing your signup process.",
-                                        });
+                                ChurchApp.assignParishToUser({
+                                    username: json.data.username,
+                                    firstName: json.data.firstName,
+                                    lastName: json.data.lastName,
+                                    email: json.data.email,
+                                    stepsAwayFromCompleteSignup: "Thank you! You are few steps alway from completing your signup process.",
+                                });
                             } else {
                                 ChurchApp.alertResponse(json, true);
                             }

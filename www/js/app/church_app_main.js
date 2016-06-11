@@ -62,6 +62,41 @@ var ChurchApp = new function () {
 
     this.ChildrenFeatures = [];//TODO
 
+    this.enableFindParishes = true;// controls the finding of parishes based on change event of drop-down list. 
+
+    this.parishesOnDivisionChange = function () {
+
+        if (!ChurchApp.enableFindParishes) {
+            return;//this action is disabled
+        }
+
+        var data = $("#assign-to-parish-form").serialize();
+
+        ChurchApp.post("php/FindParishes.php", data,
+                function (data) {
+                    alert(data);
+                    var json = JSON.parse(data);
+                    if (json.status === "success") {
+                        ChurchApp.comboBoxPopulate("assign-to-parish-name"
+                                , json.data.parish_names
+                                , json.data.parish_sn);
+                    } else {
+                        ChurchApp.alertResponse(json);
+                    }
+                },
+                function (data, r, error) {
+
+                });
+    };
+
+    this.SignUpInfo = {
+        username: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        stepsAwayFromCompleteSignup: ""
+    };
+
     this.failed_auth = 0;
     this.attempts_update = 0;
     this.attempts_delete = 0;
@@ -272,7 +307,7 @@ var ChurchApp = new function () {
         $(":mobile-pagecontainer").on("pagecontainershow", function (event, ui) {
             //alert("This page was just hidden: " + ui.toPage);//dataUrl
             //alert("absUrl " + ui.absUrl);//dataUrl
-            
+
             var s = $(document).find('[data-name="churchapp-news-content"]');//come back - could have more that one elements
 
             $(s).each(function (index, element) {
@@ -334,7 +369,7 @@ var ChurchApp = new function () {
     };
 
     this.post = function (url, data, doneCallback, failureCallback) {
-
+        
         $.ajax({
             type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
             url: url, // the url where we want to POST
@@ -402,8 +437,8 @@ var ChurchApp = new function () {
     this.cdSec = 0;
     this.cdTimerId = 0;
     this.countDownAuthFinished = false;
-    this.inactivit_timeout_msg = "Sorry, your inactivity has timeout.<br/>Operation disabled!";
-    this.inactivit_timeout_browser_msg = "Sorry, your inactivity has timeout.Operation disabled!";
+    this.inactivity_timeout_msg = "Sorry, your inactivity has timeout.<br/>Operation disabled!";
+    this.inactivity_timeout_browser_msg = "Sorry, your inactivity has timeout.Operation disabled!";
 
     initCountDownToAuth = function (inactivityTimeout) {
         if (!ChurchApp.countDownAuthFinished) {
@@ -436,7 +471,7 @@ var ChurchApp = new function () {
                 countdown.attr({style: "color:red;"});
                 window.clearInterval(ChurchApp.cdTimerId);
                 var obj = $(selector).find("[name=display_msg]");
-                obj.html(ChurchApp.inactivit_timeout_msg);
+                obj.html(ChurchApp.inactivity_timeout_msg);
                 obj.attr({style: "color:red;"});
                 //$(selector).find("[type=submit]").attr("disabled",true);//come back for you later!!!
                 return;
@@ -470,17 +505,30 @@ var ChurchApp = new function () {
         }
     };
 
-    this.comboxPopulate = function (id, arr) {
+    this.comboBoxClear = function (id) {
+        var d = document.getElementById(id);
+
+        for (var i = 1; i < d.length; i++) {//start from index 1 by default
+            d.remove(i);
+        }
+        $("#" + id).prop("selectedIndex", 0);
+        $("#" + id).change();
+    };
+
+    this.comboBoxPopulate = function (id, arrText, arrValue) {
         var d = document.getElementById(id);
         for (var i = 1; i < d.length; i++) {//from from index 1 by default
             d.remove(i);
         }
 
-        for (var i = 0; i < arr.length; i++) {
+        for (var i = 0; i < arrText.length; i++) {
             var opt = document.createElement("option");
-            opt.text = arr[i];
-            opt.value = arr[i];//come back
-
+            opt.text = arrText[i];
+            if (typeof arrValue !== "undefined") {
+                opt.value = arrValue[i];//come back
+            } else {
+                opt.value = arrText[i];//come back
+            }
             d.add(opt);
         }
     };
@@ -584,7 +632,7 @@ var ChurchApp = new function () {
             messages: tablePageObj.validationMessages,
             submitHandler: function (form) {
                 if (ChurchApp.countDownAuthFinished) {
-                    alert(ChurchApp.inactivit_timeout_browser_msg);
+                    alert(ChurchApp.inactivity_timeout_browser_msg);
                     return;//do nothing!
                 }
 
@@ -657,7 +705,7 @@ var ChurchApp = new function () {
         $(popup).on('submit', 'form', function (evt) {
             evt.preventDefault();
             if (ChurchApp.countDownAuthFinished) {
-                alert(ChurchApp.inactivit_timeout_browser_msg);
+                alert(ChurchApp.inactivity_timeout_browser_msg);
                 return;//do nothing!
             }
 
@@ -873,6 +921,12 @@ var ChurchApp = new function () {
     };
 
     this.assignParishToUser = function (obj) {
+        //copy the properties to the SignUpInfo
+        ChurchApp.SignUpInfo.username = obj.username;
+        ChurchApp.SignUpInfo.firstName = obj.firstName;
+        ChurchApp.SignUpInfo.lastName = obj.lastName;
+        ChurchApp.SignUpInfo.email = obj.email;
+
         $(":mobile-pagecontainer").pagecontainer("change", "#answer-parish-question-page", {
             transition: 'slide',
             //changeHash: false,
@@ -881,7 +935,7 @@ var ChurchApp = new function () {
         });
 
         $(document).find("[data-name='hi-user-full-name']").each(function () {
-            $(this).html(obj.fullName);
+            $(this).html(obj.firstName + " " + obj.lastName);
         });
 
         var s = $(document).find("[data-name='steps-away-from-sign-up-completion']");
