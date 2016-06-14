@@ -1,6 +1,6 @@
 <?php
 
-include './base/app-util-base.php';
+require './base/app-util-base.php';
 
 $app = new AppUtil();
 
@@ -56,11 +56,12 @@ function signUp($app) {
             return;
         }
 
+         //by default each user has USER_GROUPS as 'Member' 
         $stmt2 = $app->conn->prepare("INSERT INTO "
-                . "register"
-                . " (FIRST_NAME, LAST_NAME, EMAIL, USERNAME, PASSWORD,DATE_REGISTERED, PARISH_SN)"
-                . "VALUES(?,?,?,?, SHA('$password'),now(),?) ");
-
+                . " register "
+                . "(USER_GROUPS, FIRST_NAME, LAST_NAME, EMAIL, USERNAME, PASSWORD,DATE_REGISTERED, PARISH_SN)"
+                . "VALUES('Member',?,?,?,?, SHA('$password'),now(),?) ");
+       
         $stmt2->execute(array($first_name, $last_name, $email, $username, $empty_parish_name_sn));
 
         if ($stmt2->rowCount() > 0) {

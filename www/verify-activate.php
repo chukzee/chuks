@@ -1,5 +1,5 @@
 <?php
-include './php/base/app-util-base.php';
+require './php/base/app-util-base.php';
 $app = new AppUtil();
 ?>
 <!DOCTYPE html>

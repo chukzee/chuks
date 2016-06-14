@@ -1,6 +1,6 @@
 <?php
 
-include './base/app-util-base.php';
+require './base/app-util-base.php';
 
 $app = new AppUtil();
 
@@ -19,33 +19,41 @@ function loginUser($app) {
 
     try {
 
-        $stmt = $app->sqlSelect("register", "*", "BINARY USERNAME =? AND BINARY PASSWORD=SHA($password) AND BINARY DEPARTMENT=? AND BINARY ROLE=?", array($username, $group, $role));
+        $stmt = $app->sqlSelect("register", "*", "BINARY USERNAME =? AND BINARY PASSWORD=SHA('$password')", array($username));
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            
+            //first check user priveledge
+            $group_arr = explode($row["USER_GROUPS"], ',');
+            if (!checkUserPriveledge($group_arr, $row["ROLE"], $group, $role)) {
+                $app->sendErrorJSON("Invalid access level!");
+                return;
+            }
+            
             $user = new User();
+            $user->username = $row["USERNAME"];
             $user->firstName = $row["FIRST_NAME"];
             $user->lastName = $row["LAST_NAME"];
             $user->middleName = $row["MIDDLE_NAME"];
             $user->dob = $row["DOB"];
-            $user->birthday = $row["BIRTH_DAY"];
+            $user->birthday = $row["BIRTHDAY"];
             $user->ageRange = $row["AGE_RANGE"];
             $user->sex = $row["SEX"];
             $user->address = $row["ADDRESS"];
             $user->email = $row["EMAIL"];
             $user->verifiedEmail = $row["VERIFIED_EMAIL"];
             $user->phoneNumbers = $row["PHONE_NUMBERS"];
-            $user->dateconverted = $row["DATE_CONVERTED"];
+            $user->dateConverted = $row["DATE_CONVERTED"];
             $user->membershipDate = $row["MEMBERSHIP_DATE"];
             $user->photoUrl = $row["PROFILE_PHOTO"];
             $user->designation = $row["DESIGNATION"];
             $user->dept = $row["DEPARTMENT"];
-            $user->group = $row["GROUP"];
+            $user->group = $row["USER_GROUPS"];
             $user->role = $row["ROLE"];
             $user->uneditableFeatures = $row["UNEDITABLE_FEATURES"];
             $user->unviewableFeatures = $row["UNVIEWABLE_FEATURES"];
-            
+
             $parish_sn = $row["PARISH_SN"];
 
             $stmt2 = $app->sqlSelect("parish_register", "*", "PARISH_SN =?", array($parish_sn));
@@ -63,15 +71,33 @@ function loginUser($app) {
             }
             $data = array();
             $data["user"] = $user;
-            
+
             $data["carouselImages"] = array(); //come back
             $data["newsContent"] = array(); //come back
+
+            //save the login session
+            $app->userSession->setSessionUserParishID($parish_sn);
+            $app->userSession->setSessionUsername($user->username);
+            $app->userSession->setSessionUserHashPassword($row["PASSWORD"]);
+            $app->userSession->setSessionUserGroup($user->group);
+            $app->userSession->setSessionUserRole($user->role);
             
             $app->sendSuccessJSON("Successfully!", $data);
         } else {
-            $app->sendErrorJSON("Invalid username or pasword or access level!");
+            $app->sendErrorJSON("Invalid username or pasword!");
         }
     } catch (Exception $e) {
-        $app->sendErrorJSON("Please try again later!");
+        $app->sendErrorJSON("Please try again later!" . $e);
     }
+}
+
+function checkUserPriveledge($user_store_groups_arr, $user_stored_role, $group, $role) {
+    $len = count($user_store_groups_arr);
+    for ($i = 0; $i < $len; $i++) {
+        if ($user_store_groups_arr[$i] == $group && $user_stored_role == $role) {
+            return true;
+        }
+    }
+
+    return false;
 }

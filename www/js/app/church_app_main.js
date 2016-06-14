@@ -261,9 +261,9 @@ var ChurchApp = new function () {
 
         });
     };
-    
-    loadHomePageByPriviledge = function(obj){
-        
+
+    loadHomePageByPriviledge = function (obj) {
+
         var homePage = "";
         switch (obj.user.group) {
             case "Admin":
@@ -332,15 +332,17 @@ var ChurchApp = new function () {
 
 
     this.loginByPriviledge = function (obj) {
-        
-        if(obj.user.parishName === null || obj.user.parish_name === ''){
+
+        if (obj.user.parishName === null
+                || obj.user.parish_name === '') {
             ChurchApp.assignParishToUser(obj);
-        }else if(obj.user.verifiedEmail === 0){//email not verified
-            ChurchApp.verifyUserEmail()(obj);
-        }else{
+        } else if (obj.user.verifiedEmail === '0'
+                || obj.user.verifiedEmail === 0) {//email not verified
+            ChurchApp.verifyUserEmail(obj.user);
+        } else {
             loadHomePageByPriviledge(obj);
         }
-        
+
     };
 
     initializeSlick = function (obj) {
@@ -500,7 +502,7 @@ var ChurchApp = new function () {
 
     this.alertResponse = function (json, use_default_msg) {
 
-        if (use_default_msg && json.msg !== '' && json.msg !== 'null'&& json.msg !== null) {
+        if (use_default_msg && json.msg !== '' && json.msg !== 'null' && json.msg !== null) {
             alert(json.msg);
             return;
         }
@@ -962,11 +964,13 @@ var ChurchApp = new function () {
         });
     };
 
-    this.verifyUserEmail = function (obj) {
-        ChurchApp.SignUpInfo.username = obj.username;
-        ChurchApp.SignUpInfo.firstName = obj.firstName;
-        ChurchApp.SignUpInfo.lastName = obj.lastName;
-        ChurchApp.SignUpInfo.email = obj.email;
+    this.verifyUserEmail = function (user) {
+        ChurchApp.SignUpInfo.username = user.username;
+        ChurchApp.SignUpInfo.firstName = user.firstName;
+        ChurchApp.SignUpInfo.lastName = user.lastName;
+        ChurchApp.SignUpInfo.email = user.email;
+        var e = $("#email-verification-page [data-role='main']");
+        e.html("");//first clear the content
         $(":mobile-pagecontainer").pagecontainer("change", "#email-verification-page", {
             transition: 'slide',
             //changeHash: false,
@@ -980,22 +984,23 @@ var ChurchApp = new function () {
                 + '<p>Please check your email and click a link we have provided to complete your sign-up process.</p>';
 
         ChurchApp.post("php/SendEmailVerify.php",
-        {
-            username:obj.username,
-            firstName:obj.firstName,
-            lastName:obj.lastName,
-            email:obj.email,
-        },function(data){
+                {
+                    username: user.username,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                }, function (data) {
+                    alert(data);
             var json = JSON.parse(data);
-            var e = $("#email-verification-page [data-role='main']");
-            if(json.status==="success"){
+             e = $("#email-verification-page [data-role='main']");
+            if (json.status === "success") {
                 e.html(content);
-            }else{
-                e.html("Sorry! Could not continue process.<br/>"+json.msg);
+            } else {
+                e.html("<h2>Sorry!</h2>Could not continue process.<br/>" + json.msg);
             }
-        },function(error){
-            
-        })       
+        }, function (error) {
+
+        })
     };
 
     this.renderAccountReconcile = function (obj) {

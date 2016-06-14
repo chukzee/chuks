@@ -18,7 +18,7 @@ and open the template in the editor.
             <div data-role="header" style="overflow:hidden;">
                 <a data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
                 <h1>Authorization</h1>
-                <button class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save Changes</button>
+                <button id="authoriazation_save_changes" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save Changes</button>
             </div><!-- /header -->
 
 
@@ -28,20 +28,22 @@ and open the template in the editor.
                     <form class="ui-filterable">
                         <input id="autocomplete-input" data-type="search" placeholder="Find a user...">
                     </form>
-                    <ul id="authoriazation_autocomplete" data-role="listview" data-inset="true" data-filter="true" data-input="#autocomplete-input"></ul>
+                    <ul id="authoriazation_autocomplete" data-role="listview" data-inset="true" data-filter="true" data-input="#autocomplete-input">
+                        <!--Will be populated dynamically  -->
+                    </ul>
                 </div>
 
-                <form method="post" action="#" id="authoriazation_form">
+                <form method="post" action="php/UserAuthorization.php" id="authoriazation_form">
 
                     <div class="ui-grid-b  ui-responsive">
                         <div class="ui-block-a">
 
-                            <div class="ui-field-contain">
+                            <div class="ui-field-contain"  style="margin: 0.75em">
                                 <label for="authorization_username" >Username </label>
                                 <input data-clear-btn="true" name="authorization_username" readonly id="authorization_username" type="text"/>
                             </div>
 
-                            <div class="ui-field-contain">
+                            <div class="ui-field-contain"  style="margin: 0.75em">
                                 <label for="authorization_fullname" >Full name</label>
                                 <input data-clear-btn="true" name="authorization_fullname" readonly id="authorization_fullname" type="text"/>
                             </div>
@@ -54,15 +56,15 @@ and open the template in the editor.
 
                             <div class="ui-field-contain">
                                 <label for="authorization_designation" >Designation</label>
-                                <input data-clear-btn="true" name="authorization_designation" readonly id="authorization_designation" type="text"/>
+                                <input  data-clear-btn="true" name="authorization_designation" readonly id="authorization_designation" type="text"/>
                             </div>
 
-                            <div class="ui-field-contain">
+                            <div class="ui-field-contain" style="margin: 0.75em">
                                 <label for="authorization_block_user" >Block user account</label>
                                 <input name="authorization_block_user" id="authorization_block_user" type="checkbox">
                             </div>
                         </div>
-                        <div class="ui-block-c">
+                        <div class="ui-block-c  ui-content" style="margin: 0.75em">
 
 
                         </div>
@@ -73,7 +75,7 @@ and open the template in the editor.
 
                         <div class="ui-grid-b ui-responsive">
 
-                            <div class="ui-block-a">
+                            <div class="ui-block-a ui-content">
                                 <div class="ui-field-contain">
                                     <label for="authorization_admin" >Administrator</label>
                                     <input name="authorization_admin" id="authorization_admin" type="checkbox" onclick="createInnerComponent(this, 'admin')">
@@ -84,13 +86,13 @@ and open the template in the editor.
                                     <input name="authorization_accountant" id="authorization_accountant" type="checkbox" onclick="createInnerComponent(this, 'accountant')">
                                 </div>
 
-                                <div class="ui-field-contain">
+                                <div class="ui-field-contain ui-content">
                                     <label for="authorization_pastor" >Pastor</label>
                                     <input name="authorization_pastor" id="authorization_pastor" type="checkbox" onclick="createInnerComponent(this, 'pastor')">
                                 </div>
                             </div>
 
-                            <div class="ui-block-b">
+                            <div class="ui-block-b ui-content">
 
                                 <div class="ui-field-contain">
                                     <label for="authorization_worker" >Worker</label>
@@ -108,7 +110,7 @@ and open the template in the editor.
                                 </div>
                             </div>
 
-                            <div class="ui-block-c">
+                            <div class="ui-block-c ui-content">
 
                                 <div class="ui-field-contain">
                                     <label for="authorization_youth_exco" >Youth Exco</label>

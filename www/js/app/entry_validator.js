@@ -162,7 +162,6 @@ $(document).ready(function () {
      */
     $(document).bind("pagecreate", function (e, data) {
 
-
         // $("#home-page-admin-content").html("see the news content");
 
         //custom validation to enter fields that are visible and require entry.
@@ -170,6 +169,33 @@ $(document).ready(function () {
             return !($(element).is(":visible") && value === "");
         }, 'Please enter this field.');
 
+
+        $("#authoriazation_save_changes").on("click", function () {
+           document.getElementById("authoriazation_form").submit();
+        });
+
+        //add authoriazation_form validation
+        $("#authoriazation_form").validate({
+            //validation rules
+            rules: {
+                "authorization_username": "required"
+            },
+            //custom validation message
+            messages: {
+            },
+            submitHandler: function (form) {
+                alert("chuks");
+                return;
+                ChurchApp.postForm(form,
+                        function (data) {//done
+                            alert(data);
+                        },
+                        function (data, r, error) {//fail
+
+                        });
+            }
+
+        });
 
         //assign to parish validation
         $("#assign-to-parish-form").validate({
@@ -518,15 +544,16 @@ $(document).ready(function () {
             },
             //submit login form
             submitHandler: function (form) {
-
+                alert($(form).serialize());
                 ChurchApp.postForm(form,
                         function (data) {//done
+                            alert(data);
                             var json = JSON.parse(data);
 
                             if (json.status === "success") {
                                 ChurchApp.loginByPriviledge(json.data);
                             } else {
-                                ChurchApp.alertResponse(data, false);
+                                ChurchApp.alertResponse(json, true);
 
                                 ChurchApp.loginByPriviledge(//TESTING!!!
                                         {

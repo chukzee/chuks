@@ -2,7 +2,7 @@
 
 session_start();//come back
 
-include 'app-config.php';
+require 'app-config.php';
 
 class AppUtil {
 
@@ -248,7 +248,7 @@ class UserBasicSession {
         session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
 
-    public function setSessionHashPassword($value) {
+    public function setSessionUserHashPassword($value) {
          $_SESSION["hash_password"] = $value;
         session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
@@ -262,7 +262,7 @@ class UserBasicSession {
         return $_SESSION["username"];
     }
 
-    public function getSessionHashPassword() {
+    public function getSessionUserHashPassword() {
         return $_SESSION["hash_password"];
     }
 
@@ -320,6 +320,7 @@ class TableView {
 
 class User {
 
+    public $username;
     public $firstName;
     public $lastName;
     public $middleName;
@@ -329,7 +330,7 @@ class User {
     public $sex;
     public $address;
     public $email;
-    public $verifiedEmail;
+    public $verifiedEmail = 0;
     public $phoneNumbers;
     public $dateConverted;
     public $membershipDate;

@@ -1,6 +1,6 @@
 <?php
 
-include './base/app-util-base.php';
+require './base/app-util-base.php';
 require './phpmailer/PHPMailerAutoload.php';
 
 $app = new AppUtil();
@@ -19,8 +19,11 @@ function verifyEmail($app) {
     }
 
     $rand = rand(0, 10000);
-    $hash = sha($rand);
+    $hash = sha1($rand);
 
+    //echo $hash.'<br/>';
+    //echo $username.'<br/>';
+    
     try {
 
         $app->conn->beginTransaction();
@@ -36,6 +39,7 @@ function verifyEmail($app) {
             $result = sendVerificationEmail($app, $first_name, $last_name, $email, $username, $hash);
             if ($result) {
                 $app->conn->commit();
+                $app->sendSuccessJSON("Successful!",null);
             } else {
                 $app->conn->rollback();
                 $app->sendErrorJSON("Verification email could not be sent!");
@@ -94,8 +98,11 @@ function sendVerificationEmail($app, $first_name, $last_name, $email, $username,
         //when internet hosted
         $path = "/verify-activate.php";
     }
-    
-    $url = $config->server_host
+    //NOTE SERVER HOST MUST BE PRECEEDED BY 
+    //THE PROTOCOL 'http://' OR 'https://'
+    //TO AVOID YAHOO WAHALA WHEN SENDING 
+    //EMAIL TO YAHOO ACCOUNT - NEVER FORGET THIS!!!
+    $url = 'http://'.$config->server_host
             . $path
             . '?'
             . 'email='.$email.'&'
@@ -103,17 +110,17 @@ function sendVerificationEmail($app, $first_name, $last_name, $email, $username,
             . 'activation-hash='.$hash;
     
     $mail->Subject = 'Email Verification';
-    $main_body_desc = 'Your account has been succefully created. In order for your account to be activated for use'
+    $main_body_desc = 'Your account has been successfully created. In order for your account to be activated for use '
             . 'we have to verify that the email address you provided to us is valid.';
 
-    $mail->Body = '<h2>Thanks, ' . $recipientFullName . '</h2>'
+    $mail->Body = '<h3>Thanks, ' . $recipientFullName . '</h3>'
             . $main_body_desc
             . '<p>'
             . 'Please click <a href="' . $url . '">here</a> to activate your account.'
             . '</p>';
 
     //AltBody for the case of non-HTML mail clients
-    $mail->AltBody = '<h2>Thanks, ' . $recipientFullName . '</h2>'
+    $mail->AltBody = '<h3>Thanks, ' . $recipientFullName . '</h3>'
             . $main_body_desc
             . '<p>'
             . 'Please copy the link below to open in your brower so as to'

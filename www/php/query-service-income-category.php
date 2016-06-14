@@ -1,6 +1,6 @@
 <?php
 
-include './base/app-util-base.php';
+require './base/app-util-base.php';
 
 $app = new AppUtil();
 

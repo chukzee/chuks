@@ -8,7 +8,7 @@ class Divison {
     }
 }
 
-include './base/app-util-base.php';
+require './base/app-util-base.php';
 
 $b = array();
 $b["name"] = 'okore';
