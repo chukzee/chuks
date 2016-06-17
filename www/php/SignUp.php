@@ -43,7 +43,6 @@ function signUp($app) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $empty_parish_name_sn = -1;
         if ($stmt->rowCount() > 0) {
-            //$column_name = "PARISH_SN";
             $empty_parish_name_sn = $row["PARISH_SN"]; //maps the colum name in result set
         } else {
             //DESIGN REMINDER!!! PLEASE CREATE A RECORD IN parish_register

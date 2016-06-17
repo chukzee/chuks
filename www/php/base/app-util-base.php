@@ -341,6 +341,7 @@ class User {
     public $role;
     public $uneditableFeatures;
     public $unviewableFeatures;
+    public $blockedAccount;
     public $parishAddress;
     public $parishName;
     public $parishLogitutude;

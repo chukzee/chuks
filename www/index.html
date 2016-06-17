@@ -124,15 +124,35 @@ and open the template in the editor.
                                 </select>
                             </div>
 
-                            <input name="btn_login_sign_in" id="btn_login_sign_in" class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-lock" data-transition="slide" type="submit" value="Sign in"/>
+                            <div class="ui-field-contain">
+                                <input name="btn_login_sign_in" id="btn_login_sign_in" data-icon="lock" data-mini="true" data-transition="slide" type="submit" value="Sign in"/>
+                            </div> 
 
-                            <label for="chk_keep_me_signed_in">Keep me signed in</label>                           
-                            <input data-mini="true" name="chk_keep_me_signed_in" id="chk_keep_me_signed_in" checked="" type="checkbox">
+                            <div class="ui-field-contain">
+                                <label for="chk_keep_me_signed_in">Keep me signed in</label>                           
+                                <input data-mini="true" name="chk_keep_me_signed_in" id="chk_keep_me_signed_in" checked="" type="checkbox"/>
+                            </div> 
 
-                            <div>                
-                                <a href="#forgot-password-page" name="btn_login_forgot_password" id="btn_login_forgot_password" data-transition="slide">Forgot Password?</a>
-                            </div>              
-                            <a href="#help-dialog" name="btn_login_help" id="btn_login_help">Need help?</a></div>
+                            <div class="ui-grid-c  ui-responsive">
+                                <div class="ui-block-a">
+                                    <div class="ui-field-contain">                
+                                        <a href="#forgot-password-page" name="btn_login_forgot_password" id="btn_login_forgot_password" data-transition="slide">Forgot Password?</a>
+                                    </div> 
+                                </div>
+                                <div class="ui-block-b">
+
+                                </div>
+                                <div class="ui-block-c">
+
+                                </div>
+                                <div class="ui-block-d">
+                                    <div class="ui-field-contain">
+                                        <a href="#help-dialog" name="btn_login_help" id="btn_login_help">Need help?</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div> 
                 </form>
             </div>
@@ -239,16 +259,16 @@ and open the template in the editor.
             </div>
         </div>
 
-         <div data-url="email-verification-page" data-role="page" id="email-verification-page">
+        <div data-url="email-verification-page" data-role="page" id="email-verification-page">
             <div data-role="header">
                 <h1>MercyApp</h1>
                 <a data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
             </div><!-- /header -->
 
             <div data-role="main" class="ui-content">
-                
+
             </div>
-         </div>
+        </div>
 
         <div data-url="forgot-password-page" data-role="page" id="forgot-password-page">
             <div data-role="header">
@@ -310,9 +330,9 @@ and open the template in the editor.
                                 <label for="txt_sign_up_password_again" >Password again:</label>
                                 <input data-clear-btn="true" name="txt_sign_up_password_again" id="txt_sign_up_password_again"  type="password">
 
-                                <center>
-                                    <input  name="txt_sign_up_send" id="txt_sign_up_send" class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-action" value="Send" type="submit"/>
-                                    <a data-rel="back" name="txt_sign_up_cancel" id="txt_sign_up_cancel" class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-delete" >Cancel</a>
+                                <center>       
+                                    <input  name="txt_sign_up_send" data-mini="true" data-inline="true" data-icon="action" id="txt_sign_up_send"  value="Send" type="submit"/>
+                                    <a data-rel="back" name="txt_sign_up_cancel" id="txt_sign_up_cancel" class="ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete" >Cancel</a>
                                 </center>
                             </div>
                         </div>

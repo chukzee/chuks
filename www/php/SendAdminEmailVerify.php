@@ -5,9 +5,9 @@ require './phpmailer/PHPMailerAutoload.php';
 
 $app = new AppUtil();
 
-verifyEmail($app);
+verifyAdmimEmail($app);
 
-function verifyEmail($app) {
+function verifyAdmimEmail($app) {
 
     $first_name = $app->getInputPOST('firstName');
     $last_name = $app->getInputPOST('lastName');
@@ -23,40 +23,24 @@ function verifyEmail($app) {
 
     //echo $hash.'<br/>';
     //echo $username.'<br/>';
-    
+
     try {
 
-        $app->conn->beginTransaction();
+        $result = sendVerificationEmail($app, $first_name, $last_name, $email, $username, $hash);
 
-        $stmt = $app->sqlUpdate("register", "EMAIL_VERIIFY_HASH=?", ""
-                . "(EMAIL_VERIIFY_HASH='' "
-                . " OR EMAIL_VERIIFY_HASH='NULL')"
-                . " AND USERNAME=?"
-                . " AND VERIFIED_EMAIL = 0 "
-                . " ", array($hash, $username));
-
-        if ($stmt->rowCount() > 0) {
-            $result = sendVerificationEmail($app, $first_name, $last_name, $email, $username, $hash);
-            if ($result) {
-                $app->conn->commit();
-                $user = array();
-                $user["username"] = $username;
-                $user["firstName"] = $first_name;
-                $user["lastName"] = $last_name;
-                $user["email"] = $email;
-                $app->sendSuccessJSON("Successful!",$user);
-            } else {
-                $app->conn->rollback();
-                $app->sendErrorJSON("Verification email could not be sent!");
-            }
+        if ($result) {
+            $user = array();
+            $user["username"] = $username;
+            $user["firstName"] = $first_name;
+            $user["lastName"] = $last_name;
+            $user["email"] = $email;
+            $user["verificationCode"] = $hash;
+            $app->sendSuccessJSON("Successful!", $user);
         } else {
-            $app->sendIgnoreJSON("Verification email aleady sent or account already activated!");
-            return false;
+            $app->sendErrorJSON("Verification code could not be sent!");
         }
-
-        $stmt->closeCursor();
     } catch (Exception $exc) {
-        $app->sendErrorJSON("Please try again!");
+        $app->sendErrorJSON("Please try again later!".$exc);
         return false;
     }
 }
@@ -96,47 +80,24 @@ function sendVerificationEmail($app, $first_name, $last_name, $email, $username,
     //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
     $mail->isHTML(true);                                  // Set email format to HTML
 
-    if($config->server_host == "localhost"){
-        //when local hosted
-        $path = "/churchmegaapp/www/verify-activate.php";
-    }else{
-        //when internet hosted
-        $path = "/verify-activate.php";
-    }
-    //NOTE SERVER HOST MUST BE PRECEEDED BY 
-    //THE PROTOCOL 'http://' OR 'https://'
-    //TO AVOID YAHOO WAHALA WHEN SENDING 
-    //EMAIL TO YAHOO ACCOUNT - NEVER FORGET THIS!!!
-    $url = 'http://'.$config->server_host
-            . $path
-            . '?'
-            . 'email='.$email.'&'
-            . 'username='.$username.'&'
-            . 'activation-hash='.$hash;
-    
-    $mail->Subject = 'Email Verification';
-    $main_body_desc = 'Your account has been successfully created. In order for your account to be activated for use '
-            . 'we have to verify that the email address you provided to us is valid.'
-            . '<p>'
-            . 'Please note that if a newer verification email has been sent then this one becomes invalid.'
-            . '</p>';
+    $mail->Subject = 'Admin Email Verification';
+    $main_body_desc = 'In order for your account to be activated for use '
+            . 'we have to verify that the email address you provided to us is valid.';
 
     $mail->Body = '<h3>Thanks, ' . $recipientFullName . '</h3>'
             . $main_body_desc
             . '<p>'
-            . 'Please click <a href="' . $url . '">here</a> to activate your account.'
+            . 'Below is the verification code required for creating the parish administrator account.'
+            . ' Please note that if a newer verification code has been sent then this one becomes invalid.'
+            . '</p>'
+            . '<br/>'
+            . '<p>'
+            . 'Username: ' . $username
+            . '<br/>Verification code: ' . $hash
             . '</p>';
 
     //AltBody for the case of non-HTML mail clients
-    $mail->AltBody = '<h3>Thanks, ' . $recipientFullName . '</h3>'
-            . $main_body_desc
-            . '<p>'
-            . 'Please copy the link below to open in your brower so as to'
-            . 'activate your account.'
-            . '</p>'
-            . '<p>'
-            . $url
-            . '</p>';
+    $mail->AltBody = $mail->Body;
 
     if (!$mail->send()) {
         //echo 'Message could not be sent.';

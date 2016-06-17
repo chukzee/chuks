@@ -10,27 +10,45 @@ function findUsers($app) {
 
     $name_of_user = $app->getInputPOST('name_of_user');
     $search_limit = $app->getInputPOST('search_limit');
+    $next_search = $app->getInputPOST('next_search');
 
-    if ($name_of_user === FALSE || $search_limit === FALSE) {
+    //$name_of_user = 'ss';//testing!!!
+    //$search_limit = 19;//testing!!!
+    //$next_search = 1;//testing!!!
+
+    if ($name_of_user === FALSE || $search_limit === FALSE || $next_search === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
 
+    $nth_pos = ($next_search - 1) * $search_limit; //ok
+
+    $name_of_user = str_replace("  ", " ", $name_of_user);
+
+    $name_split = explode(" ", $name_of_user);
+    
     try {
         $stmt = $app->conn->prepare("SELECT"
                 . " * "
                 . " FROM "
-                . "  Browse register "
+                . " register "
                 . " WHERE "
-                . " FIRST_NAME LIKE ? "
+                . " (USERNAME LIKE '%$name_of_user%' "
                 . " OR "
-                . " MIDDLE_NAME LIKE ? "
+                . " FIRST_NAME LIKE '%$name_of_user%' "
                 . " OR "
-                . " LAST_NAME LIKE ? "
-                . " AND"
-                . " PARISH_SN = ? ");
+                . " LAST_NAME LIKE '%$name_of_user%' "
+                . ((count($name_split) > 1) ?
+                        (" OR FIRST_NAME LIKE '%" . $name_split[1] . "%'"
+                        . " OR LAST_NAME LIKE '%" . $name_split[1] . "%'") : ""
+                        ). " OR "
+                        . " MIDDLE_NAME LIKE '%$name_of_user%' )"
+                        . " AND"
+                        . " PARISH_SN = ? "
+                        . " LIMIT $nth_pos, $search_limit");
 
-
-        $stmt->execute(array($name_of_user, $name_of_user, $name_of_user, $app->userSession->getSessionUserParishID()));
+        //$app->userSession->getSessionUserParishID()
+        
+        $stmt->execute(array($app->userSession->getSessionUserParishID()));
 
         $found_users_arr = array();
         $index = -1;
@@ -54,14 +72,14 @@ function findUsers($app) {
             $users["profilePhotoUrl"] = $row["PROFILE_PHOTO"];
             $users["designation"] = $row["DESIGNATION"];
             $users["department"] = $row["DEPARTMENT"];
-                        
+
             $found_users_arr[$index] = $users;
         }
-        
+
         $stmt->closeCursor();
-        
+
         $app->sendSuccessJSON("Successful!", $found_users_arr);
     } catch (Exception $exc) {
-        $app->sendErrorJSON("Please try again later! ");
+        $app->sendErrorJSON("Please try again later! " . $exc);
     }
 }

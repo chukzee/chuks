@@ -24,14 +24,24 @@ function loginUser($app) {
 
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             
+            
             //first check user priveledge
-            $group_arr = explode($row["USER_GROUPS"], ',');
+            $group_arr = explode( ',', $row["USER_GROUPS"]);
             if (!checkUserPriveledge($group_arr, $row["ROLE"], $group, $role)) {
                 $app->sendErrorJSON("Invalid access level!");
                 return;
             }
             
             $user = new User();
+            
+            $user->blockedAccount = $row["BLOCKED_ACCOUNT"];
+            
+            //check if the account is blocked
+            if($user->blockedAccount!='0'){
+                $app->sendErrorJSON("Your account is blocked! Please contact your parish administrator.");
+                return;
+            }
+            
             $user->username = $row["USERNAME"];
             $user->firstName = $row["FIRST_NAME"];
             $user->lastName = $row["LAST_NAME"];
@@ -53,7 +63,7 @@ function loginUser($app) {
             $user->role = $row["ROLE"];
             $user->uneditableFeatures = $row["UNEDITABLE_FEATURES"];
             $user->unviewableFeatures = $row["UNVIEWABLE_FEATURES"];
-
+            
             $parish_sn = $row["PARISH_SN"];
 
             $stmt2 = $app->sqlSelect("parish_register", "*", "PARISH_SN =?", array($parish_sn));
@@ -93,7 +103,9 @@ function loginUser($app) {
 
 function checkUserPriveledge($user_store_groups_arr, $user_stored_role, $group, $role) {
     $len = count($user_store_groups_arr);
+    
     for ($i = 0; $i < $len; $i++) {
+        
         if ($user_store_groups_arr[$i] == $group && $user_stored_role == $role) {
             return true;
         }

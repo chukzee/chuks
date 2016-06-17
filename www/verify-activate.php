@@ -140,9 +140,9 @@ and open the template in the editor.
             return;
         }
 
-        $stmt = $app->sqlSelect("register", "VERIFIED_EMAIL, EMAIL_VERIIFY_HASH", "USERNAME =?", array($username));
         try {
 
+            $stmt = $app->sqlSelect("register", "VERIFIED_EMAIL, EMAIL_VERIIFY_HASH", "USERNAME =?", array($username));
 
             if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 if ($row["EMAIL_VERIIFY_HASH"] != $activation_hash) {

@@ -163,39 +163,139 @@ $(document).ready(function () {
     $(document).bind("pagecreate", function (e, data) {
 
         // $("#home-page-admin-content").html("see the news content");
+        
+        ChurchApp.adminVerifyCode.init();
 
         //custom validation to enter fields that are visible and require entry.
         jQuery.validator.addMethod("enterFieldShowing", function (value, element) {
             return !($(element).is(":visible") && value === "");
         }, 'Please enter this field.');
 
+        jQuery.validator.addMethod("checkVerificationCode", function (value, element) {
+            return ChurchApp.adminVerifyCode.code === value && value !=="";
+        }, 'Invalid Verification Code.');
+
+        jQuery.validator.addMethod("checkUsernameVerificationCodePair", function (value, element) {
+            return (ChurchApp.adminVerifyCode.username === value 
+                    && value !=="")
+                    || ChurchApp.adminVerifyCode.username ==="";
+        }, 'Invalid Username/Verificaton-Code pair');
+
+        jQuery.validator.addMethod("checkEmailVerificationCodePair", function (value, element) {
+            return (ChurchApp.adminVerifyCode.email === value
+                    && value !=="") 
+                    || ChurchApp.adminVerifyCode.email ==="";
+        }, 'Invalid Email/Verificaton-Code pair');
+
+        $("#btn-register-parish-admin-verify-email").on("click", function (evt) {
+
+            if($("#register-parish-admin-email").val()===""){
+                alert("Please enter email.");
+                return;
+            }
+            
+            if($("#register-parish-admin-username").val()===""){
+                alert("Please enter username.");
+                return;
+            }
+            
+            if($("#register-parish-admin-first-name").val()===""){
+                alert("Please enter first name.");
+                return;
+            }
+            
+            if($("#register-parish-admin-last-name").val()===""){
+                alert("Please enter last name.");
+                return;
+            }
+            
+            //disable to prevent another operation until we receive feedback from the server
+            $("#btn-register-parish-admin-verify-email").attr("disabled", true);
+
+            $("#register-parish-admin-email-feedback").html("");
+
+
+
+            $.mobile.loading("show", {
+                text: "Sending verification code. Please wait... ",
+                textVisible: true,
+                theme: "a",
+                textonly: false,
+                html: ""
+            });
+
+            ChurchApp.post("php/SendAdminEmailVerify.php",
+                    {
+                        firstName: $("#register-parish-admin-first-name").val(),
+                        lastName: $("#register-parish-admin-last-name").val(),
+                        username: $("#register-parish-admin-username").val(),
+                        email: $("#register-parish-admin-email").val(),
+                    },
+                    function (data) {//done
+
+                        //alert(data);
+
+                        //enable the operation
+                        $("#btn-register-parish-admin-verify-email").attr("disabled", false);
+
+                        $.mobile.loading("hide");
+                        var json = JSON.parse(data);
+
+                        if (json.status === "success") {
+
+                            ChurchApp.adminVerifyCode.username = json.data.username;
+                            ChurchApp.adminVerifyCode.email = json.data.email;
+                            ChurchApp.adminVerifyCode.code = json.data.verificationCode;
+
+                            document.getElementById("register-parish-admin-email-feedback").style.color = "black";
+                            $("#register-parish-admin-email-feedback").html("Verification code  has been sent to your email!<br/>" +
+                                    "Please enter in feild above.");
+                        } else if (json.status === "error") {
+                            document.getElementById("register-parish-admin-email-feedback").style.color = "red";
+                            $("#register-parish-admin-email-feedback").html("Failed to send verification code!");
+                        } else {
+                            ChurchApp.alertResponse(json);
+                        }
+
+                    },
+                    function (data, r, error) {//fail
+                        $.mobile.loading("hide");
+                        //enable the operation
+                        $("#btn-register-parish-admin-verify-email").attr("disabled", false);
+
+                    });
+        });
+
+        $("#authoriazation-search-user-next").on("click", function (evt) {
+            var search_name = $("#authoriazation-search-user").val();
+            ChurchApp.authorizeFindUser.findUser("next", search_name, 5);
+        });
+
+        $("#authoriazation-search-user-previous").on("click", function (evt) {
+            var search_name = $("#authoriazation-search-user").val();
+            ChurchApp.authorizeFindUser.findUser("previous", search_name, 5);
+        });
+
+        $("#authoriazation-search-user").on("keyup", function (evt) {
+            var search_name = $("#authoriazation-search-user").val();
+            ChurchApp.authorizeFindUser.findUser("", search_name, 5);
+        });
 
         $("#authoriazation_save_changes").on("click", function () {
-           document.getElementById("authoriazation_form").submit();
-        });
-
-        //add authoriazation_form validation
-        $("#authoriazation_form").validate({
-            //validation rules
-            rules: {
-                "authorization_username": "required"
-            },
-            //custom validation message
-            messages: {
-            },
-            submitHandler: function (form) {
-                alert("chuks");
+            if ($.trim($("#authoriazation_save_changes").val()).length === 0)
+            {
+                alert("No user!");
                 return;
-                ChurchApp.postForm(form,
-                        function (data) {//done
-                            alert(data);
-                        },
-                        function (data, r, error) {//fail
-
-                        });
             }
+            ChurchApp.postForm(form,
+                    function (data) {//done
+                        alert(data);
+                    },
+                    function (data, r, error) {//fail
 
+                    });
         });
+
 
         //assign to parish validation
         $("#assign-to-parish-form").validate({
@@ -393,6 +493,40 @@ $(document).ready(function () {
                 "register-parish-name": "required",
                 "register-parish-address": "required",
                 "register-parish-country": "required",
+                "register-parish-admin-first-name": "required",
+                "register-parish-admin-last-name": "required",
+                                
+                "register-parish-admin-username": {
+                    required: true,
+                    minlength: 3,
+                    checkUsernameVerificationCodePair: true, //custom validation method name - see above
+                    remote: {
+                        url: "php/check-username.php",
+                        type: "post",
+                        data: {
+                            txt_sign_up_username: function () {
+                                return $("#register-parish-admin-username").val();
+                            }
+                        }
+                    }
+                },
+                "register-parish-admin-password": {
+                    required: true,
+                    minlength: 6
+                },
+                "register-parish-admin-email": {
+                    required: true,
+                    email: true,
+                    checkEmailVerificationCodePair: true, //custom validation method name - see above
+                },
+                "register-parish-admin-password-again": {
+                    required: true,
+                    equalTo: "#register-parish-admin-password"
+                },
+                "register-parish-admin-email-verification-code": {
+                    required: true,
+                    checkVerificationCode: true, //custom validation method name - see above
+                },
                 "register-parish-division-name": {
                     enterFieldShowing: true, //custom validation method name - see above
                 },
@@ -414,11 +548,20 @@ $(document).ready(function () {
             },
             //custom validation message
             messages: {
+                "register-parish-admin-password-again": "Passwords did not match!",
+                "register-parish-admin-username": {
+                    remote: "Username already taken!"
+                },
+                "register-parish-admin-email": {
+                    email: "Invalid email address - e.g name@domain.com"
+                }
             },
             submitHandler: function (form) {
 
                 ChurchApp.postForm(form,
                         function (data) {//done
+                            ChurchApp.adminVerifyCode.init();
+                            
                             alert(data);
                         },
                         function (data, r, error) {//fail
@@ -558,7 +701,7 @@ $(document).ready(function () {
                                 ChurchApp.loginByPriviledge(//TESTING!!!
                                         {
                                             user: {group: "Admin", role: "super"}, //TESTING!!!
-                                            carouselImages: ["img/Chrysanthemum.jpg", "img/Desert.jpg"], //images                                          
+                                            carouselImages: ["img/images0.jpg", "img/images1.jpg", "img/images2.jpg", "img/images3.jpg", "img/images4.jpg", "img/images5.jpg"], //images                                          
                                             newsContent: newsContentTest()//TESTING!!!
                                         });
                             }
@@ -573,9 +716,7 @@ $(document).ready(function () {
 
 
     });
-
 });
-
 function newsContentTest() {
     return{
         newsGroupList: [[newsItemTest(1), newsItemTest(2), newsItemTest(3)],

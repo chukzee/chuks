@@ -64,6 +64,57 @@ var ChurchApp = new function () {
 
     this.enableFindParishes = true;// controls the finding of parishes based on change event of drop-down list. 
 
+    this.adminVerifyCode = {
+        username:"",
+        email:"",
+        code:"",
+        init :function(){
+           ChurchApp.adminVerifyCode.username = ""; 
+           ChurchApp.adminVerifyCode.email = ""; 
+           ChurchApp.adminVerifyCode.code = ""; 
+        }
+    },
+    this.authorizeFindUser = {
+        searchNext: 1,
+        findUser: function (param, searchName, searchLimit) {
+            if (param === "next") {
+                ChurchApp.authorizeFindUser.searchNext++;
+            } else if (param === "previous") {
+                if (ChurchApp.authorizeFindUser.searchNext > 1) {
+                    ChurchApp.authorizeFindUser.searchNext--;
+                }
+            } else {
+                ChurchApp.authorizeFindUser.searchNext = 1;
+            }
+            ChurchApp.post("php/FindUsers.php",
+                    {
+                        name_of_user: searchName,
+                        search_limit: searchLimit,
+                        next_search: ChurchApp.authorizeFindUser.searchNext,
+                    },
+                    function (data) {//done
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            if (json.data.length > 0) {
+                                ChurchApp.showAuthorizationFoundUsers(json.data);
+                            } else {
+                                //decrement searchNext if no user was found of avoid overflow of searchNext
+                                if (ChurchApp.authorizeFindUser.searchNext > 1) {
+                                    ChurchApp.authorizeFindUser.searchNext--;
+                                }
+                                ChurchApp.showAuthorizationFoundUsers(json.data);
+                            }
+                        } else {
+                            ChurchApp.alertResponse(json);
+                        }
+
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+        }
+    };
+
     this.parishesOnDivisionChange = function () {
 
         if (!ChurchApp.enableFindParishes) {
@@ -978,10 +1029,13 @@ var ChurchApp = new function () {
             showLoadMsg: true
         });
 
-        var content = '<h2>Email Address Verification</h2>'
-                + '<p>Thanks, <b><span data-name ="hi-user-full-name" style="font-size: large;">Full name</span></b>, you have reached the final step.</p>'
-                + '<p>We have sent you an email to verify the email address, <strong data-name ="user-email-address">the email address goes here</strong>, you gave us.</p>'
-                + '<p>Please check your email and click a link we have provided to complete your sign-up process.</p>';
+        $.mobile.loading("show", {
+            text: "Sending verification email. Please wait... ",
+            textVisible: true,
+            theme: "a",
+            textonly: false,
+            html: ""
+        });
 
         ChurchApp.post("php/SendEmailVerify.php",
                 {
@@ -990,75 +1044,147 @@ var ChurchApp = new function () {
                     lastName: user.lastName,
                     email: user.email,
                 }, function (data) {
-                    alert(data);
+
+            $.mobile.loading("hide");
+
+            alert(data);
+
             var json = JSON.parse(data);
-             e = $("#email-verification-page [data-role='main']");
+
+            e = $("#email-verification-page [data-role='main']");
             if (json.status === "success") {
+                var fullName = json.data.firstName + " " + json.data.lastName;
+                var content = '<h2>Email Address Verification</h2>'
+                        + '<p>Thanks, <b><span data-name ="hi-user-full-name" style="font-size: large;">' + fullName + '</span></b>, you have reached the final step.</p>'
+                        + '<p>We have sent you an email to verify the email address, <strong data-name ="user-email-address">'
+                        + json.data.email + '</strong>, you gave us.</p>'
+                        + '<p>Please check your email and click a link we have provided to complete your sign-up process.</p>';
+
                 e.html(content);
             } else {
                 e.html("<h2>Sorry!</h2>Could not continue process.<br/>" + json.msg);
             }
         }, function (error) {
-
-        })
+            $.mobile.loading("hide");
+        });
     };
 
-    this.renderAccountReconcile = function (obj) {
-
-        if (typeof obj.reconcileTransactionButton === "string") {
-            obj.reconcileTransactionButton = $("#" + obj.reconcileTransactionButton);
+    this.showAuthorizationFoundUsers = function (users_arr) {
+        var userHtml = "";
+        for (var i = 0; i < users_arr.length; i++) {
+            userHtml += userFoundHTML(users_arr[i]);
         }
-        if (typeof obj.missingTransactionButton === "string") {
-            obj.missingTransactionButton = $("#" + obj.missingTransactionButton);
-        }
-        if (typeof obj.unknownTransactionButton === "string") {
-            obj.unknownTransactionButton = $("#" + obj.unknownTransactionButton);
-        }
-        if (typeof obj.conflictingTransactionButton === "string") {
-            obj.conflictingTransactionButton = $("#" + obj.conflictingTransactionButton);
-        }
+        $("#authoriazation_autocomplete").html(userHtml);
+        $("#authoriazation_autocomplete").trigger('create');
+        $("#authoriazation_autocomplete").listview('refresh');
 
-        if (typeof obj.dataRenderDiv === "string") {
-            obj.dataRenderDiv = $("#" + obj.conflictingTransactionButton);
-        }
-
-        var info_html = accountInfoHTML(obj);
-
-        var main_html = "";
-
-        if (obj.reconcileTransactionButton.is(":checked")) {
-            main_html = reconcileTransactionHTML(obj);
-        } else if (obj.missingTransactionButton.is(":checked")) {
-            main_html = missingTransactionHTML(obj);
-        } else if (obj.unknownTransactionButton.is(":checked")) {
-            main_html = unknownTransactionHTML(obj);
-        } else if (obj.conflictingTransactionButton.is(":checked")) {
-            main_html = conflictingTransactionHTML(obj);
-        }
-
-        renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-
-        obj.reconcileTransactionButton.on("click", function () {
-            main_html = reconcileTransactionHTML(obj);
-            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+        $("#authoriazation_autocomplete li a").on('click', function () {
+            $("#authorization_username").val($(this).find("[name='username']").val());
+            $("#authorization_fullname").val($(this).find("[name='full_name']").val());
+            $("#authorization_designation").val($(this).find("[name='designation']").val());
         });
-
-        obj.missingTransactionButton.on("click", function () {
-            main_html = missingTransactionHTML(obj);
-            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-        });
-
-        obj.unknownTransactionButton.on("click", function () {
-            main_html = unknownTransactionHTML(obj);
-            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-        });
-
-        obj.conflictingTransactionButton.on("click", function () {
-            main_html = conflictingTransactionHTML(obj);
-            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-        });
-
     };
+    
+    userFoundHTML = function (user) {
+        var fullName = user.firstName + ' ' + user.lastName;
+        return '<li><a href="#">'
+                + '<img src="' + user.profilePhotoUrl + '" height="100%">'
+                + '<h6 style="margin-top:-5px !important; margin-bottom:-5px !important;">' + fullName + '</h6>'
+                + '<p>'
+                + 'Age: ' + user.ageRange + '<br/>'
+                + user.sex
+                + '</p>'
+                + '<div style="position:absolute;right:0.75em; top:0.75em;">'
+                + user.username
+                + '</div>'
+                + '<input type="hidden" name="username" value="' + user.username + '"/>'
+                + '<input type="hidden" name="full_name" value="' + fullName + '"/>'
+                + '<input type="hidden" name="designation" value="' + user.designation + '"/>'
+                + '</a>'
+                + '<a href="#" data-rel="popup" data-position-to="window" data-transition="pop">User profile</a>'
+                + '</li>';
+        /*return '<li><a><div class="ui-grid-a">'
+         + '<div class="ui-block-a" style="width:80px">'
+         + '<img src="' + user.profilePhotoUrl + '" width="60" height="60">'
+         + '</div>'
+         + '<div class="ui-block-b">'
+         
+         + '<div class="ui-grid-a">'
+         
+         + '<div class="ui-block-a">'
+         + user.firstName + ' ' + user.lastName
+         + '</div>'
+         
+         + '<div class="ui-block-a">'
+         + user.ageRange
+         + '</div>'
+         
+         + '<div class="ui-block-a">'
+         + user.sex
+         + '</div>'
+         
+         + '</div>'
+         
+         + '</div>'
+         
+         + '</div></a></li>';*/
+    },
+            this.renderAccountReconcile = function (obj) {
+
+                if (typeof obj.reconcileTransactionButton === "string") {
+                    obj.reconcileTransactionButton = $("#" + obj.reconcileTransactionButton);
+                }
+                if (typeof obj.missingTransactionButton === "string") {
+                    obj.missingTransactionButton = $("#" + obj.missingTransactionButton);
+                }
+                if (typeof obj.unknownTransactionButton === "string") {
+                    obj.unknownTransactionButton = $("#" + obj.unknownTransactionButton);
+                }
+                if (typeof obj.conflictingTransactionButton === "string") {
+                    obj.conflictingTransactionButton = $("#" + obj.conflictingTransactionButton);
+                }
+
+                if (typeof obj.dataRenderDiv === "string") {
+                    obj.dataRenderDiv = $("#" + obj.conflictingTransactionButton);
+                }
+
+                var info_html = accountInfoHTML(obj);
+
+                var main_html = "";
+
+                if (obj.reconcileTransactionButton.is(":checked")) {
+                    main_html = reconcileTransactionHTML(obj);
+                } else if (obj.missingTransactionButton.is(":checked")) {
+                    main_html = missingTransactionHTML(obj);
+                } else if (obj.unknownTransactionButton.is(":checked")) {
+                    main_html = unknownTransactionHTML(obj);
+                } else if (obj.conflictingTransactionButton.is(":checked")) {
+                    main_html = conflictingTransactionHTML(obj);
+                }
+
+                renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+
+                obj.reconcileTransactionButton.on("click", function () {
+                    main_html = reconcileTransactionHTML(obj);
+                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+                });
+
+                obj.missingTransactionButton.on("click", function () {
+                    main_html = missingTransactionHTML(obj);
+                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+                });
+
+                obj.unknownTransactionButton.on("click", function () {
+                    main_html = unknownTransactionHTML(obj);
+                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+                });
+
+                obj.conflictingTransactionButton.on("click", function () {
+                    main_html = conflictingTransactionHTML(obj);
+                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+                });
+
+            };
 
     renderAccountReconcileView = function (container, info, main) {
         container.html(info + main);
