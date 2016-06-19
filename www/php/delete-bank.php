@@ -13,21 +13,23 @@ function deleteBank($app) {
         return;
     }
 
-    $bank_name = $app->getInputPOST('monetary-delete-bank'); // REMIND: element name unused
-
-    if ($bank_name === FALSE) {
+    $sn = $app->getInputPOST('SN');
+    
+    if ($sn === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
 
-    $stmt = $app->sqlDelete("add_bank", "BANK_NAME=? AND ENTRY_USER_ID=?", array($bank_name, $app->userSession->getSessionUsername()));
+    $stmt = $app->sqlDelete("add_bank", "SN=? AND ENTRY_USER_ID=?", array($sn, $app->userSession->getSessionUsername()));
 
     if ($stmt->rowCount() > 0) {
         $app->sendSuccessJSON("Bank name deleted successfully!", null);
-        $stmt->closeCursor();
-        return;
     } else {
-        //check if the reason is because the user was not the one who added the bank in the first place.
-        //to know that we can check if the bank name exists
-        $app->handleUnauthorizedOperation("add_bank", "BANK_NAME", "BANK_NAME =?", array($bank_name));
+            //check if the reason is because the user was not the one who added the bank in the first place.
+            //to know that we can check if the bank name exists
+            if ($app->checkAuthorizedOperation("add_bank", "SN", $sn)) {
+                $this->sendIgnoreJSON("Nothing deleted!");
+            } else {
+                $this->sendUnauthorizedOperationJSON("You cannot delete a record that does not originate from you!");
+            }
     }
 }

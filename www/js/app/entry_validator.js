@@ -163,7 +163,7 @@ $(document).ready(function () {
     $(document).bind("pagecreate", function (e, data) {
 
         // $("#home-page-admin-content").html("see the news content");
-        
+
         ChurchApp.adminVerifyCode.init();
 
         //custom validation to enter fields that are visible and require entry.
@@ -172,43 +172,48 @@ $(document).ready(function () {
         }, 'Please enter this field.');
 
         jQuery.validator.addMethod("checkVerificationCode", function (value, element) {
-            return ChurchApp.adminVerifyCode.code === value && value !=="";
+            return ChurchApp.adminVerifyCode.code === value && value !== "";
         }, 'Invalid Verification Code.');
 
         jQuery.validator.addMethod("checkUsernameVerificationCodePair", function (value, element) {
-            return (ChurchApp.adminVerifyCode.username === value 
-                    && value !=="")
-                    || ChurchApp.adminVerifyCode.username ==="";
+            return (ChurchApp.adminVerifyCode.username === value
+                    && value !== "")
+                    || ChurchApp.adminVerifyCode.username === "";
         }, 'Invalid Username/Verificaton-Code pair');
 
         jQuery.validator.addMethod("checkEmailVerificationCodePair", function (value, element) {
             return (ChurchApp.adminVerifyCode.email === value
-                    && value !=="") 
-                    || ChurchApp.adminVerifyCode.email ==="";
+                    && value !== "")
+                    || ChurchApp.adminVerifyCode.email === "";
         }, 'Invalid Email/Verificaton-Code pair');
+
+        jQuery.validator.addMethod("workaroundComboboxValidateEmpty", function (value, element) {
+            //alert($("#"+$(element).attr("id")).val());
+            return $("#"+$(element).attr("id")).val() !== "";
+        }, 'Please select an item.');
 
         $("#btn-register-parish-admin-verify-email").on("click", function (evt) {
 
-            if($("#register-parish-admin-email").val()===""){
+            if ($("#register-parish-admin-email").val() === "") {
                 alert("Please enter email.");
                 return;
             }
-            
-            if($("#register-parish-admin-username").val()===""){
+
+            if ($("#register-parish-admin-username").val() === "") {
                 alert("Please enter username.");
                 return;
             }
-            
-            if($("#register-parish-admin-first-name").val()===""){
+
+            if ($("#register-parish-admin-first-name").val() === "") {
                 alert("Please enter first name.");
                 return;
             }
-            
-            if($("#register-parish-admin-last-name").val()===""){
+
+            if ($("#register-parish-admin-last-name").val() === "") {
                 alert("Please enter last name.");
                 return;
             }
-            
+
             //disable to prevent another operation until we receive feedback from the server
             $("#btn-register-parish-admin-verify-email").attr("disabled", true);
 
@@ -296,6 +301,22 @@ $(document).ready(function () {
                     });
         });
 
+        
+        $("#monetary-add-bank-account-bank").on("click", function () {
+
+            ChurchApp.post("php/get-bank-list.php",
+                    {
+                    },
+                    function (data) {//done
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            ChurchApp.comboBoxPopulate("monetary-add-bank-account-bank", json.data);
+                        }
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+        });
 
         //assign to parish validation
         $("#assign-to-parish-form").validate({
@@ -377,9 +398,12 @@ $(document).ready(function () {
         $("#monetary-add-bank-account-form").validate({
             //validation rules
             rules: {
-                "monetary-add-bank-account-bank": "required",
                 "monetary-add-bank-account-name": "required",
-                "monetary-add-bank-account-no": "required"
+                "monetary-add-bank-account-no": "required",
+                "monetary-add-bank-account-bank": "required",
+                /*"monetary-add-bank-account-bank":{
+                  workaroundComboboxValidateEmpty :true,  
+                }*/
             },
             //custom validation message
             messages: {
@@ -495,7 +519,6 @@ $(document).ready(function () {
                 "register-parish-country": "required",
                 "register-parish-admin-first-name": "required",
                 "register-parish-admin-last-name": "required",
-                                
                 "register-parish-admin-username": {
                     required: true,
                     minlength: 3,
@@ -561,7 +584,7 @@ $(document).ready(function () {
                 ChurchApp.postForm(form,
                         function (data) {//done
                             ChurchApp.adminVerifyCode.init();
-                            
+
                             alert(data);
                         },
                         function (data, r, error) {//fail

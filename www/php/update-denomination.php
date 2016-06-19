@@ -13,25 +13,30 @@ function updateDenomination($app) {
         return;
     }
 
-    $denomination = $app->getInputPOST('monetary-update-denomination'); // REMIND: element name unused
-
-    if ($denomination === FALSE) {
+    $denomination = $app->getInputPOST('DENOMINATION');
+    $sn = $app->getInputPOST('SN');
+    
+    if ( $sn === FALSE || $denomination === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
     try {
 
 
-        $stmt = $app->sqlUpdate("add_bank", "DENOMINATION=?", "DENOMINATION=? AND ENTRY_USER_ID=?", array($denomination, $denomination, $app->userSession->getSessionUsername()));
+        $stmt = $app->sqlUpdate("add_denomination", "DENOMINATION=?", "SN=? AND ENTRY_USER_ID=?", array($denomination, $sn, $app->userSession->getSessionUsername()));
 
         if ($stmt->rowCount() > 0) {
             $app->sendSuccessJSON("Denomination updated successfully!", null);
-            $stmt->closeCursor();
-            return;
         } else {
-            //check if the reason is because the user was not the one who added the record in the first place.
-            //to know that we can check if the record exists
-            $app->handleUnauthorizedOperation("add_denomination", "DENOMINATION", "DENOMINATION =?", array($denomination));
+                //check if the reason is because the user was not the one who added the bank in the first place.
+                //to know that we can check if the bank name exists
+                if ($app->checkAuthorizedOperation("add_denomination", "SN", $sn)) {
+                    $this->sendIgnoreJSON("Nothing updated!");
+                } else {
+                    $this->sendUnauthorizedOperationJSON("You cannot update a record that does not originate from you!");
+                }
         }
+        $stmt->closeCursor();
+        
     } catch (Exception $exc) {
         return $app->sendErrorJSON("Please try again!");
     }

@@ -17,7 +17,7 @@ function authRecordsModify($app) {
         }
         //sha1($str)
         $stored_username = $app->userSession->getSessionUsername();
-        $stored_hash_pasword = $app->userSession->getSessionHashPassword();
+        $stored_hash_pasword = $app->userSession->getSessionUserHashPassword();
 
         if (!$app->userSession->isBasicSessionAvailable()) {
             $app->sendSessionNotAvaliableJSON(null);
@@ -25,7 +25,7 @@ function authRecordsModify($app) {
         }
 
         if ($stored_username == $record_modify_username && $stored_hash_pasword == sha1($record_modify_password)) {
-            $app->sendSuccessJSON("Authentication was successful!");
+            $app->sendSuccessJSON("Authentication was successful!",null);
         } else {
             $app->sendErrorJSON("Invalid username or password!");
         }

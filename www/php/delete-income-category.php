@@ -13,22 +13,23 @@ function deleteIncomeCategory($app) {
         return;
     }
 
-    $category = $app->getInputPOST('monetary-delete-income-category'); // REMIND: element name unused
-
-    if ($category === FALSE) {
+    $sn = $app->getInputPOST('SN');
+    
+    if ( $sn === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
 
-    $stmt = $app->sqlDelete("add_income_category", "INCOME_CATEGORY=? AND ENTRY_USER_ID=?", array($category, $app->userSession->getSessionUsername()));
+    $stmt = $app->sqlDelete("add_income_category", "SN=? AND ENTRY_USER_ID=?", array($sn, $app->userSession->getSessionUsername()));
 
     if ($stmt->rowCount() > 0) {
         $app->sendSuccessJSON("Income category deleted successfully!", null);
-        $stmt->closeCursor();
-        return;
     } else {
-        //check if the reason is because the user was not the one who added the record in the first place.
-        //to know that we can check if the record exists
-        $app->handleUnauthorizedOperation("add_income_category", "INCOME_CATEGORY", "INCOME_CATEGORY =?", array($category));
-        
+            //check if the reason is because the user was not the one who added the bank in the first place.
+            //to know that we can check if the bank name exists
+            if ($app->checkAuthorizedOperation("add_income_category", "SN", $sn)) {
+                $this->sendIgnoreJSON("Nothing deleted!");
+            } else {
+                $this->sendUnauthorizedOperationJSON("You cannot delete a record that does not originate from you!");
+            }
     }
 }

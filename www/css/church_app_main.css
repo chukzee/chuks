@@ -56,9 +56,10 @@ and open the template in the editor.
 }
 
 .churchapp-division{
-    background-color: #d0d0d0;
+    //background-color: #d0d0d0;
     margin: 0.125em;
     padding: 0.25em;
+    border-left-color: #abd590;
 }
 
 .table-report-view thead th,

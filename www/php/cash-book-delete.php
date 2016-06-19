@@ -14,23 +14,26 @@ function deleteCashBook($app) {
     }
 
 
-    $entry_serial_no = $app->getInputPOST('cash_book_serial_no');
+    $sn = $app->getInputPOST('SN');
 
-    if ($entry_serial_no === FALSE) {
+    if ($sn === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
  
         $stmt = $app->sqlDelete("cash_book", 
               /* where */ "SN =? AND ENTRY_USER_ID=?",
-                array($entry_serial_no, $app->userSession->getSessionUsername()));
+                array($sn, $app->userSession->getSessionUsername()));
 
         if ($stmt->rowCount() > 0) {
             $app->sendSuccessJSON("The operation was successfully!", null);
-            $stmt->closeCursor();
-            return;
         } else {
-            //check if the reason is because the user was not the one who added the record in the first place.
-            //to know that we can check if the record exists
-            $app->handleUnauthorizedOperation("cash_book", "SN", "SN =?", array($entry_serial_no));
+            //check if the reason is because the user was not the one who added the bank in the first place.
+            //to know that we can check if the bank name exists
+            if ($app->checkAuthorizedOperation("cash_book", "SN", $sn)) {
+                $this->sendIgnoreJSON("Nothing deleted!");
+            } else {
+                $this->sendUnauthorizedOperationJSON("You cannot delete a record that does not originate from you!");
+            }
         }
+        $stmt->closeCursor();
 }

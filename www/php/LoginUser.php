@@ -59,7 +59,7 @@ function loginUser($app) {
             $user->photoUrl = $row["PROFILE_PHOTO"];
             $user->designation = $row["DESIGNATION"];
             $user->dept = $row["DEPARTMENT"];
-            $user->group = $row["USER_GROUPS"];
+            $user->group = $group;
             $user->role = $row["ROLE"];
             $user->uneditableFeatures = $row["UNEDITABLE_FEATURES"];
             $user->unviewableFeatures = $row["UNVIEWABLE_FEATURES"];

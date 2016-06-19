@@ -25,9 +25,7 @@ function onRegisterParishHeadOf(e) {
             {
                 $("#register-parish-division-name-cont").show();
                 
-                $("#register-parish-under-area-cont").hide();
-                $("#register-parish-under-area").val("");
-
+                $("#register-parish-under-area-cont").show();
                 $("#register-parish-under-zone-cont").show();
                 $("#register-parish-under-province-cont").show();
                 $("#register-parish-under-region-cont").show();
@@ -41,9 +39,7 @@ function onRegisterParishHeadOf(e) {
                 $("#register-parish-under-area-cont").hide();
                 $("#register-parish-under-area").val("");
                 
-                $("#register-parish-under-zone-cont").hide();
-                $("#register-parish-under-zone").val("");
-                
+                $("#register-parish-under-zone-cont").show();                
                 $("#register-parish-under-province-cont").show();
                 $("#register-parish-under-region-cont").show();
                 $("#register-parish-under-national-cont").show();
@@ -59,9 +55,7 @@ function onRegisterParishHeadOf(e) {
                 $("#register-parish-under-zone-cont").hide();
                 $("#register-parish-under-zone").val("");
                 
-                $("#register-parish-under-province-cont").hide();
-                $("#register-parish-under-province").val("");
-                
+                $("#register-parish-under-province-cont").show();                
                 $("#register-parish-under-region-cont").show();
                 $("#register-parish-under-national-cont").show();
             }
@@ -79,9 +73,7 @@ function onRegisterParishHeadOf(e) {
                 $("#register-parish-under-province-cont").hide();
                 $("#register-parish-under-province").val("");
                 
-                $("#register-parish-under-region-cont").hide();
-                $("#register-parish-under-region").val("");
-                
+                $("#register-parish-under-region-cont").show();                
                 $("#register-parish-under-national-cont").show();
             }
             break;
@@ -102,7 +94,6 @@ function onRegisterParishHeadOf(e) {
                 $("#register-parish-under-region").val("");
                 
                 $("#register-parish-under-national-cont").show();
-                $("#register-parish-under-national").val("");
             }
             break;
     }

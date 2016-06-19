@@ -26,7 +26,7 @@ function queryBankAccount($app) {
         $app->sendSuccessJSON("Successful", $table);
         
     } catch (Exception $exc) {
-        return $app->sendErrorJSON("Please try again!");
+        return $app->sendErrorJSON("Please try again later!");
         //echo $exc->getTraceAsString();
     }
 }

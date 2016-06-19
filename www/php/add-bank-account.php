@@ -14,7 +14,7 @@ function addBankAccount($app) {
     }
 
 
-    $bank_name = $app->getInputPOST('monetary-add-bank-acount-bank');
+    $bank_name = $app->getInputPOST('monetary-add-bank-account-bank');
     $account_name = $app->getInputPOST('monetary-add-bank-account-name');
     $account_no = $app->getInputPOST('monetary-add-bank-account-no');
 
@@ -22,6 +22,7 @@ function addBankAccount($app) {
         return $app->sendErrorJSON("Please try again!");
     }
 
+    
     //first check if the bank accont is already added
     try {
 
@@ -41,7 +42,7 @@ function addBankAccount($app) {
             return;
         }
     } catch (Exception $exc) {
-        return $app->sendErrorJSON("Please try again!");
+        return $app->sendErrorJSON("Please try again later!".$exc);
         //echo $exc->getTraceAsString();
     }
 }

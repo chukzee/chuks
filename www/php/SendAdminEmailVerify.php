@@ -29,6 +29,11 @@ function verifyAdmimEmail($app) {
         $result = sendVerificationEmail($app, $first_name, $last_name, $email, $username, $hash);
 
         if ($result) {
+            
+            $_SESSION["super_admin_username"] = $username;
+            $_SESSION["super_admin_email"] = $email;
+            $_SESSION["super_admin_verification_code"] = $hash;
+            
             $user = array();
             $user["username"] = $username;
             $user["firstName"] = $first_name;
@@ -40,7 +45,7 @@ function verifyAdmimEmail($app) {
             $app->sendErrorJSON("Verification code could not be sent!");
         }
     } catch (Exception $exc) {
-        $app->sendErrorJSON("Please try again later!".$exc);
+        $app->sendErrorJSON("Please try again later!" . $exc);
         return false;
     }
 }

@@ -65,13 +65,13 @@ var ChurchApp = new function () {
     this.enableFindParishes = true;// controls the finding of parishes based on change event of drop-down list. 
 
     this.adminVerifyCode = {
-        username:"",
-        email:"",
-        code:"",
-        init :function(){
-           ChurchApp.adminVerifyCode.username = ""; 
-           ChurchApp.adminVerifyCode.email = ""; 
-           ChurchApp.adminVerifyCode.code = ""; 
+        username: "",
+        email: "",
+        code: "",
+        init: function () {
+            ChurchApp.adminVerifyCode.username = "";
+            ChurchApp.adminVerifyCode.email = "";
+            ChurchApp.adminVerifyCode.code = "";
         }
     },
     this.authorizeFindUser = {
@@ -317,6 +317,9 @@ var ChurchApp = new function () {
 
         var homePage = "";
         switch (obj.user.group) {
+            case "Super Admin":
+                homePage = "home-page-admin.html";//TODO change to home-page-super-admin.html
+                break;
             case "Admin":
                 homePage = "home-page-admin.html";
                 break;
@@ -583,10 +586,15 @@ var ChurchApp = new function () {
 
     this.comboBoxPopulate = function (id, arrText, arrValue) {
         var d = document.getElementById(id);
-        for (var i = 1; i < d.length; i++) {//from from index 1 by default
-            d.remove(i);
+
+        var value = d.value;
+
+        var len = d.length;
+        for (var i = 1; i < len; i++) {//from from index 1 by default
+            d.remove(d.length - 1);//perfect way to remove 
         }
 
+        var found = false;
         for (var i = 0; i < arrText.length; i++) {
             var opt = document.createElement("option");
             opt.text = arrText[i];
@@ -595,13 +603,20 @@ var ChurchApp = new function () {
             } else {
                 opt.value = arrText[i];//come back
             }
+            if (opt.value == value) {
+                found = true;
+            }
             d.add(opt);
+        }
+
+        if (found) {
+            d.value = value;
         }
     };
 
     tableActionOptionMenuPopup = function (tablePageObj, index) {
 
-        var markup = '<div data-role="popup" data-theme="b">'
+        var markup = '<div data-role="popup" data-theme="a">'
                 + '<ul data-role="listview" data-inset="true" style="min-width:13.125em;">'
                 + '<li data-role="list-divider">Choose an action</li>'
                 + '<li><a href="#">View Only</a></li>'
@@ -651,7 +666,7 @@ var ChurchApp = new function () {
         var popup_title = "Edit record";//come back later
         var closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>',
                 header = '<div data-role="header"><div name="countdown_to_auth">-:--</div><h2>' + popup_title + '</h2></div>',
-                popup = '<div data-role="popup" data-overlay-theme="b" data-tolerance="15"></div>',
+                popup = '<div data-role="popup" data-overlay-theme="a" data-tolerance="15"></div>',
                 footer = '<div data-role="footer"><div class="ui-content" style="font-size:0.75em;"><div name="attempts_update">'
                 + ChurchApp.attempts_update + ChurchApp.attempts_update_msg_append + '</div><div name="failed_auth">'
                 + ChurchApp.failed_auth + ChurchApp.failed_auth_msg_append + '</div></div></div>';
@@ -728,7 +743,7 @@ var ChurchApp = new function () {
         var popup_title = "Delete record";//come back later
         var closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>',
                 header = '<div data-role="header"><div name="countdown_to_auth">-:--</div><h2>' + popup_title + '</h2></div>',
-                popup = '<div data-role="popup" data-overlay-theme="b" data-tolerance="15"></div>',
+                popup = '<div data-role="popup" data-overlay-theme="a" data-tolerance="15"></div>',
                 footer = '<div data-role="footer"><div class="ui-content" style="font-size:0.75em;"><div name="attempts_delete">'
                 + ChurchApp.attempts_delete + ChurchApp.attempts_delete_msg_append + '</div><div name="failed_auth">'
                 + ChurchApp.failed_auth + ChurchApp.failed_auth_msg_append + '</div></div></div>';
@@ -798,7 +813,7 @@ var ChurchApp = new function () {
         var popup_title = "View Only";//come back later
         var closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>',
                 header = '<div data-role="header"><h2>' + popup_title + '</h2></div>',
-                popup = '<div data-role="popup" data-overlay-theme="b" data-tolerance="15"></div>';
+                popup = '<div data-role="popup" data-overlay-theme="a" data-tolerance="15"></div>';
 
         // Create the popup.
         var popup = $(popup)
@@ -834,7 +849,7 @@ var ChurchApp = new function () {
                 + '<label for="record_modify_password" class="ui-hidden-accessible">Password:</label>'
                 + '<input type="password" name="record_modify_password" value="" placeholder="password" data-theme="a" />'
                 + '<p name="auth_feedback" style="color:red;"></p>'
-                + '<button type="submit" data-theme="b">OK</button>'
+                + '<button type="submit" data-theme="a">OK</button>'
                 + '</div>'
                 + '</form>'
                 + '</div>';
@@ -894,6 +909,16 @@ var ChurchApp = new function () {
         });
 
     };
+
+    this.changeAndRenderTablePage = function (tablePageObj) {
+        $(":mobile-pagecontainer").pagecontainer("change", "index.html#" + tablePageObj.pageId, {
+            transition: 'slide',
+            //changeHash: false,
+            // reverse: true,
+            showLoadMsg: true
+        });
+        ChurchApp.renderTablePage(tablePageObj);
+    }
 
     this.renderTablePage = function (tablePageObj) {
         //data-church-table-name="table-view-page"
@@ -1084,7 +1109,7 @@ var ChurchApp = new function () {
             $("#authorization_designation").val($(this).find("[name='designation']").val());
         });
     };
-    
+
     userFoundHTML = function (user) {
         var fullName = user.firstName + ' ' + user.lastName;
         return '<li><a href="#">'
@@ -1128,63 +1153,64 @@ var ChurchApp = new function () {
          + '</div>'
          
          + '</div></a></li>';*/
-    },
-            this.renderAccountReconcile = function (obj) {
+    };
+    
+    this.renderAccountReconcile = function (obj) {
 
-                if (typeof obj.reconcileTransactionButton === "string") {
-                    obj.reconcileTransactionButton = $("#" + obj.reconcileTransactionButton);
-                }
-                if (typeof obj.missingTransactionButton === "string") {
-                    obj.missingTransactionButton = $("#" + obj.missingTransactionButton);
-                }
-                if (typeof obj.unknownTransactionButton === "string") {
-                    obj.unknownTransactionButton = $("#" + obj.unknownTransactionButton);
-                }
-                if (typeof obj.conflictingTransactionButton === "string") {
-                    obj.conflictingTransactionButton = $("#" + obj.conflictingTransactionButton);
-                }
+        if (typeof obj.reconcileTransactionButton === "string") {
+            obj.reconcileTransactionButton = $("#" + obj.reconcileTransactionButton);
+        }
+        if (typeof obj.missingTransactionButton === "string") {
+            obj.missingTransactionButton = $("#" + obj.missingTransactionButton);
+        }
+        if (typeof obj.unknownTransactionButton === "string") {
+            obj.unknownTransactionButton = $("#" + obj.unknownTransactionButton);
+        }
+        if (typeof obj.conflictingTransactionButton === "string") {
+            obj.conflictingTransactionButton = $("#" + obj.conflictingTransactionButton);
+        }
 
-                if (typeof obj.dataRenderDiv === "string") {
-                    obj.dataRenderDiv = $("#" + obj.conflictingTransactionButton);
-                }
+        if (typeof obj.dataRenderDiv === "string") {
+            obj.dataRenderDiv = $("#" + obj.conflictingTransactionButton);
+        }
 
-                var info_html = accountInfoHTML(obj);
+        var info_html = accountInfoHTML(obj);
 
-                var main_html = "";
+        var main_html = "";
 
-                if (obj.reconcileTransactionButton.is(":checked")) {
-                    main_html = reconcileTransactionHTML(obj);
-                } else if (obj.missingTransactionButton.is(":checked")) {
-                    main_html = missingTransactionHTML(obj);
-                } else if (obj.unknownTransactionButton.is(":checked")) {
-                    main_html = unknownTransactionHTML(obj);
-                } else if (obj.conflictingTransactionButton.is(":checked")) {
-                    main_html = conflictingTransactionHTML(obj);
-                }
+        if (obj.reconcileTransactionButton.is(":checked")) {
+            main_html = reconcileTransactionHTML(obj);
+        } else if (obj.missingTransactionButton.is(":checked")) {
+            main_html = missingTransactionHTML(obj);
+        } else if (obj.unknownTransactionButton.is(":checked")) {
+            main_html = unknownTransactionHTML(obj);
+        } else if (obj.conflictingTransactionButton.is(":checked")) {
+            main_html = conflictingTransactionHTML(obj);
+        }
 
-                renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+        renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
 
-                obj.reconcileTransactionButton.on("click", function () {
-                    main_html = reconcileTransactionHTML(obj);
-                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-                });
+        obj.reconcileTransactionButton.on("click", function () {
+            main_html = reconcileTransactionHTML(obj);
+            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+        });
 
-                obj.missingTransactionButton.on("click", function () {
-                    main_html = missingTransactionHTML(obj);
-                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-                });
+        obj.missingTransactionButton.on("click", function () {
+            main_html = missingTransactionHTML(obj);
+            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+        });
 
-                obj.unknownTransactionButton.on("click", function () {
-                    main_html = unknownTransactionHTML(obj);
-                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-                });
+        obj.unknownTransactionButton.on("click", function () {
+            main_html = unknownTransactionHTML(obj);
+            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+        });
 
-                obj.conflictingTransactionButton.on("click", function () {
-                    main_html = conflictingTransactionHTML(obj);
-                    renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
-                });
+        obj.conflictingTransactionButton.on("click", function () {
+            main_html = conflictingTransactionHTML(obj);
+            renderAccountReconcileView(obj.dataRenderDiv, info_html, main_html);
+        });
 
-            };
+    };
 
     renderAccountReconcileView = function (container, info, main) {
         container.html(info + main);
@@ -1537,6 +1563,9 @@ var ChurchApp = new function () {
     };
 
     create_Style_A_News_Html = function (newsObj) {
+        if (newsObj.length === 0) {
+            return "";
+        }
         var newsGroupList = newsObj.newsGroupList;//array of news group objects
         var news_html = '<ul data-role="listview" data-inset="true">';
         for (var i = 0; i < newsGroupList.length; i++) {

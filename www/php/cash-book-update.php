@@ -14,19 +14,19 @@ function updateCashBook($app) {
     }
 
 
-    $serial_no = $app->getInputPOST('cash_book_serial_no');
-    $date = $app->getInputPOST('cash_book_date');
-    $bank_name = $app->getInputPOST('cash_book_bank');
-    $account_name = $app->getInputPOST('cash_book_account_name');
-    $account_no = $app->getInputPOST('cash_book_account_no');
-    $trancode = $app->getInputPOST('cash_book_tran_code');
-    $description = $app->getInputPOST('cash_book_description');
-    $debit = $app->getInputPOST('cash_book_debit');
-    $credit = $app->getInputPOST('cash_book_credit');
+    $sn = $app->getInputPOST('SN');
+    $date = $app->getInputPOST('TRANDATE');
+    $bank_name = $app->getInputPOST('BANK');
+    $account_name = $app->getInputPOST('ACCOUNT_NAME');
+    $account_no = $app->getInputPOST('ACCOUNT_NO');
+    $trancode = $app->getInputPOST('TRANCODE');
+    $remarks = $app->getInputPOST('REMARKS');
+    $debit = $app->getInputPOST('DEBIT');
+    $credit = $app->getInputPOST('CREDIT');
 
-    if ($date === FALSE || $bank_name  === FALSE|| $account_name === FALSE
+    if ($sn === FALSE || $date === FALSE || $bank_name  === FALSE|| $account_name === FALSE
             || $account_no === FALSE || $trancode === FALSE
-            || $description === FALSE || $debit  === FALSE|| $credit === FALSE) {
+            || $remarks === FALSE || $debit  === FALSE|| $credit === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
 
@@ -36,18 +36,21 @@ function updateCashBook($app) {
                 . "TRANCODE =?, BANK =?, ACCOUNT_NAME =?, ACCOUNT_NO =?, "
                 . " DEBIT =?, CREDIT =?, REMARKS =?, ENTRY_DATETIME=now()",
                 /* where */ "SN =? AND ENTRY_USER_ID=?", "?,?,?,?,?,?,?,?,?,?",
-                array($date, $trancode, $bank_name, $account_name, $account_no, $debit, $credit, $description,
-                            $serial_no, $app->userSession->getSessionUsername()));
+                array($date, $trancode, $bank_name, $account_name, $account_no, $debit, $credit, $remarks,
+                            $sn, $app->userSession->getSessionUsername()));
 
         if ($stmt->rowCount() > 0) {
             $app->sendSuccessJSON("The operation was successfully!", null);
-            $stmt->closeCursor();
-            return;
         } else {
-            //check if the reason is because the user was not the one who added the record in the first place.
-            //to know that we can check if the record exists
-            $app->handleUnauthorizedOperation("cash_book", "SN", "SN =?", array($serial_no));
+            //check if the reason is because the user was not the one who added the bank in the first place.
+            //to know that we can check if the bank name exists
+            if ($app->checkAuthorizedOperation("cash_book", "SN", $sn)) {
+                $this->sendIgnoreJSON("Nothing updated!");
+            } else {
+                $this->sendUnauthorizedOperationJSON("You cannot update a record that does not originate from you!");
+            }
         }
+        $stmt->closeCursor();
     } catch (Exception $exc) {
         return $app->sendErrorJSON("Please try again!");
         //echo $exc->getTraceAsString();

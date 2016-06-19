@@ -17,18 +17,15 @@ class AppUtil {
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
-    public function handleUnauthorizedOperation($table, $columns, $condition_expressions, $params_array) {
+    public function checkAuthorizedOperation($table, $serial_number_column, $serial_number) {
         //check if the reason is because the user was not the one who added the record in the first place.
         //to know that we can check if the record exists
-        $stmt = $this->sqlSelect($table, $columns, $condition_expressions, $params_array);
+        $stmt = $this->sqlSelect($table, $serial_number_column, "$serial_number_column=? AND ENTRY_USER_ID=?", array($serial_number, $this->userSession->getSessionUsername()));
 
         if ($stmt->rowCount() > 0) {
-            //ok the bank exist so the user can not update a bank he did not add in the first place
-            $this->sendUnauthorizedOperationJSON("You cannot update a record that does not originate from you!");
-            $stmt->closeCursor();
-            return;
+            return true;
         } else {
-            return $this->sendErrorJSON("Please try again later!");
+            return false;
         }
     }
 
@@ -214,9 +211,15 @@ class UserBasicSession {
     
     }
 
+    /**
+     * NOT DO REALLY UNDERSTAND THE USE - LEARN MORE - WIERD BEHAVIOUR - ie. prevent further write - why?
+     */
+    public function sessionWriteClose() {
+          session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
+    }
+    
     public function set($name, $value) {
         $_SESSION[$name] = $value;
-        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
 
     public function get($name) {
@@ -226,6 +229,7 @@ class UserBasicSession {
     }
 
     public function isBasicSessionAvailable() {
+       
         return isset($_SESSION["username"])
         && isset($_SESSION["hash_password"]) && 
         isset($_SESSION["user_group"]) &&
@@ -235,27 +239,22 @@ class UserBasicSession {
 
     public function setSessionUserParishID($value) {
          $_SESSION["user_parish_id"] = $value;
-        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
 
     public function setSessionUserGroup($value) {
          $_SESSION["user_group"] = $value;
-        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
 
     public function setSessionUsername($value) {
          $_SESSION["username"] = $value;
-        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
 
     public function setSessionUserHashPassword($value) {
          $_SESSION["hash_password"] = $value;
-        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
 
     public function setSessionUserRole($value) {
          $_SESSION["user_role"] = $value;
-        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
     
     public function getSessionUsername() {
