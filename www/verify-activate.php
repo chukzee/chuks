@@ -75,7 +75,7 @@ and open the template in the editor.
         $login_page = "";
          $config = new Config;
         if ($config->server_host == "localhost") {
-            //when local hosted
+            //when locally hosted
             $login_page = "'/churchmegaapp/www/index.html#login-page'";
         } else {
             //when internet hosted

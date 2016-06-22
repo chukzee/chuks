@@ -88,10 +88,7 @@ $(document).ready(function () {
                 $("#assign-to-parish-under-area-cont").hide();
 
             } else if (document.getElementById('radio-choice-v-2d').checked) {
-
-
                 $("#assign-to-parish-under-area-cont").hide();
-
             } else if (document.getElementById('radio-choice-v-2e').checked) {
                 //do nothing.
             } else if (document.getElementById('radio-choice-v-2f').checked) {
@@ -151,6 +148,43 @@ $(document).ready(function () {
         ChurchApp.parishesOnDivisionChange();
     });
 
+
+    $(document).on("pagecontainerbeforeshow", function (event, ui) {
+
+        if (ChurchApp.Util.endsWithStr(ui.toPage[0].baseURI, "/authorization.html")) {
+            
+            if (ChurchApp.userPivilegeFeatures === null) {
+                
+                $.mobile.loading("show", {
+                    text: "Retrieving users privileges. Please wait... ",
+                    textVisible: true,
+                    theme: "a",
+                    textonly: false,
+                    html: ""
+                });
+                
+                ChurchApp.post("php/GetPrivilegeHomePages.php", {},
+                        function (data) {
+         
+                            var json = JSON.parse(data);
+                            if (json.status === "success") {
+                                ChurchApp.createUserPrivilegeFeatures(json.data);
+                                $.mobile.loading("hide");
+                            } else if (json.status === "error") {
+                                $.mobile.loading("hide");
+                                ChurchApp.alertResponse(json, true);
+                            } else {
+                                $.mobile.loading("hide");
+                                ChurchApp.alertResponse(json);
+                            }
+                        },
+                        function (data, r, error) {
+                            $.mobile.loading("hide");
+                        })
+            }
+        }
+    });
+
     /**
      * Use this method to process events for the case of pages
      *  that are not dynamically created.
@@ -189,7 +223,7 @@ $(document).ready(function () {
 
         jQuery.validator.addMethod("workaroundComboboxValidateEmpty", function (value, element) {
             //alert($("#"+$(element).attr("id")).val());
-            return $("#"+$(element).attr("id")).val() !== "";
+            return $("#" + $(element).attr("id")).val() !== "";
         }, 'Please select an item.');
 
         $("#btn-register-parish-admin-verify-email").on("click", function (evt) {
@@ -287,11 +321,12 @@ $(document).ready(function () {
         });
 
         $("#authoriazation_save_changes").on("click", function () {
-            if ($.trim($("#authoriazation_save_changes").val()).length === 0)
+            if ($.trim($("#authorization_username").val()).length === 0)
             {
                 alert("No user!");
                 return;
             }
+            var form = document.getElementById("authoriazation_form");
             ChurchApp.postForm(form,
                     function (data) {//done
                         alert(data);
@@ -301,7 +336,7 @@ $(document).ready(function () {
                     });
         });
 
-        
+
         $("#monetary-add-bank-account-bank").on("click", function () {
 
             ChurchApp.post("php/get-bank-list.php",
@@ -402,8 +437,8 @@ $(document).ready(function () {
                 "monetary-add-bank-account-no": "required",
                 "monetary-add-bank-account-bank": "required",
                 /*"monetary-add-bank-account-bank":{
-                  workaroundComboboxValidateEmpty :true,  
-                }*/
+                 workaroundComboboxValidateEmpty :true,  
+                 }*/
             },
             //custom validation message
             messages: {

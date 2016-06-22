@@ -5,64 +5,86 @@
  */
 
 var ChurchApp = new function () {
-    this.AccountantFeatures = [];
-    this.AccountantFeatures[0] = ["Bank Statement", true];
-    this.AccountantFeatures[1] = ["Budget", true];
-    this.AccountantFeatures[2] = ["Cash Book", true];
-    this.AccountantFeatures[3] = ["Cheques", true];
-    this.AccountantFeatures[4] = ["Child Dedication", true];
-    this.AccountantFeatures[5] = ["Daily Acitivite Schedule", true];
-    this.AccountantFeatures[6] = ["Fund Request", true];
-    this.AccountantFeatures[7] = ["Fund Tranfer", true];
-    this.AccountantFeatures[8] = ["Home Fellowship", true];
-    this.AccountantFeatures[9] = ["Inflow", true];
-    this.AccountantFeatures[10] = ["Membership", true];
-    this.AccountantFeatures[11] = ["Monthly Spiritual Growth", true];
-    this.AccountantFeatures[12] = ["Service Income", true];
-    this.AccountantFeatures[13] = ["Home Fellowship", true];
 
-    this.AdminFeatures = [];
-    this.AdminFeatures[0] = ["Bank", true];
-    this.AdminFeatures[1] = ["Birthday", true];
-    this.AdminFeatures[2] = ["Child Dedication", true];
-    this.AdminFeatures[3] = ["Church Structure", true];
-    this.AdminFeatures[4] = ["Authorization", true];
-    this.AdminFeatures[5] = ["Daily Activities Schedule", true];
-    this.AdminFeatures[6] = ["Daily Income", true];
-    this.AdminFeatures[7] = ["Denomination", true];
-    this.AdminFeatures[8] = ["Department", true];
-    this.AdminFeatures[9] = ["Designation", true];
-    this.AdminFeatures[10] = ["Digging Deep", true];
-    this.AdminFeatures[11] = ["Events", true];
-    this.AdminFeatures[12] = ["Expense Category", true];
-    this.AdminFeatures[13] = ["Faith Clinic", true];
-    this.AdminFeatures[14] = ["General Thanksgiving", true];
-    this.AdminFeatures[15] = ["Home Fellowship", true];
-    this.AdminFeatures[16] = ["Member Thanksgiving", true];
-    this.AdminFeatures[17] = ["Membership", true];
-    this.AdminFeatures[18] = ["News Post", true];
-    this.AdminFeatures[19] = ["Rehearsals", true];
-    this.AdminFeatures[20] = ["Service Income", true];
-    this.AdminFeatures[21] = ["Service", true];
-    this.AdminFeatures[22] = ["Service Income Category", true];
-    this.AdminFeatures[23] = ["Wedding", true];
-    this.AdminFeatures[24] = ["Home", true];
+    this.userPivilegeFeatures = null;
 
-    this.PastorFeatures = [];//TODO
+    this.createUserPrivilegeFeatures = function (data) {
+        ChurchApp.userPivilegeFeatures = [];
+        for (var i = 0; i < data.length; i++) {
+            
+            var group = data[i].group;
+            var homePage = data[i].homePage;
+            var els = $(homePage).find('[data-privilege^="privilege-"]')
+            
+            var priv_feat = [];
+            
+            els.each(function (index, element) {
+                //alert(index +" " +element);
+                var attr_value = $(this).attr('data-privilege');
+                var feature = normalizeDataPrivilege(attr_value);
+                priv_feat[index]={
+                    feature :feature,
+                    enabled :true,
+                };
+                ChurchApp.userPivilegeFeatures[group]=priv_feat;
+            });
+        }
 
-    this.WorkerFeatures = [];//TODO
+    };
 
-    this.MenExcoFeatures = [];//TODO
-
-    this.WomenExcoFeatures = [];//TODO
-
-    this.YouthExcoFeatures = [];//TODO
-
-    this.MemberFeatures = [];//TODO
-
-    this.ChildrenFeatures = [];//TODO
+    normalizeDataPrivilege = function(attr_value){
+        var str = attr_value.substring("privilege-".length);
+        str = ChurchApp.Util.replaceAllChar(str,"-"," ");
+        str = toSentenceCase(str);
+        return str;
+    };
 
     this.enableFindParishes = true;// controls the finding of parishes based on change event of drop-down list. 
+
+    this.privilegeSet = {
+        data: [],
+        init: function () {
+            ChurchApp.privilegeSet.data = [];
+        },
+        add: function (name, value) {
+            if (typeof ChurchApp.privilegeSet.data[name] === 'undefined'
+                    || ChurchApp.privilegeSet.data[name] === null) {
+                ChurchApp.privilegeSet.data[name] = value;
+            } else {
+                ChurchApp.privilegeSet.data[name] += "," + value;
+            }
+        },
+        remove: function (name, value) {
+            if (typeof ChurchApp.privilegeSet.data[name] === 'undefined'
+                    || ChurchApp.privilegeSet.data[name] === null) {
+                return;
+            }
+
+            var v = ChurchApp.privilegeSet.data[name].split(",");
+            var new_v = "";
+            var n = 0;
+            for (var i = 0; i < v.length; i++) {
+                if (v[i] == value) {
+                    continue;
+                }
+                if (n === 0) {
+                    new_v = v[i];
+                } else {
+                    new_v += "," + v[i];
+                }
+                n++;
+            }
+
+            ChurchApp.privilegeSet.data[name] = new_v;
+            if (new_v == "") {
+                ChurchApp.privilegeSet.data[name] = null;
+            }
+
+        },
+        get: function (name) {
+            return ChurchApp.privilegeSet.data[name];
+        },
+    };
 
     this.adminVerifyCode = {
         username: "",
@@ -257,6 +279,28 @@ var ChurchApp = new function () {
             return new_str;
         };
 
+        isArray = function (obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        };
+
+        this.arrayFind = function (arr, search) {
+
+            if (!isArray(arr)) {
+                return false;
+            }
+
+            if (typeof search === "undefined") {
+                return false;
+            }
+
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] == search) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
     };
 
     this.setScrollFixedNavTop = function (className, num) {
@@ -662,7 +706,12 @@ var ChurchApp = new function () {
         //alert("pop  edit");
         var fieldValues = tablePageObj.tableData[index];
         //alert(json.data.table_data[index]);
-        var form_html = creatFormFieldHTML(tablePageObj.tableColumns, fieldValues, tablePageObj.updateUrl);
+        var form_html = createFormFieldHTML(tablePageObj.tableColumns,
+                tablePageObj.useDefaultUneditables,
+                tablePageObj.uneditableColumns,
+                fieldValues,
+                tablePageObj.updateUrl);
+
         var popup_title = "Edit record";//come back later
         var closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>',
                 header = '<div data-role="header"><div name="countdown_to_auth">-:--</div><h2>' + popup_title + '</h2></div>',
@@ -739,7 +788,10 @@ var ChurchApp = new function () {
     tableDeletePopup = function (tablePageObj, index) {
 
         var fieldValues = tablePageObj.tableData[index];
-        var html = createUnEditedFieldHTML(tablePageObj.tableColumns, fieldValues, tablePageObj.deleteUrl);
+        var html = createUneditedFieldHTML(tablePageObj.tableColumns,
+                fieldValues,
+                tablePageObj.deleteUrl);
+
         var popup_title = "Delete record";//come back later
         var closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>',
                 header = '<div data-role="header"><div name="countdown_to_auth">-:--</div><h2>' + popup_title + '</h2></div>',
@@ -809,7 +861,8 @@ var ChurchApp = new function () {
 
     tableViewOnlyPopup = function (tablePageObj, index) {
         var fieldValues = tablePageObj.tableData[index];
-        var html = createUnEditedFieldHTML(tablePageObj.tableColumns, fieldValues, '');
+        var html = createUneditedFieldHTML(tablePageObj.tableColumns,
+                fieldValues, '');
         var popup_title = "View Only";//come back later
         var closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>',
                 header = '<div data-role="header"><h2>' + popup_title + '</h2></div>',
@@ -911,41 +964,68 @@ var ChurchApp = new function () {
     };
 
     this.changeAndRenderTablePage = function (tablePageObj) {
-        $(":mobile-pagecontainer").pagecontainer("change", "index.html#" + tablePageObj.pageId, {
+        $(":mobile-pagecontainer").pagecontainer("change", "table-view.html", {
             transition: 'slide',
             //changeHash: false,
             // reverse: true,
             showLoadMsg: true
         });
-        ChurchApp.renderTablePage(tablePageObj);
-    }
+        $(":mobile-pagecontainer").on("pagecontainershow", function (event, ui) {
+            ChurchApp.renderTablePage(tablePageObj);
+        });
+
+
+
+    };
 
     this.renderTablePage = function (tablePageObj) {
         //data-church-table-name="table-view-page"
-        $("#" + tablePageObj.pageId)
-                .find("[data-church-table-name=table-view-page]").html(tablePageObj.headerTitle);
+        /*$("#" + tablePageObj.pageId)
+         .find("[data-church-table-name=table-view-page]").html(tablePageObj.headerTitle);
+         
+         $("#" + tablePageObj.pageId).attr("data-title", tablePageObj.pageTitle);//not working
+         
+         $('div[data-role="page"]').bind("pageshow", function () {
+         if ($.mobile.activePage.attr("id") === tablePageObj.pageId) {
+         document.title = tablePageObj.pageTitle;
+         }
+         });
+         
+         var table_html = ChurchApp.createTableHtml(tablePageObj.tableTitle, tablePageObj.tableColumns, tablePageObj.tableData, tablePageObj.style);
+         $("#" + tablePageObj.pageId + " .ui-content").html(table_html);
+         $("#" + tablePageObj.pageId).trigger('create');
+         ChurchApp.handleTableAction(tablePageObj);*/
 
-        $("#" + tablePageObj.pageId).attr("data-title", tablePageObj.pageTitle);//not working
+        $("[data-church-table-name=table-view-page]").html(tablePageObj.headerTitle);
 
-        $('div[data-role="page"]').bind("pageshow", function () {
-            if ($.mobile.activePage.attr("id") === tablePageObj.pageId) {
-                document.title = tablePageObj.pageTitle;
-            }
-        });
+        //$("#" + tablePageObj.pageId).attr("data-title", tablePageObj.pageTitle);//not working
+
+        /*$('div[data-role="page"]').bind("pageshow", function () {
+         if ($.mobile.activePage.attr("id") === tablePageObj.pageId) {
+         document.title = tablePageObj.pageTitle;
+         }
+         });*/
 
         var table_html = ChurchApp.createTableHtml(tablePageObj.tableTitle, tablePageObj.tableColumns, tablePageObj.tableData, tablePageObj.style);
-        $("#" + tablePageObj.pageId + " .ui-content").html(table_html);
+        $("#" + tablePageObj.pageId).html(table_html);
         $("#" + tablePageObj.pageId).trigger('create');
         ChurchApp.handleTableAction(tablePageObj);
     };
 
     this.handleTableAction = function (tablePageObj) {
 
-        $("#" + tablePageObj.pageId).on('dblclick', 'tr', function () {
+        //first we need to remove previous dblclick and taphold events 
+        //-  important!
+        var id_selector = "#" + tablePageObj.pageId + " tr";
+
+        $(id_selector).off('dblclick');
+        $(id_selector).off('taphold');
+
+        $(id_selector).on('dblclick', function () {
             tableAction(tablePageObj, $(this), $("#" + tablePageObj.pageId + " tbody"));
         });
 
-        $("#" + tablePageObj.pageId).on('taphold', 'tr', function () {
+        $(id_selector).on('taphold', function () {
             tableAction(tablePageObj, $(this), $("#" + tablePageObj.pageId + " tbody"));
         });
 
@@ -963,23 +1043,41 @@ var ChurchApp = new function () {
 
     };
 
-    creatFormFieldHTML = function (fieldLabels, fieldValues, formAction) {
+    createFormFieldHTML = function (fieldLabels,
+            useDefaultUneditables,
+            uneditableColumns,
+            fieldValues,
+            formAction) {
+
         var html = '<div data-role="main" class="ui-content">'
                 + '<h3 name="display_msg">You may edit the selected record.<h3>'
                 + '<form action="' + formAction + '">';
 
         for (var i = 0; i < fieldLabels.length; i++) {
+            var data_clear = 'data-clear-btn="true"';
+            var readonly_class = "";
+            var readonly = "";
+
+            if (needReadonly(fieldLabels[i], useDefaultUneditables, uneditableColumns)) {
+                data_clear = ' data-clear-btn="false" ';
+                readonly_class = " class='churchapp-input-readonly' ";
+                readonly = " readonly ";
+            }
+
             html += '<label for="' + fieldLabels[i] + '" >'
                     + toSentenceCase(fieldLabels[i]) +
-                    '</label><input data-clear-btn="true" name="'
-                    + fieldLabels[i] + '" value="' + fieldValues[i] + '" type="text"/>';
+                    '</label><input ' + data_clear + ' name="'
+                    + fieldLabels[i] + '" '
+                    + readonly + readonly_class
+                    + ' value="' + fieldValues[i] + '" type="text"/>';
         }
         html += '<input type="submit" value="Update"/></form></div>';
         return html;
     };
 
-    createUnEditedFieldHTML = function (fieldLabels, fieldValues, formAction) {
-        var html = '<div data-role="main" class="ui-content">';
+    createUneditedFieldHTML = function (fieldLabels, fieldValues, formAction) {
+
+        var html = '<div data-role="main" class="ui-content ui-responsive">';
         if (formAction !== '') {
             html += "<h3 name='display_msg'>Confirm the record you have selected to delete.<h3>";
             html += "<form action='" + formAction + "'>";
@@ -996,6 +1094,21 @@ var ChurchApp = new function () {
         }
         html += '</div>';
         return html;
+    };
+
+    needReadonly = function (fieldName, useDefaultUneditables,
+            uneditableColumns) {
+
+        if (ChurchApp.Util.arrayFind(uneditableColumns, fieldName))
+            return true;
+
+        var defaultUneditables = ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME"];
+        if (useDefaultUneditables
+                && ChurchApp.Util.arrayFind(defaultUneditables, fieldName)) {
+            return true;
+        }
+
+        return false;
     };
 
     toSentenceCase = function (str) {
@@ -1099,14 +1212,20 @@ var ChurchApp = new function () {
         for (var i = 0; i < users_arr.length; i++) {
             userHtml += userFoundHTML(users_arr[i]);
         }
+        $("#authoriazation_autocomplete").show();
+        
         $("#authoriazation_autocomplete").html(userHtml);
         $("#authoriazation_autocomplete").trigger('create');
         $("#authoriazation_autocomplete").listview('refresh');
 
+        $("#authoriazation_autocomplete li a").off('click');
+        
         $("#authoriazation_autocomplete li a").on('click', function () {
             $("#authorization_username").val($(this).find("[name='username']").val());
             $("#authorization_fullname").val($(this).find("[name='full_name']").val());
             $("#authorization_designation").val($(this).find("[name='designation']").val());
+            
+            $("#authoriazation_autocomplete").hide();
         });
     };
 
@@ -1154,7 +1273,7 @@ var ChurchApp = new function () {
          
          + '</div></a></li>';*/
     };
-    
+
     this.renderAccountReconcile = function (obj) {
 
         if (typeof obj.reconcileTransactionButton === "string") {
@@ -1679,7 +1798,7 @@ var ChurchApp = new function () {
         this.prototype = this.inherit(new this.Member());
     };
 
-//Paid worker
+    //Paid worker
     this.ChurchStaff = function () {
         this.prototype = this.inherit(new this.ChurchWorker());
     };

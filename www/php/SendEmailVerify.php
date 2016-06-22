@@ -97,7 +97,7 @@ function sendVerificationEmail($app, $first_name, $last_name, $email, $username,
     $mail->isHTML(true);                                  // Set email format to HTML
 
     if($config->server_host == "localhost"){
-        //when local hosted
+        //when locally hosted
         $path = "/churchmegaapp/www/verify-activate.php";
     }else{
         //when internet hosted

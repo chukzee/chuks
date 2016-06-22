@@ -24,8 +24,8 @@ function deleteExpenseCategory($app) {
     if ($stmt->rowCount() > 0) {
         $app->sendSuccessJSON("Expense category deleted successfully!", null);
     } else {
-            //check if the reason is because the user was not the one who added the bank in the first place.
-            //to know that we can check if the bank name exists
+            //check if the reason is because the user was not the one who added the record in the first place.
+            
             if ($app->checkAuthorizedOperation("add_expense_category", "SN", $sn)) {
                 $this->sendIgnoreJSON("Nothing deleted!");
             } else {

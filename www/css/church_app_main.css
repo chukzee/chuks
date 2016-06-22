@@ -8,6 +8,11 @@ and open the template in the editor.
     Author     : chuks
 */
 
+.churchapp-input-readonly{
+    background-color: #eeeeee !important;
+    cursor: not-allowed !important;
+}
+
 .churchapp-left-panel{
     background-color: #3fa65b !important;
     color: #eeeeee !important;

@@ -102,70 +102,86 @@ function onRegisterParishHeadOf(e) {
 function createInnerComponent(e, id_suffix) {
 
     var title;
-    var comp_features;
+    var compFeatures;
 
     switch (id_suffix) {
         case "accountant":
             {
                 title = "Accountant Access Control";
-                comp_features = ChurchApp.AccountantFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["accountant"];
             }
             break;
         case "admin":
             {
                 title = "Admin Access Control";
-                comp_features = ChurchApp.AdminFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["admin"];
 
             }
             break;
         case "pastor":
             {
                 title = "Pastor Access Control";
-                comp_features = ChurchApp.PastorFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["pastor"];
             }
             break;
         case "worker":
             {
                 title = "Worker Access Control";
-                comp_features = ChurchApp.WorkerFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["worker"];
             }
             break;
         case "men_exco":
             {
                 title = "Men Exco Access Control";
-                comp_features = ChurchApp.MenExcoFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["men_exco"];
             }
             break;
         case "women_exco":
             {
                 title = "Women Exco Access Control";
-                comp_features = ChurchApp.WomenExcoFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["women_exco"];
             }
             break;
         case "youth_exco":
             {
                 title = "Youth Exco Access Control";
-                comp_features = ChurchApp.YouthExcoFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["youth_exco"];
             }
             break;
         case "member":
             {
                 title = "Member Access Control";
-                comp_features = ChurchApp.MemberFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["member"];
             }
             break;
         case "children":
             {
                 title = "Children Access Control";
-                comp_features = ChurchApp.ChildrenFeatures;
+                compFeatures = ChurchApp.userPivilegeFeatures["children"];
             }
             break;
     }
 
     if (e.checked) {
         // perform operation for checked
-        var content = featureInnerContent(title, id_suffix, comp_features);
+        var content = featureInnerContent(title, id_suffix, compFeatures);
         $("#authorization_features").prepend(content).trigger('create');
+        //remove previous click events for purpose of overiding when we add below
+        for(var i=0; i<compFeatures.length; i++){
+            $('#authorization_features  [name="'+compFeatures[i].feature+'"]').off('click');
+        }
+        
+        //add click events.
+        for(var i=0; i<compFeatures.length; i++){
+            $('#authorization_features  [name="'+compFeatures[i].feature+'"]').on('click',function(){                
+                //enable/disable user features
+                for(var k=0; k<compFeatures.length; k++){
+                    if(compFeatures[k].feature === $(this).attr("name")){
+                       compFeatures[k].enabled = $(this).is(":checked"); 
+                    }
+                }
+            });
+        }
     }
     else {
         // perform operation for unchecked
@@ -186,15 +202,15 @@ function featureInnerContent(desc, id_suffix, arrFeature) {
     html += '<div data-role="controlgroup">';
 
     for (var i = 0; i < arrFeature.length; i++) {
-        var descNameWithoutSpace = ChurchApp.Util.replaceAllChar(arrFeature[i][0], " ", "");
+        var descNameWithoutSpace = ChurchApp.Util.replaceAllChar(arrFeature[i].feature, " ", "_");
         var id = div_id + "_" + descNameWithoutSpace;
         var checked = "";
-        if (arrFeature[i][1]) {
+        if (arrFeature[i].enabled) {
             checked = "checked";
         }
 
-        html += '<label for="' + id + '">' + arrFeature[i][0] + '</label>';
-        html += '<input name="' + id + '" id="' + id + '" ' + checked + ' type="checkbox">';
+        html += '<label for="' + id + '">' + arrFeature[i].feature + '</label>';
+        html += '<input name="' + arrFeature[i].feature + '" id="' + id + '" ' + checked + ' type="checkbox">';
     }
 
     html += "</div>";

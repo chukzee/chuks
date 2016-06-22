@@ -21,17 +21,19 @@ $(document).ready(function () {
                                 tableColumns: json.data.table_columns,
                                 tableData: json.data.table_data,
                                 style: ChurchApp.DisplayStyle.A,
-                                pageId: "table-view-page",
+                                pageId: "table-view-page-content",
                                 pageTitle: "Banks",
                                 headerTitle: "Showing Banks Added",
                                 updateUrl: "php/update-bank.php",
                                 deleteUrl: "php/delete-bank.php",
                                 inactivityTimeout: 180,
+                                useDefaultUneditables:true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                uneditableColumns:["SN","ENTRY_USER_ID","ENTRY_DATETIME",],
                                 validationRules: {
-                                    //"COS_1": "required"
+                                    "BANK_NAME": "required"
                                 },
                                 validationMessages: {
-                                    //"COS_1": "Please enter this field."
+                                    //"BANK_NAME": "Please enter this field."
                                 },
                             });
                                                         
@@ -42,7 +44,204 @@ $(document).ready(function () {
                     });
 
         });
+        
+        
+        $("#monetary-show-bank-accounts-added").on("click", function () {
 
+            ChurchApp.post("php/query-bank-account.php",
+                    {
+                    },
+                    function (data) {//done
+                        alert(data);
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            ChurchApp.changeAndRenderTablePage({
+                                tableTitle: json.data.table_title,
+                                tableColumns: json.data.table_columns,
+                                tableData: json.data.table_data,
+                                style: ChurchApp.DisplayStyle.A,
+                                pageId: "table-view-page-content",
+                                pageTitle: "Bank Accounts",
+                                headerTitle: "Showing Bank Accounts Added",
+                                updateUrl: "php/update-bank-account.php",
+                                deleteUrl: "php/delete-bank-account.php",
+                                inactivityTimeout: 180,
+                                useDefaultUneditables:true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                //do not allow edit of BANK_NAME here - that should be done in table that shows only bankks
+                                uneditableColumns:["SN","BANK_NAME","ENTRY_USER_ID","ENTRY_DATETIME",],
+                                validationRules: {
+                                    "BANK_NAME": "required",
+                                    "ACCOUNT_NAME": "required",
+                                    "ACCOUNT_NO": "required",
+                                },
+                                validationMessages: {
+                                    //"BANK_NAME": "Please enter this field."
+                                },
+                            });
+                                                        
+                        }
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+
+        });
+        
+        
+        $("#monetary-show-denominatios-added").on("click", function () {
+
+            ChurchApp.post("php/query-denomination.php",
+                    {
+                    },
+                    function (data) {//done
+                        alert(data);
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            ChurchApp.changeAndRenderTablePage({
+                                tableTitle: json.data.table_title,
+                                tableColumns: json.data.table_columns,
+                                tableData: json.data.table_data,
+                                style: ChurchApp.DisplayStyle.A,
+                                pageId: "table-view-page-content",
+                                pageTitle: "Currency Demonminatios",
+                                headerTitle: "Showing Currency Denominations Added",
+                                updateUrl: "php/update-denomination.php",
+                                deleteUrl: "php/delete-denomination.php",
+                                inactivityTimeout: 180,
+                                useDefaultUneditables:true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                uneditableColumns:["SN","ENTRY_USER_ID","ENTRY_DATETIME",],
+                                validationRules: {
+                                    "DENOMINATION": "required",
+                                },
+                                validationMessages: {
+                                    //"DENOMINATION": "Please enter this field."
+                                },
+                            });
+                                                        
+                        }
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+
+        });
+        
+        $("#monetary-show-service-income-category-added").on("click", function () {
+
+            ChurchApp.post("php/query-service-income-category.php",
+                    {
+                    },
+                    function (data) {//done
+                        alert(data);
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            ChurchApp.changeAndRenderTablePage({
+                                tableTitle: json.data.table_title,
+                                tableColumns: json.data.table_columns,
+                                tableData: json.data.table_data,
+                                style: ChurchApp.DisplayStyle.A,
+                                pageId: "table-view-page-content",
+                                pageTitle: "Service Income Categories",
+                                headerTitle: "Showing Service Income Categories Added",
+                                updateUrl: "php/update-service-income-category.php",
+                                deleteUrl: "php/delete-service-income-category.php",
+                                inactivityTimeout: 180,
+                                useDefaultUneditables:true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                uneditableColumns:["SN","ENTRY_USER_ID","ENTRY_DATETIME",],
+                                validationRules: {
+                                    "SERVICE_INCOME_CATEGORY": "required"
+                                },
+                                validationMessages: {
+                                    //"SERVICE_INCOME_CATEGORY": "Please enter this field."
+                                },
+                            });
+                                                        
+                        }
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+
+        });
+        
+        $("#monetary-show-income-category-added").on("click", function () {
+
+            ChurchApp.post("php/query-income-category.php",
+                    {
+                    },
+                    function (data) {//done
+                        alert(data);
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            ChurchApp.changeAndRenderTablePage({
+                                tableTitle: json.data.table_title,
+                                tableColumns: json.data.table_columns,
+                                tableData: json.data.table_data,
+                                style: ChurchApp.DisplayStyle.A,
+                                pageId: "table-view-page-content",
+                                pageTitle: "Income Categories",
+                                headerTitle: "Showing Income Categories Added",
+                                updateUrl: "php/update-income-category.php",
+                                deleteUrl: "php/delete-income-category.php",
+                                inactivityTimeout: 180,
+                                useDefaultUneditables:true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                uneditableColumns:["SN","ENTRY_USER_ID","ENTRY_DATETIME",],
+                                validationRules: {
+                                    "INCOME_CATEGORY": "required"
+                                },
+                                validationMessages: {
+                                    //"INCOME_CATEGORY": "Please enter this field."
+                                },
+                            });
+                                                        
+                        }
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+
+        });
+        
+                
+        $("#monetary-show-expense-category-added").on("click", function () {
+
+            ChurchApp.post("php/query-expense-category.php",
+                    {
+                    },
+                    function (data) {//done
+                        alert(data);
+                        var json = JSON.parse(data);
+                        if (json.status === "success") {
+                            ChurchApp.changeAndRenderTablePage({
+                                tableTitle: json.data.table_title,
+                                tableColumns: json.data.table_columns,
+                                tableData: json.data.table_data,
+                                style: ChurchApp.DisplayStyle.A,
+                                pageId: "table-view-page-content",
+                                pageTitle: "Expense Categories",
+                                headerTitle: "Showing Expenses Categories Added",
+                                updateUrl: "php/update-expense-category.php",
+                                deleteUrl: "php/delete-expense-category.php",
+                                inactivityTimeout: 180,
+                                useDefaultUneditables:true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                uneditableColumns:["SN","ENTRY_USER_ID","ENTRY_DATETIME",],
+                                validationRules: {
+                                    "EXPENSE_CATEGORY": "required"
+                                },
+                                validationMessages: {
+                                    //"EXPENSE_CATEGORY": "Please enter this field."
+                                },
+                            });
+                                                        
+                        }
+                    },
+                    function (data, r, error) {//fail
+
+                    });
+
+        });
+        
+        
     });
 
     $(document).on("pagecreate", "#table-view-page", function () {
@@ -66,7 +265,7 @@ $(document).ready(function () {
          tableColumns: json.data.table_columns,
          tableData: json.data.table_data,
          style: ChurchApp.DisplayStyle.A,
-         pageId: "table-view-page",
+         pageId: "table-view-page-content",
          pageTitle: "Page Title",
          headerTitle: "Page Header Title",
          updateUrl: "#",
