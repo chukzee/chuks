@@ -30,9 +30,9 @@ function updateBank($app) {
                 //check if the reason is because the user was not the one who added the record in the first place.
                 
                 if ($app->checkAuthorizedOperation("add_bank", "SN", $sn)) {
-                    $this->sendIgnoreJSON("Nothing updated!");
+                    $app->sendIgnoreJSON("Nothing updated!");
                 } else {
-                    $this->sendUnauthorizedOperationJSON("You cannot update a record that does not originate from you!");
+                    $app->sendUnauthorizedOperationJSON("You cannot update a record that does not originate from you!");
                 }
         }
         $stmt->closeCursor();

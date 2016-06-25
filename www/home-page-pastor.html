@@ -22,11 +22,24 @@ and open the template in the editor.
                 <ul>
                     <li><a href="#" data-icon="home" >Home</a></li>
                     <li><a href="#" data-icon="user" >Profile</a></li>
-                    <li><a href="#" data-icon="gear" >Options</a></li>
+                    <li><a href="#home-page-popup-misc-menu" data-rel="popup" data-transition="slide" data-icon="bars" >Misc</a></li>
                 </ul>
             </div><!-- /navbar -->
         </div><!-- /header -->
-
+        
+        <div data-role="popup" id="home-page-popup-misc-menu" data-theme="a">
+                <ul data-role="listview" data-inset="true" style="min-width:210px;">
+                    <li data-role="list-divider">Menu</li>
+                    <li data-icon="comment"><a href="#">Chat</a></li>
+                    <li data-privilege="privilege-voice-call"
+                        data-icon="phone"><a href="#">Voice call</a></li>
+                    <li data-icon="location"><a href="#">Maps</a></li>
+                    <li data-icon="gear"><a href="#">Settings</a></li>
+                    <li data-icon="user"><a href="#">Log out</a></li>
+                </ul>
+        </div>
+        
+        
         <div id="home-page-pastor-content" class="ui-content">
 
 
@@ -37,7 +50,7 @@ and open the template in the editor.
 
             <div class="churchapp-left-panel-header" >
                 <div>
-                    <img class="header-parish-photo" src="img/Rccg_logo.png" width="80" height="80" alt="Parish Photo N/A"/>
+                    <img class="header-parish-photo" src="img/RccgImg.gif" width="80" height="80" alt="Parish Photo N/A"/>
                 </div>
                 <span class="header-parish-name">Name of parish goes here</span>
             </div>

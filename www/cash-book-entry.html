@@ -34,12 +34,12 @@ and open the template in the editor.
                     </div>
 
                     <div class="ui-field-contain">
-                        <label for="cash_book_account_name" >Account Name:</label>
+                        <label for="cash_book_account_name" >Account name:</label>
                         <input data-clear-btn="true" name="cash_book_account_name" id="cash_book_account_name" type="text"/>
                     </div>
 
                     <div class="ui-field-contain">
-                        <label for="cash_book_account_no" >Account No:</label>
+                        <label for="cash_book_account_no" >Account no:</label>
                         <input data-clear-btn="true" name="cash_book_account_no" id="cash_book_account_no" type="text"/>
                     </div>
 
@@ -86,9 +86,47 @@ and open the template in the editor.
 
 
         <script>
-            /*$(function () {
-             $("#cash_book_date").datepicker();
-             });*/
+
+
+            $(document).ready(function () {
+
+                $(document).bind("pagecreate", function (e, data) {
+
+                    //cash book validation
+                    $("#cash-book-entry-form").validate({
+                        //validation rules
+                        rules: {
+                            cash_book_date: "required",
+                            cash_book_bank: "required",
+                            cash_book_account_name: "required",
+                            cash_book_description: "required",
+                            cash_book_account_no: "required",
+                            cash_book_tran_code: "required",
+                            cash_book_tran_type: "required",
+                            cash_book_amount: {
+                                required: true,
+                                min: 0
+                            },
+                        },
+                        //custom validation message
+                        messages: {
+                        },
+                        submitHandler: function (form) {
+
+                            ChurchApp.postForm(form,
+                                    function (data) {//done
+                                        alert(data);
+                                    },
+                                    function (data, r, error) {//fail
+
+                                    });
+                        }
+
+                    });
+
+
+                });
+            });
         </script>
 
     </body>

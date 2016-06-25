@@ -8,52 +8,49 @@ registerParish($app);
 
 function registerParish($app) {
 
-    
-        $username = $app->getInputPOST('register-parish-admin-username');
-        $password = $app->getInputPOST('register-parish-admin-password');
-        $first_name = $app->getInputPOST('register-parish-admin-first-name');
-        $last_name = $app->getInputPOST('register-parish-admin-last-name');
-        $email = $app->getInputPOST('register-parish-admin-email');
-        $verification_code = $app->getInputPOST('register-parish-admin-email-verification-code');
 
-        $parish_name = $app->getInputPOST('register-parish-name');
-        $parish_address = $app->getInputPOST('register-parish-address');
-        $parish_head_of = $app->getInputPOST('register-parish-head-of');
-        $division_name = $app->getInputPOST('register-parish-division-name');
-        $under_area = $app->getInputPOST('register-parish-under-area');
-        $under_zone = $app->getInputPOST('register-parish-under-zone');
-        $under_province = $app->getInputPOST('register-parish-under-province');
-        $under_region = $app->getInputPOST('register-parish-under-region');
-        $under_national = $app->getInputPOST('register-parish-under-national');
+    $username = $app->getInputPOST('register-parish-admin-username');
+    $password = $app->getInputPOST('register-parish-admin-password');
+    $first_name = $app->getInputPOST('register-parish-admin-first-name');
+    $last_name = $app->getInputPOST('register-parish-admin-last-name');
+    $email = $app->getInputPOST('register-parish-admin-email');
+    $verification_code = $app->getInputPOST('register-parish-admin-email-verification-code');
+
+    $parish_name = $app->getInputPOST('register-parish-name');
+    $parish_address = $app->getInputPOST('register-parish-address');
+    $parish_head_of = $app->getInputPOST('register-parish-head-of');
+    $division_name = $app->getInputPOST('register-parish-division-name');
+    $under_area = $app->getInputPOST('register-parish-under-area');
+    $under_zone = $app->getInputPOST('register-parish-under-zone');
+    $under_province = $app->getInputPOST('register-parish-under-province');
+    $under_region = $app->getInputPOST('register-parish-under-region');
+    $under_national = $app->getInputPOST('register-parish-under-national');
 
 
-        if ($username === FALSE || $password === FALSE || $first_name === FALSE || $last_name === FALSE || $email === FALSE || $verification_code === FALSE || $parish_name === FALSE || $parish_address === FALSE || $parish_head_of === FALSE || $division_name === FALSE || $under_area === FALSE || $under_zone === FALSE || $under_province === FALSE || $under_region === FALSE || $under_national === FALSE) {
-            return $app->sendErrorJSON("Please try again!");
-        }
-        
-        //check if the username , email and verification code correspond to that 
-        //saved in this user session
-        
-        if($username !== $_SESSION["super_admin_username"]
-                || !isset($_SESSION["super_admin_username"])){
-            $app->sendIgnoreJSON("Usernam not recognized in this session!");
-            return;            
-        }
-        
-        if($email !== $_SESSION["super_admin_email"]
-                || !isset($_SESSION["super_admin_email"])){
-            $app->sendIgnoreJSON("Email not recognized in this session!");
-            return;            
-        }
-        
-        if($verification_code !== $_SESSION["super_admin_verification_code"]
-                || !isset($_SESSION["super_admin_verification_code"])){
-            $app->sendIgnoreJSON("Verification code not recognized in this session!");
-            return;
-        }
-    
-        try {
-            
+    if ($username === FALSE || $password === FALSE || $first_name === FALSE || $last_name === FALSE || $email === FALSE || $verification_code === FALSE || $parish_name === FALSE || $parish_address === FALSE || $parish_head_of === FALSE || $division_name === FALSE || $under_area === FALSE || $under_zone === FALSE || $under_province === FALSE || $under_region === FALSE || $under_national === FALSE) {
+        return $app->sendErrorJSON("Please try again!");
+    }
+
+    //check if the username , email and verification code correspond to that 
+    //saved in this user session
+
+    if ($username !== $_SESSION["super_admin_username"] || !isset($_SESSION["super_admin_username"])) {
+        $app->sendIgnoreJSON("Usernam not recognized in this session!");
+        return;
+    }
+
+    if ($email !== $_SESSION["super_admin_email"] || !isset($_SESSION["super_admin_email"])) {
+        $app->sendIgnoreJSON("Email not recognized in this session!");
+        return;
+    }
+
+    if ($verification_code !== $_SESSION["super_admin_verification_code"] || !isset($_SESSION["super_admin_verification_code"])) {
+        $app->sendIgnoreJSON("Verification code not recognized in this session!");
+        return;
+    }
+
+    try {
+
         //check if user already exist .  DO NOT USE BINARY USERNAME!
         $stmt = $app->sqlSelect("register", "USERNAME", "USERNAME =?", array($username));
         if ($stmt->rowCount() > 0) {
@@ -98,9 +95,9 @@ function registerParish($app) {
         $stmt = $app->conn->prepare("INSERT INTO "
                 . " register "
                 . "(USER_GROUPS, FIRST_NAME, LAST_NAME, EMAIL, EMAIL_VERIIFY_HASH,  VERIFIED_EMAIL , USERNAME, PASSWORD,DATE_REGISTERED, PARISH_SN)"
-                . "VALUES('Super Admin,Member',?,?,?,?,1,?, SHA('$password'),now(),?) ");
-        
-        $stmt->execute(array($first_name, $last_name, $email,$verification_code, $username, $empty_parish_name_sn));
+                . "VALUES('Member',?,?,?,?,1,?, SHA('$password'),now(),?) ");
+
+        $stmt->execute(array($first_name, $last_name, $email, $verification_code, $username, $empty_parish_name_sn));
         if ($stmt->rowCount() <= 0) {
             $app->sendErrorJSON("Could not create user!");
             $stmt->closeCursor();
@@ -109,7 +106,7 @@ function registerParish($app) {
 
         //$under_area = "";
         //echo $username." ".$parish_name." ". $parish_address." ". $under_area." ". $under_zone." ". $under_province." ". $under_region." ". $under_national;
-        
+
         $stmt = $app->conn->prepare("INSERT INTO "
                 . " parish_register "
                 . " (PARISH_SN, PARISH_SUPER_ADMIN, PARISH_NAME, PARISH_ADDRESS, UNDER_AREA, UNDER_ZONE,UNDER_PROVINCE,UNDER_REGION,UNDER_NATIONAL)"
@@ -120,6 +117,18 @@ function registerParish($app) {
         $success = false;
         if ($stmt->rowCount() > 0) {
             $stmt->closeCursor();
+
+            //update the parish sn in the register to reflect the real one
+            $stmt = $app->conn->prepare("UPDATE "
+                    . " register "
+                    . " SET "
+                    . " PARISH_SN = LAST_INSERT_ID()"
+                    . " WHERE "
+                    . " USERNAME = ?");
+
+            $stmt->execute(array($username));
+            $stmt->closeCursor();
+            
             If ($parish_head_of != null && $parish_head_of != '') {
                 $success = false;
                 $stmt = $app->conn->prepare("INSERT INTO "
@@ -145,8 +154,8 @@ function registerParish($app) {
             $app->sendErrorJSON("Parish not registered!");
         }
     } catch (Exception $exc) {
-        
-        $app->sendErrorJSON("Could not register parish.\nPlease try again later!".$exc);
+
+        $app->sendErrorJSON("Could not register parish.\nPlease try again later!" . $exc);
         return;
     }
 }

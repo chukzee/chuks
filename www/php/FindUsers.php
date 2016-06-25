@@ -25,7 +25,7 @@ function findUsers($app) {
     $name_of_user = str_replace("  ", " ", $name_of_user);
 
     $name_split = explode(" ", $name_of_user);
-    
+
     try {
         $stmt = $app->conn->prepare("SELECT"
                 . " * "
@@ -40,14 +40,14 @@ function findUsers($app) {
                 . ((count($name_split) > 1) ?
                         (" OR FIRST_NAME LIKE '%" . $name_split[1] . "%'"
                         . " OR LAST_NAME LIKE '%" . $name_split[1] . "%'") : ""
-                        ). " OR "
-                        . " MIDDLE_NAME LIKE '%$name_of_user%' )"
-                        . " AND"
-                        . " PARISH_SN = ? "
-                        . " LIMIT $nth_pos, $search_limit");
+                ) . " OR "
+                . " MIDDLE_NAME LIKE '%$name_of_user%' )"
+                . " AND"
+                . " PARISH_SN = ? "
+                . " LIMIT $nth_pos, $search_limit");
 
         //$app->userSession->getSessionUserParishID()
-        
+
         $stmt->execute(array($app->userSession->getSessionUserParishID()));
 
         $found_users_arr = array();
@@ -72,6 +72,11 @@ function findUsers($app) {
             $users["profilePhotoUrl"] = $row["PROFILE_PHOTO"];
             $users["designation"] = $row["DESIGNATION"];
             $users["department"] = $row["DEPARTMENT"];
+            $users["blockedAccount"] = $row["BLOCKED_ACCOUNT"];
+            $users["userGroups"] = $row["USER_GROUPS"];
+            $users["role"] = $row["ROLE"];
+            $users["uneditableFeaturesJson"] = $row["UNEDITABLE_FEATURES_JSON"];
+            $users["unviewableFeaturesJson"] = $row["UNVIEWABLE_FEATURES_JSON"];
 
             $found_users_arr[$index] = $users;
         }

@@ -23,11 +23,23 @@ and open the template in the editor.
                 <ul>
                     <li><a href="#" data-icon="home" >Home</a></li>
                     <li><a href="#" data-icon="user" >Profile</a></li>
-                    <li><a href="#" data-icon="gear" >Options</a></li>
+                    <li><a href="#home-page-popup-misc-menu" data-rel="popup" data-transition="slide" data-icon="bars" >Misc</a></li>
                 </ul>
             </div><!-- /navbar -->
         </div><!-- /header -->
-
+        
+        <div data-role="popup" id="home-page-popup-misc-menu" data-theme="a">
+                <ul data-role="listview" data-inset="true" style="min-width:210px;">
+                    <li data-role="list-divider">Menu</li>
+                    <li data-icon="comment"><a href="#">Chat</a></li>
+                    <li data-privilege="privilege-voice-call"
+                        data-icon="phone"><a href="#">Voice call</a></li>
+                    <li data-icon="location"><a href="#">Maps</a></li>
+                    <li data-icon="gear"><a href="#">Settings</a></li>
+                    <li data-icon="user"><a href="#">Log out</a></li>
+                </ul>
+        </div>
+        
         <div id="home-page-admin-content" data-name="churchapp-news-content" class="ui-content"></div>
 
         <div data-role="panel" class="churchapp-left-panel" data-display="overlay" id="home-page-admin-left-nav-panel" >
@@ -69,7 +81,7 @@ and open the template in the editor.
                         <div data-privilege="privilege-activities" data-role="collapsible" data-inset="false" class="home_menu_adjust">
                             <h3>Activities </h3>
                             <ul data-role="listview">
-                                <li data-privilege="privilege-service"><a href="service.html">Service</a></li>
+                                <li data-privilege="privilege-service"><a href="service-type.html">Service</a></li>
                                 <li data-privilege="privilege-event"><a href="event.html">Event</a></li>
                             </ul>
                         </div>

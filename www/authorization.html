@@ -45,36 +45,36 @@ and open the template in the editor.
 
             </div>
 
-            <form method="post" action="php/UserAuthorization.php" id="authoriazation_form">
+            <form method="post" action="#" id="authoriazation_form">
 
                 <div class="ui-grid-b  ui-responsive">
                     <div class="ui-block-a">
-                        <div class="ui-field-contain">
+                        <div class="ui-content">    
                             <label for="authorization_username" >Username </label>
                             <input data-clear-btn="false" name="authorization_username" readonly id="authorization_username" type="text"/>
                         </div>
                     </div>
                     <div class="ui-block-b">
-                        <div class="ui-field-contain">
+                        <div class="ui-content">    
                             <label for="authorization_fullname" >Full name</label>
                             <input data-clear-btn="false" name="authorization_fullname" readonly id="authorization_fullname" type="text"/>
                         </div>
                     </div>
-                    <div class="ui-block-c  ui-content">
-                        <div class="ui-field-contain">
+                    <div class="ui-block-c">
+                        <div class="ui-content">   
                             <label for="authorization_designation" >Designation</label>
                             <input  data-clear-btn="false" name="authorization_designation" readonly id="authorization_designation" type="text"/>
                         </div>
                     </div>
                     <div class="ui-block-a">
-                        <div class="ui-field-contain">
+                        <div class="ui-content"> 
                             <label for="authorization_block_user" >Block user account</label>
                             <input name="authorization_block_user" id="authorization_block_user" type="checkbox">
                         </div>
                     </div>                    
                 </div>
 
-                <fieldset data-role="collapsible" data-collapsed="false">
+                <fieldset id="authorization_assign_privilege" data-role="collapsible" data-collapsed="false">
                     <legend>Assign privileges</legend>
 
                     <div class="ui-grid-b ui-responsive">
@@ -148,6 +148,101 @@ and open the template in the editor.
             </form>
 
         </div>
+
+        <script>
+
+            $(document).ready(function () {
+
+                $(document).bind("pagecreate", function (e, data) {
+
+                    $("#authoriazation-search-user-next").on("click", function (evt) {
+                        var search_name = $("#authoriazation-search-user").val();
+                        ChurchApp.authorizeFindUser.findUser("next", search_name, 5);
+                    });
+
+                    $("#authoriazation-search-user-previous").on("click", function (evt) {
+                        var search_name = $("#authoriazation-search-user").val();
+                        ChurchApp.authorizeFindUser.findUser("previous", search_name, 5);
+                    });
+
+                    $("#authoriazation-search-user").on("keyup", function (evt) {
+                        var search_name = $("#authoriazation-search-user").val();
+                        ChurchApp.authorizeFindUser.findUser("", search_name, 5);
+                    });
+
+                    $("#authoriazation_save_changes").on("click", function () {
+                        if ($.trim($("#authorization_username").val()).length === 0)
+                        {
+                            alert("No user!");
+                            return;
+                        }
+                        var username = document.getElementById("authorization_username").value;
+
+                        var block_account = "0";
+                        if (document.getElementById("authorization_block_user").checked) {
+                            block_account = "1";
+                        }
+
+
+                        var user_group_arr = [];
+                        if (document.getElementById("authorization_admin").checked) {
+                            user_group_arr[user_group_arr.length] = "Admin";
+                        }
+                        if (document.getElementById("authorization_accountant").checked) {
+                            user_group_arr[user_group_arr.length] = "Accountant";
+                        }
+                        if (document.getElementById("authorization_pastor").checked) {
+                            user_group_arr[user_group_arr.length] = "Pastor";
+                        }
+                        if (document.getElementById("authorization_worker").checked) {
+                            user_group_arr[user_group_arr.length] = "Worker";
+                        }
+                        if (document.getElementById("authorization_men_exco").checked) {
+                            user_group_arr[user_group_arr.length] = "Men Exco";
+                        }
+                        if (document.getElementById("authorization_women_exco").checked) {
+                            user_group_arr[user_group_arr.length] = "Women Exco";
+                        }
+                        if (document.getElementById("authorization_youth_exco").checked) {
+                            user_group_arr[user_group_arr.length] = "Youth Exco";
+                        }
+                        if (document.getElementById("authorization_member").checked) {
+                            user_group_arr[user_group_arr.length] = "Member";
+                        }
+                        if (document.getElementById("authorization_children").checked) {
+                            user_group_arr[user_group_arr.length] = "Children";
+                        }
+
+                        //json array
+                        var unviewable_features_json
+                                = ChurchApp.createUnviewableFeaturesJSON(user_group_arr);
+
+                        var user_groups = "";
+                        for (var i = 0; i < user_group_arr.length; i++) {
+                            user_groups += i === 0 ? user_group_arr[i] : ("," + user_group_arr[i]);
+                        }
+                        unviewable_features_json = JSON.stringify(unviewable_features_json);
+                        ChurchApp.post("php/UserAuthorization.php",
+                                {
+                                    username: username,
+                                    block_account: block_account,
+                                    user_groups: user_groups,
+                                    unviewable_features_json: unviewable_features_json,
+                                },
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    });
+
+
+                });
+            });
+
+
+        </script>
 
     </body>
 </html>

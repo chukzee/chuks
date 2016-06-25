@@ -8,33 +8,177 @@ var ChurchApp = new function () {
 
     this.userPivilegeFeatures = null;
 
+    this.createUnviewableFeaturesJSON = function (group_arr) {
+
+        var unview_feat_json = {};
+        for (var i = 0; i < group_arr.length; i++) {
+            var group = group_arr[i];
+            var name = ChurchApp.Util.replaceAllChar(group.toLowerCase(), " ", "_");
+            var norm_group = ChurchApp.Util.replaceAllChar(group, "-", " ");
+            norm_group = toSentenceCase(norm_group);
+
+            var priv_feat = ChurchApp.userPivilegeFeatures[name];
+            var concat_feat = "";
+            for (var k = 0; k < priv_feat.length; k++) {
+                if (!priv_feat[k].enabled) {
+                    concat_feat += priv_feat[k].feature + ",";
+                }
+            }
+            if (concat_feat.charAt(concat_feat.length - 1) === ',') {
+                concat_feat = concat_feat.substring(0, concat_feat.length - 1);
+            }
+            //var obj = {};
+
+            //obj[group] = concat_feat;
+            unview_feat_json[group] = concat_feat;
+        }
+
+        return unview_feat_json;
+    };
+
+    this.createPrivilegeFeaturesElements = function (is_checked, group) {
+        var title;
+
+        switch (group) {
+            case "accountant":
+                {
+                    title = "Accountant Access Control";
+                }
+                break;
+            case "admin":
+                {
+                    title = "Admin Access Control";
+                }
+                break;
+            case "pastor":
+                {
+                    title = "Pastor Access Control";
+                }
+                break;
+            case "worker":
+                {
+                    title = "Worker Access Control";
+                }
+                break;
+            case "men_exco":
+                {
+                    title = "Men Exco Access Control";
+                }
+                break;
+            case "women_exco":
+                {
+                    title = "Women Exco Access Control";
+                }
+                break;
+            case "youth_exco":
+                {
+                    title = "Youth Exco Access Control";
+                }
+                break;
+            case "member":
+                {
+                    title = "Member Access Control";
+                }
+                break;
+            case "children":
+                {
+                    title = "Children Access Control";
+                }
+                break;
+        }
+
+        var compFeatures = ChurchApp.userPivilegeFeatures[group];
+
+        if (is_checked) {
+            // perform operation for checked
+            var content = featureInnerContent(title, group, compFeatures);
+            $("#authorization_features").prepend(content).trigger('create');
+            //remove previous click events for purpose of overiding when we add below
+            for (var i = 0; i < compFeatures.length; i++) {
+                $('#authorization_features  [name="' + group + "_" + compFeatures[i].feature + '"]').off('click');
+            }
+
+            //add click events.
+            for (var i = 0; i < compFeatures.length; i++) {
+                $('#authorization_features  [name="'
+                        + group + "_" + compFeatures[i].feature +
+                        '"]').on('click', {
+                    group_name: group,
+                }, function (event) {
+                    var name = event.data.group_name;
+                    var comp_features = ChurchApp.userPivilegeFeatures[name];
+                    //enable/disable user features
+                    for (var k = 0; k < comp_features.length; k++) {
+                        if (name + "_" + comp_features[k].feature === $(this).attr("name")) {
+                            comp_features[k].enabled = $(this).is(":checked");
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            // perform operation for unchecked
+            var div_id = createAuthorizationFeaturesId(group);
+            $('#' + div_id).remove();
+        }
+    };
+
+
+    createAuthorizationFeaturesId = function (id_suffix) {
+        return "authorization_features_" + id_suffix;
+    };
+
+    featureInnerContent = function (desc, group, arrFeature) {
+
+        var div_id = createAuthorizationFeaturesId(group);
+
+        var html = '<div data-role="collapsible" id="' + div_id + '" ><h3>' + desc + '</h3>';
+        html += '<div data-role="controlgroup">';
+
+        for (var i = 0; i < arrFeature.length; i++) {
+            var descNameWithoutSpace = ChurchApp.Util.replaceAllChar(arrFeature[i].feature, " ", "_");
+            var id = div_id + "_" + descNameWithoutSpace;
+            var checked = "";
+            if (arrFeature[i].enabled) {
+                checked = "checked";
+            }
+
+            html += '<label for="' + id + '">' + arrFeature[i].feature + '</label>';
+            html += '<input name="' + group + "_" + arrFeature[i].feature + '" id="' + id + '" ' + checked + ' type="checkbox">';
+        }
+
+        html += "</div>";
+        html += "</div>";
+        return html;
+    };
+
     this.createUserPrivilegeFeatures = function (data) {
         ChurchApp.userPivilegeFeatures = [];
         for (var i = 0; i < data.length; i++) {
-            
+
             var group = data[i].group;
             var homePage = data[i].homePage;
             var els = $(homePage).find('[data-privilege^="privilege-"]')
-            
+
             var priv_feat = [];
-            
+
             els.each(function (index, element) {
                 //alert(index +" " +element);
                 var attr_value = $(this).attr('data-privilege');
                 var feature = normalizeDataPrivilege(attr_value);
-                priv_feat[index]={
-                    feature :feature,
-                    enabled :true,
+                priv_feat[index] = {
+                    feature: feature,
+                    enabled: true,
                 };
-                ChurchApp.userPivilegeFeatures[group]=priv_feat;
+                ChurchApp.userPivilegeFeatures[group] = priv_feat;
             });
         }
 
     };
 
-    normalizeDataPrivilege = function(attr_value){
+    normalizeDataPrivilege = function (attr_value) {
         var str = attr_value.substring("privilege-".length);
-        str = ChurchApp.Util.replaceAllChar(str,"-"," ");
+        str = ChurchApp.Util.replaceAllChar(str, "-", " ");
         str = toSentenceCase(str);
         return str;
     };
@@ -175,7 +319,7 @@ var ChurchApp = new function () {
     this.attempts_delete = 0;
     this.attempts_delete_msg_append = " attempts delete in current session";
     this.attempts_update_msg_append = " attempts update in current session";
-    this.failed_auth_msg_append = " failed authentications";
+    this.failed_auth_msg_append = " failed authentications in current session";
 
     this.TablePageObject = function () {
         this.tableData = "";
@@ -405,6 +549,12 @@ var ChurchApp = new function () {
         $(":mobile-pagecontainer").on("pagecontainershow", function (event, ui) {
             //alert("This page was just hidden: " + ui.toPage);//dataUrl
             //alert("absUrl " + ui.absUrl);//dataUrl
+            
+            $(".header-parish-name").html(obj.user.parishName
+                    +"<br/><span style='font-size:0.8em;'>"
+                    +obj.user.parishAddress+"</span>");
+            
+            hideUnauthorizedFeatures(obj.user);
 
             var s = $(document).find('[data-name="churchapp-news-content"]');//come back - could have more that one elements
 
@@ -428,6 +578,64 @@ var ChurchApp = new function () {
 
     }
 
+    hideUnauthorizedFeatures = function (user) {
+        var unviewables = ""
+        try {
+            for (var group in JSON.parse(user.unviewableFeaturesJson)) {
+                if (group === user.group) {
+                    try {
+                        var unviewJson = JSON.parse(user.unviewableFeaturesJson);
+                        unviewables = unviewJson[group];
+                    } catch (e) {
+                        continue;
+                    }
+                    break;
+                }
+            }
+        } catch (e) {
+            return; // e.g JSON error
+        }
+
+
+        if (unviewables === "") {
+            return;
+        }
+        unviewables = unviewables.split(',');
+        
+        var els = $(document).find('[data-privilege^="privilege-"]');
+
+        //first ensure all is showing
+        els.each(function (index, element) {
+            $(this).show();
+        });
+
+        //reconstruct to the data-privilege value then hide using the value
+
+        for (var i = 0; i < unviewables.length; i++) {
+            unviewables[i] = unviewables[i].toLowerCase();
+            unviewables[i] = ChurchApp.Util.replaceAllChar(unviewables[i], "  "," ");
+            unviewables[i] = ChurchApp.Util.replaceAllChar(unviewables[i], " ","-");
+            if(unviewables[i].indexOf("privilege-")!==0){
+               unviewables[i] = "privilege-" + unviewables[i]; 
+               //now hide using the value of data-privilege reconstructed
+               $("[data-privilege='"+unviewables[i]+"']").hide();
+            }
+        }
+        
+        //now hide the ones marked 
+        /*els.first();
+         els.each(function (index, element) {
+         for(var i =0; i< unviewables; i++){
+         if(unviewables[i].toLowerCase() === element.innerHTML.toLowerCase()){
+         $(this).hide();
+         break;
+         }
+         }
+         });*/
+
+
+
+    };
 
     this.loginByPriviledge = function (obj) {
 
@@ -843,8 +1051,11 @@ var ChurchApp = new function () {
             }
 
             ChurchApp.attempts_delete++;
-
-            ChurchApp.postForm($(this),
+           
+            alert($(this).serialize());
+            
+            
+            ChurchApp.postForm(this,
                     function (data) {//done
                         alert(data);
                     },
@@ -853,7 +1064,7 @@ var ChurchApp = new function () {
                     });
 
             $(popup).find("[name=attempts_delete]").html(ChurchApp.attempts_delete + ChurchApp.attempts_delete_msg_append);
-            alert("submit");
+            
         });
 
         $(popup).popup("open");
@@ -1209,24 +1420,178 @@ var ChurchApp = new function () {
 
     this.showAuthorizationFoundUsers = function (users_arr) {
         var userHtml = "";
+        var foundUsers = users_arr;
         for (var i = 0; i < users_arr.length; i++) {
             userHtml += userFoundHTML(users_arr[i]);
         }
-        $("#authoriazation_autocomplete").show();
-        
+        $("#authoriazation_autocomplete").slideDown();
+
         $("#authoriazation_autocomplete").html(userHtml);
         $("#authoriazation_autocomplete").trigger('create');
         $("#authoriazation_autocomplete").listview('refresh');
 
         $("#authoriazation_autocomplete li a").off('click');
-        
+
         $("#authoriazation_autocomplete li a").on('click', function () {
-            $("#authorization_username").val($(this).find("[name='username']").val());
+            var username = $(this).find("[name='username']").val();
+            $("#authorization_username").val(username);
             $("#authorization_fullname").val($(this).find("[name='full_name']").val());
             $("#authorization_designation").val($(this).find("[name='designation']").val());
-            
-            $("#authoriazation_autocomplete").hide();
+
+            $("#authoriazation_autocomplete").slideUp();
+            for (var i = 0; i < foundUsers.length; i++) {
+                if (foundUsers[i].username === username) {
+                    $("#authorization_features").html("");
+
+                    //check block user account
+                    if (foundUsers[i].blockedAccount === '0') {
+                        $("#authorization_block_user").prop("checked", false).checkboxradio('refresh');
+                    } else {
+                        $("#authorization_block_user").prop("checked", true).checkboxradio('refresh');
+                    }
+
+                    //check/uncheck the unviewable features
+                    var unviewable_features_json = foundUsers[i].unviewableFeaturesJson;
+                    checkUserPrivilegeFeatureElements(unviewable_features_json);
+
+                    //check/uncheck the privilege
+                    var user_groups = foundUsers[i].userGroups;
+                    checkUserAssignPrivilegeElements(user_groups);
+
+                    break;
+                }
+            }
         });
+    };
+
+    checkUserPrivilegeFeatureElements = function (unviewable_features_json) {
+
+        if (ChurchApp.userPivilegeFeatures === null) {
+            return;
+        }
+
+        //first initialize to true
+        for (var field_name in ChurchApp.userPivilegeFeatures) {
+            var priv_feat = ChurchApp.userPivilegeFeatures[field_name];
+            for (var index = 0; index < priv_feat.length; index++) {
+                priv_feat[index].enabled = true;
+            }
+        }
+
+        //convert to json object
+        try {
+            unviewable_features_json = JSON.parse(unviewable_features_json);
+        } catch (e) {
+            return;//no json so leave
+        }
+
+        for (var group in unviewable_features_json) {
+
+            var norm_group = group.toLowerCase();
+            norm_group = ChurchApp.Util.replaceAllChar(norm_group, "  ", " ");
+            norm_group = ChurchApp.Util.replaceAllChar(norm_group, " ", "_");
+            var priv_feat = ChurchApp.userPivilegeFeatures[norm_group];
+            var unviewables_str = unviewable_features_json[group];
+            if (typeof unviewables_str === "undefined"
+                    || unviewables_str === null
+                    || unviewables_str === '') {
+                continue;
+            }
+            var unviewables_arr = unviewables_str.split(',');
+            for (var j = 0; j < unviewables_arr.length; j++) {
+                for (var k = 0; k < priv_feat.length; k++) {
+                    if (priv_feat[k].feature.toLowerCase()
+                            === unviewables_arr[j].toLowerCase()) {
+                        priv_feat[k].enabled = false;//disable
+                        break;
+                    }
+                }
+            }
+        }
+
+    };
+
+    checkUserAssignPrivilegeElements = function (user_groups) {
+        if (typeof user_groups === "string") {
+            user_groups = user_groups.split(',');
+        } else if (!ChurchApp.Util.isArray(user_groups)) {
+            return;
+        }
+        //first initialize all to false ie uncheck all
+        $("#authorization_admin").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_accountant").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_worker").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_pastor").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_men_exco").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_women_exco").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_youth_exco").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_member").prop("checked", false).checkboxradio('refresh');
+        $("#authorization_children").prop("checked", false).checkboxradio('refresh');
+
+        if (user_groups.length === 1 && user_groups[0] === "") {
+            return;//As far as I am concern, it's equivalent to empty array
+        }
+
+        //now check the relevant check box
+        for (var i = 0; i < user_groups.length; i++) {
+            var group = user_groups[i].toLowerCase();
+            group = ChurchApp.Util.replaceAllChar(group, "  ", " ");
+            group = ChurchApp.Util.replaceAllChar(group, " ", "_");
+            var e = null;
+            switch (group) {
+                case "admin":
+                    {
+                        e = document.getElementById("authorization_admin");
+                    }
+                    break;
+                case "accountant":
+                    {
+                        e = document.getElementById("authorization_accountant");
+                    }
+                    break;
+                case "pastor":
+                    {
+                        e = document.getElementById("authorization_pastor");
+                    }
+                    break;
+                case "worker":
+                    {
+                        e = document.getElementById("authorization_worker");
+                    }
+                    break;
+                case "men_exco":
+                    {
+                        e = document.getElementById("authorization_men_exco");
+                    }
+                    break;
+                case "women_exco":
+                    {
+                        e = document.getElementById("authorization_women_exco");
+                    }
+                    break;
+                case "youth_exco":
+                    {
+                        e = document.getElementById("authorization_youth_exco");
+                    }
+                    break;
+                case "member":
+                    {
+                        e = document.getElementById("authorization_member");
+                    }
+                    break;
+                case "children":
+                    {
+                        e = document.getElementById("authorization_children");
+                    }
+                    break;
+            }
+
+            if (e !== null) {
+                $(e).prop("checked", true).checkboxradio('refresh');
+                ChurchApp.createPrivilegeFeaturesElements(true, group);
+            }
+        }
+
     };
 
     userFoundHTML = function (user) {

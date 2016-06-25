@@ -1,6 +1,6 @@
 <?php
 
-session_start();//come back
+session_start(); //come back
 
 require 'app-config.php';
 
@@ -8,15 +8,15 @@ class AppUtil {
 
     public $conn = null;
     public $userSession = null;
-    
+
     public function __construct() {
 
         $this->userSession = new UserBasicSession();
-        $config = new Config;       
-        $this->conn = new PDO("mysql:host=$config->db_host;dbname=".$config->db_name, $config->db_username, $config->db_password);
+        $config = new Config;
+        $this->conn = new PDO("mysql:host=$config->db_host;dbname=" . $config->db_name, $config->db_username, $config->db_password);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-    
+
     public function checkAuthorizedOperation($table, $serial_number_column, $serial_number) {
         //check if the reason is because the user was not the one who added the record in the first place.
         //to know that we can check if the record exists
@@ -130,7 +130,7 @@ class AppUtil {
         if ($condition_expression != null && $condition_expression != '') {
             $where_clause = " WHERE " . $condition_expression;
         }
- 
+
         $stmt = $this->conn->prepare("UPDATE " . $table
                 . " SET "
                 . $set_clause
@@ -156,9 +156,9 @@ class AppUtil {
 
         return $stmt;
     }
-    
-    public function createDBTableView($stmt){
-        if(!($stmt instanceof PDOStatement)){// is this really necessary
+
+    public function createDBTableView($stmt) {
+        if (!($stmt instanceof PDOStatement)) {// is this really necessary
             throw InvalidArgumentException("Expected PDOStatement object");
         }
         $table = null;
@@ -183,11 +183,11 @@ class AppUtil {
 
             $table->addRowData($row_data);
         }
-        
-        if($table==null){
+
+        if ($table == null) {
             $table = new TableView(array()); //empty table view
         }
-        
+
         return $table;
     }
 
@@ -208,16 +208,16 @@ class Feedback {
 class UserBasicSession {
 
     public function __construct() {
-    
+        
     }
 
     /**
      * NOT DO REALLY UNDERSTAND THE USE - LEARN MORE - WIERD BEHAVIOUR - ie. prevent further write - why?
      */
     public function sessionWriteClose() {
-          session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
+        session_write_close(); //important! avoid blocking other scripts that need the session file which is locked by php when writing session variables . 
     }
-    
+
     public function set($name, $value) {
         $_SESSION[$name] = $value;
     }
@@ -229,36 +229,43 @@ class UserBasicSession {
     }
 
     public function isBasicSessionAvailable() {
-       
-        return isset($_SESSION["username"])
-        && isset($_SESSION["hash_password"]) && 
-        isset($_SESSION["user_group"]) &&
-        isset($_SESSION["user_role"]) &&
-        isset($_SESSION["user_parish_id"]);
+
+        return isset($_SESSION["username"]) && isset($_SESSION["hash_password"]) &&
+                isset($_SESSION["user_group"]) &&
+                isset($_SESSION["user_role"]) &&
+                isset($_SESSION["user_parish_id"]);
     }
 
     public function setSessionUserParishID($value) {
-         $_SESSION["user_parish_id"] = $value;
+        $_SESSION["user_parish_id"] = $value;
+    }
+
+    public function setSessionUserParishSuperAdmin($value) {
+        $_SESSION["user_parish_super_admin"] = $value;
     }
 
     public function setSessionUserGroup($value) {
-         $_SESSION["user_group"] = $value;
+        $_SESSION["user_group"] = $value;
     }
 
     public function setSessionUsername($value) {
-         $_SESSION["username"] = $value;
+        $_SESSION["username"] = $value;
     }
 
     public function setSessionUserHashPassword($value) {
-         $_SESSION["hash_password"] = $value;
+        $_SESSION["hash_password"] = $value;
     }
 
     public function setSessionUserRole($value) {
-         $_SESSION["user_role"] = $value;
+        $_SESSION["user_role"] = $value;
     }
-    
+
     public function getSessionUsername() {
         return $_SESSION["username"];
+    }
+
+    public function getSessionUserParishSuperAdmin() {
+        return $_SESSION["user_parish_super_admin"];
     }
 
     public function getSessionUserHashPassword() {
@@ -283,8 +290,8 @@ class TableView {
 
     public $table_columns; //array of column names
     public $table_data = array();
-    public $row_count =0;
-    public $column_count =0;
+    public $row_count = 0;
+    public $column_count = 0;
     public $table_title = "";
 
     public function __construct($colum_arr) {
@@ -297,16 +304,16 @@ class TableView {
     }
 
     public function setTitle($title) {
-        if (!is_string($title)) {          
+        if (!is_string($title)) {
             throw new InvalidArgumentException("Expected string type!");
         }
         $this->table_title = $title;
     }
-    
+
     public function addRowData($row_data_arr) {
         if (is_array($row_data_arr)) {
-            if(count($row_data_arr) != $this->column_count){
-                throw new InvalidArgumentException("length of row data must be equal to number of columns! Expecte length of ".$this->column_count);
+            if (count($row_data_arr) != $this->column_count) {
+                throw new InvalidArgumentException("length of row data must be equal to number of columns! Expecte length of " . $this->column_count);
             }
             $this->row_count++;
             $this->table_data[$this->row_count - 1] = $row_data_arr;
@@ -338,8 +345,8 @@ class User {
     public $dept;
     public $group;
     public $role;
-    public $uneditableFeatures;
-    public $unviewableFeatures;
+    public $uneditableFeaturesJson;
+    public $unviewableFeaturesJson;
     public $blockedAccount;
     public $parishAddress;
     public $parishName;

@@ -66,7 +66,7 @@ and open the template in the editor.
             <div data-role="main" class="ui-content">
                 <a href="#login-page" data-role="button" data-transition="slide" >test 1</a>
                 <a href="#assign-to-parish-page" data-role="button" data-transition="slide" >test 2</a>
-                <a href="#account-reconcile-page" data-role="button" data-transition="slide" >test 3</a>
+                <a href="account-reconciliation.html" data-role="button" data-transition="slide" >test 3</a>
 
             </div>
         </div><!-- splash screen page end -->
@@ -355,105 +355,11 @@ and open the template in the editor.
         </div><!--Help dialog end-->
 
 
-        <div data-url="account-reconcile-page" data-role="page" id="account-reconcile-page" data-title="Account Reconciliation">
-            <div data-role="header" data-theme="a">
-                <a  data-rel="back" data-icon="arrow-l" data-iconpos="notext" data-shadow="false" data-icon-shadow="false">Back</a>
-                <h2 data-church-table-name="table-view-page">Account Reconciliation</h2>
-            </div><!-- /header -->
-            <div role="main" class="ui-content">
-                <form action="php/account-reconcile.php" id="account-reconcile-form" class="churchapp-form ui-corner-all">
-
-                    <div class="ui-grid-c ui-responsive">
-
-                        <div class="ui-block-a">
-                            <label for="account_reconcile_bank">Bank</label>
-                            <select name="account_reconcile_bank" id="account_reconcile_bank" data-mini="true">
-                                <option value="">Select Bank</option>
-                            </select>
-                        </div>
-                        <div class="ui-block-b">
-                            <label for="account_reconcile_account_name">Account name</label>
-                            <select name="account_reconcile_account_name" id="account_reconcile_account_name" data-mini="true">
-                                <option value="">Select Account Name</option>
-                            </select>
-                        </div>
-                        <div class="ui-block-c">
-                            <label for="account_reconcile_account_no">Account no.</label>
-                            <input name="account_reconcile_account_no"  id="account_reconcile_account_no" value="" readonly type="text" data-mini="true">
-                        </div>
-                        <div class="ui-block-d">
-                            <label for="account_reconcile_month_year">Month/Year</label>
-                            <input class="date-input monthPicker" name="account_reconcile_month_year"  id="account_reconcile_month_year" style="position: relative; z-index: 100000;" readonly  data-role="date" data-inline="false" value="" data-mini="true">
-                        </div>
-                        <div class="ui-block-a">
-                        </div>
-                        <div class="ui-block-b">
-
-                        </div>
-                        <div class="ui-block-c">
-
-                        </div>
-                        <div class="ui-block-d">
-                            <input name="account_reconcile_submit"  value="Reconcile"  type="submit"  data-mini="true">
-                        </div>
-                    </div><!-- /grid-d -->
-                </form>
-
-                <form>
-                    <div data-role="controlgroup" data-type="horizontal" data-mini="true" >
-                        <h3>Reconciliation status</h3>
-                        <!--DO NOT CHANGE THE value of the name and id attributes in this controlgroup! e.g DO NOT CHANGE radio-choice-h-6a, radio-choice-h-6 AND THE LIKES PLEASE  -->
-                        <label for="radio-choice-h-6a">Reconciliation</label>
-                        <input name="radio-choice-h-6" id="radio-choice-h-6a" value="Reconciliation" checked="checked" type="radio">
-
-                        <label for="radio-choice-h-6b">Missing</label>
-                        <input name="radio-choice-h-6" id="radio-choice-h-6b" value="Missing" type="radio">
-
-                        <label for="radio-choice-h-6c">Unknown</label>
-                        <input name="radio-choice-h-6" id="radio-choice-h-6c" value="Unknown" type="radio">
-
-                        <label for="radio-choice-h-6d">Conflicting</label>
-                        <input name="radio-choice-h-6" id="radio-choice-h-6d" value="Conflicting" type="radio">
-                    </div>
-                </form>
-
-                <div id="reconcile-transaction-render">
-
-                </div>
-
-            </div><!-- /content -->
-        </div>
-
-
         <script>
 
             $(document).ready(function () {
 
                 ChurchApp.setScrollFixedNavTop("home-page-nav", 80);
-
-                $(".monthPicker").datepicker({
-                    dateFormat: 'MM yy',
-                    changeMonth: true,
-                    changeYear: true,
-                    showButtonPanel: true,
-                    onClose: function (dateText, inst) {
-                        var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-                        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-                        $(this).val($.datepicker.formatDate('MM yy', new Date(year, month, 1)));
-                    }
-                });
-
-                $(".monthPicker").focus(function () {
-                    $(".ui-datepicker-calendar").hide();
-                    $("#ui-datepicker-div").position({
-                        my: "center top",
-                        at: "center bottom",
-                        of: $(this)
-                    });
-                });
-
-
-
 
             });
 

@@ -52,10 +52,14 @@ and open the template in the editor.
             <input type="text" name="test" value="43" />
             <input type="text" name="test"  value="53" />
             <input type="text" name="test"  value="63" />
+            <input type="checkbox" id="my_check" />
         </div>
-        <script>
+        <script> 
+            
             alert("attr_value".substring("attr".length));
             $(document).ready(function () {
+               document.getElementById("my_check").checked = true;
+
                 /*var els = $('[data-privilege^="privilege-"]');
                  alert("start");
                  els.each(function (index, element) {
