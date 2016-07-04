@@ -19,16 +19,17 @@ function deleteCashBook($app) {
     if ($sn === FALSE) {
         return $app->sendErrorJSON("Please try again!");
     }
- 
-        $stmt = $app->sqlDelete("cash_book", 
-              /* where */ "SN =? AND ENTRY_USER_ID=?",
-                array($sn, $app->userSession->getSessionUsername()));
+    try {
+
+
+        $stmt = $app->sqlDelete("cash_book",
+                /* where */ "SN =? AND ENTRY_USER_ID=?", array($sn, $app->userSession->getSessionUsername()));
 
         if ($stmt->rowCount() > 0) {
             $app->sendSuccessJSON("The operation was successfully!", null);
         } else {
             //check if the reason is because the user was not the one who added the record in the first place.
-            
+
             if ($app->checkAuthorizedOperation("cash_book", "SN", $sn)) {
                 $this->sendIgnoreJSON("Nothing deleted!");
             } else {
@@ -36,4 +37,7 @@ function deleteCashBook($app) {
             }
         }
         $stmt->closeCursor();
+    } catch (Exception $exc) {
+        return $app->sendErrorJSON("Please try again later!");
+    }
 }

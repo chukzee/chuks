@@ -11,7 +11,6 @@ and open the template in the editor.
 <html>
     <head>
 
-
         <meta charset="UTF-8">
         <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
         <meta name="format-detection" content="telephone=no">

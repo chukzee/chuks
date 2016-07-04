@@ -49,17 +49,34 @@ and open the template in the editor.
             </div>
         </div>
         <div id="test_cover">
-            <input type="text" name="test" value="43" />
-            <input type="text" name="test"  value="53" />
-            <input type="text" name="test"  value="63" />
-            <input type="checkbox" id="my_check" />
+            <!--<input type="text" name="test" value="43" />
+            <!--<input type="text" name="test"  value="53" />
+            <!--<input type="text" name="test"  value="63" />
+            <!--<input type="checkbox" id="my_check" />-->
+            
+            
         </div>
+        
+        <div id="me1" style="display: none;">
+            
+            ME 11111111
+            
+        </div>
+        
+        
+        <div id="me2"  style="display: none;">
+            
+            ME 22222222
+        </div>
+        
         <script> 
             
-            alert("attr_value".substring("attr".length));
+            //alert("attr_value".substring("attr".length));
             $(document).ready(function () {
-               document.getElementById("my_check").checked = true;
-
+              // document.getElementById("my_check").checked = true;
+               $("#me2").show();
+               $("#me2").hide();
+               $("#me1").show();
                 /*var els = $('[data-privilege^="privilege-"]');
                  alert("start");
                  els.each(function (index, element) {
@@ -68,10 +85,10 @@ and open the template in the editor.
                  
                  alert("end");*/
 
-                var e = document.getElementById("test_cover");
+                /*var e = document.getElementById("test_cover");
                 $(e).on('click',"[name='test']", function () {
                     alert($(this).val());
-                });
+                });*/
 
             });
 

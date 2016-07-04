@@ -302,7 +302,7 @@ $(document).ready(function () {
             },
             //submit login form
             submitHandler: function (form) {
-                alert($(form).serialize());
+                //alert($(form).serialize());
                 ChurchApp.postForm(form,
                         function (data) {//done
                             alert(data);

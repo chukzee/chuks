@@ -10,6 +10,15 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <script>
+            if (typeof $ === "undefined"
+                    || typeof $.mobile === "undefined"
+                    || typeof ChurchApp === "undefined") {
+                //redirect to index page
+                window.location = window.location.protocol + "//" + window.location.host;
+            }
+        </script>
+
     </head>
     <body>
 
@@ -218,496 +227,496 @@ and open the template in the editor.
 
             $(document).ready(function () {
 
+                $(".monetary-show-banks-added").on("click", function () {
+
+                    ChurchApp.post("php/query-bank.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Banks",
+                                        headerTitle: "Showing Banks Added",
+                                        updateUrl: "php/update-bank.php",
+                                        deleteUrl: "php/delete-bank.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "BANK_NAME": "required"
+                                        },
+                                        validationMessages: {
+                                            //"BANK_NAME": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+
+                $(".monetary-show-bank-accounts-added").on("click", function () {
+
+                    ChurchApp.post("php/query-bank-account.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Bank Accounts",
+                                        headerTitle: "Showing Bank Accounts Added",
+                                        updateUrl: "php/update-bank-account.php",
+                                        deleteUrl: "php/delete-bank-account.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        //do not allow edit of BANK_NAME here - that should be done in table that shows only bankks
+                                        uneditableColumns: ["SN", "BANK_NAME", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "BANK_NAME": "required",
+                                            "ACCOUNT_NAME": "required",
+                                            "ACCOUNT_NO": "required",
+                                        },
+                                        validationMessages: {
+                                            //"BANK_NAME": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+
+                $(".monetary-show-denominatios-added").on("click", function () {
+
+                    ChurchApp.post("php/query-denomination.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Currency Demonminatios",
+                                        headerTitle: "Showing Currency Denominations Added",
+                                        updateUrl: "php/update-denomination.php",
+                                        deleteUrl: "php/delete-denomination.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "DENOMINATION": "required",
+                                        },
+                                        validationMessages: {
+                                            //"DENOMINATION": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+                $(".monetary-show-service-income-category-added").on("click", function () {
+
+                    ChurchApp.post("php/query-service-income-category.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Service Income Categories",
+                                        headerTitle: "Showing Service Income Categories Added",
+                                        updateUrl: "php/update-service-income-category.php",
+                                        deleteUrl: "php/delete-service-income-category.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "SERVICE_INCOME_CATEGORY": "required"
+                                        },
+                                        validationMessages: {
+                                            //"SERVICE_INCOME_CATEGORY": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+                $(".monetary-show-income-category-added").on("click", function () {
+
+                    ChurchApp.post("php/query-income-category.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Income Categories",
+                                        headerTitle: "Showing Income Categories Added",
+                                        updateUrl: "php/update-income-category.php",
+                                        deleteUrl: "php/delete-income-category.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "INCOME_CATEGORY": "required"
+                                        },
+                                        validationMessages: {
+                                            //"INCOME_CATEGORY": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+                $(".monetary-show-expense-category-added").on("click", function () {
+
+                    ChurchApp.post("php/query-expense-category.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Expense Categories",
+                                        headerTitle: "Showing Expenses Categories Added",
+                                        updateUrl: "php/update-expense-category.php",
+                                        deleteUrl: "php/delete-expense-category.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "EXPENSE_CATEGORY": "required"
+                                        },
+                                        validationMessages: {
+                                            //"EXPENSE_CATEGORY": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+                $("#monetary-add-bank-account-bank").on("click", function () {
+
+                    ChurchApp.post("php/get-bank-list.php",
+                            {
+                            },
+                            function (data) {//done
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.comboBoxPopulate("monetary-add-bank-account-bank", json.data);
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+                });
+
+
+
+                //add department validation
+                $("#department-form").validate({
+                    //validation rules
+                    rules: {
+                        "department": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+                //add designation validation
+                $("#designation-form").validate({
+                    //validation rules
+                    rules: {
+                        "designation": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+
+                //assign to parish validation
+                $("#assign-to-parish-form").validate({
+                    //validation rules
+                    rules: {
+                        "assign-to-parish-name": "required",
+                        "assign-to-parish-under-national": {
+                            enterFieldShowing: true, //custom validation method name - see above
+                        },
+                        "assign-to-parish-under-region": {
+                            enterFieldShowing: true, //custom validation method name - see above
+                        },
+                        "assign-to-parish-under-province": {
+                            enterFieldShowing: true, //custom validation method name - see above
+                        },
+                        "assign-to-parish-under-zone": {
+                            enterFieldShowing: true, //custom validation method name - see above
+                        },
+                        "assign-to-parish-under-area": {
+                            enterFieldShowing: true, //custom validation method name - see above
+                        }
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.post(form.action,
+                                {
+                                    parish_sn: $("#assign-to-parish-name").val(),
+                                    username: ChurchApp.SignUpInfo.username,
+                                    first_name: ChurchApp.SignUpInfo.firstName,
+                                    last_name: ChurchApp.SignUpInfo.lastName,
+                                    email: ChurchApp.SignUpInfo.email,
+                                },
+                                function (data) {//done
+
+                                    alert(data);
+
+                                    var json = JSON.parse(data);
+
+                                    if (json.status === "success") {
+                                        ChurchApp.verifyUserEmail(json.data);
+                                    } else {
+                                        ChurchApp.alertResponse(json, true);
+                                    }
+
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+                //add bank validation
+                $("#monetary-add-bank-form").validate({
+                    //validation rules
+                    rules: {
+                        "monetary-add-bank": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+                //add bank account validation
+                $("#monetary-add-bank-account-form").validate({
+                    //validation rules
+                    rules: {
+                        "monetary-add-bank-account-name": "required",
+                        "monetary-add-bank-account-no": "required",
+                        "monetary-add-bank-account-bank": "required",
+                        /*"monetary-add-bank-account-bank":{
+                         workaroundComboboxValidateEmpty :true,  
+                         }*/
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+                //add denomination validation
+                $("#monetary-add-denomination-form").validate({
+                    //validation rules
+                    rules: {
+                        "monetary-add-denomination": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+                //add service income category validation
+                $("#monetary-add-service-income-category-form").validate({
+                    //validation rules
+                    rules: {
+                        "monetary-add-service-income-category": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+
+                //add income category validation
+                $("#monetary-add-income-category-form").validate({
+                    //validation rules
+                    rules: {
+                        "monetary-add-income-category": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
+
+                //add expense category validation
+                $("#monetary-add-expense-category-form").validate({
+                    //validation rules
+                    rules: {
+                        "monetary-add-expense-category": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
+                                function (data) {//done
+                                    alert(data);
+                                },
+                                function (data, r, error) {//fail
+
+                                });
+                    }
+
+                });
 
                 $(document).bind("pagecreate", function (e, data) {
                     
-                    $(".monetary-show-banks-added").on("click", function () {
-
-                        ChurchApp.post("php/query-bank.php",
-                                {
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Banks",
-                                            headerTitle: "Showing Banks Added",
-                                            updateUrl: "php/update-bank.php",
-                                            deleteUrl: "php/delete-bank.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "BANK_NAME": "required"
-                                            },
-                                            validationMessages: {
-                                                //"BANK_NAME": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-
-                    });
-
-
-                    $(".monetary-show-bank-accounts-added").on("click", function () {
-
-                        ChurchApp.post("php/query-bank-account.php",
-                                {
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Bank Accounts",
-                                            headerTitle: "Showing Bank Accounts Added",
-                                            updateUrl: "php/update-bank-account.php",
-                                            deleteUrl: "php/delete-bank-account.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            //do not allow edit of BANK_NAME here - that should be done in table that shows only bankks
-                                            uneditableColumns: ["SN", "BANK_NAME", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "BANK_NAME": "required",
-                                                "ACCOUNT_NAME": "required",
-                                                "ACCOUNT_NO": "required",
-                                            },
-                                            validationMessages: {
-                                                //"BANK_NAME": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-
-                    });
-
-
-                    $(".monetary-show-denominatios-added").on("click", function () {
-
-                        ChurchApp.post("php/query-denomination.php",
-                                {
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Currency Demonminatios",
-                                            headerTitle: "Showing Currency Denominations Added",
-                                            updateUrl: "php/update-denomination.php",
-                                            deleteUrl: "php/delete-denomination.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "DENOMINATION": "required",
-                                            },
-                                            validationMessages: {
-                                                //"DENOMINATION": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-
-                    });
-
-                    $(".monetary-show-service-income-category-added").on("click", function () {
-
-                        ChurchApp.post("php/query-service-income-category.php",
-                                {
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Service Income Categories",
-                                            headerTitle: "Showing Service Income Categories Added",
-                                            updateUrl: "php/update-service-income-category.php",
-                                            deleteUrl: "php/delete-service-income-category.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "SERVICE_INCOME_CATEGORY": "required"
-                                            },
-                                            validationMessages: {
-                                                //"SERVICE_INCOME_CATEGORY": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-
-                    });
-
-                    $(".monetary-show-income-category-added").on("click", function () {
-
-                        ChurchApp.post("php/query-income-category.php",
-                                {
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Income Categories",
-                                            headerTitle: "Showing Income Categories Added",
-                                            updateUrl: "php/update-income-category.php",
-                                            deleteUrl: "php/delete-income-category.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "INCOME_CATEGORY": "required"
-                                            },
-                                            validationMessages: {
-                                                //"INCOME_CATEGORY": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-
-                    });
-
-
-                    $(".monetary-show-expense-category-added").on("click", function () {
-
-                        ChurchApp.post("php/query-expense-category.php",
-                                {
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Expense Categories",
-                                            headerTitle: "Showing Expenses Categories Added",
-                                            updateUrl: "php/update-expense-category.php",
-                                            deleteUrl: "php/delete-expense-category.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "EXPENSE_CATEGORY": "required"
-                                            },
-                                            validationMessages: {
-                                                //"EXPENSE_CATEGORY": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-
-                    });
-
-                    $("#monetary-add-bank-account-bank").on("click", function () {
-
-                        ChurchApp.post("php/get-bank-list.php",
-                                {
-                                },
-                                function (data) {//done
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.comboBoxPopulate("monetary-add-bank-account-bank", json.data);
-                                    }
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-                    });
-
-                    //add department validation
-                    $("#department-form").validate({
-                        //validation rules
-                        rules: {
-                            "department": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-                    //add designation validation
-                    $("#designation-form").validate({
-                        //validation rules
-                        rules: {
-                            "designation": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-
-                    //assign to parish validation
-                    $("#assign-to-parish-form").validate({
-                        //validation rules
-                        rules: {
-                            "assign-to-parish-name": "required",
-                            "assign-to-parish-under-national": {
-                                enterFieldShowing: true, //custom validation method name - see above
-                            },
-                            "assign-to-parish-under-region": {
-                                enterFieldShowing: true, //custom validation method name - see above
-                            },
-                            "assign-to-parish-under-province": {
-                                enterFieldShowing: true, //custom validation method name - see above
-                            },
-                            "assign-to-parish-under-zone": {
-                                enterFieldShowing: true, //custom validation method name - see above
-                            },
-                            "assign-to-parish-under-area": {
-                                enterFieldShowing: true, //custom validation method name - see above
-                            }
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.post(form.action,
-                                    {
-                                        parish_sn: $("#assign-to-parish-name").val(),
-                                        username: ChurchApp.SignUpInfo.username,
-                                        first_name: ChurchApp.SignUpInfo.firstName,
-                                        last_name: ChurchApp.SignUpInfo.lastName,
-                                        email: ChurchApp.SignUpInfo.email,
-                                    },
-                                    function (data) {//done
-
-                                        alert(data);
-
-                                        var json = JSON.parse(data);
-
-                                        if (json.status === "success") {
-                                            ChurchApp.verifyUserEmail(json.data);
-                                        } else {
-                                            ChurchApp.alertResponse(json, true);
-                                        }
-
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-                    //add bank validation
-                    $("#monetary-add-bank-form").validate({
-                        //validation rules
-                        rules: {
-                            "monetary-add-bank": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-                    //add bank account validation
-                    $("#monetary-add-bank-account-form").validate({
-                        //validation rules
-                        rules: {
-                            "monetary-add-bank-account-name": "required",
-                            "monetary-add-bank-account-no": "required",
-                            "monetary-add-bank-account-bank": "required",
-                            /*"monetary-add-bank-account-bank":{
-                             workaroundComboboxValidateEmpty :true,  
-                             }*/
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-                    //add denomination validation
-                    $("#monetary-add-denomination-form").validate({
-                        //validation rules
-                        rules: {
-                            "monetary-add-denomination": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-                    //add service income category validation
-                    $("#monetary-add-service-income-category-form").validate({
-                        //validation rules
-                        rules: {
-                            "monetary-add-service-income-category": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-
-                    //add income category validation
-                    $("#monetary-add-income-category-form").validate({
-                        //validation rules
-                        rules: {
-                            "monetary-add-income-category": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
-                    //add expense category validation
-                    $("#monetary-add-expense-category-form").validate({
-                        //validation rules
-                        rules: {
-                            "monetary-add-expense-category": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
                 });
             });
 

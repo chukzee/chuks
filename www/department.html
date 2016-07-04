@@ -9,6 +9,16 @@ and open the template in the editor.
         <title>Department</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script>
+            if (typeof $ === "undefined"
+                    || typeof $.mobile === "undefined"
+                    || typeof ChurchApp === "undefined") {
+                //redirect to index page
+                window.location = window.location.protocol + "//" + window.location.host;
+            }
+        </script>
+
     </head>
     <body>
 
@@ -44,67 +54,69 @@ and open the template in the editor.
         <script>
 
             $(document).ready(function () {
-                $(document).bind("pagecreate", function (e, data) {
 
-                    $(".department-show-departments-added").on("click", function () {
+                $(".department-show-departments-added").on("click", function () {
 
-                        ChurchApp.post("php/query-department.php",
-                                {
-                                },
+                    ChurchApp.post("php/query-department.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Departments",
+                                        headerTitle: "Showing Departments Added",
+                                        updateUrl: "php/update-department.php",
+                                        deleteUrl: "php/delete-department.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "DEPARTMENT": "required"
+                                        },
+                                        validationMessages: {
+                                            //"DEPARTMENT": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+                //add department validation
+                $("#department-form").validate({
+                    //validation rules
+                    rules: {
+                        "department": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
                                 function (data) {//done
                                     alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Departments",
-                                            headerTitle: "Showing Departments Added",
-                                            updateUrl: "php/update-department.php",
-                                            deleteUrl: "php/delete-department.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "DEPARTMENT": "required"
-                                            },
-                                            validationMessages: {
-                                                //"DEPARTMENT": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
                                 },
                                 function (data, r, error) {//fail
 
                                 });
+                    }
 
-                    });
+                });
 
-                    //add department validation
-                    $("#department-form").validate({
-                        //validation rules
-                        rules: {
-                            "department": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
+                $(document).bind("pagecreate", function (e, data) {
 
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
                 });
             });
 

@@ -19,18 +19,24 @@ function deleteBankAccount($app) {
         return $app->sendErrorJSON("Please try again!");
     }
 
-    $stmt = $app->sqlDelete("add_bank_account", "SN=? AND ENTRY_USER_ID=?", array($sn, $app->userSession->getSessionUsername()));
+    try {
+        $stmt = $app->sqlDelete("add_bank_account", "SN=? AND ENTRY_USER_ID=?", array($sn, $app->userSession->getSessionUsername()));
 
-    if ($stmt->rowCount() > 0) {
-        $app->sendSuccessJSON("Bank account deleted successfully!", null);
-    } else {
+        if ($stmt->rowCount() > 0) {
+            $app->sendSuccessJSON("Bank account deleted successfully!", null);
+        } else {
             //check if the reason is because the user was not the one who added the record in the first place.
-            
+
+
             if ($app->checkAuthorizedOperation("add_bank_account", "SN", $sn)) {
                 $this->sendIgnoreJSON("Nothing deleted!");
             } else {
                 $this->sendUnauthorizedOperationJSON("You cannot delete a record that does not originate from you!");
             }
+        }
+        $stmt->closeCursor();
+    } catch (Exception $exc) {
+        return $app->sendErrorJSON("Please try again later!");
     }
-    $stmt->closeCursor();
+
 }

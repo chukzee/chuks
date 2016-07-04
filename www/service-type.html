@@ -9,6 +9,16 @@ and open the template in the editor.
         <title>Service Type</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script>
+            if (typeof $ === "undefined"
+                    || typeof $.mobile === "undefined"
+                    || typeof ChurchApp === "undefined") {
+                //redirect to index page
+                window.location = window.location.protocol + "//" + window.location.host;
+            }
+        </script>
+
     </head>
     <body>
 
@@ -45,69 +55,70 @@ and open the template in the editor.
         <script>
 
             $(document).ready(function () {
-                $(document).bind("pagecreate", function (e, data) {
 
-                    $(".service-type-show-service-type-added").on("click", function () {
+                $(".service-type-show-service-type-added").on("click", function () {
 
-                        ChurchApp.post("php/query-service-type.php",
-                                {
-                                },
+                    ChurchApp.post("php/query-service-type.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Services types",
+                                        headerTitle: "Showing Service Types Added",
+                                        updateUrl: "php/update-service-type.php",
+                                        deleteUrl: "php/delete-service-type.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "SERVICE": "required"
+                                        },
+                                        validationMessages: {
+                                            //"SERVICE": "Please enter this field."
+                                        },
+                                    });
+
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+
+                //add designation validation
+                $("#service-type-form").validate({
+                    //validation rules
+                    rules: {
+                        "service-type": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
                                 function (data) {//done
                                     alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Services types",
-                                            headerTitle: "Showing Service Types Added",
-                                            updateUrl: "php/update-service-type.php",
-                                            deleteUrl: "php/delete-service-type.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "SERVICE": "required"
-                                            },
-                                            validationMessages: {
-                                                //"SERVICE": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
                                 },
                                 function (data, r, error) {//fail
 
                                 });
+                    }
 
-                    });
-
-
-                    //add designation validation
-                    $("#service-type-form").validate({
-                        //validation rules
-                        rules: {
-                            "service-type": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
-
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
-
+                });
+                
+                $(document).bind("pagecreate", function (e, data) {
+                    
                 });
             });
 

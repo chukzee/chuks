@@ -9,6 +9,16 @@ and open the template in the editor.
         <title>Accountant</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+        <script>
+            if (typeof $ === "undefined"
+                    || typeof $.mobile === "undefined"
+                    || typeof ChurchApp === "undefined") {
+                //redirect to index page
+                window.location = window.location.protocol + "//" + window.location.host;
+            }
+        </script>
+    
     </head>
     <body>
         <div data-role="header" style="overflow:hidden;">
@@ -26,20 +36,22 @@ and open the template in the editor.
                 </ul>
             </div><!-- /navbar -->
         </div><!-- /header -->
-        
+
         <div data-role="popup" id="home-page-popup-misc-menu" data-theme="a">
-                <ul data-role="listview" data-inset="true" style="min-width:210px;">
-                    <li data-role="list-divider">Menu</li>
-                    <li data-icon="comment"><a href="#">Chat</a></li>
-                    <li data-privilege="privilege-voice-call"
-                        data-icon="phone"><a href="#">Voice call</a></li>
-                    <li data-icon="location"><a href="#">Maps</a></li>
-                    <li data-icon="gear"><a href="#">Settings</a></li>
-                    <li data-icon="user"><a href="#">Log out</a></li>
-                </ul>
+            <ul data-role="listview" data-inset="true" style="min-width:210px;">
+                <li data-role="list-divider">Menu</li>
+                <li data-icon="comment"><a href="chat.html">Chat</a></li>
+                <li  data-privilege-disabled="true" data-privilege="privilege-sms"
+                     data-icon="mail"><a href="sms.html">SMS</a></li>                
+                <li  data-privilege-disabled="true" data-privilege="privilege-voice-call"
+                     data-icon="phone"><a href="voice-call.html">Voice call</a></li>
+                <li data-icon="location"><a href="maps.html">Maps</a></li>
+                <li data-icon="gear"><a href="settings.html">Settings</a></li>
+                <li data-icon="user"><a href="#">Log out</a></li>
+            </ul>
         </div>
-        
-        
+
+
         <div id="home-page-women-exco-content" class="ui-content">
 
 
@@ -50,7 +62,7 @@ and open the template in the editor.
 
             <div class="churchapp-left-panel-header" >
                 <div>
-                    <img class="header-parish-photo" src="img/RccgImg.gif" width="80" height="80" alt="Parish Photo N/A"/>
+                    <img class="header-parish-photo" src="img/redeem_logo.png" width="80" height="80" alt="Parish Photo N/A"/>
                 </div>
                 <span class="header-parish-name">Name of parish goes here</span>
             </div>

@@ -4,26 +4,26 @@ require './base/app-util-base.php';
 
 $app = new AppUtil();
 
-getBankAccountList($app);
+qetExpenseCategorys($app);
 
-function getBankAccountList($app) {
+function qetExpenseCategorys($app) {
 
     try {
 
-        $stmt = $app->conn->prepare("SELECT BANK_NAME "
+        $stmt = $app->conn->prepare("SELECT EXPENSE_CATEGORY "
                 . " FROM "
-                . " add_bank ");
+                . " add_expense_category ");
 
         $stmt->execute(array());
 
-        $banks = array();
+        $category = array();
         $index = -1;
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $index++;
-            $banks[$index] = $row["BANK_NAME"];
+            $category[$index] = $row["EXPENSE_CATEGORY"];
         }
 
-        $app->sendSuccessJSON("Successful", $banks);
+        $app->sendSuccessJSON("Successful", $category);
         
     } catch (Exception $exc) {
         return $app->sendErrorJSON("Please try again later!");

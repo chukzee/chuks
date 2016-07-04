@@ -9,6 +9,16 @@ and open the template in the editor.
         <title>Service Type</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script>
+            if (typeof $ === "undefined"
+                    || typeof $.mobile === "undefined"
+                    || typeof ChurchApp === "undefined") {
+                //redirect to index page
+                window.location = window.location.protocol + "//" + window.location.host;
+            }
+        </script>
+
     </head>
     <body>
 
@@ -44,67 +54,69 @@ and open the template in the editor.
         <script>
 
             $(document).ready(function () {
-                $(document).bind("pagecreate", function (e, data) {
+                $(".designation-show-designation-added").on("click", function () {
 
-                    $(".designation-show-designation-added").on("click", function () {
+                    ChurchApp.post("php/query-designation.php",
+                            {
+                            },
+                            function (data) {//done
+                                alert(data);
+                                var json = JSON.parse(data);
+                                if (json.status === "success") {
+                                    ChurchApp.changeAndRenderTablePage({
+                                        tableTitle: json.data.table_title,
+                                        tableColumns: json.data.table_columns,
+                                        tableData: json.data.table_data,
+                                        style: ChurchApp.DisplayStyle.A,
+                                        pageId: "table-view-page-content",
+                                        pageTitle: "Designations",
+                                        headerTitle: "Showing Designations Added",
+                                        updateUrl: "php/update-designation.php",
+                                        deleteUrl: "php/delete-designation.php",
+                                        inactivityTimeout: 180,
+                                        useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
+                                        uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
+                                        validationRules: {
+                                            "DESIGNATION": "required"
+                                        },
+                                        validationMessages: {
+                                            //"DESIGNATION": "Please enter this field."
+                                        },
+                                    });
 
-                        ChurchApp.post("php/query-designation.php",
-                                {
-                                },
+                                }
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+
+                });
+
+
+                //add designation validation
+                $("#designation-form").validate({
+                    //validation rules
+                    rules: {
+                        "designation": "required"
+                    },
+                    //custom validation message
+                    messages: {
+                    },
+                    submitHandler: function (form) {
+
+                        ChurchApp.postForm(form,
                                 function (data) {//done
                                     alert(data);
-                                    var json = JSON.parse(data);
-                                    if (json.status === "success") {
-                                        ChurchApp.changeAndRenderTablePage({
-                                            tableTitle: json.data.table_title,
-                                            tableColumns: json.data.table_columns,
-                                            tableData: json.data.table_data,
-                                            style: ChurchApp.DisplayStyle.A,
-                                            pageId: "table-view-page-content",
-                                            pageTitle: "Designations",
-                                            headerTitle: "Showing Designations Added",
-                                            updateUrl: "php/update-designation.php",
-                                            deleteUrl: "php/delete-designation.php",
-                                            inactivityTimeout: 180,
-                                            useDefaultUneditables: true, //which are SN, ENTRY_USER_ID and ENTRY_DATETIME 
-                                            uneditableColumns: ["SN", "ENTRY_USER_ID", "ENTRY_DATETIME", ],
-                                            validationRules: {
-                                                "DESIGNATION": "required"
-                                            },
-                                            validationMessages: {
-                                                //"DESIGNATION": "Please enter this field."
-                                            },
-                                        });
-
-                                    }
                                 },
                                 function (data, r, error) {//fail
 
                                 });
+                    }
 
-                    });
+                });
 
-                    //add designation validation
-                    $("#designation-form").validate({
-                        //validation rules
-                        rules: {
-                            "designation": "required"
-                        },
-                        //custom validation message
-                        messages: {
-                        },
-                        submitHandler: function (form) {
 
-                            ChurchApp.postForm(form,
-                                    function (data) {//done
-                                        alert(data);
-                                    },
-                                    function (data, r, error) {//fail
-
-                                    });
-                        }
-
-                    });
+                $(document).bind("pagecreate", function (e, data) {
 
                 });
             });

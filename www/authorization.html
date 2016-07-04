@@ -10,20 +10,29 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <script>
+            if (typeof $ === "undefined"
+                    || typeof $.mobile === "undefined"
+                    || typeof ChurchApp === "undefined") {
+                //redirect to index page
+                window.location = window.location.protocol + "//" + window.location.host;
+            }
+        </script>
+
     </head>
     <body>
 
         <div data-role="header" style="overflow:hidden;">
             <a data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
             <h1>Authorization</h1>
-            <button id="authoriazation_save_changes" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save Changes</button>
+            <button id="authorization_save_changes" class="ui-btn-right ui-btn ui-btn-a ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save Changes</button>
         </div><!-- /header -->
 
 
         <div class="ui-content">
 
-            <div class="ui-grid-b ui-responsive" id="authoriazation-responsive">  
-                <input id="authoriazation-search-user" data-type="search" placeholder="Find a user...">
+            <div class="ui-grid-b ui-responsive" id="authorization-responsive">  
+                <input id="authorization-search-user" data-type="search" placeholder="Find a user...">
                 <div class="ui-grid-d  ui-responsive">
                     <div class="ui-block-a">
                     </div>
@@ -32,20 +41,20 @@ and open the template in the editor.
                     <div class="ui-block-c">
                     </div>
                     <div class="ui-block-d">
-                        <a href="#" id="authoriazation-search-user-next" class="ui-btn  ui-mini ui-alt-icon ui-nodisc-icon ui-icon-arrow-r">Next >></a> 
+                        <a href="#" id="authorization-search-user-next" class="ui-btn  ui-mini ui-alt-icon ui-nodisc-icon ui-icon-arrow-r">Next >></a> 
                     </div>
                     <div class="ui-block-e">
-                        <a href="#" id="authoriazation-search-user-previous" class="ui-btn  ui-mini ui-alt-icon ui-nodisc-icon ui-icon-arrow-l"><< Previous</a>  
+                        <a href="#" id="authorization-search-user-previous" class="ui-btn  ui-mini ui-alt-icon ui-nodisc-icon ui-icon-arrow-l"><< Previous</a>  
                     </div>
                 </div> 
-                <ul id="authoriazation_autocomplete" data-role="listview" data-inset="true" data-split-icon="user">
+                <ul id="authorization_autocomplete" data-role="listview" data-inset="true" data-split-icon="user">
                     <!--Will be populated dynamically  -->
 
                 </ul>
 
             </div>
 
-            <form method="post" action="#" id="authoriazation_form">
+            <form method="post" action="#" id="authorization_form">
 
                 <div class="ui-grid-b  ui-responsive">
                     <div class="ui-block-a">
@@ -153,91 +162,90 @@ and open the template in the editor.
 
             $(document).ready(function () {
 
+                $("#authorization-search-user-next").on("click", function (evt) {
+                    var search_name = $("#authorization-search-user").val();
+                    ChurchApp.authorizeFindUser.findUser("next", search_name, 5);
+                });
+
+                $("#authorization-search-user-previous").on("click", function (evt) {
+                    var search_name = $("#authorization-search-user").val();
+                    ChurchApp.authorizeFindUser.findUser("previous", search_name, 5);
+                });
+
+                $("#authorization-search-user").on("keyup", function (evt) {
+                    var search_name = $("#authorization-search-user").val();
+                    ChurchApp.authorizeFindUser.findUser("", search_name, 5);
+                });
+
+                $("#authorization_save_changes").on("click", function () {
+                    if ($.trim($("#authorization_username").val()).length === 0)
+                    {
+                        alert("No user!");
+                        return;
+                    }
+                    var username = document.getElementById("authorization_username").value;
+
+                    var block_account = "0";
+                    if (document.getElementById("authorization_block_user").checked) {
+                        block_account = "1";
+                    }
+
+
+                    var user_group_arr = [];
+                    if (document.getElementById("authorization_admin").checked) {
+                        user_group_arr[user_group_arr.length] = "Admin";
+                    }
+                    if (document.getElementById("authorization_accountant").checked) {
+                        user_group_arr[user_group_arr.length] = "Accountant";
+                    }
+                    if (document.getElementById("authorization_pastor").checked) {
+                        user_group_arr[user_group_arr.length] = "Pastor";
+                    }
+                    if (document.getElementById("authorization_worker").checked) {
+                        user_group_arr[user_group_arr.length] = "Worker";
+                    }
+                    if (document.getElementById("authorization_men_exco").checked) {
+                        user_group_arr[user_group_arr.length] = "Men Exco";
+                    }
+                    if (document.getElementById("authorization_women_exco").checked) {
+                        user_group_arr[user_group_arr.length] = "Women Exco";
+                    }
+                    if (document.getElementById("authorization_youth_exco").checked) {
+                        user_group_arr[user_group_arr.length] = "Youth Exco";
+                    }
+                    if (document.getElementById("authorization_member").checked) {
+                        user_group_arr[user_group_arr.length] = "Member";
+                    }
+                    if (document.getElementById("authorization_children").checked) {
+                        user_group_arr[user_group_arr.length] = "Children";
+                    }
+
+                    //json array
+                    var unviewable_features_json
+                            = ChurchApp.createUnviewableFeaturesJSON(user_group_arr);
+
+                    var user_groups = "";
+                    for (var i = 0; i < user_group_arr.length; i++) {
+                        user_groups += i === 0 ? user_group_arr[i] : ("," + user_group_arr[i]);
+                    }
+                    unviewable_features_json = JSON.stringify(unviewable_features_json);
+                    ChurchApp.post("php/UserAuthorization.php",
+                            {
+                                username: username,
+                                block_account: block_account,
+                                user_groups: user_groups,
+                                unviewable_features_json: unviewable_features_json,
+                            },
+                            function (data) {//done
+                                alert(data);
+                            },
+                            function (data, r, error) {//fail
+
+                            });
+                });
+
                 $(document).bind("pagecreate", function (e, data) {
-
-                    $("#authoriazation-search-user-next").on("click", function (evt) {
-                        var search_name = $("#authoriazation-search-user").val();
-                        ChurchApp.authorizeFindUser.findUser("next", search_name, 5);
-                    });
-
-                    $("#authoriazation-search-user-previous").on("click", function (evt) {
-                        var search_name = $("#authoriazation-search-user").val();
-                        ChurchApp.authorizeFindUser.findUser("previous", search_name, 5);
-                    });
-
-                    $("#authoriazation-search-user").on("keyup", function (evt) {
-                        var search_name = $("#authoriazation-search-user").val();
-                        ChurchApp.authorizeFindUser.findUser("", search_name, 5);
-                    });
-
-                    $("#authoriazation_save_changes").on("click", function () {
-                        if ($.trim($("#authorization_username").val()).length === 0)
-                        {
-                            alert("No user!");
-                            return;
-                        }
-                        var username = document.getElementById("authorization_username").value;
-
-                        var block_account = "0";
-                        if (document.getElementById("authorization_block_user").checked) {
-                            block_account = "1";
-                        }
-
-
-                        var user_group_arr = [];
-                        if (document.getElementById("authorization_admin").checked) {
-                            user_group_arr[user_group_arr.length] = "Admin";
-                        }
-                        if (document.getElementById("authorization_accountant").checked) {
-                            user_group_arr[user_group_arr.length] = "Accountant";
-                        }
-                        if (document.getElementById("authorization_pastor").checked) {
-                            user_group_arr[user_group_arr.length] = "Pastor";
-                        }
-                        if (document.getElementById("authorization_worker").checked) {
-                            user_group_arr[user_group_arr.length] = "Worker";
-                        }
-                        if (document.getElementById("authorization_men_exco").checked) {
-                            user_group_arr[user_group_arr.length] = "Men Exco";
-                        }
-                        if (document.getElementById("authorization_women_exco").checked) {
-                            user_group_arr[user_group_arr.length] = "Women Exco";
-                        }
-                        if (document.getElementById("authorization_youth_exco").checked) {
-                            user_group_arr[user_group_arr.length] = "Youth Exco";
-                        }
-                        if (document.getElementById("authorization_member").checked) {
-                            user_group_arr[user_group_arr.length] = "Member";
-                        }
-                        if (document.getElementById("authorization_children").checked) {
-                            user_group_arr[user_group_arr.length] = "Children";
-                        }
-
-                        //json array
-                        var unviewable_features_json
-                                = ChurchApp.createUnviewableFeaturesJSON(user_group_arr);
-
-                        var user_groups = "";
-                        for (var i = 0; i < user_group_arr.length; i++) {
-                            user_groups += i === 0 ? user_group_arr[i] : ("," + user_group_arr[i]);
-                        }
-                        unviewable_features_json = JSON.stringify(unviewable_features_json);
-                        ChurchApp.post("php/UserAuthorization.php",
-                                {
-                                    username: username,
-                                    block_account: block_account,
-                                    user_groups: user_groups,
-                                    unviewable_features_json: unviewable_features_json,
-                                },
-                                function (data) {//done
-                                    alert(data);
-                                },
-                                function (data, r, error) {//fail
-
-                                });
-                    });
-
-
+                    //do not put click event here
                 });
             });
 

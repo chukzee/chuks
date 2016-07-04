@@ -6,7 +6,263 @@
 
 var ChurchApp = new function () {
 
+    this.user = {};
+
+    this.createSwipeEvents = function (related_div_ids) {
+        for (var i = 0; i < related_div_ids.length; i++) {
+            var tab_id = "";
+            if (typeof related_div_ids[i] === "object") {
+                tab_id = related_div_ids[i].id;
+            } else {
+                tab_id = related_div_ids[i];
+            }
+            $("#" + tab_id).off("swipeleft swiperight");
+            $("#" + tab_id).on("swipeleft swiperight", function (event) {
+                showStackTab($(this).attr("id"), event.type, related_div_ids);
+            });
+        }
+    };
+
+
+    function showStackTab(id, direction, related_div_ids) {
+        for (var i = 0; i < related_div_ids.length; i++) {
+
+            var tab_id = "";
+            if (typeof related_div_ids[i] === "object") {
+                tab_id = related_div_ids[i].id;
+            } else {
+                tab_id = related_div_ids[i];
+            }
+
+            if (tab_id === id) {
+                
+                if(typeof related_div_ids[i].onBeforeTabChange === "function"
+                        && related_div_ids[i].onBeforeTabChange() === false){
+                    return; //leave! the tab says it does not want to be changed.
+                }
+                
+                if (direction === "swipeleft") {
+                    if (i < related_div_ids.length - 1) {
+                        ChurchApp.showTab(false, id);
+                        ChurchApp.showTab(true, related_div_ids[i + 1], related_div_ids);
+                    }
+                } else if (direction === "swiperight") {
+                    if (i > 0) {
+                        ChurchApp.showTab(false, id);
+                        ChurchApp.showTab(true, related_div_ids[i - 1], related_div_ids);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    ;
+
+    this.showTab = function (show, idTab, related_div_ids) {
+        var id = idTab;
+        if (typeof idTab === "object") {
+            id = idTab.id;
+        }
+
+        if (show) {
+            active_tab = $('[data-tab-content-id="' + id + '"]').find("a");
+            active_tab.addClass('ui-btn-active');
+            $("#" + id).show();
+            if(typeof idTab.onTabShow === "function"){
+                idTab.onTabShow(idTab.id);
+            }
+            //make sure the others are hidden
+            for (var i = 0; i < related_div_ids.length; i++) {
+                var tab_id = "";
+                if (typeof related_div_ids[i] === "object") {
+                    tab_id = related_div_ids[i].id;
+                } else {
+                    tab_id = related_div_ids[i];
+                }
+                if (tab_id !== id) {
+                    var active_tab = $('[data-tab-content-id="' + tab_id + '"]').find("a");
+                    active_tab.removeClass('ui-btn-active');
+                    $("#" + tab_id).hide();
+                }
+            }
+        } else {
+            var active_tab = $('[data-tab-content-id="' + id + '"]').find("a");
+            active_tab.removeClass('ui-btn-active');
+            $("#" + id).hide();
+        }
+    }
+    ;
+
+    this.SpinOpts = {
+        lines: 13 // The number of lines to draw
+        , length: 20 // The length of each line
+        , width: 8 // The line thickness
+        , radius: 30 // The radius of the inner circle
+        , scale: 0.75 // Scales overall size of the spinner
+        , corners: 0.9 // Corner roundness (0..1)
+        , color: '#000' // #rgb or #rrggbb or array of colors
+        , opacity: 0.15 // Opacity of the lines
+        , rotate: 51 // The rotation offset
+        , direction: 1 // 1: clockwise, -1: counterclockwise
+        , speed: 1.5 // Rounds per second
+        , trail: 31 // Afterglow percentage
+        , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+        , zIndex: 2e9 // The z-index (defaults to 2000000000)
+        , className: 'spinner' // The CSS class to assign to the spinner
+        , top: '50%' // Top position relative to parent
+        , left: '0' // Left position relative to parent
+        , shadow: true // Whether to render a shadow
+        , hwaccel: true // Whether to use hardware acceleration
+        , position: 'relative' // Element positioning
+    };
+
+    this.spinner = new Spinner(this.SpinOpts);
+
+    this.spinRun = function (el, speed) {
+        if (typeof el === "string") {
+            el = document.getElementById(el);
+        }
+        if (typeof speed === "undefined" || speed === null) {
+            speed = 1.5;
+        }
+
+        ChurchApp.spinner.opts.speed = speed;
+        ChurchApp.spinner.spin(el);
+    };
+
+    this.spinPause = function (el) {
+        if (typeof el === "string") {
+            el = document.getElementById(el);
+        }
+        ChurchApp.spinner.opts.speed = 0;
+        ChurchApp.spinner.spin(el);
+    };
+
+    this.spinHide = function (el) {
+        if (typeof el === "string") {
+            el = document.getElementById(el);
+        }
+        ChurchApp.spinner.spin(false);
+    };
+
     this.userPivilegeFeatures = null;
+
+    this.createPopup = function (obj) {
+
+        if (typeof obj.header === 'undefined') {
+            obj.header = "";
+        }
+
+        if (typeof obj.footer === 'undefined') {
+            obj.footer = "";
+        }
+
+        if (typeof obj.body === 'undefined') {
+            obj.body = "";
+        }
+
+        if (typeof obj.closeButtonPos === 'undefined') {
+            obj.closeButtonPos = "";
+        }
+
+        var closebtn = "";
+        if (obj.closeButtonPos === 'right') {
+            closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>';
+        } else if (obj.closeButtonPos === 'left') {
+            closebtn = '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left">Close</a>';
+        }
+
+
+        //var popup = '<div data-role="popup" data-overlay-theme="a" data-tolerance="15"></div>';
+        //var popup_title = "Edit record";//come back later
+        //var header = '<div data-role="header"><div name="countdown_to_auth">-:--</div><h2>' + popup_title + '</h2></div>';
+        //var popup = '<div data-role="popup" data-overlay-theme="a" data-tolerance="15"></div>';
+        //var footer = '<div data-role="footer"><div class="ui-content" style="font-size:0.75em;"><div name="attempts_update">'
+        //      + ChurchApp.attempts_update + ChurchApp.attempts_update_msg_append + '</div><div name="failed_auth">'
+        //    + ChurchApp.failed_auth + ChurchApp.failed_auth_msg_append + '</div></div></div>';
+
+        var markup = '<div data-role="popup" data-theme="a">'
+                + closebtn
+                + '<div data-role="header">' + obj.header + '</div>'
+                + obj.body
+                + '<div data-role="header">' + obj.footer + '</div>'
+                + '</div>';
+
+        var pup = $(markup)
+                .appendTo($.mobile.activePage)
+                .popup();
+
+        //var popup = $(popup)
+        //      .appendTo($.mobile.activePage)
+        //    .popup();
+
+        /*if (obj.header !== "") {
+         $(obj.header)
+         .appendTo(popup)
+         .toolbar()
+         //.before(closebtn)
+         .after(obj.body);
+         }else{
+         
+         }*/
+
+        /* if (obj.footer !== "") {
+         $(obj.footer)
+         .appendTo(popup)
+         .toolbar();
+         }*/
+
+        $(pup).trigger('create');
+
+        $(pup).popup("open");
+    };
+
+    this.remoteTextFill = function (obj) {
+        ChurchApp.remoteFill(obj, setTextField);
+    };
+
+    var setTextField = function (id, value) {
+        $("#" + id).val(value);
+    };
+
+    /**
+     * Populate drop-down list using the remoteFile. 
+     * @param {type} obj.url
+     * @param {type} obj.ids - array or string of target id or ids. 
+     * @returns {undefined}
+     */
+    this.remoteComboBoxFill = function (obj) {
+        ChurchApp.remoteFill(obj, ChurchApp.comboBoxPopulate);
+    };
+
+    this.remoteFill = function (obj, func)
+    {
+        ChurchApp.post(obj.url,
+                obj.data,
+                function (data) {
+
+                    var json = JSON.parse(data);
+
+                    if (json.status === "success") {
+                        if (typeof obj.ids === "string") {
+                            obj.ids = obj.ids.split(",");
+                        } else if (!ChurchApp.Util.isArray(obj.ids)) {
+                            return;
+                        }
+
+                        for (var i = 0; i < obj.ids.length; i++) {
+                            //ChurchApp.comboBoxPopulate(obj.ids[i], json.data);
+                            func(obj.ids[i], json.data);
+                        }
+                    } else {
+                        //ChurchApp.alertResponse(json);
+                    }
+                },
+                function (data, r, error) {
+
+                });
+
+    };
 
     this.createUnviewableFeaturesJSON = function (group_arr) {
 
@@ -158,7 +414,7 @@ var ChurchApp = new function () {
 
             var group = data[i].group;
             var homePage = data[i].homePage;
-            var els = $(homePage).find('[data-privilege^="privilege-"]')
+            var els = $(homePage).find('[data-privilege^="privilege-"]');
 
             var priv_feat = [];
 
@@ -170,6 +426,14 @@ var ChurchApp = new function () {
                     feature: feature,
                     enabled: true,
                 };
+
+                var attr_priv_disabled = $(this).attr('data-privilege-disabled');
+                if (attr_priv_disabled === "false"
+                        || typeof attr_priv_disabled === "undefined") {
+                    priv_feat[index].enabled = true;
+                } else {
+                    priv_feat[index].enabled = false;
+                }
                 ChurchApp.userPivilegeFeatures[group] = priv_feat;
             });
         }
@@ -351,7 +615,17 @@ var ChurchApp = new function () {
     };
 
     this.Util = new function () {
+        this.toCommaSeparated = function (arr) {
+            if (Object.prototype.toString.call(arr) !== '[object Array]') {
+                return arr;//no an array
+            }
+            var str = "";
+            for (var i = 0; i < arr.length; i++) {
+                str = i < arr.lenght - 1 ? (arr[i] + ",") : arr[i];
+            }
 
+            return str;
+        };
         this.isInternalPage = function (page_url) {
             var strUrl = new String(page_url);
             for (var i = strUrl.length - 1; i > -1; i--) {
@@ -503,6 +777,8 @@ var ChurchApp = new function () {
 
     loadHomePageByPriviledge = function (obj) {
 
+        ChurchApp.user = obj.user;
+
         var homePage = "";
         switch (obj.user.group) {
             case "Super Admin":
@@ -549,11 +825,11 @@ var ChurchApp = new function () {
         $(":mobile-pagecontainer").on("pagecontainershow", function (event, ui) {
             //alert("This page was just hidden: " + ui.toPage);//dataUrl
             //alert("absUrl " + ui.absUrl);//dataUrl
-            
-            $(".header-parish-name").html(obj.user.parishName
-                    +"<br/><span style='font-size:0.8em;'>"
-                    +obj.user.parishAddress+"</span>");
-            
+
+            $(".header-parish-name").html((typeof obj.user.parishName === "undefined" ? "" : obj.user.parishName)
+                    + "<br/><span style='font-size:0.8em;'>"
+                    + (typeof obj.user.parishAddress === "undefined" ? "" : obj.user.parishAddress) + "</span>");
+
             hideUnauthorizedFeatures(obj.user);
 
             var s = $(document).find('[data-name="churchapp-news-content"]');//come back - could have more that one elements
@@ -601,7 +877,7 @@ var ChurchApp = new function () {
             return;
         }
         unviewables = unviewables.split(',');
-        
+
         var els = $(document).find('[data-privilege^="privilege-"]');
 
         //first ensure all is showing
@@ -613,15 +889,15 @@ var ChurchApp = new function () {
 
         for (var i = 0; i < unviewables.length; i++) {
             unviewables[i] = unviewables[i].toLowerCase();
-            unviewables[i] = ChurchApp.Util.replaceAllChar(unviewables[i], "  "," ");
-            unviewables[i] = ChurchApp.Util.replaceAllChar(unviewables[i], " ","-");
-            if(unviewables[i].indexOf("privilege-")!==0){
-               unviewables[i] = "privilege-" + unviewables[i]; 
-               //now hide using the value of data-privilege reconstructed
-               $("[data-privilege='"+unviewables[i]+"']").hide();
+            unviewables[i] = ChurchApp.Util.replaceAllChar(unviewables[i], "  ", " ");
+            unviewables[i] = ChurchApp.Util.replaceAllChar(unviewables[i], " ", "-");
+            if (unviewables[i].indexOf("privilege-") !== 0) {
+                unviewables[i] = "privilege-" + unviewables[i];
+                //now hide using the value of data-privilege reconstructed
+                $("[data-privilege='" + unviewables[i] + "']").hide();
             }
         }
-        
+
         //now hide the ones marked 
         /*els.first();
          els.each(function (index, element) {
@@ -945,7 +1221,6 @@ var ChurchApp = new function () {
 
         $(popup).trigger('create');
 
-
         $(popup).on("popupafteropen", function () {//confirm later
             startCountDownToAuth($(popup), tablePageObj.inactivityTimeout);
         });
@@ -1051,10 +1326,10 @@ var ChurchApp = new function () {
             }
 
             ChurchApp.attempts_delete++;
-           
+
             alert($(this).serialize());
-            
-            
+
+
             ChurchApp.postForm(this,
                     function (data) {//done
                         alert(data);
@@ -1064,7 +1339,7 @@ var ChurchApp = new function () {
                     });
 
             $(popup).find("[name=attempts_delete]").html(ChurchApp.attempts_delete + ChurchApp.attempts_delete_msg_append);
-            
+
         });
 
         $(popup).popup("open");
@@ -1217,7 +1492,14 @@ var ChurchApp = new function () {
          }
          });*/
 
-        var table_html = ChurchApp.createTableHtml(tablePageObj.tableTitle, tablePageObj.tableColumns, tablePageObj.tableData, tablePageObj.style);
+        var table_html = ChurchApp.createTableHtml(
+                {
+                    title: tablePageObj.tableTitle,
+                    columns: tablePageObj.tableColumns,
+                    data: tablePageObj.tableData,
+                    style: tablePageObj.style
+                }
+        );
         $("#" + tablePageObj.pageId).html(table_html);
         $("#" + tablePageObj.pageId).trigger('create');
         ChurchApp.handleTableAction(tablePageObj);
@@ -1424,21 +1706,21 @@ var ChurchApp = new function () {
         for (var i = 0; i < users_arr.length; i++) {
             userHtml += userFoundHTML(users_arr[i]);
         }
-        $("#authoriazation_autocomplete").slideDown();
+        $("#authorization_autocomplete").slideDown();
 
-        $("#authoriazation_autocomplete").html(userHtml);
-        $("#authoriazation_autocomplete").trigger('create');
-        $("#authoriazation_autocomplete").listview('refresh');
+        $("#authorization_autocomplete").html(userHtml);
+        $("#authorization_autocomplete").trigger('create');
+        $("#authorization_autocomplete").listview('refresh');
 
-        $("#authoriazation_autocomplete li a").off('click');
+        $("#authorization_autocomplete li a").off('click');
 
-        $("#authoriazation_autocomplete li a").on('click', function () {
+        $("#authorization_autocomplete li a").on('click', function () {
             var username = $(this).find("[name='username']").val();
             $("#authorization_username").val(username);
             $("#authorization_fullname").val($(this).find("[name='full_name']").val());
             $("#authorization_designation").val($(this).find("[name='designation']").val());
 
-            $("#authoriazation_autocomplete").slideUp();
+            $("#authorization_autocomplete").slideUp();
             for (var i = 0; i < foundUsers.length; i++) {
                 if (foundUsers[i].username === username) {
                     $("#authorization_features").html("");
@@ -1899,21 +2181,225 @@ var ChurchApp = new function () {
 
     this.DisplayStyle = {A: 1, B: 2, C: 3, D: 4, E: 5};
 
-    this.createTableHtml = function (tableTitle, tableColumns, tableData, display_style, table_id) {
-        switch (display_style) {
-            case this.DisplayStyle.A:
-                return create_Style_A_Table_Html(tableTitle, tableColumns, tableData, table_id);
-            case this.DisplayStyle.B:
-                return create_Style_B_Table_Html(tableTitle, tableColumns, tableData, table_id);
-            case this.DisplayStyle.C:
-                return create_Style_C_Table_Html(tableTitle, tableColumns, tableData, table_id);
-            case this.DisplayStyle.D:
-                return create_Style_D_Table_Html(tableTitle, tableColumns, tableData, table_id);
-            case this.DisplayStyle.E:
-                return create_Style_E_Table_Html(tableTitle, tableColumns, tableData, table_id);
+    this.createTable = function (tableProp) {
+        var table_html = ChurchApp.createTableHtml(tableProp);
 
+        var uniqueColIndex = -1;
+        if (typeof tableProp.uniqueColumn === "string") {
+            //get the index of the unique column
+            for (var i = 0; i < tableProp.columns.length; i++) {
+                if (tableProp.columns[i] === tableProp.uniqueColumn) {
+                    uniqueColIndex = i;
+                    break;
+                }
+            }
+        }
+
+        var container = tableProp.container;
+        if (typeof tableProp.container === "string") {
+            container = $("#" + container);
+        }
+
+        var filterForm = "";
+        if (typeof tableProp.filterInputId === "string") {
+            filterForm = '<form>'
+                    + '<input id="' + tableProp.filterInputId + '" data-type="search" placeholder="Filter..." >'
+                    + '</form>';
+        }
+
+        var delete_view_bottons = "";
+        var deleteInput = '<input data-table-button="delete" type="button" value="Delete">';
+        var viewInput = '<input data-table-button="view" type="button" value="View">';
+        if (tableProp.deleteButton === true
+                || tableProp.viewButton === true) {
+            delete_view_bottons = '<div class="ui-grid-a">'
+                    + '<div class="ui-block-a">'
+                    + (tableProp.viewButton === true ? viewInput : deleteInput)
+                    + '</div>'
+                    + '<div class="ui-block-b">'
+                    + (tableProp.viewButton === false ? "" : deleteInput)
+                    + '</div>'
+
+                    + '</div>';
+
+        }
+
+        var before_html = "";
+
+        if (filterForm !== "" || delete_view_bottons !== "") {
+            before_html = '<div class="ui-grid-b ui-responsive">'
+                    + '<div class="ui-block-a">'
+                    + filterForm
+                    + '</div>'
+                    + '<div class="ui-block-b">'
+                    + '</div>'
+                    + '<div class="ui-block-c">'
+                    + delete_view_bottons
+                    + '</div>'
+
+                    + '</div>';
+        }
+
+        var html = before_html + table_html;
+        container.html(html);
+        container.trigger('create');
+
+        var extraCols = 0;
+        if (tableProp.selectByCheck === true) {
+            extraCols++;
+        }
+        if (typeof tableProp.action === "object") {
+            if (tableProp.action.delete === true) {
+                extraCols++;
+            }
+            if (tableProp.action.view === true) {
+                extraCols++;
+            }
+        }
+
+        $(container).find('tbody tr td').each(function (index, e) {
+            var col_count = tableProp.data[0].length + extraCols;
+            var colIndex = index % col_count;
+            var rowIndex = Math.floor(index / col_count);
+
+            //alert("rowIndex = " + rowIndex);
+
+            /*if (tableProp.selectByCheck === true
+             && colIndex === 0) {
+             $(e).on('click', function () {
+             alert("colIndex = " + colIndex);
+             });
+             }*/
+
+            if (typeof tableProp.action !== "object") {
+                return;
+            }
+
+            if (tableProp.action.delete === true
+                    && tableProp.action.view === true) {
+                if (colIndex === col_count - 1) {
+                    $(e).on('click', function () {//delete clicked
+                        var obj = {};
+                        obj.selectedIndices = [rowIndex];
+                        obj.selectedRows = [tableProp.data[rowIndex]];
+                        if (uniqueColIndex > -1) {
+                            obj.selectedUniqueValues = [tableProp.data[rowIndex][uniqueColIndex]];
+                        }
+                        //uniqueColIndex
+                        tableHanlerCallback(obj, tableProp.deleteHandler);
+                    });
+                } else if (colIndex === col_count - 2) {//view clicked
+                    $(e).on('click', function () {
+                        var obj = {};
+                        obj.selectedIndex = rowIndex;
+                        obj.selectedRow = tableProp.data[rowIndex];
+                        if (uniqueColIndex > -1) {
+                            obj.selectedUniqueValue = tableProp.data[rowIndex][uniqueColIndex];
+                        }
+                        tableHanlerCallback(obj, tableProp.viewHandler);
+                    });
+                }
+            } else if (tableProp.action.delete === true
+                    && colIndex === col_count - 1) {
+                $(e).on('click', function () {
+                    var obj = {};
+                    obj.selectedIndices = [rowIndex];
+                    obj.selectedRows = [tableProp.data[rowIndex]];
+                    if (uniqueColIndex > -1) {
+                        obj.selectedUniqueValues = [tableProp.data[rowIndex][uniqueColIndex]];
+                    }
+                    tableHanlerCallback(obj, tableProp.deleteHandler);
+                });
+            } else if (tableProp.action.view === true
+                    && colIndex === col_count - 1) {
+                $(e).on('click', function () {
+                    var obj = {};
+                    obj.selectedIndex = rowIndex;
+                    obj.selectedRow = tableProp.data[rowIndex];
+                    if (uniqueColIndex > -1) {
+                        obj.selectedUniqueValue = tableProp.data[rowIndex][uniqueColIndex];
+                    }
+                    tableHanlerCallback(obj, tableProp.viewHandler);
+                });
+            }
+
+        });
+
+
+        $(container).off('click', '[data-table-check="all"]');
+
+        $(container).on('click', '[data-table-check="all"]', {
+            toggle: true,
+        }, function (event) {
+            $(container).find('tbody [data-table-check="checkbox"]').each(function (index, e) {
+                e.checked = event.data.toggle;
+            });
+            event.data.toggle = !event.data.toggle;
+        });
+
+        $(container).off('click', '[data-table-button="delete"]');
+
+        $(container).on('click', '[data-table-button="delete"]', function () {
+            var obj = {};
+            obj.selectedIndices = [];
+            obj.selectedRows = [];
+            obj.selectedUniqueValues = [];
+            $(container).find('tbody [data-table-check="checkbox"]').each(function (index, e) {
+                if (e.checked === true) {
+                    obj.selectedIndices.push(index);
+                    obj.selectedRows.push(tableProp.data[index]);
+                    if (uniqueColIndex > -1) {
+                        obj.selectedUniqueValues.push(tableProp.data[index][uniqueColIndex]);
+                    }
+                }
+            });
+
+            if (obj.selectedIndices.length > 0) {
+                tableHanlerCallback(obj, tableProp.deleteHandler);
+            }
+        });
+
+        $(container).off('click', '[data-table-button="view"]');
+
+        $(container).on('click', '[data-table-button="view"]', function () {
+
+            $(container).find('tbody [data-table-check="checkbox"]').each(function (index, e) {
+                if (e.checked === true) {
+                    var obj = {};
+                    obj.selectedIndex = index;
+                    obj.selectedRow = tableProp.data[index];
+                    if (uniqueColIndex > -1) {
+                        obj.selectedUniqueValue = tableProp.data[index][uniqueColIndex];
+                    }
+                    tableHanlerCallback(obj, tableProp.viewHandler);
+                    return false;//break from the 'each' function
+                }
+            });
+
+        });
+
+    };
+
+    tableHanlerCallback = function (obj, callback) {
+        if (typeof callback === "function") {
+            callback(obj);
+        }
+    };
+
+    this.createTableHtml = function (tableProp) {
+        switch (tableProp.style) {
+            case this.DisplayStyle.A:
+                return create_Style_A_Table_Html(tableProp);
+            case this.DisplayStyle.B:
+                return create_Style_B_Table_Html(tableProp);
+            case this.DisplayStyle.C:
+                return create_Style_C_Table_Html(tableProp);
+            case this.DisplayStyle.D:
+                return create_Style_D_Table_Html(tableProp);
+            case this.DisplayStyle.E:
+                return create_Style_E_Table_Html(tableProp);
             default :
-                return create_Style_A_Table_Html(tableTitle, tableColumns, tableData, table_id);
+                return create_Style_A_Table_Html(tableProp);
         }
 
         return "";
@@ -1938,38 +2424,137 @@ var ChurchApp = new function () {
         }
     }
 
-    function create_Style_A_Table_Html(tableTitle, tableColumns, tableData, table_id) {
+    function create_Style_A_Table_Html(tableProp) {
         var id_attr = "";
-        if (table_id !== "" && table_id !== null) {//TODO: confirm later
-            id_attr = 'id="' + table_id + '"';
+        if (tableProp.Id !== ""
+                && tableProp.Id !== null
+                && typeof tableProp.Id !== "undefined") {
+            id_attr = ' id="' + tableProp.Id + '" ';
 
         }
-        var table_html = '<table data-role="table" ' + id_attr + ' data-mode="reflow" class="ui-responsive  table-report-view">';
+
+        var filter = "";
+        if (typeof tableProp.filterInputId === "string") {
+            filter = ' data-filter="true" data-input="#' + tableProp.filterInputId + '" ';
+        }
+
+        var table_html = '<table data-role="table" ' + id_attr + filter + ' data-mode="reflow" class="ui-responsive  table-report-view">';
+
+        var action_col_span = 0;
+        var deleteHTML = "";
+        var viewHTML = "";
+        var actionColumn = "";
+
+        if (tableProp.action === true) {
+            action_col_span = 2;
+            actionColumn = "Action";
+            viewHTML = "<a href='#'>View</a>";
+            deleteHTML = "<a href='#'>Delete</a>";
+            tableProp.action = {
+                delete: true, //automatic - important!
+                view: true, //automatic - important!
+            };
+
+        } else if (typeof tableProp.action === "object") {
+            action_col_span = 2;
+
+            if (tableProp.action.text === "string") {
+                actionColumn = tableProp.action.text;
+            } else {
+                actionColumn = "Action";
+            }
+
+            if (tableProp.action.viewHTML === "string") {
+                viewHTML = tableProp.action.viewHTML;
+                tableProp.action.view = true;//automatic - important!
+            } else {
+                viewHTML = "<a href='#'>View</a>";
+            }
+
+            if (tableProp.action.deleteHTML === "string") {
+                deleteHTML = tableProp.action.deleteHTML;
+                tableProp.action.delete = true;//automatic - important!
+            } else {
+                deleteHTML = "<a href='#'>Delete</a>";
+            }
+
+
+            if (tableProp.action.view !== true) {//yes !== true
+                action_col_span--;
+            }
+
+            if (tableProp.action.delete !== true) {//yes !== true
+                action_col_span--;
+            }
+
+
+        }
 
         var caption = "";
         var thead = "";
         var tbody = "";
 
-        if (tableTitle !== "") {
-            caption = "<caption>" + tableTitle + "</caption>";
+        if (tableProp.title !== ""
+                && tableProp.title !== null
+                && typeof tableProp.title !== "undefined") {
+            caption = "<caption>" + tableProp.title + "</caption>";
         }
 
-        var columns = tableColumns;
+        var columns = tableProp.columns;
         var th = "";
-        for (var i = 0; i < columns.length; i++) {
-            th += "<th data-priority='" + (i + 1) + "'>" + normalizeTableColumn(columns[i]) + "</th>";
+        var extra = 0;
+
+        if (tableProp.deleteButton === true
+                || tableProp.viewButton === true) {
+            tableProp.selectByCheck = true;//automatically this will be true
+        }
+
+        if (tableProp.selectByCheck === true) {
+            extra = 1;
+        }
+        for (var i = 0; i < columns.length + extra + action_col_span; i++) {
+            if (i === 0 && tableProp.selectByCheck === true) {
+                th += "<th data-priority='" + (i + 1) + "'><a data-table-check='all' href='#'>All</a></th>";
+                continue;
+            }
+            if (i === columns.length + extra) {
+
+                th += "<th colspan='" + action_col_span + "' data-priority='" + (i + 1) + "'>" + actionColumn + "</th>";
+                break;
+            }
+            th += "<th data-priority='" + (i + 1) + "'>" + normalizeTableColumn(columns[i - extra]) + "</th>";
         }
 
         if (th !== "") {
             thead = "<thead><tr>" + th + "</tr></thead>";
         }
 
-        var rows = tableData;
+        var rows = tableProp.data;
 
         for (var i = 0; i < rows.length; i++) {
             var td = "";
-            for (var k = 0; k < rows[i].length; k++) {
-                td += "<td>" + rows[i][k] + "</td>";
+            for (var k = 0; k < rows[i].length + extra + action_col_span; k++) {
+                if (k === 0 && tableProp.selectByCheck === true) {
+                    td += "<td><input data-table-check='checkbox' type='checkbox'/></td>";
+                    continue;
+                }
+
+                if (action_col_span === 1
+                        && k === rows[i].length + extra) {
+                    var h = tableProp.action.delete === true ? deleteHTML : viewHTML;
+                    td += "<td>" + h + "</td>";
+                    continue;
+                } else if (action_col_span === 2
+                        && k === rows[i].length + extra) {
+                    td += "<td>" + viewHTML + "</td>";
+                    continue;
+                } else if (action_col_span === 2
+                        && k === rows[i].length + extra + 1) {
+                    td += "<td>" + deleteHTML + "</td>";
+                    continue;
+                }
+
+                td += "<td>" + rows[i][k - extra] + "</td>";
             }
             if (td !== "") {
                 tbody += "<tr>" + td + "</tr>";
@@ -1987,22 +2572,22 @@ var ChurchApp = new function () {
         return table_html;
     }
 
-    function create_Style_B_Table_Html(tableTitle, tableColumns, tableData, table_id) {
+    function create_Style_B_Table_Html(tableProp) {
 
         //TODO
     }
 
-    function create_Style_C_Table_Html(tableTitle, tableColumns, tableData, table_id) {
+    function create_Style_C_Table_Html(tableProp) {
         //TODO
 
     }
 
-    function create_Style_D_Table_Html(tableTitle, tableColumns, tableData, table_id) {
+    function create_Style_D_Table_Html(tableProp) {
         //TODO
 
     }
 
-    function create_Style_E_Table_Html(tableTitle, tableColumns, tableData, table_id) {
+    function create_Style_E_Table_Html(tableProp) {
         //TODO
 
     }
