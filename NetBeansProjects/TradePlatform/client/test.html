@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TEST</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div style="display: inline-block;"></div>
+        <script>
+
+            generateData = function () {
+                var period_len = 30 * 24 * 60 * 60 * 1000;
+                var record = {
+                    time: new Date().getTime() - period_len,
+                };
+
+                alert(new Date(record.time));
+
+                var count = period_len / 1000;
+
+
+                var max = 1000;
+                var min = 0;
+                var trend = -1;
+                var price = max / 2;
+                var rand_trend = [1, -1, 1, -1, 1, -1, 1, -1, 1, -1];
+                var bar_h = 25;
+                var close = 0;
+                var open = 0;
+                var high = 0;
+                var low = 0;
+                var data = [];
+                for (var i = 0; i < count; i++) {
+                    var rand = Math.abs(Math.random());
+                    trend = rand_trend[Math.floor(rand * rand_trend.length)];
+                    var delta = rand * 5;
+                    price += (trend * delta);
+
+                    if (price >= (max - bar_h) * 0.9) {
+                        trend = -1;
+                        price += (trend * delta);
+                    }
+
+                    if (price <= (min + bar_h) * 1.1) {
+                        trend = 1;
+                        price += (trend * delta);
+                    }
+
+                    bar_trend = rand_trend[Math.floor(rand * rand_trend.length)];
+                    var diff = rand * 5;
+                    low = price;
+                    high = price + (rand * bar_h);
+                    close = low + (high - low) * rand;
+                    open = low + (high - low) * Math.random();
+                    var record = {
+                        time: record.time + 1000,
+                        open: open,
+                        high: high,
+                        low: low,
+                        close: close
+                    };
+
+                    data.push(record);
+                }
+
+                return data;
+            };
+
+            /*var d = generateData();
+             console.dir(d[0]);
+             console.dir(d[d.length - 1]);
+             alert('done');*/
+
+            /*var mill_sec = 60 * 60 * 24 * 30 * 1000;
+            var b1 = new Date('01/01/1970').getTime();
+            var b2 = new Date('01/01/1971').getTime();
+            var num = (b2 - b1) / mill_sec;
+            alert(num);
+            num = Math.floor(num);
+            alert(num);
+            alert(60 * 24 * 30 * 12 * 20);*/
+    
+            var mill_sec = 60 * 60 * 24 * 1000;
+            
+            var dtf = timeframeFilter(generateData(), mill_sec);
+            
+            for(var i=0; i< dtf.length; i++){
+                console.log(new Date(dtf[i].time).toGMTString());
+            }
+            
+            function timeframeFilter(data, mill_sec) {
+                var tf_data = [];
+                var b1 = new Date('01/01/1970').getTime();
+                var b2 = new Date(data[0].time).getTime();
+                var num = (b2 - b1) / mill_sec;
+                num = Math.floor(num);
+                var rb = num * mill_sec;
+                var next_time = b1 + rb ;
+                for (var i = 1; i < data.length; i++) {
+                    if (data[i].time >= next_time) {
+                        tf_data.push(data[i]);
+                        next_time += mill_sec;
+                    }
+                }
+                return tf_data;
+            }
+
+        </script>
+    </body>
+</html>
