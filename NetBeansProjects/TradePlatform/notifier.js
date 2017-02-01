@@ -277,9 +277,10 @@ var onExchangeBought = function (msg) {
     var expirySeconds = (new Date(order.exchange_expiry).getTime() - new Date(sObj.now()).getTime()) / 1000;
 
 
-    if (expirySeconds < 10) {// if less than 10 seconds then make atleast 10 seconds to prevent any unexcepted behaviour - Just in case!
+    /*Not neccessary
+     * if (expirySeconds < 10) {// if less than 10 seconds then make atleast 10 seconds to prevent any unexcepted behaviour - Just in case!
         expirySeconds = 10;
-    }
+    }*/
 
     var countdownQty = expirySeconds;
     var countdownUnit = sObj.executor.SECONDS;
@@ -327,7 +328,7 @@ var onExchangeBought = function (msg) {
                     args: order,
                     value: countdownQty,
                     unit: countdownUnit,
-                    name: "countdown",
+                    name: "countdown",//Do not change! Used in many places
                     id: sObj.util.countdownID(order.order_ticket)
                 });
 

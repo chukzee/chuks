@@ -31,6 +31,20 @@ module.exports = function (_sObj) {
                 order.seller_commission = 0;
                 order.seller_profit_and_loss = -amt;
 
+            } else {//BOTH ARE BREAK EVEN - For Spotfx this may happen if a 
+                //trade which is not already activated is nullified (rejected by the server) 
+                //for reason such as when the server expectedly  shuts down
+                //and comed back up when the trade countdown is already over. In case the trade 
+                //is rendered useless
+
+                //seller
+                order.seller_commission = 0;
+                order.seller_profit_and_loss = 0;
+
+                //buyer
+                order.buyer_commission = 0;
+                order.buyer_profit_and_loss = 0;
+
             }
 
         } else if (order.product_type === "options") {
@@ -63,7 +77,11 @@ module.exports = function (_sObj) {
                 order.seller_commission = 0;
                 order.seller_profit_and_loss = -(order.size * order.seller_premium / 100);
                 
-            } else {//BOTH ARE BREAK EVEN
+            } else {//BOTH ARE BREAK EVEN. This could happen if a 
+                //trade which is not already activated is nullified (rejected by the server) 
+                //for reason such as when the server expectedly  shuts down
+                //and comed back up when the trade countdown is already over. In case the trade 
+                //is rendered useless
 
                 //seller
                 order.seller_commission = 0;

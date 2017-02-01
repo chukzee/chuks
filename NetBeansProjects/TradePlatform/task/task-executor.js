@@ -3,8 +3,11 @@ var tasks = [];
 var namedTasks = {};
 var isLazyStarted = false;
 var MIN_INTERVAL = 1000; // TODO: Experiment with lower value later (say 100, 10 , 1) and check server performance if it has negative impact.
-var executor = function () {
+var metrics = null;
 
+var executor = function (_metrics) {
+    metrics = _metrics;
+    
     this.SECONDS = 1000;
     this.MINUTES = 60 * 1000;
     this.HOURS = 60 * 60 * 1000;
@@ -36,7 +39,7 @@ var executor = function () {
     };
 
     this.queue = function (fn, args, value, unit) {
-        
+
         if (typeof fn === "function" && arguments.length >= 3) {
             validateTask(fn, args, value, unit, false);
         } else if (typeof fn === "object" && arguments.length === 1) {
@@ -63,25 +66,25 @@ var executor = function () {
 
     var validateTask = function () {
         var fn, value, unit, begin_time, args = null, repeat;
-        
+
         if (typeof arguments[3] === "undefined") {
             fn = arguments[0];
             value = arguments[1];
             unit = arguments[2];
-            
+
         } else if (typeof arguments[4] === "undefined") {
             fn = arguments[0];
             args = arguments[1];
             value = arguments[2];
             unit = arguments[3];
-            
+
         } else {
             fn = arguments[0];
             args = arguments[1];
             value = arguments[2];
             unit = arguments[3];
             begin_time = arguments[4];
-            
+
         }
 
         repeat = arguments[arguments.length - 1];
@@ -126,13 +129,23 @@ var executor = function () {
             name: name,
             id: id
         };
-        tasks.push(ts);
+
         if ((ts.id && !ts.name) || (!ts.id && ts.name)) {
             throw new Error("a task with id must go with a name and vice versa");
         }
         if (ts.id) {
             namedTasks[ts.id] = ts;
         }
+
+        tasks.push(ts);
+
+        //do some metrics
+        metrics.incrementTasks();
+
+        if (ts.name === "countdown") {
+            metrics.incrementCountdownOrders();
+        }
+
     };
 
     return this;
@@ -154,6 +167,13 @@ var run = function () {
                     delete namedTasks[task.id];
                 }
                 arr.splice(index, 1);// remove the task
+
+                //do some metrics
+                metrics.decrementTasks();
+
+                if (task.name === "countdown") {
+                    metrics.decrementCountdownOrders();
+                }
 
             }
             task.nextTime += task.interval;

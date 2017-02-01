@@ -237,6 +237,7 @@ var exchangeBuyer = function (sObj) {
                 SYMBOL: row.SYMBOL,
                 STOP_LOSS: row.STOP_LOSS,
                 TAKE_PROFIT: row.TAKE_PROFIT,
+                COUNT_DOWN : row.EXCHANGE_EXPIRY,
                 TIME: sObj.now()
             };
         } else if (mkt_type === "options") {
@@ -256,6 +257,7 @@ var exchangeBuyer = function (sObj) {
                 EXPIRY: row.EXPIRY,
                 PRICE: row.PRICE,
                 PREMIUM: row.PREMIUM,
+                COUNT_DOWN : row.EXCHANGE_EXPIRY,
                 TIME: sObj.now()
             };
         }

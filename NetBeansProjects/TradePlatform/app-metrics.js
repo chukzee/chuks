@@ -42,6 +42,14 @@ var connectedUsersCounter = probe.counter({
   name : 'Total users connected'
 });
 
+var tasksCounter = probe.counter({
+  name : 'Total regitered tasks'
+});
+
+var countdownOrdersCounter = probe.counter({
+  name : 'Total countdown orders'
+});
+
 
 var metrics = function(){
     
@@ -60,18 +68,22 @@ var metrics = function(){
     };
 
     this.incrementOrder = function(){
+        console.log('incrementOrder');
         ordersCounter.inc();
     };
     
     this.decrementOrder = function(){
+        console.log('decrementOrder');
         ordersCounter.dec();
     };
     
     this.incrementOpenOrder = function(){
+        console.log('incrementOpenOrder');
         openOrdersCounter.inc();
     };
     
     this.decrementOpenOrder = function(){
+        console.log('decrementOpenOrder');
         openOrdersCounter.dec();
     };
     
@@ -89,8 +101,23 @@ var metrics = function(){
     
     this.decrementConnectedUsers = function(){
         connectedUsersCounter.dec();
+    };    
+    
+    this.incrementTasks = function(){
+        tasksCounter.inc();
     };
-             
+    
+    this.decrementTasks = function(){
+        tasksCounter.dec();
+    };
+        
+    this.incrementCountdownOrders = function(){
+        countdownOrdersCounter.inc();
+    };
+    
+    this.decrementCountdownOrders = function(){
+        countdownOrdersCounter.dec();
+    };
     return this;
 };
 

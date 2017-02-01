@@ -112,7 +112,12 @@ var AbstractOrders = function () {
             return;
         }
 
+        if (!this.list[order.symbol] || !this.list[order.symbol][order.order_ticket]) {            
+            return;
+        }
+
         delete this.list[order.symbol][order.order_ticket]; //delete using delete operator
+
 
         //metrics go below
         sObj.metrics.decrementOrder();
@@ -258,6 +263,7 @@ var openTrades = new function () {
                     .where("ORDER_TICKET", order.order_ticket)
                     .from(open_trdes_table)
                     .then(function (result) {
+
                         if (result < 1) {//this may occur if another worker in the cluster has already perform this operation
 
                             me.remove(order); //important! remove the order object from the list store even though no delete occurred since another cluster worker may have deleted it already
@@ -813,9 +819,22 @@ var loadExistingPendingOrders = function () {
 var loadExistingOpenTrades = function () {
 
     console.log('Loading existing open positions if any...');
+    var abstractOrders = new AbstractOrders();
+
+    var registerCountdown = function (order) {
+        var expirySeconds = (order.countdown_expiry - new Date(sObj.now()).getTime()) / 1000;
+        sObj.executor.queue(
+                {
+                    fn: notifier.effectOpenTrade, //after countdown
+                    args: order,
+                    value: expirySeconds,
+                    unit: sObj.executor.SECONDS,
+                    name: "countdown", //Do not change! Used in many places
+                    id: sObj.util.countdownID(order.order_ticket)
+                });
+    };
 
     sObj.db.select()
-            .where("OPEN", "!=", 0)
             .from("open_positions_spotfx")
             .then(function (result) {
 
@@ -839,19 +858,11 @@ var loadExistingOpenTrades = function () {
                         stop_loss: row.STOP_LOSS,
                         take_profit: row.TAKE_PROFIT,
                         countdown: row.COUNT_DOWN,
+                        countdown_expiry: new Date(row.COUNT_DOWN).getTime(),
                         open: row.OPEN,
                         close: row.CLOSE,
                         time: row.TIME
                     };
-
-                    //var signed_sl = sObj.util.validateStopLossPips(order.stop_loss, order.direction);
-                    //var signed_tp = sObj.util.validateTakeProfitPips(order.take_profit, order.direction);
-
-                    //order.sl = Math.abs(signed_sl);//important! stop loss size - positive value
-                    //order.tp = Math.abs(signed_tp);//important! take profit size - positive value also - take note
-
-                    order.sl = Math.abs(order.open - order.stop_loss) / pairPoints(order.symbol);//important! stop loss size - positive value
-                    order.tp = Math.abs(order.open - order.take_profit) / pairPoints(order.symbol);//important! take profit size - positive value also - take note
 
                     //set product type
                     order.product_type = "spotfx";
@@ -863,6 +874,28 @@ var loadExistingOpenTrades = function () {
                         continue;
                     }
 
+                    if (!order.open) {
+                        if (!abstractOrders.isExpired(order.countdown_expiry)) {
+                            registerCountdown(order);
+                        } else {
+                            //close the trade for beak even
+                            openTrades.closeOrder(order, openTrades.BREAK_EVEN);
+                        }
+
+                        continue;
+                    }
+
+                    //var signed_sl = sObj.util.validateStopLossPips(order.stop_loss, order.direction);
+                    //var signed_tp = sObj.util.validateTakeProfitPips(order.take_profit, order.direction);
+
+                    //order.sl = Math.abs(signed_sl);//important! stop loss size - positive value
+                    //order.tp = Math.abs(signed_tp);//important! take profit size - positive value also - take note
+
+                    order.sl = Math.abs(order.open - order.stop_loss) / pairPoints(order.symbol);//important! stop loss size - positive value
+                    order.tp = Math.abs(order.open - order.take_profit) / pairPoints(order.symbol);//important! take profit size - positive value also - take note                    
+
+
+
                     //register the open position for price monitoring
                     openTrades.add(order);
 
@@ -871,7 +904,6 @@ var loadExistingOpenTrades = function () {
             })
             .then(function (result) {
                 return sObj.db.select()
-                        .where("OPEN", "!=", 0)
                         .from("open_positions_options");
             })
             .then(function (result) {
@@ -901,14 +933,16 @@ var loadExistingOpenTrades = function () {
                         barrier_down: row.BARRIER_DOWN,
                         size: row.SIZE,
                         expiry: row.EXPIRY,
-                        long_expiry: new Date(row.EXPIRY).getTime(), 
+                        long_expiry: new Date(row.EXPIRY).getTime(),
                         price: row.PRICE,
                         premium: row.PREMIUM,
                         countdown: row.COUNT_DOWN,
+                        countdown_expiry: new Date(row.COUNT_DOWN).getTime(),
                         open: row.OPEN,
                         close: row.CLOSE,
                         time: row.TIME
                     };
+
 
                     //set product type
                     order.product_type = "options";
@@ -919,6 +953,18 @@ var loadExistingOpenTrades = function () {
                     if (!order.pip_value) {//this can be because the symbol is not supported!
                         continue;
                     }
+
+                    if (!order.open) {
+                        if (!abstractOrders.isExpired(order.countdown_expiry)) {
+                            registerCountdown(order);
+                        } else {
+                            //close the trade for beak even
+                            openTrades.closeOrder(order, openTrades.BREAK_EVEN);
+                        }
+
+                        continue;
+                    }
+
 
                     //register the open position for price monitoring
                     openTrades.add(order);

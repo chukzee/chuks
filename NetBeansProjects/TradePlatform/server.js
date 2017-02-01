@@ -26,14 +26,14 @@ var bluebirdPromise = require('bluebird');
 var jwt = require('jsonwebtoken');
 var shortid = require('shortid');
 var moment = require('moment');
-var executor = require('./task/task-executor')();
 var util = require('./util')();
 var priceHistory = require('./price-history')();
 var metrics = require('./app-metrics')();
+var executor = require('./task/task-executor')(metrics);
 
 app.use(helmet());//secure the server app from attackers - Important!
 
-app.use(bodyParser.json());// to support JSON-encoded bodies
+app.use(bodyParser.json());       // to support JSON-encoded bodies
 
 app.use(bodyParser.urlencoded({// to support URL-encoded bodies
     extended: true

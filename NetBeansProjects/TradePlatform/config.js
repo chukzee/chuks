@@ -98,7 +98,7 @@ module.exports = {
      * possible values are 
      * @type String MT_CLIENT and FIX_SERVER
      */
-    PRICE_DATASOURCE: "FIX_SERVER",
+    PRICE_DATASOURCE: "MT_CLIENT",
     /**
      * A flag used to select the FIX server to connect to.
      * Set to true to connect to fix live server. Default is false
