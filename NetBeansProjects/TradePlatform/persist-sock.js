@@ -44,8 +44,6 @@ module.exports = function (https_server, _sObj, _exchangePost, _market, _priceHi
 
     _exchangePost.on("pending_order_sold", onPendingOrderSold);
 
-    //Monitor options trade to detect their expiration
-    //sObj.executor.schedule(checkExpiredOptions, 1, sObj.executor.SECONDS);
 
     /*for (var nsp in io.nsps) {
      //console.dir('----------------------------------------------------------');
@@ -278,13 +276,6 @@ var openTrades = new function () {
                                 .into(history_trades_table)
                                 .then(function (result) {
 
-                                    /*if(!order.seller_premium_paid){
-                                     order.seller_premium_paid = 0;//avoid undefined - in the case of spot fx
-                                     }
-                                     if(!order.buyer_premium_paid){
-                                     order.buyer_premium_paid = 0;//avoid undefined - in the case of spot fx
-                                     }*/
-
                                     //update the seller's account balance
                                     return trx.raw("UPDATE users "
                                             + " SET ACCOUNT_BALANCE = ACCOUNT_BALANCE + "
@@ -322,18 +313,6 @@ var openTrades = new function () {
 
     };
     this.checkSpotFxTrade = function (order, cprice) {
-        /*var quote = market.getQuote(order.symbol);
-         if (!quote) {
-         return;//yes! important!
-         }
-         var cprice = quote.price;
-         
-         if (!cprice) {
-         return;//yes! important!
-         }
-         */
-
-        //order.close = cprice; // remove this - according to onyeka since it allows slippage
 
         if (order.direction === "BUY" && cprice >= order.take_profit) {
 
@@ -432,13 +411,9 @@ var pendingOrders = new function () {
     AbstractOrders.call(this); //extend AbstractOrders
 
     this.activateOrder = function (order) {
-        //console.log("activateOrder--------");
-        //console.log(order);
 
         this.deleteOrder(order, true)
                 .then(function (result) {
-                    //console.log("notifier activateOrder--------");
-                    //console.log(order);
 
                     notifier.effectOpenTrade(order);
                 })
@@ -455,8 +430,6 @@ var pendingOrders = new function () {
      * @returns {undefined}
      */
     this.cancelExchangePendingOrder = function (order) {
-        //console.log("cancelExchangePendingOrder--------");
-        //console.log(order);
 
         order.is_removing_pending_order = true;
         var me = this;
@@ -476,8 +449,6 @@ var pendingOrders = new function () {
                         me.remove(order); //important! remove the order object from the list store even though no delete occurred since another cluster worker may have deleted it already
                         return sObj.promise.reject("NO DELETE OF PENDING ORDER FROM EXCHANGE ROOM !!!! order ticket - " + order.order_ticket + "\nNOTE: this is not a problem only if another worker in the cluster has already perform this operation otherwise check the cause!");
                     }
-                    //console.log("removed cancelExchangePendingOrder--------");
-                    //console.log(order);
 
                     me.remove(order); //remove the order object from the list store 
                 });
@@ -535,9 +506,6 @@ var pendingOrders = new function () {
             //here the order is bought and no longer in exchange room
             if (this.isExpired(order.long_pending_order_expiry)) {
 
-                //console.log("------bought expiry--------");
-                //console.log(order);
-
                 this.deleteOrder(order, false)
                         .catch(function (err) {
                             if (err) {
@@ -546,23 +514,14 @@ var pendingOrders = new function () {
                         });
             } else if (this.isHitPendingOrderPrice(order, current_price, prev_price)) {
 
-                //console.log("-----bought hit price--------");
-                //console.log(order);
-
                 this.activateOrder(order);
             }
         } else {
-
-            //console.log("-----not bought ---is expired --------   "+this.isExpired(order.long_pending_order_expiry));
-            //console.log("-----not bought ---is hit price --------   "+this.isHitPendingOrderPrice(order, current_price, prev_price));
 
             //here the order is not bought and still available (not expired) in exchange room
             if (!this.isExpired(order.long_pending_order_expiry)
                     && this.isHitPendingOrderPrice(order, current_price, prev_price)) {
                 //here the price is hit before expiry so we will cancel the order    
-
-                //console.log("-----not bought and hit price--------");
-                //console.log(order);
 
                 this.cancelExchangePendingOrder(order)
                         .catch(function (err) {
@@ -885,16 +844,8 @@ var loadExistingOpenTrades = function () {
                         continue;
                     }
 
-                    //var signed_sl = sObj.util.validateStopLossPips(order.stop_loss, order.direction);
-                    //var signed_tp = sObj.util.validateTakeProfitPips(order.take_profit, order.direction);
-
-                    //order.sl = Math.abs(signed_sl);//important! stop loss size - positive value
-                    //order.tp = Math.abs(signed_tp);//important! take profit size - positive value also - take note
-
                     order.sl = Math.abs(order.open - order.stop_loss) / pairPoints(order.symbol);//important! stop loss size - positive value
                     order.tp = Math.abs(order.open - order.take_profit) / pairPoints(order.symbol);//important! take profit size - positive value also - take note                    
-
-
 
                     //register the open position for price monitoring
                     openTrades.add(order);
@@ -1167,9 +1118,6 @@ var onPriceQuote = function (priceObj) {
 };
 
 var onPendingOrderSold = function (order) {
-
-    //console.log("onPendingOrderSold--------");
-    //console.log(order);
 
     pendingOrders.add(order);//register the order for monitoring!
 };

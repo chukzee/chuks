@@ -14,10 +14,12 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
         //listen to events using GlobalEvents
         global: {
             check_exchange_update: 'onCheckExchangeUpdate',
-            options_exchange_sold: 'onOptionsExchangeOperation',
-            spotfx_exchange_sold: 'onSpotFxExchangeOperation',
-            options_exchange_bought: 'onOptionsExchangeOperation',
-            spotfx_exchange_bought: 'onSpotFxExchangeOperation'
+            options_exchange_sold: 'onOptionsExchangeSold',
+            spotfx_exchange_sold: 'onSpotFxExchangeSold',
+            options_exchange_bought: 'onOptionsExchangeBought',
+            spotfx_exchange_bought: 'onSpotFxExchangeBought',
+            options_exchange_expire: 'onOptionsExchangeExpire',
+            spotfx_exchange_expire: 'onSpotFxExchangeExpire'
         }
     },
     onItemSelected: function (sender, record) {
@@ -192,7 +194,7 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
         this.onExchangeSpotFxRecentUpdate();
         return false;//important! prevent further call - i suppose it is a bug.
     },
-    onSpotFxExchangeOperation: function (msg) {
+    onSpotFxExchangeSold: function (msg) {
         if (msg.seller_id === TradeApp.Util.getUserExchangeId()) {
             return;//no need since we already refresh the grid immediately after it was sold
         }
@@ -203,7 +205,7 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
 
         return false;//important! prevent further call - i suppose it is a bug.
     },
-    onOptionsExchangeOperation: function (msg) {
+    onOptionsExchangeSold: function (msg) {
         if (msg.seller_id === TradeApp.Util.getUserExchangeId()) {
             return;//no need since we already refresh the grid immediately after it was sold
         }
@@ -212,6 +214,68 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
         var btn = Ext.getCmp("btn_options_recent_update");
         btn.setText(increment < 2 ? increment + " recent update" : increment + " recent updates");
         return false;//important! prevent further call - i suppose it is a bug.
+    },
+    onSpotFxExchangeBought: function (msg) {
+        if (msg.buyer_id === TradeApp.Util.getUserExchangeId()) {
+            return;//no need since we already refresh the grid immediately after it was bought
+        }
+
+        var increment = TradeApp.Util.incrementExchangeSpotFxUpdateCount();
+        var btn = Ext.getCmp("btn_spotfx_recent_update");
+        btn.setText(increment < 2 ? increment + " recent update" : increment + " recent updates");
+
+        //make the grid row reflect the change
+        var grid = Ext.getCmp("exchange-spotfx-grid-id");
+        this.gridRowDeleteIndicator(msg, grid);
+
+        return false;//important! prevent further call - i suppose it is a bug.
+    },
+    onOptionsExchangeBought: function (msg) {
+        if (msg.buyer_id === TradeApp.Util.getUserExchangeId()) {
+            return;//no need since we already refresh the grid immediately after it was bought
+        }
+
+        var increment = TradeApp.Util.incrementExchangeOptionsUpdateCount();
+        var btn = Ext.getCmp("btn_options_recent_update");
+        btn.setText(increment < 2 ? increment + " recent update" : increment + " recent updates");
+
+        var grid = Ext.getCmp("exchange-options-grid-id");
+        this.gridRowDeleteIndicator(msg, grid);
+
+        return false;//important! prevent further call - i suppose it is a bug.
+    },
+    onSpotFxExchangeExpire: function (msg) {
+
+        //make the grid row reflect the change
+        var grid = Ext.getCmp("exchange-spotfx-grid-id");
+        this.gridRowDeleteIndicator(msg, grid);
+
+        return false;//important! prevent further call - i suppose it is a bug.
+    },
+    onOptionsExchangeExpire: function (msg) {
+
+        var grid = Ext.getCmp("exchange-options-grid-id");
+        this.gridRowDeleteIndicator(msg, grid);
+
+        return false;//important! prevent further call - i suppose it is a bug.
+    },
+    gridRowDeleteIndicator: function (msg, grid) {
+        var view = grid.getView();
+        var store = grid.getStore();
+        var count = store.getCount();
+
+        for (var i = 0; i < count; i++) {
+            var rec = store.getAt(i);
+            var row = view.getRow(i);
+            if (!row) {
+                continue;//just in case! avoid error
+            }
+                        
+            if (rec.get('order') === msg.order_ticket) {
+                row.style.color = "red";
+            }
+        }
+
     },
     onPersonalExchangeSpotDelete: function () {
 
@@ -277,11 +341,11 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
                         success: function (conn, response, options, eOpts) {
                             try {
                                 var result = JSON.parse(conn.responseText);
-                                
+
                                 if (result.success) {
                                     Ext.Msg.alert('Success', result.msg);
                                     TradeApp.Util.deleteGridWhere(grid, 'order', order_tickets.split(','));
-                                }  else if (result.status === TradeApp.Const.AUTH_FAIL) {
+                                } else if (result.status === TradeApp.Const.AUTH_FAIL) {
                                     Ext.Msg.confirm("Authentication",
                                             "You may have to login to perform this operation!"
                                             + "<br/>Do you want to login?", function (option) {
@@ -289,7 +353,7 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
                                                     TradeApp.Util.login();
                                                 }
                                             });
-                                }else if (result.status === TradeApp.Const.UNSUPPORTED_VERSION) {
+                                } else if (result.status === TradeApp.Const.UNSUPPORTED_VERSION) {
                                     //Ext.Msg.alert("Unsupporte Version", "The application version has changed. In order to continue this page must be reloaded!"
                                     //      +" <br/>NOTE: If you see this message again after reload then clear your browse cache before reloading the page.");
                                     Ext.Msg.show({
@@ -302,8 +366,8 @@ Ext.define('TradeApp.view.exchange.ExchangeController', {
                                         }
                                     });
 
-                                   
-                                }else{
+
+                                } else {
                                     Ext.Msg.alert('Failed', result.msg);
                                 }
 

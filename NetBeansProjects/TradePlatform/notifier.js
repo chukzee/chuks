@@ -59,7 +59,7 @@ module.exports = function (_ioTraders, _sObj, _openTrades, _pendingOrders, _emai
     };
 
     this.effectOpenTrade = function (order) {
-        
+
         //console.log("this.effectOpenTrade--------");
         //console.log(order);
 
@@ -203,11 +203,28 @@ var sendTradeInfo = function (order, socket_id, extraParam, event_name) {
 
 };
 
+var onExchangeExpire = function (obj) {
+    onExchangeOperation(JSON.stringify(obj), obj.type, "expire");
+};
+
 var onExchangeSold = function (msg) {
-    var event_name = "";
+    //var event_name = "";
     var msgObj = JSON.parse(msg);
+
+    var expirySeconds = (new Date(msgObj.exchange_expiry).getTime() - new Date(sObj.now()).getTime()) / 1000;
+
+    sObj.executor.queue(
+            {
+                fn: onExchangeExpire,
+                args: msgObj,
+                value: expirySeconds,
+                unit: sObj.executor.SECONDS,
+                name: "exchange", //Do not change! Used in many places
+                id: msgObj.seller_id
+            });
+
     onExchangeOperation(msg, msgObj.type, "sold");
-    ioTraders.emit(event_name, msg);
+    //ioTraders.emit(event_name, msg);
 };
 
 var onAccountModified = function (msg) {
@@ -237,6 +254,9 @@ var onAccountModified = function (msg) {
 var broadcastExchangeBought = function (order) {
     var obj = {
         seller_id: order.seller_id,
+        buyer_id: order.buyer_id,
+        order_ticket: order.order_ticket,
+        order: order.order_ticket,//same
         type: order.product_type
     };
     var msg = JSON.stringify(obj);
@@ -279,8 +299,8 @@ var onExchangeBought = function (msg) {
 
     /*Not neccessary
      * if (expirySeconds < 10) {// if less than 10 seconds then make atleast 10 seconds to prevent any unexcepted behaviour - Just in case!
-        expirySeconds = 10;
-    }*/
+     expirySeconds = 10;
+     }*/
 
     var countdownQty = expirySeconds;
     var countdownUnit = sObj.executor.SECONDS;
@@ -328,7 +348,7 @@ var onExchangeBought = function (msg) {
                     args: order,
                     value: countdownQty,
                     unit: countdownUnit,
-                    name: "countdown",//Do not change! Used in many places
+                    name: "countdown", //Do not change! Used in many places
                     id: sObj.util.countdownID(order.order_ticket)
                 });
 
@@ -368,7 +388,7 @@ var doEffectOpenTrade = function (order) {
             if (!order.pip_value) {//this can be because the symbol is not supported!
                 return;
             }
-            
+
             //register the open position for price monitoring
             openTrades.add(order);
 
@@ -409,7 +429,7 @@ var setupSpotfxOpenPosition = function (order) {
     if (!current_price) {
         return;//yes! important!
     }
-    
+
     var open = order.pending_order_price ? order.pending_order_price : current_price;
     var close = current_price;
     var signed_sl = validateStopLossPips(order.stop_loss, order.direction);
@@ -448,12 +468,12 @@ var setupSpotfxOpenPosition = function (order) {
         return sObj.db.insert(columns_map)
                 .into("open_positions_spotfx")
                 .then(function (result) {
-                    
+
                     orderUpdate(order);
-            
+
                     //console.log("setupSpotfxOpenPosition---- then 1 ------");
                     //console.log(order);
-                        
+
                     return order;
                 });
     } else {
@@ -593,32 +613,32 @@ var computeExpiry = function (expiry_value, expiry_unit) {
     var format = sObj.DEFAULT_DATETIME_FORMAT;
     var expiry = null;
     /*if (expiry_unit !== "ticks") {
-        expiry = sObj.moment().utc().add(expiry_value, expiry_unit).format(format);
-    } else {
-        expiry = sObj.moment().utc().add(expiry_value, expiry_unit).format(format);
-    }*/
-    
-    var longNow =new Date(sObj.now()).getTime();
-    
+     expiry = sObj.moment().utc().add(expiry_value, expiry_unit).format(format);
+     } else {
+     expiry = sObj.moment().utc().add(expiry_value, expiry_unit).format(format);
+     }*/
+
+    var longNow = new Date(sObj.now()).getTime();
+
     var milliSec = 0;
-    
-    if(expiry_unit === 'seconds'){
-        milliSec = 1000 * expiry_value; 
-    }else if(expiry_unit === 'minutes'){
+
+    if (expiry_unit === 'seconds') {
+        milliSec = 1000 * expiry_value;
+    } else if (expiry_unit === 'minutes') {
         milliSec = 1000 * 60 * expiry_value;
-    }else if(expiry_unit === 'hours'){
+    } else if (expiry_unit === 'hours') {
         milliSec = 1000 * 3600 * expiry_value;
-    }else if(expiry_unit === 'days'){
+    } else if (expiry_unit === 'days') {
         milliSec = 1000 * 3600 * 24 * expiry_value;
-    }else{
-        console.log('WARNING!!!  Unsupported expiry unit - '+expiry_unit);
+    } else {
+        console.log('WARNING!!!  Unsupported expiry unit - ' + expiry_unit);
         return '1900-01-01 00:00:00';
     }
 
     var longExpiry = longNow + milliSec;
 
     expiry = sObj.moment(longExpiry).format(format);
-    
+
     return expiry;
 
 };

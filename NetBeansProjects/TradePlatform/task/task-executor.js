@@ -7,7 +7,7 @@ var metrics = null;
 
 var executor = function (_metrics) {
     metrics = _metrics;
-    
+
     this.SECONDS = 1000;
     this.MINUTES = 60 * 1000;
     this.HOURS = 60 * 60 * 1000;
@@ -140,10 +140,12 @@ var executor = function (_metrics) {
         tasks.push(ts);
 
         //do some metrics
-        metrics.incrementTasks();
+        if (metrics) {
+            metrics.incrementTasks();
 
-        if (ts.name === "countdown") {
-            metrics.incrementCountdownOrders();
+            if (ts.name === "countdown") {
+                metrics.incrementCountdownOrders();
+            }
         }
 
     };
@@ -169,10 +171,12 @@ var run = function () {
                 arr.splice(index, 1);// remove the task
 
                 //do some metrics
-                metrics.decrementTasks();
+                if (metrics) {
+                    metrics.decrementTasks();
 
-                if (task.name === "countdown") {
-                    metrics.decrementCountdownOrders();
+                    if (task.name === "countdown") {
+                        metrics.decrementCountdownOrders();
+                    }
                 }
 
             }

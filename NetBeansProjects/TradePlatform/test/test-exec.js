@@ -18,10 +18,18 @@ var fn = function(args){
 
 executor.schedule({
     fn:fn,
-    args:" the args",
+    args:" schedule",
     value:5,
     unit:executor.SECONDS,
-    begin_time:"2017-01-06 01:56:00"
+    begin_time:"2017-02-02 09:58:12"
+});
+
+executor.queue({
+    fn:fn,
+    args:" queue",
+    //value:5,
+    //unit:executor.SECONDS,
+    begin_time:"2017-02-02 09:58:12"
 });
 
 /*executor.schedule(

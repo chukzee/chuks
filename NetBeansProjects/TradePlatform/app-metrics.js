@@ -25,6 +25,15 @@ var requestCounter = probe.counter({
   name : 'Total requests'
 });
 
+
+var ordersCounter = probe.counter({
+  name : 'Total orders'
+});
+
+var countdownOrdersCounter = probe.counter({
+  name : 'Total countdown orders'
+});
+
 var openOrdersCounter = probe.counter({
   name : 'Total open orders'
 });
@@ -33,21 +42,12 @@ var pendingOrdersCounter = probe.counter({
   name : 'Total pending orders'
 });
 
-
-var ordersCounter = probe.counter({
-  name : 'Total orders'
-});
-
 var connectedUsersCounter = probe.counter({
   name : 'Total users connected'
 });
 
 var tasksCounter = probe.counter({
   name : 'Total regitered tasks'
-});
-
-var countdownOrdersCounter = probe.counter({
-  name : 'Total countdown orders'
 });
 
 

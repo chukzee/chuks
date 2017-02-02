@@ -314,6 +314,9 @@ var ExchangePost = function () {
                                 sObj.sendSuccess(res, 'Sent and stored successfully.');
                                 var msg = {
                                     seller_id: column_map.SELLER_ID,
+                                    order_ticket: column_map.ORDER_TICKET,
+                                    order: column_map.ORDER_TICKET,//same
+                                    exchange_expiry:column_map.EXCHANGE_EXPIRY,
                                     type: type
                                 };
                                 sObj.redis.publish(sObj.EXCHAGE_SOLD, JSON.stringify(msg));

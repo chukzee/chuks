@@ -89,12 +89,21 @@ Ext.define('TradeApp.TradeSocket', {
             var msgObj = JSON.parse(msg);
             Ext.GlobalEvents.fireEvent('spotfx_exchange_bought', msgObj);
         });
-
-        socket.on('options_exchange_sold', function (msg) {
+        
+        socket.on('options_exchange_bought', function (msg) {
             var msgObj = JSON.parse(msg);
             Ext.GlobalEvents.fireEvent('options_exchange_bought', msgObj);
         });
 
+        socket.on('spotfx_exchange_expire', function (msg) {
+            var msgObj = JSON.parse(msg);
+            Ext.GlobalEvents.fireEvent('spotfx_exchange_expire', msgObj);
+        });
+        
+        socket.on('options_exchange_expire', function (msg) {
+            var msgObj = JSON.parse(msg);
+            Ext.GlobalEvents.fireEvent('options_exchange_expire', msgObj);
+        });
 
         socket.on('authenticate', function (msg) {
             socket.emit('authenticate', TradeApp.Util.getAccessToken());//send the acces token
