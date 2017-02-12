@@ -1,0 +1,134 @@
+
+/*RCall is a technique design  by Chuks to remotely make calls to function.
+ * This is done by specifying the class name and its method to access in the 
+ * remote end. Parameter can also be passed to the remote method.
+ * 
+ * The advantage of this technique is that unlike RESTful API where each request
+ * is made for a number of actions , in RCall you can send multiple calls in just
+ * one http request. That is to say that you can call a number of methods remotely
+ * in just one http request. Thus saving bandwidth.
+ * 
+ * 
+ */
+Ext.define('GameApp.RCall', {
+    singleton: true,
+
+    exec: function (param) {
+        var r;
+        if (arguments.length === 1) {
+            if ((r = validateSingeArg(param))) {
+                ajaxExec(r.obj, r.callback);
+            }
+        } else {
+            if ((r = validateMultiArgs(arguments))) {
+                ajaxExec(r.obj, r.callback);
+            }
+        }
+
+        function isFunc(fn) {
+            return typeof fn === "function";
+        }
+
+        function validateMultiArgs(arr) {
+            //either the firs or the last parameter must be a function otherwise error
+            if (!isFunc(arr[0]) && !isFunc(arr[arr.length])) {
+                console.warn("No callback function for RCall - must be the first or last parameter. Cannot also be both");
+                return;
+            }
+
+            if (isFunc(arr[0]) && isFunc(arr[arr.length])) {
+                console.warn("Call function for RCall cannot be both the first and last parameter at same time! Choose one.");
+                return;
+            }
+
+            if (arr.length < 3) {
+                console.warn("Incomplete RCall parameter! must be atleast 3");
+                return;
+            }
+            var fnStart = isFunc(arr[0]);
+            var argStart = fnStart ? 0 : 1;
+
+            var obj = {};
+            var callback = fnStart ? arr[0] : arr[arr.length];
+            obj.class = arr[1];
+            obj.method = arr[2];
+            obj.param = [];
+            for (var i = argStart; i < arr.length - 1; i++) {
+                obj.param.push(arr[i]);
+            }
+            return {obj: obj, callback: callback};
+        }
+
+        function validateSingeArg(obj) {
+            if (!isFunc(obj.callback)) {
+                console.warn("RCall callback function not provided.");
+                return;
+            }
+
+            if (!obj.class) {
+                console.warn("RCall class not provided.");
+                return;
+            }
+
+            if (typeof obj.class !== "string") {
+                console.warn("RCall class invalid - must be a string type.");
+                return;
+            }
+
+            if (!obj.method) {
+                console.warn("RCall method not provided.");
+                return;
+            }
+
+            if (typeof obj.method !== "string") {
+                console.warn("RCall method invalid - must be a string type.");
+                return;
+            }
+            var o = {};
+            o.class = obj.class;
+            o.method = obj.method;
+            o.param = obj.param !== null && typeof obj.param !== "undefined" ?
+                    (obj.param.constructor === Array ? obj.param : [obj.param]) : null;
+
+            return {obj: o, callback: obj.callback};
+        }
+
+        function ajaxExec(obj, callback) {
+
+            var xhttp;
+            if (window.XMLHttpRequest) {
+                // code for modern browsers
+                xhttp = new XMLHttpRequest();
+            } else {
+                // code for old IE browsers e.g IE6, IE5
+                xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xhttp.onreadystatechange = function () {
+                var respose ={};
+                if (this.readyState - 0 === 4 && this.status - 0 === 200) {
+                    respose.success = true;
+                    respose.status = this.statusText;
+                    respose.data = this.responseText;
+                    try {
+                        //try to convert to object
+                        respose.data = JSON.parse(respose.data);
+                        callback(respose);
+                    } catch (e) {
+                        //not an object
+                        callback(respose);
+                    }
+
+                }else if (this.status - 0 > 200){
+                    respose.success = false;
+                    respose.status = this.statusText;
+                    callback(respose);
+                }
+            };
+
+            //rcall is the route for RCall requests
+            xhttp.open("POST", "rcall", true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send(JSON.stringify(obj));
+        }
+    }
+});
