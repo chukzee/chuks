@@ -6,6 +6,53 @@
     "config_munge": {
         "files": {}
     },
-    "installed_plugins": {},
-    "dependent_plugins": {}
+    "installed_plugins": {
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-contacts": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-media-capture": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        },
+        "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        }
+    },
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "com.game9ja.mobile"
+        }
+    }
 }

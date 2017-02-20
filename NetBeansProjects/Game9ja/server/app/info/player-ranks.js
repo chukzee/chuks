@@ -19,8 +19,10 @@ class PlayerRank extends Base{
     }
 
     getMonthlyRankList() {
-        console.log(this.RANK_FACTOR +" after apply");
-         console.log(arguments[0], arguments[1], arguments[2], arguments[3]);  
+        
+        //console.log(this.RANK_FACTOR +" after apply");
+        //console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
+         
          
     }
 
@@ -31,7 +33,7 @@ class PlayerRank extends Base{
 
 module.exports = PlayerRank;
 
-var p = new PlayerRank;
+//var p = new PlayerRank;
 
-p['getMonthlyRankList'].apply(p, [1,2,3,4]);
+//p['getMonthlyRankList'].apply(p, [1,2,3,4]);
 

@@ -19,10 +19,11 @@
      * declared in these locations will be available in your class "requires" or in calls
      * to "Ext.require". The "app.dir" variable below is expanded to the path where the
      * application resides (the same folder in which this file is located).
-     */
+     */    
     "classpath": [
-        "app",
-        "${toolkit.name}/src"
+        "app",/*This does not work so I added the correct enntry below - ${app.dir}/app */
+        "${toolkit.name}/src",
+        "${app.dir}/app" /*added by Chuks Alimele - This is the correct way to link to the universal app folder*/
     ],
 
     /**
@@ -31,12 +32,12 @@
      * If any file defines an Ext JS override (using Ext.define with an "override" property),
      * that override will in fact only be included in the build if the target class specified
      * in the "override" property is also included.
-     */
+     */    
     "overrides": [
         "overrides",
-        "${toolkit.name}/overrides"
+        "${toolkit.name}/overrides",
+        "${app.dir}/overrides" /*added by Chuks Alimele - I believe this is the correct approach - see classpath above*/
     ],
-
     /**
      * The Sencha Framework for this application: "ext" or "touch".
      */

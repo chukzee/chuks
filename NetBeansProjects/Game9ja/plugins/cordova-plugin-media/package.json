@@ -1,8 +1,7 @@
 {
   "name": "cordova-plugin-media",
-  "version": "2.4.2-dev",
+  "version": "2.4.1",
   "description": "Cordova Media Plugin",
-  "types": "./types/index.d.ts",
   "cordova": {
     "id": "cordova-plugin-media",
     "platforms": [

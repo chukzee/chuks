@@ -1,5 +1,5 @@
 $app-name:  dynamic( 'GameApp' );
-$image-search-path: 'C:/Users/chuks/Documents/NetBeansProjects/Game9ja/src/client/build/production/GameApp/classic/resources';
+$image-search-path: 'C:/Users/chuks/Documents/NetBeansProjects/Game9ja/www/build/production/GameApp/classic/resources';
 $theme-name:  dynamic( 'theme-triton' );
 $include-ext-abstractcomponent: dynamic(true);;
 $include-ext-abstractcontainer: dynamic(true);;
@@ -875,7 +875,10 @@ $include-ext-view-view: dynamic(true);;
 $include-ext-window-messagebox: dynamic(true);;
 $include-ext-window-toast: dynamic(true);;
 $include-ext-window-window: dynamic(true);;
+$include-gameapp-alert: dynamic(true);;
 $include-gameapp-application: dynamic(true);;
+$include-gameapp-device: dynamic(true);;
+$include-gameapp-rcall: dynamic(true);;
 $include-gameapp-store-personnel: dynamic(true);;
 $include-gameapp-view-main-list: dynamic(true);;
 $include-gameapp-view-main-main: dynamic(true);;

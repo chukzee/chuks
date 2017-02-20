@@ -529,7 +529,7 @@
         "classic": {
             "toolkit": "classic",
             
-            "theme": "theme-triton",
+            "theme": "classic-game9ja-theme",
             
             "sass": {
                 "generated": {
@@ -542,7 +542,7 @@
         "modern": {
             "toolkit": "modern",
             
-            "theme": "theme-triton",
+            "theme": "mobile-game9ja-theme",
             
             "sass": {
                 "generated": {

@@ -1,8 +1,26 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
+
+module.exports = {
+        
+    /**
+     * Server https port used in production
+     * @type Number
+     */
+    HTTPS_PORT: 443,
+    /**
+     * Server http port used in production
+     * @type Number
+     */
+    //HTTP_PORT: 80,
+    HTTP_PORT: 300,
+    /**
+     * Server http host used in production
+     * @type Number
+     */
+    //HOST: "game9ja.com"
+    HOST: "localhost"
+
+};
 
 
 

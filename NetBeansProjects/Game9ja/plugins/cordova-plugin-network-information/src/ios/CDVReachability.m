@@ -120,7 +120,6 @@ static void CDVReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRe
 - (void)stopNotifier
 {
     if (reachabilityRef != NULL) {
-        SCNetworkReachabilitySetCallback(reachabilityRef, NULL, NULL);
         SCNetworkReachabilityUnscheduleFromRunLoop(reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     }
 }

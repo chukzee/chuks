@@ -35,7 +35,9 @@
             }
 
             Ext.manifest = profile; // this name must match a build profile name
-
+            
+            Ext.manifest = 'modern';//By Chuks - For testing in the browser
+            
             // This function is called once the manifest is available but before
             // any data is pulled from it.
             //
@@ -45,6 +47,7 @@
         };
     </script>
     
+    <script type="text/javascript" src="cordova.js"></script>
     
     <!-- The line below must be kept intact for Sencha Cmd to build your application -->
     <script id="microloader" data-app="709c92fb-f695-498f-9411-fcf7ded2989a" type="text/javascript" src="bootstrap.js"></script>

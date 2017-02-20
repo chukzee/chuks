@@ -24,7 +24,7 @@
     xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest"
     xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
     id="cordova-plugin-contacts"
-    version="2.2.2-dev">
+    version="2.2.1">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>
@@ -213,14 +213,14 @@
     <!-- Windows 8 -->
     <platform name="windows8">
         <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
-            <runs />
+            <merges target="" />
         </js-module>
     </platform>
 
     <!-- Windows -->
     <platform name="windows">
         <js-module src="src/windows/ContactProxy.js" name="ContactProxy">
-            <runs />
+            <merges target="" />
         </js-module>
         <config-file target="package.phone.appxmanifest" parent="/Package/Capabilities">
             <m3:Capability Name="contacts" />

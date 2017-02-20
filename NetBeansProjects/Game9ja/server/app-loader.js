@@ -88,9 +88,9 @@ module.exports = function(){
      * //No no no! Dont because of thread issue 
      * //even though it is widely believed node is thread safe.
      * //Have you though of asyn operation and how it
-     * //may cause unexpected result if we make requireMod
-     * //have static access. There could be thread issues i guess.
-     * //Thus, we will rather instantiate on demand.
+     * //may cause unexpected result if we make 'requireMod' variable
+     * //have static access? There could be thread issues i strongly believe.
+     * //Thus, we will rather instantiate on demand. Caution is the word here!
      * 
         requireMod[i] =new requireMod[i](app); // we shall later instantiate on demand! see reason directly above 
     }*/

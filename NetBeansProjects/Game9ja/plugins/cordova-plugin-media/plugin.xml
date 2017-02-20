@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
 id="cordova-plugin-media"
-    version="2.4.2-dev">
+    version="2.4.1">
 
     <name>Media</name>
     <description>Cordova Media Plugin</description>
@@ -155,7 +155,7 @@ id="cordova-plugin-media"
     <!-- windows8 -->
     <platform name="windows8">
         <js-module src="src/windows/MediaProxy.js" name="MediaProxy">
-            <runs />
+            <merges target="" />
         </js-module>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">
@@ -166,7 +166,7 @@ id="cordova-plugin-media"
     <!-- windows -->
     <platform name="windows">
         <js-module src="src/windows/MediaProxy.js" name="MediaProxy">
-            <runs />
+            <merges target="" />
         </js-module>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">

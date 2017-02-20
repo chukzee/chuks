@@ -395,12 +395,6 @@ namespace GlobalizationProxy.Globalization
         public string TimeZone { get; set; }
 
         /// <summary>
-        /// IANA TimeZone
-        /// </summary>
-        [DataMember(Name = "iana_timezone", IsRequired = false)]
-        public string IanaTimeZone { get; set; }
-
-        /// <summary>
         /// UTC offset
         /// </summary>
         [DataMember(Name = "utc_offset", IsRequired = false)]
@@ -417,14 +411,12 @@ namespace GlobalizationProxy.Globalization
         /// </summary>
         /// <param name="pattern"></param>
         /// <param name="timezone"></param>
-        /// <param name="ianaTimezone"></param>
         /// <param name="utcOffset"></param>
         /// <param name="dstOffset"></param>
-        public DatePattern(string pattern, string timezone, string ianaTimezone, double utcOffset, double dstOffset)
+        public DatePattern(string pattern, string timezone, double utcOffset, double dstOffset)
         {
             this.Pattern = pattern;
             this.TimeZone = timezone;
-            this.IanaTimeZone = ianaTimezone;
             this.UtcOffset = utcOffset;
             this.DstOffset = dstOffset;
         }
