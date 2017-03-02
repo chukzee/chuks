@@ -36,7 +36,7 @@
      *
      *    "extend": "parent-theme-package",
      */
-    "extend": "theme-crisp",
+    "extend": "theme-neptune",
 
     /**
      * The toolkit used by this theme (only for "theme" package type).
@@ -45,7 +45,7 @@
      *
      *    "toolkit": "classic",
      */
-    "toolkit": "classic",
+    "toolkit": "modern",
 
      /**
       * The author of the package.
