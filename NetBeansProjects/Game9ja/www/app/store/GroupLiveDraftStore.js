@@ -1,7 +1,7 @@
 Ext.define('GameApp.store.GroupLiveDraftStore', {
     extend: 'Ext.data.Store',
     alias: 'store.group-live-draft',
-    requires: ['TradeApp.model.LiveDraft'
+    requires: ['GameApp.model.LiveDraft'
     ],
     autoLoad: true,
     proxy: {

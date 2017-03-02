@@ -1,7 +1,7 @@
 Ext.define('GameApp.store.LiveChessStore', {
     extend: 'Ext.data.Store',
     alias: 'store.live-chess',
-    requires: ['TradeApp.model.LiveChess'
+    requires: ['GameApp.model.LiveChess'
     ],
     autoLoad: true,
     proxy: {
