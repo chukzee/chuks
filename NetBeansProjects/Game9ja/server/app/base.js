@@ -7,33 +7,26 @@ class Base {
         this.sObj = _sObj;
     }
 
+    /*
+     * This method must be called by subclass if operation fails
+     * otherwise the request will block indefinitely, denialing other requests
+     */
     replyError(error) {
-        this.reply(error ? error : "An error occur!", false);
+        this.response.replyError(error);
     }
     /*
-     * This method must be called by subclass if operation is success
-     * otherwise the request will block indefinitely, denially other requests
+     * This method must be called by subclass if operation is successful
+     * otherwise the request will block indefinitely, denialing other requests
      */
     replySuccess(data) {
-        this.reply(data, true);
-    }
-    
-    /*
-     * This method must be called by subclass if operation fails or there is an 
-     * error otherwise the request will block indefinitely, denially
-     * other requests
-     */
-    reply(data, success) {
-        if (this.response) {
-            this.response.json({success: success, data: data});
-        }
+        this.response.replySuccess(data);
     }
 
-    set response(res){
-        this._res = res;
+    set response(resp){
+        this._resp = resp;
     }
     get response(){
-        return this._res ;
+        return this._resp ;
     }
 }
 

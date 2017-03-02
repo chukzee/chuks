@@ -8,7 +8,7 @@ var options = {
     key: fs.readFileSync('security/matadorprimeelcmarketscom.key')
 };
 var appLoader = require('./app-loader');
-var RCall = require('./rcall');
+var RCallRequest = require('./rcall-request');
 var express = require('express');
 var app = express();
 var http_app = express();
@@ -106,7 +106,7 @@ const sObj = new ServerObject();
 
 appLoader();
 
-new RCall(sObj, app, appLoader);
+new RCallRequest(sObj, app, appLoader);
 
 
 

@@ -8,14 +8,49 @@ Ext.define('GameApp.view.chess.FriendsLiveChessList', {
     singleSelect: true,
     
 
-    itemTpl: '<div class="the chess live list">'+
+    /*itemTpl: '<div class="the chess live list">'+
             '<img src= "{white_player_pic}"></img>'+
             '<div>{white_player_name}</div>'+
             '<div>{black_player_name}</div>'+
             '<div>{score}</div>'+
             '<div>{game_duration}</div>'+
             '<img src= "{black_player_pic}"></img>'+
-            '</div>',
+            '</div>',*/
+    
+    itemTpl: '<div class="game9ja_live_games_list">'+
+            '<div>'+
+                '<img  src="{white_player_pic}" alt="" onerror="this.onerror=null; this.src=\'resources/images/default_person.png\';"/>'+
+            '</div>'+
+            '<div>'+
+                '<div>'+
+                    '<span>'+
+                        '{white_player_name}'+
+                    '</span>'+
+                    '<span >'+
+                        '{game_elapse_time}'+
+                    '</span>'+
+                '</div>'+
+                '<div>'+
+                    '<span>'+
+                        '{score}'+
+                    '</span>'+
+                    '<span>'+
+                        'Live'+
+                    '</span>'+
+                '</div>'+
+                '<div>'+
+                    '<span>'+
+                        '{game_views_count}'+
+                    '</span>'+
+                    '<span>'+
+                        '{black_player_name}'+
+                    '</span>'+
+                '</div>'+
+            '</div>'+
+            '<div>'+
+                '<img   src="{black_player_pic}" alt="" onerror="this.onerror=null; this.src=\'resources/images/default_person.png\';"/>'+
+            '</div>'+
+        '</div>',
     /*data: [
         {white_player_name: 'Alimele C.',white_player_username: '08048239423', white_player_pic: "alimele_pic.png", white_player_rating: "4 star", black_player_name: 'Okoro M.', black_player_name: '09087324723', black_player_pic: "okoro_pic.png", black_player_rating: "4 star", game_duration: "2 hours", score: "1 - 0", game_position: "The game position goes here"},
     ],*/

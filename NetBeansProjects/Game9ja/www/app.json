@@ -279,6 +279,9 @@
             "path": "${build.out.css.path}",
             "bundle": true,
             "exclude": ["fashion"]
+        },{            
+            //custom css
+            "path": "resources/css/live_games_list.css"//By Chuks
         }
     ],
 
