@@ -1,12 +1,13 @@
-Ext.define('GameApp.store.FriendsLiveChessStore', {
-    extend: 'Ext.data.Store',
-    alias: 'store.friends-live-chess',
-    requires: ['GameApp.model.LiveChess'
+Ext.define('GameApp.store.WhotLiveTournamentsStore', {
+    extend: 'Ext.data.TreeStore',
+    alias: 'store.whot-live-tournaments',
+    requires: ['GameApp.model.LiveWhot'
     ],
+    model: 'GameApp.model.LiveWhot',
     autoLoad: true,
     proxy: {
         type: 'ajax',
-        url: 'access/chess/query/friends_live_matches',
+        url: 'access/whot/query/tournament_live_matches',
         actionMethods: {
             create: 'POST',
             read: 'POST',

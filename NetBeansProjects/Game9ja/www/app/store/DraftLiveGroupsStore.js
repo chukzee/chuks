@@ -1,12 +1,13 @@
-Ext.define('GameApp.store.FriendsLiveDraftStore', {
-    extend: 'Ext.data.Store',
-    alias: 'store.friends-live-draft',
+Ext.define('GameApp.store.DraftLiveGroupsStore', {
+    extend: 'Ext.data.TreeStore',
+    alias: 'store.draft-live-groups',
     requires: ['GameApp.model.LiveDraft'
     ],
+    model: 'GameApp.model.LiveDraft',
     autoLoad: true,
     proxy: {
         type: 'ajax',
-        url: 'access/draft/query/friens_live_matches',
+        url: 'access/draft/query/group_live_matches',
         actionMethods: {
             create: 'POST',
             read: 'POST',

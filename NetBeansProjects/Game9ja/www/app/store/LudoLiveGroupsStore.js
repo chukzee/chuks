@@ -1,12 +1,13 @@
-Ext.define('GameApp.store.TournamentLiveDraftStore', {
-    extend: 'Ext.data.Store',
-    alias: 'store.tournament-live-draft',
-    requires: ['GameApp.model.LiveDraft'
+Ext.define('GameApp.store.LudoLiveGroupsStore', {
+    extend: 'Ext.data.TreeStore',
+    alias: 'store.ludo-live-groups',
+    requires: ['GameApp.model.LiveLudo'
     ],
+    model: 'GameApp.model.LiveLudo',
     autoLoad: true,
     proxy: {
         type: 'ajax',
-        url: 'access/draft/query/tournament_live_matches',
+        url: 'access/ludo/query/group_live_matches',
         actionMethods: {
             create: 'POST',
             read: 'POST',

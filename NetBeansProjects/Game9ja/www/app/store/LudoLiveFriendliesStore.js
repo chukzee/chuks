@@ -1,12 +1,13 @@
-Ext.define('GameApp.store.GroupLiveDraftStore', {
+Ext.define('GameApp.store.LudoLiveFriendliesStore', {
     extend: 'Ext.data.Store',
-    alias: 'store.group-live-draft',
-    requires: ['GameApp.model.LiveDraft'
+    alias: 'store.ludo-live-friendlies',
+    requires: ['GameApp.model.LiveLudo'
     ],
+    model: 'GameApp.model.LiveLudo',
     autoLoad: true,
     proxy: {
         type: 'ajax',
-        url: 'access/draft/query/group_live_matches',
+        url: 'access/ludo/query/friends_live_matches',
         actionMethods: {
             create: 'POST',
             read: 'POST',

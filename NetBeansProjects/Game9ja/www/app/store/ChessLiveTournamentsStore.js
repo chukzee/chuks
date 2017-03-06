@@ -1,11 +1,13 @@
-Ext.define('GameApp.store.TournamentLiveChessStore', {
-    extend: 'Ext.data.Store',
-    alias: 'store.tournament-live-chess',
+Ext.define('GameApp.store.ChessLiveTournamentsStore', {
+    extend: 'Ext.data.TreeStore',
+    alias: 'store.chess-live-tournaments',
     requires: ['GameApp.model.LiveChess'
     ],
+    model: 'GameApp.model.LiveChess',
     autoLoad: true,
     proxy: {
-        type: 'ajax',
+        //type: 'ajax',// UNCOMENT AFTER TESTING
+        type: 'memory', //COMMENT OUT THIS LINE AFTER TESTING
         url: 'access/chess/query/tournament_live_matches',
         actionMethods: {
             create: 'POST',
@@ -18,8 +20,11 @@ Ext.define('GameApp.store.TournamentLiveChessStore', {
             rootProperty: 'data',
             totalProperty: 'total'
         }
-    }
+    },
+    
+    //REMIND - COMMENT OUT THE data PROPERTY AFTER TESTING
 
+    data: {}
 });
 
 

@@ -3,7 +3,7 @@
 
 
 Ext.define('GameApp.view.chess.ChessView', {
-    extend: 'Ext.Panel',
+    extend: 'GameApp.view.game.GameView',
     xtype: 'chess-view'
     
 });

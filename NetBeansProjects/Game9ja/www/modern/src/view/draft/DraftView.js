@@ -1,7 +1,7 @@
 
 
 Ext.define('GameApp.view.draft.DraftView', {
-    extend: 'Ext.Panel',
+    extend: 'GameApp.view.game.GameView',
     xtype: 'draft-view'
     
 });

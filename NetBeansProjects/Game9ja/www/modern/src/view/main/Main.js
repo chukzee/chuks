@@ -15,22 +15,30 @@ Ext.define('GameApp.view.main.Main', {
         'GameApp.view.main.MainModel',
         'GameApp.view.main.GameList'
     ],
+    
     controller: 'main',
     viewModel: 'main',
     fullscreen: true,
-    config: {
-        //DO NOT UNDERSTAND -  NOT WORKING AS EXPECTED - COME BACK LATER
-        defaultBackButtonText:'<',//this is working!
-        //navigationBar: {//not working - so painful
-            backButton: {
-                align: 'right',//not working - so painful
-                hidden: true,//not working - so painful
-                //ui:...
-            }
-        //}
+    defaultBackButtonText: '<', //this is working!
+    navigationBar: {
+        backButton: {//not working
+            align: 'right', //not working - so painful
+            hidden: true, //not working well - so painful
+            //ui:...//not yet tested
+        },
+        html: "My Title"
+    },
+    layout:{
+        type:"card",
+        animation:{
+            duration:300,
+            easing:'ease-in-out',
+            type:'fade'
+            
+        }
     },
 //store: store,
     items: [{
             xtype: 'game-list'
-        }]
+        }],
 });

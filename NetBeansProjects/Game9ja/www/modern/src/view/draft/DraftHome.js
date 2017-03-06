@@ -2,25 +2,31 @@
 Ext.define('GameApp.view.draft.DraftHome', {
     extend: 'Ext.TabPanel',
     xtype: 'draft-home',
-    fullscreen: true,
-
+    fullscreen: true,    
     requires: [
-        'GameApp.view.draft.DraftView'
+        'GameApp.view.draft.DraftView',
+        'GameApp.view.draft.DraftWatch',
+        'GameApp.view.draft.DraftLiveFriendlies',
+        'GameApp.view.draft.DraftLiveGroups',
+        'GameApp.view.draft.DraftLiveTournaments'
     ],
-    
+
     defaults: {
         styleHtmlContent: true
     },
 
     items: [
         {
-            title: 'Draft tab 1',
-            html: 'Draft tab content 1'
+            title: 'Friendlies',
+            xtype:'draft-live-friendlies',
         },
         {
-            title: 'Draft tab 2',
-            html: 'Draft tab content 2'
+            title: 'Groups',
+            xtype:'draft-live-groups',
+        },
+        {
+            title: 'Tournaments',
+            xtype:'draft-live-tournaments',
         }
     ]
 });
-

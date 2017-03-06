@@ -2,10 +2,14 @@
 Ext.define('GameApp.view.chess.ChessHome', {
     extend: 'Ext.TabPanel',
     xtype: 'chess-home',
-    fullscreen: true,
-
+    fullscreen: true,    
+    
     requires: [
-        'GameApp.view.chess.ChessView'
+        'GameApp.view.chess.ChessView',
+        'GameApp.view.chess.ChessWatch',
+        'GameApp.view.chess.ChessLiveFriendlies',
+        'GameApp.view.chess.ChessLiveGroups',
+        'GameApp.view.chess.ChessLiveTournaments'
     ],
 
     defaults: {
@@ -14,12 +18,16 @@ Ext.define('GameApp.view.chess.ChessHome', {
 
     items: [
         {
-            title: 'Chess tab 1',
-            html: 'Chess tab content 1'
+            title: 'Friendlies',
+            xtype:'chess-live-friendlies',
         },
         {
-            title: 'Chess tab 2',
-            html: 'Chess tab content 2'
+            title: 'Groups',
+            xtype:'chess-live-groups',
+        },
+        {
+            title: 'Tournaments',
+            xtype:'chess-live-tournaments',
         }
     ]
 });

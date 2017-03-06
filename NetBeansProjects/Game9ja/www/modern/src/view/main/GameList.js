@@ -3,11 +3,20 @@ Ext.define('GameApp.view.main.GameList', {
     extend: 'Ext.List',
     xtype: 'game-list',
     fullscreen: true,
-    singleSelect: true,
+    singleSelect: true,  
+    
     requires: [
-
+        'GameApp.view.game.GameLiveFriendlies',
+        'GameApp.view.game.GameLiveGroups',
+        'GameApp.view.game.GameLiveTournaments',
+        'GameApp.view.game.GameView',
+        'GameApp.view.game.GameWatch',
+        
         'GameApp.view.chess.ChessHome',
-        'GameApp.view.draft.DraftHome'
+        'GameApp.view.draft.DraftHome',
+        'GameApp.view.ludo.LudoHome',
+        'GameApp.view.solitaire.SolitaireHome',
+        'GameApp.view.whot.WhotHome' 
     ],
 
     //store: store,
@@ -15,7 +24,10 @@ Ext.define('GameApp.view.main.GameList', {
     itemTpl: '<div class="the_list_item_class"><img src= "{gameIcon}"></img><span>{game}</span></div>',
     data: [
         {game: 'Chess',gameIcon:"chess_icon_file_goes_here.png"},
-        {game: 'Draft',gameIcon:"draft_icon_file_goes_here.png"}
+        {game: 'Draft',gameIcon:"draft_icon_file_goes_here.png"},
+        {game: 'Ludo',gameIcon:"ludo_icon_file_goes_here.png"},
+        {game: 'Solitaire',gameIcon:"solitaire_icon_file_goes_here.png"},
+        {game: 'Whot',gameIcon:"whot_icon_file_goes_here.png"}
     ],
 
     items: [{
@@ -40,6 +52,15 @@ Ext.define('GameApp.view.main.GameList', {
                 view.push(nextView);
             }else if(record.get("game") === "Draft"){
                 var nextView = Ext.create('GameApp.view.draft.DraftHome');
+                view.push(nextView);
+            }else if(record.get("game") === "Ludo"){
+                var nextView = Ext.create('GameApp.view.ludo.LudoHome');
+                view.push(nextView);
+            }else if(record.get("game") === "Solitaire"){
+                var nextView = Ext.create('GameApp.view.solitaire.SolitaireHome');
+                view.push(nextView);
+            }else if(record.get("game") === "Whot"){
+                var nextView = Ext.create('GameApp.view.whot.WhotHome');
                 view.push(nextView);
             }
         

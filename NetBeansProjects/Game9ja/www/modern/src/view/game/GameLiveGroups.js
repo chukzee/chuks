@@ -1,0 +1,51 @@
+
+
+Ext.define('GameApp.view.game.GameLiveGroups', {
+    extend: 'Ext.NestedList',//NOTE: NestedList expects a TreeStore
+    xtype: 'game-live-groups',
+    fullscreen: true,
+    singleSelect: true,
+    itemTpl: '<div class="game9ja_live_games_list">' +
+            '<div>' +
+            '<img  src="{white_player_small_pic}" alt="" onerror="this.onerror=null; this.src=\'resources/images/default_person.png\';"/>' +
+            '</div>' +
+            '<div>' +
+            '<div>' +
+            '<div>' +
+            '{white_player_name}' +
+            '</div>' +
+            '<div>' +
+            '{game_elapse_time}' +
+            '</div>' +
+            '</div>' +
+            '<div>' +
+            '<div>' +
+            '{score}' +
+            '</div>' +
+            '<div style="{status_style}">'+
+            '{status}' + //whether Live or Paused or End
+            '</div>' +
+            '</div>' +
+            '<div>' +
+            '<div>' +
+            '{game_views_count}' +
+            '</div>' +
+            '<div>' +
+            '{black_player_name}' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div>' +
+            '<img   src="{black_player_small_pic}" alt="" onerror="this.onerror=null; this.src=\'resources/images/default_person.png\';"/>' +
+            '</div>' +
+            '</div>',
+    
+    items: [{
+            xtype: 'button',
+            scrollDock: 'bottom',
+            docked: 'bottom',
+            html: '<div>Show more...</div>'
+        }],
+    
+
+});
