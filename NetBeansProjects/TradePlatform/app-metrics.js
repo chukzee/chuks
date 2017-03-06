@@ -68,22 +68,18 @@ var metrics = function(){
     };
 
     this.incrementOrder = function(){
-        console.log('incrementOrder');
         ordersCounter.inc();
     };
     
     this.decrementOrder = function(){
-        console.log('decrementOrder');
         ordersCounter.dec();
     };
     
     this.incrementOpenOrder = function(){
-        console.log('incrementOpenOrder');
         openOrdersCounter.inc();
     };
     
     this.decrementOpenOrder = function(){
-        console.log('decrementOpenOrder');
         openOrdersCounter.dec();
     };
     

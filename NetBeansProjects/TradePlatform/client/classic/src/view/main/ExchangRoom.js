@@ -25,7 +25,7 @@ Ext.define('TradeApp.view.main.ExchangeRoom', {
             height: "100%",
             headerPosition: 'left',
             header: {
-                style: 'background-color: gray',
+                //style: 'background-color: gray',
                 layout: {
                     align: 'stretchmax'
                 },

@@ -37,12 +37,28 @@ Ext.define('TradeAdmin.view.register.BrokerRegistrationGrid', {
                     xtype: 'textfield',
                     margin: '0 10 0 0',
                     width: 170,
-                    emptyText: 'Company'
+                    emptyText: 'Company',
+                    listeners: {
+                        change: function (s, r) {
+                            var grid = this.up("broker-registration-grid");
+                            var p = grid.getStore().getProxy();
+                            var params = p.getExtraParams();
+                            params.company = s.getValue();
+                        }
+                    }
                 }, {
                     xtype: 'textfield',
                     margin: '0 10 0 0',
                     width: 170,
-                    emptyText: 'Website'
+                    emptyText: 'Website',
+                    listeners: {
+                        change: function (s, r) {
+                            var grid = this.up("broker-registration-grid");
+                            var p = grid.getStore().getProxy();
+                            var params = p.getExtraParams();
+                            params.website = s.getValue();
+                        }
+                    }
                 }]
 
         }

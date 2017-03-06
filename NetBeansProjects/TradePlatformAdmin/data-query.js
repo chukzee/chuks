@@ -44,7 +44,7 @@ var dataQuery = function (sObj) {
                     sObj.sendSuccess(res, "Success", data);
                 })
                 .catch(function (err) {
-                    
+
                     if (err) {//TODO - log error to another process in production
                         res.end();
                         console.log(err);
@@ -99,7 +99,7 @@ var dataQuery = function (sObj) {
                     sObj.sendSuccess(res, "Success", data);
                 })
                 .catch(function (err) {
-                    
+
                     if (err) {//TODO - log error to another process in production
                         res.end();
                         console.log(err);
@@ -166,11 +166,14 @@ var dataQuery = function (sObj) {
     };
 
     this.adminUsers = function (user, input, res, recursion_count) {
+        var param = [];
+        var queryStr = "BINARY CREATED_BY=?";
+        var filter = [];
+        var filterStr = "";
+        param.push(user.username);
 
         if (input.username || input.full_name) {
-            var param = [];
-            var queryStr = "";
-            var filter = [];
+
             if (input.username) {
                 filter.push("BINARY USERNAME=?");
                 param.push(input.username);
@@ -186,53 +189,47 @@ var dataQuery = function (sObj) {
                 param.push(last_name);
             }
 
-            var filterStr = "";
             for (var i = 0; i < filter.length; i++) {
                 if (i < filter.length - 1) {
-                    filterStr += filter + " || ";
+                    filterStr += filter[i] + " || ";
                 } else {
-                    filterStr += filter;
+                    filterStr += filter[i];
                 }
             }
-            queryStr += filterStr;
-            var condition = sObj.db.raw(queryStr,
-                    param);
 
-            selectByCondition(user, input, res, 0, 'admin', condition, function (row) {
-                return {
-                    username: row.USERNAME,
-                    first_name: row.FIRST_NAME,
-                    last_name: row.LAST_NAME,
-                    email: row.EMAIL,
-                    privileges: row.PRIVILEGES,
-                    created_by: row.CREATED_BY,
-                    date_created: row.DATE_CREATED
-                };
-            });
-
-        } else {
-
-            select(user, input, res, 0, 'admin', function (row) {
-                return {
-                    username: row.USERNAME,
-                    first_name: row.FIRST_NAME,
-                    last_name: row.LAST_NAME,
-                    email: row.EMAIL,
-                    privileges: row.PRIVILEGES,
-                    created_by: row.CREATED_BY,
-                    date_created: row.DATE_CREATED
-                };
-            });
         }
+
+        if (filterStr) {
+            queryStr += " AND ( " + filterStr + " ) ";
+        }
+
+        var condition = sObj.db.raw(queryStr,
+                param);
+
+        selectByCondition(user, input, res, 0, 'admin', condition, function (row) {
+            return {
+                username: row.USERNAME,
+                first_name: row.FIRST_NAME,
+                last_name: row.LAST_NAME,
+                email: row.EMAIL,
+                privileges: row.PRIVILEGES,
+                created_by: row.CREATED_BY,
+                date_created: row.DATE_CREATED
+            };
+        });
+
 
     };
 
     this.brokers = function (user, input, res) {
+        var param = [];
+        var queryStr = "BINARY REGISTERED_BY=?";
+        var filter = [];
+        var filterStr = "";
+        param.push(user.username);
 
         if (input.company || input.website) {
-            var param = [];
-            var queryStr = "";
-            var filter = [];
+
             if (input.company) {
                 filter.push("COMPANY=?");
                 param.push(input.company);
@@ -246,45 +243,38 @@ var dataQuery = function (sObj) {
             var filterStr = "";
             for (var i = 0; i < filter.length; i++) {
                 if (i < filter.length - 1) {
-                    filterStr += filter + " || ";
+                    filterStr += filter[i] + " || ";
                 } else {
-                    filterStr += filter;
+                    filterStr += filter[i];
                 }
             }
-            queryStr += filterStr;
-            var condition = sObj.db.raw(queryStr, param);
 
-            selectByCondition(user, input, res, 0, 'brokers', condition, function (row) {
-                return {
-                    username: row.USERNAME,
-                    company: row.COMPANY,
-                    website: row.WEBSITE,
-                    email: row.EMAIL,
-                    broker_admin_host_name: row.BROKER_ADMIN_HOST_NAME,
-                    trade_platform_host_name: row.TRADE_PLATFORM_HOST_NAME,
-                    privileges: row.PRIVILEGES,
-                    registered_by: row.REGISTERED_BY,
-                    date_registered: row.DATE_REGISTERED
-                };
-            });
-
-        } else {
-
-            select(user, input, res, 0, 'brokers', function (row) {
-
-                return {
-                    username: row.USERNAME,
-                    company: row.COMPANY,
-                    website: row.WEBSITE,
-                    email: row.EMAIL,
-                    broker_admin_host_name: row.BROKER_ADMIN_HOST_NAME,
-                    trade_platform_host_name: row.TRADE_PLATFORM_HOST_NAME,
-                    privileges: row.PRIVILEGES,
-                    registered_by: row.REGISTERED_BY,
-                    date_registered: row.DATE_REGISTERED
-                };
-            });
         }
+
+
+
+        if (filterStr) {
+            queryStr += " AND ( " + filterStr + " ) ";
+        }
+
+        var condition = sObj.db.raw(queryStr,
+                param);
+
+        selectByCondition(user, input, res, 0, 'brokers', condition, function (row) {
+            return {
+                username: row.USERNAME,
+                company: row.COMPANY,
+                website: row.WEBSITE,
+                email: row.EMAIL,
+                broker_admin_host_name: row.BROKER_ADMIN_HOST_NAME,
+                trade_platform_host_name: row.TRADE_PLATFORM_HOST_NAME,
+                privileges: row.PRIVILEGES,
+                registered_by: row.REGISTERED_BY,
+                date_registered: row.DATE_REGISTERED
+            };
+        });
+
+
     };
 
 
@@ -343,10 +333,10 @@ var dataQuery = function (sObj) {
     this.userBasicInfo = function (user, input, res) {
         var content = "access_token=" + input.access_token
                 + (input.username ? "&username=" + input.username : "");
-        
+
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/user_basic_info', content);
     };
-    
+
     this.spotFxPositions = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
@@ -358,7 +348,7 @@ var dataQuery = function (sObj) {
 
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_query/open/spotfx', content);
     };
-    
+
     this.optionsPositions = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
@@ -370,7 +360,7 @@ var dataQuery = function (sObj) {
 
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_query/open/options', content);
     };
-    
+
     this.spotFxHistory = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
@@ -382,7 +372,7 @@ var dataQuery = function (sObj) {
 
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_query/history/spotfx', content);
     };
-    
+
     this.optionsHistory = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
@@ -394,7 +384,7 @@ var dataQuery = function (sObj) {
 
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_query/history/options', content);
     };
-    
+
     this.depositsAndWithdrawals = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
@@ -406,7 +396,7 @@ var dataQuery = function (sObj) {
 
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_query/history/deposits_and_withdrawals', content);
     };
-    
+
     this.accountInfo = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
@@ -416,7 +406,7 @@ var dataQuery = function (sObj) {
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_request_trader_account_info', content);
     };
 
-    this.historyRebate= function (user, input, res) {
+    this.historyRebate = function (user, input, res) {
 
         var content = "access_token=" + input.access_token
                 + (input.page ? "&page=" + input.page : "")
@@ -428,7 +418,7 @@ var dataQuery = function (sObj) {
         sObj.util.remoteRequest(res, user.trade_platform_host_name, '/admin/admin_query/history_rebate', content);
     };
 
-    this.currentRebate= function (user, input, res) {
+    this.currentRebate = function (user, input, res) {
 
         var content = "access_token=" + input.access_token;
 

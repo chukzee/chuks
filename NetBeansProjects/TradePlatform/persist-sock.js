@@ -952,7 +952,8 @@ var connHandler = function (socket) {
 
     sObj.metrics.incrementConnectedUsers();
 
-    console.log('a user connected');
+    //console.log('a user connected');
+    
     socket.isTraderAuth = false;
     //emit authentication event to the client
     send(socket, "authenticate", null);
@@ -962,7 +963,7 @@ var connHandler = function (socket) {
 
         sObj.metrics.decrementConnectedUsers();
 
-        console.log('user disconnected');
+        //console.log('user disconnected');
 
     });
 
@@ -1039,7 +1040,7 @@ var deferDisconnet = function (socket) {
     sObj.executor.queue(function (sock) {
         if (!sock.isTraderAuth) {
             sock.disconnect(true);//set to true to close the underlying connection                                    
-            console.log("disconnected by defer");
+            //console.log("disconnected by defer");
         }
     }, socket, AUTH_DISCONNECT_SECONDS, sObj.executor.SECONDS);
 };

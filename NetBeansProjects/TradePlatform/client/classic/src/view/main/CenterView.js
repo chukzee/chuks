@@ -68,6 +68,8 @@ Ext.define('TradeApp.view.main.CenterView', {
                      {
                     text: 'Change theme',
                     menu: [{
+                            text: 'Green Guzy'
+                        },{
                             text: 'Gray Guzy'
                         }, {
                             text: 'Dark Guzy'

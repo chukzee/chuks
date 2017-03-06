@@ -43,13 +43,13 @@ app.use(express.static(__dirname)); //define the root folder to my web resources
 
 //application level middleware
 app.use(function (req, res, next) {
-        
+
     //request metrics
     metrics.markRequest();// measure requests per time e.g per min, per hour and per day
     metrics.incrementRequest();
-    
-    res.on('finish', function () {        
-        metrics.decrementRequest();                
+
+    res.on('finish', function () {
+        metrics.decrementRequest();
     });
 
     next();
@@ -895,7 +895,29 @@ app.get('/*', function (req, res) {
 
     //console.log(reqFile);//UNCOMMENT TO SEE THE PATHS
 
-    res.sendFile(__dirname + '/client/' + reqFile);
+    var filename = __dirname + '/client/' + reqFile;
+    res.sendFile(filename, function (err) {
+        if (err) {
+            if ((err + "").startsWith("Error: ENOENT: no such file or directory")) {
+                res.status(404)
+                        .send("<html>" +
+                                "<head>" +
+                                "<title>Not Found</title>" +
+                                "</head>" +
+                                "<body>" +
+                                "<h1>Oops! Not Found.</h1>" +
+                                "<div style='font-size: 18px; font-family: Times New Roman;'>" +
+                                "Sorry, the file you are seeking for does not exist in the remote server." +
+                                "</div>" +
+                                "<div style='font-size: 14px; font-family: Times New Roman;'>" +
+                                "- " + reqFile +
+                                "</div>" +
+                                "</body>" +
+                                "</html>");
+
+            }
+        }
+    });
 });
 
 

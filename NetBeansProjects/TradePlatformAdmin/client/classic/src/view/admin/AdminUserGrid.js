@@ -8,7 +8,7 @@ Ext.define('TradeAdmin.view.admin.AdminUserGrid', {
     xtype: 'admin-user-grid',
     requires: [
         'Ext.grid.feature.Grouping'
-        
+
     ],
     controller: 'main',
     viewModel: 'main',
@@ -37,12 +37,28 @@ Ext.define('TradeAdmin.view.admin.AdminUserGrid', {
                     xtype: 'textfield',
                     margin: '0 10 0 0',
                     width: 170,
-                    emptyText: 'Username'
+                    emptyText: 'Username',
+                    listeners: {
+                        change: function (s, r) {
+                            var grid = this.up("admin-user-grid");
+                            var p = grid.getStore().getProxy();
+                            var params = p.getExtraParams();
+                            params.username = s.getValue();
+                        }
+                    }
                 }, {
                     xtype: 'textfield',
                     margin: '0 10 0 0',
                     width: 170,
-                    emptyText: 'Full Name'
+                    emptyText: 'Full Name',
+                    listeners: {
+                        change: function (s, r) {
+                            var grid = this.up("admin-user-grid");
+                            var p = grid.getStore().getProxy();
+                            var params = p.getExtraParams();
+                            params.full_name = s.getValue();
+                        }
+                    }
                 }]
 
         }
@@ -67,7 +83,7 @@ Ext.define('TradeAdmin.view.admin.AdminUserGrid', {
             text: 'Privileges',
             dataIndex: 'privileges',
             flex: 1
-        },  {
+        }, {
             text: 'Created By',
             dataIndex: 'created_by',
             flex: 1
