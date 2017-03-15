@@ -244,8 +244,47 @@ function Draft9ja(size) {
         var caps = [];
 
         //do the capture
-        return findCaptives(pce.crowned, sq, 0, pce.white, null, caps, false);
+        findCaptives(pce.crowned, sq, 0, pce.white, null, caps, false);
+
+        return pce.crowned? normalizeKingCaps(caps) : caps;
     };
+
+    function normalizeKingCaps(caps) {
+
+        norm_caps = [];
+
+        for (var i = 0; i < caps.length; i++) {
+            var c = caps[i];
+
+            for (var k = 0; k < c.length; k++) {
+                if (k < c.length - 1) {
+                    c[k].dest_sq = c[k].dest_sq.constructor === Array ? c[k].dest_sq[0] : c[k].dest_sq;
+                } else {
+                    if (c[k].dest_sq.constructor === Array) {
+
+                        for (var n = 0; n < c[k].dest_sq.length; n++) {
+                            var copy = [];
+                            for (var m = 0; m < c.length; m++) {
+
+                                var cp = {
+                                    captive: c[m].captive,
+                                    dest_sq: m === c.length - 1 ? c[m].dest_sq[n] : c[m].dest_sq
+                                };
+                                copy.push(cp);
+
+                            }
+                            norm_caps.push(copy);
+                        }
+                    } else {
+                        norm_caps.push(c);
+                    }
+                }
+            }
+
+        }
+
+        return norm_caps;
+    }
 
     function findCaptives(crowned, from_sq, old_direction, white, node, caps, cyclic) {
 
@@ -541,14 +580,7 @@ function Draft9ja(size) {
                 }
             }
             //set the destination square
-            to = path[path.length - 1].dest_sq;
-            if (to.dest_sq.constructor === Array) {
-                if (to.length === 1) {
-                    to = to[0];
-                } else {
-                    throw new Error("Invalid capture array parameter! Ambitigious destination. Please provide the final destination square.");
-                }
-            }
+            to = path[path.length - 1].dest_sq;            
         }
 
         squares[from].piece = null;
@@ -626,8 +658,8 @@ function Draft9ja(size) {
 
     function validateCapture(from, to, fn) {
         var caps = searchCaputrePaths(from);
-        if (caps.length) {            
-            fn({error: "No capture opportunity."});            
+        if (caps.length) {
+            fn({error: "No capture opportunity."});
             return false;
         }
         for (var i = 0; i < caps.length; i++) {
@@ -638,9 +670,7 @@ function Draft9ja(size) {
             //at this point compare them
             var match = true;
             for (var k = 0; k < c.length; k++) {
-                var td = to[k].dest_sq.constructor === Array ? to[k].dest_sq[0] : to[k].dest_sq;
-                var cd = c[k].dest_sq.constructor === Array ? c[k].dest_sq[0] : c[k].dest_sq;
-                if (td !== cd
+                if (to[k].dest_sq !== c[k].dest_sq
                         || to[k].captive.sqLoc !== c[k].captive.sqLoc) {
                     match = false;
                     break;
@@ -714,6 +744,38 @@ function Draft9ja(size) {
             console.log(squares[i]);
         }
 
+    };
+
+
+    this.Engine = function () {
+
+        var draft = Draft9ja();
+
+        return function () {
+
+            var bestMove = function () {
+
+            };
+
+            this.play = function () {
+                var best = bestMove();
+                draft.moveTo(best.from, best.path);
+            };
+        };
+    };
+
+
+    this.Game = function (size) {
+
+        var draft = Draft9ja(size);
+
+        return function () {
+
+            this.move = function (from, path, fn) {
+
+                draft.moveTo(from, path, fn);
+            };
+        };
     };
 
 
