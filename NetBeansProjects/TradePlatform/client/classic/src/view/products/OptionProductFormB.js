@@ -323,7 +323,7 @@ Ext.define('TradeApp.view.products.OptionProductFormB', {
                         failure: function (form, action) {
 
                             if (action.failureType === "connect") {
-                                Ext.Msg.alert('Connection problem!', "Please check your internet connection.");
+                                Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
                                 return;
                             }
 

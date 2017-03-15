@@ -38,7 +38,7 @@ Ext.define('TradeApp.view.main.WithdrawalDialog', {
                     xtype: 'textfield',
                     name: 'version',
                     allowBlank: true//important! otherwise it may confuse users if not set which will raise form error message - this will confuse the user in this case since it is an hidden component.
-                },{
+                }, {
                     allowBlank: false,
                     fieldLabel: 'Amount ($)',
                     width: 250,
@@ -53,7 +53,7 @@ Ext.define('TradeApp.view.main.WithdrawalDialog', {
                     width: 150,
                     handler: function () {
                         var me = this;
-                        if(this.isOperationInProgress === true){
+                        if (this.isOperationInProgress === true) {
                             return;
                         }
                         var form = this.up('form'); // get the form panel
@@ -72,9 +72,9 @@ Ext.define('TradeApp.view.main.WithdrawalDialog', {
                             form.submit({
                                 success: function (form, action) {
                                     me.isOperationInProgress = false;
-                                    
+
                                     var result = action.result;
-                                
+
                                     if (result.success) {
                                         form.reset();//reset the form
                                         Ext.Msg.alert(result.status, result.msg);
@@ -86,28 +86,33 @@ Ext.define('TradeApp.view.main.WithdrawalDialog', {
                                                         TradeApp.Util.login();
                                                     }
                                                 });
-                                    }  else if (result.status === TradeApp.Const.UNSUPPORTED_VERSION) {
+                                    } else if (result.status === TradeApp.Const.UNSUPPORTED_VERSION) {
                                         //Ext.Msg.alert("Unsupporte Version", "The application version has changed. In order to continue this page must be reloaded!"
-                                          //      +" <br/>NOTE: If you see this message again after reload then clear your browse cache before reloading the page.");
-                                        
+                                        //      +" <br/>NOTE: If you see this message again after reload then clear your browse cache before reloading the page.");
+
                                         Ext.Msg.show({
-                                            title:"Unsupported Version",
-                                            msg:"The application version has changed. In order to continue this page must be reloaded!"
-                                                +" <p><strong>NOTE: If you see this message again after reloading then clear your browse cache before reloading the page.</strong></p>",
+                                            title: "Unsupported Version",
+                                            msg: "The application version has changed. In order to continue this page must be reloaded!"
+                                                    + " <p><strong>NOTE: If you see this message again after reloading then clear your browse cache before reloading the page.</strong></p>",
                                             buttons: Ext.Msg.OK,
-                                            fn:function(btn){
-                                                
+                                            fn: function (btn) {
+
                                                 window.location = 'https://' + window.location.hostname;
                                             }
                                         });
-                                        
-                                        
-                                    }else {
+
+
+                                    } else {
                                         Ext.Msg.alert('Failed', result.msg);
                                     }
                                 },
                                 failure: function (form, action) {
                                     me.isOperationInProgress = false;
+                                    if (action.failureType === "connect") {
+                                        Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
+                                        return;
+                                    }
+
                                     var result = action.result;
                                     if (result.status === TradeApp.Const.AUTH_FAIL) {
                                         Ext.Msg.confirm("Authentication",
@@ -119,24 +124,24 @@ Ext.define('TradeApp.view.main.WithdrawalDialog', {
                                                 });
                                     } else if (result.status === TradeApp.Const.UNSUPPORTED_VERSION) {
                                         //Ext.Msg.alert("Unsupporte Version", "The application version has changed. In order to continue this page must be reloaded!"
-                                          //      +" <br/>NOTE: If you see this message again after reload then clear your browse cache before reloading the page.");
-                                        
+                                        //      +" <br/>NOTE: If you see this message again after reload then clear your browse cache before reloading the page.");
+
                                         Ext.Msg.show({
-                                            title:"Unsupported Version",
-                                            msg:"The application version has changed. In order to continue this page must be reloaded!"
-                                                +" <p><strong>NOTE: If you see this message again after reloading then clear your browse cache before reloading the page.</strong></p>",
+                                            title: "Unsupported Version",
+                                            msg: "The application version has changed. In order to continue this page must be reloaded!"
+                                                    + " <p><strong>NOTE: If you see this message again after reloading then clear your browse cache before reloading the page.</strong></p>",
                                             buttons: Ext.Msg.OK,
-                                            fn:function(btn){
-                                                
+                                            fn: function (btn) {
+
                                                 window.location = 'https://' + window.location.hostname;
                                             }
                                         });
-                                        
-                                        
+
+
                                     } else {
                                         Ext.Msg.alert('Failed', result.msg);
                                     }
-                                    
+
                                 }
                             });
                         } else { // display error alert if the data is invalid

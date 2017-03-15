@@ -18,7 +18,7 @@ var ExchangePost = function () {
 
     this.invalid_buyer_action_msg = 'Invalid input - could not create BUYER action';
     this.invalid_strike_msg = 'Invalid input - incorrect strike';
-
+    
     this.init = function (_sObj, _market) {
         sObj = _sObj;
         market = _market;

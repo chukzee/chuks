@@ -272,14 +272,12 @@ var exchangeBuyer = function (sObj) {
             for (var i = 0; i < order_tickets.length; i++) {
 
                 sObj.executor.getByID(sObj.util.countdownID(order_tickets[i]), function (name, id, args, value, unit) {
-
-                    var countdown_elapse = (new Date(sObj.now()).getTime() - new Date(args.countdown_start_time).getTime()) / 1000;
-                    var countdown_remaining = value - countdown_elapse;
-                    //OR
-                    //var countdown_remaining = (new Date(args.exchange_expiry).getTime() - new Date(sObj.now()).getTime()) / 1000;
-
+                    
+                    var countdown_remaining = (new Date(args.exchange_expiry).getTime() - new Date(sObj.now()).getTime()) / 1000;
+                    
+                    console.log("value " + value);
                     console.log("countdown_remaining " + countdown_remaining);
-
+                    
                     countdown_orders.push({
                         product_type: args.product_type,
                         order_ticket: args.order_ticket,

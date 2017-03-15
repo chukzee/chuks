@@ -781,7 +781,8 @@ var loadExistingOpenTrades = function () {
     var abstractOrders = new AbstractOrders();
 
     var registerCountdown = function (order) {
-        var expirySeconds = (order.countdown_expiry - new Date(sObj.now()).getTime()) / 1000;
+        
+        var expirySeconds = (order.countdown_long_expiry - new Date(sObj.now()).getTime()) / 1000;
         sObj.executor.queue(
                 {
                     fn: notifier.effectOpenTrade, //after countdown
@@ -816,8 +817,9 @@ var loadExistingOpenTrades = function () {
                         symbol: row.SYMBOL,
                         stop_loss: row.STOP_LOSS,
                         take_profit: row.TAKE_PROFIT,
+                        exchange_expiry:row.COUNT_DOWN,//for purpose of consistency
                         countdown: row.COUNT_DOWN,
-                        countdown_expiry: new Date(row.COUNT_DOWN).getTime(),
+                        countdown_long_expiry: new Date(row.COUNT_DOWN).getTime(),
                         open: row.OPEN,
                         close: row.CLOSE,
                         time: row.TIME
@@ -832,12 +834,25 @@ var loadExistingOpenTrades = function () {
                     if (!order.pip_value) {//this can be because the symbol is not supported!
                         continue;
                     }
-
+                    
+                    //console.log('order.open ',order.open);
+                    
                     if (!order.open) {
-                        if (!abstractOrders.isExpired(order.countdown_expiry)) {
+                        
+                        //console.log('order.open1 ',order.open);
+                        //console.log('order.order ',order.order);
+                        
+                        if (!abstractOrders.isExpired(order.countdown_long_expiry)) {
+                            
+                            //console.log('order.open2 ',order.open);
+                        
                             registerCountdown(order);
+                        
                         } else {
                             //close the trade for beak even
+                            
+                            //console.log('openTrades.closeOrder(order, openTrades.BREAK_EVEN);');
+                           
                             openTrades.closeOrder(order, openTrades.BREAK_EVEN);
                         }
 
@@ -887,8 +902,9 @@ var loadExistingOpenTrades = function () {
                         long_expiry: new Date(row.EXPIRY).getTime(),
                         price: row.PRICE,
                         premium: row.PREMIUM,
+                        exchange_expiry:row.COUNT_DOWN,//for purpose of consistency
                         countdown: row.COUNT_DOWN,
-                        countdown_expiry: new Date(row.COUNT_DOWN).getTime(),
+                        countdown_long_expiry: new Date(row.COUNT_DOWN).getTime(),
                         open: row.OPEN,
                         close: row.CLOSE,
                         time: row.TIME
@@ -906,7 +922,7 @@ var loadExistingOpenTrades = function () {
                     }
 
                     if (!order.open) {
-                        if (!abstractOrders.isExpired(order.countdown_expiry)) {
+                        if (!abstractOrders.isExpired(order.countdown_long_expiry)) {
                             registerCountdown(order);
                         } else {
                             //close the trade for beak even

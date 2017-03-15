@@ -211,6 +211,7 @@ var search = function (sObj) {
                             .select('account_tran.SN',//important! very important! we the the SN of account_tran and not users
                                     'account_tran.USERNAME',
                                     'account_tran.TRAN_DATE',
+                                    'account_tran.TRAN_TYPE',
                                     'users.EXCHANGE_ID',
                                     'users.FIRST_NAME',
                                     'users.LAST_NAME',

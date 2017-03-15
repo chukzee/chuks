@@ -170,7 +170,7 @@ Ext.define('TradeApp.view.exchange.BuyerSportfxConfirmDialog', {
 
                             },
                             failure: function (conn, response, options, eOpts) {
-                                Ext.Msg.alert('Connection problem!', "Please check your internet connection.");
+                                Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
                             }
                         });
 

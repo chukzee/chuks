@@ -34,15 +34,15 @@ Ext.define('TradeApp.view.main.ForgotPasswordDialog', {
                 }, {
                     xtype: 'textfield',
                     allowBlank: false,
-                    margin:'20 0 40 0',
+                    margin: '20 0 40 0',
                     fieldLabel: 'Username',
                     width: 250,
                     name: 'username'
-                },{
+                }, {
                     xtype: 'component',
-                    id:'forgot_password_feedback',
+                    id: 'forgot_password_feedback',
                     html: ''
-                    
+
                 }],
             buttons: [
                 {xtype: 'component', flex: 1},
@@ -51,7 +51,7 @@ Ext.define('TradeApp.view.main.ForgotPasswordDialog', {
                     width: 150,
                     handler: function () {
                         var me = this;
-                        if(this.isOperationInProgress === true){
+                        if (this.isOperationInProgress === true) {
                             return;
                         }
                         var form = this.up('form'); // get the form panel
@@ -69,7 +69,7 @@ Ext.define('TradeApp.view.main.ForgotPasswordDialog', {
                                         form.reset();//reset the form
                                         element.style.color = 'green';
                                         element.innerHTML = result.msg;
-                                        
+
                                     } else {
                                         Ext.Msg.alert('Failed', result.msg);
                                         element.style.color = 'red';
@@ -78,6 +78,10 @@ Ext.define('TradeApp.view.main.ForgotPasswordDialog', {
                                 },
                                 failure: function (form, action) {
                                     me.isOperationInProgress = false;
+                                    if (action.failureType === "connect") {
+                                        Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
+                                        return;
+                                    }
                                     var result = action.result;
                                     var element = document.getElementById('forgot_password_feedback');
                                     element.style.color = 'red';

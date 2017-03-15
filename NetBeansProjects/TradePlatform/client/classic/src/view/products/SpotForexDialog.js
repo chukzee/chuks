@@ -166,7 +166,7 @@ Ext.define('TradeApp.view.products.SpotForexDialog', {
                             step: 0.01,
                             minValue: 0,
                             emptyText: 'Price',
-                            decimalPrecision:5,
+                            decimalPrecision: 5,
                             allowBlank: true, //important! otherwise it may confuse users if not set which will raise form error message - this will confuse the user in this case since it is an hidden component.
                             hidden: true,
                             //spinner buttons, arrow keys and mouse wheel listeners
@@ -315,7 +315,7 @@ Ext.define('TradeApp.view.products.SpotForexDialog', {
                                 failure: function (form, action) {
 
                                     if (action.failureType === "connect") {
-                                        Ext.Msg.alert('Connection problem!', "Please check your internet connection.");
+                                        Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
                                         return;
                                     }
 

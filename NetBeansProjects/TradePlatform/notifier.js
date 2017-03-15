@@ -338,9 +338,7 @@ var onExchangeBought = function (msg) {
             }
         }
 
-        //run the countdown here in the server
-
-        order.countdown_start_time = sObj.now(); //important! used when determining countdown remaining
+        //run the countdown here in the server        
 
         sObj.executor.queue(
                 {

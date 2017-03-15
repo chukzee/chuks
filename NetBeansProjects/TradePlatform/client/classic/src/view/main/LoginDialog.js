@@ -39,11 +39,11 @@ Ext.define('TradeApp.view.main.LoginDialog', {
                     name: 'password',
                     emptyText: 'password',
                     inputType: 'password'
-                },/* {
-                    xtype: 'checkbox',
-                    fieldLabel: 'Keep me signed in',
-                    name: 'remember'
-                },*/
+                }, /* {
+                 xtype: 'checkbox',
+                 fieldLabel: 'Keep me signed in',
+                 name: 'remember'
+                 },*/
                 {
                     xtype: 'component',
                     autoEl: {
@@ -62,10 +62,10 @@ Ext.define('TradeApp.view.main.LoginDialog', {
                     width: 120,
                     handler: function () {
                         var me = this;
-                        if(this.isOperationInProgress === true){
+                        if (this.isOperationInProgress === true) {
                             return;
                         }
-                        
+
                         var form = this.up('form'); // get the form panel
                         var win = this.up('window'); // get the form panel
                         if (form.isValid()) { // make sure the form contains valid data before submitting
@@ -101,7 +101,14 @@ Ext.define('TradeApp.view.main.LoginDialog', {
                                 },
                                 failure: function (form, action) {
                                     me.isOperationInProgress = false;
-                                    Ext.Msg.alert('Failed', action.result.msg);
+                                    if (action.failureType === "connect") {
+                                        Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
+                                    } else if (action.result && action.result.msg) {
+                                        Ext.Msg.alert('Failed', action.result.msg);
+                                    } else {
+                                        Ext.Msg.alert('Failed', "Something is not right! Please try again later.");
+                                    }
+
                                 }
                             });
                         } else { // display error alert if the data is invalid

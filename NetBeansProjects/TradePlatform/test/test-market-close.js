@@ -30,7 +30,7 @@ var sObj = {
     setMarketClosed: function (closed) {
         this.isMarketClosed = closed;
         if (!closed) {//where market is open
-            market.unsetLastQuotes();
+            //market.unsetLastQuotes();
         }
     },
     now: function () {
@@ -71,8 +71,10 @@ var marketActivationTask = function () {
 (function () {
     var d = new Date(sObj.date() + " 00:00:00").getDay(); // no need to use getUTCDay() since sObj.date() uses utc
 
+    console.log(new Date().getTimezoneOffset());
     console.log(sObj.date());
     console.log(new Date(sObj.date() + " 00:00:00"));
+    console.log("day ", d);
     
     var hours_away = 22 * 3600 * 1000;
     var startTime = new Date(sObj.date() + " 00:00:00").getTime() + hours_away;

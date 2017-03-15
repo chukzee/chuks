@@ -358,7 +358,7 @@ if (!config.HONOUR_MARKET_CLOSED) {
 }
 
 var marketActivationTask = function () {
-    var d = new Date(sObj.date()).getDay(); // no need to use getUTCDay() since sObj.date() uses utc
+    var d = new Date(sObj.date() + " 00:00:00").getDay(); // no need to use getUTCDay() since sObj.date() uses utc
     if (d === 5 || d === 6) {
         sObj.isMarketClosed = true;//close market
         console.log("Market is closed! Day " + d);

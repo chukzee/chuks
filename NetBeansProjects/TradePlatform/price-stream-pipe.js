@@ -5,6 +5,8 @@ var MarketSymbol = {};
 var sObj;
 var dataStr = "";
 
+var server;
+
 var PriceStreamer = function (_sObj) {
 
 
@@ -40,7 +42,7 @@ var PriceStreamer = function (_sObj) {
         setMarketSymbol(sObj.config.COMMODITIES_SYMBOLS, "Commodities");
         setMarketSymbol(sObj.config.OIL_AND_GAS_SYMBOLS, "Oil/Gas");
 
-        var server = net.createServer(function (stream) {
+        var streamPrice = function (stream) {
             console.log('Price stream server pipe connected');
             stream.on('data', function (d) {
                 handleData(d);
@@ -89,15 +91,27 @@ var PriceStreamer = function (_sObj) {
 
             };
 
-        });
+        };
 
-        server.on('close', function () {
-            console.log('Price stream server pipe closed');
-        });
+        startPipeServer();
 
-        server.listen(sObj.config.PRICE_PIPE_PATH, function () {
-            console.log('Price stream server pipe listening on ' + sObj.config.PRICE_PIPE_PATH);
-        });
+        function startPipeServer() {
+            server = net.createServer(streamPrice);
+
+            server.on('close', function () {
+                console.log('Price stream server pipe closed');
+
+                setTimeout(function () {
+                    console.log('Price stream server pipe restarting...');
+                    startPipeServer();
+                }, 1000);
+            });
+
+            server.listen(sObj.config.PRICE_PIPE_PATH, function () {
+                console.log('Price stream server pipe listening on ' + sObj.config.PRICE_PIPE_PATH);
+            });           
+        }
+
 
     };
 

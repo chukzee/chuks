@@ -140,6 +140,12 @@ var usersManager = function (sObj, emailer) {
                         trx.insert(column_map)
                                 .into('users')
                                 .then(function (result) {
+                                    //record the initial deposit
+                                    return trx.insert({
+                                        USERNAME: input.username, TRAN_TYPE: "DEPOSIT", TRAN_DATE: sObj.now(), TRAN_DETAILS: "INITIAL DEPOSIT UPON ACCCOUNT OPENING.", AMOUNT: input.initial_deposit
+                                    }).into('account_tran');
+                                })
+                                .then(function (result) {
                                     //now insert the user into redis - cache
                                     return sObj.redis.set("user:" + input.username, JSON.stringify(user));
                                 })

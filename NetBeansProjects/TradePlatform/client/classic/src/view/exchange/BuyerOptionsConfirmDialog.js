@@ -195,8 +195,8 @@ Ext.define('TradeApp.view.exchange.BuyerOptionsConfirmDialog', {
                                 }
 
                             },
-                            failure: function (conn, response, options, eOpts) {
-                                Ext.Msg.alert('Connection problem!', "Please check your internet connection.");
+                            failure: function (conn, response, options, eOpts) {                               
+                                Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
                             }
                         });
 
