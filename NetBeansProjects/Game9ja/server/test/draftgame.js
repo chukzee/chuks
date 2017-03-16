@@ -246,7 +246,7 @@ function Draft9ja(size) {
         //do the capture
         findCaptives(pce.crowned, sq, 0, pce.white, null, caps, false);
 
-        return pce.crowned? normalizeKingCaps(caps) : caps;
+        return pce.crowned ? normalizeKingCaps(caps) : caps;
     };
 
     function normalizeKingCaps(caps) {
@@ -286,87 +286,44 @@ function Draft9ja(size) {
         return norm_caps;
     }
 
-    function findCaptives(crowned, from_sq, old_direction, white, node, caps, cyclic) {
-
+    function findCaptives(crowned, from_sq, old_direction, white, last_node, caps, cyclic) {
 
         //first check if it is going roundabout.
         if (cyclic) {
             return caps;//avoid roundabout trip which causes stackoverflow on recursion
         }
+        var c;
+        var anyCap = false;
+        for (var direction = 1; direction < 5; direction++) {
+            c = nextCaptive(crowned, from_sq, old_direction, direction, !white);
+            if (c) {
+                
+                var node = {};
+                node.prev = last_node;
+                node.cap = c;
 
-        var c0, c1, c2, c3;
+                node.visited = node.prev ? node.prev.visited : {};
+                cyclic = node.visited[c.captive.sqLoc] === 1; //detect if captive square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
+                node.visited[c.captive.sqLoc] = 1;
 
-        c0 = nextCaptive(crowned, from_sq, old_direction, up_right, !white);
-        c1 = nextCaptive(crowned, from_sq, old_direction, up_left, !white);
-        c2 = nextCaptive(crowned, from_sq, old_direction, down_right, !white);
-        c3 = nextCaptive(crowned, from_sq, old_direction, down_left, !white);
+                findCaptives(crowned, c.dest_sq, direction, white, node, caps, cyclic);
 
-        if (c0) {
-            var node0 = {};
-            node0.prev = node;
-            node0.cap = c0;
-
-            node0.visited = node0.prev ? node0.prev.visited : {};
-            cyclic = node0.visited[c0.captive.sqLoc] === 1; //detect if captive square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
-            node0.visited[c0.captive.sqLoc] = 1;
-
-            findCaptives(crowned, c0.dest_sq, up_right, white, node0, caps, cyclic);
-
-            c0 = cyclic ? null : c0;
+                c = cyclic ? null : c;
+                if(!cyclic){
+                    anyCap = true;
+                }
+            }            
         }
-        if (c1) {
-            var node1 = {};
-            node1.prev = node;
-            node1.cap = c1;
-
-            node1.visited = node1.prev ? node1.prev.visited : {};
-            cyclic = node1.visited[c1.captive.sqLoc] === 1; //detect if captive square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
-            node1.visited[c1.captive.sqLoc] = 1;
-
-            findCaptives(crowned, c1.dest_sq, up_left, white, node1, caps, cyclic);
-
-            c1 = cyclic ? null : c1;
-
-        }
-        if (c2) {
-            var node2 = {};
-            node2.prev = node;
-            node2.cap = c2;
-
-            node2.visited = node2.prev ? node2.prev.visited : {};
-            cyclic = node2.visited[c2.captive.sqLoc] === 1; //detect if captive square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
-            node2.visited[c2.captive.sqLoc] = 1;
-
-            findCaptives(crowned, c2.dest_sq, down_right, white, node2, caps, cyclic);
-
-            c2 = cyclic ? null : c2;
-
-        }
-        if (c3) {
-            var node3 = {};
-            node3.prev = node;
-            node3.cap = c3;
-
-            node3.visited = node3.prev ? node3.prev.visited : {};
-            cyclic = node3.visited[c3.captive.sqLoc] === 1; //detect if captive square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
-            node3.visited[c3.captive.sqLoc] = 1;
-
-            findCaptives(crowned, c3.dest_sq, down_left, white, node3, caps, cyclic);
-
-            c3 = cyclic ? null : c3;
-
-        }
-
-        if (!c0 && !c1 && !c2 && !c3) {
+        
+        if (!anyCap) {
             var node_caps = [];
-            var prev_node = node;
+            var prev_node = last_node;
             while (prev_node) {
                 node_caps.push(prev_node.cap);
                 prev_node = prev_node.prev;
             }
             node_caps.reverse();
             caps.push(node_caps);
-
         }
 
         return caps;
@@ -580,7 +537,7 @@ function Draft9ja(size) {
                 }
             }
             //set the destination square
-            to = path[path.length - 1].dest_sq;            
+            to = path[path.length - 1].dest_sq;
         }
 
         squares[from].piece = null;

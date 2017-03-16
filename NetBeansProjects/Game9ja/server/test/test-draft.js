@@ -11,7 +11,7 @@ var draft = require('./draftgame')();
 draft.clearBoard();
 
 //Man
- /*
+ 
  draft.setPiece(22, true, false);
 
 draft.setPiece(33, false, false);
@@ -23,13 +23,13 @@ draft.setPiece(13, false, false);
 draft.setPiece(15, false, false);
 draft.setPiece(37, false, false);
 draft.setPiece(17, false, false);
-*/
+
 
 //------------------------------------
 
 //King
  
- draft.setPiece(22, true, true);
+ /*draft.setPiece(22, true, true);
 
 draft.setPiece(33, false, false);
 draft.setPiece(55, false, false);
@@ -42,7 +42,7 @@ draft.setPiece(15, false, false);
 draft.setPiece(37, false, false);
 draft.setPiece(17, false, false);
 
-
+*/
 //draft.printBoard();
 
 var caps = draft.searchCaputrePaths(22);
