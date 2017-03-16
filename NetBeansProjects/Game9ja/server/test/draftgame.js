@@ -294,10 +294,20 @@ function Draft9ja(size) {
         }
         var c;
         var anyCap = false;
+
+        /*
+         * directions are:
+         * 
+         * up_right = 1
+         * up_left = 2
+         * down_right = 3
+         * down_left = 4
+         * 
+         */
         for (var direction = 1; direction < 5; direction++) {
             c = nextCaptive(crowned, from_sq, old_direction, direction, !white);
             if (c) {
-                
+
                 var node = {};
                 node.prev = last_node;
                 node.cap = c;
@@ -309,12 +319,12 @@ function Draft9ja(size) {
                 findCaptives(crowned, c.dest_sq, direction, white, node, caps, cyclic);
 
                 c = cyclic ? null : c;
-                if(!cyclic){
+                if (!cyclic) {
                     anyCap = true;
                 }
-            }            
+            }
         }
-        
+
         if (!anyCap) {
             var node_caps = [];
             var prev_node = last_node;
@@ -425,41 +435,31 @@ function Draft9ja(size) {
         }
     }
 
-    //NOT YET TESTED FOR CORRECTNESS!!!
-    function filterCapturePath(cps, p) {
+    this.filterPaths = function (from, tos) {
 
-        var o = {};
-        var max = 0;
-        for (var i = 0; i < cps.length; i++) {
-            var c = cps[i];
-            var count = 0;
-            for (var k = 0; k < c.length; k++) {
-                for (var m = 0; m < p.length; m++) {
-                    if (p[m] === c[k]) {
-                        count++;
-                    }
+        var caps = searchCaputrePaths(from);
+        if (caps.length === 0
+                || (caps.length === 1 && caps[0].length === 0)) {
+            return [];
+        }
+
+        for (var i = caps.length - 1; i > -1; i--) {
+            var c = caps[i];
+            if (c.length < tos.length) {
+                caps.splice(i, 1);
+                continue;
+            }
+            for (var k = 0; k < tos.length; k++) {
+
+                if (tos[k] !== c[k].dest_sq) {
+                    caps.splice(i, 1);
+                    break
                 }
             }
-            if (max < count) {
-                max = count;
-            }
-            if (!o[count]) {
-                o[count] = {};
-                o[count].index = i;
-                o[count].dup = false;//duplicate is false
-            } else {
-                o[count].dup = true;//duplicate is true
-            }
         }
 
-
-        if (o[max] && !o[max].dup) {
-            var index = o[max].index;
-            return cps[index];
-        }
-
-    }
-
+        return caps;
+    };
 
     function isSquare(sq) {
         return sq > -1 && sq < SQ_COUNT;
@@ -501,7 +501,7 @@ function Draft9ja(size) {
 
     function canKingCapture(sq, opponent) {
 
-        for (var i = 0; i < LOOKUP_DIRECTIONS; i++) {
+        for (var i = 0; i < LOOKUP_DIRECTIONS.length; i++) {
             var next = squares[sq][LOOKUP_DIRECTIONS[i]];
             while (next.sq !== OFF_BOARD) {
                 if (next.piece) {
@@ -526,7 +526,7 @@ function Draft9ja(size) {
         if (path.constructor === Array) {
             //remove the captured pieces from the square
             captives_sq = [];
-            for (var i = 0; i < path.lenth; i++) {
+            for (var i = 0; i < path.length; i++) {
                 var cap_sq = path[i].captive.sqLoc;
                 captives_sq.push(cap_sq);
                 if (squares[cap_sq].piece) {
@@ -545,16 +545,21 @@ function Draft9ja(size) {
         squares[to] = pce;
         pce.sqLoc = to;
 
-        if (fn) {
-
-            fn({
+        var result = {
                 error: null, //yes, the user must check for error
                 from: from,
                 to: to,
                 target: pce,
-                capture: captives_sq ? captives_sq : []
-            });
+                capture: captives_sq ? captives_sq : [],
+                path: path
+            };
+
+        if (fn) {
+            fn(result);
+            return;
         }
+        
+        return result;//for the case of engine 
     }
 
     function validateManMove(from, to, white, fn) {
@@ -615,7 +620,8 @@ function Draft9ja(size) {
 
     function validateCapture(from, to, fn) {
         var caps = searchCaputrePaths(from);
-        if (caps.length) {
+        if (caps.length === 0
+                || (caps.length === 1 && caps[0].length === 0)) {
             fn({error: "No capture opportunity."});
             return false;
         }
@@ -665,6 +671,7 @@ function Draft9ja(size) {
 
         if (needCapture(from) && to.constructor !== Array) {
             fn({error: "Expected a capture move."});
+            return false;
         }
 
         if (to.constructor === Array) {
@@ -685,7 +692,7 @@ function Draft9ja(size) {
                 return;
             }
         }
-        effectMove(from, to, fn);
+        return effectMove(from, to, fn);
     };
 
     this.clearBoard = function () {
@@ -707,16 +714,53 @@ function Draft9ja(size) {
     this.Engine = function () {
 
         var draft = Draft9ja();
+        var DEPTH = 5;
+        return function (depth) {
 
-        return function () {
+            if (depth) {
+                DEPTH = depth;
+            }
 
-            var bestMove = function () {
+            function evalPosition(piece, is_maximizer) {
+                //COME BACK - NOT OK YET!!!
+                var cost = 0;
 
-            };
+                //var piece_evalute=evaluatePiecesOnBoardCost();        
+                //var threat_attack_cost = possibleThreatCost(piece);
+
+                //cost= evalute;//TESTING!!! COMMENT HERE LATER
+
+                //cost= piece_evalute + threat_attack_cost; // REMOVE COMMENT LATER
+
+                //cost = is_maximizer ? cost : -cost;//come back        
+                
+                //if(cost==0)
+                //  cost=(int)(Math.random()*(Constants.pawn_cost-5));
+                //return 0;        
+                return cost;
+            }
+
+            function search(is_maximizer, alpha, beta, n_depth, max_depth, piece) {
+
+            }
+
+            function bestMove() {
+                var best = search(true, // is maximizer.
+                        Infinity, //alpha value.
+                        -Infinity, //beta value.            
+                        -1, //depth : must first be initialize to -1.
+                        DEPTH, //max search depth.
+                        null
+                        );
+
+
+                return best;
+            }
+
 
             this.play = function () {
                 var best = bestMove();
-                draft.moveTo(best.from, best.path);
+                return draft.moveTo(best.from, best.path); //returns the move object
             };
         };
     };
