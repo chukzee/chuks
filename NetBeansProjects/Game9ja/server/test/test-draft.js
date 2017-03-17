@@ -12,6 +12,7 @@ draft.clearBoard();
 
 //Man
  
+ 
  draft.setPiece(22, true, false);
 
 draft.setPiece(33, false, false);
@@ -57,7 +58,7 @@ console.dir(filter_caps);
 
 var cap =caps[4];
 
-    cap.splice(0,1);
+    //cap.splice(0,1);
 
 console.log("----------------------------");
 

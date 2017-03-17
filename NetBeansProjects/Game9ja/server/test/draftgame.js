@@ -1,7 +1,9 @@
 
 function Draft9ja(size) {
 
+    this.turn = true; //white
     var squares = [];
+    var pieces = [];
     var SIZE = 10; //default is 10 by 10
     var SQ_COUNT, OFF_BOARD, LAST_SQ_INDEX;
 
@@ -11,7 +13,10 @@ function Draft9ja(size) {
             down_left = 4;
 
     var REVERSE_DIRECTION = [];
-
+    BoardPieceCount = {//these are the supported
+        10: 40, //10 x 10 = 40 pieces
+        8: 24 // 8 x 8    = 24 pieces
+    };
     REVERSE_DIRECTION[up_right] = down_left;
     REVERSE_DIRECTION[up_left] = down_right;
     REVERSE_DIRECTION[down_right] = up_left;
@@ -24,10 +29,25 @@ function Draft9ja(size) {
         var r = (SIZE - 2) / 2;
         var square = {};
 
-        var pce = new Piece();
+        var pce;
+
+        if (!squares[sq] || !squares[sq].piece) {
+            for (var i = 0; i < pieces.length; i++) {
+                if (pieces[i].sqLoc === OFF_BOARD) {
+                    pce = pieces[i];
+                    break;
+                }
+            }
+        } else {
+            pce = squares[sq].piece;
+        }
+
+        if (!pce) {
+            pce = new Piece(); // dummy piece any! just to avoid NullPionterException
+        }
+
         var row = getRow(sq);
         var col = getCol(sq);
-        pce.sqLoc = sq;
 
         if (arguments.length === 1) {
             if (sq <= SIZE * r) {
@@ -65,6 +85,9 @@ function Draft9ja(size) {
         square.rightDown = rightDown(sq);
 
         square.piece = !isEmptySq ? pce : null;
+        if (square.piece) {
+            square.piece.sqLoc = sq;
+        }
 
         if (!squares[sq]) {
             squares[sq] = square;
@@ -78,6 +101,7 @@ function Draft9ja(size) {
 
     function initBoard(size) {
 
+
         if (size) {
             SIZE = size;
         }
@@ -85,6 +109,13 @@ function Draft9ja(size) {
         SQ_COUNT = SIZE * SIZE;
         OFF_BOARD = SQ_COUNT;
         LAST_SQ_INDEX = SQ_COUNT - 1;
+
+        //initialize pieces array
+        for (var i = 0; i < BoardPieceCount[SIZE]; i++) {
+            pieces.push(new Piece());
+            pieces[i].id = i;
+            pieces[i].sqLoc = OFF_BOARD;
+        }
 
         var len = SQ_COUNT;
 
@@ -116,6 +147,7 @@ function Draft9ja(size) {
 
 
     function Piece(sq, white, crowned) {
+        //the piece id is set during board initializatin - see initBoard function
         if (arguments.length === 0) {
             this.sqLoc = OFF_BOARD;
             this.white = true;
@@ -267,7 +299,7 @@ function Draft9ja(size) {
                             for (var m = 0; m < c.length; m++) {
 
                                 var cp = {
-                                    captive: c[m].captive,
+                                    capture: c[m].capture,
                                     dest_sq: m === c.length - 1 ? c[m].dest_sq[n] : c[m].dest_sq
                                 };
                                 copy.push(cp);
@@ -313,8 +345,8 @@ function Draft9ja(size) {
                 node.cap = c;
 
                 node.visited = node.prev ? node.prev.visited : {};
-                cyclic = node.visited[c.captive.sqLoc] === 1; //detect if captive square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
-                node.visited[c.captive.sqLoc] = 1;
+                cyclic = node.visited[c.capture] === 1; //detect if capture square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
+                node.visited[c.capture] = 1;
 
                 findCaptives(crowned, c.dest_sq, direction, white, node, caps, cyclic);
 
@@ -403,7 +435,7 @@ function Draft9ja(size) {
                 && next.piece.white === opponent
                 && after_next.sq !== OFF_BOARD
                 && !after_next.piece) {
-            return {captive: next.piece, dest_sq: after_next.sq};
+            return {capture: next.piece.sqLoc, dest_sq: after_next.sq};
         }
     }
 
@@ -426,7 +458,7 @@ function Draft9ja(size) {
                         next = next[lookupDirection];
                     } while (next.sq !== OFF_BOARD && !next.piece)
 
-                    return {captive: pce, dest_sq: sqs};
+                    return {capture: pce.sqLoc, dest_sq: sqs};
                 }
                 return;//leave - square blocked by own piece
             }
@@ -522,16 +554,16 @@ function Draft9ja(size) {
 
     function effectMove(from, path, fn) {
         var pce = squares[from].piece;
-        var to = path, captives_sq;
+        var to = path;
         if (path.constructor === Array) {
             //remove the captured pieces from the square
-            captives_sq = [];
+
             for (var i = 0; i < path.length; i++) {
-                var cap_sq = path[i].captive.sqLoc;
-                captives_sq.push(cap_sq);
+                var cap_sq = path[i].capture;
+
                 if (squares[cap_sq].piece) {
-                    squares[cap_sq].piece.sqLoc = OFF_BOARD;
-                    squares[cap_sq].piece = null;
+                    squares[cap_sq].piece.sqLoc = OFF_BOARD;//yes
+                    squares[cap_sq].piece = null;//yes also
                 } else {
                     console.warn("Warning!!! captive not found on square " + cap_sq);
                 }
@@ -541,25 +573,23 @@ function Draft9ja(size) {
         }
 
         squares[from].piece = null;
-        squares[to] = null;//prevent reference issue
-        squares[to] = pce;
-        pce.sqLoc = to;
+        squares[to].piece = null;//prevent reference issue
+        squares[to].piece = pce;
+        squares[to].piece.sqLoc = to;
 
-        var result = {
+
+
+        if (fn) {
+            fn({
                 error: null, //yes, the user must check for error
                 from: from,
                 to: to,
                 target: pce,
-                capture: captives_sq ? captives_sq : [],
                 path: path
-            };
+            });
 
-        if (fn) {
-            fn(result);
-            return;
         }
-        
-        return result;//for the case of engine 
+
     }
 
     function validateManMove(from, to, white, fn) {
@@ -634,7 +664,7 @@ function Draft9ja(size) {
             var match = true;
             for (var k = 0; k < c.length; k++) {
                 if (to[k].dest_sq !== c[k].dest_sq
-                        || to[k].captive.sqLoc !== c[k].captive.sqLoc) {
+                        || to[k].capture !== c[k].capture) {
                     match = false;
                     break;
                 }
@@ -686,18 +716,110 @@ function Draft9ja(size) {
 
     }
 
-    this.moveTo = function (from, to, fn) {
+    function manPlainMoves(from_sq) {
+        var moves = [];
+        if (squares[from_sq].piece.white) {//white
+
+            if (squares[from_sq].SquareRightUp.sq !== OFF_BOARD
+                    && !squares[from_sq].SquareRightUp.piece) {
+
+                var bit_move = 0;//initialize - it is important to initialize
+                bit_move |= from_sq;
+                bit_move |= squares[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                moves.push(bit_move);
+
+            }
+            if (squares[from_sq].SquareLeftUp.sq !== OFF_BOARD
+                    && !squares[from_sq].SquareLeftUp.piece) {
+
+                var bit_move = 0;//initialize - it is important to initialize
+                bit_move |= from_sq;
+                bit_move |= squares[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                moves.push(bit_move);
+
+            }
+
+        } else {//black
+            if (squares[from_sq].SquareRightDown.sq !== OFF_BOARD
+                    && !squares[from_sq].SquareRightDown.piece) {
+
+                var bit_move = 0;//initialize - it is important to initialize
+                bit_move |= from_sq;
+                bit_move |= squares[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                moves.push(bit_move);
+
+            }
+            if (squares[from_sq].SquareLeftDown.sq !== OFF_BOARD
+                    && !squares[from_sq].SquareLeftDown.piece) {
+
+                var bit_move = 0;//initialize - it is important to initialize
+                bit_move |= from_sq;
+                bit_move |= squares[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                moves.push(bit_move);
+
+            }
+        }
+        return moves;
+    }
+
+    function manKingMoves(from_sq) {
+        var moves = [];
+        var bit_move = 0;//initialize - it is important to initialize
+
+        for (var i = 0; i < LOOKUP_DIRECTIONS.length; i++) {
+            var next = squares[from_sq][LOOKUP_DIRECTIONS[i]];
+            while (next.sq !== OFF_BOARD && !next.piece) {
+
+                bit_move |= from_sq;
+                bit_move |= next.sq << TO_SQUARE_SHIFT;
+                moves.push(bit_move);
+
+                next = next[LOOKUP_DIRECTIONS[i]];
+            }
+        }
+
+        return moves;
+    }
+
+    this.possibleMoves = function (from_sq) {
+        if (!squares[from_sq].piece) {
+            return [];
+        }
+
+        if (!squares[from_sq].piece.crowned) {
+            if (canManCapture(from_sq, !squares[from_sq].piece.white)) {
+                return searchCaputrePaths(from_sq);
+            }
+            return manPlainMoves(from_sq);
+        } else {
+            if (canKingCapture(from_sq, !squares[from_sq].piece.white)) {
+                return searchCaputrePaths(from_sq);
+            }
+            return manKingMoves(from_sq);
+        }
+
+    };
+
+    this.moveTo = function (from, path, fn) {
         if (fn) {
-            if (!validateMove(from, to, fn)) {
+            if (!validateMove(from, path, fn)) {
                 return;
             }
         }
-        return effectMove(from, to, fn);
+        effectMove(from, path, fn);
+    };
+
+    this.undoMove = function (move) {
+
+
     };
 
     this.clearBoard = function () {
         for (var i = 0; i < SQ_COUNT; i++) {
-            squares[i].piece = null;
+            if (squares[i].piece) {
+                squares[i].piece.sqLoc = OFF_BOARD;//remove the piece from the board
+                squares[i].piece = null;//nullify the piece reference on the square
+            }
         }
     };
 
@@ -715,6 +837,16 @@ function Draft9ja(size) {
 
         var draft = Draft9ja();
         var DEPTH = 5;
+        var p_index;
+        var eval_count;
+        var prune_count;
+
+        function initEngine() {
+            p_index = -1;
+            eval_count = 0;
+            prune_count = 0;
+        }
+
         return function (depth) {
 
             if (depth) {
@@ -733,18 +865,112 @@ function Draft9ja(size) {
                 //cost= piece_evalute + threat_attack_cost; // REMOVE COMMENT LATER
 
                 //cost = is_maximizer ? cost : -cost;//come back        
-                
+
                 //if(cost==0)
                 //  cost=(int)(Math.random()*(Constants.pawn_cost-5));
                 //return 0;        
                 return cost;
             }
 
+            function generateMoves() {
+
+                var moves;
+
+                if (p_index === pieces.length) {
+                    p_index = 0;
+                }
+
+
+                if (pieces[p_index].white === draft.turn
+                        || pieces[p_index].sqLoc === OFF_BOARD) {
+                    p_index++;
+                    generateMoves();
+                }
+
+                moves = draft.possibleMoves(pieces[p_index].sqLoc);
+
+
+                return moves;
+            }
+
             function search(is_maximizer, alpha, beta, n_depth, max_depth, piece) {
+
+                n_depth++; // must be initialize to -1. Take note
+
+                if (n_depth === max_depth) {
+                    eval_count++;
+                    var eval = evalPosition(is_maximizer);//uncomment later                  
+                    return eval;//return            
+                }
+
+                var value = is_maximizer ? -Infinity : Infinity;//come back  
+                var next_turn = !draft.turn;
+                var node_turn = draft.turn;
+
+                var moves = generateMoves();
+
+                for (var i = 0; i < moves.length; i++) {
+
+                    var pre_value = value;
+
+                    draft.turn = next_turn;//assign board turn used by the child node
+
+                    value = search(!is_maximizer,
+                            alpha,
+                            beta,
+                            n_depth,
+                            max_depth,
+                            piece);
+
+
+
+                    draft.turn = node_turn;
+                    draft.undoMove(moves[i]);
+
+
+                    if (is_maximizer) {
+
+                        if (n_depth === 0) {
+
+                            if (value > pre_value) {
+                                //best_move = new Move(moves[i], node_turn, value, caputre_id, piece_name, -1);
+                            }
+                        }
+
+                        if (value >= beta) {                       
+                            prune_count++;
+                            break;//prune                        
+                        }
+
+                        if (value < pre_value) {
+                            value = pre_value;//bigger value                        
+                            alpha = value;
+                        }
+
+                    } else {//if minimizer                
+                        if (value <= alpha) {                        
+                            prune_count++;
+                            break;//prune                        
+                        }
+
+                        if (value > pre_value) {
+                            value = pre_value;//smaller value                        
+                            beta = value;
+                        }
+                    }
+
+                    //update alpha or beta value                
+                    alpha = is_maximizer ? value : alpha;
+                    beta = !is_maximizer ? value : beta;
+
+                }
 
             }
 
             function bestMove() {
+
+                initEngine();
+
                 var best = search(true, // is maximizer.
                         Infinity, //alpha value.
                         -Infinity, //beta value.            
@@ -758,9 +984,9 @@ function Draft9ja(size) {
             }
 
 
-            this.play = function () {
+            this.play = function (fn) {
                 var best = bestMove();
-                return draft.moveTo(best.from, best.path); //returns the move object
+                draft.moveTo(best.from, best.path, fn);
             };
         };
     };
