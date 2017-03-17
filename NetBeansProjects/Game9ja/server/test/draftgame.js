@@ -875,16 +875,17 @@ function Draft9ja(size) {
             function generateMoves() {
 
                 var moves;
-
+                
+                p_index++;
+                
                 if (p_index === pieces.length) {
                     p_index = 0;
                 }
 
 
                 if (pieces[p_index].white === draft.turn
-                        || pieces[p_index].sqLoc === OFF_BOARD) {
-                    p_index++;
-                    generateMoves();
+                        || pieces[p_index].sqLoc === OFF_BOARD) {                    
+                    return generateMoves();                    
                 }
 
                 moves = draft.possibleMoves(pieces[p_index].sqLoc);
