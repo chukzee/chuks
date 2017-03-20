@@ -3,7 +3,7 @@ var events = require('events');
 var MarketSymbol = {};
 
 var sObj;
-var dataStr = "";
+var dataStr;
 
 var server;
 
@@ -43,6 +43,7 @@ var PriceStreamer = function (_sObj) {
         setMarketSymbol(sObj.config.OIL_AND_GAS_SYMBOLS, "Oil/Gas");
 
         var streamPrice = function (stream) {
+            dataStr = "";
             console.log('Price stream server pipe connected');
             stream.on('data', function (d) {
                 handleData(d);
@@ -103,6 +104,7 @@ var PriceStreamer = function (_sObj) {
 
                 setTimeout(function () {
                     console.log('Price stream server pipe restarting...');
+                    
                     startPipeServer();
                 }, 1000);
             });

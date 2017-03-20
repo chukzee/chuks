@@ -358,7 +358,10 @@ if (!config.HONOUR_MARKET_CLOSED) {
 }
 
 var marketActivationTask = function () {
-    var d = new Date(sObj.date() + " 00:00:00").getDay(); // no need to use getUTCDay() since sObj.date() uses utc
+    var nowTimeUTC = new Date().getTime() + 1000  * 60 * new Date().getTimezoneOffset();
+    
+    var d = new Date(nowTimeUTC).getDay(); // no need to use getUTCDay() since sObj.date() uses utc
+    
     if (d === 5 || d === 6) {
         sObj.isMarketClosed = true;//close market
         console.log("Market is closed! Day " + d);
@@ -370,27 +373,26 @@ var marketActivationTask = function () {
 
 //chect if market is open and creat task for closing and opening the market.
 (function () {
-    var d = new Date(sObj.date() + " 00:00:00").getDay(); // no need to use getUTCDay() since sObj.date() uses utc
+    var nowTimeUTC = new Date().getTime() + 1000  * 60 * new Date().getTimezoneOffset();
+    
+    var d = new Date(nowTimeUTC).getDay(); // no need to use getUTCDay() since sObj.date() uses utc
 
     var hours_away = 22 * 3600 * 1000;
-    var startTime = new Date(sObj.date() + " 00:00:00").getTime() + hours_away;
-
-    var nowTime = new Date().getTime();
-
+    var startTime = new Date(sObj.date() + " 00:00:00").getTime() + hours_away; 
 
     if (d === 6) {//obviously saturday
         sObj.setMarketClosed(true);//closed on saturdays       
         console.log("Market is closed! Day " + d);
-    } else if (d === 5 && nowTime < startTime) {
+    } else if (d === 5 && nowTimeUTC < startTime) {
         sObj.setMarketClosed(false);//open on friday at this time
         console.log("Market is open. Day " + d);
-    } else if (d === 5 && nowTime >= startTime) {
+    } else if (d === 5 && nowTimeUTC >= startTime) {
         sObj.setMarketClosed(true);//closed on friday at this time
         console.log("Market is closed! Day " + d);
-    } else if (d === 0 && nowTime < startTime) {
+    } else if (d === 0 && nowTimeUTC < startTime) {
         sObj.setMarketClosed(true);//closed on sunday at this time
         console.log("Market is closed! Day " + d);
-    } else if (d === 0 && nowTime >= startTime) {
+    } else if (d === 0 && nowTimeUTC >= startTime) {
         sObj.setMarketClosed(false);//open on sunday at this time
         console.log("Market is open. Day " + d);
     } else {
