@@ -65,7 +65,9 @@ console.log("----------------------------");
 //draft.setPiece(40, false, false);
 
 draft.moveTo(22,cap, function(obj){
-    console.log(obj);
+    //console.log(obj);
+    console.log(JSON.stringify(obj));//REMIND - Send move in compressed form - hint: use base64 or custom compression techique like using one or two letter to represent a word 
+    console.log(JSON.stringify(obj).length);
 });
 
 

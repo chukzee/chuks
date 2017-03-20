@@ -37,16 +37,38 @@ function Draft9ja(size) {
     this.getBoard = function () {
         return board;
     };
-
+    /*
+     * Set the current board position of the game.
+     * This method takes an object as parameter with 
+     * the following compulsory properties:
+     * 
+     * turn -  player's turn. ie white or black
+     * size - The size of the game
+     * pieces - The pieces on the board or the entire pieces of the game.
+     *          NOTE: if only the pieces on the board are provided, it rest 
+     *          will be automaticcally set with their square location set to
+     *          OFF_BOARD and other default properties.
+     * 
+     * @param {type} boardPositonObj
+     * @return {undefined}
+     */
     this.boardPosition = function (boardPositonObj) {
         board = [];
         pieces = [];
 
+        if (boardPositonObj.turn !== true && boardPositonObj.turn !== false) {
+            throw new Error("board position must have the turn set to true or false");
+        }
+        var brd_size = boardPositonObj.size - 0;//implicitly convert to numeric
+        if (isNaN(brd_size)) {
+            throw new Error("board size must be a number");
+        }
+
         this.turn = boardPositonObj.turn;
-        initBoard(boardPositonObj.size);
+        initBoard(brd_size);
         var gm_pieces = boardPositonObj.pieces;
 
-        //check for duplicate piece id
+        //validate pieces : e.g check for duplicate piece id ; check piece properties
         for (var i = 0; i < gm_pieces.length; i++) {
             for (var k = 0; k < gm_pieces.length; k++) {
                 if (gm_pieces[i].id !== null
@@ -54,6 +76,22 @@ function Draft9ja(size) {
                         && gm_pieces[i].id === gm_pieces[k].id) {
                     throw new Error("duplicate piece id - " + id);
                 }
+            }
+
+            if (!isSquare(gm_pieces[i].sqCap) && gm_pieces[i].sqCap !== OFF_BOARD) {
+                throw new Error("piece sqCap must be a valid square or OFF_BOARD value ");
+            }
+
+            if (!isSquare(gm_pieces[i].sqLoc)) {
+                throw new Error("piece sqLoc must be a valid square");
+            }
+
+            if (gm_pieces[i].white !== true && gm_pieces[i].white !== false) {
+                throw new Error("piece must be white or black");
+            }
+
+            if (gm_pieces[i].crowned !== true && gm_pieces[i].crowned !== false) {
+                throw new Error("piece crowned must be a true or false");
             }
         }
 
@@ -93,7 +131,6 @@ function Draft9ja(size) {
         }
 
         //now prevserse the ids
-
         for (var i = 0; i < gm_pieces.length; i++) {
             var pce = gm_pieces[i];
             if (pce.sqLoc === pieces[i].sqLoc
@@ -112,7 +149,7 @@ function Draft9ja(size) {
             }
         }
 
-        //now reassign any cancelled id
+        //now reassign any cancelled id and set captured pieces
         for (var i = 0; i < pieces.length; i++) {
 
             if (!pieces[i].id && pieces[i].id !== 0) {
@@ -131,13 +168,18 @@ function Draft9ja(size) {
                     }
                 }
             }
+
+            //set captured piece
+            if (pieces[i].sqCap !== OFF_BOARD) {
+                capSquarePce[pieces[i].sqCap] = pieces[i];
+            }
         }
 
         //finally
-        recordBoardPieces();
+        boardPiecesCount();
     };
 
-    function recordBoardPieces() {
+    function boardPiecesCount() {
 
         whiteCount = 0;//is used - Do not mind NetBeans misleading statement that it is not used
         blackCount = 0;//is used - Do not mind NetBeans misleading statement that it is not used
@@ -239,7 +281,7 @@ function Draft9ja(size) {
         }
 
         //finally
-        recordBoardPieces();
+        boardPiecesCount();
     };
 
     initBoard(size);
@@ -286,7 +328,7 @@ function Draft9ja(size) {
             board[i].SquareRightDown = board[board[i].rightDown];
             board[i].SquareLeftDown = board[board[i].leftDown];
         }
-        
+
         //initialize capSquarePce
         for (var i = 0; i < SQ_COUNT; i++) {
             capSquarePce[i] = null;//ensure null in all
@@ -702,7 +744,7 @@ function Draft9ja(size) {
     }
 
 
-    function effectMove(from, path, fn) {
+    function doMove(from, path, fn) {
         var pce = board[from].piece;
         var to = path;
         if (path.constructor === Array) {
@@ -748,12 +790,21 @@ function Draft9ja(size) {
         }
 
         if (fn) {
+            //REMIND - Send move in compressed form since boardPosition data
+            //length could be upto 2K which is too large for just a move.
+            //hint: use base64 or custom compression techique like 
+            //using one or two letters to represent a word 
             fn({
                 error: null, //yes, the user must check for error
                 from: from,
                 to: to,
                 target: pce,
-                path: path
+                path: path,
+                boardPosition: {
+                    turn: !pce.white,
+                    size: SIZE,
+                    pieces: pieces
+                }
             });
 
         }
@@ -982,7 +1033,7 @@ function Draft9ja(size) {
                 return;
             }
         }
-        effectMove(from, path, fn);
+        doMove(from, path, fn);
     };
 
     this.undoMove = function (from, path, was_crowned) {
