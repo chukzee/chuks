@@ -1137,7 +1137,7 @@ function Draft9ja(size) {
 
             function generateMoves() {
 
-                var moves;
+                var moves  = [];
 
                 for (var p_index = 0; p_index < pieces.length; p_index++) {
 
