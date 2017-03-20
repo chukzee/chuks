@@ -45,7 +45,7 @@ function Draft9ja(size) {
      * turn -  player's turn. ie white or black
      * size - The size of the game
      * pieces - The pieces on the board or the entire pieces of the game.
-     *          NOTE: if only the pieces on the board are provided, it rest 
+     *          NOTE: if only the pieces on the board are provided, the rest 
      *          will be automaticcally set with their square location set to
      *          OFF_BOARD and other default properties.
      * 
@@ -1141,7 +1141,7 @@ function Draft9ja(size) {
 
                 for (var p_index = 0; p_index < pieces.length; p_index++) {
 
-                    if (pieces[p_index].white === draft.turn
+                    if (pieces[p_index].white !== draft.turn
                             || pieces[p_index].sqLoc === OFF_BOARD) {
                         continue;
                     }
