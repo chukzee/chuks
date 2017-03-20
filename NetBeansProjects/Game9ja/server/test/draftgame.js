@@ -298,12 +298,12 @@ function Draft9ja(size) {
         //the piece id is set during board initializatin - see initBoard function
         if (arguments.length === 0) {
             this.sqLoc = OFF_BOARD;
-            this.sqCap = null;//square captured from
+            this.sqCap = OFF_BOARD;//square captured from
             this.white = true;
             this.crowned = false;
         } else {
             this.sqLoc = sq;
-            this.sqCap = null;//square captured from
+            this.sqCap = OFF_BOARD;//square captured from
             this.white = white;
             this.crowned = crowned;
         }
@@ -994,7 +994,7 @@ function Draft9ja(size) {
                 var cap_sq = path[i].capture;
                 var pce = capSquarePce[cap_sq];
                 capSquarePce[cap_sq] = null;
-                pce.sqCap = null;//yes
+                pce.sqCap = OFF_BOARD;//yes
                 pce.sqLoc = cap_sq;
                 board[cap_sq].piece = pce;
 
