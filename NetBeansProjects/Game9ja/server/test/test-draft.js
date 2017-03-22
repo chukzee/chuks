@@ -2,7 +2,7 @@
 
 var draft = require('./draftgame')();
 
-//draft.printBoard();
+draft.printBoard();
 
 //console.dir(draft);
 
@@ -13,7 +13,7 @@ draft.clearBoard();
 //Man
  
  
- draft.setPiece(22, true, false);
+/* draft.setPiece(22, true, false);
 
 draft.setPiece(33, false, false);
 draft.setPiece(55, false, false);
@@ -24,13 +24,13 @@ draft.setPiece(13, false, false);
 draft.setPiece(15, false, false);
 draft.setPiece(37, false, false);
 draft.setPiece(17, false, false);
-
+*/
 
 //------------------------------------
 
 //King
  
- /*draft.setPiece(22, true, true);
+ draft.setPiece(22, true, true);
 
 draft.setPiece(33, false, false);
 draft.setPiece(55, false, false);
@@ -42,7 +42,7 @@ draft.setPiece(13, false, false);
 draft.setPiece(15, false, false);
 draft.setPiece(37, false, false);
 draft.setPiece(17, false, false);
-*/
+
 
 //draft.printBoard();
 
@@ -69,6 +69,12 @@ draft.moveTo(22,cap, function(obj){
     console.log(JSON.stringify(obj));//REMIND - Send move in compressed form - hint: use base64 or custom compression techique like using one or two letter to represent a word 
     console.log(JSON.stringify(obj).length);
 });
+
+
+
+var robot = new draft.Robot(draft.DefaultBoardPostion, 9);
+
+robot.play();
 
 
 

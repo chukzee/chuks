@@ -136,6 +136,6 @@ Ext.define('TradeApp.view.main.Register', {
                         }
                     }
                 }]
-        }],
+        }]
 
 });

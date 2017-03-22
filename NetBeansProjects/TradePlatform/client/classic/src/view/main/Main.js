@@ -57,7 +57,7 @@ Ext.define('TradeApp.view.main.Main', {
         }, {
             xtype: 'register',
             title: 'Register',
-            id: 'register-tab',
+            id: 'register-tab'
             //iconCls: null,
             
 

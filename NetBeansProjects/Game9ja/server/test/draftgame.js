@@ -1,16 +1,27 @@
 
 function Draft9ja(size) {
 
+    this.MAX_VALUE = 1000000;
+    this.globalThis = this;
     this.turn = true; //white
-    var board = [];
-    var pieces = [];
-    var capSquarePce = [];//hold the pieces captured at an index equal to the square captured from - this is to ensure quick access by the game engine to captured pieces
-    var SIZE = 10; //default is 10 by 10
-    var SQ_COUNT, OFF_BOARD, LAST_SQ_INDEX;
+    this.board = [];
+    this.pieces = [];
+    this.SIZE = 10; //default is 10 by 10
+    this.SQ_COUNT;
+    this.OFF_BOARD;
+    this.LAST_SQ_INDEX;
     this.whiteCount = 0;
     this.blackCount = 0;
     this.whiteKingCount = 0;
     this.blackKingCount = 0;
+    this.DEPTH = 5;
+    var eval_count = 0;
+    var prune_count = 0;
+    this.DefaultBoardPostion = {
+        turn: true, //white
+        size: 0, //set automatically upon initialization
+        pieces: null, //set automatically upon initialization
+    };
     var up_right = 1,
             up_left = 2,
             down_right = 3,
@@ -26,16 +37,16 @@ function Draft9ja(size) {
     REVERSE_DIRECTION[down_right] = up_left;
     REVERSE_DIRECTION[down_left] = up_right;
 
-    var LOOKUP_DIRECTIONS = ['SquareRightUp', 'SquareLeftUp', 'SquareRightDown', 'SquareLeftDown'];
+    this.LOOKUP_DIRECTIONS = ['SquareRightUp', 'SquareLeftUp', 'SquareRightDown', 'SquareLeftDown'];
 
-    var FROM_SQUARE_MASK = 127;// 0 - 127 with max 127
-    var TO_SQUARE_MASK = 127;// 0 - 127 with max 127 
+    this.FROM_SQUARE_MASK = 127;// 0 - 127 with max 127
+    this.TO_SQUARE_MASK = 127;// 0 - 127 with max 127 
 
-    var FROM_SQUARE_SHIFT = 0;
-    var TO_SQUARE_SHIFT = FROM_SQUARE_SHIFT + 7;
+    this.FROM_SQUARE_SHIFT = 0;
+    this.TO_SQUARE_SHIFT = FROM_SQUARE_SHIFT + 7;
 
     this.getBoard = function () {
-        return board;
+        return this.board;
     };
     /*
      * Set the current board position of the game.
@@ -53,8 +64,6 @@ function Draft9ja(size) {
      * @return {undefined}
      */
     this.boardPosition = function (boardPositonObj) {
-        board = [];
-        pieces = [];
 
         if (boardPositonObj.turn !== true && boardPositonObj.turn !== false) {
             throw new Error("board position must have the turn set to true or false");
@@ -64,17 +73,20 @@ function Draft9ja(size) {
             throw new Error("board size must be a number");
         }
 
-        this.turn = boardPositonObj.turn;
+        turn = boardPositonObj.turn;
         initBoard(brd_size);
         var gm_pieces = boardPositonObj.pieces;
 
         //validate pieces : e.g check for duplicate piece id ; check piece properties
         for (var i = 0; i < gm_pieces.length; i++) {
             for (var k = 0; k < gm_pieces.length; k++) {
+                if (k === i) {
+                    continue;
+                }
                 if (gm_pieces[i].id !== null
                         && typeof gm_pieces[i].id !== "undefined"
                         && gm_pieces[i].id === gm_pieces[k].id) {
-                    throw new Error("duplicate piece id - " + id);
+                    throw new Error("duplicate piece id - " + gm_pieces[i].id);
                 }
             }
 
@@ -169,10 +181,6 @@ function Draft9ja(size) {
                 }
             }
 
-            //set captured piece
-            if (pieces[i].sqCap !== OFF_BOARD) {
-                capSquarePce[pieces[i].sqCap] = pieces[i];
-            }
         }
 
         //finally
@@ -203,10 +211,10 @@ function Draft9ja(size) {
 
         }
 
-        console.log('whiteCount ', whiteCount);
-        console.log('blackCount ', blackCount);
-        console.log('whiteKingCount ', whiteKingCount);
-        console.log('blackKingCount ', blackKingCount);
+        //console.log('whiteCount ', whiteCount);
+        //console.log('blackCount ', blackCount);
+        //console.log('whiteKingCount ', whiteKingCount);
+        //console.log('blackKingCount ', blackKingCount);
     }
 
     this.setPiece = function (sq, white, crowned) {
@@ -216,7 +224,7 @@ function Draft9ja(size) {
 
         var pce;
 
-        if (!board[sq] || !board[sq].piece) {
+        if (!this.board[sq] || !this.board[sq].piece) {
             for (var i = 0; i < pieces.length; i++) {
                 if (pieces[i].sqLoc === OFF_BOARD) {
                     pce = pieces[i];
@@ -224,7 +232,7 @@ function Draft9ja(size) {
                 }
             }
         } else {
-            pce = board[sq].piece;
+            pce = this.board[sq].piece;
         }
 
         if (!pce) {
@@ -244,6 +252,14 @@ function Draft9ja(size) {
             pce.white = white;
             pce.crowned = crowned;
         }
+        
+        /*
+         console.log("----------------- ");
+         console.log("sq ", sq);
+         console.log("row ", row);
+         console.log("col ", col);
+         console.log("----------------- ");
+         */
 
         if (row % 2 === 0) {
             if (col % 2 === 0) {
@@ -264,6 +280,8 @@ function Draft9ja(size) {
 
 
         square.sq = sq;
+        square.row = row;
+        square.col = col;
         square.leftUp = leftUp(sq);
         square.rightUp = rightUp(sq);
         square.leftDown = leftDown(sq);
@@ -274,10 +292,10 @@ function Draft9ja(size) {
             square.piece.sqLoc = sq;
         }
 
-        if (!board[sq]) {
-            board[sq] = square;
+        if (!this.board[sq]) {
+            this.board[sq] = square;
         } else {
-            board[sq].piece = square.piece;
+            this.board[sq].piece = square.piece;
         }
 
         //finally
@@ -288,10 +306,14 @@ function Draft9ja(size) {
 
     function initBoard(size) {
 
+        board = [];
+        pieces = [];
 
         if (size) {
             SIZE = size;
         }
+
+        DefaultBoardPostion.size = SIZE;
 
         SQ_COUNT = SIZE * SIZE;
         OFF_BOARD = SQ_COUNT;
@@ -300,14 +322,21 @@ function Draft9ja(size) {
         //initialize pieces array
         for (var i = 0; i < BoardPieceCount[SIZE]; i++) {
             pieces.push(new Piece());
-            pieces[i].id = i;
             pieces[i].sqLoc = OFF_BOARD;
+
+            //NOTE: The piece id must only be used by the game engine. It must not be
+            //used in other purposes unless if the board in well synchronize between the
+            //remote players, otherwise it may cause some hard-to-find bug
+
+            pieces[i].id = i;
         }
 
         var len = SQ_COUNT;
 
         board[SQ_COUNT] = {};
         board[SQ_COUNT].sq = OFF_BOARD;
+        board[SQ_COUNT].row = OFF_BOARD;
+        board[SQ_COUNT].col = OFF_BOARD;
         board[SQ_COUNT].rightUp = OFF_BOARD;
         board[SQ_COUNT].leftUp = OFF_BOARD;
         board[SQ_COUNT].rightDown = OFF_BOARD;
@@ -329,15 +358,16 @@ function Draft9ja(size) {
             board[i].SquareLeftDown = board[board[i].leftDown];
         }
 
-        //initialize capSquarePce
-        for (var i = 0; i < SQ_COUNT; i++) {
-            capSquarePce[i] = null;//ensure null in all
-        }
+        DefaultBoardPostion.pieces = pieces;
+
     }
 
 
     function Piece(sq, white, crowned) {
         //the piece id is set during board initializatin - see initBoard function
+        //NOTE: The piece id must only be used by the game engine. It must not be
+        //used in other purposes unless if the board in well synchronize between the
+        //remote players, otherwise it may cause some hard-to-find bug
         if (arguments.length === 0) {
             this.sqLoc = OFF_BOARD;
             this.sqCap = OFF_BOARD;//square captured from
@@ -358,7 +388,8 @@ function Draft9ja(size) {
     }
 
     function getCol(sq) {
-        return sq > -1 && sq < SQ_COUNT ? sq - (sq % SIZE) * SIZE : null;
+
+        return sq > -1 && sq < SQ_COUNT ? (sq % SIZE) : null;
     }
 
     function leftUp(sq) {
@@ -455,7 +486,7 @@ function Draft9ja(size) {
      * @return {Array, undefined}
      */
     this.searchCaputrePaths = function (sq) {
-        var pce = board[sq].piece;
+        var pce = this.board[sq].piece;
         if (!pce) {//no piece on square
             return null;
         }
@@ -491,6 +522,7 @@ function Draft9ja(size) {
                             for (var m = 0; m < c.length; m++) {
 
                                 var cp = {
+                                    cid: c[m].cid, //captured piece id
                                     capture: c[m].capture,
                                     dest_sq: m === c.length - 1 ? c[m].dest_sq[n] : c[m].dest_sq
                                 };
@@ -627,7 +659,7 @@ function Draft9ja(size) {
                 && next.piece.white === opponent
                 && after_next.sq !== OFF_BOARD
                 && !after_next.piece) {
-            return {capture: next.piece.sqLoc, dest_sq: after_next.sq};
+            return {cid: next.piece.id, capture: next.piece.sqLoc, dest_sq: after_next.sq};
         }
     }
 
@@ -650,7 +682,7 @@ function Draft9ja(size) {
                         next = next[lookupDirection];
                     } while (next.sq !== OFF_BOARD && !next.piece)
 
-                    return {capture: pce.sqLoc, dest_sq: sqs};
+                    return {cid: pce.id, capture: pce.sqLoc, dest_sq: sqs};
                 }
                 return;//leave - square blocked by own piece
             }
@@ -691,31 +723,31 @@ function Draft9ja(size) {
 
     function canManCapture(sq, opponent) {
 
-        if (board[sq].SquareLeftUp.piece
-                && board[sq].SquareLeftUp.piece.white === opponent
-                && board[sq].SquareLeftUp.SquareLeftUp.sq !== OFF_BOARD
-                && !board[sq].SquareLeftUp.SquareLeftUp.piece) {
+        if (this.board[sq].SquareLeftUp.piece
+                && this.board[sq].SquareLeftUp.piece.white === opponent
+                && this.board[sq].SquareLeftUp.SquareLeftUp.sq !== this.OFF_BOARD
+                && !this.board[sq].SquareLeftUp.SquareLeftUp.piece) {
             return true;
         }
 
-        if (board[sq].SquareRightUp.piece
-                && board[sq].SquareRightUp.piece.white === opponent
-                && board[sq].SquareRightUp.SquareRightUp.sq !== OFF_BOARD
-                && !board[sq].SquareRightUp.SquareRightUp.piece) {
+        if (this.board[sq].SquareRightUp.piece
+                && this.board[sq].SquareRightUp.piece.white === opponent
+                && this.board[sq].SquareRightUp.SquareRightUp.sq !== this.OFF_BOARD
+                && !this.board[sq].SquareRightUp.SquareRightUp.piece) {
             return true;
         }
 
-        if (board[sq].SquareLeftDown.piece
-                && board[sq].SquareLeftDown.piece.white === opponent
-                && board[sq].SquareLeftDown.SquareLeftDown.sq !== OFF_BOARD
-                && !board[sq].SquareLeftDown.SquareLeftDown.piece) {
+        if (this.board[sq].SquareLeftDown.piece
+                && this.board[sq].SquareLeftDown.piece.white === opponent
+                && this.board[sq].SquareLeftDown.SquareLeftDown.sq !== this.OFF_BOARD
+                && !this.board[sq].SquareLeftDown.SquareLeftDown.piece) {
             return true;
         }
 
-        if (board[sq].SquareRightDown.piece
-                && board[sq].SquareRightDown.piece.white === opponent
-                && board[sq].SquareRightDown.SquareRightDown.sq !== OFF_BOARD
-                && !board[sq].SquareRightDown.SquareRightDown.piece) {
+        if (this.board[sq].SquareRightDown.piece
+                && this.board[sq].SquareRightDown.piece.white === opponent
+                && this.board[sq].SquareRightDown.SquareRightDown.sq !== this.OFF_BOARD
+                && !this.board[sq].SquareRightDown.SquareRightDown.piece) {
             return true;
         }
 
@@ -725,18 +757,18 @@ function Draft9ja(size) {
 
     function canKingCapture(sq, opponent) {
 
-        for (var i = 0; i < LOOKUP_DIRECTIONS.length; i++) {
-            var next = board[sq][LOOKUP_DIRECTIONS[i]];
-            while (next.sq !== OFF_BOARD) {
+        for (var i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
+            var next = this.board[sq][this.LOOKUP_DIRECTIONS[i]];
+            while (next.sq !== this.OFF_BOARD) {
                 if (next.piece) {
                     if (next.piece.white === opponent
-                            && next[LOOKUP_DIRECTIONS[i]].sq !== OFF_BOARD
-                            && !next[LOOKUP_DIRECTIONS[i]].piece) {
+                            && next[this.LOOKUP_DIRECTIONS[i]].sq !== this.OFF_BOARD
+                            && !next[this.LOOKUP_DIRECTIONS[i]].piece) {
                         return true;
                     }
                     break;//path blocked by own piece so break from loop
                 }
-                next = next[LOOKUP_DIRECTIONS[i]];
+                next = next[this.LOOKUP_DIRECTIONS[i]];
             }
         }
 
@@ -745,30 +777,33 @@ function Draft9ja(size) {
 
 
     function doMove(from, path, fn) {
-        var pce = board[from].piece;
+        var pce = this.board[from].piece;
         var to = path;
         if (path.constructor === Array) {
             //remove the captured pieces from the square
 
             for (var i = 0; i < path.length; i++) {
                 var cap_sq = path[i].capture;
+                var cid = path[i].cid;
 
-                if (board[cap_sq].piece) {
-                    if (board[cap_sq].piece.white) {
-                        whiteCount--;
-                        if (board[cap_sq].piece.crowned) {
-                            whiteKingCount--;
+                if (this.board[cap_sq].piece) {
+                    if (this.board[cap_sq].piece.white) {
+                        this.whiteCount--;
+                        if (this.board[cap_sq].piece.crowned) {
+                            this.whiteKingCount--;
                         }
                     } else {
-                        blackCount--;
-                        if (board[cap_sq].piece.crowned) {
-                            blackKingCount--;
+                        this.blackCount--;
+                        if (this.board[cap_sq].piece.crowned) {
+                            this.blackKingCount--;
                         }
                     }
-                    capSquarePce[cap_sq] = board[cap_sq].piece;
-                    capSquarePce[cap_sq].sqCap = cap_sq;//yes
-                    board[cap_sq].piece.sqLoc = OFF_BOARD;//yes
-                    board[cap_sq].piece = null;//yes also
+
+                    this.pieces[cid].sqCap = cap_sq;//yes                   
+                    this.pieces[cid].sqLoc = OFF_BOARD;//yes
+                    this.board[cap_sq].piece = null;//yes also
+
+
                 } else {
                     console.warn("Warning!!! captive not found on square " + cap_sq);
                 }
@@ -777,15 +812,15 @@ function Draft9ja(size) {
             to = path[path.length - 1].dest_sq;
         }
 
-        board[from].piece = null;
-        board[to].piece = null;//prevent reference issue
-        board[to].piece = pce;
-        board[to].piece.sqLoc = to;
+        this.board[from].piece = null;
+        this.board[to].piece = null;//prevent reference issue
+        this.board[to].piece = pce;
+        this.board[to].piece.sqLoc = to;
 
         //promote piece if necessary
-        if (to < SIZE && !pce.white) {//is black and on king row in the white end
+        if (to < this.SIZE && !pce.white) {//is black and on king row in the white end
             pce.crowned = true;//crown the piece
-        } else if (to >= SQ_COUNT - SIZE && pce.white) {//is white and on king row in the black end - note that we know the piece is not OFF_BOARD at this piont. so the test is not buggy
+        } else if (to >= this.SQ_COUNT - this.SIZE && pce.white) {//is white and on king row in the black end - note that we know the piece is not OFF_BOARD at this piont. so the test is not buggy
             pce.crowned = true;//crown the piece
         }
 
@@ -802,8 +837,8 @@ function Draft9ja(size) {
                 path: path,
                 boardPosition: {
                     turn: !pce.white,
-                    size: SIZE,
-                    pieces: pieces
+                    size: this.SIZE,
+                    pieces: this.pieces
                 }
             });
 
@@ -812,20 +847,20 @@ function Draft9ja(size) {
     }
 
     function validateManMove(from, to, white, fn) {
-        if (to !== OFF_BOARD && !board[to].piece) {
-            if (white && (board[from].leftUp === to || board[from].rightUp === to)) {
+        if (to !== this.OFF_BOARD && !this.board[to].piece) {
+            if (white && (this.board[from].leftUp === to || this.board[from].rightUp === to)) {
                 return true;
-            } else if (!white && (board[from].leftDown === to || board[from].rightDown === to)) {
+            } else if (!white && (this.board[from].leftDown === to || this.board[from].rightDown === to)) {
                 return true;
             }
         }
 
         //at this point the move is invalid
-        if (to === OFF_BOARD) {
+        if (to === this.OFF_BOARD) {
             fn({error: "Not a square."});
-        } else if (board[to].piece) {
+        } else if (this.board[to].piece) {
             fn({error: "Square is not empty."});
-        } else if (!board[to].dark) {
+        } else if (!this.board[to].dark) {
             fn({error: "Cannot play on a light square."});
         } else {
             fn({error: "Invalid move."});
@@ -837,11 +872,11 @@ function Draft9ja(size) {
 
     function validateKingMove(from, to, fn) {
 
-        for (i = 0; i < LOOKUP_DIRECTIONS.length; i++) {
-            var lookup = LOOKUP_DIRECTIONS[i];
-            var next = board[from][lookup];
+        for (i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
+            var lookup = this.LOOKUP_DIRECTIONS[i];
+            var next = this.board[from][lookup];
             while (true) {
-                if (next.sq === OFF_BOARD || next.piece) {
+                if (next.sq === this.OFF_BOARD || next.piece) {
                     break;
                 }
                 if (next.sq === to) {
@@ -852,11 +887,11 @@ function Draft9ja(size) {
         }
 
         //at this point the move is invalid
-        if (to === OFF_BOARD) {
+        if (to === this.OFF_BOARD) {
             fn({error: "Not a square."});
-        } else if (board[to].piece) {
+        } else if (this.board[to].piece) {
             fn({error: "Square is not empty."});
-        } else if (!board[to].dark) {
+        } else if (!this.board[to].dark) {
             fn({error: "Cannot play on a light square."});
         } else {
             fn({error: "Invalid move."});
@@ -899,26 +934,26 @@ function Draft9ja(size) {
     }
 
     this.needCapture = function (sq) {
-        if (sq === OFF_BOARD || !board[sq].piece) {
+        if (sq === OFF_BOARD || !this.board[sq].piece) {
             return false;
         }
 
-        if (!board[sq].piece.crowned) {
-            return canManCapture(sq, !board[sq].piece.white);
+        if (!this.board[sq].piece.crowned) {
+            return canManCapture.call(this, sq, !this.board[sq].piece.white);
         } else {
-            return canKingCapture(sq, !board[sq].piece.white);
+            return canKingCapture.call(this, sq, !this.board[sq].piece.white);
         }
 
     };
 
     function validateMove(from, to, fn) {
 
-        if (!board[from].piece) {
+        if (!this.board[from].piece) {
             fn({error: "No piece on square."});
             return false;
         }
 
-        if (needCapture(from) && to.constructor !== Array) {
+        if (this.needCapture(from) && to.constructor !== Array) {
             fn({error: "Expected a capture move."});
             return false;
         }
@@ -927,9 +962,9 @@ function Draft9ja(size) {
             return validateCapture(from, to, fn);
         } else {
             if (board[from].piece.crowned) {
-                return validateKingMove(from, to, fn);
+                return validateKingMove.call(this, from, to, fn);
             } else {
-                return validateManMove(from, to, board[from].piece.white, fn);
+                return validateManMove.call(this, from, to, board[from].piece.white, fn);
             }
         }
 
@@ -937,139 +972,143 @@ function Draft9ja(size) {
 
     function manPlainMoves(from_sq, moves) {
 
-        if (board[from_sq].piece.white) {//white
+        if (this.board[from_sq].piece.white) {//white
 
-            if (board[from_sq].SquareRightUp.sq !== OFF_BOARD
-                    && !board[from_sq].SquareRightUp.piece) {
+            if (this.board[from_sq].SquareRightUp.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareRightUp.piece) {
 
                 var bit_move = 0;//initialize - it is important to initialize
                 bit_move |= from_sq;
-                bit_move |= board[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                bit_move |= this.board[from_sq].SquareRightUp.sq << this.TO_SQUARE_SHIFT;
                 moves.push(bit_move);
 
             }
-            if (board[from_sq].SquareLeftUp.sq !== OFF_BOARD
-                    && !board[from_sq].SquareLeftUp.piece) {
+            if (this.board[from_sq].SquareLeftUp.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareLeftUp.piece) {
 
                 var bit_move = 0;//initialize - it is important to initialize
                 bit_move |= from_sq;
-                bit_move |= board[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                bit_move |= this.board[from_sq].SquareLeftUp.sq << this.TO_SQUARE_SHIFT;
                 moves.push(bit_move);
 
             }
 
         } else {//black
-            if (board[from_sq].SquareRightDown.sq !== OFF_BOARD
-                    && !board[from_sq].SquareRightDown.piece) {
+            if (this.board[from_sq].SquareRightDown.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareRightDown.piece) {
 
                 var bit_move = 0;//initialize - it is important to initialize
                 bit_move |= from_sq;
-                bit_move |= board[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                bit_move |= this.board[from_sq].SquareRightDown.sq << this.TO_SQUARE_SHIFT;
                 moves.push(bit_move);
 
             }
-            if (board[from_sq].SquareLeftDown.sq !== OFF_BOARD
-                    && !board[from_sq].SquareLeftDown.piece) {
+            if (this.board[from_sq].SquareLeftDown.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareLeftDown.piece) {
 
                 var bit_move = 0;//initialize - it is important to initialize
                 bit_move |= from_sq;
-                bit_move |= board[from_sq].SquareRightUp.sq << TO_SQUARE_SHIFT;
+                bit_move |= this.board[from_sq].SquareLeftDown.sq << this.TO_SQUARE_SHIFT;
                 moves.push(bit_move);
 
             }
         }
-        return moves;
+
     }
 
-    function manKingMoves(from_sq, moves) {
+    function kingPlainMoves(from_sq, moves) {
 
         var bit_move = 0;//initialize - it is important to initialize
 
-        for (var i = 0; i < LOOKUP_DIRECTIONS.length; i++) {
-            var next = board[from_sq][LOOKUP_DIRECTIONS[i]];
-            while (next.sq !== OFF_BOARD && !next.piece) {
+        for (var i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
+            var next = this.board[from_sq][this.LOOKUP_DIRECTIONS[i]];
+            while (next.sq !== this.OFF_BOARD && !next.piece) {
 
                 bit_move |= from_sq;
-                bit_move |= next.sq << TO_SQUARE_SHIFT;
+                bit_move |= next.sq << this.TO_SQUARE_SHIFT;
                 moves.push(bit_move);
 
-                next = next[LOOKUP_DIRECTIONS[i]];
+                next = next[this.LOOKUP_DIRECTIONS[i]];
             }
         }
 
-        return moves;
     }
 
     this.possibleMoves = function (from_sq, moves) {
-        if (!board[from_sq].piece) {
+        if (!this.board[from_sq].piece) {
             return moves;
         }
 
-        if (!board[from_sq].piece.crowned) {
-            if (canManCapture(from_sq, !board[from_sq].piece.white)) {
+        if (!this.board[from_sq].piece.crowned) {
+            if (canManCapture.call(this, from_sq, !this.board[from_sq].piece.white)) {
                 var caps = searchCaputrePaths(from_sq);
                 for (var i = 0; i < caps.length; i++) {
                     moves.push({from: from_sq, path: caps[i]});
                 }
                 return;
             }
-            return manPlainMoves(from_sq, moves);
+            manPlainMoves.call(this, from_sq, moves);
         } else {
-            if (canKingCapture(from_sq, !board[from_sq].piece.white)) {
+            if (canKingCapture.call(this, from_sq, !this.board[from_sq].piece.white)) {
                 var caps = searchCaputrePaths(from_sq);
                 for (var i = 0; i < caps.length; i++) {
                     moves.push({from: from_sq, path: caps[i]});
                 }
                 return;
             }
-            manKingMoves(from_sq, moves);
+            kingPlainMoves.call(this, from_sq, moves);
         }
 
     };
 
     this.moveTo = function (from, path, fn) {
         if (fn) {
-            if (!validateMove(from, path, fn)) {
+            if (!validateMove.call(this, from, path, fn)) {
                 return;
             }
         }
-        doMove(from, path, fn);
+        doMove.call(this, from, path, fn);
     };
 
     this.undoMove = function (from, path, was_crowned) {
-        var pce = board[from].piece;
+        var pce = this.board[from].piece;
         var to = path;
         if (path.constructor === Array) {
+            //set the destination square
+            to = path[path.length - 1].dest_sq;
+
             //return the captured pieces to the squares they where captured from
             for (var i = 0; i < path.length; i++) {
                 var cap_sq = path[i].capture;
-                var pce = capSquarePce[cap_sq];
-                capSquarePce[cap_sq] = null;
-                pce.sqCap = OFF_BOARD;//yes
+                var cid = path[i].cid;
+
+                var pce = this.pieces[cid];
+                pce.sqCap = this.OFF_BOARD;//yes
                 pce.sqLoc = cap_sq;
-                board[cap_sq].piece = pce;
+                pce.white = !this.board[to].piece.white;//just in case! we know it must be the opponent
+
+                this.board[cap_sq].piece = pce;
 
                 if (pce.white) {
-                    whiteCount++;
+                    this.whiteCount++;
                     if (pce.crowned) {
-                        whiteKingCount++;
+                        this.whiteKingCount++;
                     }
                 } else {
-                    blackCount++;
+                    this.blackCount++;
                     if (pce.crowned) {
-                        blackKingCount++;
+                        this.blackKingCount++;
                     }
                 }
             }
-            //set the destination square
-            to = path[path.length - 1].dest_sq;
+
         }
 
         //return the moved piece back
-        board[from].piece = board[to].piece;
-        board[from].piece.sqLoc = from;
-        board[from].piece.crowned = was_crowned;
-        board[to].piece = null;
+        this.board[from].piece = this.board[to].piece;
+        this.board[from].piece.sqLoc = from;
+        this.board[from].piece.crowned = was_crowned;
+        this.board[to].piece = null;
 
 
 
@@ -1086,192 +1125,287 @@ function Draft9ja(size) {
 
 
     this.printBoard = function () {
+        var str = "";
 
-        for (var i = 0; i < SQ_COUNT; i++) {
-            console.log(board[i]);
+        var row = [];
+        for (var i = 0; i < SIZE; i++) {
+            row[i] = [];
         }
+        for (var i = 0; i < SQ_COUNT; i++) {
+            if (board[i].dark) {
+                if (board[i].piece) {
+                    if (board[i].piece.white) {
+                        str = board[i].piece.crowned ? "W" : "w";
+                    } else {
+                        str = board[i].piece.crowned ? "B" : "b";
+                    }
+                } else {
+                    str = "O";
+                }
+            } else {
+                str = "-";
+            }
+
+            row[getRow(i)].push(str);
+
+        }
+
+        for (var i = row.length - 1; i > -1; i--) {
+
+            var r = row[i];
+            var line = "";
+            for (var k = 0; k < r.length; k++) {
+                line += r[k] + " ";
+            }
+
+            console.log(line);
+        }
+
 
     };
 
+    function evalPosition(piece, is_maximizer) {
 
-    this.Engine = function () {
+        var cost = 0;
+        var CROWN_WORTH = 35;
+        var MAN_WORTH = 9;
+        var ATTACK = 4;
+        var DEFENCE = 3; 
+        var piece_evalute = 0;
+        var attack_cost = 0;
+        var defence_cost = 0;
+        if (piece.white) {
+            piece_evalute = MAN_WORTH * this.whiteCount + CROWN_WORTH * this.whiteKingCount;
 
-        var draft;
-        var DEPTH = 5;
-
-        var eval_count;
-        var prune_count;
-
-        function initEngine() {
-
-            eval_count = 0;
-            prune_count = 0;
+        } else {
+            piece_evalute = MAN_WORTH * this.blackCount + CROWN_WORTH * this.blackKingCount;
         }
 
-        return function (boardPositonObj, depth) {
 
-            if (depth) {
-                DEPTH = depth;
+        //evaluate the attack and defence
+        
+        var sq;
+        for (var i = 0; i < this.pieces.length; i++) {
+            if(pieces[i].white !== piece.white){
+                continue;
             }
-            draft = new Draft9ja();
-            draft.boardPosition(boardPositonObj);
-
-            function evalPosition(piece, is_maximizer) {
-
-                var cost = 0;
-                var CROWN_FACTOR = 4;
-                var piece_evalute = 0;
-                if (piece.white) {
-                    piece_evalute = draft.whiteCount + CROWN_FACTOR * draft.whiteKingCount;
-                } else {
-                    piece_evalute = draft.blackCount + CROWN_FACTOR * draft.blackKingCount;
+            
+            sq = pieces[i].sqLoc;
+            
+            if(sq === this.OFF_BOARD){//pieces is off board - obviously captured
+                continue;//skip
+            }
+            
+            if (pieces[i].white) {
+                
+                attack_cost += this.board[sq].row * ATTACK;
+                
+                if(this.board[sq].SquareRightDown.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareRightDown.piece 
+                        && piece.white ===this.board[sq].SquareRightDown.piece.white )){
+                    defence_cost += DEFENCE;
                 }
-                var threat_attack_cost = 0; /*possibleThreatCost(piece)*/
+                if(this.board[sq].SquareLeftDown.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareLeftDown.piece 
+                        && piece.white ===this.board[sq].SquareLeftDown.piece.white )){
+                    defence_cost += DEFENCE;
+                }
+                
+            } else {
+                attack_cost += (this.SIZE - this.board[sq].row)  * ATTACK;
+                
+                if(this.board[sq].SquareRightUp.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareRightUp.piece 
+                        && piece.white ===this.board[sq].SquareRightUp.piece.white )){
+                    defence_cost += DEFENCE;
+                }
+                if(this.board[sq].SquareLeftUp.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareLeftUp.piece 
+                        && piece.white ===this.board[sq].SquareLeftUp.piece.white )){
+                    defence_cost += DEFENCE;
+                }
+                
+            }
+        }
 
-                cost = piece_evalute + threat_attack_cost; // REMOVE COMMENT LATER
 
-                cost = is_maximizer ? cost : -cost;//come back        
 
-                return cost;
+        cost = piece_evalute + attack_cost + defence_cost; // REMOVE COMMENT LATER
+
+        cost = is_maximizer ? cost : -cost;//come back        
+
+        return cost;
+    }
+
+    function generateMoves() {
+
+        var moves = [];
+
+        for (var p_index = 0; p_index < this.pieces.length; p_index++) {
+
+            if (this.pieces[p_index].white !== this.turn
+                    || this.pieces[p_index].sqLoc === this.OFF_BOARD) {
+                continue;
             }
 
-            function generateMoves() {
+            this.possibleMoves(this.pieces[p_index].sqLoc, moves);
+        }
 
-                var moves  = [];
+        return moves;
+    }
 
-                for (var p_index = 0; p_index < pieces.length; p_index++) {
+    function search(is_maximizer, alpha, beta, n_depth, max_depth, piece) {
 
-                    if (pieces[p_index].white !== draft.turn
-                            || pieces[p_index].sqLoc === OFF_BOARD) {
-                        continue;
+        n_depth++; // must be initialize to -1. Take note
+
+        if (n_depth === max_depth) {
+            eval_count++;
+            var eval = evalPosition.call(this, piece, is_maximizer);//uncomment later                   
+            return eval;//return            
+        }
+
+        var value = is_maximizer ? -this.MAX_VALUE : this.MAX_VALUE;//come back  
+        var next_turn = !this.turn;
+        var node_turn = this.turn;
+
+        var moves = generateMoves.call(this);
+        var from, to;
+        for (var i = 0; i < moves.length; i++) {
+
+            if (!moves[i].path) {
+                from = (moves[i] >> this.FROM_SQUARE_SHIFT)
+                        & this.FROM_SQUARE_MASK;
+                to = (moves[i] >> this.TO_SQUARE_SHIFT)
+                        & this.TO_SQUARE_MASK;
+            } else {
+                from = moves[i].from;
+                to = moves[i].path;
+            }
+            var pce = this.board[from].piece;
+            if (pce === null) {//testing!!!
+                console.log(pce);//testing!!!
+            }
+            var was_crowned = pce.crowned; //needed to get the correct status when undoing move
+            this.moveTo(from, to);
+
+            //console.log('-------moved----------');
+            //this.printBoard();
+
+            var pre_value = value;
+
+            this.turn = next_turn;//assign board turn used by the child node
+
+            value = search.call(this, !is_maximizer,
+                    alpha,
+                    beta,
+                    n_depth,
+                    max_depth,
+                    pce);
+
+
+
+            this.turn = node_turn;
+            this.undoMove(from, to, was_crowned);
+
+            //console.log('-------undone move----------');
+            //this.printBoard();
+
+            //console.log('value ', value);
+
+            if (is_maximizer) {
+
+                if (n_depth === 0) {
+
+                    if (value > pre_value) {
+                        //best_move = new Move(moves[i], node_turn, value, caputre_id, piece_name, -1);
+                        console.log('best ', value,' pre_value ', pre_value);
                     }
-
-                    draft.possibleMoves(pieces[p_index].sqLoc, moves);
+                    console.log('best_1', value,' pre_value ', pre_value);
                 }
 
-                return moves;
-            }
-
-            function search(is_maximizer, alpha, beta, n_depth, max_depth, piece) {
-
-                n_depth++; // must be initialize to -1. Take note
-
-                if (n_depth === max_depth) {
-                    eval_count++;
-                    var eval = evalPosition(piece, is_maximizer);//uncomment later                  
-                    return eval;//return            
+                if (value >= beta) {
+                    prune_count++;
+                    
+                    //console.log('is_maximizer ', prune_count, ' value ', value, ' beta ', beta);
+                    
+                    break;//prune                        
                 }
 
-                var value = is_maximizer ? -Infinity : Infinity;//come back  
-                var next_turn = !draft.turn;
-                var node_turn = draft.turn;
-
-                var moves = generateMoves();
-                var from, to;
-                for (var i = 0; i < moves.length; i++) {
-
-                    if (!moves[i].path) {
-                        from = (moves[i] >> FROM_SQUARE_SHIFT)
-                                & FROM_SQUARE_MASK;
-                        to = (moves[i] >> TO_SQUARE_SHIFT)
-                                & TO_SQUARE_MASK;
-                    } else {
-                        from = moves[i].from;
-                        to = moves[i].path;
-                    }
-                    var was_crowned = draft.board[from].piece.crowned; //needed to get the correct status when undoing move
-                    draft.moveTo(from, to);
-
-                    var pre_value = value;
-
-                    draft.turn = next_turn;//assign board turn used by the child node
-
-                    value = search(!is_maximizer,
-                            alpha,
-                            beta,
-                            n_depth,
-                            max_depth,
-                            draft.board[from].piece);
-
-
-
-                    draft.turn = node_turn;
-                    draft.undoMove(from, to, was_crowned);
-
-
-                    if (is_maximizer) {
-
-                        if (n_depth === 0) {
-
-                            if (value > pre_value) {
-                                //best_move = new Move(moves[i], node_turn, value, caputre_id, piece_name, -1);
-                            }
-                        }
-
-                        if (value >= beta) {
-                            prune_count++;
-                            break;//prune                        
-                        }
-
-                        if (value < pre_value) {
-                            value = pre_value;//bigger value                        
-                            alpha = value;
-                        }
-
-                    } else {//if minimizer                
-                        if (value <= alpha) {
-                            prune_count++;
-                            break;//prune                        
-                        }
-
-                        if (value > pre_value) {
-                            value = pre_value;//smaller value                        
-                            beta = value;
-                        }
-                    }
-
-                    //update alpha or beta value                
-                    alpha = is_maximizer ? value : alpha;
-                    beta = !is_maximizer ? value : beta;
-
+                if (value < pre_value) {
+                    value = pre_value;//bigger value                        
+                    alpha = value;
+                    
+                    //console.log('continue max ', prune_count, ' value ', value, ' pre_value ', pre_value);
                 }
 
+            } else {//if minimizer                
+                if (value <= alpha) {
+                    prune_count++;
+                    
+                    //console.log('minimizer ', prune_count, ' value ', value, ' alpha ', alpha);
+                    
+                    break;//prune                        
+                }
+
+                if (value > pre_value) {
+                    value = pre_value;//smaller value                        
+                    beta = value;
+                   
+                    //console.log('continue min ', prune_count, ' value ', value, ' pre_value ', pre_value);
+                }
             }
 
-            function bestMove() {
+            //update alpha or beta value                
+            alpha = is_maximizer ? value : alpha;
+            beta = !is_maximizer ? value : beta;
 
-                initEngine();
+        }
 
-                var best = search(true, // is maximizer.
-                        Infinity, //alpha value.
-                        -Infinity, //beta value.            
-                        -1, //depth : must first be initialize to -1.
-                        DEPTH, //max search depth.
-                        null
-                        );
+        return value;
+    }
+
+    function bestMove() {
+        eval_count = 0;
+        prune_count = 0;
+
+        var best = search.call(this, true, // is maximizer.
+                -Infinity, //alpha value.
+                Infinity, //beta value.            
+                -1, //depth : must first be initialize to -1.
+                DEPTH, //max search depth.
+                null
+                );
 
 
-                return best;
-            }
+        return best;
+    }
 
+    this.Robot = function (boardPositonObj, depth) {
 
-            this.play = function (fn) {
-                var best = bestMove();
-                draft.moveTo(best.from, best.path, fn);
-            };
+        if (depth) {
+            DEPTH = depth;
+        }
+
+        boardPosition(boardPositonObj);
+
+        this.play = function (fn) {
+
+            var best = bestMove.call(globalThis, DEPTH);
+            //moveTo(best.from, best.path, fn);
+            globalThis.printBoard();
         };
     };
 
 
     this.Game = function (size) {
 
-        var draft = Draft9ja(size);
+
 
         return function () {
 
             this.move = function (from, path, fn) {
 
-                draft.moveTo(from, path, fn);
+                moveTo(from, path, fn);
             };
         };
     };

@@ -97,7 +97,7 @@ Ext.define('TradeApp.view.products.OptionProductForm', {
                     step: 0.01,
                     minValue: 0,
                     emptyText: 'Price',
-                    decimalPrecision:5,
+                    decimalPrecision: 5,
                     allowBlank: true, //important! otherwise it may confuse users if not set which will raise form error message - this will confuse the user in this case since it is an hidden component.
                     hidden: true,
                     //spinner buttons, arrow keys and mouse wheel listeners
@@ -321,9 +321,10 @@ Ext.define('TradeApp.view.products.OptionProductForm', {
                 }
 
                 var submitForm = function (option) {
-                    if (option === 'no') {
+                    if (option !== 'yes') {
                         return;
                     }
+
                     form.submit({
                         success: function (form, action) {
 

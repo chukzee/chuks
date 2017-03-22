@@ -295,7 +295,7 @@ Ext.define('TradeApp.view.products.SpotForexDialog', {
                         }
 
                         var submitForm = function (option) {
-                            if (option === 'no') {
+                            if (option !== 'yes') {
                                 return;
                             }
 

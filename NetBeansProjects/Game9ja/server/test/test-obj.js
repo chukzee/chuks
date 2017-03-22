@@ -41,3 +41,9 @@ var g = (mk >> TO_SQUARE_SHIFT)
 console.log("------shift-----");
 
 console.log(g);
+
+
+console.log("------col-----");
+
+for(var i=0; i<100; i++)
+console.log(i%10);

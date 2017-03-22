@@ -54,7 +54,7 @@ Ext.define('TradeApp.view.exchange.BuyerSportfxConfirmDialog', {
                 {
                     fieldLabel: 'Direction',
                     name: 'direction'
-                },  {
+                }, {
                     fieldLabel: 'Trigger Price',
                     name: 'pending_order_price',
                     renderer: function (value) {
@@ -75,7 +75,7 @@ Ext.define('TradeApp.view.exchange.BuyerSportfxConfirmDialog', {
                             return "<span style='font-style: italic;'>None</span>";
                         }
                     }
-                },{
+                }, {
                     fieldLabel: 'Stop Loss',
                     name: 'stop_loss'
                 }, {
@@ -105,15 +105,15 @@ Ext.define('TradeApp.view.exchange.BuyerSportfxConfirmDialog', {
                 }, {
                     text: 'Ok, Send',
                     handler: function (option) {
-                        if (option === 'no') {
+                        /*if (option !== 'yes') {
                             return;
-                        }
+                        }*/
                         var win = this.up('window');
                         var f = this.up('form').getForm();
                         var order = f.findField('order').getValue();
                         var token = TradeApp.Util.getAccessToken();
-                        var param = "access_token=" + token 
-                                + "&" +"version=" + TradeApp.Util.version 
+                        var param = "access_token=" + token
+                                + "&" + "version=" + TradeApp.Util.version
                                 + "&" + "order_ticket=" + order;
 
                         Ext.Ajax.request({

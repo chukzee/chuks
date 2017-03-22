@@ -131,11 +131,11 @@ Ext.define('TradeApp.view.exchange.BuyerOptionsConfirmDialog', {
                 }, {
                     text: 'Ok, Send',
                     handler: function (option) {
-                        if (option === 'no') {
+                        /*if (option !== 'yes') {
                             return;
-                        }
+                        }*/
                         var win = this.up('window');
-                        
+
                         var f = this.up('form').getForm();
                         var order = f.findField('order').getValue();
                         var token = TradeApp.Util.getAccessToken();
@@ -161,7 +161,7 @@ Ext.define('TradeApp.view.exchange.BuyerOptionsConfirmDialog', {
                                     TradeApp.Util.refreshGrid(pex_opt_grid, true);
 
                                     win.hide(); // will eventually be destroyed
-                                    
+
                                     //NOT NECESSARY - since upon countdown_start even , the open postions will
                                     //be automatically refreshed
                                     //var op_opt_grid = Ext.getCmp("trade-open-options-grid-id");//NOT NECESSARY
@@ -195,7 +195,7 @@ Ext.define('TradeApp.view.exchange.BuyerOptionsConfirmDialog', {
                                 }
 
                             },
-                            failure: function (conn, response, options, eOpts) {                               
+                            failure: function (conn, response, options, eOpts) {
                                 Ext.Msg.alert('Connection problem!', "Could not connect to the remote server!");
                             }
                         });
