@@ -252,7 +252,7 @@ function Draft9ja(size) {
             pce.white = white;
             pce.crowned = crowned;
         }
-        
+
         /*
          console.log("----------------- ");
          console.log("sq ", sq);
@@ -1170,7 +1170,7 @@ function Draft9ja(size) {
         var CROWN_WORTH = 35;
         var MAN_WORTH = 9;
         var ATTACK = 4;
-        var DEFENCE = 3; 
+        var DEFENCE = 3;
         var piece_evalute = 0;
         var attack_cost = 0;
         var defence_cost = 0;
@@ -1183,48 +1183,48 @@ function Draft9ja(size) {
 
 
         //evaluate the attack and defence
-        
+
         var sq;
         for (var i = 0; i < this.pieces.length; i++) {
-            if(pieces[i].white !== piece.white){
+            if (pieces[i].white !== piece.white) {
                 continue;
             }
-            
+
             sq = pieces[i].sqLoc;
-            
-            if(sq === this.OFF_BOARD){//pieces is off board - obviously captured
+
+            if (sq === this.OFF_BOARD) {//pieces is off board - obviously captured
                 continue;//skip
             }
-            
+
             if (pieces[i].white) {
-                
+
                 attack_cost += this.board[sq].row * ATTACK;
-                
-                if(this.board[sq].SquareRightDown.sq === this.OFF_BOARD
-                        || (this.board[sq].SquareRightDown.piece 
-                        && piece.white ===this.board[sq].SquareRightDown.piece.white )){
+
+                if (this.board[sq].SquareRightDown.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareRightDown.piece
+                                && piece.white === this.board[sq].SquareRightDown.piece.white)) {
                     defence_cost += DEFENCE;
                 }
-                if(this.board[sq].SquareLeftDown.sq === this.OFF_BOARD
-                        || (this.board[sq].SquareLeftDown.piece 
-                        && piece.white ===this.board[sq].SquareLeftDown.piece.white )){
+                if (this.board[sq].SquareLeftDown.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareLeftDown.piece
+                                && piece.white === this.board[sq].SquareLeftDown.piece.white)) {
                     defence_cost += DEFENCE;
                 }
-                
+
             } else {
-                attack_cost += (this.SIZE - this.board[sq].row)  * ATTACK;
-                
-                if(this.board[sq].SquareRightUp.sq === this.OFF_BOARD
-                        || (this.board[sq].SquareRightUp.piece 
-                        && piece.white ===this.board[sq].SquareRightUp.piece.white )){
+                attack_cost += (this.SIZE - this.board[sq].row) * ATTACK;
+
+                if (this.board[sq].SquareRightUp.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareRightUp.piece
+                                && piece.white === this.board[sq].SquareRightUp.piece.white)) {
                     defence_cost += DEFENCE;
                 }
-                if(this.board[sq].SquareLeftUp.sq === this.OFF_BOARD
-                        || (this.board[sq].SquareLeftUp.piece 
-                        && piece.white ===this.board[sq].SquareLeftUp.piece.white )){
+                if (this.board[sq].SquareLeftUp.sq === this.OFF_BOARD
+                        || (this.board[sq].SquareLeftUp.piece
+                                && piece.white === this.board[sq].SquareLeftUp.piece.white)) {
                     defence_cost += DEFENCE;
                 }
-                
+
             }
         }
 
@@ -1252,6 +1252,20 @@ function Draft9ja(size) {
         }
 
         return moves;
+    }
+
+    function toMoveObj(move) {
+        if (move.path) {
+            return move;
+        }
+
+        var from = (move >> this.FROM_SQUARE_SHIFT)
+                & this.FROM_SQUARE_MASK;
+        var to = (move >> this.TO_SQUARE_SHIFT)
+                & this.TO_SQUARE_MASK;
+        
+        return {from: from, path: to};
+
     }
 
     function search(is_maximizer, alpha, beta, n_depth, max_depth, piece) {
@@ -1317,40 +1331,42 @@ function Draft9ja(size) {
                 if (n_depth === 0) {
 
                     if (value > pre_value) {
-                        //best_move = new Move(moves[i], node_turn, value, caputre_id, piece_name, -1);
-                        console.log('best ', value,' pre_value ', pre_value);
+                        best_move = toMoveObj.call(this, moves[i]);//current move
+                    } else {
+                        //TODO: Investigate this else block for correctness
+                        best_move = toMoveObj.call(this, moves[0]);//try first move
                     }
-                    console.log('best_1', value,' pre_value ', pre_value);
+                    return best_move;
                 }
 
                 if (value >= beta) {
                     prune_count++;
-                    
+
                     //console.log('is_maximizer ', prune_count, ' value ', value, ' beta ', beta);
-                    
+
                     break;//prune                        
                 }
 
                 if (value < pre_value) {
                     value = pre_value;//bigger value                        
                     alpha = value;
-                    
+
                     //console.log('continue max ', prune_count, ' value ', value, ' pre_value ', pre_value);
                 }
 
             } else {//if minimizer                
                 if (value <= alpha) {
                     prune_count++;
-                    
+
                     //console.log('minimizer ', prune_count, ' value ', value, ' alpha ', alpha);
-                    
+
                     break;//prune                        
                 }
 
                 if (value > pre_value) {
                     value = pre_value;//smaller value                        
                     beta = value;
-                   
+
                     //console.log('continue min ', prune_count, ' value ', value, ' pre_value ', pre_value);
                 }
             }
@@ -1391,8 +1407,7 @@ function Draft9ja(size) {
         this.play = function (fn) {
 
             var best = bestMove.call(globalThis, DEPTH);
-            //moveTo(best.from, best.path, fn);
-            globalThis.printBoard();
+            moveTo(best.from, best.path, fn);
         };
     };
 
