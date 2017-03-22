@@ -72,7 +72,7 @@ draft.moveTo(22,cap, function(obj){
 
 
 
-var robot = new draft.Robot(draft.DefaultBoardPostion, 9);
+var robot = new draft.Robot(draft.DefaultBoardPostion, 13);
 
 robot.play(function(result){
     console.log(JSON.stringify(result));

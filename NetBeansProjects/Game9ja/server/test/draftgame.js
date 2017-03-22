@@ -17,10 +17,11 @@ function Draft9ja(size) {
     this.DEPTH = 5;
     var eval_count = 0;
     var prune_count = 0;
+    var node_count = 0;
     this.DefaultBoardPostion = {
         turn: true, //white
         size: 0, //set automatically upon initialization
-        pieces: null, //set automatically upon initialization
+        pieces: null //set automatically upon initialization
     };
     var up_right = 1,
             up_left = 2,
@@ -74,7 +75,7 @@ function Draft9ja(size) {
         }
 
         turn = boardPositonObj.turn;
-        initBoard(brd_size);
+        initBoard.call(this, brd_size);
         var gm_pieces = boardPositonObj.pieces;
 
         //validate pieces : e.g check for duplicate piece id ; check piece properties
@@ -184,28 +185,28 @@ function Draft9ja(size) {
         }
 
         //finally
-        boardPiecesCount();
+        boardPiecesCount.call(this);
     };
 
     function boardPiecesCount() {
 
-        whiteCount = 0;//is used - Do not mind NetBeans misleading statement that it is not used
-        blackCount = 0;//is used - Do not mind NetBeans misleading statement that it is not used
-        whiteKingCount = 0;//is used - Do not mind NetBeans misleading statement that it is not used
-        blackKingCount = 0;//is used - Do not mind NetBeans misleading statement that it is not used
+        this.whiteCount = 0;
+        this.blackCount = 0;
+        this.whiteKingCount = 0;
+        this.blackKingCount = 0;
 
-        for (var i = 0; i < pieces.length; i++) {
-            if (pieces[i].white && pieces[i].sqLoc !== OFF_BOARD) {
-                whiteCount++;
-                if (pieces[i].crowned) {
-                    whiteKingCount++;
+        for (var i = 0; i < this.pieces.length; i++) {
+            if (this.pieces[i].white && this.pieces[i].sqLoc !== this.OFF_BOARD) {
+                this.whiteCount++;
+                if (this.pieces[i].crowned) {
+                    this.whiteKingCount++;
                 }
             }
 
-            if (!pieces[i].white && pieces[i].sqLoc !== OFF_BOARD) {
-                blackCount++;
-                if (pieces[i].crowned) {
-                    blackKingCount++;
+            if (!this.pieces[i].white && this.pieces[i].sqLoc !== this.OFF_BOARD) {
+                this.blackCount++;
+                if (this.pieces[i].crowned) {
+                    this.blackKingCount++;
                 }
             }
 
@@ -219,15 +220,15 @@ function Draft9ja(size) {
 
     this.setPiece = function (sq, white, crowned) {
 
-        var r = (SIZE - 2) / 2;
+        var r = (this.SIZE - 2) / 2;
         var square = {};
 
         var pce;
 
         if (!this.board[sq] || !this.board[sq].piece) {
-            for (var i = 0; i < pieces.length; i++) {
-                if (pieces[i].sqLoc === OFF_BOARD) {
-                    pce = pieces[i];
+            for (var i = 0; i < this.pieces.length; i++) {
+                if (this.pieces[i].sqLoc === this.OFF_BOARD) {
+                    pce = this.pieces[i];
                     break;
                 }
             }
@@ -243,9 +244,9 @@ function Draft9ja(size) {
         var col = getCol(sq);
 
         if (arguments.length === 1) {
-            if (sq <= SIZE * r) {
+            if (sq <= this.SIZE * r) {
                 pce.white = true;
-            } else if (sq >= SIZE * (SIZE - r)) {
+            } else if (sq >= this.SIZE * (this.SIZE - r)) {
                 pce.white = false;
             }
         } else {
@@ -276,7 +277,7 @@ function Draft9ja(size) {
         }
 
         var isEmptySq = square.dark === false
-                || ((sq >= SIZE * r && sq < SIZE * (SIZE - r)) && arguments.length === 1);
+                || ((sq >= this.SIZE * r && sq < this.SIZE * (this.SIZE - r)) && arguments.length === 1);
 
 
         square.sq = sq;
@@ -299,66 +300,66 @@ function Draft9ja(size) {
         }
 
         //finally
-        boardPiecesCount();
+        boardPiecesCount.call(this);
     };
 
-    initBoard(size);
+    initBoard.call(this, size);
 
     function initBoard(size) {
 
-        board = [];
-        pieces = [];
+        this.board = [];
+        this.pieces = [];
 
         if (size) {
-            SIZE = size;
+            this.SIZE = size;
         }
 
-        DefaultBoardPostion.size = SIZE;
+        this.DefaultBoardPostion.size = this.SIZE;
 
-        SQ_COUNT = SIZE * SIZE;
-        OFF_BOARD = SQ_COUNT;
-        LAST_SQ_INDEX = SQ_COUNT - 1;
+        this.SQ_COUNT = this.SIZE * this.SIZE;
+        this.OFF_BOARD = this.SQ_COUNT;
+        this.LAST_SQ_INDEX = this.SQ_COUNT - 1;
 
         //initialize pieces array
-        for (var i = 0; i < BoardPieceCount[SIZE]; i++) {
-            pieces.push(new Piece());
-            pieces[i].sqLoc = OFF_BOARD;
+        for (var i = 0; i < BoardPieceCount[this.SIZE]; i++) {
+            this.pieces.push(new Piece());
+            this.pieces[i].sqLoc = this.OFF_BOARD;
 
             //NOTE: The piece id must only be used by the game engine. It must not be
             //used in other purposes unless if the board in well synchronize between the
             //remote players, otherwise it may cause some hard-to-find bug
 
-            pieces[i].id = i;
+            this.pieces[i].id = i;
         }
 
-        var len = SQ_COUNT;
+        var len = this.SQ_COUNT;
 
-        board[SQ_COUNT] = {};
-        board[SQ_COUNT].sq = OFF_BOARD;
-        board[SQ_COUNT].row = OFF_BOARD;
-        board[SQ_COUNT].col = OFF_BOARD;
-        board[SQ_COUNT].rightUp = OFF_BOARD;
-        board[SQ_COUNT].leftUp = OFF_BOARD;
-        board[SQ_COUNT].rightDown = OFF_BOARD;
-        board[SQ_COUNT].leftDown = OFF_BOARD;
+        this.board[this.SQ_COUNT] = {};
+        this.board[this.SQ_COUNT].sq = this.OFF_BOARD;
+        this.board[this.SQ_COUNT].row = this.OFF_BOARD;
+        this.board[this.SQ_COUNT].col = this.OFF_BOARD;
+        this.board[this.SQ_COUNT].rightUp = this.OFF_BOARD;
+        this.board[this.SQ_COUNT].leftUp = this.OFF_BOARD;
+        this.board[this.SQ_COUNT].rightDown = this.OFF_BOARD;
+        this.board[this.SQ_COUNT].leftDown = this.OFF_BOARD;
 
-        board[SQ_COUNT].SquareRightUp = board[SQ_COUNT];
-        board[SQ_COUNT].SquareLeftUp = board[SQ_COUNT];
-        board[SQ_COUNT].SquareRightDown = board[SQ_COUNT];
-        board[SQ_COUNT].SquareLeftDown = board[SQ_COUNT];
+        this.board[this.SQ_COUNT].SquareRightUp = this.board[this.SQ_COUNT];
+        this.board[this.SQ_COUNT].SquareLeftUp = this.board[this.SQ_COUNT];
+        this.board[this.SQ_COUNT].SquareRightDown = this.board[this.SQ_COUNT];
+        this.board[this.SQ_COUNT].SquareLeftDown = this.board[this.SQ_COUNT];
 
         for (var i = 0; i < len; i++) {
-            setPiece(i);
+            this.setPiece(i);
         }
 
-        for (var i = 0; i < SQ_COUNT; i++) {
-            board[i].SquareRightUp = board[board[i].rightUp];
-            board[i].SquareLeftUp = board[board[i].leftUp];
-            board[i].SquareRightDown = board[board[i].rightDown];
-            board[i].SquareLeftDown = board[board[i].leftDown];
+        for (var i = 0; i < this.SQ_COUNT; i++) {
+            this.board[i].SquareRightUp = this.board[this.board[i].rightUp];
+            this.board[i].SquareLeftUp = this.board[this.board[i].leftUp];
+            this.board[i].SquareRightDown = this.board[this.board[i].rightDown];
+            this.board[i].SquareLeftDown = this.board[this.board[i].leftDown];
         }
 
-        DefaultBoardPostion.pieces = pieces;
+        this.DefaultBoardPostion.pieces = this.pieces;
 
     }
 
@@ -1018,12 +1019,13 @@ function Draft9ja(size) {
 
     function kingPlainMoves(from_sq, moves) {
 
-        var bit_move = 0;//initialize - it is important to initialize
+        var bit_move;
 
         for (var i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
             var next = this.board[from_sq][this.LOOKUP_DIRECTIONS[i]];
             while (next.sq !== this.OFF_BOARD && !next.piece) {
 
+                bit_move = 0;//initialize - it is important to initialize
                 bit_move |= from_sq;
                 bit_move |= next.sq << this.TO_SQUARE_SHIFT;
                 moves.push(bit_move);
@@ -1164,26 +1166,12 @@ function Draft9ja(size) {
 
     };
 
-    function evalPosition(piece, is_maximizer) {
-
-        var cost = 0;
-        var CROWN_WORTH = 35;
-        var MAN_WORTH = 9;
+    //FOR NOW THIS METHOD IS EXPERIMENTAL! MAY BE REMOVED OR REFINED LATER
+    function attackAndDefenceCost(piece) {
         var ATTACK = 4;
         var DEFENCE = 3;
-        var piece_evalute = 0;
         var attack_cost = 0;
         var defence_cost = 0;
-        if (piece.white) {
-            piece_evalute = MAN_WORTH * this.whiteCount + CROWN_WORTH * this.whiteKingCount;
-
-        } else {
-            piece_evalute = MAN_WORTH * this.blackCount + CROWN_WORTH * this.blackKingCount;
-        }
-
-
-        //evaluate the attack and defence
-
         var sq;
         for (var i = 0; i < this.pieces.length; i++) {
             if (pieces[i].white !== piece.white) {
@@ -1228,9 +1216,36 @@ function Draft9ja(size) {
             }
         }
 
+        return attack_cost + defence_cost;
+
+    }
+
+    function evalPosition(piece, is_maximizer) {
+
+        var cost = 0;
+        var CROWN_WORTH = 35;
+        var MAN_WORTH = 9;
+        var piece_evalute = 0;
+
+        if (piece.white) {
+            piece_evalute = MAN_WORTH * this.whiteCount + CROWN_WORTH * this.whiteKingCount;
+
+        } else {
+            piece_evalute = MAN_WORTH * this.blackCount + CROWN_WORTH * this.blackKingCount;
+        }
 
 
-        cost = piece_evalute + attack_cost + defence_cost; // REMOVE COMMENT LATER
+        //attack and defence evaluation is experimental - it make the engine slower and we
+        //are not certain if it produces a better searched move since just relying on
+        //the piece count on board could make a search depth of 13 which appears to
+        //be stronger. if stronger is no improved from the experimation we will
+        //reconsider this option of evaluation (attack and defence cost).
+        
+        var attack_and_defence_cost = 0;
+        //attack_and_defence_cost = attackAndDefenceCost.call(this, piece);//EXPERIMENTAL - MAY BE REMOVED IF STRENGTH AND PERFORMANCE SAY SO.
+
+
+        cost = piece_evalute + attack_and_defence_cost ? attack_and_defence_cost : 0; // REMOVE COMMENT LATER
 
         cost = is_maximizer ? cost : -cost;//come back        
 
@@ -1263,7 +1278,7 @@ function Draft9ja(size) {
                 & this.FROM_SQUARE_MASK;
         var to = (move >> this.TO_SQUARE_SHIFT)
                 & this.TO_SQUARE_MASK;
-        
+
         return {from: from, path: to};
 
     }
@@ -1321,6 +1336,7 @@ function Draft9ja(size) {
             this.turn = node_turn;
             this.undoMove(from, to, was_crowned);
 
+            node_count++;
             //console.log('-------undone move----------');
             //this.printBoard();
 
@@ -1392,6 +1408,10 @@ function Draft9ja(size) {
                 null
                 );
 
+
+        console.log('node_count ', node_count);
+        console.log('prune_count ', prune_count);
+        console.log('eval_count ', eval_count);
 
         return best;
     }
