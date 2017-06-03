@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="game9ja-game-view">
+            <div class="game9ja-game-view-header">
+                <div>
+                    <div id="game9ja-game-view-white-player-name"></div> 
+                    
+                    <img onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game9ja-game-view-white-player-pic"  alt="" />
+                    
+                    <div id="game9ja-game-view-score"></div>
+                    <div id="game9ja-game-view-game-status"></div>
+                    
+                    <img  onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game9ja-game-view-black-player-pic" />
+                    <div id="game9ja-game-view-black-player-name"></div>
+                </div>
+                <i class="fa fa-arrow-left game9ja-back-btn"></i>
+                <i class="fa fa-ellipsis-v game9ja-ellipsis-menu-btn"></i>
+            </div>
+            <div class="game9ja-game-view-body">
+                <div id="game9ja-game-view-main">
+                    <!--holds the canvas for the game-->
+                    
+                    <div id="game9ja-game-view-main-upper"><!--sizing and positioning using javascript-->
+                        <!--some upper display e.g time countdown and online status-->
+                        <!--note when countdown starts it means the move is delivered to the opponent
+                        and when it stop it means the opponent has played or the countdown is over i.e timeout-->
+                        <span>05:34</span> <!--countdown-->
+                        <span>thinking...</span> <!--activity e.g making move... , thinking...-->
+                    </div>
+                    <div id="game9ja-game-view-main-board"><!--sizing and positioning using javascript-->
+                        <!--the game board-->
+                    </div>
+                    <div id="game9ja-game-view-main-lower"><!--sizing and positioning using javascript-->
+                        <!--some lower display e.g time countdown -->
+                        <span>03:25</span> <!--countdown-->
+                    </div>
+                </div>
+                <div id="game9ja-game-view-left-content">
+                    <!--holds panel in the side. this show by default in 
+                    large device but hidden in small device gets revealled dynamically-->
+                    <div class="game9ja-game-view-left-panel">
+                        <span id="game9ja-game-view-left-panel-header-title"></span>
+                        <span class="fa fa-close" id="game9ja-game-view-left-panel-close"></span>                        
+                        <div id="game9ja-game-view-left-panel-body">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="game9ja-game-view-footer">
+                <div id="game-view-footer-chat">
+                    <!--holds chat icon tab -->
+                    <i class="fa fa-comment"></i> <div >Chat</div>
+                </div>
+                <div id="game-view-footer-comments">
+                    <!--holds comments icon tab -->
+                    <i class="fa fa-comments"></i> <div >Comments</div>
+                </div>    
+                <div id="game-view-footer-voice-call">
+                    <!--holds voice call icon tab -->
+                    <i class="fa fa-phone"></i> <div >Voice call</div>
+                </div>
+                <div id="game-view-footer-video-call">
+                    <!--holds video call icon tab -->
+                    <i class="fa fa-video-camera"></i> <div >Video call</div>
+                </div>
+                <div id="game-view-footer-stats">
+                    <!--holds stats icon tab -->
+                    <i class="fa fa-bar-chart"></i> <div >Stats</div>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>

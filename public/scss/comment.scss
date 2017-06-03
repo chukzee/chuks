@@ -1,0 +1,103 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 18, 2017, 4:11:48 PM
+    Author     : Engr Chuks
+*/
+
+@import "base-var.scss";
+
+$profile_img_size : 30px;
+$b_color : #777;
+
+
+.game9ja-comment{
+    position: absolute;
+    top : 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.game9ja-comment-body{
+    position: absolute;
+    top : 0;
+    left: 0;
+    bottom : $message_input_height;
+    width: 100%;
+    padding: 0;
+    overflow: auto;
+}
+
+
+.game9ja-comment-item{
+    position: relative;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    color: $b_color;
+    
+    
+    > :nth-child(1){/*user profile pic*/
+        width: $profile_img_size;
+        height: $profile_img_size;
+        position: relative;
+        top: 0;
+        left: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        
+    }
+    
+    > :nth-child(2){/*user full name*/
+        width: 100px;
+        position: absolute;
+        top: $profile_img_size/3 + 4px ;
+        left: $profile_img_size + 15px;
+        color: #444;
+        font-size: 14px;
+    }
+    
+    > :nth-child(3){/*time ago*/
+        width: 80px;
+        position: absolute;
+        top: $profile_img_size/3;        
+        right: 5px;
+        font-size: 11px;
+    }
+    
+    > :nth-child(4){/*user comment content*/
+        width: 100%;
+        position: relative;
+        top: 0;        
+        left: 4px;
+        font-size: 14px;
+    }
+    
+    > :nth-child(5){/*reply comment icon*/
+        position: relative;
+        top: 5px;        
+        left: 4px;
+        cursor: pointer;        
+    }
+    
+    > :nth-child(6){/*like comment icon*/
+        position: absolute;
+        bottom: 5px;        
+        right: 80px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+    > :nth-child(7){/*dislike comment icon*/
+        position: absolute;
+        bottom: 5px;        
+        right: 5px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+}

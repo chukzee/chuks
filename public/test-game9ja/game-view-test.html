@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/header-items.css" />
+        <link rel="stylesheet" href="../app/css/game-view.css" />
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+    </head>
+    <body>
+
+        <div class="game9ja-game-view"  id="test">
+            <div class="game9ja-game-view-header">
+                <div>
+                    <div>Chuks Aimele</div> 
+                    <img src="images/white_player.jpg" alt=""/>
+                    <div>1 - 0</div>
+                    <div>Live</div>
+                    
+                    <img src="images/black_player.jpg" alt=""/>
+                    <div>Onome Okori </div>
+                </div>
+                <i class="fa fa-arrow-left game9ja-back-btn"></i>
+                <i class="fa fa-ellipsis-v game9ja-ellipsis-menu-btn"></i>
+            </div>
+            <div class="game9ja-game-view-body">
+                <div id="game9ja-game-view-main">
+                    <!--holds the canvas for the game-->
+                    
+                    <div id="test_width" style="background-color: red;"><!--sizing and positioning using javascript-->
+                        <!--some upper display e.g time countdown and online status-->
+                        <!--note when countdown starts it means the move is delivered to the opponent
+                        and when it stop it means the opponent has played or the countdown is over i.e timeout-->
+                        <span>05:34</span> <!--countdown-->
+                        <span>thinking...</span> <!--activity e.g making move... , thinking...-->
+                    </div>
+                    <div style="background-color: blue;"><!--sizing and positioning using javascript-->
+                        <!--the game board-->
+                    </div>
+                    <div style="background-color: green;"><!--sizing and positioning using javascript-->
+                        <!--some lower display e.g time countdown -->
+                        <span>03:25</span> <!--countdown-->
+                    </div>
+                </div>
+                <div id="game9ja-game-view-left-content">
+                    <!--holds panel in the side. this show by default in 
+                    large device but hidden in small device gets revealed dynamically-->
+                    <div class="game9ja-game-view-left-panel">
+                        <span id="game9ja-game-view-left-panel-header-title"></span>
+                        <span class="fa fa-close" id="game9ja-game-view-left-panel-close"></span>                        
+                        <div id="game9ja-game-view-left-panel-body">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="game9ja-game-view-footer">
+                <div>
+                    <!--holds chat icon tab -->
+                    <i class="fa fa-comment"></i> <div >Chat</div>
+                </div>
+                <div>
+                    <!--holds comments icon tab -->
+                    <i class="fa fa-comments"></i> <div >Comments</div>
+                </div>    
+                <div>
+                    <!--holds voice call icon tab -->
+                    <i class="fa fa-phone"></i> <div >Voice call</div>
+                </div>
+                <div>
+                    <!--holds video call icon tab -->
+                    <i class="fa fa-video-camera"></i> <div >Video call</div>
+                </div>
+                <div>
+                    <!--holds stats icon tab -->
+                    <i class="fa fa-bar-chart"></i> <div >Stats</div>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            alert("width = "+window.screen.width +", heigt = "+window.screen.height);
+            
+            var el = document.getElementById("test");
+            el.addEventListener('touchmove', function(evt){
+                evt.preventDefault();//prevent other events propagation 
+                console.log('touchmove');
+            });
+            el.addEventListener('touchend', function(evt){
+                evt.preventDefault();//prevent click event
+                console.log('touchend');
+            });
+            el.addEventListener('click', function(){
+                console.log('click');
+            });
+            
+            var elm = document.getElementById("test_width");
+            
+            alert(elm.clientTop);
+            alert(elm.clientLeft);
+            alert(elm.clientHeight);
+            alert(elm.clientWidth);
+        </script>
+            
+    </body>
+</html>
+
+

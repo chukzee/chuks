@@ -1,0 +1,10 @@
+{
+    "name": "Game9ja",
+    "version": "1.0.0",
+    "keywords": ["util", "functional", "server", "client", "browser"],
+    "author": "chuks",
+    "contributors": [],
+    "dependencies": {}, "scripts":{
+"start":"node game-server.js"}
+
+}

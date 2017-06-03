@@ -1,0 +1,114 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 30, 2017, 9:39:10 AM
+    Author     : Engr Chuks
+*/
+@import "base-var.scss";
+
+$tournaments_header_height: 45px;
+$tournament_name_font_size: 18px;
+
+$arrow_size: 10px;
+$page_number_width: 60px;
+$profile_pic_size : $tournaments_header_height - 2*$base_padding;
+
+.game9a-tournaments-live{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+
+    >.game9a-tournaments-live-header{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: $tournaments_header_height;
+        background : $base_background;
+        color : $base_text_color;
+        
+        > :nth-child(1){/*the tournament profile pic*/
+            position: absolute;
+            top: $base_padding;
+            left: $base_padding;
+            width: $profile_pic_size;
+            height: $profile_pic_size;
+            cursor: pointer;
+            @include border-radius(50%); 
+        }
+        > :nth-child(2){/*the tournament name*/
+            position: absolute;
+            top: ($tournaments_header_height - $tournament_name_font_size)/ 2;
+            left: $profile_pic_size + 2* $base_padding;
+            width: 150px;
+            font-size: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        > :nth-child(3){/*the tournament duration*/
+            position: absolute;
+            top: 2px;
+            right: $base_padding;
+            width: 150px;
+            font-size: 11px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: right;
+        }
+        > :nth-child(4){/*the previous tournament arrow*/
+            position: absolute;
+            bottom: $base_padding;
+            right:  $page_number_width + $arrow_size + 2* $base_padding + 30px;
+            width: $arrow_size;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        > :nth-child(5){/*the page number*/
+            position: absolute;
+            bottom: $base_padding;
+            right: $arrow_size + $base_padding + 30px;
+            width: $page_number_width;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+            font-size: 12px;
+        }
+        > :nth-child(6){/*the next tournament arrow*/
+            position: absolute;
+            bottom: $base_padding;
+            right: $base_padding + 30px;
+            width: $arrow_size;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        > :nth-child(7){/*dropdown menu arrow */
+            position: absolute;
+            bottom: $base_padding;
+            right: $base_padding;
+            width: $arrow_size;
+            height : 20px;
+            cursor: pointer;
+            font-size: 10px;
+            padding-top: 10px;
+            @include box-sizing(border-box);
+        }
+    }
+    
+    
+    >.game9a-tournaments-live-body{
+        position: absolute;
+        top: $tournaments_header_height;
+        bottom: 0px;
+        width: 100%;
+        //background: hotpink;
+    }
+}

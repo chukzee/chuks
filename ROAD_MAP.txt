@@ -1,0 +1,35 @@
+
+Road Map For The Project With No Specific Order.
+
+1. Users will bet with the chess engine.
+    
+    - users must have account with Game9ja with enough account balance to be eligible.
+
+    - game timeout is only applicable to the user. Timeout will not affect the game engine
+      when searching for best move because the user may cheat in such situation putting the
+      engine in disadvantage. One way the user can cheat the game engine is by using low performance
+      device (computer or mobile device) which may cause the engine to fail to beat its timeout thus
+      putting it in disadvantage position to lose the game.
+
+    - For very high rank user the engine may occasionally get best move from remote server. Or in some
+      situations get all best moves from a server dedicated to him alone.  Note that for a server to be 
+      dedicated to a user his stake (money bet) for the game must worth that facility. The dedicated server
+      could be a cloud for running the code to search best move. More research on this later.
+
+
+
+2. Users will bet with one anther.
+
+    - users must have account with Game9ja with enough account balance to be eligible.
+
+3. Users will play in tournaments.
+
+    -
+
+
+     
+
+
+
+
+

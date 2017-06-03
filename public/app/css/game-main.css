@@ -1,0 +1,112 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header, .game9ja-main > :nth-child(1) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-footer, .game9ja-main > .game9ja-tab > .game9ja-tab-header {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-main {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden; }
+  .game9ja-main > :nth-child(1) {
+    position: absolute;
+    top: 0;
+    left: 0; }
+    .game9ja-main > :nth-child(1) > :nth-child(1) {
+      /*live game name*/
+      position: absolute;
+      top: 3px;
+      font-size: 24px;
+      text-align: center;
+      width: 100%; }
+    .game9ja-main > :nth-child(1) > :nth-child(2) {
+      /*Gameja Title*/
+      position: absolute;
+      left: 5px;
+      bottom: 3px;
+      font-size: 14px;
+      text-align: center;
+      color: greenyellow; }
+      .game9ja-main > :nth-child(1) > :nth-child(2) > span {
+        color: #ccc;
+        font-size: 20px;
+        font-style: italic; }
+    .game9ja-main > :nth-child(1) > :nth-child(3) {
+      /*ellipsis menu*/
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      padding: 5px;
+      box-sizing: border-box; }
+  .game9ja-main > .game9ja-tab {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    bottom: 0;
+    width: 100%; }
+    .game9ja-main > .game9ja-tab > .game9ja-tab-header {
+      position: absolute;
+      top: 0;
+      clear: both; }
+      .game9ja-main > .game9ja-tab > .game9ja-tab-header > button {
+        float: left;
+        height: 100%;
+        width: 33.33%;
+        background: transparent;
+        color: inherit;
+        border-width: 0px;
+        outline: none;
+        font-size: 11px; }
+      .game9ja-main > .game9ja-tab > .game9ja-tab-header > button:hover {
+        color: #00dd00; }
+      .game9ja-main > .game9ja-tab > .game9ja-tab-header > .game9ja-tab-active {
+        color: #00dd00;
+        border-bottom: 2px #00dd00 solid; }
+    .game9ja-main > .game9ja-tab > .game9ja-tab-body {
+      position: absolute;
+      top: 35px;
+      left: 0;
+      width: 100%;
+      height: 100%; }
+      .game9ja-main > .game9ja-tab > .game9ja-tab-body > div {
+        display: none;
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 100%; }
+
+/*# sourceMappingURL=game-main.css.map */

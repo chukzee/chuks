@@ -1,0 +1,32 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 16, 2017, 1:05:04 AM
+    Author     : Engr Chuks
+*/
+@import "base-var.scss";
+
+.game9ja-section-container{
+    position: absolute;
+    top: 0;
+    bottom :0;
+    left: 0;
+    right: 0;
+    background:  #f6f6f6;
+    padding: $base_padding;
+    box-sizing: border-box;
+    
+}
+
+.game9ja-section-container > div{
+    width: 100% !important;
+    background:  #fff !important;
+    margin-bottom: 10px !important;
+    @include box-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+    border-radius: 2px !important;
+    box-sizing: border-box !important;
+    padding: $base_padding !important; 
+}

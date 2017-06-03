@@ -1,0 +1,117 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 18, 2017, 6:07:47 PM
+    Author     : Engr Chuks
+*/
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-chat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0; }
+
+.game9ja-chat-body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 40px;
+  width: 100%;
+  padding: 5px;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: auto; }
+
+.game9ja-chat-sent {
+  position: relative;
+  right: -35%;
+  width: 65%;
+  padding: 5px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  background-color: #fff;
+  margin-top: 5px;
+  margin-bottom: 5px; }
+  .game9ja-chat-sent > :nth-child(1) {
+    /*chat message*/
+    position: relative;
+    top: 0;
+    left: 0;
+    font-size: 14px;
+    color: #444444; }
+  .game9ja-chat-sent > :nth-child(2) {
+    /*chat time ago*/
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 10px;
+    color: #888888; }
+  .game9ja-chat-sent > :nth-child(3) {
+    /*message sent and delivery indicator*/
+    position: relative;
+    top: 5px;
+    left: 5px;
+    width: 20px;
+    height: 10px; }
+
+.game9ja-chat-received {
+  position: relative;
+  width: 65%;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin-top: 5px;
+  margin-bottom: 5px; }
+  .game9ja-chat-received > :nth-child(1) {
+    /*chat message*/
+    position: relative;
+    top: 0;
+    left: 0;
+    font-size: 14px;
+    color: #008800; }
+  .game9ja-chat-received > :nth-child(2) {
+    /*chat time ago*/
+    width: 100%;
+    font-size: 10px;
+    text-align: right;
+    color: #004400; }
+
+/*# sourceMappingURL=chat.css.map */

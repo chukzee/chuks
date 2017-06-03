@@ -1,0 +1,80 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 19, 2017, 1:18:56 AM
+    Author     : Engr Chuks
+*/
+
+@import "base-var.scss";
+
+ $awesome_fnt_size : 18px;
+
+.game9ja-message-input{
+    position: absolute;
+        
+    left :0px;
+    bottom: 0;
+    width: 100%; 
+    height: $message_input_height;
+    background: $base_background;
+    color : $base_text_color;
+    > div{
+        height: $message_input_height;
+        position: absolute;
+        left :0;
+        right: 40px; 
+        //background-color: green;
+        
+        > :nth-child(1){//image icon or pic to load emoji - see whatapp
+            height: $message_input_height;
+            position: absolute; 
+            left :0; 
+            width: $message_input_height; 
+            //background-color: brown;
+            padding: ($message_input_height - $awesome_fnt_size)/2;
+            box-sizing: border-box;
+            
+            > i{
+                font-size : $awesome_fnt_size;
+                cursor: pointer;
+            }
+        }
+        > :nth-child(2){//input div wrapper - a helper to enable flexing the test field
+             height: $message_input_height;
+             position: absolute; 
+             left :$message_input_height;
+             right: 0;
+             overflow: hidden;
+             //background-color: rosybrown;
+             
+             > textarea{
+                 padding: 10px;
+                 box-sizing: border-box;
+                 height: $message_input_height; 
+                 width: 100%; 
+                 border: none; 
+                 border-bottom: #555 1px solid;
+                 overflow: hidden;
+                 margin: 0;
+             }
+        }
+    }
+    
+    > i{
+        height: $message_input_height;
+        position: absolute;
+        font-size : $awesome_fnt_size;
+        padding: ($message_input_height - $awesome_fnt_size)/2;
+        padding-left: 10px;
+        box-sizing: border-box;
+        right: 0px; 
+        top: 0px; 
+        width: 40px; 
+        cursor: pointer;
+        //background-color: #00bb00;
+    }
+    
+}

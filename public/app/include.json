@@ -1,0 +1,86 @@
+
+/**
+ *Include files required by these app. These files are loaded
+ *before the app is fully initialized. The css files are loaded
+ *before the js. Also the files are loaded sequentially according
+ *to thier listing.
+ *
+*/
+
+{
+    /**
+     * css and js files required for all devices. These files are loaded first
+     */
+    "app": {
+        
+        "css": [
+            //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
+            //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
+            "font-awesome.min.css",
+            "game-main.css", 
+            "live-games-list.css", 
+            "chat.css", 
+            "comment.css", 
+            "game-view-left-panel.css", 
+            "game-view.css", 
+            "header-items.css", 
+            "message-input.css", 
+            "section-container.css",  
+            "groups-live.css",
+            "tournaments-live.css",
+            "user-show-list.css"
+        ],
+        
+        "js": [
+            "draftgame.js",
+            "jquery-1.10.2.min.js", 
+            //"bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
+            "tween/TweenMax.min.js"
+        ] 
+    },
+
+    /**
+     * css and js files required for small size devices e.g smart phones
+     */
+    "small": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            "test.js", 
+            "GameHome.js", 
+            "GameSelect.js",
+            "GameView.js"
+        ] 
+    },
+
+    /**
+     * css and js files required for medium size devices e.g tablets 
+     */
+    "medium": {
+
+        "css": [
+
+        ],
+
+        "js": [
+
+        ]
+    },
+
+    /**
+     * css and js files required for large size devices e.g desktops and laptops 
+     */
+    "large": {
+
+        "css": [
+
+        ],
+
+        "js": [
+
+        ]
+    }
+}

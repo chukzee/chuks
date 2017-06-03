@@ -1,0 +1,46 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 19, 2017, 9:20:33 AM
+    Author     : Engr Chuks
+*/
+
+
+.game9ja-ellipsis-menu-btn {
+    position: absolute;
+    top: 10px; 
+    right: 10px;
+    font-size: 14px;   
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+}
+
+.game9ja-back-btn {
+    position: absolute;
+    top: 10px; 
+    left: 10px;
+    font-size: 12px;   
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+}
+
+
+@media screen and (min-width: 768px) {
+    /*Good! Only screen size 768px and above will 
+    have no back button. their content will be displayed 
+    like desktop . 
+    So tablets with size 768px and above
+    will have their screen orientation locked to landscape
+    and their content will show as in desktop and laptop.
+    */
+    .game9ja-back-btn {
+        visibility: hidden; /*hide back button*/
+    }
+}

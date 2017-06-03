@@ -1,0 +1,62 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 31, 2017, 2:24:29 PM
+    Author     : Engr Chuks
+*/
+
+@import "base-var.scss";
+
+$heading_color : #ddd;
+
+.game9a-menu{
+    
+    min-width : 120px;
+    border: 1px #eee solid;
+    color : #222;
+    @include box-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+    
+    > .game9a-menu-header{
+        position: relative;
+        width: 100%;
+        padding : $base_padding;
+        text-align: center;
+        border-bottom : 1px #eee solid;
+        min-height: 30px;
+        @include box-sizing(border-box);
+        font-weight: 600;
+    }
+    
+    > .game9a-menu-body{
+        position: relative;
+        width: 100%;
+        padding : $base_padding;
+        @include box-sizing(border-box);
+        >div{
+            min-height: 30px;
+            cursor: pointer;
+            padding : $base_padding;
+            @include box-sizing(border-box);
+            &:hover{
+                background: #eee;
+            }
+        }
+        
+    }
+    
+    > .game9a-menu-footer{
+        position: relative;
+        width: 100%;
+        min-height: 30px;
+        padding : $base_padding;
+        text-align: center;
+        border-bottom-style: 1px #eee solid;
+        @include box-sizing(border-box);
+        min-height: 30px;
+        font-weight: 600;
+        border-top : 1px #eee solid;
+    }
+}

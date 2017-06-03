@@ -1,0 +1,87 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+//#00d6b2 is a beautiful color - experiment with is later
+
+$h_color_1 : #333;
+$h_color_2 : #222;
+$base_background : linear-gradient($h_color_1, $h_color_2);
+$base_text_color : #eee;
+$base_padding : 5px;
+
+//body variables
+
+$body_margin : 0;
+$body_padding : 0;
+$body_bg: #fff;
+
+//Header variables
+
+$header_height : 50px;
+$header_small_height : 35px;
+$header_bg : $base_background;
+$header_text_color : $base_text_color;
+$header_padding : $base_padding;
+$header_margin : 0;
+
+//chats and comments
+ $message_input_height : 40px;
+
+ //list variables
+ $list_item_height : 60px;
+ $list_divider_width : 0.0325em;
+ $list_divider_color : #eee;
+
+.game9ja-header{
+    position: absolute;
+    top :0;
+    left:0;
+    top :0;
+    width: 100%;
+    height: $header_height;
+    background: $h_color_1;//fallback to browser that do not support gradient
+    background: $header_bg;
+    color: $header_text_color;
+    //border-bottom: 1px  groove;
+    //box-sizing: border-box;
+}
+
+
+.game9ja-footer{
+    
+    position: absolute;
+    left:0;
+    bottom :0;
+    width: 100%;
+    height: $header_small_height;
+    background: $h_color_1;//fallback to browser that do not support gradient
+    background: $header_bg;
+    color: $header_text_color;
+    //border-top: 1px  groove;
+    //box-sizing: border-box;
+}
+
+
+@mixin border-radius($radius){
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+@mixin box-shadow($shadow){
+    -webkit-box-shadow: $shadow;
+    border-radius: $shadow;
+}
+
+@mixin box-sizing($sizing){
+    -webkit-box-sizing: $sizing;
+    box-sizing: $sizing;
+}
+

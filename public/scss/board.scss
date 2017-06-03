@@ -1,0 +1,97 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 21, 2017, 5:35:04 AM
+    Author     : Engr Chuks
+*/
+
+$border : 1px #777 solid;
+$light_cell_bg : #fff; //fallback for browser with no support for gradient
+$light_cell_bg_gradient : #fff; //TODO - Use gradient to design 
+
+$dark_cell_bg : #000; //fallback for browser with no support for gradient
+$dark_cell_bg_gradient : #fff; //TODO - Use gradient to design 
+
+//$highlight_opacity: 0.6; // Deprecated - see below and read!
+
+.game9ja-board-abstract{
+    width: 500px;
+    height:500px;
+    border-collapse: collapse;
+    background: $light_cell_bg;//fallback for browser with no support for gradient
+    background: $light_cell_bg_gradient;
+}
+
+.game9ja-board-abstract tr td{
+    border : $border;
+}
+
+.game9ja-chess-board , .game9ja-draft-board-inverse{
+    @extend .game9ja-board-abstract;
+}
+
+.game9ja-chess-board tr:nth-child(odd) td:nth-child(even){
+    background : $dark_cell_bg;
+}
+
+.game9ja-chess-board tr:nth-child(even) td:nth-child(odd){
+    background : $dark_cell_bg;
+}
+
+
+/*Deprecated - will cause conflict in mobile device especially small screen device
+  where the touch by the hand must not be on the square to be highlighted since we
+  will be using a hand-pointer image to aid in selection where by the touch will
+  actually be some offset away from the selected square.
+
+  Solution - Instead use javascript to set opacity on the square you want highlighted by 
+  tracking the table td element. 
+
+
+.game9ja-chess-board tr:nth-child(odd) td:nth-child(even):hover{
+    opacity : $highlight_opacity;
+}
+
+.game9ja-chess-board tr:nth-child(even) td:nth-child(odd):hover{
+    opacity : $highlight_opacity;
+}
+*/
+
+.game9ja-draft-board{
+    @extend .game9ja-chess-board;
+}
+
+.game9ja-draft-board-inverse{
+   border: $border;
+}
+
+.game9ja-draft-board-inverse tr:nth-child(odd) td:nth-child(odd){
+    background : #000;
+}
+
+.game9ja-draft-board-inverse tr:nth-child(even) td:nth-child(even){
+    background : #000;
+}
+
+
+/*Deprecated - will cause conflict in mobile device especially small screen device
+  where the touch by the hand must not be on the square to be highlighted since we
+  will be using a hand-pointer image to aid in selection where by the touch will
+  actually be some offset away from the selected square.
+
+  Solution - Instead use javascript to set opacity on the square you want highlighted by 
+  tracking the table td element. 
+
+.game9ja-draft-board-inverse tr:nth-child(odd) td:nth-child(odd):hover{
+    opacity : $highlight_opacity;
+}
+
+.game9ja-draft-board-inverse tr:nth-child(even) td:nth-child(even):hover{
+    opacity : $highlight_opacity;
+}
+*/
+
+

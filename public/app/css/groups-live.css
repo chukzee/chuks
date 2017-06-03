@@ -1,0 +1,131 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 30, 2017, 9:39:10 AM
+    Author     : Engr Chuks
+*/
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9a-groups-live {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+  .game9a-groups-live > .game9a-groups-live-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    background: linear-gradient(#333, #222);
+    color: #eee; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(1) {
+      /*the group profile pic*/
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      border-radius: 50%; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(2) {
+      /*the group name*/
+      position: absolute;
+      top: 2px;
+      left: 45px;
+      width: 150px;
+      font-size: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(3) {
+      /*the group profile status*/
+      position: absolute;
+      top: 23px;
+      left: 45px;
+      width: 150px;
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(4) {
+      /*the previous group arrow*/
+      position: absolute;
+      bottom: 5px;
+      right: 110px;
+      width: 10px;
+      cursor: pointer;
+      font-size: 12px; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(5) {
+      /*the page number*/
+      position: absolute;
+      bottom: 5px;
+      right: 45px;
+      width: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 12px; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(6) {
+      /*the next group arrow*/
+      position: absolute;
+      bottom: 5px;
+      right: 35px;
+      width: 10px;
+      cursor: pointer;
+      font-size: 12px; }
+    .game9a-groups-live > .game9a-groups-live-header > :nth-child(7) {
+      /*dropdown menu arrow */
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 10px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 10px;
+      padding-top: 10px;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box; }
+  .game9a-groups-live > .game9a-groups-live-body {
+    position: absolute;
+    top: 45px;
+    bottom: 0px;
+    width: 100%; }
+
+/*# sourceMappingURL=groups-live.css.map */

@@ -1,0 +1,85 @@
+
+@import "base-var.scss";
+
+
+$hgap : 5px;
+$label_width : 100px;
+$profile_img_size : $list_item_height - 2 * $hgap;
+
+.game9ja-user-show-list{
+    position: relative;
+    width: 100%;
+    height: $list_item_height; 
+    border-bottom-width: $list_divider_width;
+    border-bottom-color: $list_divider_color;
+    border-bottom-style: solid;  
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    
+    &:hover{
+        background-color: #eee;
+    }
+
+    
+    > :nth-child(1) > img{/*profile pic*/
+        width: $profile_img_size;
+        height: $profile_img_size;
+        position: absolute;
+        top: $hgap;
+        left: $hgap;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    
+    > :nth-child(2){/*full name*/
+        position: absolute;
+        top: 5px;
+        left:  $profile_img_size + 2 * $hgap;
+        font-size: 14px;
+        width: $label_width;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #555;
+    }
+
+    
+    > :nth-child(3){/*phone number*/
+        @extend :nth-child(2);
+        top: 30px;
+        font-size: 12px;
+        color: #888;
+    }
+
+    
+    > :nth-child(4) > input{/*Lets play button*/
+        position: absolute;
+        top: $list_item_height/ 3;
+        right:  $hgap;
+        width: $label_width;
+        height: 30px;
+        background: #00aa00;//fallback
+        background: linear-gradient(#00bb00, #00aa00);
+        color: lighten(#00aa00, 65%);
+        border-style: none;
+        border-radius: 2px;
+        cursor: pointer;
+        outline: none;
+    }
+    
+    > :nth-child(5){/*time ago*/
+        position: absolute;
+        top: 2px;
+        font-size: 11px;
+        right:  $hgap;
+        width: $label_width;
+        text-shadow: rgba(170,170,170, 0.9) 0px 0.3px 0.5px;
+        color: #aaa;
+        text-align: right;
+    }
+}
+
+
