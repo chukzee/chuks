@@ -14,7 +14,7 @@ Main.controller.GameView = {
 
     onBeforeShow: function (data) {
 
-        initMain();
+        initMain();//
         
         $('#game9ja-game-view-white-player-name').html(data.white_player_name);
         $('#game9ja-game-view-white-player-pic').attr({src: data.white_player_pic});
