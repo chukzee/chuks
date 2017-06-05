@@ -1,0 +1,277 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 1, 2017, 4:28:52 PM
+    Author     : Engr Chuks
+*/
+@import "base-var.scss";
+@import "header-items.scss";
+
+
+$main_body_bg : linear-gradient(#999, #bbb);
+
+$score_color : #ff4444;
+$score_width : 100px;
+
+.game9ja-game-watch{
+    position: absolute;
+    top : 0;
+    left: 0;
+    width : 100%;
+    height: 100%;
+
+    > .game9ja-game-watch-header{
+        @extend .game9ja-header;
+        > :nth-child(1){ /*holding the score and the live status*/
+            margin : 0 auto;
+            width: $score_width;     
+            height:  100%;
+            padding: 5px;
+            @include box-sizing(border-box);
+
+            > :nth-child(2){/*the actual score*/
+                color: #ff4444;
+            }
+            > :nth-child(3){/*the live status*/
+                width: 85%; 
+                text-align: right;
+                color: #00aa00;
+            }
+        }
+
+        > :nth-child(3){/*comment icon*/
+            position: absolute;
+            right: 3* $header_item_top + $header_item_size;
+            top : $header_item_top;
+            font-size: $header_item_font_size;
+            width : $header_item_size;
+            height : $header_item_size;
+            padding: $header_item_padding;
+            cursor: pointer;
+        }
+    }
+
+    > .game9ja-game-watch-body{/* holds center panel for game playiing area e.g game board*/
+
+        //background: red;
+        width: 100%;
+        overflow: hidden;
+        display: block;
+        position: absolute;
+        top: $header_height;
+        bottom: 0;
+
+        /*mobile first*/
+        > :nth-child(1){/* holds center panel for game playiing area e.g game board*/
+            position: absolute;
+            top: 0;
+            bottom:0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: $main_body_bg;
+
+            >:nth-child(1){/*center the upper panel inside the ceter panel*/
+                position: relative;
+                margin : 0 auto;
+                //background: red;
+
+                > :nth-child(1){/*the player_1 countdown time in the upper panel*/
+                    position: absolute;
+                    bottom: 0px;
+                    left: $base_padding;
+                    font-size: 12px;
+
+                }
+
+                > :nth-child(2){/*the player_1 profile pic and name display*/
+                    position: relative;
+                    margin : 0 auto;
+                    width : 200px;
+                    max-width: 100%;
+                    font-size: 14px;
+                    padding-top : $base_padding;
+                    @include box-sizing(border-box);
+
+                    > :nth-child(1){/*player_1 profile image*/
+                        width: 30px;
+                        height: 30px;
+                        @include border-radius(50%);
+                        margin-right: $base_padding;
+                    }
+                    > :nth-child(2){/*player_1 profile full name*/
+                        width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        position: absolute;
+                        left :30px + 2* $base_padding;
+                        top : 5px;
+                    }
+                    > :nth-child(3){/*player_1 activity status*/
+                        width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        position: absolute;
+                        left :30px +  2* $base_padding;
+                        bottom : 3px;
+                        font-size: 14px;
+                        font-style: italic;
+                        color : #00bb00;
+                    }
+                }
+
+                > :nth-child(3){/*the player_1 win, loss, draw, display*/
+                    position: absolute;
+                    bottom: 0px;
+                    right: $base_padding;
+                    width: 200px;
+                    text-align: right;
+                    font-size: 12px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+
+                }
+            }
+
+            >:nth-child(2){/*center the board panel inside the ceter panel*/
+                position: relative;
+                margin : 0 auto;
+                background: black;
+            }
+
+            >:nth-child(3){/*center the lower panel inside the ceter panel*/
+                position: relative;
+                margin : 0 auto;
+                padding : $base_padding;
+                @include box-sizing(border-box);
+                //background: green;
+
+                > :nth-child(1){/*the player_2 countdown time in the lower panel*/
+                    position: absolute;
+                    top: 2px;
+                    left: $base_padding;
+                    font-size: 12px;
+                }
+
+                > :nth-child(2){/*the player_2 profile pic and name display*/
+                    position: relative;
+                    margin : 0 auto;
+                    width : 200px;
+                    max-width: 100%;
+                    font-size: 14px;
+
+                    > :nth-child(1){/*player_2 profile image*/
+                        width: 30px;
+                        height: 30px;
+                        @include border-radius(50%);
+                    }
+                    > :nth-child(2){/*player_2 profile full name*/
+                        width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        position: absolute;
+                        left :30px +  2* $base_padding;
+                        top : 0px;
+                    }
+                    > :nth-child(3){/*player_2 activity status*/
+                        width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        position: absolute;
+                        left :30px +  2* $base_padding;
+                        bottom : 3px ;
+                        font-size: 14px;
+                        font-style: italic;
+                        color : #00bb00;
+                    }
+
+                }
+
+                > :nth-child(3){/*the player_2 win, loss, draw display*/
+                    position: absolute;
+                    top: 2px;
+                    right: $base_padding;
+                    width: 200px;
+                    text-align: right;
+                    font-size: 12px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+
+                }
+            }
+
+
+
+        }
+
+        > :nth-child(2){/* holds right panel for chats, comments etc*/
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 75%;
+            height: 100%;
+            background: $main_body_bg;
+            display: none;//hide for certain size of device
+            box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @media screen and (min-width: 600px) {
+            > :nth-child(1){/* holds center panel for game playiing area e.g game board*/
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 60%;
+                height: 100%;
+                background-color: gray;
+            }
+
+            > :nth-child(2){/* holds right panel for chats, comments etc*/
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 40%;
+                height: 100%;
+                background-color: burlywood;
+                display: block;
+                box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);//remove box shadow
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            > :nth-child(1){/* holds center panel for game playiing area e.g game board*/
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 70%;
+                height: 100%;
+                background-color: gray;
+            }
+
+            > :nth-child(2){/* holds right panel for chats, comments etc*/
+                position: absolute;
+                top: 0;
+                right: 0px;
+                width: 30%;
+                height: 100%;
+                background-color: burlywood;
+                display: block;
+                //box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);//remove box shadow
+                box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+
+
+    }
+
+}

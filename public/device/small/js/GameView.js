@@ -14,74 +14,141 @@ Main.controller.GameView = {
 
     onBeforeShow: function (data) {
 
-        initMain();////
-        
-        $('#game9ja-game-view-white-player-name').html(data.white_player_name);
-        $('#game9ja-game-view-white-player-pic').attr({src: data.white_player_pic});
-        $('#game9ja-game-view-black-player-name').html(data.black_player_name);
-        $('#game9ja-game-view-black-player-pic').attr({src: data.black_player_pic});
-        $('#game9ja-game-view-score').html(data.score);
-        $('#game9ja-game-view-game-status').html(data.game_status);
+        initMain();
 
-        var lefPanelTitleComp = document.getElementById("game9ja-game-view-left-panel-header-title");
-        var lefPanelBody = document.getElementById("game9ja-game-view-left-panel-body");
+        $('#game-view-white-name').html(data.white_name);
+        $('#game-view-white-pic').attr({src: data.white_pic});
+        $('#game-view-black-name').html(data.black_name);
+        $('#game-view-black-pic').attr({src: data.black_pic});
+        $('#game-view-score').html(data.score);
+        $('#game-view-game-status').html(data.game_status);
+        
+        if (Main.controller.auth.appUser.id === data.white_id) {
+            
+            $('#game-view-user-wld').html(data.white_wld);
+            $('#game-view-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
+            
+            $('#game-view-opponent-countdown').html(data.black_countdown);
+            $('#game-view-opponent-activity').html(data.black_activity);
+            $('#game-view-opponent-wld').html(data.black_wld);
+            
+        } else if (Main.controller.auth.appUser.id === data.black_id) {
+            
+            $('#game-view-user-wld').html(data.black_wld);
+            $('#game-view-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
+            
+            $('#game-view-opponent-countdown').html(data.white_countdown);
+            $('#game-view-opponent-activity').html(data.white_activity);
+            $('#game-view-opponent-wld').html(data.white_wld);
+            
+        }
+
+        var lefPanelTitleComp = document.getElementById("game-view-right-panel-header-title");
+        var lefPanelBody = document.getElementById("game-view-right-panel-body");
 
         var obj = {
             data: data,
             lefPanelTitleComp: lefPanelTitleComp,
             lefPanelBody: lefPanelBody
-        }
+        };
+        
         $('#game-view-footer-chat').on('click', function () {
-            lefPanelTitleComp.innerHTML = 'Chat';
+            var title = 'Chat';
+            if(lefPanelTitleComp.innerHTML === title){
+                return;
+            }
+            lefPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
             showLeftContent(chatMessages.bind(obj));
         });
 
         $('#game-view-footer-comments').on('click', function () {
-            lefPanelTitleComp.innerHTML = 'Comments';
+            var title = 'Comments';
+            if(lefPanelTitleComp.innerHTML === title){
+                return;
+            }
+            lefPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
             showLeftContent(comments.bind(obj));
         });
 
         $('#game-view-footer-voice-call').on('click', function () {
-            lefPanelTitleComp.innerHTML = 'Voice Call';
+            var title = 'Voice Call';
+            if(lefPanelTitleComp.innerHTML === title){
+                return;
+            }
+            lefPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
             showLeftContent(voiceCall.bind(obj));
         });
 
         $('#game-view-footer-video-call').on('click', function () {
-            lefPanelTitleComp.innerHTML = 'Video Call';
+            var title = 'Video Call';
+            if(lefPanelTitleComp.innerHTML === title){
+                return;
+            }
+            lefPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
             showLeftContent(videoCall.bind(obj));
         });
 
         $('#game-view-footer-stats').on('click', function () {
-            lefPanelTitleComp.innerHTML = 'Stats';
+            var title = 'Stats';
+            if(lefPanelTitleComp.innerHTML === title){
+                return;
+            }
+            lefPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
             showLeftContent(Stats.bind(obj));
         });
 
-        $('#game9ja-game-view-left-panel-close').on('click', function () {
+        $('#game-view-right-panel-close').on('click', function () {
             hideLeftContent();
         });
 
-        $('#game9ja-game-view-main').on('click', function () {
+        $('#game-view-main').on('click', function () {
             hideLeftContent();
         });
 
-
-        function initMain(){
-            var el = document.getElementById('game9ja-game-view-main');
+        function doSizing(){
+            var el = this.element;
             var size = el.clientWidth < el.clientHeight ? el.clientWidth: el.clientHeight;
             
-            var upper_height = 30;
-            var lower_height = 50;
-            var board_size = size - upper_height - lower_height;
-            var board_el = document.getElementById('game9ja-game-view-main-board');
-            var upper_el = document.getElementById('game9ja-game-view-main-upper');
-            var lower_el = document.getElementById('game9ja-game-view-main-lower');
+            //since there is a possibility that the clientWidth or clientHeight 
+            //might be zero we shall wait till the dimension of the element is
+            //ready before trying again
+            
+            if(el.clientWidth === 0 || el.clientHeight === 0){
+                if(this.elaspeTime >= 5000){
+                    console.warn('Something is wrong with dom element - could not get size of element!');
+                    return;
+                }
+                this.elaspeTime += this.interval;                
+                window.setTimeout(this.sizingFn.bind(this), this.interval);//wait till the dimension is ready
+                return;
+            }
+            
+            console.log('client height gotten after ', this.elaspeTime +' ms');
+            
+            var upper_height = 40;
+            var lower_height = 40;
+            var board_size;
+            var board_el = document.getElementById('game-view-main-board');
+            var upper_el = document.getElementById('game-view-main-upper');
+            var lower_el = document.getElementById('game-view-main-lower');
+            
+            if(size + upper_height + lower_height > el.clientHeight){
+                 board_size = size - upper_height - lower_height;
+                 if(el.clientHeight > size){
+                    board_size = el.clientHeight - upper_height - lower_height;
+                 }
+            }else{
+                board_size = size;
+            }
+            
             
             //setting the sizes of the panels
+            
             board_el.style.width = board_size+'px';
             board_el.style.height = board_size+'px';
             
@@ -91,27 +158,56 @@ Main.controller.GameView = {
             lower_el.style.width = board_el.style.width;
             lower_el.style.height = lower_height+'px';
             
-            //positioning the panels
-            board_el.style.position = 'relative';
-            board_el.style.margin = '0 auto';
+        };
+
+        function sizingMain(evt){
             
-            upper_el.style.position = 'relative';
-            upper_el.style.margin = '0 auto';
+            if(evt && evt.type === "orientationchange"){
+                this.canChangeOrientation = true;
+            }else if(evt && this.canChangeOrientation){
+                window.removeEventListener('resize', this.funcListener, false);
+                return;
+            }
+                        
+            var el = document.getElementById('game-view-main');
+            var obj = {};
+            obj.element = el;
+            obj.elaspeTime = 0;
+            obj.interval = 100;            
+            obj.sizingFn = doSizing.bind(obj);
             
-            lower_el.style.position = 'relative';
-            lower_el.style.margin = '0 auto';
-            
-            //testing!!!
-            upper_el.style.background = 'red';
-            board_el.style.background = 'blue';
-            lower_el.style.background = 'green';
-            
-            
+            obj.sizingFn();
+        }
+
+        function mainResizeListener() {
+            if (!window.addEventListener || !window.removeEventListener) {
+                return;
+            }
+
+            var obj = {
+                canChangeOrientation: false
+            };
+
+            var sizingMainFn = sizingMain.bind(obj);
+
+            obj.funcListener = sizingMainFn;
+
+            window.removeEventListener('resize', sizingMainFn, false);
+            window.addEventListener('resize', sizingMainFn, false);
+
+            window.removeEventListener('orientationchange', sizingMainFn, false);
+            window.addEventListener('orientationchange', sizingMainFn, false);
+
+        }
+
+        function initMain() {
+            mainResizeListener();
+            sizingMain();
         }
 
         function chatMessages() {
             var data = this.data;
-            var me = this
+            var me = this;
             //TODO: show loading indicator
 
             Main.rcall.live(function () {
@@ -123,8 +219,8 @@ Main.controller.GameView = {
                             //me.lefPanelBody.innerHTML = '<div class="game9ja-chat-body"></div>';
                             var contentHtml = '';
                             for (var i = 0; i < res.length; i++) {
-                                if (res[i].white_player_id === data.white_player_id ||
-                                        res[i].black_player_id === data.black_player_id) {
+                                if (res[i].white_id === data.white_id ||
+                                        res[i].black_id === data.black_id) {
                                     //own messaage
 
                                     var time_html = div(res[i].time);
@@ -210,20 +306,25 @@ Main.controller.GameView = {
         }
 
         function showLeftContent(func) {
-            var el = document.getElementById('game9ja-game-view-left-content');
-
-            el.style.right = "-75%";//set to negative of the width we have in css file
+            var el = document.getElementById('game-view-right-content');
+            
+            el.style.width = '80%';//we set this width programatically here
+            el.style.right = "-80%";//set to negative of the width we have in css file or the width we set programatically here
             el.style.display = 'block';//make visible
             //animate the element to right of 0%
-            Main.anim.to('game9ja-game-view-left-content', 500, {right: '0%'}, func);
+            Main.anim.to('game-view-right-content', 500, {right: '0%'}, func);
+        }
+        
+        function afterLeftContentHide(){
+            lefPanelTitleComp.innerHTML = '';
         }
 
         function hideLeftContent() {
-            var el = document.getElementById('game9ja-game-view-left-content');
-            var negative_width = "-75%";//set to negative of the width we have in css file
+            var el = document.getElementById('game-view-right-content');
+            var negative_width = "-80%";//set to negative of the width we have in css file or the width we set programatically here
             if (el.style.right === '0%') {
                 el.style.display = 'block';//ensure visible        
-                Main.anim.to('game9ja-game-view-left-content', 500, {right: negative_width});
+                Main.anim.to('game-view-right-content', 500, {right: negative_width}, afterLeftContentHide);
             }
         }
 

@@ -807,7 +807,10 @@ var Main = {};
             var content = [];
 
             for (var i = 0; i < children.length; i++) {
-                if (children[i].nodeName !== 'SCRIPT' && children[i].nodeName !== 'TITLE') {
+                if (children[i].nodeName !== 'SCRIPT' 
+                        && children[i].nodeName !== 'LINK' 
+                        && children[i].nodeName !== 'META' 
+                        && children[i].nodeName !== 'TITLE') {
                     content.push(children[i]);
                     $(children[i]).remove();
                 }
@@ -815,7 +818,7 @@ var Main = {};
 
             //Just in case there are any embeded unwanted element, remove them.
             //We do not want to unitentionally execute script more than once.            
-            $(content).find('title , script').each(function (index) {
+            $(content).find('title , script , link , meta').each(function (index) {
                 this.remove();
             });
 

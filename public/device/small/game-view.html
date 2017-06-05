@@ -8,51 +8,52 @@ and open the template in the editor.
     <head>
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <div class="game9ja-game-view">
             <div class="game9ja-game-view-header">
                 <div>
-                    <div id="game9ja-game-view-white-player-name"></div> 
+                    <div id="game-view-white-name"></div> 
                     
-                    <img onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game9ja-game-view-white-player-pic"  alt="" />
+                    <img onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game-view-white-pic"  alt="" />
                     
-                    <div id="game9ja-game-view-score"></div>
-                    <div id="game9ja-game-view-game-status"></div>
+                    <div id="game-view-score"></div>
+                    <div id="game-view-game-status"></div>
                     
-                    <img  onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game9ja-game-view-black-player-pic" />
-                    <div id="game9ja-game-view-black-player-name"></div>
+                    <img  onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game-view-black-pic" />
+                    <div id="game-view-black-name"></div>
                 </div>
                 <i class="fa fa-arrow-left game9ja-back-btn"></i>
                 <i class="fa fa-ellipsis-v game9ja-ellipsis-menu-btn"></i>
             </div>
             <div class="game9ja-game-view-body">
-                <div id="game9ja-game-view-main">
+                <div id="game-view-main">
                     <!--holds the canvas for the game-->
                     
-                    <div id="game9ja-game-view-main-upper"><!--sizing and positioning using javascript-->
+                    <div id="game-view-main-upper"><!--sizing and positioning using javascript-->
                         <!--some upper display e.g time countdown and online status-->
                         <!--note when countdown starts it means the move is delivered to the opponent
                         and when it stop it means the opponent has played or the countdown is over i.e timeout-->
-                        <span>05:34</span> <!--countdown-->
-                        <span>thinking...</span> <!--activity e.g making move... , thinking...-->
+                        <div id="game-view-opponent-countdown"></div> <!--countdown-->
+                        <div id="game-view-opponent-activity"></div> <!--activity e.g making move... , thinking...-->
+                        <div id="game-view-opponent-wld"></div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
                     </div>
-                    <div id="game9ja-game-view-main-board"><!--sizing and positioning using javascript-->
+                    <div id="game-view-main-board"><!--sizing and positioning using javascript-->
                         <!--the game board-->
                     </div>
-                    <div id="game9ja-game-view-main-lower"><!--sizing and positioning using javascript-->
+                    <div id="game-view-main-lower"><!--sizing and positioning using javascript-->
                         <!--some lower display e.g time countdown -->
-                        <span>03:25</span> <!--countdown-->
+                        <div id="game-view-user-countdown"></div> <!-- 03:25 countdown-->
+                        <div id="game-view-user-wld"></div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
                     </div>
                 </div>
-                <div id="game9ja-game-view-left-content">
+                <div id="game-view-right-content">
                     <!--holds panel in the side. this show by default in 
                     large device but hidden in small device gets revealled dynamically-->
-                    <div class="game9ja-game-view-left-panel">
-                        <span id="game9ja-game-view-left-panel-header-title"></span>
-                        <span class="fa fa-close" id="game9ja-game-view-left-panel-close"></span>                        
-                        <div id="game9ja-game-view-left-panel-body">
+                    <div class="game9ja-game-view-right-panel">
+                        <span id="game-view-right-panel-header-title"></span>
+                        <span class="fa fa-close" id="game-view-right-panel-close"></span>                        
+                        <div id="game-view-right-panel-body">
                             
                         </div>
                     </div>

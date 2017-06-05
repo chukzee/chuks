@@ -1,0 +1,296 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 1, 2017, 4:28:52 PM
+    Author     : Engr Chuks
+*/
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header, .game9ja-game-watch > .game9ja-game-watch-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-ellipsis-menu-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px; }
+
+.game9ja-back-btn {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px; }
+
+@media screen and (min-width: 768px) {
+  /*Good! Only screen size 768px and above will 
+  have no back button. their content will be displayed 
+  like desktop . 
+  So tablets with size 768px and above
+  will have their screen orientation locked to landscape
+  and their content will show as in desktop and laptop.
+  */
+  .game9ja-back-btn {
+    visibility: hidden;
+    /*hide back button*/ } }
+.game9ja-game-watch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+  .game9ja-game-watch > .game9ja-game-watch-header > :nth-child(1) {
+    /*holding the score and the live status*/
+    margin: 0 auto;
+    width: 100px;
+    height: 100%;
+    padding: 5px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box; }
+    .game9ja-game-watch > .game9ja-game-watch-header > :nth-child(1) > :nth-child(2) {
+      /*the actual score*/
+      color: #ff4444; }
+    .game9ja-game-watch > .game9ja-game-watch-header > :nth-child(1) > :nth-child(3) {
+      /*the live status*/
+      width: 85%;
+      text-align: right;
+      color: #00aa00; }
+  .game9ja-game-watch > .game9ja-game-watch-header > :nth-child(3) {
+    /*comment icon*/
+    position: absolute;
+    right: 50px;
+    top: 10px;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    cursor: pointer; }
+  .game9ja-game-watch > .game9ja-game-watch-body {
+    /* holds center panel for game playiing area e.g game board*/
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    /*mobile first*/ }
+    .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) {
+      /* holds center panel for game playiing area e.g game board*/
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(#999, #bbb); }
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) {
+        /*center the upper panel inside the ceter panel*/
+        position: relative;
+        margin: 0 auto; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(1) {
+          /*the player_1 countdown time in the upper panel*/
+          position: absolute;
+          bottom: 0px;
+          left: 5px;
+          font-size: 12px; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) {
+          /*the player_1 profile pic and name display*/
+          position: relative;
+          margin: 0 auto;
+          width: 200px;
+          max-width: 100%;
+          font-size: 14px;
+          padding-top: 5px;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box; }
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(1) {
+            /*player_1 profile image*/
+            width: 30px;
+            height: 30px;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            -ms-border-radius: 50%;
+            border-radius: 50%;
+            margin-right: 5px; }
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(2) {
+            /*player_1 profile full name*/
+            width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: absolute;
+            left: 40px;
+            top: 5px; }
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(3) {
+            /*player_1 activity status*/
+            width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: absolute;
+            left: 40px;
+            bottom: 3px;
+            font-size: 14px;
+            font-style: italic;
+            color: #00bb00; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(3) {
+          /*the player_1 win, loss, draw, display*/
+          position: absolute;
+          bottom: 0px;
+          right: 5px;
+          width: 200px;
+          text-align: right;
+          font-size: 12px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap; }
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(2) {
+        /*center the board panel inside the ceter panel*/
+        position: relative;
+        margin: 0 auto;
+        background: black; }
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) {
+        /*center the lower panel inside the ceter panel*/
+        position: relative;
+        margin: 0 auto;
+        padding: 5px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(1) {
+          /*the player_2 countdown time in the lower panel*/
+          position: absolute;
+          top: 2px;
+          left: 5px;
+          font-size: 12px; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(2) {
+          /*the player_2 profile pic and name display*/
+          position: relative;
+          margin: 0 auto;
+          width: 200px;
+          max-width: 100%;
+          font-size: 14px; }
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(2) > :nth-child(1) {
+            /*player_2 profile image*/
+            width: 30px;
+            height: 30px;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            -ms-border-radius: 50%;
+            border-radius: 50%; }
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(2) > :nth-child(2) {
+            /*player_2 profile full name*/
+            width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: absolute;
+            left: 40px;
+            top: 0px; }
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(2) > :nth-child(3) {
+            /*player_2 activity status*/
+            width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: absolute;
+            left: 40px;
+            bottom: 3px;
+            font-size: 14px;
+            font-style: italic;
+            color: #00bb00; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(3) {
+          /*the player_2 win, loss, draw display*/
+          position: absolute;
+          top: 2px;
+          right: 5px;
+          width: 200px;
+          text-align: right;
+          font-size: 12px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap; }
+    .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(2) {
+      /* holds right panel for chats, comments etc*/
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 75%;
+      height: 100%;
+      background: linear-gradient(#999, #bbb);
+      display: none;
+      box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2); }
+    @media screen and (min-width: 600px) {
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) {
+        /* holds center panel for game playiing area e.g game board*/
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 60%;
+        height: 100%;
+        background-color: gray; }
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(2) {
+        /* holds right panel for chats, comments etc*/
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 40%;
+        height: 100%;
+        background-color: burlywood;
+        display: block;
+        box-shadow: 0px 0px 0px transparent; } }
+    @media screen and (min-width: 768px) {
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) {
+        /* holds center panel for game playiing area e.g game board*/
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 70%;
+        height: 100%;
+        background-color: gray; }
+      .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(2) {
+        /* holds right panel for chats, comments etc*/
+        position: absolute;
+        top: 0;
+        right: 0px;
+        width: 30%;
+        height: 100%;
+        background-color: burlywood;
+        display: block;
+        box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2); } }
+
+/*# sourceMappingURL=game-watch.css.map */

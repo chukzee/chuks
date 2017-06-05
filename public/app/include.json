@@ -17,13 +17,15 @@
             //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
             "font-awesome.min.css",
+            "header-items.css",
             "game-main.css", 
             "live-games-list.css", 
             "chat.css", 
             "comment.css", 
-            "game-view-left-panel.css", 
+            "game-view-right-panel.css", 
+            "game-watch-right-panel.css", 
             "game-view.css", 
-            "header-items.css", 
+            "game-watch.css",             
             "message-input.css", 
             "section-container.css",  
             "groups-live.css",
@@ -52,7 +54,8 @@
             "test.js", 
             "GameHome.js", 
             "GameSelect.js",
-            "GameView.js"
+            "GameView.js",
+            "GameWatch.js"
         ] 
     },
 
@@ -66,7 +69,10 @@
         ],
 
         "js": [
-
+            "GameHome.js", 
+            "GameSelect.js",
+            "GameView.js",
+            "GameWatch.js"
         ]
     },
 
@@ -80,7 +86,10 @@
         ],
 
         "js": [
-
+            "GameHome.js", 
+            "GameSelect.js",
+            "GameView.js",
+            "GameWatch.js"
         ]
     }
 }

@@ -10,7 +10,7 @@ var gameObj = {
 Main.rcall.live(gameObj);
 
 
-Main.controller.GameView = {
+Main.controller.GameWatch = {
 
     onBeforeShow: function (data) {
 
@@ -18,7 +18,7 @@ Main.controller.GameView = {
     
 
         
-        function doSizing(){
+           function doSizing(){
             var el = this.element;
             var size = el.clientWidth < el.clientHeight ? el.clientWidth: el.clientHeight;
             
@@ -41,9 +41,9 @@ Main.controller.GameView = {
             var upper_height = 40;
             var lower_height = 40;
             var board_size;
-            var board_el = document.getElementById('game-view-main-board');
-            var upper_el = document.getElementById('game-view-main-upper');
-            var lower_el = document.getElementById('game-view-main-lower');
+            var board_el = document.getElementById('game-watch-main-board');
+            var upper_el = document.getElementById('game-watch-main-upper');
+            var lower_el = document.getElementById('game-watch-main-lower');
             
             if(size + upper_height + lower_height > el.clientHeight){
                  board_size = size - upper_height - lower_height;
@@ -77,7 +77,7 @@ Main.controller.GameView = {
                 return;
             }
                         
-            var el = document.getElementById('game-view-main');
+            var el = document.getElementById('game-watch-main');
             var obj = {};
             obj.element = el;
             obj.elaspeTime = 0;

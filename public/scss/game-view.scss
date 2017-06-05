@@ -88,8 +88,8 @@ $mobile_label_fn : 35%;//fullname label on small device
             left: $mobile_label_fn;
             right: $mobile_label_fn;
             text-align: center;
-            font-size: 18px;
-            font-weight: 500;
+            //font-size: 18px;
+            //font-weight: 500;
             color: $score_color;
             //background-color: yellowgreen;
         }
@@ -99,8 +99,8 @@ $mobile_label_fn : 35%;//fullname label on small device
             @extend :nth-child(3);
             top : 32px; 
             color: #00aa00;
-            font-family: sans-serif;
-            font-weight: 700;
+            //font-family: sans-serif;
+            //font-weight: 700;
 
         }
 
@@ -307,7 +307,83 @@ $mobile_label_fn : 35%;//fullname label on small device
         width: 100%;
         height: 100%;
         background: $main_body_bg;
-        
+
+        >:nth-child(1){/*center the upper panel inside the ceter panel*/
+            position: relative;
+            margin : 0 auto;
+            //background: red;
+            
+            > :nth-child(1){/*the oppontent countdown time in the upper panel*/
+                position: absolute;
+                bottom: 0px;
+                left: $base_padding;
+                font-size: 12px;
+                
+            }
+
+            > :nth-child(2){/*the oppontent activity display in the upper panel*/
+                margin : 0 auto;
+                width : 180px;
+                max-width: 100%;
+                font-size: 14px;
+                font-style: italic;
+                color : #00bb00;
+                //background: white;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+
+            > :nth-child(3){/*the oppontent win, loss, draw, display*/
+                position: absolute;
+                bottom: 0px;
+                right: $base_padding;
+                width: 200px;
+                text-align: right;
+                font-size: 12px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+        }
+
+        >:nth-child(2){/*center the board panel inside the ceter panel*/
+            position: relative;
+            margin : 0 auto;
+            background: black;
+        }
+
+        >:nth-child(3){/*center the lower panel inside the ceter panel*/
+            position: relative;
+            margin : 0 auto;
+            //background: green;
+            
+            > :nth-child(1){/*the user countdown time in the lower panel*/
+                position: absolute;
+                top: 2px;
+                left: $base_padding;
+                font-size: 12px;
+            }
+
+            > :nth-child(2){/*the user win, loss, draw display*/
+                position: absolute;
+                top: 2px;
+                right: $base_padding;
+                width: 200px;
+                text-align: right;
+                font-size: 12px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+        }
+
+
+
     }
 
     > :nth-child(2){/* holds right panel for chats, comments etc*/

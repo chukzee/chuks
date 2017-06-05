@@ -1,0 +1,73 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 19, 2017, 12:39:35 AM
+    Author     : Engr Chuks
+*/
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #333;
+  background: linear-gradient(#333, #222);
+  color: #eee; }
+
+.game9ja-game-watch-right-panel {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #eee; }
+  .game9ja-game-watch-right-panel > :nth-child(1) {
+    /*panel header*/
+    background: linear-gradient(#333, #222);
+    width: 100%;
+    height: 35px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 18px; }
+  .game9ja-game-watch-right-panel > :nth-child(2) {
+    /*left panel close btn icon*/
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    cursor: pointer; }
+  .game9ja-game-watch-right-panel > :nth-child(3) {
+    /*body of the left panel*/
+    width: 100%;
+    position: absolute;
+    top: 35px;
+    bottom: 0;
+    left: 0;
+    background-color: #fff; }
+
+/*# sourceMappingURL=game-watch-right-panel.css.map */
