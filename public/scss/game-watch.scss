@@ -42,16 +42,6 @@ $score_width : 100px;
             }
         }
 
-        > :nth-child(3){/*comment icon*/
-            position: absolute;
-            right: 3* $header_item_top + $header_item_size;
-            top : $header_item_top;
-            font-size: $header_item_font_size;
-            width : $header_item_size;
-            height : $header_item_size;
-            padding: $header_item_padding;
-            cursor: pointer;
-        }
     }
 
     > .game9ja-game-watch-body{/* holds center panel for game playiing area e.g game board*/

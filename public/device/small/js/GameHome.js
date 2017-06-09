@@ -57,7 +57,85 @@ Main.controller.GameHome = {
             }
         });
 
+        Main.menu.create({
+            width: 150,
+            target: "#home-menu",
+            items: [
+                'Play notifications',
+                'Invite players',
+                'Contacts',
+                'Create group',
+                'Create tournament',
+                'Profile',
+                'Settings',
+                'Help'
+            ],
+            onSelect: function (evt) {
+                var item = this.item;
+                
+                //finally hide the menu
+                this.hide();
+            }
+        });
 
+
+        Main.menu.create({
+            width: 200,
+            target: "#home-groups-live-show-groups",
+            header:'Jump to group',
+            items: [
+                '<img /><span> Grace</span>',
+                '<img /><span> Favour group</span>',
+                '<img /><span> Chess omega</span>'
+            ],
+            onSelect: function (evt) {
+                var item = this.item;
+                
+                //finally hide the menu
+                this.hide();
+            }
+        });
+        
+
+        Main.menu.create({
+            width: 200,
+            target: "#home-tournaments-live-show-tournaments",
+            header:'Search tournaments',
+            items: [
+                '<input type="text" placeholder="find by name...">',
+                '<div>Warri Championship</span>',
+                '<div>Sapele Championship</span>',
+            ],
+            onSelect: function (evt) {
+                var item = this.item;
+                
+                //finally hide the menu
+                //this.hide();
+                
+                this.addItem();
+                this.appendItem();
+                this.prependItem();
+                this.removeItem();
+                this.removeItemAt();
+                this.clearItems();
+                this.clear();
+                this.setHeader();
+                this.setFooter();
+            },
+            onShow: function () {
+                
+                this.addItem();
+                this.appendItem();
+                this.prependItem();
+                this.removeItem();
+                this.removeItemAt();
+                this.clearItems();
+                this.clear();
+                this.setHeader();
+                this.setFooter();
+            }
+        });
+        
         function myContactsMatchLeist() {
 
 

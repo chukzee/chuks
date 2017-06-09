@@ -19,9 +19,9 @@ and open the template in the editor.
     color : $header_text_color;
     
     > :nth-child(1){/*panel header*/
-        background: $header_bg;
+        background: $small_header_bg;
         width: 100%;
-        height: $header_small_height;
+        height: $small_header_height;
         position: absolute;
         top: 0;
         left: 0;
@@ -42,7 +42,7 @@ and open the template in the editor.
     > :nth-child(3){/*body of the left panel*/
         width: 100%;
         position: absolute;
-        top: $header_small_height;
+        top: $small_header_height;
         bottom: 0;
         left: 0;  
         background-color: $body_bg;

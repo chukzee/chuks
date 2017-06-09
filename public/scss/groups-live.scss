@@ -63,7 +63,7 @@ $profile_pic_size : $groups_header_height - 2*$base_padding;
         > :nth-child(4){/*the previous group arrow*/
             position: absolute;
             bottom: $base_padding;
-            right:  $page_number_width + $arrow_size + 2* $base_padding + 30px;
+            right:  $page_number_width + $arrow_size + $base_padding + 30px;
             width: $arrow_size;
             cursor: pointer;
             font-size: 12px;

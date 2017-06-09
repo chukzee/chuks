@@ -24,7 +24,7 @@ and open the template in the editor.
   width: 100%;
   height: 50px;
   background: #333;
-  background: linear-gradient(#333, #222);
+  background: #222;
   color: #eee; }
 
 .game9ja-footer {
@@ -33,8 +33,7 @@ and open the template in the editor.
   bottom: 0;
   width: 100%;
   height: 35px;
-  background: #333;
-  background: linear-gradient(#333, #222);
+  background: #222;
   color: #eee; }
 
 .game9a-tournaments-live {
@@ -49,7 +48,7 @@ and open the template in the editor.
     left: 0;
     width: 100%;
     height: 45px;
-    background: linear-gradient(#333, #222);
+    background: #222;
     color: #eee; }
     .game9a-tournaments-live > .game9a-tournaments-live-header > :nth-child(1) {
       /*the tournament profile pic*/
@@ -88,7 +87,7 @@ and open the template in the editor.
       /*the previous tournament arrow*/
       position: absolute;
       bottom: 5px;
-      right: 110px;
+      right: 105px;
       width: 10px;
       cursor: pointer;
       font-size: 12px; }

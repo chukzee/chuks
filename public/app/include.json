@@ -17,6 +17,7 @@
             //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
             "font-awesome.min.css",
+            "menu.css",
             "header-items.css",
             "game-main.css", 
             "live-games-list.css", 

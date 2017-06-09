@@ -15,7 +15,7 @@ $main_body_bg : linear-gradient(#999, #bbb);
 
 $score_color : #ff4444;
 
-$footer_height : $header_small_height;
+$footer_height : $small_header_height;
 
 $footer_menu_width : 20%;
 
@@ -242,14 +242,13 @@ $mobile_label_fn : 35%;//fullname label on small device
 
 
 .game9ja-game-view-footer{
-
+    @extend  .game9ja-footer;
     clear : both;
     font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
-    @extend  .game9ja-footer;
+    
 
 
     > div{/* holds footer items*/

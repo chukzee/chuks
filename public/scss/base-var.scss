@@ -11,7 +11,8 @@ and open the template in the editor.
 
 $h_color_1 : #333;
 $h_color_2 : #222;
-$base_background : linear-gradient($h_color_1, $h_color_2);
+//$base_background : linear-gradient($h_color_1, $h_color_2);
+$base_background : $h_color_2;
 $base_text_color : #eee;
 $base_padding : 5px;
 
@@ -24,11 +25,19 @@ $body_bg: #fff;
 //Header variables
 
 $header_height : 50px;
-$header_small_height : 35px;
 $header_bg : $base_background;
 $header_text_color : $base_text_color;
 $header_padding : $base_padding;
 $header_margin : 0;
+
+
+//Small Header variables
+$small_header_height : 35px;
+$small_header_bg : $h_color_1;
+
+
+//Footer variables
+$footer_bg : $header_bg;
 
 //chats and comments
  $message_input_height : 40px;
@@ -59,9 +68,9 @@ $header_margin : 0;
     left:0;
     bottom :0;
     width: 100%;
-    height: $header_small_height;
-    background: $h_color_1;//fallback to browser that do not support gradient
-    background: $header_bg;
+    height: $small_header_height;
+    //background: $h_color_1;//fallback to browser that do not support gradient
+    background: $footer_bg;
     color: $header_text_color;
     //border-top: 1px  groove;
     //box-sizing: border-box;

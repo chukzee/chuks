@@ -1,10 +1,13 @@
 
+@import "base-var.scss";
+
 $header_item_size : 20px;
 $header_item_top : 10px;
 $header_item_font_size : 14px;
 $header_item_padding : 5px;
+$header_item_spacing : 35px;
 
-.game9ja-ellipsis-menu-btn {
+.game9ja-header-item-right {
     position: absolute;
     top: $header_item_top; 
     right: $header_item_top;
@@ -13,9 +16,35 @@ $header_item_padding : 5px;
     width: $header_item_size;
     height: $header_item_size;
     padding: $header_item_padding;
+    @include box-sizing(border-box);
 }
 
-.game9ja-back-btn {
+.game9ja-header-item-right-a {
+    position: absolute;
+    top: $header_item_top; 
+    right: $header_item_top + $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
+
+.game9ja-header-item-right-b {
+    position: absolute;
+    top: $header_item_top; 
+    right: $header_item_top + 2 * $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
+.game9ja-header-item-left {
     position: absolute;
     top: $header_item_top; 
     left: $header_item_size;
@@ -24,6 +53,33 @@ $header_item_padding : 5px;
     width: $header_item_size;
     height: $header_item_size;
     padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
+
+.game9ja-header-item-left-a {
+    position: absolute;
+    top: $header_item_top; 
+    left: $header_item_size + $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
+
+.game9ja-header-item-left-b {
+    position: absolute;
+    top: $header_item_top; 
+    left: $header_item_size + 2 * $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
 }
 
 

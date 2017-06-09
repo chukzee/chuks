@@ -536,7 +536,7 @@ var Main = {};
 
     function Animate() {
         this.to = function (element, duration, propObj, callback) {
-            if(!element){
+            if (!element) {
                 return;
             }
             var el = Main.util.isString(element) ? document.getElementById(element) : element;
@@ -807,9 +807,9 @@ var Main = {};
             var content = [];
 
             for (var i = 0; i < children.length; i++) {
-                if (children[i].nodeName !== 'SCRIPT' 
-                        && children[i].nodeName !== 'LINK' 
-                        && children[i].nodeName !== 'META' 
+                if (children[i].nodeName !== 'SCRIPT'
+                        && children[i].nodeName !== 'LINK'
+                        && children[i].nodeName !== 'META'
                         && children[i].nodeName !== 'TITLE') {
                     content.push(children[i]);
                     $(children[i]).remove();
@@ -1239,7 +1239,7 @@ var Main = {};
         function defaultHtml(showText, txt) {
             var text = showText !== false ? 'Loading...' : ''; //strictly not equal to false
             text = txt ? txt : text;
-            return '<div style="position: absolute; top: 50%; width: 100%; text-align: center;"><i class="fa fa-spinner fa-spin" style="margin-right: 3px;"></i>' + text + '</div>';//come back
+            return '<div style="position: absolute; top: 50%; width: 100%; text-align: center;"><i class="fa fa-circle-o-notch fa-spin" style="margin-right: 3px;"></i>' + text + '</div>';//come back
         }
 
     }
@@ -1278,15 +1278,15 @@ var Main = {};
             }
 
             /*if (fullScreenElement) {//remove old one
-                fullScreenElement.remove();
-                fullScreenElement = null;
-            }*/
+             fullScreenElement.remove();
+             fullScreenElement = null;
+             }*/
 
             var children = $('body').children(); //.find("[data-app-content='fullscreen']")
             var content;
             for (var i = 0; i < children.length; i++) {
                 if ($(children[i]).attr('data-app-content') === 'fullscreen') {
-                    if(content){
+                    if (content) {
                         content.remove();//already found so remove - must be only one at a time.
                         continue;
                     }
@@ -1301,7 +1301,7 @@ var Main = {};
                 content = children[children.length - 1];
                 initFullscreen(content);
             }
-            
+
             fullScreenElement = content;
 
             if (obj.url) {
@@ -1422,7 +1422,226 @@ var Main = {};
     Main.anim = new Animate();
     Main.fullscreen = new Fullscreen();
     Main.busy = new Busy();
+    Main.dom = new Dom();
+    Main.menu = new Menu();
 
+    function Dom() {
+        this.addListener = function (e, type, callback, capture) {
+            var el = e;
+            if (Main.util.isString(e)) {
+                el = document.getElementById(e);
+                if (!el) {
+                    throw new Error('unknown element id - ' + e);
+                }
+            }
+
+            if (el.addEventListener) {
+                el.addEventListener(type, callback, capture);
+            } else if (el.attachEvent) {//IE
+                el.attachEvent('on' + type, callback, capture);
+            }
+        };
+
+        this.removeListener = function (e, type, callback, capture) {
+            var el = e;
+            if (Main.util.isString(e)) {
+                el = document.getElementById(e);
+                if (!el) {
+                    throw new Error('unknown element id - ' + e);
+                }
+            }
+
+            if (el.removeEventListener) {
+                el.removeEventListener(type, callback, capture);
+            } else if (el.detachEvent) {//IE
+                el.detachEvent('on' + type, callback, capture);
+            }
+        };
+    }
+    ;
+
+
+    function Menu() {
+        var defaultWidth = 150;
+        var menuCmp;
+        var menuBtn;
+
+        function onClickOutsideHide(evt) {
+            if (evt.target === menuBtn) {
+                return;
+            }
+            if (!menuCmp) {
+                return;
+            }
+            var container = menuCmp[0];
+
+            var parent = evt.target.parentNode;
+            var click_outside = true;
+            while (parent && parent !== document.body) {
+                if (parent === container) {
+                    click_outside = false;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+
+            if (click_outside) {
+                destroy();
+            }
+        }
+
+        function destroy() {
+            if (menuCmp) {
+                menuCmp.remove();
+                menuCmp = null;
+                Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
+            }
+        }
+
+        function menuThis() {
+
+            this.hide = function(){
+                
+            };
+            
+            this.getItems = function () {
+                alert('getItems');
+            };
+            
+            this.addItem = function (item) {
+                alert('addItem');
+            };
+
+            this.appendItem = function (item) {
+                alert('appendItem');
+            };
+
+            this.prependItem = function (item) {
+                alert('prependItem');
+            };
+
+            this.removeItem = function (item) {
+                alert('removeItem');
+            };
+
+            this.removeItemAt = function (item) {
+                alert('removeItemAt');
+            };
+
+            this.clearItems = function () {
+                alert('clearItems');
+            };
+
+            this.setHeader = function () {
+                alert('setHeader');
+            };
+
+            this.setFooter = function () {
+                alert('setFooter');
+            };
+
+        }
+
+        this.create = function (obj) {
+            
+            $(obj.target).off('click');
+            $(obj.target).on('click', onTargetClick.bind(obj));
+
+            function onTargetClick(evt) {
+                //first destroy previous menu shown - there cannot be more than
+                //one menu at a time.
+                destroy();
+                menuBtn = this.target;
+                if (Main.util.isString(this.target)) {
+                    menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
+                    menuBtn = document.getElementById(menuBtn);
+                }
+
+                var bound = menuBtn.getBoundingClientRect();
+                var y = bound.top;
+                var mnu_width = this.width ? this.width : defaultWidth;
+                mnu_width = new String(mnu_width).replace('px', '');
+                mnu_width = mnu_width - 0; // implicitly convert to numeric
+                if (isNaN(mnu_width)) {
+                    mnu_width = defaultWidth;
+                }
+
+                var x = bound.left;
+
+                var padding = 5;
+                var body_bound = document.body.getBoundingClientRect();
+                if (x + mnu_width + padding > body_bound.width) {
+                    x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
+                }
+                var style = 'position: absolute; top : ' + y + 'px; left: ' + x + 'px; width: ' + mnu_width + 'px;';
+                menuCmp = $('<div class="game9ja-menu" style = "' + style + '" ></div>');
+
+                if (this.header) {
+                    menuCmp.append('<div class="game9ja-menu-header">' + this.header + '</div>');
+                }
+
+                var els = [];
+                /*var ownObj = {
+                    hide: destroy.bind(menuCmp),
+                    getItems: getItems.bind(menuCmp),
+                    addItem: addItem.bind(menuCmp),
+                    prependItem: prependItem.bind(menuCmp),
+                    appendItem: appendItem.bind(menuCmp),
+                    removeItem: removeItem.bind(menuCmp),
+                    removeItemAt: removeItemAt.bind(menuCmp),
+                    clear: clearItems.bind(menuCmp),
+                    clearItems: clearItems.bind(menuCmp),
+                    setHeader: setHeader.bind(menuCmp),
+                    setFooter: setFooter.bind(menuCmp)
+                };*/
+
+                for (var i = 0; i < this.items.length; i++) {
+
+                    var e = document.createElement('div');
+                    var t = this.items[i];
+                    /*var thisObj = {
+                     item: t,
+                     hide: destroy.bind(menuCmp)
+                     };*/
+                    var mThis = menuThis.bind(this)(menuCmp);
+                    mThis.item = t;
+                    /*var thisObj = function () {
+                        this.item = t;
+                        this.hide = destroy.bind(menuCmp);
+                    }()*/;
+                    
+                    if (Main.util.isFunc(this.onSelect)) {
+                        $(e).on('click', this.onSelect.bind(mThis));
+                    }
+                    e.innerHTML = t;
+                    els.push(e);
+                }
+
+                menuCmp.append('<div class="game9ja-menu-body"></div>');
+                var children = $(menuCmp).children();
+                var last = children[children.length - 1];
+                $(last).append(els);
+
+                if (this.footer) {
+                    menuCmp.append('<div class="game9ja-menu-footer">' + this.footer + '</div>');
+                }
+
+                $('body').append(menuCmp);
+
+                Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
+
+                if (Main.util.isFunc(this.onShow)) {
+                    var mnuThis = menuThis.bind(this)(menuCmp);
+                    this.onShow.bind(mnuThis)();
+                }
+            }
+        };
+    }
+
+
+    Main.dialog = function (obj) {
+
+    };
 
     Main.tab = function (obj) {
         var id_prefix = "#";

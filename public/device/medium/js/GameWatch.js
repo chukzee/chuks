@@ -20,13 +20,23 @@ Main.controller.GameWatch = {
         
            function doSizing(){
             var el = this.element;
-            var size = el.clientWidth < el.clientHeight ? el.clientWidth: el.clientHeight;
+            var bound = el.getBoundingClientRect();
+            var cmpHeight , cmpWidth;
+            if('clientHeight' in el){
+                cmpHeight = el.clientHeight;
+                cmpWidth = el.clientWidth;
+            }else{                
+                cmpHeight = bound.height;
+                cmpWidth = bound.width;
+            }
+            
+            var size = cmpWidth < cmpHeight ? cmpWidth: cmpHeight;
             
             //since there is a possibility that the clientWidth or clientHeight 
             //might be zero we shall wait till the dimension of the element is
             //ready before trying again
             
-            if(el.clientWidth === 0 || el.clientHeight === 0){
+            if(cmpWidth === 0 || cmpHeight === 0){
                 if(this.elaspeTime >= 5000){
                     console.warn('Something is wrong with dom element - could not get size of element!');
                     return;
