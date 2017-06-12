@@ -1,0 +1,34 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 11, 2017, 1:53:00 PM
+    Author     : Engr Chuks
+*/
+
+@import "base-var.scss";
+
+.game9a-gallery{
+    padding-top: $base_padding;
+    padding-bottom: $base_padding;
+    padding-left: $base_padding;
+    padding-right: $base_padding;    
+    @include box-sizing(border-box);
+    width: 100%;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0, 0.3);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border-bottom :0.0195em solid #eee;
+    border-right :0.0195em solid #eee;
+    clear: both;
+    
+    >div{
+        margin: 2px;
+        float: left;
+        box-shadow: 0 1.5px 1.5px rgba(0, 0, 0, 0.3);
+        @include border-radius (5px);
+    }
+}

@@ -29,7 +29,8 @@ Main.controller.GameView = {
             target: "#game-view-menu",
             items: [
                 'Draw offer',
-                'Active rules',
+                'Draft variant',//for draft - we display the draft variant and the rules for the variant
+                'Rules applied',
                 'Rules',
                 'Theme',
                 'Sound',

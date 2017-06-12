@@ -27,6 +27,9 @@ $container_width : 2* $fullname_width + 2 * $profile_img_size + $score_width + 4
 
 $mobile_label_fn : 35%;//fullname label on small device
 
+$right_panel_width_md : 40%;
+
+$right_panel_width_ld : 30%;
 
 .game9ja-game-view{
 
@@ -133,13 +136,13 @@ $mobile_label_fn : 35%;//fullname label on small device
     }
     @media screen and (min-width: 600px) {
         > div{
-            margin: 0 15%;
+            margin: 0 (100% - $right_panel_width_ld)/2 - 12%; // try centering it
             width: 100%;
             height: 100%;
             max-width: $container_width;
             position: relative;
-
-            //background-color: green;
+            
+            background-color: green;
             > :nth-child(1){/* holds white player full name*/
                 position: absolute;
                 top: 20px;
@@ -402,7 +405,7 @@ $mobile_label_fn : 35%;//fullname label on small device
             position: absolute;
             top: 0;
             left: 0;
-            width: 60%;
+            width: 100% - $right_panel_width_md;
             height: 100%;
             background-color: gray;
         }
@@ -411,7 +414,7 @@ $mobile_label_fn : 35%;//fullname label on small device
             position: absolute;
             top: 0;
             right: 0;
-            width: 40%;
+            width: $right_panel_width_md;
             height: 100%;
             background-color: burlywood;
             display: block;
@@ -424,7 +427,7 @@ $mobile_label_fn : 35%;//fullname label on small device
             position: absolute;
             top: 0;
             left: 0;
-            width: 70%;
+            width: 100% -  $right_panel_width_ld;
             height: 100%;
             background-color: gray;
         }
@@ -433,7 +436,7 @@ $mobile_label_fn : 35%;//fullname label on small device
             position: absolute;
             top: 0;
             right: 0px;
-            width: 30%;
+            width: $right_panel_width_ld;
             height: 100%;
             background-color: burlywood;
             display: block;

@@ -16,23 +16,32 @@ $profile_img_size : $list_item_height - 2 * $hgap;
     margin: 0;
     padding: 0;
     list-style-type: none;
-    
+
     &:hover{
         background-color: #eee;
     }
 
-    
-    > :nth-child(1) > img{/*profile pic*/
+
+    > :nth-child(1) > div{/*profile pic container to help centering and setting border radius*/
         width: $profile_img_size;
         height: $profile_img_size;
         position: absolute;
         top: $hgap;
         left: $hgap;
-        border-radius: 50%;
-        cursor: pointer;
+        overflow: hidden;
+        @include border-radius(50%);
+        
+        >  img{/*profile pic*/
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
     }
 
-    
+
     > :nth-child(2){/*full name*/
         position: absolute;
         top: 5px;
@@ -46,7 +55,7 @@ $profile_img_size : $list_item_height - 2 * $hgap;
         color: #555;
     }
 
-    
+
     > :nth-child(3){/*phone number*/
         @extend :nth-child(2);
         top: 30px;
@@ -54,7 +63,7 @@ $profile_img_size : $list_item_height - 2 * $hgap;
         color: #888;
     }
 
-    
+
     > :nth-child(4) > input{/*Lets play button*/
         position: absolute;
         top: $list_item_height/ 3;
@@ -69,7 +78,7 @@ $profile_img_size : $list_item_height - 2 * $hgap;
         cursor: pointer;
         outline: none;
     }
-    
+
     > :nth-child(5){/*time ago*/
         position: absolute;
         top: 2px;

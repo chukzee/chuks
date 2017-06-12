@@ -99,40 +99,40 @@ Main.controller.GameHome = {
 
         Main.menu.create({
             width: 200,
+            height: 200,
             target: "#home-tournaments-live-show-tournaments",
             header:'Search tournaments',
             items: [
                 '<input type="text" placeholder="find by name...">',
                 '<div>Warri Championship</span>',
                 '<div>Sapele Championship</span>',
+                'Text Only',
             ],
             onSelect: function (evt) {
                 var item = this.item;
-                
+                var items = this.getItems();
                 //finally hide the menu
                 //this.hide();
                 
-                this.addItem();
-                this.appendItem();
+                this.addItem('chuks');
+                /*this.appendItem();
                 this.prependItem();
-                this.removeItem();
                 this.removeItemAt();
                 this.clearItems();
                 this.clear();
                 this.setHeader();
-                this.setFooter();
+                this.setFooter();*/
             },
             onShow: function () {
                 
-                this.addItem();
-                this.appendItem();
-                this.prependItem();
-                this.removeItem();
-                this.removeItemAt();
-                this.clearItems();
-                this.clear();
-                this.setHeader();
-                this.setFooter();
+                this.addItem('<input type="button" value="addItem"/>');
+                this.appendItem('<input type="button" value="appendItem"/>');
+                this.prependItem('<input type="button" value="prependItem"/>');
+                //this.removeItemAt(1);
+                //this.clearItems();
+                //this.clear();
+                this.setHeader('setHeader');
+                this.setFooter('setFooter');
             }
         });
         

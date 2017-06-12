@@ -1498,52 +1498,150 @@ var Main = {};
             }
         }
 
-        function menuThis() {
+        function menuThis(_this, menuCmp, mnuBody) {
 
-            this.hide = function(){
-                
+            this.hide = function () {
+                destroy();
             };
-            
+
             this.getItems = function () {
-                alert('getItems');
+                
+                var children = mnuBody.children();
+                var items = [];
+                if (children.length) {
+
+                    for (var i = 0; i < children.length; i++) {
+                        var len = children[i].children.length;
+                        if(len === 0){
+                            items.push(children[i].innerHTML);
+                        }else if(len === 1){
+                            items.push(children[i].children[0]);
+                        }else{ // > 1
+                            items.push(children[i].children);
+                        }
+                        
+                    }
+                }
+
+                return items;
             };
-            
+
             this.addItem = function (item) {
-                alert('addItem');
+                
+                this.appendItem(item);
             };
 
             this.appendItem = function (item) {
-                alert('appendItem');
+                
+                var e = createMenuItem(_this, menuThis, menuCmp, mnuBody, item);
+                mnuBody.append(e);
             };
 
             this.prependItem = function (item) {
-                alert('prependItem');
+                
+                var e = createMenuItem(_this, menuThis, menuCmp, mnuBody, item);
+                mnuBody.prepend(e);
             };
 
-            this.removeItem = function (item) {
-                alert('removeItem');
-            };
-
-            this.removeItemAt = function (item) {
-                alert('removeItemAt');
+            this.removeItemAt = function (index) {
+                
+                var children = mnuBody.children();
+                if (children[index]) {
+                    $(children[index]).remove();
+                }
             };
 
             this.clearItems = function () {
-                alert('clearItems');
+                
+                mnuBody.html('');
             };
 
-            this.setHeader = function () {
-                alert('setHeader');
+            this.clear = function () {
+                
+                this.clearItems();
             };
 
-            this.setFooter = function () {
-                alert('setFooter');
+            this.setHeader = function (text) {
+                
+                var children = menuCmp.children();
+                if (children.length && children[0].className === 'game9ja-menu-header') {
+                    children[0].innerHTML = text;
+                } else {
+                    menuCmp.prepend('<div class="game9ja-menu-header" >' + text + '</div>');
+                }
+
             };
 
+            this.setFooter = function (text) {
+                
+                var children = menuCmp.children();
+                if (children.length && children[children.length - 1].className === 'game9ja-menu-footer') {
+                    children[children.length - 1].innerHTML = text;
+                } else {
+                    menuCmp.append('<div class="game9ja-menu-footer" >' + text + '</div>');
+                }
+            };
+
+            return this;
         }
 
+        function createMenuItem(_this, menuThis, menuCmp, mnuBody, t) {
+            var e = document.createElement('div');
+            e.innerHTML = t;
+            var mThis = new menuThis(_this, menuCmp, mnuBody);
+
+            mThis.item = e.children.length > 0 ?
+                    (e.children.length === 1 ? e.children[0] : e.children)
+                    : t;
+
+            if (Main.util.isFunc(_this.onSelect)) {
+                $(e).on('click', _this.onSelect.bind(mThis));
+            }
+
+
+            return e;
+        }
+
+        /**
+         * Create a dropdown menu whose content can be dynamic.
+         * 
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *       width [opt] : ....,<br>
+         *       height [opt] : ....,<br>
+         *       items        : [....]// array of element. can also be text only<br>
+         *       header [opt] : .....<br>
+         *       footer [opt] : .....<br>
+         *       onShow [opt] : .....<br>
+         *       onSelect [opt] : .....<br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      <br>
+         * Usage in onShow and onSelect.<br>
+         * 
+         * The follow method can be called in the onShow and onSelect callback function <br>
+         * for creating dynamic content of the menu:<br>
+         * <br>
+         * this.getItems() -- gets all items of the menu<br>
+         * this.addItem() --- append an item -- can be elements or plain text<br>
+         * this.appendItem() --- append an item - same as this.addItem() -- can be elements or plain text<br>
+         * this.prependItem() --- prepends an item  -- can be elements or plain text<br>
+         * this.clearItems() ---- clears all items<br>
+         * this.clear() ---- clears all items - same as this.clearItems()<br>
+         * this.removeItemA() -- clear an items at the specified index<br>
+         * this.setHeader() -- set new menu header<br>
+         * this.setFooter() -- set new menu footer<br>
+         * <br>
+         * @param {type} obj
+         * @returns {undefined}
+         */
         this.create = function (obj) {
-            
+
             $(obj.target).off('click');
             $(obj.target).on('click', onTargetClick.bind(obj));
 
@@ -1573,51 +1671,29 @@ var Main = {};
                 if (x + mnu_width + padding > body_bound.width) {
                     x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
                 }
-                var style = 'position: absolute; top : ' + y + 'px; left: ' + x + 'px; width: ' + mnu_width + 'px;';
+                
+                this.height = this.height? new String(this.height).replace('px', ''): null;
+                
+                var style = 'position: absolute; top : ' + y +
+                        'px; left: ' + x +
+                        'px; width: ' + mnu_width + 
+                        'px;' + (!isNaN(this.height - 0) ? 'height: '+this.height +'px;' :'');
                 menuCmp = $('<div class="game9ja-menu" style = "' + style + '" ></div>');
 
                 if (this.header) {
                     menuCmp.append('<div class="game9ja-menu-header">' + this.header + '</div>');
                 }
 
+                menuCmp.append('<div class="game9ja-menu-body"></div>');
+
+                var mnuBody = menuCmp.find('.game9ja-menu-body');
                 var els = [];
-                /*var ownObj = {
-                    hide: destroy.bind(menuCmp),
-                    getItems: getItems.bind(menuCmp),
-                    addItem: addItem.bind(menuCmp),
-                    prependItem: prependItem.bind(menuCmp),
-                    appendItem: appendItem.bind(menuCmp),
-                    removeItem: removeItem.bind(menuCmp),
-                    removeItemAt: removeItemAt.bind(menuCmp),
-                    clear: clearItems.bind(menuCmp),
-                    clearItems: clearItems.bind(menuCmp),
-                    setHeader: setHeader.bind(menuCmp),
-                    setFooter: setFooter.bind(menuCmp)
-                };*/
 
                 for (var i = 0; i < this.items.length; i++) {
-
-                    var e = document.createElement('div');
                     var t = this.items[i];
-                    /*var thisObj = {
-                     item: t,
-                     hide: destroy.bind(menuCmp)
-                     };*/
-                    var mThis = menuThis.bind(this)(menuCmp);
-                    mThis.item = t;
-                    /*var thisObj = function () {
-                        this.item = t;
-                        this.hide = destroy.bind(menuCmp);
-                    }()*/;
-                    
-                    if (Main.util.isFunc(this.onSelect)) {
-                        $(e).on('click', this.onSelect.bind(mThis));
-                    }
-                    e.innerHTML = t;
+                    var e = createMenuItem(this, menuThis, menuCmp, mnuBody, t);
                     els.push(e);
                 }
-
-                menuCmp.append('<div class="game9ja-menu-body"></div>');
                 var children = $(menuCmp).children();
                 var last = children[children.length - 1];
                 $(last).append(els);
@@ -1631,7 +1707,7 @@ var Main = {};
                 Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
 
                 if (Main.util.isFunc(this.onShow)) {
-                    var mnuThis = menuThis.bind(this)(menuCmp);
+                    var mnuThis = menuThis(this, menuCmp, mnuBody);
                     this.onShow.bind(mnuThis)();
                 }
             }

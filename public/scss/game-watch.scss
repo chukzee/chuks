@@ -16,6 +16,9 @@ $main_body_bg : linear-gradient(#999, #bbb);
 $score_color : #ff4444;
 $score_width : 100px;
 
+$right_panel_width_md : 40%;
+$right_panel_width_ld : 30%;
+
 .game9ja-game-watch{
     position: absolute;
     top : 0;
@@ -26,7 +29,7 @@ $score_width : 100px;
     > .game9ja-game-watch-header{
         @extend .game9ja-header;
         > :nth-child(1){ /*holding the score and the live status*/
-            margin : 0 auto;
+            margin: 0 (100% - $right_panel_width_ld)/2 - 10%; // try centering it
             width: $score_width;     
             height:  100%;
             padding: 5px;
@@ -220,7 +223,7 @@ $score_width : 100px;
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 60%;
+                width: 100% - $right_panel_width_md;
                 height: 100%;
                 background-color: gray;
             }
@@ -229,7 +232,7 @@ $score_width : 100px;
                 position: absolute;
                 top: 0;
                 right: 0;
-                width: 40%;
+                width: $right_panel_width_md;
                 height: 100%;
                 background-color: burlywood;
                 display: block;
@@ -242,7 +245,7 @@ $score_width : 100px;
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 70%;
+                width: 100% - $right_panel_width_ld;
                 height: 100%;
                 background-color: gray;
             }
@@ -251,7 +254,7 @@ $score_width : 100px;
                 position: absolute;
                 top: 0;
                 right: 0px;
-                width: 30%;
+                width: $right_panel_width_ld;
                 height: 100%;
                 background-color: burlywood;
                 display: block;

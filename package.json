@@ -4,7 +4,13 @@
     "keywords": ["util", "functional", "server", "client", "browser"],
     "author": "chuks",
     "contributors": [],
-    "dependencies": {}, "scripts":{
-"start":"node game-server.js"}
+    "dependencies": {},
+    "scripts":{
+    "start":"node game-server.js"
+    },
+    "engines": {
+        "node": "6.11.0",
+        "npm": "3.10.10"    
+      }
 
 }

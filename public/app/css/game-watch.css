@@ -156,7 +156,7 @@ and open the template in the editor.
   height: 100%; }
   .game9ja-game-watch > .game9ja-game-watch-header > :nth-child(1) {
     /*holding the score and the live status*/
-    margin: 0 auto;
+    margin: 0 25%;
     width: 100px;
     height: 100%;
     padding: 5px;
