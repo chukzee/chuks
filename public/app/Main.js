@@ -9,6 +9,8 @@ var Main = {};
     var isMainInit;
     var deviceUrl = "device/";
     var device_category;
+    var portriat_width;
+    var portriat_height;
     var appUrl = "app/";
     var listeners = {};
     Main.controller = {}; // js in the controller folder will dynamically use this prototype
@@ -192,7 +194,7 @@ var Main = {};
         onDeviceReady: function () {
             //using 'this' to access isMobileDeviceReady variable is only possible
             //because of the bind(this) in the constructor above - the 'this' of the
-            // Main.device class instance is bind to onDeviceReady.
+            //Main.device class instance is bind to onDeviceReady.
             this.isMobileDeviceReady = true;
         },
 
@@ -214,6 +216,18 @@ var Main = {};
 
         isXLarge: function () {
             return window.screen.width > 800; //important! checking current width of  screen 
+        },
+        getPortriatWidth: function () {
+            return portriat_width;
+        },
+        getPortriatHeight: function () {
+            return portriat_height;
+        },
+        getLandscapeWidth: function () {
+            return Main.device.getPortriatHeight();
+        },
+        getLandscapeHeight: function () {
+            return Main.device.getPortriatWidth();
         }
     };
 
@@ -243,21 +257,6 @@ var Main = {};
             }
             return s;
         },
-
-        /**
-         * Automaticlally destorys the underlying object if the onHide event method is fired.
-         * Typically used for destroying ui components when hidden
-         */
-        onHideThenDestroy: {
-            onHide: function () {
-                this.destroy();
-                return true;
-            }
-            , onDestroy: function () {//Note: this method is deprecated as of ExtJS 6.2.*
-                //alert("destroy"); // UNCOMENT TO SEE IT IN ACTION
-                return true;
-            }
-        }
 
     };
 
@@ -1074,7 +1073,7 @@ var Main = {};
         this.home = function (obj) {
             if (transitionInProgress) {
                 console.warn("Action ignored! Page transition in progress.");
-                return;
+                return false; //unsuccesful becasue page is in transition
             }
             var transition;
             var lastPage = pages[pages.length - 1];
@@ -1106,13 +1105,15 @@ var Main = {};
                     foundFirst = true;
                 }
             }
+
+            return true;//important! - successful
         };
 
 
         this.back = function () {
             if (transitionInProgress) {
                 console.warn("Action ignored! Page transition in progress.");
-                return;
+                return false; //unsuccesful becasue page is in transition
             }
 
             var pgGoOut;
@@ -1137,13 +1138,13 @@ var Main = {};
                 pages.splice(last_index, 1);//remove the last page
             }
 
-
+            return true;//important!
         };
 
         this.show = function (obj) {
             if (transitionInProgress) {
                 console.warn("Action ignored! Page transition in progress.");
-                return;
+                return false; //unsuccesful becasue page is in transition
             }
             var transit = {};
             if (!obj.transition) {
@@ -1155,10 +1156,14 @@ var Main = {};
 
 
             load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj));
+            return true;//important!
         };
 
         var _pShowFn = function (obj) {
-            return {onShow: obj.onShow, onBeforeShow: obj.onBeforeShow};
+            return {
+                onShow: obj && obj.onShow ? obj.onShow : null,
+                onBeforeShow: obj && obj.onBeforeShow ? obj.onBeforeShow : null
+            };
         };
 
         this.init = function () {
@@ -1759,7 +1764,7 @@ var Main = {};
             busyEl.style.width = '100%';
             busyEl.style.height = '100%';
             busyEl.style.background = 'transparent';
-            busyEl.style.zIndex = '10000';//come back
+            busyEl.style.zIndex = Main.const.Z_INDEX;//come back
 
         };
 
@@ -1933,7 +1938,7 @@ var Main = {};
             content.style.background = 'black';
             content.style.opacity = 0;
             content.style.display = 'block';
-            content.style.zIndex = '10000';//come back
+            content.style.zIndex = Main.const.Z_INDEX;//come back
         }
 
         function cleanUp() {
@@ -1949,6 +1954,183 @@ var Main = {};
 
     }
 
+    function Card() {
+        var viewHtmls = {};
+        var cards = {};
+        function load(container_id, file, fn) {
+            if (!viewHtmls[container_id]) {
+                viewHtmls[container_id] = {};
+            }
+
+            var url = 'device/' + Main.device.getCategory() + '/' + file;
+
+            var html = viewHtmls[container_id][url];
+            if (html) {
+                if (fn) {
+                    fn(html);
+                }
+                return;
+            }
+
+            Main.ajax.get(url,
+                    function (res) {
+                        viewHtmls[container_id][url] = res;
+                        if (fn) {
+                            fn(res);
+                        }
+                    },
+                    function (err) {
+                        console.warn('could not get resource ', url);
+                    });
+
+        }
+
+        this.to = function (obj) {
+            var cid;
+            if (!obj.url) {
+                console.warn('invalid card url - ', obj.url);
+                return;
+            }
+            if (Main.util.isString(obj.container)) {
+                cid = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+            } else {
+                cid = $(obj.container).id();
+            }
+
+            var cont = document.getElementById(cid);
+            if (!cont) {
+                console.warn('unknown  card container id - ', cid);
+                return;
+            }
+
+            if (!cards[cid]) {
+                cards[cid] = [];
+                if (cont.innerHTML) {
+                    var cardObj = {url: null, fade: null, content: cont.children};
+                    cards[cid].push(cardObj); //push the children
+                }
+
+            }
+
+            load(cid, obj.url, function (html) {
+                //first update the last content in case of any change
+                var div = document.createElement('div');
+                var children = cont.children;
+                var len = children.length;
+                for (var i = 0; i < len; i++) {
+                    var child = children[0];//always the first
+                    div.appendChild(cont.removeChild(child));
+                }
+
+                var cds = cards[cid];
+                var last_crd = cds[cds.length - 1];
+                if (last_crd) {
+                    last_crd.content = div; //update the last content
+                }
+
+                //find if the new card already exist and make it come last
+                for (var i = 0; i < cds.length; i++) {
+                    if (obj.url === cds[i].url) {//found so remove - we will make it last soon, we promise
+                        cds.splice(i, 1);
+                        break;
+                    }
+                }
+
+                cont.style.opacity = '0';
+
+                cont.innerHTML = html;//set new content to the container
+                var cardObj = {url: obj.url, fade: obj.fade || obj.fadein || obj.fadeIn, content: cont.children};
+                cds.push(cardObj);//now make it last as promised
+                if (obj.fade || obj.fadein || obj.fadeIn) {
+                    Main.anim.to(cont, 500, {opacity: 1}, function () {
+                        if (Main.util.isFunc(obj.onShow)) {
+                            obj.onShow(obj.data);
+                        }
+                    });
+                } else {
+                    cont.style.opacity = '1';
+                    if (Main.util.isFunc(obj.onShow)) {
+                        obj.onShow(obj.data);
+                    }
+                }
+            });
+
+        };
+
+        this.back = function (arg0, arg1) {
+
+            var container, data ,onShow;
+
+            if (!Main.util.isString(arg0)
+                    || arguments.length === 1) {//detecting that an object is passed
+                container = arg0.container;
+                data =  arg0.data;
+                onShow = arg0.onShow;
+                
+            } else if (Main.util.isString(arg0) && Main.util.isFunc(arg1)) {
+                container = arg0;
+                onShow = arg1;
+            } else {
+                console.warn('invalid method arguments - must be  either a one argument object or two argument with the first string type and the second function type. ');
+                return;
+            }
+
+            if (!container) {
+                console.warn('can not go back on a card without a container - ', container);
+                return;
+            }
+
+            var cid;
+
+            if (Main.util.isString(container)) {
+                cid = container.charAt(0) === '#' ? container.substring(1) : container;
+            } else {
+                cid = $(container).id();
+            }
+
+            var cont = document.getElementById(cid);
+            if (!cont) {
+                console.warn('unknown  card container id - ', cid);
+                return;
+            }
+
+            var cds = cards[cid];
+
+            if (!cds.length //important - must check if it is array 
+                    || cds.length < 2) {
+                return; // already at the begining
+            }
+            var last_index = cds.length - 1;
+            var out_card = cds[last_index];
+            cds.splice(last_index, 1);
+
+            cont.innerHTML = ''; //clear
+            cont.style.opacity = '0';
+            var prev = cds[cds.length - 1];
+            var last_content = prev.content.children;
+            var len = last_content.length;
+            for (var i = 0; i < len; i++) {
+                var rem_child = prev.content.removeChild(last_content[0]);//removing the first
+                cont.appendChild(rem_child); //adding the removed child
+            }
+
+            if (out_card.fade || out_card.fadein || out_card.fadeIn) {
+                Main.anim.to(cont, 500, {opacity: 1}, function(){
+                    if (Main.util.isFunc(onShow)) {
+                        onShow(data);
+                    }
+                });
+            } else {
+                cont.style.opacity = '1';
+                if (Main.util.isFunc(onShow)) {
+                    onShow();
+                }
+            }
+
+        };
+    }
+
+
     Main.event = new Event();
     Main.rcall = new RCall();
     Main.page = new Page();
@@ -1958,6 +2140,8 @@ var Main = {};
     Main.busy = new Busy();
     Main.dom = new Dom();
     Main.menu = new Menu();
+    Main.dialog = new Dialog();
+    Main.card = new Card();
 
     function Dom() {
         this.addListener = function (e, type, callback, capture) {
@@ -1994,8 +2178,420 @@ var Main = {};
             }
         };
     }
-    ;
 
+    Main.const = {
+        Z_INDEX: 10000,
+        EXCLAMATION: 'EXCLAMATION',
+        QUESTION: 'QUESTION',
+        INFO: 'INFO',
+        YES: 'YES',
+        NO: 'NO',
+        YES_NO: 'YES_NO',
+        YES_NO_CANCEL: 'YES_NO_CANCEL',
+        CANCEL: 'CANCEL',
+        OK: 'OK',
+        OK_CANCEL: 'OK_CANCEL'
+    };
+    /**
+     * Displays option dialog box
+     * 
+     * @param {type} callback - a callback function called when a button is clicked or confirm box closed - the callback argument
+     *  contains the text of the button clicked or undefined if the close button was clicked
+     * @param {type} msg - message
+     * @param {type} title - message title
+     * @param {type} optionButtons - option buttons type (see Main.const )or array of custom option buttons 
+     * @param {type} show_icon - whether to display question icon - true or false - defaults to true 
+     * @param {type} fade - whether to use fade transition - true or false - defaults to true
+     * @returns {undefined}
+     */
+    Main.confirm = function (callback, msg, title, optionButtons, show_icon, fade) {
+
+        var msg_icon_cls = show_icon !== false ? "fa fa-question-circle" : "";
+        var btns = optionButtons;
+        if (!Main.util.isArray(optionButtons)) {
+            switch (optionButtons) {
+                case Main.const.YES_NO:
+                    btns = ['NO', 'YES'];
+                    break;
+                case Main.const.YES_NO_CANCEL:
+                    btns = ['CANCEL', 'NO', 'YES'];
+                    break;
+                case Main.const.OK_CANCEL:
+                    btns = ['CANCEL', 'OK'];
+                    break;
+                default:
+                    btns = ['NO', 'YES'];
+                    break;
+
+            }
+        }
+
+        var is_close_btn = true;
+
+        Main.dialog.show({
+            content: msg,
+            iconCls: msg_icon_cls,
+            title: title,
+            buttons: btns,
+            fade: fade !== false, // default is fade
+            closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
+            touchOutClose: true, //close the dialog if the user touch outside it
+            action: function (el, value) {//not close button   
+                is_close_btn = false;
+                this.hide();
+                if (Main.util.isFunc(callback)) {
+                    callback(value);
+                }
+
+            },
+            onHide: function () {
+                if (is_close_btn && Main.util.isFunc(callback)) {//close button clicked
+                    callback();
+                }
+            }
+        });
+
+    };
+
+    /**
+     * Displays alert dialog box
+     *      
+     * @param {type} msg - message
+     * @param {type} title - message title
+     * @param {type} msg_type - message type to determine the message icon - see Main.const
+     * @param {type} buttonText - custom button text - the default is 'OK' text
+     * @param {type} fade - whether to use fade transition - true or false - defaults to true
+     * @returns {undefined}
+     */
+    Main.alert = function (msg, title, msg_type, buttonText, fade) {
+        var msg_icon_cls = "";
+        switch (msg_type) {
+            case Main.const.EXCLAMATION:
+                msg_icon_cls = "fa fa-exclamation-circle";
+                break;
+            case Main.const.QUESTION:
+                msg_icon_cls = "fa fa-question-circle";
+                break;
+            case Main.const.INFO:
+                msg_icon_cls = "fa fa-info-circle";
+                break;
+        }
+
+        Main.dialog.show({
+            content: msg,
+            iconCls: msg_icon_cls,
+            title: title,
+            buttons: [!buttonText ? 'OK' : buttonText],
+            fade: fade !== false, // default is fade
+            closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
+            touchOutClose: true //close the dialog if the user touch outside it
+        });
+    };
+
+    function Dialog() {
+
+        function diagThis(obj, outer, resizeListen, touchCloseFn) {
+            this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
+                this.hide();
+            };
+            this.hide = function () {
+
+                if (obj.fade || obj.fadeIn || obj.fadeIn) {
+                    Main.anim.to(outer, 300, {opacity: 0}, destroy);
+                } else {
+                    destroy();
+                }
+                if (Main.util.isFunc(obj.onHide)) {
+                    obj.onHide();
+                }
+            };
+
+            function destroy() {
+                if (outer) {
+                    outer.parentNode.removeChild(outer);
+                    Main.dom.removeListener(window, 'orientationchange', resizeListen, false);
+                    Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
+                    outer = null;
+                }
+
+                //TODO: Unlock the orientation here
+            }
+
+        }
+
+        /**
+         * Creates and  shows a dialog.
+         * 
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *       container[opt] : ....,//container to center the dialog on<br>
+         *       width [opt] : ...., //width of the dialog in pixel - px <br>
+         *       height [opt] : ...., //height of the dialog body (not the dialog in this case) in pixel - px <br>
+         *       title [opt] : .....,//title of the dialog<br>
+         *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
+         *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
+         *       action [opt] : .....,//called when any buttons created in the footer is cliced<br>
+         *       content [opt] : .....,//cotent of the dialog body<br>
+         *       iconCls [opt] : .....,//icon class to show - used typically by alert and confirm dialog<br>
+         *       fade | fadein | fadeIn [opt] : .....,//whether to use fade transition<br>
+         *       closeButton [opt] : .....,//whether to display close button<br>
+         *       touchOutClose [opt] : .....,//whether to close the dialog if user touch outside it on mobile device <br>
+         *       onShow [opt] : .....,//called when the dialog is shown<br>
+         *       onHide [opt] : .....,//called when the dilog is closed and destroyed<br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      <br>
+         * Usage in action and onShow callback function.<br>
+         * 
+         * The follow method can be called in the action and onShow callback function <br>
+         * <br>
+         * this.hide() --- hides and destroys the dialog
+         * this.close() --- closes and destroys the dialog - same as this.hide()
+         * <br>
+         * @param {type} obj
+         * @returns {undefined}
+         */
+        this.show = function (obj) {
+
+            if (obj.buttons && !Main.util.isArray(obj.buttons)) {//yes because button can be absence. so check if present and it is also an array
+                console.warn('Dialog buttons must be array of button texts if provided!');
+                return;
+            }
+
+            //TODO: lock orientation here to the current orientation - to avoid resize problems of the dialog- just a form of workaround
+            //TODO : Unlock the orientation when the dialog is hide and destroyed - see destroy() method
+
+            var outer = document.createElement('div');
+            var base = document.createElement('div');
+            base.className = 'game9ja-dialog';
+
+            var header_el = document.createElement('div');
+            header_el.className = 'game9ja-dialog-header';
+
+            var body_el = document.createElement('div');
+            body_el.className = 'game9ja-dialog-body';
+
+            var footer_el = document.createElement('div');
+            footer_el.className = 'game9ja-dialog-footer';
+
+            header_el.innerHTML = obj.title;
+
+            if (obj.iconCls) {
+                var icon_el = document.createElement('span');
+                icon_el.className = obj.iconCls;
+                body_el.appendChild(icon_el);
+            }
+
+            var content_el = document.createElement('div');
+            content_el.innerHTML = obj.content;
+            content_el.style.width = '100%';
+
+            body_el.appendChild(content_el);
+
+            if (obj.width) {
+                var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
+                if (!isNaN(width)) {
+                    base.style.width = width + 'px';//width of the dialog
+                } else {
+                    console.warn('dialog width invalid - ', obj.width);
+                }
+            }
+
+            if (obj.height) {
+                var height = new String(obj.height).replace('px', '') - 0; //implicitly convert to numeric
+                if (!isNaN(height)) {
+                    body_el.style.height = height + 'px';//the height of the body - not the dialog in this case
+                } else {
+                    console.warn('dialog height invalid - ', obj.height);
+                }
+            }
+
+            header_el.innerHTML = obj.title;
+
+            outer.style.position = 'absolute';
+            outer.style.top = '0';
+            outer.style.left = '0';
+            outer.style.minWidth = '100%';
+            outer.style.minHeight = '100%';
+            outer.style.zIndex = Main.const.Z_INDEX;
+
+            if (obj.modal !== false) {
+                outer.style.top = '0px';
+                outer.style.left = '0px';
+                outer.style.width = '100%';
+                outer.style.height = '100%';
+                outer.style.background = 'rgba(0,0,0,0.1)';
+            }
+
+            base.style.maxWidth = '80%';
+            base.style.maxHeight = '80%';
+
+            base.appendChild(header_el);
+            base.appendChild(body_el);
+
+            outer.appendChild(base);
+            //outer  = base;
+
+            base.style.opacity = 0;
+
+            document.body.appendChild(outer);
+
+
+            if (obj.touchOutClose === true) {
+                Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
+            }
+
+            var objThis = new diagThis(obj, outer, resizeListen, touchCloseFunc);
+
+            if (obj.closeButton !== false) {
+                var close_el = document.createElement('span');
+                close_el.className = 'fa fa-close';
+                close_el.style.position = 'absolute';
+                close_el.style.right = '2px';
+                close_el.style.top = '2px';
+                close_el.style.width = '20px';
+                close_el.style.height = '20px';
+                base.appendChild(close_el);
+                Main.dom.addListener(close_el, 'click', objThis.hide, false);
+            }
+
+            if (obj.buttons) {//if present
+
+                for (var i = obj.buttons.length - 1; i > -1; i--) {
+                    var btn = document.createElement('input');
+                    btn.type = 'button';
+                    btn.value = obj.buttons[i];
+                    footer_el.appendChild(btn);
+                }
+
+                Main.dom.addListener(footer_el, 'click', function (evt) {
+                    if (evt.target.type === 'button') {
+                        if (Main.util.isFunc(obj.action)) {
+                            obj.action.call(objThis, evt.target, evt.target.value);
+                        }
+                    }
+                }.bind(objThis), false);
+
+                base.appendChild(footer_el);
+            }
+
+            var container;
+            if (Main.util.isString(obj.container)) {
+                var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+                container = document.getElementById(container_id);
+            } else if (obj.container) {
+                container = obj.container;
+            } else {
+                container = document.body;
+            }
+            var cb = container.getBoundingClientRect();
+            var bound = base.getBoundingClientRect();
+
+            var compXY = computeXY(cb, bound);
+
+            base.style.left = compXY.x + 'px';
+            base.style.top = compXY.y + 'px';
+
+            outer.style.minWidth = bound.width + 'px';
+            outer.style.minHeight = bound.height + 'px';
+
+            Main.dom.addListener(window, 'orientationchange', resizeListen, false);
+
+            if (obj.fade || obj.fadeIn || obj.fadeIn) {
+                Main.anim.to(base, 300, {opacity: 1}, function () {
+                    if (Main.util.isFunc(obj.onShow)) {
+                        obj.onShow.call(objThis);
+                    }
+                });
+            } else {
+                base.style.opacity = 1;
+                if (Main.util.isFunc(obj.onShow)) {
+                    obj.onShow.call(objThis);
+                }
+            }
+
+            function touchCloseFunc(evt) {
+                var parent = evt.target;
+                var touch_outside = true;
+                while (parent && parent !== document.body) {
+                    if (parent === base) {
+                        touch_outside = false;
+                        break;
+                    }
+                    if (parent === outer) {//when the dialog is modal the outer element fills the page - so close it if touched
+                        break;
+                    }
+                    parent = parent.parentNode;
+                }
+                if (touch_outside) {
+                    objThis.hide();
+                }
+            }
+
+            function resizeListen() {
+
+                var cb = container.getBoundingClientRect();
+                var bound = base.getBoundingClientRect();
+                if (bound.width && cb.width && bound.width >= cb.width) {
+                    base.style.width = (0.8 * cb.width) + 'px';
+                }
+                if (bound.height && cb.height && bound.height >= cb.height) {
+                    base.style.height = (0.8 * cb.height) + 'px';
+                }
+                var compXY = computeXY(cb, bound);
+                base.style.left = compXY.x + 'px';
+                base.style.top = compXY.y + 'px';
+            }
+
+
+            function computeXY(cb, bound) {
+                var x, y;
+                if (bound.top >= 0
+                        && bound.top <= window.screen.height
+                        && bound.left >= 0
+                        && bound.left <= window.screen.width
+                        && bound.height) {//inside the window view port
+                    var cb_h = cb.height;
+                    var cb_w = cb.width;
+                    if (cb_h === 0) {
+                        cb_h = window.screen.height;
+                    }
+
+                    if (cb_w === 0) {
+                        cb_w = window.screen.width;
+                    }
+                    var b_w = bound.width;
+                    var b_h = bound.height;
+
+                    x = cb.left + (cb_w - b_w) / 2;
+                    y = cb.top + (cb_h - b_h) / 2;
+                    if (b_w > cb_w) {
+                        x = 0.1 * cb_w;
+                    }
+                    if (b_h > cb_h) {
+                        y = 0.1 * cb_h;
+                    }
+
+                } else {
+                    var bw = 200;
+                    x = (window.screen.width - bw) / 2;
+                    y = (window.screen.height - bw) / 2;
+                    if (x <= 0) {
+                        x = 40;
+                    }
+                    if (y <= 0) {
+                        y = 40;
+                    }
+                }
+                return {x: x, y: y};
+            }
+        };
+    }
 
     function Menu() {
         var defaultWidth = 150;
@@ -2247,10 +2843,13 @@ var Main = {};
 
                 this.height = this.height ? new String(this.height).replace('px', '') : null;
 
-                var style = 'position: absolute; top : ' + y +
-                        'px; left: ' + x +
-                        'px; width: ' + mnu_width +
-                        'px;' + (!isNaN(this.height - 0) ? 'height: ' + this.height + 'px;' : '');
+                var max_height = Main.device.getPortriatWidth() - 20; // minus some pixels
+
+                var style = 'position: absolute; '
+                        + ' top : ' + y + 'px; '
+                        + ' left: ' + x + 'px; '
+                        + ' width: ' + mnu_width + 'px; '
+                        + (!isNaN(this.height - 0) ? 'height: ' + this.height + 'px;' : '');
                 menuCmp = $('<div class="game9ja-menu" style = "' + style + '" ></div>');
 
                 if (this.header) {
@@ -2266,7 +2865,11 @@ var Main = {};
                     }
                 }
 
-                body_height_style = body_height_style ? "style='height: " + body_height_style + "px;'" : '';
+
+                body_height_style = body_height_style ?
+                        "style='height: " + body_height_style + "px; max-height: " + max_height + "px;'"
+                        : "style='max-height: " + max_height + "px;'";
+
 
                 menuCmp.append('<div class="game9ja-menu-body" ' + body_height_style + '></div>');
 
@@ -2298,10 +2901,6 @@ var Main = {};
         };
     }
 
-
-    Main.dialog = function (obj) {
-
-    };
 
     Main.tab = function (obj) {
         var id_prefix = "#";
@@ -2639,6 +3238,7 @@ var Main = {};
                         } else {//zero
                             loadDeviceMain(track.deviceCategory);
                         }
+                        
                     }
             , function () {
                 console.log("could not get resource: ", pkg);
@@ -2731,6 +3331,21 @@ var Main = {};
                             $('body').append(childrenRev[i]);
                         }
                         Main.page.init();
+                        //initialize controller objects with constructor
+                        
+                        console.log(Object.getOwnPropertyNames(Main.controller));
+                        
+                        
+                        var props = Object.getOwnPropertyNames(Main.controller);
+                        
+                        for(var n in props){
+                            var clazzObj = Main.controller[props[n]];
+                            var construtorFn = clazzObj['constructor'];
+                            if(Main.util.isFunc(construtorFn)){
+                                construtorFn();
+                            }
+                        }
+                        
                     }
             ).fail(function (data) {
                 console.log("could not get resource: ", routeFile);
@@ -2745,6 +3360,12 @@ var Main = {};
          */
         function deviceSizeCategory() {
             var size = window.screen.width > window.screen.height ?
+                    window.screen.width
+                    : window.screen.height;
+
+            portriat_height = size;
+
+            portriat_width = window.screen.width < window.screen.height ?
                     window.screen.width
                     : window.screen.height;
 

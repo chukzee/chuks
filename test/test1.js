@@ -98,3 +98,36 @@ console.log(Object.getOwnPropertyNames(Cls.prototype));
 for(var h in arr){
     console.log('h ', arr[h]);
 }
+
+
+var arr = [];
+for(var i=1; i<=20; i++){
+    arr[i-1] = i;
+}
+var mid = Math.floor(arr.length/2)-1;
+var end = arr.length -1;
+var f1 = mid;
+var f2 = end;
+var c1 = 0;
+var c2 = 0;
+
+var qrt =Math.floor(mid/2) +1;
+
+console.log(arr);
+
+for(var i=0; i<qrt; i++){
+    var temp1 = arr[f1-c1];
+    var temp2 = arr[f2-c2];
+    
+    arr[f1-c1] = arr[c1];
+    arr[f2-c2] = arr[c2+mid+1];
+    
+    arr[c1] = temp1;
+    arr[c2+mid+1] = temp2;
+        
+    c1++;    
+    c2++;
+        
+ }
+
+console.log(arr);

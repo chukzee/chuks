@@ -37,7 +37,8 @@ and open the template in the editor.
   color: #eee; }
 
 .game9ja-group-details {
-  padding: 0; }
+  padding: 0;
+  overflow: auto; }
   .game9ja-group-details > :nth-child(1) {
     border-radius: 0px !important;
     padding: 0 !important;
@@ -108,14 +109,18 @@ and open the template in the editor.
         bottom: 0;
         left: 0; }
     .game9ja-group-details > :nth-child(2) > :nth-child(3) {
-      /*custom notification*/
-      background-color: #eee;
-      cursor: pointer;
-      width: 150px;
-      font-size: 16px; }
-      > .game9ja-group-details > :nth-child(2) > :nth-child(3):hover {
-        background-color: #eee;
-        cursor: pointer; }
+      /*custom notification*/ }
+      .game9ja-group-details > :nth-child(2) > :nth-child(3) > input[type=button] {
+        background-color: transparent;
+        cursor: pointer;
+        height: 100%;
+        font-size: 14px;
+        outline: none;
+        border: 1px #aaa solid;
+        border-radius: 2px; }
+        > .game9ja-group-details > :nth-child(2) > :nth-child(3) > input[type=button]:hover {
+          background-color: #eee;
+          cursor: pointer; }
   .game9ja-group-details > :nth-child(3) {
     border-radius: 0px !important;
     position: relative; }

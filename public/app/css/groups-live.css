@@ -67,7 +67,7 @@ and open the template in the editor.
       position: absolute;
       top: 2px;
       left: 45px;
-      width: 150px;
+      width: 35%;
       font-size: 20px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -77,7 +77,7 @@ and open the template in the editor.
       position: absolute;
       top: 23px;
       left: 45px;
-      width: 150px;
+      width: 35%;
       font-size: 11px;
       overflow: hidden;
       text-overflow: ellipsis;

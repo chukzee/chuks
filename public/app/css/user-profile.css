@@ -37,7 +37,8 @@ and open the template in the editor.
   color: #eee; }
 
 .game9ja-user-profile {
-  padding: 0; }
+  padding: 0;
+  overflow: auto; }
   .game9ja-user-profile > :nth-child(1) {
     border-radius: 0px !important;
     padding: 0 !important;
@@ -77,7 +78,7 @@ and open the template in the editor.
       text-overflow: ellipsis;
       white-space: nowrap; }
     .game9ja-user-profile > :nth-child(1) > :nth-child(4) {
-      /*user profile status*/
+      /*user phone number*/
       font-weight: 300;
       font-size: 12px;
       color: #777;
@@ -118,7 +119,7 @@ and open the template in the editor.
     position: relative; }
     .game9ja-user-profile > :nth-child(2) > :nth-child(1) {
       position: relative;
-      font-size: 14px;
+      font-size: 18px;
       color: #444;
       height: 30px;
       -webkit-box-sizing: box-sizing;
@@ -127,12 +128,12 @@ and open the template in the editor.
       display: table-cell;
       vertical-align: bottom; }
   .game9ja-user-profile > :nth-child(3) {
-    /*group belong*/
+    /*player ranking*/
     border-radius: 0px !important;
     position: relative; }
     .game9ja-user-profile > :nth-child(3) > :nth-child(1) {
       position: relative;
-      font-size: 14px;
+      font-size: 18px;
       color: #444;
       height: 30px;
       -webkit-box-sizing: box-sizing;
@@ -140,26 +141,24 @@ and open the template in the editor.
       border-bottom: 0.0325em #eee solid;
       display: table-cell;
       vertical-align: bottom; }
-    .game9ja-user-profile > :nth-child(3) > :nth-child(2) {
-      font-weight: 300;
-      color: #444;
-      background-color: #eee;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      min-width: 30px;
-      -webkit-border-radius: 50%;
-      -moz-border-radius: 50%;
-      -ms-border-radius: 50%;
-      border-radius: 50%;
-      text-align: center; }
+    .game9ja-user-profile > :nth-child(3) > input[type=button] {
+      background-color: transparent;
+      cursor: pointer;
+      height: 30px;
+      font-size: 14px;
+      outline: none;
+      border: 1px #aaa solid;
+      border-radius: 2px; }
+      > .game9ja-user-profile > :nth-child(3) > input[type=button]:hover {
+        background-color: #eee;
+        cursor: pointer; }
   .game9ja-user-profile > :nth-child(4) {
-    /*group in common*/
+    /*group belong*/
     border-radius: 0px !important;
     position: relative; }
     .game9ja-user-profile > :nth-child(4) > :nth-child(1) {
       position: relative;
-      font-size: 14px;
+      font-size: 18px;
       color: #444;
       height: 30px;
       -webkit-box-sizing: box-sizing;
@@ -181,12 +180,12 @@ and open the template in the editor.
       border-radius: 50%;
       text-align: center; }
   .game9ja-user-profile > :nth-child(5) {
-    /*tournament belong*/
+    /*group in common*/
     border-radius: 0px !important;
     position: relative; }
     .game9ja-user-profile > :nth-child(5) > :nth-child(1) {
       position: relative;
-      font-size: 14px;
+      font-size: 18px;
       color: #444;
       height: 30px;
       -webkit-box-sizing: box-sizing;
@@ -195,6 +194,33 @@ and open the template in the editor.
       display: table-cell;
       vertical-align: bottom; }
     .game9ja-user-profile > :nth-child(5) > :nth-child(2) {
+      font-weight: 300;
+      color: #444;
+      background-color: #eee;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      min-width: 30px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      border-radius: 50%;
+      text-align: center; }
+  .game9ja-user-profile > :nth-child(6) {
+    /*tournament belong*/
+    border-radius: 0px !important;
+    position: relative; }
+    .game9ja-user-profile > :nth-child(6) > :nth-child(1) {
+      position: relative;
+      font-size: 18px;
+      color: #444;
+      height: 30px;
+      -webkit-box-sizing: box-sizing;
+      box-sizing: box-sizing;
+      border-bottom: 0.0325em #eee solid;
+      display: table-cell;
+      vertical-align: bottom; }
+    .game9ja-user-profile > :nth-child(6) > :nth-child(2) {
       font-weight: 300;
       color: #444;
       background-color: #eee;

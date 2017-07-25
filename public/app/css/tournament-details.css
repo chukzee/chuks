@@ -37,7 +37,8 @@ and open the template in the editor.
   color: #eee; }
 
 .game9ja-tournament-details {
-  padding: 0; }
+  padding: 0;
+  overflow: auto; }
   .game9ja-tournament-details > :nth-child(1) {
     border-radius: 0px !important;
     padding: 0 !important;

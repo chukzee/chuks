@@ -1,7 +1,22 @@
 
 Main.controller.Chat = {
 
-    view: function () {
+    /**
+     * this constructor is called once automatically by the framework
+     * 
+     * @returns {undefined}
+     */
+    constructor : function(){
+        
+        var obj = {
+            chat: 'game/Chat',
+                    //more may go below
+        };
+
+        Main.rcall.live(obj);
+
+    },
+    content: function () {
         var data = this.data;
         var chat_content_id = 'game-view-chat-content';
 

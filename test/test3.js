@@ -30,3 +30,13 @@ var b = n.unshift('z', 'v');
 
 console.log('n ',n);
 console.log('b ',b);
+
+console.log('------------------TESTING BINARY OR-----------------');
+
+var obj ={
+    fade: true
+};
+
+var n = obj.fadein || obj.fade;
+
+console.log('n  = ', n);

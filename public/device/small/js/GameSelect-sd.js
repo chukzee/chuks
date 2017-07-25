@@ -1,22 +1,38 @@
 /* global Main */
 
-//fake login
-Main.controller.auth = {}; //fake auth
-Main.controller.auth.appUser = {//fake app user object
-    id: "07038428492",
-    fullName: "Chuks Alimele",
-    groupsBelong: [{name: 'Grace', status_message:'this is the best group', photo: 'grace_photo.png'/*etc*/}, {name: 'Best Palyers', status_message:'this is the best group', photo: 'best_players_photo.png'/*etc*/}, {name: 'Omega', status_message:'this is the best group', photo: 'omega_photo.png'/*etc*/}],
-    //tournamentList comprise of tournamen belong and tournament listed in tournament search
-    tournamentList: [{name: 'Warri Championship', duration:'Feb-3-2017 to Mar-4-2017', photo: 'warri_champ_photo.png'/*etc*/}, {name: 'Sapele Champs', duration:'Feb-3-2017 to Mar-4-2017', photo: 'sapele_champ_photo.png'/*etc*/}, {name: 'Delta Big League', duration:'Feb-3-2017 to Mar-4-2017', photo: 'delta_league_photo.png'/*etc*/}],
-    tournamentCount: 200 // overall tournament count in the system (server)
-};
-
 //REMIND : for small device the screen orientation will be locked to portrait but on medium and large no lock in neccesary
 
 Main.on("pagecreate", function (arg) {
 
+    $('#test-dialog').on('click', function () {
+       
+        Main.dialog.show({
+           title:"This is title",
+           iconCls:"fa fa-exclamation-circle",
+           content:"This is title This is title This is title This is title", 
+           fade: true,
+           buttons:['Cancel','No','Yes'],
+           action:function(btn, value){
+               alert(btn);
+               alert(value);
+               this.hide();
+           }, 
+           onShow :function(){
+               //alert('show');
+           }
+        });
+        
+        
+        //Main.alert('this is a wonderful messag', 'The title', Main.const.INFO, 'Done' );
+        
+       
+       /*Main.confirm(function(option){
+           alert(option);
+       }, 'this is a wonderful messag', 'The title',Main.const.YES_NO_CANCEL);
+       */
+    });
+    
     $('#test-game-view').on('click', function () {
-
 
         Main.page.show({//TESTING!!!
             url: "game-view-sd.html",
@@ -25,7 +41,7 @@ Main.on("pagecreate", function (arg) {
             onBeforeShow: Main.controller.GameView.Content,
             data: {
                 game: "name of game e.g chess , draft etc",
-                gameId: "3i393kj383k2c83j", //a unique id for this match
+                game_id: "3i393kj383k2c83j", //a unique id for this match
                 white_id: "07038428492", //must be a phone number
                 white_name: "Chuks Alimele",
                 white_pic: "app/images/white_player.jpg",
@@ -52,8 +68,8 @@ Main.on("pagecreate", function (arg) {
     $('#test-game-watch').on('click', function () {
 
         //fake login
-        Main.controller.auth = {}; //fake auth
-        Main.controller.auth.appUser = {//fake app user object
+        //.Main.controller.auth = {}; //fake auth
+        Main.controller.UserProfile.appUser = {//fake app user object
             id: "07038428492",
             fullName: "Chuks Alimele"
         };
@@ -65,7 +81,7 @@ Main.on("pagecreate", function (arg) {
             onBeforeShow: Main.controller.GameWatch.Content,
             data: {
                 game: "name of game e.g chess , draft etc",
-                gameId: "3i393kj383k2c83j", //a unique id for this match
+                game_id: "3i393kj383k2c83j", //a unique id for this match
                 white_id: "07038428492", //must be a phone number
                 white_name: "Chuks Alimele",
                 white_pic: "app/images/white_player.jpg",

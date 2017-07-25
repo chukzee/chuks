@@ -7,6 +7,18 @@ class Base {
         this.sObj = _sObj;
     }
 
+    isArray(a){
+        return !a && a.constructor === Array;
+    }
+
+    isFunc(a){
+        return typeof a === "function";
+    }
+
+    isString(a){
+        return typeof a === "string";
+    }
+
     /*
      * This method must be called by subclass if operation fails
      * otherwise the request will block indefinitely, denialing other requests

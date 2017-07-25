@@ -1,6 +1,6 @@
 
 Main.controller.Stats = {
-    view: function(){
+    content: function(){
         
     }
 }

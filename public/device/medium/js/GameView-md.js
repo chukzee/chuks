@@ -7,11 +7,11 @@ Main.controller.GameView = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
-    lefPanelTitleComp: null,
+    leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameView.lefPanelTitleComp) {
-            Main.controller.GameView.lefPanelTitleComp.innerHTML = '';
+        if (Main.controller.GameView.leftPanelTitleComp) {
+            Main.controller.GameView.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
@@ -43,11 +43,12 @@ Main.controller.GameView = {
     },
     Content: function (data) {
 
+        var panel_main = document.getElementById('game-view-main');
         var board_el = document.getElementById('game-view-main-board');
         var upper_el = document.getElementById('game-view-main-upper');
         var lower_el = document.getElementById('game-view-main-lower');
 
-        Main.controller.GamePanel.ownGameView(data, 'game-view-main', resizeMain);
+        Main.controller.GamePanel.ownGameView(data, panel_main, resizeMain);
 
         function resizeMain(board_size, upper_height, lower_height) {
 

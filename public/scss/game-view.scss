@@ -142,7 +142,8 @@ $right_panel_width_ld : 30%;
             max-width: $container_width;
             position: relative;
             
-            background-color: green;
+            //background-color: green;
+            
             > :nth-child(1){/* holds white player full name*/
                 position: absolute;
                 top: 20px;
@@ -310,7 +311,7 @@ $right_panel_width_ld : 30%;
         height: 100%;
         background: $main_body_bg;
 
-        >:nth-child(1){/*center the upper panel inside the ceter panel*/
+        >:nth-child(1){/*center the upper panel inside the center panel*/
             position: relative;
             margin : 0 auto;
             //background: red;
@@ -352,13 +353,13 @@ $right_panel_width_ld : 30%;
             }
         }
 
-        >:nth-child(2){/*center the board panel inside the ceter panel*/
+        >:nth-child(2){/*center the board panel inside the center panel*/
             position: relative;
             margin : 0 auto;
             background: black;
         }
 
-        >:nth-child(3){/*center the lower panel inside the ceter panel*/
+        >:nth-child(3){/*center the lower panel inside the center panel*/
             position: relative;
             margin : 0 auto;
             //background: green;

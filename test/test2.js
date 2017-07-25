@@ -1,24 +1,46 @@
-var log = require('single-line-log').stdout;
 
-var i = 0;
-setInterval(function() {
-  i++;
 
+var u ={
+    n : 3,
+    get: function(){
+        console.log(this.n);
+    },
+    pick: function(){
+        this.get();
+    }
+}
+
+u.pick();
+
+var cobj= {}; 
+
+for(var i=5; i > -1; i--){
+    var obj = {
+        a:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+i,
+        b:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        c:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        d:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        e:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        f:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        g:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        h:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 
+        i:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        j:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        k:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        l:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        m:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        n:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        o:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        p:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        q:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        r:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        s:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    };
     
-  var s = 'line 1 - ' + Math.random();
+    
+    cobj[i+"aab"] = obj;
+    
+}
 
-  /*if (i < 10) s += ' - ' + Math.random();
-
-  if (i < 40) s += '\nline 2 - ' + Math.random();
-  if (i < 30) s += '\nline 3 - ' + Math.random();
-  if (i < 20) s += '\nline 4 - ' + Math.random();
-  */
-
-  console.log('chuksssssssssssssssssssssssssss');
-  log(s+'\n');
-
-  if (i === 50) {
-    log.clear();
-    process.exit(0);
-  }
-}, 200);
+console.log(cobj);
+//console.log('cobj');

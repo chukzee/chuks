@@ -14,6 +14,7 @@ $user_profile_img_height : 180px;
 
 .game9ja-user-profile{
     padding : 0;
+    overflow: auto;
     > :nth-child(1){
         border-radius: 0px !important;
         padding : 0 !important;
@@ -58,7 +59,7 @@ $user_profile_img_height : 180px;
             white-space: nowrap;
             //background-color: red;
         }
-        >:nth-child(4){/*user profile status*/
+        >:nth-child(4){/*user phone number*/
             font-weight: 300;  
             font-size: 12px;
             color: #777;
@@ -104,7 +105,7 @@ $user_profile_img_height : 180px;
         position : relative;
         > :nth-child(1){
             position : relative;
-            font-size: 14px;  
+            font-size: 18px;  
             color : $font_color; 
             height: 30px;            
             @include box-sizing(box-sizing);
@@ -115,13 +116,45 @@ $user_profile_img_height : 180px;
         
     }
 
-    > :nth-child(3){/*group belong*/
+    > :nth-child(3){/*player ranking*/
         border-radius: 0px !important;
         position : relative;
         
         > :nth-child(1){
             position : relative;
-            font-size: 14px;  
+            font-size: 18px;  
+            color : $font_color; 
+            height: 30px;
+            @include box-sizing(box-sizing);
+            border-bottom: $list_divider_width $list_divider_color solid;            
+            display: table-cell;
+            vertical-align: bottom;
+            //background: red;
+        }
+        
+        > input[type=button]{
+                background-color : transparent;
+                cursor: pointer;                
+                height : 30px;
+                font-size: 14px;
+                outline : none;
+                border : 1px #aaa solid;
+                border-radius : 2px;
+                > &:hover{              
+                    background-color : #eee;
+                    cursor: pointer;
+                }  
+            }
+    }
+    
+    > :nth-child(4){/*group belong*/
+        border-radius: 0px !important;
+        position : relative;
+        
+        
+        > :nth-child(1){
+            position : relative;
+            font-size: 18px;  
             color : $font_color; 
             height: 30px;
             @include box-sizing(box-sizing);
@@ -145,12 +178,12 @@ $user_profile_img_height : 180px;
     
     
 
-    > :nth-child(4){/*group in common*/
+    > :nth-child(5){/*group in common*/
         border-radius: 0px !important;
         position : relative;
         > :nth-child(1){
             position : relative;
-            font-size: 14px;  
+            font-size: 18px;  
             color : $font_color; 
             height: 30px;            
             @include box-sizing(box-sizing);
@@ -174,12 +207,12 @@ $user_profile_img_height : 180px;
     }
     
 
-    > :nth-child(5){/*tournament belong*/
+    > :nth-child(6){/*tournament belong*/
         border-radius: 0px !important;
         position : relative;
         > :nth-child(1){
             position : relative;
-            font-size: 14px;  
+            font-size: 18px;  
             color : $font_color; 
             height: 30px;            
             @include box-sizing(box-sizing);

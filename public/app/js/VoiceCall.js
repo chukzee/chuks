@@ -1,6 +1,6 @@
 
 Main.controller.VoiceCall = {
-    view : function(){
+    content : function(){
         
     }
 };

@@ -15,7 +15,8 @@ $group_img_height : 180px;
 
 .game9ja-group-details{
     padding : 0;
-
+    overflow: auto;
+    
     > :nth-child(1){
         border-radius: 0px !important;
         padding : 0 !important;
@@ -94,15 +95,20 @@ $group_img_height : 180px;
                 left : 0;
             }
         }
-        >:nth-child(3){ /*custom notification*/             
-            background-color : #eee;
-            cursor: pointer;
-            width : 150px;
-            font-size: 16px;
-            > &:hover{              
-                background-color : #eee;
-                cursor: pointer;
-            }  
+        >:nth-child(3){ /*custom notification*/  
+            > input[type=button]{
+                background-color : transparent;
+                cursor: pointer;                
+                height : 100%;
+                font-size: 14px;
+                outline : none;
+                border : 1px #aaa solid;
+                border-radius : 2px;
+                > &:hover{              
+                    background-color : #eee;
+                    cursor: pointer;
+                }  
+            }
         }
 
     }

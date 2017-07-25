@@ -1,6 +1,6 @@
 
 Main.controller.VideoCall = {
-    view : function(){
+    content : function(){
         
     }
 };

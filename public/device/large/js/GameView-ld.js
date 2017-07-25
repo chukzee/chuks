@@ -4,11 +4,11 @@
 
 
 Main.controller.GameView = {
-    lefPanelTitleComp: null,
+    leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameView.lefPanelTitleComp) {
-            Main.controller.GameView.lefPanelTitleComp.innerHTML = '';
+        if (Main.controller.GameView.leftPanelTitleComp) {
+            Main.controller.GameView.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
@@ -18,6 +18,12 @@ Main.controller.GameView = {
             var el = document.getElementById('game-view-right-content');
             el.style.width = '40%';
             el.style.display = 'block';
+            var dim = Main.controller.GamePanel.gameAreaDimension(elm);
+            if (dim) {
+                //setting the sizes of the panels
+                Main.controller.GameView.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
+            }
+
             func();
         } else {
 
@@ -49,45 +55,49 @@ Main.controller.GameView = {
             }
         }
     },
-    Content: function (data) {
+    resizeMain: function (board_size, upper_height, lower_height) {
 
         var board_el = document.getElementById('game-view-main-board');
         var upper_el = document.getElementById('game-view-main-upper');
         var lower_el = document.getElementById('game-view-main-lower');
 
-        Main.controller.GamePanel.ownGameView(data, 'game-view-main', resizeMain, checkPanelSize);
+        board_el.style.width = board_size + 'px';
+        board_el.style.height = board_size + 'px';
 
-        function resizeMain(board_size, upper_height, lower_height) {
-            board_el.style.width = board_size + 'px';
-            board_el.style.height = board_size + 'px';
+        upper_el.style.width = board_el.style.width;
+        upper_el.style.height = upper_height + 'px';
 
-            upper_el.style.width = board_el.style.width;
-            upper_el.style.height = upper_height + 'px';
+        lower_el.style.width = board_el.style.width;
+        lower_el.style.height = lower_height + 'px';
 
-            lower_el.style.width = board_el.style.width;
-            lower_el.style.height = lower_height + 'px';
+    },
+    Content: function (data) {
 
-        }
+        var panel_main = document.getElementById('game-view-main');
+
+        var rhs_el = document.getElementById('game-view-right-content');
+        
+        var resizeMainFunc = Main.controller.GameView.resizeMain;
+        Main.controller.GamePanel.ownGameView(data, panel_main, resizeMainFunc, checkPanelSize);
 
         function checkPanelSize() {
             //right panel
-            var el = document.getElementById('game-view-right-content');
 
             if (Main.device.isXLarge()) {
 
                 this.element.style.width = '60%';
                 this.element.style.height = '100%';
-                el.style.width = '40%';
-                el.style.right = '0%';//always visible
-                el.style.display = 'block';//always visible
+                rhs_el.style.width = '40%';
+                rhs_el.style.right = '0%';//always visible
+                rhs_el.style.display = 'block';//always visible
             } else {
 
                 this.element.style.width = '100%';
                 this.element.style.height = '100%';
 
-                el.style.width = '65%';
-                el.style.display = 'block';//always visible
-                el.style.right = '-' + el.style.width;
+                rhs_el.style.width = '65%';
+                rhs_el.style.display = 'block';//always visible
+                rhs_el.style.right = '-' + rhs_el.style.width;
                 Main.controller.GameView.afterLeftContentHide();
             }
         }

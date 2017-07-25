@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/header-items.css" />
+        <link rel="stylesheet" href="../app/css/game-view-b.css" />
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+    </head>
+    <body>
+
+        <div class="game9ja-game-view-b"  id="test">
+            <div class="game9ja-game-view-b-header">
+                <div>
+                    <div>Chuks Aimele</div> 
+                    <img src="images/white_player.jpg" alt=""/>
+                    <div>1 - 0</div>
+                    <div>Live</div>
+                    
+                    <img src="images/black_player.jpg" alt=""/>
+                    <div>Onome Okori </div>
+                </div>
+                <i class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i><!--back button-->
+                <i class="fa fa-bluetooth game9ja-header-item-left-a"></i>
+                <i class="fa fa-ellipsis-v game9ja-header-item-right"></i>
+            </div>
+            <div class="game9ja-game-view-b-body">
+                <div id="game9ja-game-view-b-main">
+                    <!--holds the canvas for the game-->
+                    
+                    <div id="test_width" style="background-color: red;"><!--sizing and positioning using javascript-->
+                        <!--some upper display e.g time countdown and online status-->
+                        <!--note when countdown starts it means the move is delivered to the opponent
+                        and when it stop it means the opponent has played or the countdown is over i.e timeout-->
+                        <div>05:34</div> <!--countdown-->
+                        <div>thinking...</div> <!--activity e.g making move... , thinking...-->
+                        <div>W 3, L 2, D 3 </div> <!--win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                    </div>
+                    <div style="background-color: blue;"><!--sizing and positioning using javascript-->
+                        <!--the game board-->
+                    </div>
+                    <div style="background-color: green;"><!--sizing and positioning using javascript-->
+                        <!--some lower display e.g time countdown -->
+                        <div>03:25</div> <!--countdown-->
+                        <div>W 2, L 3, D 3 </div> <!--win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                    </div>
+                </div>
+                <div id="game9ja-game-view-b-right-content">
+                    <!--holds panel in the side. this show by default in 
+                    large device but hidden in small device gets revealed dynamically-->
+                    <div class="game9ja-game-view-b-right-panel">
+                        <span id="game9ja-game-view-b-right-panel-header-title"></span>
+                        <span class="fa fa-close" id="game9ja-game-view-b-right-panel-close"></span>                        
+                        <div id="game9ja-game-view-b-right-panel-body">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+         
+    </body>
+</html>
+
+

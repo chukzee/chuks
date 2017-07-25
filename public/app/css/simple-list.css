@@ -27,7 +27,20 @@ and open the template in the editor.
   background: #222;
   color: #eee; }
 
-.game9ja-simple-list-a, .game9ja-simple-list-b, .game9ja-simple-list-c {
+.game9ja-simple-list-a {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  border-bottom-width: 0.0325em;
+  border-bottom-color: #eee;
+  border-bottom-style: solid;
+  margin: 0;
+  padding: 0;
+  list-style-type: none; }
+  .game9ja-simple-list-a:hover {
+    background-color: #eee; }
+
+.game9ja-simple-list-b, .game9ja-simple-list-c {
   position: relative;
   width: 100%;
   height: 60px;
@@ -37,20 +50,18 @@ and open the template in the editor.
   margin: 0;
   padding: 0;
   list-style-type: none; }
-  .game9ja-simple-list-a:hover, .game9ja-simple-list-b:hover, .game9ja-simple-list-c:hover {
+  .game9ja-simple-list-b:hover, .game9ja-simple-list-c:hover {
     background-color: #eee; }
 
 .game9ja-simple-list-a > :nth-child(1) {
-  /*full name*/
   position: absolute;
-  top: 20px;
+  top: 15px;
   font-size: 14px;
   left: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #555;
-  background: red; }
+  color: #555; }
 
 .game9ja-simple-list-b > :nth-child(1) > div {
   /*profile pic container to help centering and setting border radius*/

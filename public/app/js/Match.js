@@ -4,6 +4,17 @@
 
 Main.controller.Match = {
     hasMatchData: false,
+    currentUserMatch: null,//set dynamically
+    constructor: function(){
+
+        var obj = {
+            match: 'game/MatchLive',
+            //more may go below
+        };
+
+        Main.rcall.live(obj);
+  
+    },
     liveMatchList: function (container, matches) {
         matches = Main.controller.Match.normalizeMatchList(matches);
         //show the contacts live match list                   
@@ -15,7 +26,7 @@ Main.controller.Match = {
             wrapItem: false,
             //itemClass: "game9ja-live-games-list",
             onSelect: function (evt, match_data) {
-                var user = Main.controller.auth.appUser;
+                var user = Main.controller.UserProfile.appUser;
 
                 if (match_data.white_id === user.id
                         || match_data.black_id === user.id) {
@@ -167,8 +178,8 @@ Main.controller.Match = {
         var group_count;
         if (!group) {
             group_index = 0;
-            group = Main.controller.auth.appUser.groupsBelong[group_index];//first group in the list
-            group_count = Main.controller.auth.appUser.groupsBelong.length;
+            group = Main.controller.UserProfile.appUser.groupsBelong[group_index];//first group in the list
+            group_count = Main.controller.UserProfile.appUser.groupsBelong.length;
             if (!group) {
                 return;
             }
@@ -239,8 +250,8 @@ Main.controller.Match = {
     tournamentMatchList: function (tournament) {
 
         if (!tournament) {
-            if (Main.util.isArray(Main.controller.auth.appUser.tournamentList)) {
-                tournament = Main.controller.auth.appUser.tournamentList[0];
+            if (Main.util.isArray(Main.controller.Tournament.tournamentList)) {
+                tournament = Main.controller.Tournament.tournamentList[0];
             }
             if (!tournament) {
                 return;

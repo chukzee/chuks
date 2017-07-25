@@ -1,0 +1,362 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 15, 2017, 10:56:46 AM
+    Author     : Engr Chuks
+*/
+
+@import "base-var.scss";
+
+
+$main_body_bg : linear-gradient(#999, #bbb);
+
+$score_color : #ff4444;
+
+$footer_height : $small_header_height;
+
+$footer_menu_width : 20%;
+
+$fullname_width : 100px;
+$profile_img_size : 30px;
+$score_width : 50px;
+$hgap : $base_padding;
+$container_width : 2* $fullname_width + 2 * $profile_img_size + $score_width + 4 * $hgap;
+
+$mobile_label_fn : 35%;//fullname label on small device
+
+$right_panel_width_md : 40%;
+
+$right_panel_width_ld : 30%;
+
+.game9ja-game-view-b{
+
+    /*background:background;*/
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;    
+    text-shadow: rbga(255,255,255,0.5) 0px 3px 3px;
+}
+
+
+
+.game9ja-game-view-b-header {  
+
+    position: relative;
+    @extend  .game9ja-header;
+
+
+    > div{
+        margin: 0 auto;
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        /*mobile first*/
+
+        //background-color: green;
+        > :nth-child(1){/* holds white player full name*/
+            position: absolute;
+            top: $base_padding + $profile_img_size;
+            font-size: 11px;
+            left: 0;
+            width: $mobile_label_fn;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: brown;
+        }
+
+        > :nth-child(2){/* holds white player profile pic*/
+            width: $profile_img_size;
+            height: $profile_img_size;
+            position: absolute;
+            top: $base_padding;
+            left: $mobile_label_fn/1.5;
+            @include border-radius(50%);
+            cursor: pointer;
+
+            //background-color: darkcyan;
+        }
+        > :nth-child(3){/* holds score*/
+
+            position: absolute;
+            top: 15px;
+            left: $mobile_label_fn;
+            right: $mobile_label_fn;
+            text-align: center;
+            //font-size: 18px;
+            //font-weight: 500;
+            color: $score_color;
+            //background-color: yellowgreen;
+        }
+
+
+        > :nth-child(4){/*holds live status indicator*/
+            @extend :nth-child(3);
+            top : 32px; 
+            color: #00aa00;
+            //font-family: sans-serif;
+            //font-weight: 700;
+
+        }
+
+
+        > :nth-child(5){/* holds black player profile pic*/
+            width: $profile_img_size;
+            height: $profile_img_size;
+            position: absolute;
+            top: $base_padding;
+            right: $mobile_label_fn/1.5;
+            @include border-radius(50%);
+            cursor: pointer;
+
+            //background-color: coral;
+        }
+
+
+        > :nth-child(6){/* holds black player full name*/
+            position: absolute;
+            top: $base_padding + $profile_img_size;
+            font-size: 11px;
+            right: 0;
+            width: $mobile_label_fn;
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            //background-color: crimson;
+        }
+    }
+    @media screen and (min-width: 600px) {
+        > div{
+            margin: 0 (100% - $right_panel_width_ld)/2 - 12%; // try centering it
+            width: 100%;
+            height: 100%;
+            max-width: $container_width;
+            position: relative;
+            
+            //background-color: green;
+            
+            > :nth-child(1){/* holds white player full name*/
+                position: absolute;
+                top: 20px;
+                font-size: 14px;
+                left: 0px;
+                width: $fullname_width;
+                text-align: right;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+                //background-color: brown;
+            }
+
+
+            /* device larger than smart phones e.g tablet and desktop*/
+            > :nth-child(1){/* holds white player full name*/
+                position: absolute;
+                top: 20px;
+                font-size: 14px;
+                left: 0px;
+                width: $fullname_width;
+                text-align: right;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+                //background-color: brown;
+            }
+
+
+            > :nth-child(2){/* holds white player profile pic*/
+                width: $profile_img_size;
+                height: $profile_img_size;
+                position: absolute;
+                top: 10px;
+                left: $fullname_width + $hgap;
+                @include border-radius(50%);
+                cursor: pointer;
+
+                //background-color: darkcyan;
+            }
+
+
+            > :nth-child(3){/* holds score*/
+                width: $score_width;
+                position: absolute;
+                top: 15px;
+                left: $fullname_width + $profile_img_size+ 2* $hgap;
+                text-align: center;
+                color: $score_color;
+
+                //background-color: yellowgreen;
+            }
+
+
+            > :nth-child(4){/*holds live status indicator*/
+                width: $score_width;
+                position: absolute;
+                //top: 20px;
+                left: $fullname_width + $profile_img_size+ 2* $hgap;
+                text-align: center;
+                font-size: 16px;
+                top : 32px; 
+                color: #00aa00;
+                font-family: sans-serif;
+                font-weight: 700;
+
+            }
+
+            > :nth-child(5){/* holds black player profile pic*/
+                width: $profile_img_size;
+                height: $profile_img_size;
+                position: absolute;
+                top: 10px;
+                left: $fullname_width + $profile_img_size+ $score_width + 3* $hgap;
+                @include border-radius(50%);
+                cursor: pointer;
+
+                //background-color: coral;
+            }
+
+
+            > :nth-child(6){/* holds black player full name*/
+                position: absolute;
+                top: 20px;
+                font-size: 14px;
+                left: $fullname_width + 2* $profile_img_size+ $score_width + 4* $hgap;
+                width: $fullname_width;
+                text-align: left;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                //background-color: crimson;
+            }
+        }
+    }
+
+}
+
+
+
+.game9ja-game-view-b-body{
+
+    //background: red;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    position: absolute;
+    top: $header_height;
+    bottom: 0;
+
+    /*mobile first*/
+    > :nth-child(1){/* holds center panel for game playiing area e.g game board*/
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: $main_body_bg;
+
+        >:nth-child(1){/*center the upper panel inside the center panel*/
+            position: relative;
+            margin : 0 auto;
+            //background: red;
+            
+            > :nth-child(1){/*the oppontent countdown time in the upper panel*/
+                position: absolute;
+                bottom: 0px;
+                left: $base_padding;
+                font-size: 12px;
+                
+            }
+
+            > :nth-child(2){/*the oppontent activity display in the upper panel*/
+                margin : 0 auto;
+                width : 180px;
+                max-width: 100%;
+                font-size: 14px;
+                font-style: italic;
+                color : #00bb00;
+                //background: white;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+
+            > :nth-child(3){/*the oppontent win, loss, draw, display*/
+                position: absolute;
+                bottom: 0px;
+                right: $base_padding;
+                width: 200px;
+                text-align: right;
+                font-size: 12px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+        }
+
+        >:nth-child(2){/*center the board panel inside the center panel*/
+            position: relative;
+            margin : 0 auto;
+            background: black;
+        }
+
+        >:nth-child(3){/*center the lower panel inside the center panel*/
+            position: relative;
+            margin : 0 auto;
+            //background: green;
+            
+            > :nth-child(1){/*the user countdown time in the lower panel*/
+                position: absolute;
+                top: 2px;
+                left: $base_padding;
+                font-size: 12px;
+            }
+
+            > :nth-child(2){/*the user win, loss, draw display*/
+                position: absolute;
+                top: 2px;
+                right: $base_padding;
+                width: 200px;
+                text-align: right;
+                font-size: 12px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+        
+        }
+
+
+
+    }
+
+    > :nth-child(2){/* holds right panel for chats, comments etc*/
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 75%;
+        height: 100%;
+        background: $main_body_bg;
+        display: none;//hide for certain size of device
+        box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2);
+    }
+
+}
+
+
+
+

@@ -2,27 +2,23 @@
 
 /* global Main */
 
-var homeObj = {
-    match: 'game/MatchLive',
-    //more may go below
-};
-
-Main.rcall.live(homeObj);
+//Main.rcall.live(homeObj);
 
 
 Main.controller.GameHome = {
-    
+
     GAME_VIEW_HTML: 'game-view-md.html',
+    GAME_VIEW_B_HTML: 'game-view-b-md.html',
     GAME_WATCH_HTML: 'game-watch-md.html',
     isCurrentViewGamePane: false,
     contactsMatchKey: function () {
-        return Main.controller.auth.appUser.id + ":" + "CONTACTS_MATCH_KEY";
+        return Main.controller.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
     },
     groupMatchKey: function (group_name) {
-        return Main.controller.auth.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
+        return Main.controller.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
     },
     tournamentMatchKey: function (tournament) {
-        return Main.controller.auth.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
+        return Main.controller.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
     },
     isLandscape: function () {
         return window.screen.width > window.screen.height;
@@ -64,24 +60,51 @@ Main.controller.GameHome = {
             }
         }
     },
-    showGameView: function (match_data) {
+    showGameView: function (match) {
+
         Main.controller.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewHtml;
         if (Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameView.Content(match_data);
+            Main.controller.GameView.Content(match);
         } else {
             Main.controller.GameHome.portraitView(true);
-            Main.controller.GameView.Content(match_data);
+            Main.controller.GameView.Content(match);
         }
     },
-    showGameWatch: function (match_data) {
+    showGameViewB: function (match) {
+        //show a dialog to display startup settings
+        Main.dialog.show({
+            title: "Play Robot", //TODO - display a robot like photo alongside the title
+            content: Main.controller.UI.gameSettings(match.game_name),
+            fade: true,
+            buttons: ['Cancel', 'Play'],
+            closeButton: false,
+            modal: true,
+            action: function (btn, value) {
+                if (value === 'Cancel') {
+                    Main.controller.GameHome.home();
+                }
+                this.hide();
+            }
+        });
+
+        Main.controller.GameHome.isCurrentViewGamePanel = true;
+        document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+        if (Main.controller.GameHome.isLandscape()) {
+            Main.controller.GameViewB.Content(match);
+        } else {
+            Main.controller.GameHome.portraitView(true);
+            Main.controller.GameViewB.Content(match);
+        }
+    },
+    showGameWatch: function (match) {
         Main.controller.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameWatchHtml;
         if (Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameWatch.Content(match_data);
+            Main.controller.GameWatch.Content(match);
         } else {
             Main.controller.GameHome.portraitView(true);
-            Main.controller.GameWatch.Content(match_data);
+            Main.controller.GameWatch.Content(match);
         }
     },
     Content: function (data) {
@@ -118,247 +141,115 @@ Main.controller.GameHome = {
                 }
             }
         }
-
-/*
-        function contactsMatchList() {
-
-            var stored_matches = window.localStorage.getItem(Main.controller.GameHome.contactsMatchKey());
-
-            try {
-                if (stored_matches) {
-                    stored_matches = JSON.parse(stored_matches);
-                    //show the contacts live match list
-                    liveMatchList('#home-contacts-live-games', stored_matches);
+    },
+    showBluetoothGame: function (data) {
+        //show a dialog to display startup settings
+        var container_id = 'bluetooth-dialog-continer';
+        Main.dialog.show({
+            title: "Play via bluetooth", //TODO - display a robot like photo alongside the title
+            content: '<div id="' + container_id + '"></div>',
+            width : window.screen.width * 0.6,
+            height : window.screen.height * 0.5,
+            fade: true,
+            closeButton: false,
+            modal: true,
+            buttons:['Cancel'],
+            action: function(btn, value){
+                if (value === 'Cancel') {
+                    Main.controller.GameHome.home();
                 }
-            } catch (e) {
-                console.warn(e);
+                this.hide();
+            },
+            onShow: function () {
+                //access ui component here
+                var me = this;
+                Main.controller.Bluetooth.start({
+                    data: data,
+                    container: container_id,
+                    onReady: function (argu) {
+
+                        //do some final setup on the game panel
+
+                        me.hide(); //call to close the dialog
+                    }
+                });
             }
+        });
 
-            refreshMyContactsMatchList();
-
+        Main.controller.GameHome.isCurrentViewGamePanel = true;
+        document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+        var match = {bluetooth: true, game_name: data.game};
+        if (Main.controller.GameHome.isLandscape()) {
+            Main.controller.GameViewB.Content(match);
+        } else {
+            Main.controller.GameHome.portraitView(true);
+            Main.controller.GameViewB.Content(match);
         }
 
-        function refreshMyContactsMatchList() {
-            var now = new Date().getTime();
-            var oldTime = lastContactsMatchRequestTime;
-            if (oldTime && now < oldTime + REQUEST_RATE_INTERVAL * 1000) {
-                return;
-            }
+    },
+    showTournamentDetails : function(tournament){
+        
+        Main.card.to({
+            container: '#home-main',
+            url:'tournament-details-md.html',
+            fade:true,
+            data : tournament,
+            onShow: Main.controller.Tournament.content
+        });
+    },
+    showGroupDetails : function(group){
+        
+        Main.card.to({
+            container: '#home-main',
+            url:'group-details-md.html',
+            fade:true,
+            data : group,
+            onShow: Main.controller.Group.content
+        });
+    },
+    showPlayNotifications: function (data) {
 
-            lastContactsMatchRequestTime = now;
+        Main.card.to({
+            container: '#home-main',
+            url:'play-notifications-md.html',
+            fade:true,            
+            data : data,
+            onShow: Main.controller.PlayNotifications.content
+        });
+    },
+    showInvitePlayers: function (data) {
 
+    },
+    showContacts: function (data) {
 
-            Main.rcall.live(function () {
+        Main.card.to({
+            container: '#home-main',
+            url:'contacts-md.html',
+            fade:true,
+            data : data,
+            onShow: Main.controller.Contacts.content
+        });
+    },
+    showCreateGroup: function (data) {
 
-                Main.ro.match.getContantsMatchList()
-                        .get(function (data) {
-                            var matches = data;
+    },
+    showCreateTournament: function (data) {
 
-                            if (matches.length) {
+    },
+    showUserProfile: function (data) {
 
-                                liveMatchList('#home-contacts-live-games', matches);
-                                var key = Main.controller.GameHome.contactsMatchKey();
-                                window.localStorage.setItem(key, JSON.stringify(matches));
+        Main.card.to({
+            container: '#home-main',
+            url:'user-profile-md.html',
+            fade:true,
+            data : data,
+            onShow: Main.controller.UserProfile.content
+        });
+    },
+    showSettings: function (data) {
 
-                            } else {
-                                //TODO - display no match found or something similar
+    },
+    showHelp: function (data) {
 
-                            }
-                        })
-                        .error(function (err) {
-                            lastContactsMatchRequestTime = oldTime;
-
-                            //TODO - display error
-
-                        });
-
-            });
-
-        }
-
-        function groupMatchList(group) {
-            var group_index;
-            var group_count;
-            if (!group) {
-                group_index = 0;
-                group = Main.controller.auth.appUser.groupsBelong[group_index];//first group in the list
-                group_count = Main.controller.auth.appUser.groupsBelong.length;
-                if (!group) {
-                    return;
-                }
-            }
-
-            //show the first group live match list
-
-
-            var stored_matches = window.localStorage.getItem(Main.controller.GameHome.groupMatchKey(group.name));
-
-            try {
-                if (stored_matches) {
-                    stored_matches = JSON.parse(stored_matches);
-                    //show the group live match list
-                    liveMatchList('#home-group-live-games', stored_matches);
-
-                }
-            } catch (e) {
-                console.warn(e);
-            }
-
-            //display group header info
-            document.getElementById('home-group-pic').src = group.photo;
-            document.getElementById('home-group-name').innerHTML = group.name;
-            document.getElementById('home-group-status-message').innerHTML = group.status_message;
-            document.getElementById('home-group-page-number').innerHTML = (group_index + 1) + " of " + group_count;
-
-            refreshMyGroupsMatchList(group.name);
-
-            //create the group drop down menu.
-
-            //the groupt items of the dropdown menu.
-            var groupItems = function (groups) {
-                var arr = [];
-                for (var n in groups) {
-                    arr.push('<img onerror="Main.helper.loadDefaultGroupPhoto(event)" src = "' + groups[n].photo + '" style="width:30px; height:30px;" /><span>' + groups[n].name + '</span>');
-                }
-                return arr;
-            };
-
-            //the dropdown menu
-            Main.menu.create({
-                width: 200,
-                target: "#home-group-dropdown-menu",
-                header: 'Jump to group',
-                items: groupItems(Main.controller.auth.appUser.groupsBelong),
-                onSelect: function (evt) {
-                    var item = this.item;
-
-                    //finally hide the menu
-                    this.hide();
-                }
-            });
-
-        }
-
-        function refreshMyGroupsMatchList(group_name) {
-            var now = new Date().getTime();
-            
-            var oldTime = lastGroupMatchRequestTime[group_name];
-            if (oldTime && now < oldTime + REQUEST_RATE_INTERVAL * 1000) {
-                return;
-            }
-
-            lastGroupMatchRequestTime[group_name] = now;
-
-            Main.rcall.live(function () {
-                Main.ro.match.getGroupMatchList(group_name)
-                        .get(function (data) {
-                            var matches = data;
-                            if (matches.length) {
-                                liveMatchList('#home-group-live-games', matches);
-                                var key = Main.controller.GameHome.groupMatchKey(matches[0].group_name);
-                                window.localStorage.setItem(key, JSON.stringify(matches));
-                            } else {
-                                //TODO - display no match found or something similar
-
-                            }
-                        })
-                        .error(function (err) {
-                            lastGroupMatchRequestTime[group_name] = oldTime;
-                            //TODO - display error
-
-                        });
-
-            });
-
-        }
-
-        function tournamentMatchList(tournament) {
-            if (!tournament) {
-                if (Main.util.isArray(Main.controller.auth.appUser.tournamentList)) {
-                    tournament = Main.controller.auth.appUser.tournamentList[0];
-                }
-                if (!tournament) {
-                    return;
-                }
-            }
-            //show the first tournaments live match list
-            var stored_matches = window.localStorage.getItem(Main.controller.GameHome.tournamentMatchKey(tournament.name));
-
-            try {
-                if (stored_matches) {
-                    stored_matches = JSON.parse(stored_matches);
-                    //show the tournaments live match list
-                    liveMatchList('#home-tournaments-live-games', stored_matches);
-                }
-            } catch (e) {
-                console.warn(e);
-            }
-
-            //display tournament header info
-            document.getElementById('home-tournament-pic').src = tournament.photo;
-            document.getElementById('home-tournament-name').innerHTML = tournament.name;
-            document.getElementById('home-tournament-duration').innerHTML = tournament.duration;
-
-            refreshTournamentsMatchList(tournament);
-
-            //create the tournament drop down menu.
-
-            Main.menu.create({
-                width: 200,
-                height: 0.6 * window.screen.height,
-                target: "#home-tournaments-live-games",
-                header: 'Search tournaments',
-                items: [
-                    '<input type="text" placeholder="find by name..." style="width: 100%;">'
-                ],
-                onSelect: function (evt) {
-                    var item = this.item;
-                    //var items = this.getItems();
-
-                },
-                onShow: function () {
-
-
-                }
-            });
-
-        }
-
-        function refreshTournamentsMatchList(tornamenent_name) {
-
-            var now = new Date().getTime();
-            
-            var oldTime = lastTournamentMatchRequestTime[tornamenent_name];
-            if (oldTime && now < oldTime + REQUEST_RATE_INTERVAL * 1000) {
-                return;
-            }
-
-            lastTournamentMatchRequestTime[tornamenent_name] = now;
-
-            Main.rcall.live(function () {
-
-                Main.ro.match.getTournamentMatchList(tornamenent_name)
-                        .get(function (data) {
-                            var matches = data;
-                            if (matches.length) {
-                                liveMatchList('#home-tournaments-live-games', matches);
-                                var key = Main.controller.GameHome.tournamentMatchKey(matches[0].tournament_name);
-                                window.localStorage.setItem(key, JSON.stringify(matches));
-                            } else {
-                                //TODO - display no match found or something similar
-
-                            }
-                        })
-                        .error(function (err) {
-                            lastTournamentMatchRequestTime[tornamenent_name] = oldTime;
-                            //TODO - display error
-
-                        });
-
-            });
-
-        }
-
-*/
     }
 };

@@ -118,7 +118,6 @@ and open the template in the editor.
       height: 100%;
       max-width: 330px;
       position: relative;
-      background-color: green;
       /* device larger than smart phones e.g tablet and desktop*/ }
       .game9ja-game-view-header > div > :nth-child(1) {
         /* holds white player full name*/
@@ -249,7 +248,7 @@ and open the template in the editor.
     height: 100%;
     background: linear-gradient(#999, #bbb); }
     .game9ja-game-view-body > :nth-child(1) > :nth-child(1) {
-      /*center the upper panel inside the ceter panel*/
+      /*center the upper panel inside the center panel*/
       position: relative;
       margin: 0 auto; }
       .game9ja-game-view-body > :nth-child(1) > :nth-child(1) > :nth-child(1) {
@@ -282,12 +281,12 @@ and open the template in the editor.
         text-overflow: ellipsis;
         white-space: nowrap; }
     .game9ja-game-view-body > :nth-child(1) > :nth-child(2) {
-      /*center the board panel inside the ceter panel*/
+      /*center the board panel inside the center panel*/
       position: relative;
       margin: 0 auto;
       background: black; }
     .game9ja-game-view-body > :nth-child(1) > :nth-child(3), .game9ja-game-view-header.game9ja-game-view-body > div:nth-child(1) > :nth-child(4) {
-      /*center the lower panel inside the ceter panel*/
+      /*center the lower panel inside the center panel*/
       position: relative;
       margin: 0 auto; }
       .game9ja-game-view-body > :nth-child(1) > :nth-child(3) > :nth-child(1), .game9ja-game-view-header.game9ja-game-view-body > div:nth-child(1) > :nth-child(4) > :nth-child(1) {

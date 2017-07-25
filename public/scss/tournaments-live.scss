@@ -46,7 +46,7 @@ $profile_pic_size : $tournaments_header_height - 2*$base_padding;
             position: absolute;
             top: ($tournaments_header_height - $tournament_name_font_size)/ 2;
             left: $profile_pic_size + 2* $base_padding;
-            width: 150px;
+            width: 35%;
             font-size: 20px;
             overflow: hidden;
             text-overflow: ellipsis;

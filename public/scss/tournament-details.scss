@@ -14,6 +14,7 @@ $torunament_img_height : 180px;
 
 .game9ja-tournament-details{
     padding : 0;
+    overflow: auto;
     > :nth-child(1){
         border-radius: 0px !important;
         padding : 0 !important;

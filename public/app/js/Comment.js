@@ -3,7 +3,23 @@
 
 Main.controller.Comment = {
     
-    view: function () {
+    /**
+     * this constructor is called once automatically by the framework
+     * 
+     * @returns {undefined}
+     */
+    constructor : function(){
+                
+        var obj = {
+            comment: 'game/Comment'
+                    //more may go below
+        };
+
+        Main.rcall.live(obj);
+      
+    },
+    
+    content: function () {
         var data = this.data;
         //this.lefPanelBody - TODO
         var comment_content_id = 'game-view-comment-content';

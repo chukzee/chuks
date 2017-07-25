@@ -1,0 +1,80 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 31, 2017, 2:24:29 PM
+    Author     : Engr Chuks
+*/
+
+@import "base-var.scss";
+
+$heading_color : #ddd;
+$height : 30px;//must be 30px - please do not change! 30px is used in Main.js for normalization.
+
+.game9ja-dialog{
+    position: absolute;    
+    width : auto;
+    max-height : 100%;
+    color : #222;
+    background: white;
+    border-top : 4px #aaa solid;
+    @include border-radius(4px);
+    @include box-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+
+    > .game9ja-dialog-header{
+        position: relative;
+        width: 100%;
+        padding : $base_padding;
+        text-align: left;        
+        border-bottom : 0.8px #eee solid;
+
+        height: $height;
+        @include box-sizing(border-box);
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    > .game9ja-dialog-body{
+        position: relative;
+        width: 100%;        
+        overflow: auto;
+        padding : $base_padding;
+        @include box-sizing(border-box);
+        clear: both;
+        >:nth-child(1){
+            float: left;
+        }
+        >:nth-child(2){
+            float: left;
+            margin-left: $base_padding; 
+        }
+
+    }
+
+    > .game9ja-dialog-footer{
+        position: relative;
+        height: $height;
+        width: 100%;
+        padding : $base_padding;
+        clear: both;
+        border-top: 0.8px #eee solid;
+        @include box-sizing(border-box);
+
+        input[type=button]{
+            float: right;
+            margin: $base_padding;
+            background: transparent;
+            color: inherit;
+            border-width: 0px;
+            outline: none;
+            cursor: pointer;
+            
+        }
+
+
+    }
+}

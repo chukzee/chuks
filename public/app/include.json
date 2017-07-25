@@ -18,6 +18,7 @@
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
             "font-awesome.min.css",
             "menu.css",
+            "dialog.css",
             "header-items.css",
             "game-main.css", 
             "live-games-list.css", 
@@ -25,13 +26,19 @@
             "comment.css", 
             "game-view-right-panel.css", 
             "game-watch-right-panel.css", 
-            "game-view.css", 
+            "game-view.css",
+            "game-view-b.css",
             "game-watch.css",             
             "message-input.css", 
             "section-container.css",  
             "groups-live.css",
             "tournaments-live.css",
-            "user-show-list.css"
+            "user-show-list.css",
+            "horizontal-list.css",
+            "tournament-details.css",
+            "group-details.css",
+            "match-fixture-list.css",
+            "simple-list.css"
         ],
         
         "js": [
@@ -39,6 +46,7 @@
             "lib/jquery-1.10.2.min.js", 
             //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
             "lib/tween/TweenMax.min.js",
+            "Bluetooth.js",
             "Chat.js",
             "Comment.js",
             "GamePanel.js",
@@ -47,7 +55,12 @@
             "Stats.js",
             "Util.js",
             "UI.js",
-            "Match.js"
+            "Match.js",
+            "Tournament.js",
+            "PlayNotifications.js",
+            "Group.js",
+            "UserProfile.js",
+            "Contacts.js"
         ] 
     },
 
@@ -65,6 +78,7 @@
             "GameHome-sd.js", 
             "GameSelect-sd.js",
             "GameView-sd.js",
+            "GameViewB-sd.js",
             "GameWatch-sd.js"
         ] 
     },
@@ -82,6 +96,7 @@
             "GameHome-md.js", 
             "GameSelect-md.js",
             "GameView-md.js",
+            "GameViewB-md.js",
             "GameWatch-md.js"
         ]
     },
@@ -99,6 +114,7 @@
             "GameHome-ld.js", 
             "GameSelect-ld.js",
             "GameView-ld.js",
+            "GameViewB-ld.js",
             "GameWatch-ld.js"
         ]
     }

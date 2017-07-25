@@ -6,11 +6,11 @@ Main.controller.GameWatch = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
-    lefPanelTitleComp: null,
+    leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameWatch.lefPanelTitleComp) {
-            Main.controller.GameWatch.lefPanelTitleComp.innerHTML = '';
+        if (Main.controller.GameWatch.leftPanelTitleComp) {
+            Main.controller.GameWatch.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
@@ -41,12 +41,12 @@ Main.controller.GameWatch = {
     },
     Content: function (data) {
 
-     
+        var panel_main = document.getElementById('game-watch-main');
         var board_el = document.getElementById('game-watch-main-board');
         var upper_el = document.getElementById('game-watch-main-upper');
         var lower_el = document.getElementById('game-watch-main-lower');
 
-        Main.controller.GamePanel.watchGame(data, 'game-watch-main', resizeMain);
+        Main.controller.GamePanel.watchGame(data, panel_main, resizeMain);
         
         function resizeMain(board_size, upper_height, lower_height){
             board_el.style.width = board_size + 'px';
