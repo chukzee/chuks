@@ -68,9 +68,9 @@ Main.controller.UserProfile = {
                 return [];
             }
 
-            var app_user_id = Main.controller.Auth.appUser.user_id;
+            var app_user_id = Main.controller.UserProfile.appUser.id;
 
-            var app_user_groups_belong = Main.controller.Auth.appUser.groups_belong;
+            var app_user_groups_belong = Main.controller.UserProfile.appUser.groupsBelong;
 
             if (!app_user_groups_belong) {
                 //check the user list

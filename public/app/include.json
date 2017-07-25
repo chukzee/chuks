@@ -46,6 +46,7 @@
             "lib/jquery-1.10.2.min.js", 
             //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
             "lib/tween/TweenMax.min.js",
+            "Auth.js",
             "Bluetooth.js",
             "Chat.js",
             "Comment.js",

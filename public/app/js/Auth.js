@@ -4,7 +4,7 @@ Main.controller.Auth = {
     
     constructor : function(){
         
-        login(function(user_info){
+        this.login(function(user_info){
             Main.controller.UserProfile.appUser = user_info;
         });
         

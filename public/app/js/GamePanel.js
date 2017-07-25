@@ -158,7 +158,7 @@ Main.controller.GamePanel = {
         });
 
 
-        if (Main.controller.auth.appUser.id === data.white_id) {
+        if (Main.controller.UserProfile.appUser.id === data.white_id) {
 
             $('#game-view-user-wld').html(data.white_wld);
             $('#game-view-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
@@ -167,7 +167,7 @@ Main.controller.GamePanel = {
             $('#game-view-opponent-activity').html(data.black_activity);
             $('#game-view-opponent-wld').html(data.black_wld);
 
-        } else if (Main.controller.auth.appUser.id === data.black_id) {
+        } else if (Main.controller.UserProfile.appUser.id === data.black_id) {
 
             $('#game-view-user-wld').html(data.black_wld);
             $('#game-view-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
@@ -297,7 +297,7 @@ Main.controller.GamePanel = {
         });
 
 
-        if (Main.controller.auth.appUser.id === data.white_id) {
+        if (Main.controller.UserProfile.appUser.id === data.white_id) {
 
             $('#game-view-b-user-wld').html(data.white_wld);
             $('#game-view-b-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
@@ -306,7 +306,7 @@ Main.controller.GamePanel = {
             $('#game-view-b-opponent-activity').html(data.black_activity);
             $('#game-view-b-opponent-wld').html(data.black_wld);
 
-        } else if (Main.controller.auth.appUser.id === data.black_id) {
+        } else if (Main.controller.UserProfile.appUser.id === data.black_id) {
 
             $('#game-view-b-user-wld').html(data.black_wld);
             $('#game-view-b-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
@@ -473,7 +473,7 @@ Main.controller.GamePanel = {
 
             var gamePanel = document.getElementById("home-game-panel");
             if (Main.controller.Match.hasMatchData) {
-                var user = Main.controller.auth.appUser;
+                var user = Main.controller.UserProfile.appUser;
                 if (first_match_data.white_id === user.id
                         || first_match_data.black_id === user.id) {
                     //show the current app user game

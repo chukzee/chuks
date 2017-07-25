@@ -3331,9 +3331,10 @@ var Main = {};
                             $('body').append(childrenRev[i]);
                         }
                         Main.page.init();
+                        
                         //initialize controller objects with constructor
                         
-                        console.log(Object.getOwnPropertyNames(Main.controller));
+                        //console.log(Object.getOwnPropertyNames(Main.controller));
                         
                         
                         var props = Object.getOwnPropertyNames(Main.controller);
@@ -3342,7 +3343,7 @@ var Main = {};
                             var clazzObj = Main.controller[props[n]];
                             var construtorFn = clazzObj['constructor'];
                             if(Main.util.isFunc(construtorFn)){
-                                construtorFn();
+                                construtorFn.call(clazzObj);
                             }
                         }
                         
