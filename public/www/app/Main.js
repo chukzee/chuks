@@ -3301,6 +3301,9 @@ var Main = {};
         }
         function onLoadInclude() {
             this.count++;
+            
+            alert('onLoadInclude '+ this.count);
+            
             if (this.count === this.total) {
                 loadDeviceMain(this.deviceCategory);
             } else {
@@ -3334,6 +3337,7 @@ var Main = {};
 
         function loadDeviceMain(device_size_cat) {
             //register the home page first
+alert('loadDeviceMain');
 
             pageRouteUrl = deviceUrl + device_size_cat + '/';
             var routeFile = pageRouteUrl + "index.html";
@@ -3352,8 +3356,12 @@ var Main = {};
                             }
                             $('body').append(childrenRev[i]);
                         }
+                        
+                        alert('loadDeviceMain ' + 1);
+                        
                         Main.page.init();
 
+alert('loadDeviceMain ' + 2);
                         //initialize controller objects with constructor
 
                         //console.log(Object.getOwnPropertyNames(Main.controller));
@@ -3368,7 +3376,7 @@ var Main = {};
                                 construtorFn.call(clazzObj);
                             }
                         }
-
+alert('loadDeviceMain ' + 3);
                     }
             ).fail(function (data) {
                 console.log("could not get resource: ", routeFile);
