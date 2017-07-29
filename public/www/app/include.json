@@ -17,7 +17,7 @@
         ],
         
         "js":[
-            "/socket.io/socket.io.js"
+            //"/socket.io/socket.io.js" //deprecated
         ]
     },
     
@@ -56,7 +56,8 @@
         
         "js": [
             "draftgame.js",
-            "lib/jquery-1.10.2.min.js", 
+            "lib/socket.io.js",
+            "lib/jquery-1.10.2.min.js",
             //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
             "lib/tween/TweenMax.min.js",
             "Auth.js",
