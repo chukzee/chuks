@@ -3297,12 +3297,15 @@ var Main = {};
         }
 
         function deviceRoute(file, type, cat) {
-            return deviceUrl + "/" + cat + "/" + type + "/" + file;
+            
+            alert('deviceRoute '+ deviceUrl + cat + "/" + type + "/" + file);
+            
+            return deviceUrl + cat + "/" + type + "/" + file;
         }
         function onLoadInclude() {
             this.count++;
             
-            alert('onLoadInclude '+ this.count);
+            
             
             if (this.count === this.total) {
                 loadDeviceMain(this.deviceCategory);
@@ -3326,6 +3329,9 @@ var Main = {};
         }
 
         function loadScript(file, track, route) {
+            
+            alert('loadScript '+ file+' track.deviceCategory '+track.deviceCategory);
+            
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
