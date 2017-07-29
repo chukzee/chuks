@@ -103,7 +103,7 @@ class Main {
             reqFile = decodeURIComponent(req.path);// decodeURIComponent() will be prefered to decodeURI() because it decodes URI special markers such as &, ?, #, etc while decodeURI() does not
         }
         console.log(reqFile);//UNCOMMENT TO SEE THE PATHS
-        res.sendFile(__dirname + '/public/' + reqFile);
+        res.sendFile(__dirname + '/public/www/' + reqFile);
     }
     accessRouteRequest(req, res, next) {
 

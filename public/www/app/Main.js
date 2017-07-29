@@ -77,30 +77,18 @@ var Main = {};
             xhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
         xhttp.onreadystatechange = function () {
-            alert('2');
             if (this.readyState - 0 === 4) {
-                alert('2a');
                 if (this.status - 0 === 200) {
-                    alert('2b');
                     if (Main.util.isFunc(successFn)) {
-                        alert('2b s');
                         successFn(this.responseText, this.status);
-                        alert('2b s1');
                     } else if (Main.util.isFunc(completeFn)) {
-                        alert('2b s2');
                         completeFn(this.responseText, this.status);
-                        alert('2b s3');
                     }
                 } else {
-                    alert('2c');
                     if (Main.util.isFunc(errorFn)) {
-                        alert('2d');
                         errorFn(this.statusText, this.status);
-                        alert('2e');
                     } else if (Main.util.isFunc(completeFn)) {
-                        alert('2f');
                         completeFn(this.statusText, this.status);
-                        alert('2g');
                     }
                 }
             }
@@ -167,11 +155,8 @@ var Main = {};
                     xhttp.setRequestHeader(name, headers[name]);
                 }
                 
-                alert('1');
-                
                 xhttp.send();
                 
-                alert('1a');
             }
 
         },
@@ -3218,8 +3203,9 @@ var Main = {};
 
             Main.ajax.get(pkg,
                     function (res) {
+                        alert('1');
                         eval('var json = ' + res);//remove comments if present since they are not valid in json
-
+                        alert('2');
                         var json = json;
                         var absolute_scripts = [],
                                 app_scripts = [],
@@ -3261,7 +3247,11 @@ var Main = {};
                             queueIndex: -1,
                             queue: []
                         };
+                        alert('3 - track.total '+track.total);
                         if (track.total > 0) {
+                            
+                            alert('4');
+                            
                             loadRequiredFiles(absolute_styles, track, absoluteRoute, loadCss);
                             loadRequiredFiles(app_styles, track, appRoute, loadCss);
                             loadRequiredFiles(cat_styles, track, deviceRoute, loadCss);
@@ -3315,6 +3305,9 @@ var Main = {};
             return deviceUrl + "/" + cat + "/" + type + "/" + file;
         }
         function onLoadInclude() {
+            
+            alert('onLoadInclude '+this.count);
+            
             this.count++;
             if (this.count === this.total) {
                 loadDeviceMain(this.deviceCategory);
