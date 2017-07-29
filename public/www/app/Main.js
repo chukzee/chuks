@@ -77,18 +77,30 @@ var Main = {};
             xhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
         xhttp.onreadystatechange = function () {
+            alert('2');
             if (this.readyState - 0 === 4) {
+                alert('2a');
                 if (this.status - 0 === 200) {
+                    alert('2b');
                     if (Main.util.isFunc(successFn)) {
+                        alert('2b s');
                         successFn(this.responseText, this.status);
+                        alert('2b s1');
                     } else if (Main.util.isFunc(completeFn)) {
+                        alert('2b s2');
                         completeFn(this.responseText, this.status);
+                        alert('2b s3');
                     }
                 } else {
+                    alert('2c');
                     if (Main.util.isFunc(errorFn)) {
+                        alert('2d');
                         errorFn(this.statusText, this.status);
+                        alert('2e');
                     } else if (Main.util.isFunc(completeFn)) {
+                        alert('2f');
                         completeFn(this.statusText, this.status);
+                        alert('2g');
                     }
                 }
             }
@@ -154,9 +166,12 @@ var Main = {};
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
-                alert("about to get: "+url);
+                
+                alert('1');
+                
                 xhttp.send();
                 
+                alert('1a');
             }
 
         },
@@ -3260,7 +3275,6 @@ var Main = {};
                     }
             , function () {
                 console.log("could not get resource: ", pkg);
-                alert("could not get resource: "+ pkg);
             });
 
 
