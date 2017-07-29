@@ -16,7 +16,9 @@
     <author href="https://build.phonegap.com" email="support@phonegap.com"><!-- TODO: modify the href and email later in final release-->
         Chuks Alimele
     </author>
-
+	
+	<content src="index.html"/>
+	
     <access origin="*" subdomains="true" />
     
     
