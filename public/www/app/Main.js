@@ -154,7 +154,9 @@ var Main = {};
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
+                alert("about to get: "+url);
                 xhttp.send();
+                
             }
 
         },
@@ -2060,14 +2062,14 @@ var Main = {};
 
         this.back = function (arg0, arg1) {
 
-            var container, data ,onShow;
+            var container, data, onShow;
 
             if (!Main.util.isString(arg0)
                     || arguments.length === 1) {//detecting that an object is passed
                 container = arg0.container;
-                data =  arg0.data;
+                data = arg0.data;
                 onShow = arg0.onShow;
-                
+
             } else if (Main.util.isString(arg0) && Main.util.isFunc(arg1)) {
                 container = arg0;
                 onShow = arg1;
@@ -2116,7 +2118,7 @@ var Main = {};
             }
 
             if (out_card.fade || out_card.fadein || out_card.fadeIn) {
-                Main.anim.to(cont, 500, {opacity: 1}, function(){
+                Main.anim.to(cont, 500, {opacity: 1}, function () {
                     if (Main.util.isFunc(onShow)) {
                         onShow(data);
                     }
@@ -3210,33 +3212,33 @@ var Main = {};
                                 absolute_styles = [],
                                 app_styles = [],
                                 cat_styles = [];
-                        
+
                         if (json.absolute && Main.util.isArray(json.absolute.js)) {
                             absolute_scripts = json.absolute.js;
                         }
                         if (json.absolute && Main.util.isArray(json.absolute.css)) {
                             absolute_styles = json.absolute.css;
                         }
-                        
+
                         if (json.app && Main.util.isArray(json.app.js)) {
                             app_scripts = json.app.js;
                         }
                         if (json.app && Main.util.isArray(json.app.css)) {
                             app_styles = json.app.css;
                         }
-                        
+
                         if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].js)) {
                             cat_scripts = json[device_size_cat].js;
                         }
                         if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].css)) {
                             cat_styles = json[device_size_cat].css;
                         }
-                        
+
                         var track = {
                             deviceCategory: device_size_cat,
                             count: 0,
                             total: absolute_styles.length
-                                    +app_styles.length
+                                    + app_styles.length
                                     + cat_styles.length
                                     + absolute_scripts.length
                                     + app_scripts.length
@@ -3254,10 +3256,11 @@ var Main = {};
                         } else {//zero
                             loadDeviceMain(track.deviceCategory);
                         }
-                        
+
                     }
             , function () {
                 console.log("could not get resource: ", pkg);
+                alert("could not get resource: "+ pkg);
             });
 
 
@@ -3289,7 +3292,7 @@ var Main = {};
         function absoluteRoute(file, type) {
             return file;
         }
-        
+
         function appRoute(file, type) {
             return appUrl + type + "/" + file;
         }
@@ -3351,22 +3354,22 @@ var Main = {};
                             $('body').append(childrenRev[i]);
                         }
                         Main.page.init();
-                        
+
                         //initialize controller objects with constructor
-                        
+
                         //console.log(Object.getOwnPropertyNames(Main.controller));
-                        
-                        
+
+
                         var props = Object.getOwnPropertyNames(Main.controller);
-                        
-                        for(var n in props){
+
+                        for (var n in props) {
                             var clazzObj = Main.controller[props[n]];
                             var construtorFn = clazzObj['constructor'];
-                            if(Main.util.isFunc(construtorFn)){
+                            if (Main.util.isFunc(construtorFn)) {
                                 construtorFn.call(clazzObj);
                             }
                         }
-                        
+
                     }
             ).fail(function (data) {
                 console.log("could not get resource: ", routeFile);
