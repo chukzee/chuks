@@ -1,16 +1,23 @@
 {
-    "name": "Game9ja",
-    "version": "1.0.0",
-    "keywords": ["util", "functional", "server", "client", "browser"],
-    "author": "chuks",
-    "contributors": [],
-    "dependencies": {},
-    "scripts":{
-    "start":"node game-server.js"
-    },
-    "engines": {
-        "node": "6.11.0",
-        "npm": "3.10.10"    
-      }
-
+  "name": "Game9ja",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "chuks",
+  "contributors": [],
+  "dependencies": {
+    "mongodb": "^2.2.30"
+  },
+  "scripts": {
+    "start": "node game-server.js"
+  },
+  "engines": {
+    "node": "6.11.0",
+    "npm": "3.10.10"
+  }
 }

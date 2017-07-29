@@ -87,8 +87,6 @@ class Cls extends BaseCls{
     }
 }
 
-
-
 var c =  new Cls();
 c['method2'](c.method1.bind(c));
 console.log('c ', c);

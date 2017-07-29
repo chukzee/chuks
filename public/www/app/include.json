@@ -1,0 +1,136 @@
+
+/**
+ *Include files required by these app. These files are loaded
+ *before the app is fully initialized. The css files are loaded
+ *before the js. Also the files are loaded sequentially according
+ *to thier listing.
+ *
+*/
+
+{
+    /**
+     * css and js files required for all devices but loaded absolutely as specified. These files are loaded first
+     */
+    "absolute":{
+        
+        "css":[
+        ],
+        
+        "js":[
+            "/socket.io/socket.io.js"
+        ]
+    },
+    
+    /**
+     * css and js files required for all devices. These files are loaded second
+     */
+    "app": {
+        
+        "css": [
+            //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
+            //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
+            "font-awesome.min.css",
+            "menu.css",
+            "dialog.css",
+            "header-items.css",
+            "game-main.css", 
+            "live-games-list.css", 
+            "chat.css", 
+            "comment.css", 
+            "game-view-right-panel.css", 
+            "game-watch-right-panel.css", 
+            "game-view.css",
+            "game-view-b.css",
+            "game-watch.css",             
+            "message-input.css", 
+            "section-container.css",  
+            "groups-live.css",
+            "tournaments-live.css",
+            "user-show-list.css",
+            "horizontal-list.css",
+            "tournament-details.css",
+            "group-details.css",
+            "match-fixture-list.css",
+            "simple-list.css"
+        ],
+        
+        "js": [
+            "draftgame.js",
+            "lib/jquery-1.10.2.min.js", 
+            //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
+            "lib/tween/TweenMax.min.js",
+            "Auth.js",
+            "Bluetooth.js",
+            "Chat.js",
+            "Comment.js",
+            "GamePanel.js",
+            "VideoCall.js",
+            "VoiceCall.js",
+            "Stats.js",
+            "Util.js",
+            "UI.js",
+            "Match.js",
+            "Tournament.js",
+            "PlayNotifications.js",
+            "Group.js",
+            "UserProfile.js",
+            "Contacts.js",
+            "EventIO.js"
+        ] 
+    },
+
+    /**
+     * css and js files required for small size devices e.g smart phones
+     */
+    "small": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            "test.js", 
+            "GameHome-sd.js", 
+            "GameSelect-sd.js",
+            "GameView-sd.js",
+            "GameViewB-sd.js",
+            "GameWatch-sd.js"
+        ] 
+    },
+
+    /**
+     * css and js files required for medium size devices e.g tablets 
+     */
+    "medium": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            "GameHome-md.js", 
+            "GameSelect-md.js",
+            "GameView-md.js",
+            "GameViewB-md.js",
+            "GameWatch-md.js"
+        ]
+    },
+
+    /**
+     * css and js files required for large size devices e.g desktops and laptops 
+     */
+    "large": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            "GameHome-ld.js", 
+            "GameSelect-ld.js",
+            "GameView-ld.js",
+            "GameViewB-ld.js",
+            "GameWatch-ld.js"
+        ]
+    }
+}
