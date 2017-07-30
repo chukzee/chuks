@@ -218,7 +218,7 @@ var Main = {};
         },
 
         isXLarge: function () {
-            return window.screen.width > 800; //important! checking current width of  screen 
+            return window.innerWidth > 800; //important! checking current width of  screen 
         },
         getPortriatWidth: function () {
             return portriat_width;
@@ -2555,18 +2555,18 @@ var Main = {};
             function computeXY(cb, bound) {
                 var x, y;
                 if (bound.top >= 0
-                        && bound.top <= window.screen.height
+                        && bound.top <= window.innerHeight
                         && bound.left >= 0
-                        && bound.left <= window.screen.width
+                        && bound.left <= window.innerWidth
                         && bound.height) {//inside the window view port
                     var cb_h = cb.height;
                     var cb_w = cb.width;
                     if (cb_h === 0) {
-                        cb_h = window.screen.height;
+                        cb_h = window.innerHeight;
                     }
 
                     if (cb_w === 0) {
-                        cb_w = window.screen.width;
+                        cb_w = window.innerWidth;
                     }
                     var b_w = bound.width;
                     var b_h = bound.height;
@@ -2582,8 +2582,8 @@ var Main = {};
 
                 } else {
                     var bw = 200;
-                    x = (window.screen.width - bw) / 2;
-                    y = (window.screen.height - bw) / 2;
+                    x = (window.innerWidth - bw) / 2;
+                    y = (window.innerHeight - bw) / 2;
                     if (x <= 0) {
                         x = 40;
                     }
@@ -3382,16 +3382,21 @@ var Main = {};
          * @return {undefined}
          */
         function deviceSizeCategory() {
+            
+            //NOTE: We have deprecated the use of window.screen.height and window.screen.width
+            //rather we resort to the use of window.innerHeight and window.innerWidth.
+            //The reason for the deprecation is the shocking observation that
+            //they report wrong values and are inconsistent with deifferent device webViews and browsers.
+            //The devicePixelRation somewhat affects the values they return.
+            //One shocking and very terrifying observation I had in my Itel phone of 320 x 570 size is that,
+            //while the android browser report the correct sizes (320 x 570) with devicePixelRatio of 1.5,
+            //the webview of the same phone reported  (480 x 855) with same devicePixelRatio of 1.5.
+            //THIS IS ABSOLUTELY SHOCKING AND TERRIFYING. WHAT!!!!!!
+            
 
-            //take into account device pixel ratio
-
-            var size = window.screen.width > window.screen.height ?
-                    window.screen.width
-                    : window.screen.height;
-
-            if(!window.devicePixelRatio){
-                window.devicePixelRatio = 1;
-            }        
+            var size = window.innerWidth > window.innerHeight ?
+                    window.innerWidth
+                    : window.innerHeight;                   
 
             alert('inner width '+window.innerWidth);
             alert('inner height '+window.innerHeight);
@@ -3400,9 +3405,9 @@ var Main = {};
 
             portriat_height = size;
 
-            portriat_width = window.screen.width < window.screen.height ?
-                    window.screen.width
-                    : window.screen.height;
+            portriat_width = window.innerWidth < window.innerHeight ?
+                    window.innerWidth
+                    : window.innerHeight;
 
             //portriat_width = portriat_width / window.devicePixelRatio;
 
