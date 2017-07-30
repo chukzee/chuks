@@ -154,9 +154,9 @@ var Main = {};
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
-                
+
                 xhttp.send();
-                
+
             }
 
         },
@@ -3382,9 +3382,21 @@ var Main = {};
          * @return {undefined}
          */
         function deviceSizeCategory() {
+
+            //take into account device pixel ratio
+
             var size = window.screen.width > window.screen.height ?
                     window.screen.width
                     : window.screen.height;
+
+            if(!window.devicePixelRatio){
+                window.devicePixelRatio = 1;
+            }        
+
+            alert('inner width '+window.innerWidth);
+            alert('inner height '+window.innerHeight);
+            
+            //size = size / window.devicePixelRatio;
 
             portriat_height = size;
 
@@ -3392,8 +3404,7 @@ var Main = {};
                     window.screen.width
                     : window.screen.height;
 
-            alert('screen size ' + size);
-            alert('devicePixelRatio ' + window.devicePixelRatio);
+            //portriat_width = portriat_width / window.devicePixelRatio;
 
             if (size > 768) {//desktops and laptops
                 device_category = "large";
@@ -3402,7 +3413,7 @@ var Main = {};
             } else {//smart phones
                 device_category = "small";
             }
-
+            
             return device_category;
         }
 
