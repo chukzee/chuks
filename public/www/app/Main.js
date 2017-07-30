@@ -3401,6 +3401,9 @@ var Main = {};
             alert('inner width '+window.innerWidth);
             alert('inner height '+window.innerHeight);
             
+            alert('outer width '+window.outerWidth);
+            alert('outer height '+window.outerHeight);
+            
             //size = size / window.devicePixelRatio;
 
             portriat_height = size;
