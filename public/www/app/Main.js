@@ -3392,7 +3392,8 @@ var Main = {};
                     window.screen.width
                     : window.screen.height;
 
-            alert('screen size ' + size);        
+            alert('screen size ' + size);
+            alert('devicePixelRatio ' + window.devicePixelRatio);
 
             if (size > 768) {//desktops and laptops
                 device_category = "large";
