@@ -3297,16 +3297,10 @@ var Main = {};
         }
 
         function deviceRoute(file, type, cat) {
-            
-            alert('deviceRoute '+ deviceUrl + cat + "/" + type + "/" + file);
-            
             return deviceUrl + cat + "/" + type + "/" + file;
         }
         function onLoadInclude() {
             this.count++;
-            
-            
-            
             if (this.count === this.total) {
                 loadDeviceMain(this.deviceCategory);
             } else {
@@ -3329,9 +3323,6 @@ var Main = {};
         }
 
         function loadScript(file, track, route) {
-            
-            alert('loadScript '+ file+' track.deviceCategory '+track.deviceCategory);
-            
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
@@ -3343,7 +3334,6 @@ var Main = {};
 
         function loadDeviceMain(device_size_cat) {
             //register the home page first
-alert('loadDeviceMain');
 
             pageRouteUrl = deviceUrl + device_size_cat + '/';
             var routeFile = pageRouteUrl + "index.html";
@@ -3362,12 +3352,8 @@ alert('loadDeviceMain');
                             }
                             $('body').append(childrenRev[i]);
                         }
-                        
-                        alert('loadDeviceMain ' + 1);
-                        
                         Main.page.init();
 
-alert('loadDeviceMain ' + 2);
                         //initialize controller objects with constructor
 
                         //console.log(Object.getOwnPropertyNames(Main.controller));
@@ -3382,7 +3368,7 @@ alert('loadDeviceMain ' + 2);
                                 construtorFn.call(clazzObj);
                             }
                         }
-alert('loadDeviceMain ' + 3);
+
                     }
             ).fail(function (data) {
                 console.log("could not get resource: ", routeFile);
@@ -3405,6 +3391,8 @@ alert('loadDeviceMain ' + 3);
             portriat_width = window.screen.width < window.screen.height ?
                     window.screen.width
                     : window.screen.height;
+
+            alert('screen size ' + size);        
 
             if (size > 768) {//desktops and laptops
                 device_category = "large";
