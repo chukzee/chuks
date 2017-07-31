@@ -2312,7 +2312,7 @@ var Main = {};
             function destroy() {
                 if (outer) {
                     outer.parentNode.removeChild(outer);
-                    Main.dom.removeListener(window, 'orientationchange', resizeListen, false);
+                    Main.dom.removeListener(window, 'resize', resizeListen, false);
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
                     outer = null;
                 }
@@ -2503,7 +2503,9 @@ var Main = {};
             outer.style.minWidth = bound.width + 'px';
             outer.style.minHeight = bound.height + 'px';
 
-            Main.dom.addListener(window, 'orientationchange', resizeListen, false);
+            //orientationchange listener is deprecated here - use resize listener.
+            //orientationchange has issue with obtaining the correct window size so we deprecate its use here
+            Main.dom.addListener(window, 'resize', resizeListen, false);
 
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
                 Main.anim.to(base, 300, {opacity: 1}, function () {
@@ -2546,6 +2548,19 @@ var Main = {};
                 if (bound.height && cb.height && bound.height >= cb.height) {
                     base.style.height = (0.8 * cb.height) + 'px';
                 }
+                var ft_bound = footer_el.getBoundingClientRect();
+                var hd_bound = header_el.getBoundingClientRect();
+                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
+                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
+
+                var base_h = base.getBoundingClientRect().height;
+
+                var bd_h = base_h - hd_h - ft_h - 10;// arbituary 10 as away of workaround for the body not fitting as expected - TEST ON REAL DEVICE LATER
+                //var bd_h = base_h - hd_h - ft_h;//without  arbituary 10 - TRY THIS ON REAL DEVICE ALSO
+
+                body_el.style.height = bd_h + 'px';
+                body_el.style.height = base.style.width + 'px';
+
                 var compXY = computeXY(cb, bound);
                 base.style.left = compXY.x + 'px';
                 base.style.top = compXY.y + 'px';
@@ -2601,6 +2616,7 @@ var Main = {};
         var menuHeaderHeight = 30; //must not change -  used in css
         var menuCmp;
         var menuBtn;
+        var resizeListenMnuBind;
 
         function onClickOutsideHide(evt) {
             if (evt.target === menuBtn) {
@@ -2626,11 +2642,24 @@ var Main = {};
             }
         }
 
+        function resizeListenMnu() {
+            if(!menuCmp){
+                return;
+            }
+            var styleObj = mnuStyle.call(this);
+            menuCmp[0].style = styleObj.main_style;
+            var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
+            if(elb.length>0){
+                elb[0].style = styleObj.body_style;
+            }
+        }
+
         function destroy() {
             if (menuCmp) {
                 menuCmp.remove();
                 menuCmp = null;
                 Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
+                Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
             }
         }
 
@@ -2772,6 +2801,63 @@ var Main = {};
             return e;
         }
 
+        function mnuStyle() {
+            menuBtn = this.target;
+            if (Main.util.isString(this.target)) {
+                menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
+                menuBtn = document.getElementById(menuBtn);
+            }
+
+            var bound = menuBtn.getBoundingClientRect();
+            var y = bound.top;
+            var mnu_width = this.width ? this.width : defaultWidth;
+            mnu_width = new String(mnu_width).replace('px', '');
+            mnu_width = mnu_width - 0; // implicitly convert to numeric
+            if (isNaN(mnu_width)) {
+                mnu_width = defaultWidth;
+            }
+
+            var x = bound.left;
+
+            var padding = 5;
+            var body_bound = document.body.getBoundingClientRect();
+            if (x + mnu_width + padding > body_bound.width) {
+                x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
+            }
+            if(this._heightRatio){
+                this.height = this._heightRatio * window.innerHeight; // restore the height base on orientation
+            }
+            this.height = this.height ? new String(this.height).replace('px', '') : null;
+
+            var max_height = Main.device.getPortriatWidth() - 20; // minus some pixels
+
+            var style = 'position: absolute; '
+                    + ' top : ' + y + 'px; '
+                    + ' left: ' + x + 'px; '
+                    + ' width: ' + mnu_width + 'px; '
+                    + (!isNaN(this.height - 0) ? 'height: ' + this.height + 'px;' : '');
+
+
+            var body_height_style = this.height;
+            if (this.height) {
+                if (this.header && this.footer) {
+                    body_height_style = this.height - 2 * menuHeaderHeight;
+                } else if (this.header || this.footer) {
+                    body_height_style = this.height - menuHeaderHeight;
+                }
+            }
+
+
+            body_height_style = body_height_style ?
+                    "height: " + body_height_style + "px; max-height: " + max_height + "px;"
+                    : "max-height: " + max_height + "px;";
+
+            return {
+                main_style: style,
+                body_style: body_height_style
+            }
+        }
+
         /**
          * Create a dropdown menu whose content can be dynamic.
          * 
@@ -2816,65 +2902,26 @@ var Main = {};
 
             $(obj.target).off('click');
             $(obj.target).on('click', onTargetClick.bind(obj));
-
+            
+            if(obj.height){
+                //set a private field for adjusting height when orientation change to avoid improper height
+                obj._heightRatio = obj.height / window.innerHeight; //save the height ratio for proper height setting based on device orientaion
+            }
+            
             function onTargetClick(evt) {
                 //first destroy previous menu shown - there cannot be more than
                 //one menu at a time.
                 destroy();
-                menuBtn = this.target;
-                if (Main.util.isString(this.target)) {
-                    menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
-                    menuBtn = document.getElementById(menuBtn);
-                }
 
-                var bound = menuBtn.getBoundingClientRect();
-                var y = bound.top;
-                var mnu_width = this.width ? this.width : defaultWidth;
-                mnu_width = new String(mnu_width).replace('px', '');
-                mnu_width = mnu_width - 0; // implicitly convert to numeric
-                if (isNaN(mnu_width)) {
-                    mnu_width = defaultWidth;
-                }
+                var styleObj = mnuStyle.call(this);
 
-                var x = bound.left;
-
-                var padding = 5;
-                var body_bound = document.body.getBoundingClientRect();
-                if (x + mnu_width + padding > body_bound.width) {
-                    x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
-                }
-
-                this.height = this.height ? new String(this.height).replace('px', '') : null;
-
-                var max_height = Main.device.getPortriatWidth() - 20; // minus some pixels
-
-                var style = 'position: absolute; '
-                        + ' top : ' + y + 'px; '
-                        + ' left: ' + x + 'px; '
-                        + ' width: ' + mnu_width + 'px; '
-                        + (!isNaN(this.height - 0) ? 'height: ' + this.height + 'px;' : '');
-                menuCmp = $('<div class="game9ja-menu" style = "' + style + '" ></div>');
+                menuCmp = $('<div class="game9ja-menu" style = "' + styleObj.main_style + '" ></div>');
 
                 if (this.header) {
                     menuCmp.append('<div class="game9ja-menu-header">' + this.header + '</div>');
                 }
 
-                var body_height_style = this.height;
-                if (this.height) {
-                    if (this.header && this.footer) {
-                        body_height_style = this.height - 2 * menuHeaderHeight;
-                    } else if (this.header || this.footer) {
-                        body_height_style = this.height - menuHeaderHeight;
-                    }
-                }
-
-
-                body_height_style = body_height_style ?
-                        "style='height: " + body_height_style + "px; max-height: " + max_height + "px;'"
-                        : "style='max-height: " + max_height + "px;'";
-
-
-                menuCmp.append('<div class="game9ja-menu-body" ' + body_height_style + '></div>');
+                menuCmp.append('<div class="game9ja-menu-body" style="' + styleObj.body_style + '"></div>');
 
                 var mnuBody = menuCmp.find('.game9ja-menu-body');
                 var els = [];
@@ -2896,10 +2943,16 @@ var Main = {};
 
                 Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
 
+                resizeListenMnuBind = resizeListenMnu.bind(this);
+                
+                Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
+
                 if (Main.util.isFunc(this.onShow)) {
                     var mnuThis = menuThis(this, menuCmp, mnuBody);
                     this.onShow.bind(mnuThis)();
                 }
+
+
             }
         };
     }
@@ -3382,7 +3435,7 @@ var Main = {};
          * @return {undefined}
          */
         function deviceSizeCategory() {
-            
+
             //NOTE: We have deprecated the use of window.screen.height and window.screen.width
             //rather we resort to the use of window.innerHeight and window.innerWidth.
             //The reason for the deprecation is the shocking observation that
@@ -3392,18 +3445,20 @@ var Main = {};
             //while the android browser report the correct sizes (320 x 570) with devicePixelRatio of 1.5,
             //the webview of the same phone reported  (480 x 855) with same devicePixelRatio of 1.5.
             //THIS IS ABSOLUTELY SHOCKING AND TERRIFYING. WHAT!!!!!!
-            
+            //even window.outerHeight and window.outerWidth have similar issues so do not
+            //use them. STICK ONLY TO window.innerHeight and window.innerWidth
+
 
             var size = window.innerWidth > window.innerHeight ?
                     window.innerWidth
-                    : window.innerHeight;                   
+                    : window.innerHeight;
 
-            alert('inner width '+window.innerWidth);
-            alert('inner height '+window.innerHeight);
-            
-            alert('outer width '+window.outerWidth);
-            alert('outer height '+window.outerHeight);
-            
+            alert('inner width ' + window.innerWidth);
+            alert('inner height ' + window.innerHeight);
+
+            alert('outer width ' + window.outerWidth);
+            alert('outer height ' + window.outerHeight);
+
             //size = size / window.devicePixelRatio;
 
             portriat_height = size;
@@ -3421,7 +3476,7 @@ var Main = {};
             } else {//smart phones
                 device_category = "small";
             }
-            
+
             return device_category;
         }
 

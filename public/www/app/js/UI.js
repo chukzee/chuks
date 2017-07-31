@@ -53,7 +53,7 @@ Main.controller.UI = {
         });
 
         Main.menu.create({
-            width: 150,
+            width: 220,
             target: "#home-menu",
             items: [
                 'My game',
@@ -89,7 +89,7 @@ Main.controller.UI = {
         };
 
         Main.menu.create({
-            width: 200,
+            width: 220,
             target: "#home-group-dropdown-menu",
             header: 'Jump to group',
             items: groupItems(Main.controller.UserProfile.appUser.groupsBelong),
@@ -103,8 +103,8 @@ Main.controller.UI = {
 
         //create the tournament drop down menu.
         Main.menu.create({
-            width: 200,
-            height: 0.6 * window.screen.height,
+            width: 220,
+            height: 0.6 * window.innerHeight,//we have deprecated the use of window.screen.height and even window.outerHeight
             target: "#home-tournament-dropdown-menu",
             header: 'Search tournaments',
             items: [
