@@ -2643,15 +2643,24 @@ var Main = {};
         }
 
         function resizeListenMnu() {
+            alert('resizeListenMnu');
             if(!menuCmp){
                 return;
             }
             var styleObj = mnuStyle.call(this);
             menuCmp[0].style = styleObj.main_style;
+            
+            alert('menuCmp[0].style '+ styleObj.main_style);
+            
             var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
             if(elb.length>0){
                 elb[0].style = styleObj.body_style;
+                
+                alert('elb[0].style '+ styleObj.body_style);
+                
             }
+            
+            
         }
 
         function destroy() {
@@ -2916,6 +2925,9 @@ var Main = {};
                 destroy();
 
                 var styleObj = mnuStyle.call(this);
+
+                alert('styleObj.main_style '+styleObj.main_style);
+                alert('styleObj.body_style '+styleObj.body_style);
 
                 menuCmp = $('<div class="game9ja-menu" style = "' + styleObj.main_style + '" ></div>');
 
