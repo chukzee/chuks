@@ -2841,12 +2841,14 @@ var Main = {};
             this.height = this.height ? new String(this.height).replace('px', '') : null;
 
             var max_height = Main.device.getPortriatWidth() - 20; // minus some pixels
-
+            
+            //NOTE isNaN(null) == isNaN(0)
+            
             var style = 'position: absolute; '
                     + ' top : ' + y + 'px; '
                     + ' left: ' + x + 'px; '
                     + ' width: ' + mnu_width + 'px; '
-                    + (!isNaN(this.height - 0) ? 'height: ' + this.height + 'px;' : '');
+                    + (!isNaN(this.height) && this.height ? 'height: ' + this.height + 'px;' : '');
 
 
             var body_height_style = this.height;
