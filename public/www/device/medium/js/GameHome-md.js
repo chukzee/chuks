@@ -90,6 +90,11 @@ Main.controller.GameHome = {
 
         Main.controller.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+
+        //hide uneccessary component
+        document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
+
+
         if (Main.controller.GameHome.isLandscape()) {
             Main.controller.GameViewB.Content(match);
         } else {
@@ -146,15 +151,15 @@ Main.controller.GameHome = {
         //show a dialog to display startup settings
         var container_id = 'bluetooth-dialog-continer';
         Main.dialog.show({
-            title: "Play via bluetooth", //TODO - display a robot like photo alongside the title
+            title: "Play via bluetooth",
             content: '<div id="' + container_id + '"></div>',
-            width : window.screen.width * 0.6,
-            height : window.screen.height * 0.5,
+            width: window.innerWidth * 0.6,
+            height: window.innerHeight * 0.5,
             fade: true,
             closeButton: false,
             modal: true,
-            buttons:['Cancel'],
-            action: function(btn, value){
+            buttons: ['Cancel'],
+            action: function (btn, value) {
                 if (value === 'Cancel') {
                     Main.controller.GameHome.home();
                 }
@@ -178,6 +183,10 @@ Main.controller.GameHome = {
 
         Main.controller.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+
+        //show bluetooth icon
+        document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
+
         var match = {bluetooth: true, game_name: data.game};
         if (Main.controller.GameHome.isLandscape()) {
             Main.controller.GameViewB.Content(match);
@@ -187,23 +196,23 @@ Main.controller.GameHome = {
         }
 
     },
-    showTournamentDetails : function(tournament){
-        
+    showTournamentDetails: function (tournament) {
+
         Main.card.to({
             container: '#home-main',
-            url:'tournament-details-md.html',
-            fade:true,
-            data : tournament,
+            url: 'tournament-details-md.html',
+            fade: true,
+            data: tournament,
             onShow: Main.controller.Tournament.content
         });
     },
-    showGroupDetails : function(group){
-        
+    showGroupDetails: function (group) {
+
         Main.card.to({
             container: '#home-main',
-            url:'group-details-md.html',
-            fade:true,
-            data : group,
+            url: 'group-details-md.html',
+            fade: true,
+            data: group,
             onShow: Main.controller.Group.content
         });
     },
@@ -211,9 +220,9 @@ Main.controller.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url:'play-notifications-md.html',
-            fade:true,            
-            data : data,
+            url: 'play-notifications-md.html',
+            fade: true,
+            data: data,
             onShow: Main.controller.PlayNotifications.content
         });
     },
@@ -224,9 +233,9 @@ Main.controller.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url:'contacts-md.html',
-            fade:true,
-            data : data,
+            url: 'contacts-md.html',
+            fade: true,
+            data: data,
             onShow: Main.controller.Contacts.content
         });
     },
@@ -240,9 +249,9 @@ Main.controller.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url:'user-profile-md.html',
-            fade:true,
-            data : data,
+            url: 'user-profile-md.html',
+            fade: true,
+            data: data,
             onShow: Main.controller.UserProfile.content
         });
     },

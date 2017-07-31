@@ -220,6 +220,12 @@ var Main = {};
         isXLarge: function () {
             return window.innerWidth > 800; //important! checking current width of  screen 
         },
+        getPortriatInnerWidth: function () {
+            return window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
+        },
+        getPortriatInnerHeight: function () {
+            return window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth;
+        },
         getPortriatWidth: function () {
             return portriat_width;
         },
@@ -2553,8 +2559,7 @@ var Main = {};
 
                 var base_h = base.getBoundingClientRect().height;
 
-                var bd_h = base_h - hd_h - ft_h - 10;// arbituary 10 as away of workaround for the body not fitting as expected - TEST ON REAL DEVICE LATER
-                //var bd_h = base_h - hd_h - ft_h;//without  arbituary 10 - TRY THIS ON REAL DEVICE ALSO
+                var bd_h = base_h - hd_h - ft_h;
 
                 body_el.style.height = bd_h + 'px';
                 body_el.style.height = base.style.width + 'px';
@@ -2640,7 +2645,8 @@ var Main = {};
             }
         }
 
-        function resizeListenMnu() {
+        function resizeListenMnu(evt) {
+            
             alert('resizeListenMnu');
             if (!menuCmp) {
                 return;
@@ -2847,8 +2853,8 @@ var Main = {};
             }
             this.height = this.height ? new String(this.height).replace('px', '') : null;
 
-            var max_height = Main.device.getPortriatWidth() - 20; // minus some pixels
-
+            var max_height = Main.device.getPortriatInnerWidth() - 20; // minus some pixels
+            
             //NOTE isNaN(null) == isNaN(0)
 
             var style = 'position: absolute; '

@@ -38,7 +38,12 @@ Main.controller.GameHome = {
             modal: true,
             action: function (btn, value) {
                 if (value === 'Play') {
+                    
                     document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+
+                    //hide uneccessary component
+                    document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
+                    
                     Main.controller.GameViewB.Content(match);
                 }
                 this.hide();
@@ -99,9 +104,9 @@ Main.controller.GameHome = {
     showBluetoothGame: function (data) {
         //show a dialog to display startup settings
         var container_id = 'bluetooth-dialog-continer';
-        var width = window.screen.width * 0.3;
+        var width = window.innerWidth * 0.3;
         Main.dialog.show({
-            title: "Play via bluetooth", //TODO - display a robot like photo alongside the title
+            title: "Play via bluetooth",
             content: '<div id="' + container_id + '"></div>',
             width: width < 300 ? 300 : width ,
             height: window.screen.height * 0.5,
@@ -126,6 +131,10 @@ Main.controller.GameHome = {
                         //do some final setup on the game panel
                         
                         document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+
+                        //show bluetooth icon
+                        document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
+                        
                         Main.controller.GameViewB.Content(data);
                         
                         me.hide(); //call to close the dialog

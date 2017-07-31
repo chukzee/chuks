@@ -56,7 +56,13 @@ Main.controller.GameHome = {
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Main.controller.GameViewB.Content,
+            onShow: function () {
+                //hide uneccessary component
+                document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
+            },
             data: match});
+
+
 
     },
     showGameWatch: function (match) {
@@ -71,10 +77,10 @@ Main.controller.GameHome = {
         //show a dialog to display startup settings
         var container_id = 'bluetooth-dialog-continer';
         Main.dialog.show({
-            title: "Play via bluetooth", //TODO - display a robot like photo alongside the title
+            title: "Play via bluetooth",
             content: '<div id="' + container_id + '"></div>',
-            width : window.screen.width * 0.7,
-            height : window.screen.height * 0.5,
+            width: window.innerWidth * 0.7,
+            height: window.innerHeight * 0.5,
             fade: true,
             closeButton: false,
             modal: true,
@@ -108,12 +114,17 @@ Main.controller.GameHome = {
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Main.controller.GameViewB.Content,
+            onShow: function () {
+                //show bluetooth icon
+                document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
+            },
             data: {bluetooth: true, game_name: data.game}
         });
 
+
     },
-    showTournamentDetails : function(tournament){
-        
+    showTournamentDetails: function (tournament) {
+
         Main.page.show({
             url: 'tournament-details-sd.html',
             effect: "slideleft",
@@ -122,8 +133,8 @@ Main.controller.GameHome = {
             data: tournament
         });
     },
-    showGroupDetails : function(group){
-        
+    showGroupDetails: function (group) {
+
         Main.page.show({
             url: 'group-details-sd.html',
             effect: "slideleft",
