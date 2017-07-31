@@ -2313,7 +2313,6 @@ var Main = {};
                 if (outer) {
                     outer.parentNode.removeChild(outer);
                     Main.dom.removeListener(window, 'resize', resizeListen, false);
-                    Main.dom.removeListener(window, 'orientationchange', resizeListen, false);
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
                     outer = null;
                 }
@@ -2504,8 +2503,7 @@ var Main = {};
             outer.style.minWidth = bound.width + 'px';
             outer.style.minHeight = bound.height + 'px';
 
-            Main.dom.addListener(window, 'resize', resizeListen, false);
-            Main.dom.addListener(window, 'orientationchange', resizeListen, false);
+            Main.dom.addListener(window, 'resize', resizeListen, false);            
 
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
                 Main.anim.to(base, 300, {opacity: 1}, function () {
@@ -2644,23 +2642,32 @@ var Main = {};
 
         function resizeListenMnu() {
             alert('resizeListenMnu');
-            if(!menuCmp){
+            if (!menuCmp) {
                 return;
             }
             var styleObj = mnuStyle.call(this);
-            menuCmp[0].style = styleObj.main_style;
-            
-            alert('menuCmp[0].style '+ styleObj.main_style);
-            
-            var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
-            if(elb.length>0){
-                elb[0].style = styleObj.body_style;
-                
-                alert('elb[0].style '+ styleObj.body_style);
-                
+            //menuCmp[0].style = styleObj.main_style;
+            menuCmp[0].style.top = styleObj.top + 'px';
+            menuCmp[0].style.left = styleObj.left + 'px';
+            if (styleObj.main_height) {
+                menuCmp[0].style.height = styleObj.main_height + 'px';
             }
-            
-            
+
+
+            alert('top = ' + styleObj.top + '   left = '+ styleObj.left + '   main_height = '+ styleObj.main_height);
+
+            var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
+            if (elb.length > 0) {
+                //elb[0].style = styleObj.body_style;
+                if (styleObj.body_height) {
+                    elb[0].style.height = styleObj.body_height + 'px';
+                }
+                
+                alert('body_height ' + styleObj.body_height);
+
+            }
+
+
         }
 
         function destroy() {
@@ -2669,8 +2676,8 @@ var Main = {};
                 menuCmp = null;
                 Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
                 Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
-                Main.dom.removeListener(window, 'orientationchange', resizeListenMnuBind, false);
-               
+                
+
             }
         }
 
@@ -2835,21 +2842,22 @@ var Main = {};
             if (x + mnu_width + padding > body_bound.width) {
                 x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
             }
-            if(this._heightRatio){
+            if (this._heightRatio) {
                 this.height = this._heightRatio * window.innerHeight; // restore the height base on orientation
             }
             this.height = this.height ? new String(this.height).replace('px', '') : null;
 
             var max_height = Main.device.getPortriatWidth() - 20; // minus some pixels
-            
+
             //NOTE isNaN(null) == isNaN(0)
-            
+
             var style = 'position: absolute; '
                     + ' top : ' + y + 'px; '
                     + ' left: ' + x + 'px; '
                     + ' width: ' + mnu_width + 'px; '
                     + (!isNaN(this.height) && this.height ? 'height: ' + this.height + 'px;' : '');
 
+            var main_height = this.height;
 
             var body_height_style = this.height;
             if (this.height) {
@@ -2860,12 +2868,17 @@ var Main = {};
                 }
             }
 
+            var body_height = body_height_style;
 
             body_height_style = body_height_style ?
                     "height: " + body_height_style + "px; max-height: " + max_height + "px;"
                     : "max-height: " + max_height + "px;";
 
             return {
+                top: y,
+                left: x,
+                main_height: main_height,
+                body_height: body_height,
                 main_style: style,
                 body_style: body_height_style
             }
@@ -2915,12 +2928,12 @@ var Main = {};
 
             $(obj.target).off('click');
             $(obj.target).on('click', onTargetClick.bind(obj));
-            
-            if(obj.height){
+
+            if (obj.height) {
                 //set a private field for adjusting height when orientation change to avoid improper height
                 obj._heightRatio = obj.height / window.innerHeight; //save the height ratio for proper height setting based on device orientaion
             }
-            
+
             function onTargetClick(evt) {
                 //first destroy previous menu shown - there cannot be more than
                 //one menu at a time.
@@ -2928,8 +2941,8 @@ var Main = {};
 
                 var styleObj = mnuStyle.call(this);
 
-                alert('styleObj.main_style '+styleObj.main_style);
-                alert('styleObj.body_style '+styleObj.body_style);
+                alert('styleObj.main_style ' + styleObj.main_style);
+                alert('styleObj.body_style ' + styleObj.body_style);
 
                 menuCmp = $('<div class="game9ja-menu" style = "' + styleObj.main_style + '" ></div>');
 
@@ -2960,9 +2973,9 @@ var Main = {};
                 Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
 
                 resizeListenMnuBind = resizeListenMnu.bind(this);
-                
+
                 Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
-                Main.dom.addListener(window, 'orientationchange', resizeListenMnuBind, false);
+                
 
                 if (Main.util.isFunc(this.onShow)) {
                     var mnuThis = menuThis(this, menuCmp, mnuBody);
