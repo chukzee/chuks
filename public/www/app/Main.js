@@ -2313,6 +2313,7 @@ var Main = {};
                 if (outer) {
                     outer.parentNode.removeChild(outer);
                     Main.dom.removeListener(window, 'resize', resizeListen, false);
+                    Main.dom.removeListener(window, 'orientationchange', resizeListen, false);
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
                     outer = null;
                 }
@@ -2503,9 +2504,8 @@ var Main = {};
             outer.style.minWidth = bound.width + 'px';
             outer.style.minHeight = bound.height + 'px';
 
-            //orientationchange listener is deprecated here - use resize listener.
-            //orientationchange has issue with obtaining the correct window size so we deprecate its use here
             Main.dom.addListener(window, 'resize', resizeListen, false);
+            Main.dom.addListener(window, 'orientationchange', resizeListen, false);
 
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
                 Main.anim.to(base, 300, {opacity: 1}, function () {
@@ -2660,6 +2660,8 @@ var Main = {};
                 menuCmp = null;
                 Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
                 Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
+                Main.dom.removeListener(window, 'orientationchange', resizeListenMnuBind, false);
+               
             }
         }
 
@@ -2946,6 +2948,7 @@ var Main = {};
                 resizeListenMnuBind = resizeListenMnu.bind(this);
                 
                 Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
+                Main.dom.addListener(window, 'orientationchange', resizeListenMnuBind, false);
 
                 if (Main.util.isFunc(this.onShow)) {
                     var mnuThis = menuThis(this, menuCmp, mnuBody);
