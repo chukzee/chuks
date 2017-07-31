@@ -2509,7 +2509,7 @@ var Main = {};
             outer.style.minWidth = bound.width + 'px';
             outer.style.minHeight = bound.height + 'px';
 
-            Main.dom.addListener(window, 'resize', resizeListen, false);            
+            Main.dom.addListener(window, 'resize', resizeListen, false);
 
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
                 Main.anim.to(base, 300, {opacity: 1}, function () {
@@ -2546,27 +2546,77 @@ var Main = {};
 
                 var cb = container.getBoundingClientRect();
                 var bound = base.getBoundingClientRect();
-                if (bound.width && cb.width && bound.width >= cb.width) {
-                    base.style.width = (0.8 * cb.width) + 'px';
+
+
+                console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
+                console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
+                var pad_factor = 0.8;
+                var base_new_width = 0;
+                var base_new_height = 0;
+                if (bound.width && cb.width && bound.width > cb.width * pad_factor) {
+                    
+                    base_new_width = pad_factor * cb.width;
+                    base.style.width = base_new_width + 'px';
+                    
+                    console.log('base.style.width = ', base_new_width + 'px');
+
+
                 }
-                if (bound.height && cb.height && bound.height >= cb.height) {
-                    base.style.height = (0.8 * cb.height) + 'px';
+                if (!base_new_width && bound.width && bound.width > window.innerWidth * pad_factor) {
+                    
+                    base_new_width = pad_factor * window.innerWidth;
+                    base.style.width = base_new_width + 'px';
+
+                    console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
+
+
                 }
+                if (bound.height && cb.height && bound.height > cb.height * pad_factor) {
+                    
+                    base_new_height = pad_factor * cb.height;
+                    base.style.height = base_new_height + 'px';
+
+                    console.log('base.style.height = ', base_new_height + 'px');
+
+                }
+                if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
+                    
+                    base_new_height = pad_factor * window.innerHeight;
+                    base.style.height = base_new_height + 'px';
+
+                    console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
+
+                }
+                
                 var ft_bound = footer_el.getBoundingClientRect();
                 var hd_bound = header_el.getBoundingClientRect();
                 var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
                 var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
 
-                var base_h = base.getBoundingClientRect().height;
+                var base_h = base_new_height || base.getBoundingClientRect().height;
+                var base_w = base_new_width || base.getBoundingClientRect().width;
 
                 var bd_h = base_h - hd_h - ft_h;
+                var body_el_h = body_el.getBoundingClientRect().height;
+                
+                if(body_el_h > bd_h){
+                    body_el.style.height = bd_h + 'px';
+                }
+                
+                body_el.style.width = base_w + 'px';
 
-                body_el.style.height = bd_h + 'px';
-                body_el.style.height = base.style.width + 'px';
+                console.log('ft_h = ', ft_h);
+                console.log('hd_h = ', hd_h);
+                console.log('base_h = ', base_h);
+                console.log('bd_h = ', bd_h);
+
+                console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h,);
 
                 var compXY = computeXY(cb, bound);
                 base.style.left = compXY.x + 'px';
                 base.style.top = compXY.y + 'px';
+
+
             }
 
 
@@ -2646,7 +2696,7 @@ var Main = {};
         }
 
         function resizeListenMnu(evt) {
-            
+
             alert('resizeListenMnu');
             if (!menuCmp) {
                 return;
@@ -2660,7 +2710,7 @@ var Main = {};
             }
 
 
-            alert('top = ' + styleObj.top + '   left = '+ styleObj.left + '   main_height = '+ styleObj.main_height);
+            alert('top = ' + styleObj.top + '   left = ' + styleObj.left + '   main_height = ' + styleObj.main_height);
 
             var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
             if (elb.length > 0) {
@@ -2668,7 +2718,10 @@ var Main = {};
                 if (styleObj.body_height) {
                     elb[0].style.height = styleObj.body_height + 'px';
                 }
-                
+                if (styleObj.body_max_height) {
+                    elb[0].style.maxHeight = styleObj.body_max_height + 'px';
+                }
+
                 alert('body_height ' + styleObj.body_height);
 
             }
@@ -2682,7 +2735,7 @@ var Main = {};
                 menuCmp = null;
                 Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
                 Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
-                
+
 
             }
         }
@@ -2854,7 +2907,7 @@ var Main = {};
             this.height = this.height ? new String(this.height).replace('px', '') : null;
 
             var max_height = Main.device.getPortriatInnerWidth() - 20; // minus some pixels
-            
+
             //NOTE isNaN(null) == isNaN(0)
 
             var style = 'position: absolute; '
@@ -2885,6 +2938,7 @@ var Main = {};
                 left: x,
                 main_height: main_height,
                 body_height: body_height,
+                body_max_height: max_height,
                 main_style: style,
                 body_style: body_height_style
             }
@@ -2981,7 +3035,7 @@ var Main = {};
                 resizeListenMnuBind = resizeListenMnu.bind(this);
 
                 Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
-                
+
 
                 if (Main.util.isFunc(this.onShow)) {
                     var mnuThis = menuThis(this, menuCmp, mnuBody);

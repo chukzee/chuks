@@ -51,7 +51,8 @@
             "tournament-details.css",
             "group-details.css",
             "match-fixture-list.css",
-            "simple-list.css"
+            "simple-list.css",
+            "user-profile.css"
         ],
         
         "js": [

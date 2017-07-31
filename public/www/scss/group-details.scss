@@ -28,12 +28,13 @@ $group_img_height : 180px;
             height: $group_img_height;   
             background: #222;
             overflow: hidden;
-            margin: 0 auto;
+            margin: 0;
 
             > div{/*helper div to help center the group profile pic*/
 
-                width: 2 * $group_img_height;
-                height: $group_img_height;   
+                max-width: 2 * $group_img_height;
+                width: 100%;
+                height: 100%;   
                 margin: 0 auto;
                 > img{/*group profile pic*/
                     width: 100%;
