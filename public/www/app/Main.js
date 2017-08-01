@@ -1,10 +1,11 @@
-
+alert('main 0');
 
 var Main = {};
 
+alert('main 1');
 
 (function () {
-
+alert('main 2');
     var isPageInit = false;
     var pageRouteUrl;
     var isMainInit;
