@@ -3327,13 +3327,13 @@ var Main = {};
      * @return {undefined}
      */
     Main.init = function (obj) {
-
+        alert('2');
 
         if (isMainInit) {//prevent duplicate call
             return;
         }
         isMainInit = true;
-
+        alert('3');
         window.onload = function (evt) {
 
             var device_size_cat;
@@ -3343,7 +3343,7 @@ var Main = {};
                 device_size_cat = deviceSizeCategory();
             }
             var pkg = appUrl + "include.json";
-
+            alert(device_size_cat);
             Main.ajax.get(pkg,
                     function (res) {
                         eval('var json = ' + res);//remove comments if present since they are not valid in json
