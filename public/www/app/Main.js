@@ -1,4 +1,4 @@
-alert('main 0ss');
+alert('main 0f');
 
 var Main = {};
 
@@ -2141,7 +2141,7 @@ alert('main 2');
         };
     }
 
-/*
+
     Main.event = new Event();
     Main.rcall = new RCall();
     Main.page = new Page();
@@ -2151,9 +2151,9 @@ alert('main 2');
     Main.busy = new Busy();
     Main.dom = new Dom();
     Main.menu = new Menu();
-    Main.dialog = new Dialog();
+    //Main.dialog = new Dialog();
     Main.card = new Card();
-*/
+
     function Dom() {
         this.addListener = function (e, type, callback, capture) {
             var el = e;
@@ -2299,372 +2299,916 @@ alert('main 2');
         });
     };
 
-    function Dialog() {
 
-        function diagThis(obj, outer, resizeListen, touchCloseFn) {
-            this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
-                this.hide();
-            };
-            this.hide = function () {
+    function Menu() {
+        var defaultWidth = 150;
+        var menuHeaderHeight = 30; //must not change -  used in css
+        var menuCmp;
+        var menuBtn;
+        var resizeListenMnuBind;
 
-                if (obj.fade || obj.fadeIn || obj.fadeIn) {
-                    Main.anim.to(outer, 300, {opacity: 0}, destroy);
-                } else {
-                    destroy();
-                }
-                if (Main.util.isFunc(obj.onHide)) {
-                    obj.onHide();
-                }
-            };
-
-            function destroy() {
-                if (outer) {
-                    outer.parentNode.removeChild(outer);
-                    Main.dom.removeListener(window, 'resize', resizeListen, false);
-                    Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
-                    outer = null;
-                }
-
-                //TODO: Unlock the orientation here
+        function onClickOutsideHide(evt) {
+            if (evt.target === menuBtn) {
+                return;
             }
+            if (!menuCmp) {
+                return;
+            }
+            var container = menuCmp[0];
+
+            var parent = evt.target.parentNode;
+            var click_outside = true;
+            while (parent && parent !== document.body) {
+                if (parent === container) {
+                    click_outside = false;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+
+            if (click_outside) {
+                destroy();
+            }
+        }
+
+        function resizeListenMnu(evt) {
+
+            alert('resizeListenMnu');
+            if (!menuCmp) {
+                return;
+            }
+            var styleObj = mnuStyle.call(this);
+            //menuCmp[0].style = styleObj.main_style;
+            menuCmp[0].style.top = styleObj.top + 'px';
+            menuCmp[0].style.left = styleObj.left + 'px';
+            if (styleObj.main_height) {
+                menuCmp[0].style.height = styleObj.main_height + 'px';
+            }
+
+
+            alert('top = ' + styleObj.top + '   left = ' + styleObj.left + '   main_height = ' + styleObj.main_height);
+
+            var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
+            if (elb.length > 0) {
+                //elb[0].style = styleObj.body_style;
+                if (styleObj.body_height) {
+                    elb[0].style.height = styleObj.body_height + 'px';
+                }
+                if (styleObj.body_max_height) {
+                    elb[0].style.maxHeight = styleObj.body_max_height + 'px';
+                }
+
+                alert('body_height ' + styleObj.body_height);
+
+            }
+
 
         }
 
+        function destroy() {
+            if (menuCmp) {
+                menuCmp.remove();
+                menuCmp = null;
+                Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
+                Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
+
+
+            }
+        }
+
+        function menuThis(_this, menuCmp, mnuBody) {
+
+            this.hide = function () {
+                destroy();
+            };
+
+            this.getItems = function () {
+
+                var children = mnuBody.children();
+                var items = [];
+                if (children.length) {
+
+                    for (var i = 0; i < children.length; i++) {
+                        var len = children[i].children.length;
+                        if (len === 0) {
+                            items.push(children[i].innerHTML);
+                        } else if (len === 1) {
+                            items.push(children[i].children[0]);
+                        } else { // > 1
+                            items.push(children[i].children);
+                        }
+
+                    }
+                }
+
+                return items;
+            };
+            this.setItems = function (items) {
+
+                if (Main.util.isArray(items)) {
+                    this.clear();
+                    for (var n in items) {
+                        this.appendItem(items[n]);
+                    }
+                } else if (Main.util.isString(items)) {
+                    this.clear();
+                    this.appendItem(items);
+                }
+
+            };
+
+            this.addItem = function (item) {
+
+                this.appendItem(item);
+            };
+
+            this.appendItem = function (item) {
+
+                var e = createMenuItem(_this, menuThis, menuCmp, mnuBody, item);
+                mnuBody.append(e);
+            };
+
+            this.prependItem = function (item) {
+
+                var e = createMenuItem(_this, menuThis, menuCmp, mnuBody, item);
+                mnuBody.prepend(e);
+            };
+
+            this.removeItemAt = function (index) {
+
+                var children = mnuBody.children();
+                if (children[index]) {
+                    $(children[index]).remove();
+                }
+            };
+
+            this.clearItems = function () {
+
+                mnuBody.html('');
+            };
+
+            this.clear = function () {
+
+                this.clearItems();
+            };
+
+            this.setHeader = function (text) {
+
+                var children = menuCmp.children();
+                if (children.length && children[0].className === 'game9ja-menu-header') {
+                    children[0].innerHTML = text;
+                } else {
+                    menuCmp.prepend('<div class="game9ja-menu-header" >' + text + '</div>');
+                }
+                normalizeBodyHeight(menuCmp);
+            };
+
+            this.setFooter = function (text) {
+
+                var children = menuCmp.children();
+                if (children.length && children[children.length - 1].className === 'game9ja-menu-footer') {
+                    children[children.length - 1].innerHTML = text;
+                } else {
+                    menuCmp.append('<div class="game9ja-menu-footer" >' + text + '</div>');
+                }
+                normalizeBodyHeight(menuCmp);
+            };
+
+            function normalizeBodyHeight(menu) {
+                var children = menuCmp.children();
+                var h = menu[0].clientHeight;
+                if (!h) {
+                    return;
+                }
+                var mnu_body;
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i].className === 'game9ja-menu-header') {
+                        h -= menuHeaderHeight;
+                    } else if (children[i].className === 'game9ja-menu-footer') {
+                        h -= menuHeaderHeight; // same as header height
+                    } else if (children[i].className === 'game9ja-menu-body') {
+                        mnu_body = children[i];
+                    }
+                }
+
+                mnu_body.style.height = h + 'px';
+
+            }
+
+            return this;
+        }
+
+        function createMenuItem(_this, menuThis, menuCmp, mnuBody, t) {
+            var e = document.createElement('div');
+            e.innerHTML = t;
+            var mThis = new menuThis(_this, menuCmp, mnuBody);
+
+            mThis.item = e.children.length > 0 ?
+                    (e.children.length === 1 ? e.children[0] : e.children)
+                    : t;
+
+            if (Main.util.isFunc(_this.onSelect)) {
+                $(e).on('click', _this.onSelect.bind(mThis));
+            }
+
+            return e;
+        }
+
+        function mnuStyle() {
+            menuBtn = this.target;
+            if (Main.util.isString(this.target)) {
+                menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
+                menuBtn = document.getElementById(menuBtn);
+            }
+
+            var bound = menuBtn.getBoundingClientRect();
+            var y = bound.top;
+            var mnu_width = this.width ? this.width : defaultWidth;
+            mnu_width = new String(mnu_width).replace('px', '');
+            mnu_width = mnu_width - 0; // implicitly convert to numeric
+            if (isNaN(mnu_width)) {
+                mnu_width = defaultWidth;
+            }
+
+            var x = bound.left;
+
+            var padding = 5;
+            var body_bound = document.body.getBoundingClientRect();
+            if (x + mnu_width + padding > body_bound.width) {
+                x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
+            }
+            if (this._heightRatio) {
+                this.height = this._heightRatio * window.innerHeight; // restore the height base on orientation
+            }
+            this.height = this.height ? new String(this.height).replace('px', '') : null;
+
+            var max_height = Main.device.getPortriatInnerWidth() - 20; // minus some pixels
+
+            //NOTE isNaN(null) == isNaN(0)
+
+            var style = 'position: absolute; '
+                    + ' top : ' + y + 'px; '
+                    + ' left: ' + x + 'px; '
+                    + ' width: ' + mnu_width + 'px; '
+                    + (!isNaN(this.height) && this.height ? 'height: ' + this.height + 'px;' : '');
+
+            var main_height = this.height;
+
+            var body_height_style = this.height;
+            if (this.height) {
+                if (this.header && this.footer) {
+                    body_height_style = this.height - 2 * menuHeaderHeight;
+                } else if (this.header || this.footer) {
+                    body_height_style = this.height - menuHeaderHeight;
+                }
+            }
+
+            var body_height = body_height_style;
+
+            body_height_style = body_height_style ?
+                    "height: " + body_height_style + "px; max-height: " + max_height + "px;"
+                    : "max-height: " + max_height + "px;";
+
+            return {
+                top: y,
+                left: x,
+                main_height: main_height,
+                body_height: body_height,
+                body_max_height: max_height,
+                main_style: style,
+                body_style: body_height_style
+            }
+        }
+
         /**
-         * Creates and  shows a dialog.
+         * Create a dropdown menu whose content can be dynamic.
          * 
          * Usage
          * <br>
          * <br>
          * obj = { <br>
-         *       container[opt] : ....,//container to center the dialog on<br>
-         *       width [opt] : ...., //width of the dialog in pixel - px <br>
-         *       height [opt] : ...., //height of the dialog body (not the dialog in this case) in pixel - px <br>
-         *       title [opt] : .....,//title of the dialog<br>
-         *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
-         *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
-         *       action [opt] : .....,//called when any buttons created in the footer is cliced<br>
-         *       content [opt] : .....,//cotent of the dialog body<br>
-         *       iconCls [opt] : .....,//icon class to show - used typically by alert and confirm dialog<br>
-         *       fade | fadein | fadeIn [opt] : .....,//whether to use fade transition<br>
-         *       closeButton [opt] : .....,//whether to display close button<br>
-         *       touchOutClose [opt] : .....,//whether to close the dialog if user touch outside it on mobile device <br>
-         *       onShow [opt] : .....,//called when the dialog is shown<br>
-         *       onHide [opt] : .....,//called when the dilog is closed and destroyed<br>
+         *       target : ....,//can be the element id or the element itself <br>
+         *       items  : [....]// array of element. can also be text only<br>
+         *       width [opt] : ...., //width of the menu in pixel - px <br>
+         *       height [opt] : ...., //height of the menu in pixel - px <br>
+         *       header [opt] : .....,<br>
+         *       footer [opt] : .....,<br>
+         *       onShow [opt] : .....,<br>
+         *       onSelect [opt] : .....,<br>
          * }<br>
          * <br>
          * where '|' means 'or the property that follows'. <br>
          *      '....' means value<br>
          *       [opt] means optional property<br>
          *      <br>
-         * Usage in action and onShow callback function.<br>
+         * Usage in onShow and onSelect.<br>
          * 
-         * The follow method can be called in the action and onShow callback function <br>
+         * The follow method can be called in the onShow and onSelect callback function <br>
+         * for creating dynamic content of the menu:<br>
          * <br>
-         * this.hide() --- hides and destroys the dialog
-         * this.close() --- closes and destroys the dialog - same as this.hide()
+         * this.setItems() --- sets the items of the menu - replaces previous items
+         * this.getItems() -- gets all items of the menu<br>
+         * this.addItem() --- append an item -- can be elements or plain text<br>
+         * this.appendItem() --- append an item - same as this.addItem() -- can be elements or plain text<br>
+         * this.prependItem() --- prepends an item  -- can be elements or plain text<br>
+         * this.clearItems() ---- clears all items<br>
+         * this.clear() ---- clears all items - same as this.clearItems()<br>
+         * this.removeItemA() -- clear an items at the specified index<br>
+         * this.setHeader() -- set new menu header<br>
+         * this.setFooter() -- set new menu footer<br>
          * <br>
          * @param {type} obj
          * @returns {undefined}
          */
-        this.show = function (obj) {
+        this.create = function (obj) {
 
-            if (obj.buttons && !Main.util.isArray(obj.buttons)) {//yes because button can be absence. so check if present and it is also an array
-                console.warn('Dialog buttons must be array of button texts if provided!');
-                return;
-            }
-
-            //TODO: lock orientation here to the current orientation - to avoid resize problems of the dialog- just a form of workaround
-            //TODO : Unlock the orientation when the dialog is hide and destroyed - see destroy() method
-
-            var outer = document.createElement('div');
-            var base = document.createElement('div');
-            base.className = 'game9ja-dialog';
-
-            var header_el = document.createElement('div');
-            header_el.className = 'game9ja-dialog-header';
-
-            var body_el = document.createElement('div');
-            body_el.className = 'game9ja-dialog-body';
-
-            var footer_el = document.createElement('div');
-            footer_el.className = 'game9ja-dialog-footer';
-
-            header_el.innerHTML = obj.title;
-
-            if (obj.iconCls) {
-                var icon_el = document.createElement('span');
-                icon_el.className = obj.iconCls;
-                body_el.appendChild(icon_el);
-            }
-
-            var content_el = document.createElement('div');
-            content_el.innerHTML = obj.content;
-            content_el.style.width = '100%';
-
-            body_el.appendChild(content_el);
-
-            if (obj.width) {
-                var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
-                if (!isNaN(width)) {
-                    base.style.width = width + 'px';//width of the dialog
-                } else {
-                    console.warn('dialog width invalid - ', obj.width);
-                }
-            }
+            $(obj.target).off('click');
+            $(obj.target).on('click', onTargetClick.bind(obj));
 
             if (obj.height) {
-                var height = new String(obj.height).replace('px', '') - 0; //implicitly convert to numeric
-                if (!isNaN(height)) {
-                    body_el.style.height = height + 'px';//the height of the body - not the dialog in this case
-                } else {
-                    console.warn('dialog height invalid - ', obj.height);
-                }
+                //set a private field for adjusting height when orientation change to avoid improper height
+                obj._heightRatio = obj.height / window.innerHeight; //save the height ratio for proper height setting based on device orientaion
             }
 
-            header_el.innerHTML = obj.title;
+            function onTargetClick(evt) {
+                //first destroy previous menu shown - there cannot be more than
+                //one menu at a time.
+                destroy();
 
-            outer.style.position = 'absolute';
-            outer.style.top = '0';
-            outer.style.left = '0';
-            outer.style.minWidth = '100%';
-            outer.style.minHeight = '100%';
-            outer.style.zIndex = Main.const.Z_INDEX;
+                var styleObj = mnuStyle.call(this);
 
-            if (obj.modal !== false) {
-                outer.style.top = '0px';
-                outer.style.left = '0px';
-                outer.style.width = '100%';
-                outer.style.height = '100%';
-                outer.style.background = 'rgba(0,0,0,0.1)';
-            }
+                alert('styleObj.main_style ' + styleObj.main_style);
+                alert('styleObj.body_style ' + styleObj.body_style);
 
-            base.style.maxWidth = '80%';
-            base.style.maxHeight = '80%';
+                menuCmp = $('<div class="game9ja-menu" style = "' + styleObj.main_style + '" ></div>');
 
-            base.appendChild(header_el);
-            base.appendChild(body_el);
-
-            outer.appendChild(base);
-            //outer  = base;
-
-            base.style.opacity = 0;
-
-            document.body.appendChild(outer);
-
-
-            if (obj.touchOutClose === true) {
-                Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
-            }
-
-            var objThis = new diagThis(obj, outer, resizeListen, touchCloseFunc);
-
-            if (obj.closeButton !== false) {
-                var close_el = document.createElement('span');
-                close_el.className = 'fa fa-close';
-                close_el.style.position = 'absolute';
-                close_el.style.right = '2px';
-                close_el.style.top = '2px';
-                close_el.style.width = '20px';
-                close_el.style.height = '20px';
-                base.appendChild(close_el);
-                Main.dom.addListener(close_el, 'click', objThis.hide, false);
-            }
-
-            if (obj.buttons) {//if present
-
-                for (var i = obj.buttons.length - 1; i > -1; i--) {
-                    var btn = document.createElement('input');
-                    btn.type = 'button';
-                    btn.value = obj.buttons[i];
-                    footer_el.appendChild(btn);
+                if (this.header) {
+                    menuCmp.append('<div class="game9ja-menu-header">' + this.header + '</div>');
                 }
 
-                Main.dom.addListener(footer_el, 'click', function (evt) {
-                    if (evt.target.type === 'button') {
-                        if (Main.util.isFunc(obj.action)) {
-                            obj.action.call(objThis, evt.target, evt.target.value);
-                        }
-                    }
-                }.bind(objThis), false);
+                menuCmp.append('<div class="game9ja-menu-body" style="' + styleObj.body_style + '"></div>');
 
-                base.appendChild(footer_el);
-            }
+                var mnuBody = menuCmp.find('.game9ja-menu-body');
+                var els = [];
 
-            var container;
-            if (Main.util.isString(obj.container)) {
-                var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
-                container = document.getElementById(container_id);
-            } else if (obj.container) {
-                container = obj.container;
-            } else {
-                container = document.body;
-            }
-            var cb = container.getBoundingClientRect();
-            var bound = base.getBoundingClientRect();
-
-            var compXY = computeXY(cb, bound);
-
-            base.style.left = compXY.x + 'px';
-            base.style.top = compXY.y + 'px';
-
-            outer.style.minWidth = bound.width + 'px';
-            outer.style.minHeight = bound.height + 'px';
-
-            Main.dom.addListener(window, 'resize', resizeListen, false);
-
-            if (obj.fade || obj.fadeIn || obj.fadeIn) {
-                Main.anim.to(base, 300, {opacity: 1}, function () {
-                    if (Main.util.isFunc(obj.onShow)) {
-                        obj.onShow.call(objThis);
-                    }
-                });
-            } else {
-                base.style.opacity = 1;
-                if (Main.util.isFunc(obj.onShow)) {
-                    obj.onShow.call(objThis);
+                for (var i = 0; i < this.items.length; i++) {
+                    var t = this.items[i];
+                    var e = createMenuItem(this, menuThis, menuCmp, mnuBody, t);
+                    els.push(e);
                 }
-            }
+                var children = $(menuCmp).children();
+                var last = children[children.length - 1];
+                $(last).append(els);
 
-            function touchCloseFunc(evt) {
-                var parent = evt.target;
-                var touch_outside = true;
-                while (parent && parent !== document.body) {
-                    if (parent === base) {
-                        touch_outside = false;
-                        break;
-                    }
-                    if (parent === outer) {//when the dialog is modal the outer element fills the page - so close it if touched
-                        break;
-                    }
-                    parent = parent.parentNode;
+                if (this.footer) {
+                    menuCmp.append('<div class="game9ja-menu-footer">' + this.footer + '</div>');
                 }
-                if (touch_outside) {
-                    objThis.hide();
+
+                $('body').append(menuCmp);
+
+                Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
+
+                resizeListenMnuBind = resizeListenMnu.bind(this);
+
+                Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
+
+
+                if (Main.util.isFunc(this.onShow)) {
+                    var mnuThis = menuThis(this, menuCmp, mnuBody);
+                    this.onShow.bind(mnuThis)();
                 }
-            }
-
-            function resizeListen() {
-
-                var cb = container.getBoundingClientRect();
-                var bound = base.getBoundingClientRect();
 
 
-                console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
-                console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
-                var pad_factor = 0.8;
-                var base_new_width = 0;
-                var base_new_height = 0;
-                if (bound.width && cb.width && bound.width > cb.width * pad_factor) {
-                    
-                    base_new_width = pad_factor * cb.width;
-                    base.style.width = base_new_width + 'px';
-                    
-                    console.log('base.style.width = ', base_new_width + 'px');
-
-
-                }
-                if (!base_new_width && bound.width && bound.width > window.innerWidth * pad_factor) {
-                    
-                    base_new_width = pad_factor * window.innerWidth;
-                    base.style.width = base_new_width + 'px';
-
-                    console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
-
-
-                }
-                if (bound.height && cb.height && bound.height > cb.height * pad_factor) {
-                    
-                    base_new_height = pad_factor * cb.height;
-                    base.style.height = base_new_height + 'px';
-
-                    console.log('base.style.height = ', base_new_height + 'px');
-
-                }
-                if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
-                    
-                    base_new_height = pad_factor * window.innerHeight;
-                    base.style.height = base_new_height + 'px';
-
-                    console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
-
-                }
-                
-                var ft_bound = footer_el.getBoundingClientRect();
-                var hd_bound = header_el.getBoundingClientRect();
-                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
-                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
-
-                var base_h = base_new_height || base.getBoundingClientRect().height;
-                var base_w = base_new_width || base.getBoundingClientRect().width;
-
-                var bd_h = base_h - hd_h - ft_h;
-                var body_el_h = body_el.getBoundingClientRect().height;
-                
-                if(body_el_h > bd_h){
-                    body_el.style.height = bd_h + 'px';
-                }
-                
-                body_el.style.width = base_w + 'px';
-
-                console.log('ft_h = ', ft_h);
-                console.log('hd_h = ', hd_h);
-                console.log('base_h = ', base_h);
-                console.log('bd_h = ', bd_h);
-
-                console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h,);
-
-                var compXY = computeXY(cb, bound);
-                base.style.left = compXY.x + 'px';
-                base.style.top = compXY.y + 'px';
-
-
-            }
-
-
-            function computeXY(cb, bound) {
-                var x, y;
-                if (bound.top >= 0
-                        && bound.top <= window.innerHeight
-                        && bound.left >= 0
-                        && bound.left <= window.innerWidth
-                        && bound.height) {//inside the window view port
-                    var cb_h = cb.height;
-                    var cb_w = cb.width;
-                    if (cb_h === 0) {
-                        cb_h = window.innerHeight;
-                    }
-
-                    if (cb_w === 0) {
-                        cb_w = window.innerWidth;
-                    }
-                    var b_w = bound.width;
-                    var b_h = bound.height;
-
-                    x = cb.left + (cb_w - b_w) / 2;
-                    y = cb.top + (cb_h - b_h) / 2;
-                    if (b_w > cb_w) {
-                        x = 0.1 * cb_w;
-                    }
-                    if (b_h > cb_h) {
-                        y = 0.1 * cb_h;
-                    }
-
-                } else {
-                    var bw = 200;
-                    x = (window.innerWidth - bw) / 2;
-                    y = (window.innerHeight - bw) / 2;
-                    if (x <= 0) {
-                        x = 40;
-                    }
-                    if (y <= 0) {
-                        y = 40;
-                    }
-                }
-                return {x: x, y: y};
             }
         };
     }
+
+
+    Main.tab = function (obj) {
+        var id_prefix = "#";
+
+        for (var n in obj.onShow) {
+            if (id_prefix !== '' && n.charAt(0) !== id_prefix) {
+                throw new Error("Invalid tab button selector for onShow - expected '" + id_prefix + n + "' instead of '" + n + "'");
+            }
+        }
+
+        var btns = $(obj.container).find('.game9ja-tab-header').children();
+        var tab_body = $(obj.container).find('.game9ja-tab-body')[0];
+
+        var contents = $(tab_body).children();
+        var shownIndex = null;
+        var active_class = 'game9ja-tab-active';
+
+        //make sure a tab is active and the corresponding content showing
+        for (var i = 0; i < contents.length; i++) {
+            contents[i].style.position = 'absolute';
+            contents[i].style.top = '0px';
+            if (contents[i].style.display === 'block' && shownIndex === null) {
+                shownIndex = i;
+            } else {
+                contents[i].style.display = 'none';
+                contents[i].style.left = '100%';
+            }
+
+            if (i === contents.length - 1) {
+                if (shownIndex === null) {
+                    contents[0].style.display = 'block';
+                    contents[0].style.left = '0%';
+                    shownIndex = 0;
+                }
+
+                if (!$(btns[shownIndex]).hasClass(active_class)) {
+                    $(btns[shownIndex]).addClass(active_class);
+                }
+
+                if (btns[shownIndex]) {
+                    var func = obj.onShow[id_prefix + btns[shownIndex].id];
+                    if (Main.util.isFunc(func)) {
+                        func();
+                    }
+
+                }
+
+            }
+        }
+
+        for (var i = 0; i < btns.length; i++) {
+            $(btns[i]).off('click');
+            $(btns[i]).on('click', tabShow.bind(
+                    {
+                        tabIndex: i,
+                        buttons: btns,
+                        tabBody: tab_body,
+                        fn: obj.onShow[id_prefix + btns[i].id]
+                    }));
+        }
+
+        Main.swipe({
+            el: tab_body,
+            left: swipeTabBody.bind({direction: 1}),
+            right: swipeTabBody.bind({direction: -1})
+        });
+
+        function swipeTabBody() {
+            for (var i = 0; i < btns.length; i++) {
+                if ($(btns[i]).hasClass(active_class)) {
+                    var next = i + this.direction;
+                    if (btns[next]) {
+                        tabShow.bind(
+                                {
+                                    tabIndex: next,
+                                    buttons: btns,
+                                    tabBody: tab_body,
+                                    fn: obj.onShow[id_prefix + btns[next].id]
+                                })();
+                    }
+                    break;
+                }
+            }
+        }
+
+        function tabShow() {
+
+            for (var i = 0; i < this.buttons.length; i++) {
+                var btn = this.buttons[i];
+                if (i === this.tabIndex) {
+                    if (!$(btn).hasClass(active_class)) {
+                        $(btn).addClass(active_class);
+                    }
+                } else {
+                    $(btn).removeClass(active_class);
+                }
+            }
+
+            var contents = $(this.tabBody).children();
+
+            for (var i = 0; i < contents.length; i++) {
+                if (contents[i].style.display === 'block' && i !== this.tabIndex) {
+                    if (Main.util.isFunc(this.fn)) {
+                        this.fn();
+                    }
+                    animShowTab(contents[this.tabIndex], contents[i], i < this.tabIndex);
+                    break;
+                }
+            }
+
+
+
+        }
+
+        function animShowTab(newComp, prevComp, forward) {
+            newComp.style.display = 'block';
+
+            var prev_left = '100%';
+            newComp.style.left = '-100%';
+            if (forward) {
+                prev_left = '-100%';
+                newComp.style.left = '100%';
+            }
+
+            Main.anim.to(newComp, 500, {left: '0%'});
+            Main.anim.to(prevComp, 500, {left: prev_left}, function () {
+                this.el.style.display = 'none';
+            }.bind({el: prevComp}));
+        }
+
+    };
+
+    Main.swipe = function (obj) {
+
+        if (!obj.el.addEventListener || !obj.el.removeEventListener) {
+            return;
+        }
+
+        obj.el.removeEventListener('touchstart', startTouch, false);
+        obj.el.removeEventListener('touchmove', moveTouch, false);
+        obj.el.removeEventListener('touchend', endTouch, false);
+        obj.el.removeEventListener('touchcancel', cancelTouch, false);
+
+
+        obj.el.addEventListener('touchstart', startTouch, false);
+        obj.el.addEventListener('touchmove', moveTouch, false);
+        obj.el.addEventListener('touchend', endTouch, false);
+        obj.el.addEventListener('touchcancel', cancelTouch, false);
+
+        var SW_TIME = 500;
+        var SW_MAX_X = 100;
+        var SW_MAX_Y = 100;
+        var SW_MAX_SLANT = SW_MAX_X / 2;
+
+        var start_time;
+        var end_time;
+        var start_x;
+        var end_x;
+        var start_y;
+        var end_y;
+        var isTouching;
+
+        function startTouch(evt) {
+
+            if (evt.touches.length === 1) {
+                start_x = evt.touches[0].pageX;
+                start_y = evt.touches[0].pageY;
+                start_time = new Date().getTime();
+            }
+        }
+
+        function moveTouch(evt) {
+            if (evt.touches.length === 1) {
+                end_x = evt.touches[0].pageX;
+                end_y = evt.touches[0].pageY;
+                isTouching = true;
+            }
+
+        }
+
+        function cancelTouch(evt) {
+            obj.el.removeEventListener('touchmove', moveTouch, false);
+            isTouching = false;
+
+        }
+
+        function endTouch(evt) {
+
+            if (!isTouching) {
+                return;
+            }
+            isTouching = false;
+            end_time = new Date().getTime();
+            var elapse = end_time - start_time;
+            var change_x = start_x - end_x;
+            var change_y = start_y - end_y;
+
+            if (elapse > SW_TIME) {
+                return;
+            }
+
+            if (Math.abs(change_x) > SW_MAX_X && Math.abs(change_y) < SW_MAX_SLANT) {
+                if (change_x > 0) {
+                    if (Main.util.isFunc(obj.left)) {
+                        obj.left();
+                    }
+
+                    //console.log('left ');
+                } else {
+                    if (Main.util.isFunc(obj.right)) {
+                        obj.right();
+                    }
+
+                    //console.log('right ');
+                }
+            } else if (Math.abs(change_y) > SW_MAX_Y && Math.abs(change_x) < SW_MAX_SLANT) {
+                if (change_y > 0) {
+
+                    if (Main.util.isFunc(obj.up)) {
+                        obj.up();
+                    }
+
+                    //console.log('up ');
+                } else {
+                    if (Main.util.isFunc(obj.down)) {
+                        obj.down();
+                    }
+
+                    //console.log('down ');
+                }
+            }
+        }
+
+    };
+
+    /**
+     * Add listerner
+     * 
+     * @param {type} event_name
+     * @param {type} callback
+     * @param {type} data
+     * @return {undefined}
+     */
+    Main.on = function (event_name, callback, data) {
+        if (Main.util.isFunc(callback)) {
+            if (!listeners[event_name]) {
+                listeners[event_name] = [];
+            }
+            listeners[event_name].push({fn: callback, data: data});
+        }
+    };
+
+    /**
+     * Remove listerner
+     * 
+     * @param {type} event_name
+     * @return {undefined}
+     */
+    Main.off = function (event_name) {
+        delete listeners[event_name];
+    };
+
+    /**
+     * Called when the application is ready
+     * @param {type} fn
+     * @return {undefined}
+     */
+    Main.ready = function (fn) {
+        Main.on("ready", fn);
+
+    };
+
+    /**
+     * This method should be called by the first index page
+     * for loading the device index page and initializing
+     * the application.
+     * @param {type} obj
+     * @return {undefined}
+     */
+    Main.init = function (obj) {
+        alert('2');
+
+        if (isMainInit) {//prevent duplicate call
+            return;
+        }
+        isMainInit = true;
+        alert('3');
+        window.onload = function (evt) {
+
+            var device_size_cat;
+            if (!obj.prod) {
+                device_size_cat = obj.devDevice ? obj.devDevice : "large";
+            } else {
+                device_size_cat = deviceSizeCategory();
+            }
+            var pkg = appUrl + "include.json";
+            alert(device_size_cat);
+            Main.ajax.get(pkg,
+                    function (res) {
+                        eval('var json = ' + res);//remove comments if present since they are not valid in json
+
+                        var json = json;
+                        var absolute_scripts = [],
+                                app_scripts = [],
+                                cat_scripts = [],
+                                absolute_styles = [],
+                                app_styles = [],
+                                cat_styles = [];
+
+                        if (json.absolute && Main.util.isArray(json.absolute.js)) {
+                            absolute_scripts = json.absolute.js;
+                        }
+                        if (json.absolute && Main.util.isArray(json.absolute.css)) {
+                            absolute_styles = json.absolute.css;
+                        }
+
+                        if (json.app && Main.util.isArray(json.app.js)) {
+                            app_scripts = json.app.js;
+                        }
+                        if (json.app && Main.util.isArray(json.app.css)) {
+                            app_styles = json.app.css;
+                        }
+
+                        if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].js)) {
+                            cat_scripts = json[device_size_cat].js;
+                        }
+                        if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].css)) {
+                            cat_styles = json[device_size_cat].css;
+                        }
+
+                        var track = {
+                            deviceCategory: device_size_cat,
+                            count: 0,
+                            total: absolute_styles.length
+                                    + app_styles.length
+                                    + cat_styles.length
+                                    + absolute_scripts.length
+                                    + app_scripts.length
+                                    + cat_scripts.length,
+                            queueIndex: -1,
+                            queue: []
+                        };
+                        if (track.total > 0) {
+                            loadRequiredFiles(absolute_styles, track, absoluteRoute, loadCss);
+                            loadRequiredFiles(app_styles, track, appRoute, loadCss);
+                            loadRequiredFiles(cat_styles, track, deviceRoute, loadCss);
+                            loadRequiredFiles(absolute_scripts, track, absoluteRoute, loadScript);
+                            loadRequiredFiles(app_scripts, track, appRoute, loadScript);
+                            loadRequiredFiles(cat_scripts, track, deviceRoute, loadScript);
+                        } else {//zero
+                            loadDeviceMain(track.deviceCategory);
+                        }
+
+                    }
+            , function () {
+                console.log("could not get resource: ", pkg);
+            });
+
+
+        };
+
+        function loadRequiredFiles(files, track, route, callback) {
+
+            for (var i = 0; i < files.length; i++) {
+                if (files[i].indexOf(0) === '/') {
+                    files[i] = files[i].substring(1);
+                }
+                var argu = [];
+                argu.push(files[i]);
+                argu.push(track);
+                argu.push(route);
+                track.queueIndex++;
+                if (track.queueIndex === 0) {
+                    callback.apply(this, argu);
+                } else {
+                    track.queue.push({
+                        argu: argu,
+                        loader: callback
+                    });
+                }
+
+            }
+        }
+
+        function absoluteRoute(file, type) {
+            return file;
+        }
+
+        function appRoute(file, type) {
+            return appUrl + type + "/" + file;
+        }
+
+        function deviceRoute(file, type, cat) {
+            return deviceUrl + cat + "/" + type + "/" + file;
+        }
+        function onLoadInclude() {
+            this.count++;
+            if (this.count === this.total) {
+                loadDeviceMain(this.deviceCategory);
+            } else {
+                var next = this.queue[this.count - 1];
+                next.loader.apply(null, next.argu);
+            }
+        }
+        function onErrorInclude() {
+            console.log('Failed to load a required resource : ', this.file);
+        }
+        function loadCss(file, track, route) {
+            
+            var link = document.createElement("link");
+
+            link.onload = onLoadInclude.bind(track);
+            link.onerror = onErrorInclude.bind({file: file});
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = route(file, "css");
+            document.head.appendChild(link);
+        }
+
+        function loadScript(file, track, route) {
+            var script = document.createElement("script");
+
+            script.onload = onLoadInclude.bind(track);
+            script.onerror = onErrorInclude.bind({file: file});
+            script.type = "text/javascript";
+            script.src = route(file, "js", track.deviceCategory);
+            document.head.appendChild(script);
+        }
+
+        function loadDeviceMain(device_size_cat) {
+            //register the home page first
+
+            pageRouteUrl = deviceUrl + device_size_cat + '/';
+            var routeFile = pageRouteUrl + "index.html";
+
+            $.get(routeFile,
+                    function (response) {
+                        var pg_recv = $("<div></div>").html(response);
+                        var children = $('body').children();
+                        for (var i = children.length - 1; i > -1; i--) {
+                            $(children[i]).remove();
+                        }
+                        var childrenRev = $(pg_recv).children();
+                        for (var i = 0; i < childrenRev.length; i++) {
+                            if (childrenRev[i].nodeName === 'TITLE') {
+                                continue;
+                            }
+                            $('body').append(childrenRev[i]);
+                        }
+                        Main.page.init();
+
+                        //initialize controller objects with constructor
+
+                        //console.log(Object.getOwnPropertyNames(Main.controller));
+
+
+                        var props = Object.getOwnPropertyNames(Main.controller);
+
+                        for (var n in props) {
+                            var clazzObj = Main.controller[props[n]];
+                            var construtorFn = clazzObj['constructor'];
+                            if (Main.util.isFunc(construtorFn)) {
+                                construtorFn.call(clazzObj);
+                            }
+                        }
+
+                    }
+            ).fail(function (data) {
+                console.log("could not get resource: ", routeFile);
+            });
+
+        }
+
+        /**
+         * Detect the size of device and return
+         * small,  medium or large
+         * @return {undefined}
+         */
+        function deviceSizeCategory() {
+
+            //NOTE: We have deprecated the use of window.screen.height and window.screen.width
+            //rather we resort to the use of window.innerHeight and window.innerWidth.
+            //The reason for the deprecation is the shocking observation that
+            //they report wrong values and are inconsistent with deifferent device webViews and browsers.
+            //The devicePixelRation somewhat affects the values they return.
+            //One shocking and very terrifying observation I had in my Itel phone of 320 x 570 size is that,
+            //while the android browser report the correct sizes (320 x 570) with devicePixelRatio of 1.5,
+            //the webview of the same phone reported  (480 x 855) with same devicePixelRatio of 1.5.
+            //THIS IS ABSOLUTELY SHOCKING AND TERRIFYING. WHAT!!!!!!
+            //even window.outerHeight and window.outerWidth have similar issues so do not
+            //use them. STICK ONLY TO window.innerHeight and window.innerWidth
+
+
+            var size = window.innerWidth > window.innerHeight ?
+                    window.innerWidth
+                    : window.innerHeight;
+
+            alert('inner width ' + window.innerWidth);
+            alert('inner height ' + window.innerHeight);
+
+            alert('outer width ' + window.outerWidth);
+            alert('outer height ' + window.outerHeight);
+
+            //size = size / window.devicePixelRatio;
+
+            portriat_height = size;
+
+            portriat_width = window.innerWidth < window.innerHeight ?
+                    window.innerWidth
+                    : window.innerHeight;
+
+            //portriat_width = portriat_width / window.devicePixelRatio;
+
+            if (size > 768) {//desktops and laptops
+                device_category = "large";
+            } else if (size <= 768 && size > 600) {//tablets
+                device_category = "medium";
+            } else {//smart phones
+                device_category = "small";
+            }
+
+            return device_category;
+        }
+
+
+    };
 
 
     return Main;
