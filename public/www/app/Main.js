@@ -1,4 +1,4 @@
-alert('main 0');
+alert('main 0s');
 
 var Main = {};
 
@@ -678,6 +678,1627 @@ alert('main 2');
 
 
     }
+
+
+    function Page() {
+        var pages = [];
+        var effDuration = 0.5;//default effect duration
+        var lastPageUrl;
+        var transitionInProgress = false;
+        function swapShow(pg, transition, forward, pgGoOut) {
+            var eff = transition, duration = effDuration;
+            if (transition && !Main.util.isString(transition)) {//not string then object!
+                eff = transition.effect;
+                duration = transition.duration;
+            }
+            var eff = eff ? eff.toLowerCase() : null;
+            duration = duration ? duration : 0;
+            var pageIn = pg.page;
+            var pageOut;
+
+            for (var i = 0; i < pages.length; i++) {
+                if (pages[i].url === lastPageUrl) {
+                    pageOut = pages[i].page;
+                    break;
+                }
+            }
+
+            initPageInOut(pageIn, pageOut);
+
+            if (eff === "fadein" || eff === "fadeout") {
+                fadePg(pageIn, pageOut, duration, forward, pgGoOut);
+            } else if (eff === "slideup" || eff === "slidedown") {
+                slideVertPg(pageIn, pageOut, duration, forward, pgGoOut);
+            } else if (eff === "slideleft" || eff === "slideright") {
+                slideHorizPg(pageIn, pageOut, duration, forward, pgGoOut);
+            } else {
+                pageIn[0].style.opacity = 1;
+                $(pageIn).show();
+                if (pageOut) {
+                    pageOut[0].style.opacity = 1;
+                    $(pageOut).hide();
+                }
+                afterPageChange(pageIn, pgGoOut);
+            }
+
+            lastPageUrl = pg.url;
+
+            if (pg.title) {
+                document.title = pg.title;
+            }
+        }
+        function initPageInOut(pageIn, pageOut) {
+
+            pageIn[0].style.opacity = 0;
+            pageIn[0].style.top = "0%";
+            pageIn[0].style.left = "0%";
+            pageIn[0].style.display = "block";
+
+
+            if (pageOut) {
+                pageOut[0].style.opacity = 1;
+                pageOut[0].style.top = "0%";
+                pageOut[0].style.left = "0%";
+                pageOut[0].style.display = "block";
+
+            }
+        }
+        function fadePg(pageIn, pageOut, duration, forward, pgGoOut) {
+            transitionInProgress = true;
+
+            var jqIn = {};
+            jqIn.opacity = 1;
+            var onCompleteIn = function () {
+                afterPageChange(pageIn, pgGoOut);
+            };
+
+            var jqOut = {};
+            jqOut.opacity = 0;
+            var onCompleteOut = function () {
+                afterPageChange(pageIn, pgGoOut);
+            };
+
+            var tweenIn = {opacity: jqIn.opacity, onComplete: onCompleteIn};
+            var tweenOut = {opacity: jqOut.opacity, onComplete: onCompleteOut};
+
+            if (window.TweenMax) {
+                TweenMax.to(pageIn, duration / 1000, tweenIn);
+                TweenMax.to(pageOut, duration / 1000, tweenOut);
+            } else if (window.TweenLite) {
+                TweenLite.to(pageIn, duration / 1000, tweenIn);
+                TweenLite.to(pageOut, duration / 1000, tweenOut);
+            } else if (window.$) {
+                $(pageIn).animate(jqIn, duration, onCompleteIn);
+                $(pageOut).animate(jqOut, duration, onCompleteOut);
+            } else {
+                transitionInProgress = false;
+            }
+        }
+
+        function slideVertPg(pageIn, pageOut, duration, forward, pgGoOut) {
+            transitionInProgress = true;
+            pageIn[0].style.top = forward ? "100%" : "-100%";
+            pageIn[0].style.opacity = 1;
+
+            var body_overflow = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            pageOut[0].style.overflow = "hidden";
+            var first, second;
+
+            var jqIn = {};
+            jqIn.top = "0%";
+            var onCompleteIn = function () {
+                first = true;
+                if (first && second) {
+                    document.body.style.overflow = body_overflow;
+                    afterPageChange(pageIn, pgGoOut);
+                }
+
+            };
+
+            var jqOut = {};
+            jqOut.top = forward ? "-100%" : "100%";
+            var onCompleteOut = function () {
+                second = true;
+                if (first && second) {
+                    document.body.style.overflow = body_overflow;
+                    afterPageChange(pageIn, pgGoOut);
+                }
+
+            };
+
+            var tweenIn = {top: jqIn.top, onComplete: onCompleteIn};
+            var tweenOut = {top: jqOut.top, onComplete: onCompleteOut};
+
+            if (window.TweenMax) {
+                TweenMax.to(pageIn, duration / 1000, tweenIn);
+                TweenMax.to(pageOut, duration / 1000, tweenOut);
+            } else if (window.TweenLite) {
+                TweenLite.to(pageIn, duration / 1000, tweenIn);
+                TweenLite.to(pageOut, duration / 1000, tweenOut);
+            } else if (window.$) {
+                $(pageIn).animate(jqIn, duration, onCompleteIn);
+                $(pageOut).animate(jqOut, duration, onCompleteOut);
+            } else {
+                transitionInProgress = false;
+            }
+        }
+
+        function slideHorizPg(pageIn, pageOut, duration, forward, pgGoOut) {
+            transitionInProgress = true;
+            pageIn[0].style.left = forward ? "100%" : "-100%";
+            pageIn[0].style.opacity = 1;
+
+            var body_overflow = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            pageOut[0].style.overflow = "hidden";
+            var first, second;
+
+            var jqIn = {};
+            jqIn.left = "0%";
+            var onCompleteIn = function () {
+                first = true;
+                if (first && second) {
+                    document.body.style.overflow = body_overflow;
+                    afterPageChange(pageIn, pgGoOut);
+                }
+
+            };
+
+            var jqOut = {};
+            jqOut.left = forward ? "-100%" : "100%";
+            var onCompleteOut = function () {
+                second = true;
+                if (first && second) {
+                    document.body.style.overflow = body_overflow;
+                    afterPageChange(pageIn, pgGoOut);
+                }
+
+            };
+
+            var tweenIn = {left: jqIn.left, onComplete: onCompleteIn};
+            var tweenOut = {left: jqOut.left, onComplete: onCompleteOut};
+
+            if (window.TweenMax) {
+                TweenMax.to(pageIn, duration / 1000, tweenIn);
+                TweenMax.to(pageOut, duration / 1000, tweenOut);
+            } else if (window.TweenLite) {
+                TweenLite.to(pageIn, duration / 1000, tweenIn);
+                TweenLite.to(pageOut, duration / 1000, tweenOut);
+            } else if (window.$) {
+                $(pageIn).animate(jqIn, duration, onCompleteIn);
+                $(pageOut).animate(jqOut, duration, onCompleteOut);
+            } else {
+                transitionInProgress = false;
+            }
+
+        }
+
+        function afterPageChange(pageIn, pgGoOut) {
+            transitionInProgress = false;
+            pageIn[0].style.overflow = "auto";
+            if (pgGoOut) {
+                $(pgGoOut).remove();
+            }
+        }
+
+        function showPg(p, transition, forward, pgGoOut, pgShowObj) {
+
+            if (Main.util.isString(p)) {//is url string
+                for (var i = 0; i < pages.length; i++) {
+                    if (pages[i].url === p) {
+                        p = pages[i];
+                        break;
+                    }
+                }
+            }
+
+            if (p.url === lastPageUrl) {
+                return;//already showing!
+            }
+
+            //call pagebeforeshow listerners
+
+            callListeners(listeners["pagebeforeshow"], {pageUrl: p.url, data: p.data});
+
+            if (pgShowObj && pgShowObj.onBeforeShow) {
+                try {
+                    pgShowObj.onBeforeShow(p.data);
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+
+            //now show
+            swapShow(p, transition, forward, pgGoOut);
+
+            //call pageshow listerners
+            callListeners(listeners["pageshow"], {pageUrl: p.url, data: p.data});
+
+            if (pgShowObj && pgShowObj.onShow) {
+                try {
+                    pgShowObj.onShow(p.data);
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+        }
+
+        function refactorBody(container, selector) {
+            var sel = selector ? selector : 'body';
+            var children = $(container).find(sel).children();
+            var content = [];
+
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].nodeName !== 'SCRIPT'
+                        && children[i].nodeName !== 'LINK'
+                        && children[i].nodeName !== 'META'
+                        && children[i].nodeName !== 'TITLE') {
+                    content.push(children[i]);
+                    $(children[i]).remove();
+                }
+            }
+
+            //Just in case there are any embeded unwanted element, remove them.
+            //We do not want to unitentionally execute script more than once.            
+            $(content).find('title , script , link , meta').each(function (index) {
+                this.remove();
+            });
+
+            var style = "style='opacity: 0; position:absolute; width: 100%;"
+                    + " height:100%; top; 0%; left:0%;'";
+
+            var cont = $("<div data-app-content='page' " + style + "></div>").append(content);
+
+            var pg = $('body')
+                    .append(cont);
+
+            /*MAY NOT BE NECCESSARY SINCE 'overflow: auto' hides the scroll bar which is what we want.
+             *  see afterPageChange method where the overflow is set to auto.
+             * - observed only in android browser so far though.
+             *            
+             //The code below will only run on mobile device browser or browser that support touch event.
+             //Show scroll bar only if the user attempts to scroll otherwise hide it.
+             var bc = document.body.children;
+             var last_pg;
+             for (var i = 0; i < bc.length; i++) {
+             if (bc[i].tagName === 'DIV') {
+             last_pg = bc[i];
+             }
+             }
+             if (last_pg) {
+             last_pg.addEventListener('touchmove', function () {//show scroll bar
+             if (!transitionInProgress) {
+             this.el.style.overflow = 'auto';
+             }
+             
+             }.bind({el: last_pg}));
+             
+             last_pg.addEventListener('touchend', function (evt) {//show scroll bar
+             if (!transitionInProgress) {
+             this.el.style.overflow = 'hidden';
+             }
+             
+             }.bind({el: last_pg}));
+             
+             last_pg.addEventListener('touchcancel', function (evt) {//show scroll bar
+             if (!transitionInProgress) {
+             this.el.style.overflow = 'hidden';
+             }
+             
+             }.bind({el: last_pg}));
+             }
+             */
+
+            console.log(pg.html());
+
+            return cont;
+        }
+
+        function load(p, transition, forward, data, pgShowObj) {
+            var url = Main.util.isString(p) ? p : p.url;
+
+            for (var pg_index = 0; pg_index < pages.length; pg_index++) {
+                if (pages[pg_index].url === url) {
+                    if (pg_index === 0) {
+                        //handle home page differently
+                        Main.page.home({transition: transition, data: data});
+                        return;
+                    }
+                    //Make the page the last page in the list.
+                    if (pg_index === pages.length - 1) {
+                        //skip the last in the page list -  the last page is already
+                        //at the end so no need to make it last.
+                        showPg(url, transition, forward, null, pgShowObj);
+                        return;
+                    }
+                    //now make it the last page
+                    var pg = pages[pg_index];
+                    pages.splice(pg_index, 1);
+                    pages.push(pg);
+                    //modify the DOM to send the page to the last
+                    var children = $('body').children();
+                    var pos = -1;
+                    for (var k = 0; k < children.length; k++) {
+                        if ($(children[k]).attr('data-app-content') === 'page') {
+                            pos++;
+                            if (pos === pg_index) {
+                                $(children[k]).remove();//remove from this postion
+                                $('body').append(children[k]);//append to the end                                
+                                //clear all previous event listeners
+                                // $(document).add("*").off();//deprecate - incorrect!
+                                var lastPage = pages[pages.length - 1];
+                                //call relevant event listeners
+                                callListeners(listeners["ready"]);
+                                callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, data: lastPage.data});
+                                showPg(url, transition, forward, null, pgShowObj);
+                                break;
+                            }
+                        }
+                    }
+                    return;
+                }
+            }
+
+            $.get(pageRouteUrl + url, function (response) {
+
+                var found = false;
+                for (var i = 0; i < pages.length; i++) {
+                    if (pages[i].url === url) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+
+                    var pg_recv = $("<div></div>").html("<div data-app-content='page'>" + response + "</div>");
+                    var title = pg_recv.find('title').html();
+                    var pg = refactorBody(pg_recv, "[data-app-content=page]");
+
+                    $('body').append(pg);
+
+                    pages.push({
+                        url: url,
+                        data: data,
+                        transition: transition,
+                        title: title,
+                        page: pg
+                    });
+
+                    //clear all previous event listeners
+                    //$(document).add("*").off();//deprecate - incorrect!
+                    var lastPage = pages[pages.length - 1];
+                    //call relevant event listeners
+                    callListeners(listeners["ready"]);
+                    callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, data: lastPage.data});
+
+                }
+
+                showPg(url, transition, forward, null, pgShowObj);
+            }).fail(function () {
+                console.log("could not get resource:", url);
+            });
+        }
+
+        this.home = function (obj) {
+            if (transitionInProgress) {
+                console.warn("Action ignored! Page transition in progress.");
+                return false; //unsuccesful becasue page is in transition
+            }
+            var transition;
+            var lastPage = pages[pages.length - 1];
+            if (obj) {
+                pages[0].data = obj.data;
+                transition = obj.transition;
+            } else {
+                transition = lastPage.transition;//use last page transition
+            }
+
+            showPg(pages[0], transition, false, lastPage, _pShowFn(obj));
+
+            //remove all pages except the home page
+            for (var i = pages.length - 1; i > 0; i--) {// 'i > 0' ensures the home page in not removed
+                pages.splice(i, 1);
+            }
+
+            //clear all other pages from the DOM except the home page
+            var foundFirst = false;
+            var children = $('body').children();
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].nodeName === 'SCRIPT') {
+                    continue;
+                }
+                if ($(children[i]).attr('data-app-content') === 'page') {
+                    if (foundFirst) {
+                        children[i].remove();
+                    }
+                    foundFirst = true;
+                }
+            }
+
+            return true;//important! - successful
+        };
+
+
+        this.back = function () {
+            if (transitionInProgress) {
+                console.warn("Action ignored! Page transition in progress.");
+                return false; //unsuccesful becasue page is in transition
+            }
+
+            var pgGoOut;
+            if (pages.length > 1) {//remove the last page but do not empty the array
+                var last_index = pages.length - 1;
+                var lastPage = pages[last_index];
+                //remove also from the DOM
+                var children = $('body').children();
+                for (var i = children.length - 1; i > -1; i--) {
+                    if (children[i].nodeName === 'SCRIPT') {
+                        continue;
+                    }
+                    //get the out-going page whiche we shall remove from the
+                    //DOM when the page change is complete
+                    if ($(children[i]).attr('data-app-content') === 'page') {
+                        pgGoOut = children[i];
+                        break
+                    }
+                }
+                var toPg = pages[pages.length - 2];
+                showPg(toPg, lastPage.transition, false, pgGoOut);
+                pages.splice(last_index, 1);//remove the last page
+            }
+
+            return true;//important!
+        };
+
+        this.show = function (obj) {
+            if (transitionInProgress) {
+                console.warn("Action ignored! Page transition in progress.");
+                return false; //unsuccesful becasue page is in transition
+            }
+            var transit = {};
+            if (!obj.transition) {
+                transit.effect = obj.effect;
+                transit.duration = obj.duration;
+            } else {
+                transit = obj.transition;
+            }
+
+
+            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj));
+            return true;//important!
+        };
+
+        var _pShowFn = function (obj) {
+            return {
+                onShow: obj && obj.onShow ? obj.onShow : null,
+                onBeforeShow: obj && obj.onBeforeShow ? obj.onBeforeShow : null
+            };
+        };
+
+        this.init = function () {
+            if (!isPageInit) {
+
+                var pg = refactorBody(document);
+
+                pages[0] = {
+                    url: document.location.href,
+                    title: document.title,
+                    page: pg
+                };
+
+                callListeners(listeners["ready"]);
+                callListeners(listeners["pagecreate"], {pageUrl: pages[0].url});
+
+                showPg(pages[0], null, true);
+                isPageInit = true;//yes, must be here
+                return;
+            }
+        };
+
+        return this;
+
+    }
+
+
+    function Listview() {
+        var listTpl = {};
+        var listTplWaitCount = {};
+        var ListTplGetting = {};
+        var _game9ja_Dom_Hold_Data = '_game9ja_Dom_Hold_Data_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+        var upOut = {};
+        var downOut = {};
+        var MAX_OFF = 15;//max number of elements off view before consodering remove element from dom.
+        var MAX_REMAINING_OFF = MAX_OFF - 5;//max number of elements to be left after removal for excess 
+        var MIN_REMAINING_OFF = MAX_REMAINING_OFF - 5;//number of elements off view before putting back the removed elements
+
+        function listThis(html, obj) {
+
+            var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+
+            this.addItem = function (data) {//analogous to appendItem
+                this.appendItem(data);
+            };
+
+            this.appendItem = function (data) {
+
+                topCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                bottomCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                if (downOut[container_id].length) {
+                    downOut[container_id].unshift(data);
+                } else {
+                    putItem(html, obj, data, doAppendItem);
+                }
+
+                /*
+                 //TESTING!!!
+                 if (downOut[container_id].length + $(obj.container).children().length === 100) {//TESTING!!! TO BE REMOVED
+                 
+                 for(var i=0; i<downOut[container_id].length; i++){
+                 console.log(downOut[container_id][i].black_player_name);
+                 }
+                 }*/
+
+            };
+
+            this.prependItem = function (data) {
+
+                bottomCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                topCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
+
+                if (upOut[container_id].length) {
+                    upOut[container_id].unshift(data);
+                } else {
+                    putItem(html, obj, data, doPrependItem);
+                }
+
+                /*
+                 //TESTING!!!
+                 if (upOut[container_id].length + $(obj.container).children().length === 100) {//TESTING!!! TO BE REMOVED
+                 
+                 for(var i=0; i<upOut[container_id].length; i++){
+                 console.log(upOut[container_id][i].black_player_name);
+                 }
+                 
+                 }*/
+
+            };
+
+            //NOT YET TESTED
+            this.removeItemAt = function (index) {
+                if (index < 0) {
+                    return;//important
+                }
+                var up_out = upOut[container_id];
+                var down_out = downOut[container_id];
+                var children = $(obj.container).children();
+                if (index < up_out.length) {
+                    up_out.splice(index, 1);
+                } else if (index < up_out.length + children.length) {
+                    var c_index = index - up_out.length;
+                    var child = children[c_index];
+                    if (child) {
+                        child.remove();
+                    }
+                } else {
+                    //TODO - NOT YET TESTED
+                    var c_index = index - up_out.length - children.length;
+                    down_out.splice(c_index, 1);
+                }
+
+
+
+            };
+
+        }
+
+        function putItem(html, obj, data, actionFn) {
+            var item = tplParam(html, obj, data);
+            actionFn(obj, data, item);
+        }
+
+        function tplParam(html, obj, data) {
+
+            for (var name in data) {
+                var value = data[name];
+                var tpl_name = '{' + name + '}';
+                var h;
+                do {
+                    h = html;
+                    html = html.replace(tpl_name, value);
+                } while (h !== html)
+
+            }
+
+            var content = $('<div '
+                    + (obj.itemClass
+                            && Main.util.isString(obj.itemClass)
+                            ? (' class="' + obj.itemClass + '" ') : '')
+                    + '></div>').html(html);
+
+            //remove title and script tags if present
+            $(content).find('title , script').each(function (index) {
+                this.remove();
+            });
+            if (obj.wrapItem === false) {
+                return content.html();
+            }
+            return content;
+        }
+
+        function doAppendItem(obj, data, item) {
+
+            $(obj.container).append(item);
+
+            var children = $(obj.container).children();
+            var last = children[children.length - 1]; //last element
+
+            //store the data to the dom element for tracking
+            last[_game9ja_Dom_Hold_Data] = data;
+
+        }
+
+        function doPrependItem(obj, data, item) {
+
+            $(obj.container).prepend(item);
+
+            var children = $(obj.container).children();
+            var first = children[0]; //first element
+
+            //store the data to the dom element for tracking
+            first[_game9ja_Dom_Hold_Data] = data;
+
+        }
+
+        function handle(html, obj) {
+            var container_id = obj.container.charAt(0) === "#" ? obj.container.substring(1) : obj.container;
+            if (!upOut[container_id]) {
+                upOut[container_id] = []; // initialize
+            }
+            if (!downOut[container_id]) {
+                downOut[container_id] = []; // initialize
+            }
+
+
+            $(obj.container).html('');//clear previous content
+
+            $(obj.container).off("click");
+            $(obj.container).on("click", onSelectItem.bind({container: obj.container, onSelect: obj.onSelect}));
+
+            var cont_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+            var parent = document.getElementById(cont_id);
+
+            var lstThis = new listThis(html, obj);
+
+            var onScroll = onScrollList.bind({obj: obj, itemHtml: html, container_id: cont_id, container: parent, scrollContainer: obj.scrollContainer});
+
+            Main.dom.removeListener(obj.scrollContainer, 'scroll', onScroll, false);
+            Main.dom.addListener(obj.scrollContainer, 'scroll', onScroll, false);
+
+            try {
+                obj.onReady.bind(lstThis)();
+            } catch (e) {
+                console.warn(e);
+            }
+
+
+        }
+
+        function onScrollList(evt) {
+
+            if (!this.lastScrollTop) {
+                this.lastScrollTop = 0;
+            }
+
+            var count = 0;
+
+            if (this.lastScrollTop < evt.target.scrollTop) {
+
+                while (topCutOff(this.container, this.scrollContainer, this.container_id, this.itemHtml, this.obj)) {
+                    //continue until no more cutoff
+
+                    console.log('count topCutOff looping ', ++count);
+                }
+            } else {
+
+                while (bottomCutOff(this.container, this.scrollContainer, this.container_id, this.itemHtml, this.obj)) {
+                    //continue until no more cutoff
+
+                    console.log('count bottomCutOff looping ', ++count);
+                }
+            }
+
+
+            this.lastScrollTop = evt.target.scrollTop;
+        }
+
+        function topCutOff(_container, _scrollContainer, container_id, itemHtml, obj) {
+            var container, scrollContainer;
+
+            if (Main.util.isString(_container)) {
+                var cid = _container.charAt(0) === '#' ? _container.substring(1) : _container;
+                container = document.getElementById(cid);
+            } else if (_container) {
+                container = _container;
+            } else {
+                return;
+            }
+
+            if (Main.util.isString(_scrollContainer)) {
+                var sid = _scrollContainer.charAt(0) === '#' ? _scrollContainer.substring(1) : _scrollContainer;
+                scrollContainer = document.getElementById(sid);
+            } else if (_scrollContainer) {
+                scrollContainer = _scrollContainer;
+            } else {
+                return;
+            }
+
+            var firstChild = container.children[0];
+            if (!firstChild) {
+                return;
+            }
+            var firstChildBound = firstChild.getBoundingClientRect();
+            var scrollBound = scrollContainer.getBoundingClientRect();
+
+            var item_up_top = firstChildBound.top;
+            var item_size = firstChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var count_off_up = (scrollBound.top - item_up_top) / item_size;
+            var up_out = upOut[container_id];
+            var trim;
+            if (count_off_up >= MAX_OFF) {
+                var CUT_OFF = MAX_OFF - MAX_REMAINING_OFF;
+                for (var i = 0; i < CUT_OFF; i++) {
+                    var child = container.children[0];
+
+                    if (container.removeChild(child)) {
+                        var data = child[_game9ja_Dom_Hold_Data];
+                        up_out.push(data);
+                        trim = true;
+
+                        console.log("removed top - child count = ", container.children.length);
+                    }
+                }
+            }
+
+            addBackBottomCutOff(container, scrollBound, container_id, itemHtml, obj);
+
+            return trim;
+        }
+
+        function bottomCutOff(_container, _scrollContainer, container_id, itemHtml, obj) {
+            var container, scrollContainer;
+
+            if (Main.util.isString(_container)) {
+                var cid = _container.charAt(0) === '#' ? _container.substring(1) : _container;
+                container = document.getElementById(cid);
+            } else if (_container) {
+                container = _container;
+            } else {
+                return;
+            }
+
+            if (Main.util.isString(_scrollContainer)) {
+                var sid = _scrollContainer.charAt(0) === '#' ? _scrollContainer.substring(1) : _scrollContainer;
+                scrollContainer = document.getElementById(sid);
+            } else if (_scrollContainer) {
+                scrollContainer = _scrollContainer;
+            } else {
+                return;
+            }
+
+            var lastChild = container.children[container.children.length - 1];
+            if (!lastChild) {
+                return;
+            }
+            var lastChildBound = lastChild.getBoundingClientRect();
+            var scrollBound = scrollContainer.getBoundingClientRect();
+
+            var item_size = lastChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var item_bottom = lastChildBound.top + lastChildBound.height;
+            var scroll_cont_bottom = scrollBound.top + scrollBound.height;
+
+            var count_off_bottom = (item_bottom - scroll_cont_bottom) / item_size;
+
+            var down_out = downOut[container_id];
+            var trim;
+            if (count_off_bottom >= MAX_OFF) {
+                var CUT_OFF = MAX_OFF - MAX_REMAINING_OFF;
+                for (var i = 0; i < CUT_OFF; i++) {
+                    var last_child = container.children[container.children.length - 1];
+
+                    if (container.removeChild(last_child)) {
+                        var data = last_child[_game9ja_Dom_Hold_Data];
+                        down_out.push(data);
+                        trim = true;
+
+                        console.log("removed bottom - child count = ", container.children.length);
+                    }
+                }
+            }
+
+
+            addBackTopCutOff(container, scrollBound, container_id, itemHtml, obj);
+
+            return trim;
+        }
+
+        function addBackTopCutOff(container, scrollBound, container_id, itemHtml, obj) {
+
+            if (!upOut[container_id].length) {
+                return;
+            }
+
+            var firstChild = container.children[0];
+            if (!firstChild) {
+                return;
+            }
+            var firstChildBound = firstChild.getBoundingClientRect();
+            var item_up_top = firstChildBound.top;
+            var item_size = firstChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var count_off_up = (scrollBound.top - item_up_top) / item_size;
+            var up_out = upOut[container_id];
+            if (count_off_up < MAX_REMAINING_OFF) {
+                var add_back_count = MAX_OFF - count_off_up;
+                add_back_count = add_back_count > up_out.length ? up_out.length : add_back_count;
+
+                for (var i = 0; i < add_back_count; i++) {
+                    var last_index = up_out.length - 1;
+                    if (last_index < 0) {
+                        break;
+                    }
+                    var last_data = up_out[last_index];
+                    putItem(itemHtml, obj, last_data, doPrependItem);
+                    up_out.splice(last_index, 1);
+                }
+
+            }
+
+        }
+
+
+        function addBackBottomCutOff(container, scrollBound, container_id, itemHtml, obj) {
+
+            if (!downOut[container_id].length) {
+                return;
+            }
+
+            var lastChild = container.children[container.children.length - 1];
+            if (!lastChild) {
+                return;
+            }
+
+            var lastChildBound = lastChild.getBoundingClientRect();
+
+            var item_size = lastChildBound.height;
+            if (!item_size || !scrollBound.height) {
+                return;
+            }
+
+            var item_bottom = lastChildBound.top + lastChildBound.height;
+            var scroll_cont_bottom = scrollBound.top + scrollBound.height;
+
+            var count_off_bottom = (item_bottom - scroll_cont_bottom) / item_size;
+            var down_out = downOut[container_id];
+            if (count_off_bottom < MAX_REMAINING_OFF) {
+                var add_back_count = MAX_OFF - count_off_bottom;
+                add_back_count = add_back_count > down_out.length ? down_out.length : add_back_count;
+
+                for (var i = 0; i < add_back_count; i++) {
+                    var last_index = down_out.length - 1;
+                    if (last_index < 0) {
+                        break;
+                    }
+                    var last_data = down_out[last_index];
+                    putItem(itemHtml, obj, last_data, doAppendItem);
+                    down_out.splice(last_index, 1);
+                }
+
+            }
+
+
+        }
+
+
+        function onSelectItem(evt) {
+            var children = $(this.container).children();
+            if (!children.length) {
+                return;
+            }
+
+            var parent = evt.target;
+
+            while (parent && parent !== document.body) {
+                var saved_data = parent[_game9ja_Dom_Hold_Data];
+                if (saved_data) {
+                    if (Main.util.isFunc(this.onSelect)) {
+                        //call the onSelect callback
+                        try {
+                            this.onSelect.bind({data: saved_data})(evt, saved_data);
+                        } catch (e) {
+                            console.warn(e);
+                        }
+
+                    }
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+        }
+
+
+        this.create = function (obj) {
+            if (!obj.tplUrl) {
+                console.warn('missing list property - tplUrl');
+                return;
+            } else if (!Main.util.isString(obj.container)) {
+                console.warn('missing list property or not a string - container');
+                return;
+            } else if (!Main.util.isFunc(obj.onReady)) {
+                console.warn('missing list property or not a function - onReady');
+                return;
+            }
+
+            if (!obj.scrollContainer) {
+                obj.scrollContainer = obj.container;
+                console.warn('scrollContainer property not provided and container property has be selected in it place! Is this your intention?');
+            }
+
+            var scrollEl = obj.scrollContainer;
+            if (Main.util.isString(obj.scrollContainer)) {
+                var sid = obj.scrollContainer.charAt(0) === '#' ? obj.scrollContainer.substring(1) : obj.scrollContainer;
+                scrollEl = document.getElementById(sid);
+            }
+
+            scrollEl.style.overflow = 'auto';
+
+            var me = this;
+            var html = listTpl[obj.tplUrl];
+            if (html) {
+                handle(html, obj);
+            } else {
+                var url = pageRouteUrl + obj.tplUrl;
+                if (ListTplGetting[obj.tplUrl] === obj.tplUrl) {
+                    if (!listTplWaitCount[obj.tplUrl]) {
+                        listTplWaitCount[obj.tplUrl] = [];
+                    }
+                    listTplWaitCount[obj.tplUrl].push(arguments);
+                    return;
+                }
+
+                ListTplGetting[obj.tplUrl] = obj.tplUrl;
+                $.get(url, function (response) {
+
+                    listTpl[obj.tplUrl] = response;
+
+                    handle(response, obj);
+                    delete ListTplGetting[obj.tplUrl];
+                    //consider list templates waiting
+                    if (listTplWaitCount[obj.tplUrl]) {
+                        var countWait = listTplWaitCount[obj.tplUrl].length;
+                        if (countWait) {
+                            for (var i = 0; i < countWait; i++) {
+                                var argu = listTplWaitCount[obj.tplUrl][i];
+                                me.create.apply(null, argu);
+                            }
+                            delete listTplWaitCount[obj.tplUrl];
+                        }
+                    }
+
+
+                }).fail(function () {
+                    delete listTplWaitCount[obj.tplUrl];
+                    console.log("could not get resource:", url);
+                });
+            }
+
+            /**
+             * Get the data in the listview at the specified index
+             * 
+             */
+            this.getData = function (index) {
+                if (index < 0) {
+                    return;//important
+                }
+                var container_id = this.container.charAt(0) === '#' ? this.container.substring(1) : this.container;
+                var up_out = upOut[container_id];
+                var down_out = downOut[container_id];
+                var children = $(obj.container).children();
+                if (index < up_out.length) {
+                    return  up_out[index];
+                } else if (index < up_out.length + children.length) {
+                    var c_index = index - up_out.length;
+                    var child = children[c_index];
+                    if (child) {
+                        return child[_game9ja_Dom_Hold_Data];
+                    }
+                } else {
+                    //TODO - NOT YET TESTED
+                    var c_index = index - up_out.length - children.length;
+                    return down_out[index];
+                }
+
+
+            }.bind(obj);
+
+            return this;
+        };
+
+    }
+
+    function Busy() {
+
+        var busyEl;
+
+        /**
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *                 el : ...., //container element <br>
+         *  defaultText [opt] : ...., //whether to display default text - true or false<br>
+         *         text [opt] : ...., //text used to replace the default text <br>
+         *         html [opt] : ...., //alternative html  <br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      
+         * @param {type} obj
+         * @returns {undefined}
+         */
+        this.show = function (obj) {
+            this.hide();//hide previous one
+
+            $(obj.el).append("<div data-app-content= 'busy' >" + (obj.html ? obj.html : defaultHtml(obj.defaulText, obj.text)) + "</div>");
+            var children = $(obj.el).children();
+            busyEl = children[children.length - 1];
+            busyEl.style.position = 'absolute';
+            busyEl.style.top = '0';
+            busyEl.style.left = '0';
+            busyEl.style.width = '100%';
+            busyEl.style.height = '100%';
+            busyEl.style.background = 'transparent';
+            busyEl.style.zIndex = Main.const.Z_INDEX;//come back
+
+        };
+
+        this.hide = function () {
+            if (busyEl) {
+                busyEl.remove();
+                busyEl = null;
+            }
+        };
+
+        function defaultHtml(showText, txt) {
+            var text = showText !== false ? 'Loading...' : ''; //strictly not equal to false
+            text = txt ? txt : text;
+            return '<div style="position: absolute; top: 50%; width: 100%; text-align: center;"><i class="fa fa-circle-o-notch fa-spin" style="margin-right: 3px;"></i>' + text + '</div>';//come back
+        }
+
+    }
+
+    function Fullscreen() {
+
+        var fullScreenElement = null;
+        var effectFs = null;
+        var hideFs = null;
+        var showFs = null;
+        var duration = 500;
+        /**
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *    el | html | url : ....,<br>
+         *       effect [opt] : ....,<br>
+         *  closeButton [opt] : .....<br>
+         *       onShow [opt] : .....<br>
+         *       onHide [opt] : .....<br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      
+         * @param {type} obj
+         * @returns {undefined}
+         */
+        this.show = function (obj) {
+
+            if ((obj.el && obj.html) || (obj.el && obj.url) || (obj.url && obj.html)) {
+                throw new Error('Ambigious properties : must be only one of url , el , hmtl');
+                return;
+            }
+
+            /*if (fullScreenElement) {//remove old one
+             fullScreenElement.remove();
+             fullScreenElement = null;
+             }*/
+
+            var children = $('body').children(); //.find("[data-app-content='fullscreen']")
+            var content;
+            for (var i = 0; i < children.length; i++) {
+                if ($(children[i]).attr('data-app-content') === 'fullscreen') {
+                    if (content) {
+                        content.remove();//already found so remove - must be only one at a time.
+                        continue;
+                    }
+                    content = children[i];
+                    content.innerHTML = '';//set to empty
+                    initFullscreen(content);
+                }
+            }
+            if (!content) {
+                $('body').append("<div data-app-content= 'fullscreen'></div>");
+                children = $('body').children();
+                content = children[children.length - 1];
+                initFullscreen(content);
+            }
+
+            fullScreenElement = content;
+
+            if (obj.url) {
+                Main.ajax.get(obj.url,
+                        function (res) {
+                            $(content).append(res);
+                            addClose(content, obj.closeButton);
+                        },
+                        function (err) {
+                            if (fullScreenElement) {
+                                fullScreenElement.remove();
+                                fullScreenElement = null;
+                            }
+                            console.log("could not get resources - " + obj.url);
+                        });
+            } else if (obj.el) {
+                $(content).append(obj.el);
+                addClose(content, obj.closeButton);
+            } else if (obj.html) {
+                $(content).append(obj.html);
+                addClose(content, obj.closeButton);
+            }
+
+            showFs = obj.onShow;
+            hideFs = obj.onHide;
+
+            //now fade in or slide. depending on the transition
+            effectFs = obj.effect;
+            if (!effectFs) {
+                effectFs = "fadein";//default effect
+            }
+
+            Main.anim.to(fullScreenElement, duration, effectProp(effectFs), Main.util.isFunc(showFs) ? showFs : null);
+
+        };
+
+
+        function effectProp(effect, reverse) {
+            effect = effect.toLowerCase();
+            var prop = {};
+
+            if (effect === 'fade' || effect === 'fadeout' || effect === 'fadein') {
+                prop.opacity = 1;
+                if (reverse) {
+                    prop.opacity = 0;
+                }
+            }
+            if (effect === 'slide' || effect === 'slideleft' || effect === 'slideright' || effect === 'slidein') {
+                fullScreenElement.style.opacity = 1;
+                if (reverse) {
+                    prop.left = '100%';
+                } else {
+                    fullScreenElement.style.left = '100%';
+                    prop.left = '0%';
+                }
+            }
+            if (effect === 'slideup' || effect === 'slidedown') {
+                fullScreenElement.style.opacity = 1;
+                if (reverse) {
+                    prop.top = '100%';
+                } else {
+                    fullScreenElement.style.top = '100%';
+                    prop.top = '0%';
+                }
+            }
+
+            return prop;
+        }
+
+        /**
+         * Hide the fullscreen. Clean up to realease resources when do. 
+         * @returns {undefined}
+         */
+        this.hide = function () {
+            Main.anim.to(fullScreenElement, duration, effectProp(effectFs, true), cleanUp);
+        };
+
+        function addClose(content, close) {
+            if (!close) {
+                return;
+            }
+            var html = '<i class="fa fa-close" style="color:#777; cursor: pointer; position: absolute; top: 3px; right: 3px;"></i>';
+            $(content).append(html);
+            var children = $(content).children();
+            var last = children[children.length - 1];
+            $(last).on('click', Main.fullscreen.hide);
+        }
+
+        function initFullscreen(content) {
+            content.style.position = 'absolute';
+            content.style.top = '0%';
+            content.style.left = '0%';
+            content.style.width = '100%';
+            content.style.height = '100%';
+            content.style.background = 'black';
+            content.style.opacity = 0;
+            content.style.display = 'block';
+            content.style.zIndex = Main.const.Z_INDEX;//come back
+        }
+
+        function cleanUp() {
+            if (fullScreenElement) {
+                fullScreenElement.remove();
+                fullScreenElement = null;
+            }
+
+            if (Main.util.isFunc(hideFs)) {
+                hideFs();
+            }
+        }
+
+    }
+
+    function Card() {
+        var viewHtmls = {};
+        var cards = {};
+        function load(container_id, file, fn) {
+            if (!viewHtmls[container_id]) {
+                viewHtmls[container_id] = {};
+            }
+
+            var url = 'device/' + Main.device.getCategory() + '/' + file;
+
+            var html = viewHtmls[container_id][url];
+            if (html) {
+                if (fn) {
+                    fn(html);
+                }
+                return;
+            }
+
+            Main.ajax.get(url,
+                    function (res) {
+                        viewHtmls[container_id][url] = res;
+                        if (fn) {
+                            fn(res);
+                        }
+                    },
+                    function (err) {
+                        console.warn('could not get resource ', url);
+                    });
+
+        }
+
+        this.to = function (obj) {
+            var cid;
+            if (!obj.url) {
+                console.warn('invalid card url - ', obj.url);
+                return;
+            }
+            if (Main.util.isString(obj.container)) {
+                cid = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+            } else {
+                cid = $(obj.container).id();
+            }
+
+            var cont = document.getElementById(cid);
+            if (!cont) {
+                console.warn('unknown  card container id - ', cid);
+                return;
+            }
+
+            if (!cards[cid]) {
+                cards[cid] = [];
+                if (cont.innerHTML) {
+                    var cardObj = {url: null, fade: null, content: cont.children};
+                    cards[cid].push(cardObj); //push the children
+                }
+
+            }
+
+            load(cid, obj.url, function (html) {
+                //first update the last content in case of any change
+                var div = document.createElement('div');
+                var children = cont.children;
+                var len = children.length;
+                for (var i = 0; i < len; i++) {
+                    var child = children[0];//always the first
+                    div.appendChild(cont.removeChild(child));
+                }
+
+                var cds = cards[cid];
+                var last_crd = cds[cds.length - 1];
+                if (last_crd) {
+                    last_crd.content = div; //update the last content
+                }
+
+                //find if the new card already exist and make it come last
+                for (var i = 0; i < cds.length; i++) {
+                    if (obj.url === cds[i].url) {//found so remove - we will make it last soon, we promise
+                        cds.splice(i, 1);
+                        break;
+                    }
+                }
+
+                cont.style.opacity = '0';
+
+                cont.innerHTML = html;//set new content to the container
+                var cardObj = {url: obj.url, fade: obj.fade || obj.fadein || obj.fadeIn, content: cont.children};
+                cds.push(cardObj);//now make it last as promised
+                if (obj.fade || obj.fadein || obj.fadeIn) {
+                    Main.anim.to(cont, 500, {opacity: 1}, function () {
+                        if (Main.util.isFunc(obj.onShow)) {
+                            obj.onShow(obj.data);
+                        }
+                    });
+                } else {
+                    cont.style.opacity = '1';
+                    if (Main.util.isFunc(obj.onShow)) {
+                        obj.onShow(obj.data);
+                    }
+                }
+            });
+
+        };
+
+        this.back = function (arg0, arg1) {
+
+            var container, data, onShow;
+
+            if (!Main.util.isString(arg0)
+                    || arguments.length === 1) {//detecting that an object is passed
+                container = arg0.container;
+                data = arg0.data;
+                onShow = arg0.onShow;
+
+            } else if (Main.util.isString(arg0) && Main.util.isFunc(arg1)) {
+                container = arg0;
+                onShow = arg1;
+            } else {
+                console.warn('invalid method arguments - must be  either a one argument object or two argument with the first string type and the second function type. ');
+                return;
+            }
+
+            if (!container) {
+                console.warn('can not go back on a card without a container - ', container);
+                return;
+            }
+
+            var cid;
+
+            if (Main.util.isString(container)) {
+                cid = container.charAt(0) === '#' ? container.substring(1) : container;
+            } else {
+                cid = $(container).id();
+            }
+
+            var cont = document.getElementById(cid);
+            if (!cont) {
+                console.warn('unknown  card container id - ', cid);
+                return;
+            }
+
+            var cds = cards[cid];
+
+            if (!cds.length //important - must check if it is array 
+                    || cds.length < 2) {
+                return; // already at the begining
+            }
+            var last_index = cds.length - 1;
+            var out_card = cds[last_index];
+            cds.splice(last_index, 1);
+
+            cont.innerHTML = ''; //clear
+            cont.style.opacity = '0';
+            var prev = cds[cds.length - 1];
+            var last_content = prev.content.children;
+            var len = last_content.length;
+            for (var i = 0; i < len; i++) {
+                var rem_child = prev.content.removeChild(last_content[0]);//removing the first
+                cont.appendChild(rem_child); //adding the removed child
+            }
+
+            if (out_card.fade || out_card.fadein || out_card.fadeIn) {
+                Main.anim.to(cont, 500, {opacity: 1}, function () {
+                    if (Main.util.isFunc(onShow)) {
+                        onShow(data);
+                    }
+                });
+            } else {
+                cont.style.opacity = '1';
+                if (Main.util.isFunc(onShow)) {
+                    onShow();
+                }
+            }
+
+        };
+    }
+
+/*
+    Main.event = new Event();
+    Main.rcall = new RCall();
+    Main.page = new Page();
+    Main.listview = new Listview();
+    Main.anim = new Animate();
+    Main.fullscreen = new Fullscreen();
+    Main.busy = new Busy();
+    Main.dom = new Dom();
+    Main.menu = new Menu();
+    Main.dialog = new Dialog();
+    Main.card = new Card();
+*/
+    function Dom() {
+        this.addListener = function (e, type, callback, capture) {
+            var el = e;
+            if (Main.util.isString(e)) {
+                e = e.charAt(0) === '#' ? e.substring(1) : e;
+                el = document.getElementById(e);
+                if (!el) {
+                    throw new Error('unknown element id - ' + e);
+                }
+            }
+
+            if (el.addEventListener) {
+                el.addEventListener(type, callback, capture);
+            } else if (el.attachEvent) {//IE
+                el.attachEvent('on' + type, callback, capture);
+            }
+        };
+
+        this.removeListener = function (e, type, callback, capture) {
+            var el = e;
+            if (Main.util.isString(e)) {
+                e = e.charAt(0) === '#' ? e.substring(1) : e;
+                el = document.getElementById(e);
+                if (!el) {
+                    throw new Error('unknown element id - ' + e);
+                }
+            }
+
+            if (el.removeEventListener) {
+                el.removeEventListener(type, callback, capture);
+            } else if (el.detachEvent) {//IE
+                el.detachEvent('on' + type, callback, capture);
+            }
+        };
+    }
+
+    Main.const = {
+        Z_INDEX: 10000,
+        EXCLAMATION: 'EXCLAMATION',
+        QUESTION: 'QUESTION',
+        INFO: 'INFO',
+        YES: 'YES',
+        NO: 'NO',
+        YES_NO: 'YES_NO',
+        YES_NO_CANCEL: 'YES_NO_CANCEL',
+        CANCEL: 'CANCEL',
+        OK: 'OK',
+        OK_CANCEL: 'OK_CANCEL'
+    };
+    /**
+     * Displays option dialog box
+     * 
+     * @param {type} callback - a callback function called when a button is clicked or confirm box closed - the callback argument
+     *  contains the text of the button clicked or undefined if the close button was clicked
+     * @param {type} msg - message
+     * @param {type} title - message title
+     * @param {type} optionButtons - option buttons type (see Main.const )or array of custom option buttons 
+     * @param {type} show_icon - whether to display question icon - true or false - defaults to true 
+     * @param {type} fade - whether to use fade transition - true or false - defaults to true
+     * @returns {undefined}
+     */
+    Main.confirm = function (callback, msg, title, optionButtons, show_icon, fade) {
+
+        var msg_icon_cls = show_icon !== false ? "fa fa-question-circle" : "";
+        var btns = optionButtons;
+        if (!Main.util.isArray(optionButtons)) {
+            switch (optionButtons) {
+                case Main.const.YES_NO:
+                    btns = ['NO', 'YES'];
+                    break;
+                case Main.const.YES_NO_CANCEL:
+                    btns = ['CANCEL', 'NO', 'YES'];
+                    break;
+                case Main.const.OK_CANCEL:
+                    btns = ['CANCEL', 'OK'];
+                    break;
+                default:
+                    btns = ['NO', 'YES'];
+                    break;
+
+            }
+        }
+
+        var is_close_btn = true;
+
+        Main.dialog.show({
+            content: msg,
+            iconCls: msg_icon_cls,
+            title: title,
+            buttons: btns,
+            fade: fade !== false, // default is fade
+            closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
+            touchOutClose: true, //close the dialog if the user touch outside it
+            action: function (el, value) {//not close button   
+                is_close_btn = false;
+                this.hide();
+                if (Main.util.isFunc(callback)) {
+                    callback(value);
+                }
+
+            },
+            onHide: function () {
+                if (is_close_btn && Main.util.isFunc(callback)) {//close button clicked
+                    callback();
+                }
+            }
+        });
+
+    };
+
+    /**
+     * Displays alert dialog box
+     *      
+     * @param {type} msg - message
+     * @param {type} title - message title
+     * @param {type} msg_type - message type to determine the message icon - see Main.const
+     * @param {type} buttonText - custom button text - the default is 'OK' text
+     * @param {type} fade - whether to use fade transition - true or false - defaults to true
+     * @returns {undefined}
+     */
+    Main.alert = function (msg, title, msg_type, buttonText, fade) {
+        var msg_icon_cls = "";
+        switch (msg_type) {
+            case Main.const.EXCLAMATION:
+                msg_icon_cls = "fa fa-exclamation-circle";
+                break;
+            case Main.const.QUESTION:
+                msg_icon_cls = "fa fa-question-circle";
+                break;
+            case Main.const.INFO:
+                msg_icon_cls = "fa fa-info-circle";
+                break;
+        }
+
+        Main.dialog.show({
+            content: msg,
+            iconCls: msg_icon_cls,
+            title: title,
+            buttons: [!buttonText ? 'OK' : buttonText],
+            fade: fade !== false, // default is fade
+            closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
+            touchOutClose: true //close the dialog if the user touch outside it
+        });
+    };
+
 
 
     return Main;
