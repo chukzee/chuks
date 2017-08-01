@@ -12,34 +12,17 @@ and open the template in the editor.
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
 
-        <script>//TESTING!!!
-            function mLoad(){
-                alert('Main loaded');
-                alert(window.Main);
-                alert(Main);
-            }
-             function mError(evt){
-                
-                alert('Main error when loading!');
-                alert(evt.target.baseURI);
-            }
-        </script>
+        <script src="app/Main.js"></script>
         
-        <script src="app/Main.js" onload="mLoad()" onerror="mError(event)"></script>
-      
-          
-      <!--  <script>
-alert('1');
-alert(window.Main);
-alert(Main.init);
+        <script>
+
             Main.init({
                 prod: true,//set to true in production
                 //devDevice : "small"//force to use the device in development
             });
-alert('1a');            
 
         </script>
--->
+
     </head>
 
     <body>

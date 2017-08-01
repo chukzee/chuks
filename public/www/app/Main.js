@@ -1,12 +1,12 @@
-alert('main 0');
+
 
 var Main = {};
 
-alert('main 1');
+
 
 
 (function () {
-alert('main 2');
+
     var isPageInit = false;
     var pageRouteUrl;
     var isMainInit;
@@ -3329,13 +3329,13 @@ alert('main 2');
      * @return {undefined}
      */
     Main.init = function (obj) {
-        alert('2');
+        
 
         if (isMainInit) {//prevent duplicate call
             return;
         }
         isMainInit = true;
-        alert('3');
+        
         window.onload = function (evt) {
 
             var device_size_cat;
@@ -3345,7 +3345,7 @@ alert('main 2');
                 device_size_cat = deviceSizeCategory();
             }
             var pkg = appUrl + "include.json";
-            alert(device_size_cat);
+            
             Main.ajax.get(pkg,
                     function (res) {
                         eval('var json = ' + res);//remove comments if present since they are not valid in json
