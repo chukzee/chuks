@@ -1,4 +1,4 @@
-alert('main 0');
+alert('main 0ss');
 
 var Main = {};
 
