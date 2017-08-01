@@ -1,4 +1,4 @@
-alert('main 0fs');
+alert('main 0');
 
 var Main = {};
 
@@ -2151,7 +2151,7 @@ alert('main 2');
     Main.busy = new Busy();
     Main.dom = new Dom();
     Main.menu = new Menu();
-    //Main.dialog = new Dialog();
+    Main.dialog = new Dialog();
     Main.card = new Card();
 
     function Dom() {
@@ -2545,6 +2545,62 @@ alert('main 2');
             }
 
             function resizeListen() {
+
+                var cb = container.getBoundingClientRect();
+                var bound = base.getBoundingClientRect();
+
+
+                console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
+                console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
+                var pad_factor = 0.8;
+                var base_new_width = 0;
+                var base_new_height = 0;
+                if (bound.width && cb.width && bound.width > cb.width * pad_factor) {
+                    
+                    base_new_width = pad_factor * cb.width;
+                    base.style.width = base_new_width + 'px';
+                    
+                    console.log('base.style.width = ', base_new_width + 'px');
+
+
+                }
+                if (!base_new_width && bound.width && bound.width > window.innerWidth * pad_factor) {
+                    
+                    base_new_width = pad_factor * window.innerWidth;
+                    base.style.width = base_new_width + 'px';
+
+                    console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
+
+
+                }
+                if (bound.height && cb.height && bound.height > cb.height * pad_factor) {
+                    
+                    base_new_height = pad_factor * cb.height;
+                    base.style.height = base_new_height + 'px';
+
+                    console.log('base.style.height = ', base_new_height + 'px');
+
+                }
+                if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
+                    
+                    base_new_height = pad_factor * window.innerHeight;
+                    base.style.height = base_new_height + 'px';
+
+                    console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
+
+                }
+                
+                var ft_bound = footer_el.getBoundingClientRect();
+                var hd_bound = header_el.getBoundingClientRect();
+                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
+                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
+
+                var base_h = base_new_height || base.getBoundingClientRect().height;
+                var base_w = base_new_width || base.getBoundingClientRect().width;
+
+                var bd_h = base_h - hd_h - ft_h;
+                var body_el_h = body_el.getBoundingClientRect().height;
+
 
             }
 
