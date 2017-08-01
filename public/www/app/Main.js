@@ -2301,7 +2301,7 @@ var Main = {};
 
     function Dialog() {
 
-        function diagThis(obj, outer, resizeListen, touchCloseFn) {
+        function diagThis(obj, outer, resizeListenBind, touchCloseFn) {
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -2320,7 +2320,7 @@ var Main = {};
             function destroy() {
                 if (outer) {
                     outer.parentNode.removeChild(outer);
-                    Main.dom.removeListener(window, 'resize', resizeListen, false);
+                    Main.dom.removeListener(window, 'resize', resizeListenBind, false);
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
                     outer = null;
                 }
@@ -2439,8 +2439,10 @@ var Main = {};
                 outer.style.background = 'rgba(0,0,0,0.1)';
             }
 
-            base.style.maxWidth = '80%';
-            base.style.maxHeight = '80%';
+            var pad_factor = 0.8;
+
+            base.style.maxWidth = (pad_factor * 100) + '%';
+            base.style.maxHeight = (pad_factor * 100) + '%';
 
             base.appendChild(header_el);
             base.appendChild(body_el);
@@ -2457,7 +2459,14 @@ var Main = {};
                 Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
             }
 
-            var objThis = new diagThis(obj, outer, resizeListen, touchCloseFunc);
+            var lytObj = {//used for  save layout value
+                layouts: {},
+                LYT_MAX: 20, //max. layout objects to save 
+            };
+
+            var resizeListenBind = resizeListen.bind(lytObj);
+
+            var objThis = new diagThis(obj, outer, resizeListenBind, touchCloseFunc);
 
             if (obj.closeButton !== false) {
                 var close_el = document.createElement('span');
@@ -2511,7 +2520,20 @@ var Main = {};
             outer.style.minWidth = bound.width + 'px';
             outer.style.minHeight = bound.height + 'px';
 
-            Main.dom.addListener(window, 'resize', resizeListen, false);
+            lytObj.layouts[lytKey(cb)] = {
+                baseLeft: compXY.x,
+                baseTop: compXY.y,
+                baseWidth: bound.width,
+                baseHeight: bound.height,
+                containerLeft: cb.left,
+                containerTop: cb.top,
+                containerWidth: cb.width,
+                containerHeight: cb.height,
+                winWidth: window.innerWidth,
+                winHeight: window.innerHeight
+            };
+
+            Main.dom.addListener(window, 'resize', resizeListenBind, false);
 
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
                 Main.anim.to(base, 300, {opacity: 1}, function () {
@@ -2544,28 +2566,95 @@ var Main = {};
                 }
             }
 
+            function lytKey(cb) {
+                return cb.left + "_" 
+                        + cb.top + "_"
+                        + cb.width + "_" 
+                        + cb.height + "_" 
+                        + window.innerWidth + "_" 
+                        + window.innerHeight;
+            }
+
+            function useKnownLayoutFigs (cb){
+                var lyt_key = lytKey(cb);
+                var found_lyt = null;
+                for(var key in this.layouts){
+                    var lyt = this.layouts[key];
+                    
+                    if(lyt.containerLeft 
+                            && lyt.containerTop 
+                            && lyt.containerWidth 
+                            && lyt.containerHeight 
+                            && lyt.containerLeft == cb.left 
+                            && lyt.containerTop == cb.top 
+                            && lyt.containerWidth == cb.width 
+                            && lyt.containerHeight == cb.height){
+                        found_lyt = lyt;
+                        break;
+                    }
+                }
+                
+                if(!found_lyt && this.layouts[lyt_key]){
+                    found_lyt = this.layouts[lyt_key];
+                }
+                
+                if(!found_lyt){
+                    return;
+                }
+                
+                //at this point we have found a layout settings to use
+                base.style.left = found_lyt.baseLeft + 'px';
+                base.style.top = found_lyt.baseTop + 'px';
+                base.style.height = found_lyt.baseHeight + 'px';
+                base.style.width = found_lyt.baseWidth + 'px';
+                
+                var ft_bound = footer_el.getBoundingClientRect();
+                var hd_bound = header_el.getBoundingClientRect();
+                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
+                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
+                var hd_tp = hd_bound && hd_bound.top ? hd_bound.top : 0;
+                
+                var extra = hd_tp - found_lyt.baseTop;
+
+                var bd_h = found_lyt.baseHeight - hd_h - ft_h - extra;
+                
+                body_el.style.height = bd_h + 'px';
+                body_el.style.width = found_lyt.baseWidth + 'px';
+                
+                return true;
+            }
+
             function resizeListen() {
 
                 var cb = container.getBoundingClientRect();
                 var bound = base.getBoundingClientRect();
 
+                var prev_win_height = window.innerHeight;
+                var prev_win_width = window.innerWidth;
+                
+                if (useKnownLayoutFigs.call(this, cb)) {
+                    return;
+                }
 
                 console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
                 console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
-                var pad_factor = 0.8;
+
+
+
+
                 var base_new_width = 0;
                 var base_new_height = 0;
                 if (bound.width && cb.width && bound.width > cb.width * pad_factor) {
-                    
+
                     base_new_width = pad_factor * cb.width;
                     base.style.width = base_new_width + 'px';
-                    
+
                     console.log('base.style.width = ', base_new_width + 'px');
 
 
                 }
                 if (!base_new_width && bound.width && bound.width > window.innerWidth * pad_factor) {
-                    
+
                     base_new_width = pad_factor * window.innerWidth;
                     base.style.width = base_new_width + 'px';
 
@@ -2574,7 +2663,7 @@ var Main = {};
 
                 }
                 if (bound.height && cb.height && bound.height > cb.height * pad_factor) {
-                    
+
                     base_new_height = pad_factor * cb.height;
                     base.style.height = base_new_height + 'px';
 
@@ -2582,29 +2671,35 @@ var Main = {};
 
                 }
                 if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
-                    
+
                     base_new_height = pad_factor * window.innerHeight;
                     base.style.height = base_new_height + 'px';
 
                     console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
 
                 }
-                
+
+
                 var ft_bound = footer_el.getBoundingClientRect();
                 var hd_bound = header_el.getBoundingClientRect();
                 var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
                 var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
-
+                var hd_tp = hd_bound && hd_bound.top ? hd_bound.top : 0;
+                
+                var extra = hd_tp - bound.top;
+                
                 var base_h = base_new_height || base.getBoundingClientRect().height;
                 var base_w = base_new_width || base.getBoundingClientRect().width;
 
-                var bd_h = base_h - hd_h - ft_h;
-                var body_el_h = body_el.getBoundingClientRect().height;
+                var bd_h = base_h - hd_h - ft_h - extra;
+                body_el.style.height = bd_h + 'px';
                 
-                if(body_el_h > bd_h){
+                /*var body_el_h = body_el.getBoundingClientRect().height;
+
+                if (body_el_h > bd_h) {
                     body_el.style.height = bd_h + 'px';
-                }
-                
+                }*/
+
                 body_el.style.width = base_w + 'px';
 
                 console.log('ft_h = ', ft_h);
@@ -2618,7 +2713,33 @@ var Main = {};
                 base.style.left = compXY.x + 'px';
                 base.style.top = compXY.y + 'px';
 
+                //check if the widow size still change before execution got here
+                if(prev_win_height != window.innerHeight
+                        || prev_win_width != window.innerWidth){
+                    //the window size changed before execution got here so check if
+                    //we have the layout already stored
+                    if (useKnownLayoutFigs.call(this, cb)) {
+                        return;
+                    }
+                }
 
+                //save layout figures
+                if (Object.getOwnPropertyNames(this.layouts).length <= this.LYT_MAX) {
+
+                    this.layouts[lytKey(cb)] = {
+                        baseLeft: compXY.x,
+                        baseTop: compXY.y,
+                        baseWidth: base_w,
+                        baseHeight: base_h,
+                        containerLeft: cb.left,
+                        containerTop: cb.top,
+                        containerWidth: cb.width,
+                        containerHeight: cb.height,
+                        winWidth: window.innerWidth,
+                        winHeight: window.innerHeight
+                    };
+                }
+                
             }
 
 
@@ -3329,13 +3450,13 @@ var Main = {};
      * @return {undefined}
      */
     Main.init = function (obj) {
-        
+
 
         if (isMainInit) {//prevent duplicate call
             return;
         }
         isMainInit = true;
-        
+
         window.onload = function (evt) {
 
             var device_size_cat;
@@ -3345,7 +3466,7 @@ var Main = {};
                 device_size_cat = deviceSizeCategory();
             }
             var pkg = appUrl + "include.json";
-            
+
             Main.ajax.get(pkg,
                     function (res) {
                         eval('var json = ' + res);//remove comments if present since they are not valid in json
@@ -3457,7 +3578,7 @@ var Main = {};
             console.log('Failed to load a required resource : ', this.file);
         }
         function loadCss(file, track, route) {
-            
+
             var link = document.createElement("link");
 
             link.onload = onLoadInclude.bind(track);
