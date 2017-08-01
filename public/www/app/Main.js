@@ -1,4 +1,4 @@
-alert('main 0s');
+alert('main 0');
 
 var Main = {};
 
@@ -2299,6 +2299,372 @@ alert('main 2');
         });
     };
 
+    function Dialog() {
+
+        function diagThis(obj, outer, resizeListen, touchCloseFn) {
+            this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
+                this.hide();
+            };
+            this.hide = function () {
+
+                if (obj.fade || obj.fadeIn || obj.fadeIn) {
+                    Main.anim.to(outer, 300, {opacity: 0}, destroy);
+                } else {
+                    destroy();
+                }
+                if (Main.util.isFunc(obj.onHide)) {
+                    obj.onHide();
+                }
+            };
+
+            function destroy() {
+                if (outer) {
+                    outer.parentNode.removeChild(outer);
+                    Main.dom.removeListener(window, 'resize', resizeListen, false);
+                    Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
+                    outer = null;
+                }
+
+                //TODO: Unlock the orientation here
+            }
+
+        }
+
+        /**
+         * Creates and  shows a dialog.
+         * 
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *       container[opt] : ....,//container to center the dialog on<br>
+         *       width [opt] : ...., //width of the dialog in pixel - px <br>
+         *       height [opt] : ...., //height of the dialog body (not the dialog in this case) in pixel - px <br>
+         *       title [opt] : .....,//title of the dialog<br>
+         *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
+         *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
+         *       action [opt] : .....,//called when any buttons created in the footer is cliced<br>
+         *       content [opt] : .....,//cotent of the dialog body<br>
+         *       iconCls [opt] : .....,//icon class to show - used typically by alert and confirm dialog<br>
+         *       fade | fadein | fadeIn [opt] : .....,//whether to use fade transition<br>
+         *       closeButton [opt] : .....,//whether to display close button<br>
+         *       touchOutClose [opt] : .....,//whether to close the dialog if user touch outside it on mobile device <br>
+         *       onShow [opt] : .....,//called when the dialog is shown<br>
+         *       onHide [opt] : .....,//called when the dilog is closed and destroyed<br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      <br>
+         * Usage in action and onShow callback function.<br>
+         * 
+         * The follow method can be called in the action and onShow callback function <br>
+         * <br>
+         * this.hide() --- hides and destroys the dialog
+         * this.close() --- closes and destroys the dialog - same as this.hide()
+         * <br>
+         * @param {type} obj
+         * @returns {undefined}
+         */
+        this.show = function (obj) {
+
+            if (obj.buttons && !Main.util.isArray(obj.buttons)) {//yes because button can be absence. so check if present and it is also an array
+                console.warn('Dialog buttons must be array of button texts if provided!');
+                return;
+            }
+
+            //TODO: lock orientation here to the current orientation - to avoid resize problems of the dialog- just a form of workaround
+            //TODO : Unlock the orientation when the dialog is hide and destroyed - see destroy() method
+
+            var outer = document.createElement('div');
+            var base = document.createElement('div');
+            base.className = 'game9ja-dialog';
+
+            var header_el = document.createElement('div');
+            header_el.className = 'game9ja-dialog-header';
+
+            var body_el = document.createElement('div');
+            body_el.className = 'game9ja-dialog-body';
+
+            var footer_el = document.createElement('div');
+            footer_el.className = 'game9ja-dialog-footer';
+
+            header_el.innerHTML = obj.title;
+
+            if (obj.iconCls) {
+                var icon_el = document.createElement('span');
+                icon_el.className = obj.iconCls;
+                body_el.appendChild(icon_el);
+            }
+
+            var content_el = document.createElement('div');
+            content_el.innerHTML = obj.content;
+            content_el.style.width = '100%';
+
+            body_el.appendChild(content_el);
+
+            if (obj.width) {
+                var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
+                if (!isNaN(width)) {
+                    base.style.width = width + 'px';//width of the dialog
+                } else {
+                    console.warn('dialog width invalid - ', obj.width);
+                }
+            }
+
+            if (obj.height) {
+                var height = new String(obj.height).replace('px', '') - 0; //implicitly convert to numeric
+                if (!isNaN(height)) {
+                    body_el.style.height = height + 'px';//the height of the body - not the dialog in this case
+                } else {
+                    console.warn('dialog height invalid - ', obj.height);
+                }
+            }
+
+            header_el.innerHTML = obj.title;
+
+            outer.style.position = 'absolute';
+            outer.style.top = '0';
+            outer.style.left = '0';
+            outer.style.minWidth = '100%';
+            outer.style.minHeight = '100%';
+            outer.style.zIndex = Main.const.Z_INDEX;
+
+            if (obj.modal !== false) {
+                outer.style.top = '0px';
+                outer.style.left = '0px';
+                outer.style.width = '100%';
+                outer.style.height = '100%';
+                outer.style.background = 'rgba(0,0,0,0.1)';
+            }
+
+            base.style.maxWidth = '80%';
+            base.style.maxHeight = '80%';
+
+            base.appendChild(header_el);
+            base.appendChild(body_el);
+
+            outer.appendChild(base);
+            //outer  = base;
+
+            base.style.opacity = 0;
+
+            document.body.appendChild(outer);
+
+
+            if (obj.touchOutClose === true) {
+                Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
+            }
+
+            var objThis = new diagThis(obj, outer, resizeListen, touchCloseFunc);
+
+            if (obj.closeButton !== false) {
+                var close_el = document.createElement('span');
+                close_el.className = 'fa fa-close';
+                close_el.style.position = 'absolute';
+                close_el.style.right = '2px';
+                close_el.style.top = '2px';
+                close_el.style.width = '20px';
+                close_el.style.height = '20px';
+                base.appendChild(close_el);
+                Main.dom.addListener(close_el, 'click', objThis.hide, false);
+            }
+
+            if (obj.buttons) {//if present
+
+                for (var i = obj.buttons.length - 1; i > -1; i--) {
+                    var btn = document.createElement('input');
+                    btn.type = 'button';
+                    btn.value = obj.buttons[i];
+                    footer_el.appendChild(btn);
+                }
+
+                Main.dom.addListener(footer_el, 'click', function (evt) {
+                    if (evt.target.type === 'button') {
+                        if (Main.util.isFunc(obj.action)) {
+                            obj.action.call(objThis, evt.target, evt.target.value);
+                        }
+                    }
+                }.bind(objThis), false);
+
+                base.appendChild(footer_el);
+            }
+
+            var container;
+            if (Main.util.isString(obj.container)) {
+                var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
+                container = document.getElementById(container_id);
+            } else if (obj.container) {
+                container = obj.container;
+            } else {
+                container = document.body;
+            }
+            var cb = container.getBoundingClientRect();
+            var bound = base.getBoundingClientRect();
+
+            var compXY = computeXY(cb, bound);
+
+            base.style.left = compXY.x + 'px';
+            base.style.top = compXY.y + 'px';
+
+            outer.style.minWidth = bound.width + 'px';
+            outer.style.minHeight = bound.height + 'px';
+
+            Main.dom.addListener(window, 'resize', resizeListen, false);
+
+            if (obj.fade || obj.fadeIn || obj.fadeIn) {
+                Main.anim.to(base, 300, {opacity: 1}, function () {
+                    if (Main.util.isFunc(obj.onShow)) {
+                        obj.onShow.call(objThis);
+                    }
+                });
+            } else {
+                base.style.opacity = 1;
+                if (Main.util.isFunc(obj.onShow)) {
+                    obj.onShow.call(objThis);
+                }
+            }
+
+            function touchCloseFunc(evt) {
+                var parent = evt.target;
+                var touch_outside = true;
+                while (parent && parent !== document.body) {
+                    if (parent === base) {
+                        touch_outside = false;
+                        break;
+                    }
+                    if (parent === outer) {//when the dialog is modal the outer element fills the page - so close it if touched
+                        break;
+                    }
+                    parent = parent.parentNode;
+                }
+                if (touch_outside) {
+                    objThis.hide();
+                }
+            }
+
+            function resizeListen() {
+
+                var cb = container.getBoundingClientRect();
+                var bound = base.getBoundingClientRect();
+
+
+                console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
+                console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
+                var pad_factor = 0.8;
+                var base_new_width = 0;
+                var base_new_height = 0;
+                if (bound.width && cb.width && bound.width > cb.width * pad_factor) {
+                    
+                    base_new_width = pad_factor * cb.width;
+                    base.style.width = base_new_width + 'px';
+                    
+                    console.log('base.style.width = ', base_new_width + 'px');
+
+
+                }
+                if (!base_new_width && bound.width && bound.width > window.innerWidth * pad_factor) {
+                    
+                    base_new_width = pad_factor * window.innerWidth;
+                    base.style.width = base_new_width + 'px';
+
+                    console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
+
+
+                }
+                if (bound.height && cb.height && bound.height > cb.height * pad_factor) {
+                    
+                    base_new_height = pad_factor * cb.height;
+                    base.style.height = base_new_height + 'px';
+
+                    console.log('base.style.height = ', base_new_height + 'px');
+
+                }
+                if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
+                    
+                    base_new_height = pad_factor * window.innerHeight;
+                    base.style.height = base_new_height + 'px';
+
+                    console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
+
+                }
+                
+                var ft_bound = footer_el.getBoundingClientRect();
+                var hd_bound = header_el.getBoundingClientRect();
+                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
+                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
+
+                var base_h = base_new_height || base.getBoundingClientRect().height;
+                var base_w = base_new_width || base.getBoundingClientRect().width;
+
+                var bd_h = base_h - hd_h - ft_h;
+                var body_el_h = body_el.getBoundingClientRect().height;
+                
+                if(body_el_h > bd_h){
+                    body_el.style.height = bd_h + 'px';
+                }
+                
+                body_el.style.width = base_w + 'px';
+
+                console.log('ft_h = ', ft_h);
+                console.log('hd_h = ', hd_h);
+                console.log('base_h = ', base_h);
+                console.log('bd_h = ', bd_h);
+
+                console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h,);
+
+                var compXY = computeXY(cb, bound);
+                base.style.left = compXY.x + 'px';
+                base.style.top = compXY.y + 'px';
+
+
+            }
+
+
+            function computeXY(cb, bound) {
+                var x, y;
+                if (bound.top >= 0
+                        && bound.top <= window.innerHeight
+                        && bound.left >= 0
+                        && bound.left <= window.innerWidth
+                        && bound.height) {//inside the window view port
+                    var cb_h = cb.height;
+                    var cb_w = cb.width;
+                    if (cb_h === 0) {
+                        cb_h = window.innerHeight;
+                    }
+
+                    if (cb_w === 0) {
+                        cb_w = window.innerWidth;
+                    }
+                    var b_w = bound.width;
+                    var b_h = bound.height;
+
+                    x = cb.left + (cb_w - b_w) / 2;
+                    y = cb.top + (cb_h - b_h) / 2;
+                    if (b_w > cb_w) {
+                        x = 0.1 * cb_w;
+                    }
+                    if (b_h > cb_h) {
+                        y = 0.1 * cb_h;
+                    }
+
+                } else {
+                    var bw = 200;
+                    x = (window.innerWidth - bw) / 2;
+                    y = (window.innerHeight - bw) / 2;
+                    if (x <= 0) {
+                        x = 40;
+                    }
+                    if (y <= 0) {
+                        y = 40;
+                    }
+                }
+                return {x: x, y: y};
+            }
+        };
+    }
 
 
     return Main;
