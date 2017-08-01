@@ -2612,7 +2612,7 @@ alert('main 2');
                 console.log('base_h = ', base_h);
                 console.log('bd_h = ', bd_h);
 
-                console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h,);
+                console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h);
 
                 var compXY = computeXY(cb, bound);
                 base.style.left = compXY.x + 'px';
