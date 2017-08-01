@@ -2600,6 +2600,23 @@ alert('main 2');
 
                 var bd_h = base_h - hd_h - ft_h;
                 var body_el_h = body_el.getBoundingClientRect().height;
+                
+                if(body_el_h > bd_h){
+                    body_el.style.height = bd_h + 'px';
+                }
+                
+                body_el.style.width = base_w + 'px';
+
+                console.log('ft_h = ', ft_h);
+                console.log('hd_h = ', hd_h);
+                console.log('base_h = ', base_h);
+                console.log('bd_h = ', bd_h);
+
+                //console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h,);
+
+                var compXY = computeXY(cb, bound);
+                base.style.left = compXY.x + 'px';
+                base.style.top = compXY.y + 'px';
 
 
             }
