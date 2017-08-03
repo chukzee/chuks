@@ -2375,7 +2375,7 @@ var Main = {};
             }
 
             //TODO: lock orientation here to the current orientation - to avoid resize problems of the dialog- just a form of workaround
-            //TODO : Unlock the orientation when the dialog is hide and destroyed - see destroy() method
+            //TODO : Unlock the orientation when the dialog is hidden and destroyed - see destroy() method
 
             var outer = document.createElement('div');
             var base = document.createElement('div');
@@ -2389,8 +2389,8 @@ var Main = {};
 
             var footer_el = document.createElement('div');
             footer_el.className = 'game9ja-dialog-footer';
-
-            header_el.innerHTML = obj.title;
+            var title_html = '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' +obj.title+'</div>';
+            header_el.innerHTML = title_html;
 
             if (obj.iconCls) {
                 var icon_el = document.createElement('span');
@@ -2422,21 +2422,20 @@ var Main = {};
                 }
             }
 
-            header_el.innerHTML = obj.title;
+            header_el.innerHTML = title_html;
 
             outer.style.position = 'absolute';
             outer.style.top = '0';
             outer.style.left = '0';
-            outer.style.minWidth = '100%';
-            outer.style.minHeight = '100%';
-            outer.style.zIndex = Main.const.Z_INDEX;
+            outer.style.zIndex = Main.const.Z_INDEX;            
+            outer.style.overflow = 'hidden';
 
             if (obj.modal !== false) {
                 outer.style.top = '0px';
                 outer.style.left = '0px';
                 outer.style.width = '100%';
                 outer.style.height = '100%';
-                outer.style.background = 'rgba(0,0,0,0.1)';
+                outer.style.background = 'rgba(0,0,0,0.3)';               
             }
 
             var pad_factor = 0.8;
@@ -2516,10 +2515,7 @@ var Main = {};
 
             base.style.left = compXY.x + 'px';
             base.style.top = compXY.y + 'px';
-
-            outer.style.minWidth = bound.width + 'px';
-            outer.style.minHeight = bound.height + 'px';
-
+            
             lytObj.layouts[lytKey(cb)] = {
                 baseLeft: compXY.x,
                 baseTop: compXY.y,
@@ -2608,6 +2604,7 @@ var Main = {};
                 base.style.height = found_lyt.baseHeight + 'px';
                 base.style.width = found_lyt.baseWidth + 'px';
                 
+            
                 var ft_bound = footer_el.getBoundingClientRect();
                 var hd_bound = header_el.getBoundingClientRect();
                 var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
@@ -2692,14 +2689,7 @@ var Main = {};
                 var base_w = base_new_width || base.getBoundingClientRect().width;
 
                 var bd_h = base_h - hd_h - ft_h - extra;
-                body_el.style.height = bd_h + 'px';
-                
-                /*var body_el_h = body_el.getBoundingClientRect().height;
-
-                if (body_el_h > bd_h) {
-                    body_el.style.height = bd_h + 'px';
-                }*/
-
+                body_el.style.height = bd_h + 'px';                                
                 body_el.style.width = base_w + 'px';
 
                 console.log('ft_h = ', ft_h);
@@ -2711,8 +2701,8 @@ var Main = {};
 
                 var compXY = computeXY(cb, bound);
                 base.style.left = compXY.x + 'px';
-                base.style.top = compXY.y + 'px';
-
+                base.style.top = compXY.y + 'px';                                
+                
                 //check if the widow size still change before execution got here
                 if(prev_win_height != window.innerHeight
                         || prev_win_width != window.innerWidth){
