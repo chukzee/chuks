@@ -21,7 +21,7 @@
 	
 	<!--TODO the spec attribute which indicates the plugin version can be adjusted as appropriate-->
 	
-    <plugin name="cordova-plugin-whitelist" spec="1"/>
+    <!--<plugin name="cordova-plugin-whitelist" spec="1"/>
 	<plugin name="cordova-plugin-contacts" spec="1"/>
 	<plugin name="cordova-plugin-device" spec="1"/>
 	<plugin name="cordova-plugin-device-motion" spec="1"/>
@@ -36,7 +36,7 @@
 	<plugin name="cordova-plugin-network-information" spec="1"/>
 	<plugin name="cordova-plugin-splashscreen" spec="1"/>
 	<plugin name="cordova-plugin-vibration" spec="1"/>
-	<plugin name="cordova-plugin-statusbar" spec="1"/>
+	<plugin name="cordova-plugin-statusbar" spec="1"/>-->
 
     <access origin="*"  subdomains="true"/>
     <allow-intent href="http://*/*"/>
