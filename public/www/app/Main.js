@@ -201,6 +201,9 @@ var Main = {};
             //because of the bind(this) in the constructor above - the 'this' of the
             //Main.device class instance is bind to onDeviceReady.
             this.isMobileDeviceReady = true;
+            
+            alert('onDeviceReady');
+            
         },
 
         getCategory: function () {
@@ -2301,14 +2304,14 @@ var Main = {};
 
     function Dialog() {
 
-        function diagThis(obj, outer, resizeListenBind, touchCloseFn) {
+        function diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFn) {
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
             this.hide = function () {
 
                 if (obj.fade || obj.fadeIn || obj.fadeIn) {
-                    Main.anim.to(outer, 300, {opacity: 0}, destroy);
+                    Main.anim.to(dlg_cmp, 300, {opacity: 0}, destroy);
                 } else {
                     destroy();
                 }
@@ -2318,11 +2321,11 @@ var Main = {};
             };
 
             function destroy() {
-                if (outer) {
-                    outer.parentNode.removeChild(outer);
+                if (dlg_cmp) {
+                    dlg_cmp.parentNode.removeChild(dlg_cmp);
                     Main.dom.removeListener(window, 'resize', resizeListenBind, false);
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
-                    outer = null;
+                    dlg_cmp = null;
                 }
 
                 //TODO: Unlock the orientation here
@@ -2377,7 +2380,7 @@ var Main = {};
             //TODO: lock orientation here to the current orientation - to avoid resize problems of the dialog- just a form of workaround
             //TODO : Unlock the orientation when the dialog is hidden and destroyed - see destroy() method
 
-            var outer = document.createElement('div');
+
             var base = document.createElement('div');
             base.className = 'game9ja-dialog';
 
@@ -2389,7 +2392,7 @@ var Main = {};
 
             var footer_el = document.createElement('div');
             footer_el.className = 'game9ja-dialog-footer';
-            var title_html = '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' +obj.title+'</div>';
+            var title_html = '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + obj.title + '</div>';
             header_el.innerHTML = title_html;
 
             if (obj.iconCls) {
@@ -2424,20 +2427,6 @@ var Main = {};
 
             header_el.innerHTML = title_html;
 
-            outer.style.position = 'absolute';
-            outer.style.top = '0';
-            outer.style.left = '0';
-            outer.style.zIndex = Main.const.Z_INDEX;            
-            outer.style.overflow = 'hidden';
-
-            if (obj.modal !== false) {
-                outer.style.top = '0px';
-                outer.style.left = '0px';
-                outer.style.width = '100%';
-                outer.style.height = '100%';
-                outer.style.background = 'rgba(0,0,0,0.3)';               
-            }
-
             var pad_factor = 0.8;
 
             base.style.maxWidth = (pad_factor * 100) + '%';
@@ -2446,13 +2435,34 @@ var Main = {};
             base.appendChild(header_el);
             base.appendChild(body_el);
 
-            outer.appendChild(base);
-            //outer  = base;
+            var dlg_cmp;
+            var outsideDialog;
+            
+            if (obj.modal !== false) {
+                var outer = document.createElement('div');
+                outer.style.position = 'absolute';
+                outer.style.top = '0';
+                outer.style.left = '0';
+                outer.style.zIndex = Main.const.Z_INDEX;
+                outer.style.overflow = 'hidden';
+                outer.style.top = '0px';
+                outer.style.left = '0px';
+                outer.style.width = '100%';
+                outer.style.height = '100%';
+                outer.style.background = 'rgba(0,0,0,0.3)';
 
+                outer.appendChild(base);
+                document.body.appendChild(outer);
+                dlg_cmp = outer;
+                outsideDialog = outer;
+            } else {
+                
+                document.body.appendChild(base);
+                dlg_cmp = base;
+                outsideDialog = document.body;
+            }
+            
             base.style.opacity = 0;
-
-            document.body.appendChild(outer);
-
 
             if (obj.touchOutClose === true) {
                 Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
@@ -2465,7 +2475,7 @@ var Main = {};
 
             var resizeListenBind = resizeListen.bind(lytObj);
 
-            var objThis = new diagThis(obj, outer, resizeListenBind, touchCloseFunc);
+            var objThis = new diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFunc);
 
             if (obj.closeButton !== false) {
                 var close_el = document.createElement('span');
@@ -2515,7 +2525,7 @@ var Main = {};
 
             base.style.left = compXY.x + 'px';
             base.style.top = compXY.y + 'px';
-            
+
             lytObj.layouts[lytKey(cb)] = {
                 baseLeft: compXY.x,
                 baseTop: compXY.y,
@@ -2552,7 +2562,7 @@ var Main = {};
                         touch_outside = false;
                         break;
                     }
-                    if (parent === outer) {//when the dialog is modal the outer element fills the page - so close it if touched
+                    if (parent === outsideDialog) {
                         break;
                     }
                     parent = parent.parentNode;
@@ -2563,61 +2573,61 @@ var Main = {};
             }
 
             function lytKey(cb) {
-                return cb.left + "_" 
+                return cb.left + "_"
                         + cb.top + "_"
-                        + cb.width + "_" 
-                        + cb.height + "_" 
-                        + window.innerWidth + "_" 
+                        + cb.width + "_"
+                        + cb.height + "_"
+                        + window.innerWidth + "_"
                         + window.innerHeight;
             }
 
-            function useKnownLayoutFigs (cb){
+            function useKnownLayoutFigs(cb) {
                 var lyt_key = lytKey(cb);
                 var found_lyt = null;
-                for(var key in this.layouts){
+                for (var key in this.layouts) {
                     var lyt = this.layouts[key];
-                    
-                    if(lyt.containerLeft 
-                            && lyt.containerTop 
-                            && lyt.containerWidth 
-                            && lyt.containerHeight 
-                            && lyt.containerLeft == cb.left 
-                            && lyt.containerTop == cb.top 
-                            && lyt.containerWidth == cb.width 
-                            && lyt.containerHeight == cb.height){
+
+                    if (lyt.containerLeft
+                            && lyt.containerTop
+                            && lyt.containerWidth
+                            && lyt.containerHeight
+                            && lyt.containerLeft == cb.left
+                            && lyt.containerTop == cb.top
+                            && lyt.containerWidth == cb.width
+                            && lyt.containerHeight == cb.height) {
                         found_lyt = lyt;
                         break;
                     }
                 }
-                
-                if(!found_lyt && this.layouts[lyt_key]){
+
+                if (!found_lyt && this.layouts[lyt_key]) {
                     found_lyt = this.layouts[lyt_key];
                 }
-                
-                if(!found_lyt){
+
+                if (!found_lyt) {
                     return;
                 }
-                
+
                 //at this point we have found a layout settings to use
                 base.style.left = found_lyt.baseLeft + 'px';
                 base.style.top = found_lyt.baseTop + 'px';
                 base.style.height = found_lyt.baseHeight + 'px';
                 base.style.width = found_lyt.baseWidth + 'px';
-                
-            
+
+
                 var ft_bound = footer_el.getBoundingClientRect();
                 var hd_bound = header_el.getBoundingClientRect();
                 var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
                 var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
                 var hd_tp = hd_bound && hd_bound.top ? hd_bound.top : 0;
-                
+
                 var extra = hd_tp - found_lyt.baseTop;
 
                 var bd_h = found_lyt.baseHeight - hd_h - ft_h - extra;
-                
+
                 body_el.style.height = bd_h + 'px';
                 body_el.style.width = found_lyt.baseWidth + 'px';
-                
+
                 return true;
             }
 
@@ -2628,7 +2638,7 @@ var Main = {};
 
                 var prev_win_height = window.innerHeight;
                 var prev_win_width = window.innerWidth;
-                
+
                 if (useKnownLayoutFigs.call(this, cb)) {
                     return;
                 }
@@ -2682,14 +2692,14 @@ var Main = {};
                 var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
                 var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
                 var hd_tp = hd_bound && hd_bound.top ? hd_bound.top : 0;
-                
+
                 var extra = hd_tp - bound.top;
-                
+
                 var base_h = base_new_height || base.getBoundingClientRect().height;
                 var base_w = base_new_width || base.getBoundingClientRect().width;
 
                 var bd_h = base_h - hd_h - ft_h - extra;
-                body_el.style.height = bd_h + 'px';                                
+                body_el.style.height = bd_h + 'px';
                 body_el.style.width = base_w + 'px';
 
                 console.log('ft_h = ', ft_h);
@@ -2701,11 +2711,11 @@ var Main = {};
 
                 var compXY = computeXY(cb, bound);
                 base.style.left = compXY.x + 'px';
-                base.style.top = compXY.y + 'px';                                
-                
+                base.style.top = compXY.y + 'px';
+
                 //check if the widow size still change before execution got here
-                if(prev_win_height != window.innerHeight
-                        || prev_win_width != window.innerWidth){
+                if (prev_win_height != window.innerHeight
+                        || prev_win_width != window.innerWidth) {
                     //the window size changed before execution got here so check if
                     //we have the layout already stored
                     if (useKnownLayoutFigs.call(this, cb)) {
@@ -2729,7 +2739,7 @@ var Main = {};
                         winHeight: window.innerHeight
                     };
                 }
-                
+
             }
 
 
@@ -3449,6 +3459,8 @@ var Main = {};
 
         window.onload = function (evt) {
 
+            Main.device.constructor();//initialize device
+            
             var device_size_cat;
             if (!obj.prod) {
                 device_size_cat = obj.devDevice ? obj.devDevice : "large";

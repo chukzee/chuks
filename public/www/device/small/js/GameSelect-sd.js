@@ -12,6 +12,8 @@ Main.on("pagecreate", function (arg) {
            content:"This is title This is title This is title This is title", 
            fade: true,
            buttons:['Cancel','No','Yes'],
+           modal:false,
+           touchOutClose : true,
            action:function(btn, value){
                alert(btn);
                alert(value);

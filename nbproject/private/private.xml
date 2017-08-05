@@ -17,29 +17,48 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/js/GamePanel.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/large/game-home-ld.html</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/config.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/js/GameViewB-sd.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test3.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/small/js/GameHome-sd.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test1.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/Main.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/include.json</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/large/js/GameSelect-ld.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/js/Auth.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/small/index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/app/js/Bluetooth.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/large/js/GameHome-ld.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/app/Main.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/game-home-sd.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/medium/index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/chat.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/info/user.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/small/js/GameSelect-sd.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/js/Chat.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/medium/js/GameSelect-md.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/medium/js/GameHome-md.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/js/Bluetooth.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/small/js/GameView-sd.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/js/UserProfile.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/device/large/js/GameHome-ld.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/app/js/UI.js</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/config.xml</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/medium/js/GameWatch-md.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/large/game-home-ld.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/js/test.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/js/GameSelect-sd.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/game-watch-sd.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/test-game9ja/user-profile.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/medium/js/GameHome-md.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/scss/group-details.scss</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/game-view-b-sd.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/game-server.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/js/GameView-sd.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/test-game9ja/game-watch-test.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/js/GameWatch-sd.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/config.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/large/index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/group-details-sd.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/test-game9ja/game-view-test.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/medium/js/GameViewB-md.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/scss/game-view.scss</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/medium/js/GameView-md.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/js/GameHome-sd.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/app/include.json</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/small/user-profile-sd.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/scss/tournament-details.scss</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/test-game9ja/game-home-test.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/device/medium/game-home-md.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/scss/user-profile.scss</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/public/www/app/js/UI.js</file>
         </group>
     </open-files>
 </project-private>

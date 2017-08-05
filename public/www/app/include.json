@@ -17,6 +17,7 @@
         ],
         
         "js":[
+            "cordova.js" 
             //"/socket.io/socket.io.js" //deprecated
         ]
     },
