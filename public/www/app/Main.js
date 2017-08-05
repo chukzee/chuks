@@ -202,7 +202,8 @@ var Main = {};
             //Main.device class instance is bind to onDeviceReady.
             this.isMobileDeviceReady = true;
             
-            alert('onDeviceReady');
+            alert('onDeviceReady ');
+            alert(this.isMobileDeviceReady);
             
         },
 
@@ -3458,9 +3459,7 @@ var Main = {};
         isMainInit = true;
 
         window.onload = function (evt) {
-
-            Main.device.constructor();//initialize device
-            
+                       
             var device_size_cat;
             if (!obj.prod) {
                 device_size_cat = obj.devDevice ? obj.devDevice : "large";
@@ -3592,7 +3591,7 @@ var Main = {};
         }
 
         function loadScript(file, track, route) {
-            alert(file);
+            
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
@@ -3604,7 +3603,9 @@ var Main = {};
 
         function loadDeviceMain(device_size_cat) {
             //register the home page first
-
+            
+            Main.device.constructor();//initialize device
+            
             pageRouteUrl = deviceUrl + device_size_cat + '/';
             var routeFile = pageRouteUrl + "index.html";
 
