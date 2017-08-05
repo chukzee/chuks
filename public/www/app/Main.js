@@ -3592,6 +3592,7 @@ var Main = {};
         }
 
         function loadScript(file, track, route) {
+            alert(file);
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
