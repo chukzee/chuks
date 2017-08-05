@@ -19,7 +19,19 @@
         "js":[
             "cordova.js" 
             //"/socket.io/socket.io.js" //deprecated
+        ],
+        
+        /**
+         *These are js files that will not abort the application if not found.
+         *A typical case is failure to load cordova in the browser where it is
+         *typically not required
+         *
+         */
+        "load_exceptions":[
+            "cordova.js"//if not found no worries - possibly attempted to load in the browser 
         ]
+        
+        
     },
     
     /**

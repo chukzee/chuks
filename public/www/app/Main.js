@@ -201,10 +201,10 @@ var Main = {};
             //because of the bind(this) in the constructor above - the 'this' of the
             //Main.device class instance is bind to onDeviceReady.
             this.isMobileDeviceReady = true;
-            
+
             alert('onDeviceReady ');
             alert(this.isMobileDeviceReady);
-            
+
         },
 
         getCategory: function () {
@@ -2438,7 +2438,7 @@ var Main = {};
 
             var dlg_cmp;
             var outsideDialog;
-            
+
             if (obj.modal !== false) {
                 var outer = document.createElement('div');
                 outer.style.position = 'absolute';
@@ -2457,12 +2457,12 @@ var Main = {};
                 dlg_cmp = outer;
                 outsideDialog = outer;
             } else {
-                
+
                 document.body.appendChild(base);
                 dlg_cmp = base;
                 outsideDialog = document.body;
             }
-            
+
             base.style.opacity = 0;
 
             if (obj.touchOutClose === true) {
@@ -3459,7 +3459,7 @@ var Main = {};
         isMainInit = true;
 
         window.onload = function (evt) {
-                       
+
             var device_size_cat;
             if (!obj.prod) {
                 device_size_cat = obj.devDevice ? obj.devDevice : "large";
@@ -3480,11 +3480,18 @@ var Main = {};
                                 app_styles = [],
                                 cat_styles = [];
 
+                        var absolute_exe = [];
+                        var app_exe = [];
+                        var cat_exe = [];
+
                         if (json.absolute && Main.util.isArray(json.absolute.js)) {
                             absolute_scripts = json.absolute.js;
                         }
                         if (json.absolute && Main.util.isArray(json.absolute.css)) {
                             absolute_styles = json.absolute.css;
+                        }
+                        if (json.absolute && Main.util.isArray(json.absolute.load_exceptions)) {
+                            absolute_exe = json.absolute.load_exceptions;
                         }
 
                         if (json.app && Main.util.isArray(json.app.js)) {
@@ -3493,6 +3500,9 @@ var Main = {};
                         if (json.app && Main.util.isArray(json.app.css)) {
                             app_styles = json.app.css;
                         }
+                        if (json.app && Main.util.isArray(json.app.load_exceptions)) {
+                            app_exe = json.app.load_exceptions;
+                        }
 
                         if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].js)) {
                             cat_scripts = json[device_size_cat].js;
@@ -3500,9 +3510,14 @@ var Main = {};
                         if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].css)) {
                             cat_styles = json[device_size_cat].css;
                         }
+                        if (json[device_size_cat] && Main.util.isArray(json[device_size_cat].load_exceptions)) {
+                            cat_exe = json[device_size_cat].load_exceptions;
+                        }
 
                         var track = {
                             deviceCategory: device_size_cat,
+                            file: null, //set dynamically
+                            type: null, //set dynamically
                             count: 0,
                             total: absolute_styles.length
                                     + app_styles.length
@@ -3514,12 +3529,12 @@ var Main = {};
                             queue: []
                         };
                         if (track.total > 0) {
-                            loadRequiredFiles(absolute_styles, track, absoluteRoute, loadCss);
-                            loadRequiredFiles(app_styles, track, appRoute, loadCss);
-                            loadRequiredFiles(cat_styles, track, deviceRoute, loadCss);
-                            loadRequiredFiles(absolute_scripts, track, absoluteRoute, loadScript);
-                            loadRequiredFiles(app_scripts, track, appRoute, loadScript);
-                            loadRequiredFiles(cat_scripts, track, deviceRoute, loadScript);
+                            loadRequiredFiles(absolute_styles, track, absoluteRoute, loadCss, absolute_exe);
+                            loadRequiredFiles(app_styles, track, appRoute, loadCss, app_exe);
+                            loadRequiredFiles(cat_styles, track, deviceRoute, loadCss, cat_exe);
+                            loadRequiredFiles(absolute_scripts, track, absoluteRoute, loadScript, absolute_exe);
+                            loadRequiredFiles(app_scripts, track, appRoute, loadScript, app_exe);
+                            loadRequiredFiles(cat_scripts, track, deviceRoute, loadScript, cat_exe);
                         } else {//zero
                             loadDeviceMain(track.deviceCategory);
                         }
@@ -3532,7 +3547,7 @@ var Main = {};
 
         };
 
-        function loadRequiredFiles(files, track, route, callback) {
+        function loadRequiredFiles(files, track, route, callback, exceptions) {
 
             for (var i = 0; i < files.length; i++) {
                 if (files[i].indexOf(0) === '/') {
@@ -3542,6 +3557,7 @@ var Main = {};
                 argu.push(files[i]);
                 argu.push(track);
                 argu.push(route);
+                argu.push(exceptions);
                 track.queueIndex++;
                 if (track.queueIndex === 0) {
                     callback.apply(this, argu);
@@ -3566,7 +3582,7 @@ var Main = {};
         function deviceRoute(file, type, cat) {
             return deviceUrl + cat + "/" + type + "/" + file;
         }
-        function onLoadInclude() {
+        function nextProcess() {
             this.count++;
             if (this.count === this.total) {
                 loadDeviceMain(this.deviceCategory);
@@ -3575,37 +3591,62 @@ var Main = {};
                 next.loader.apply(null, next.argu);
             }
         }
-        function onErrorInclude() {
-            console.log('Failed to load a required resource : ', this.file);
+        function onLoadInclude() {
+            nextProcess.call(this);
         }
-        function loadCss(file, track, route) {
+        function onErrorInclude() {
+            
+            for (var n in this.exceptions) {
+                var ex = this.exceptions[n];
+                var ex_file = this.routeFn(ex);
+                if (this.file === ex_file) {
+                    
+                    console.log(ex_file, "failed to load but will not abort application loading process based on configuration!");
+                    
+                    nextProcess.call(this);
+                    return;
+                }
+            }
+            
+            console.warn('Failed to load a required resource : ', this.file);
+
+        }
+        function loadCss(file, track, route, exceptions) {
+            track.type = "css";
+            track.file = route(file, track.type);
+            track.exceptions = exceptions;
+            track.routeFn = route;
 
             var link = document.createElement("link");
-
             link.onload = onLoadInclude.bind(track);
-            link.onerror = onErrorInclude.bind({file: file});
+            link.onerror = onErrorInclude.bind(track);
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = route(file, "css");
+            link.href = track.file;
             document.head.appendChild(link);
         }
 
-        function loadScript(file, track, route) {
-            
+        function loadScript(file, track, route, exceptions) {
+
+            track.type = "js";
+            track.file = route(file, track.type, track.deviceCategory);
+            track.exceptions = exceptions;
+            track.routeFn = route;
+
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
-            script.onerror = onErrorInclude.bind({file: file});
+            script.onerror = onErrorInclude.bind(track);
             script.type = "text/javascript";
-            script.src = route(file, "js", track.deviceCategory);
+            script.src = track.file;
             document.head.appendChild(script);
         }
 
         function loadDeviceMain(device_size_cat) {
             //register the home page first
-            
+
             Main.device.constructor();//initialize device
-            
+
             pageRouteUrl = deviceUrl + device_size_cat + '/';
             var routeFile = pageRouteUrl + "index.html";
 
