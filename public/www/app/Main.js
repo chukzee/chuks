@@ -61,8 +61,8 @@ var Main = {};
      * largely gotten from https://developer.mozilla.org
      * @returns {undefined}
      */
-    (function() {
-        
+    (function () {
+
         //polyfill for bind - MDN ->https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
         if (!Function.prototype.bind) {
             Function.prototype.bind = function (oThis) {
@@ -91,9 +91,9 @@ var Main = {};
                 return fBound;
             };
         }
-        
+
         //more polyfill may go below 
-        
+
     })();
 
     function xhrReq(send, method, url) {
@@ -230,6 +230,8 @@ var Main = {};
         backActions: [], //array of functions to execute when back button is press
         menuButtonAction: null,
         searchButtonAction: null,
+        isPaused: false,
+        isActive: false,
 
         constructor: function (config) {
             document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -244,9 +246,12 @@ var Main = {};
             //because of the bind(this) in the constructor above - the 'this' of the
             //Main.device class instance is bind to onDeviceReady.
             this.isMobileDeviceReady = true;
+            this.isActive = true;
 
             alert('onDeviceReady ');
             alert(this.isMobileDeviceReady);
+
+            navigator.app.overrideButton("menubutton", true); //this will force the menubutton to fire (work) - though not documented. I do not know why!
 
             document.addEventListener('pause', this.onPause.bind(this), false);
             document.addEventListener('resume', this.onResume.bind(this), false);
@@ -257,13 +262,23 @@ var Main = {};
         },
 
         onPause: function () {
-            //TODO
+            this.isPaused = true;
+            this.isActive = false;
+
             alert('onPause');
         },
 
         onResume: function () {
-            //TODO
-            alert('onResume');
+            this.isPaused = false;
+            this.isActive = true;
+            setTimeout(function () {
+                //accoring to the cordova doc, put interative function call in setTimeout upon resume
+                //so as not to hang the application
+               
+                alert('onResume');
+                
+            }, 0);
+
         },
 
         onBackButton: function () {
