@@ -187,6 +187,9 @@ var Main = {};
     Main.device = {
 
         isMobileDeviceReady: false,
+        backActions: [], //array of functions to execute when back button is press
+        menuButtonAction: null,
+        searchButtonAction: null,
 
         constructor: function (config) {
             document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -205,8 +208,79 @@ var Main = {};
             alert('onDeviceReady ');
             alert(this.isMobileDeviceReady);
 
+            document.addEventListener('pause', this.onPause.bind(this), false);
+            document.addEventListener('resume', this.onResume.bind(this), false);
+            document.addEventListener('backbutton', this.onBackButton.bind(this), false);
+            document.addEventListener('menubutton', this.onMenuButton.bind(this), false);
+            document.addEventListener('searchbutton', this.onSearchButton.bind(this), false);
+
         },
 
+        onPause: function () {
+            //TODO
+            alert('onPause');
+        },
+
+        onResume: function () {
+            //TODO
+            alert('onResume');
+        },
+
+        onBackButton: function () {
+            alert('onBackButton');
+            if (this.backActions.length > 0) {
+                var action = this.backActions.pop();//remove the last element and return it
+                if (Main.util.isFunc(action)) {
+                    try {
+                        action();
+                    } catch (e) {
+                        console.warn(e);
+                    }
+                }
+            }
+        },
+
+        onMenuButton: function () {
+            alert('onMenuButton');
+            if (Main.util.isFunc(this.menuButtonAction)) {
+                try {
+                    this.menuButtonAction();
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+        },
+
+        onSearchButton: function () {
+            alert('onSearchButton');
+            if (Main.util.isFunc(this.searchButtonAction)) {
+                try {
+                    this.searchButtonAction();
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+        },
+
+        removeBackAction: function (action) {
+            for (var i in this.backActions) {
+                if (action === this.backActions[i]) {
+                    this.backActions.splice(i, 1);
+                    break;
+                }
+            }
+        },
+
+        addBackAction: function (action) {
+            this.backActions.push(action);
+        },
+
+        setMenuButtonAction: function (action) {
+            this.menuButtonAction = action;
+        },
+        setSearchButtonAction: function (action) {
+            this.searchButtonAction = action;
+        },
         getCategory: function () {
             return device_category;
         },
@@ -3595,19 +3669,19 @@ var Main = {};
             nextProcess.call(this);
         }
         function onErrorInclude() {
-            
+
             for (var n in this.exceptions) {
                 var ex = this.exceptions[n];
                 var ex_file = this.routeFn(ex);
                 if (this.file === ex_file) {
-                    
+
                     console.log(ex_file, "failed to load but will not abort application loading process based on configuration!");
-                    
+
                     nextProcess.call(this);
                     return;
                 }
             }
-            
+
             console.warn('Failed to load a required resource : ', this.file);
 
         }
