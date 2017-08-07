@@ -4,11 +4,23 @@
  * and open the template in the editor.
  */
 
+Main.test ={
+    simulateBackButtonListener : function(evt){
+                
+        if(evt.code === "Comma"){//backward
+            Main.device.onBackButton();
+        }
+    }
+};
+
 Main.on("pagecreate", function (arg) {
     ///alert("pagecreate");
     //REMIND: To avoid memory leak use 'one' method instead of 'on' method 
     //for page navigation so as to avoid piling up the click event listeners
     //which lead to memory leak
+    Main.device.isTesting = true; //TESTING!!!
+    Main.device.isMobileDeviceReady = true; //TESTING!!!
+    document.body.addEventListener('keypress', Main.test.simulateBackButtonListener)
 
     callCard();
 

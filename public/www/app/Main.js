@@ -57,7 +57,7 @@ var Main = {};
     };
 
     /**
-     * Self invoking function for polyfill
+     * Self invoking function for polyfills
      * largely gotten from https://developer.mozilla.org
      * @returns {undefined}
      */
@@ -231,20 +231,63 @@ var Main = {};
         menuButtonAction: null,
         searchButtonAction: null,
         isPaused: false,
-        isActive: false,
-
+        isActive: true, //yes - considering if it is no a mobile device . safe this way!
+        event: {
+            /*Go to cordova website to see the list of supported device for the events
+             * below. The commented parts are not supported
+             */
+            
+            backbutton: {
+                name: 'backbutton',
+                supported: ['Android', 'BlackBerry 10' /*, 'iOS', 'Win32NT'*/, 'WinCE']
+            },
+            pause: {
+                name: 'pause',
+                supported:  ['Android', 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE']
+            },
+            resume: {
+                name: 'resume',
+                supported:  ['Android', 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE']
+            },
+            menubutton: {
+                name: 'menubutton',
+                supported:  ['Android', 'BlackBerry 10' /*, 'iOS', 'Win32NT', 'WinCE'*/]
+            },
+            searchbutton: {
+                name: 'searchbutton',
+                supported:  ['Android' /*, 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE'*/]
+            }
+        },
         constructor: function (config) {
             document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         },
-
+        isSupported: function(ev){
+            if(this.isTesting){//TESTING!!!
+                console.log('REMIND: is testing!!! to be removed');
+                return true;
+            }
+            
+            var platf = device.platform;
+            if(ev.is === true){
+                return true;
+            }else if(ev.is === false){
+                return false;
+            }
+            for(var n in ev.supported){
+                if(platf === ev.supported[n]){
+                    ev.is = true;
+                    return ev.is;
+                }
+            }
+            
+            ev.is = false;
+        },
         // deviceready Event Handler
         //
         // Bind any cordova events here. Common events are:
         // 'pause', 'resume', etc.
         onDeviceReady: function () {
-            //using 'this' to access isMobileDeviceReady variable is only possible
-            //because of the bind(this) in the constructor above - the 'this' of the
-            //Main.device class instance is bind to onDeviceReady.
+            
             this.isMobileDeviceReady = true;
             this.isActive = true;
 
@@ -274,25 +317,25 @@ var Main = {};
             setTimeout(function () {
                 //accoring to the cordova doc, put interative function call in setTimeout upon resume
                 //so as not to hang the application
-               
+
                 alert('onResume');
-                
-            }, 0);
+
+            }, 1000);
 
         },
 
         onBackButton: function () {
             alert('onBackButton');
-            if (this.backActions.length > 0) {
-                var action = this.backActions.pop();//remove the last element and return it
-                if (Main.util.isFunc(action)) {
-                    try {
-                        action();
-                    } catch (e) {
-                        console.warn(e);
-                    }
+            var action = this.backActions[this.backActions.length - 1];
+
+            if (Main.util.isFunc(action)) {
+                try {
+                    action();
+                } catch (e) {
+                    console.warn(e);
                 }
             }
+
         },
 
         onMenuButton: function () {
@@ -318,23 +361,37 @@ var Main = {};
         },
 
         removeBackAction: function (action) {
-            for (var i in this.backActions) {
+            var c = 0;
+            for (var i = this.backActions.length - 1; i > -1; i--) {
+                c++;
                 if (action === this.backActions[i]) {
-                    this.backActions.splice(i, 1);
+                    this.backActions.splice(i, c); //automatically clear all back actions upto to this point
                     break;
                 }
             }
         },
 
         addBackAction: function (action) {
-            this.backActions.push(action);
+            if (this.isSupported(this.event.backbutton)) {
+                if (this.isMobileDeviceReady) {
+                    this.backActions.push(action);
+                }
+            }
         },
 
         setMenuButtonAction: function (action) {
-            this.menuButtonAction = action;
+            if (this.isSupported(this.event.menubutton)) {
+            if (this.isMobileDeviceReady) {
+                this.menuButtonAction = action;
+            }
+        }
         },
         setSearchButtonAction: function (action) {
-            this.searchButtonAction = action;
+            if (this.isSupported(this.event.searchbutton)) {
+            if (this.isMobileDeviceReady) {
+                this.searchButtonAction = action;
+            }
+        }
         },
         getCategory: function () {
             return device_category;
@@ -400,7 +457,7 @@ var Main = {};
                 }
             }
             return s;
-        },
+        }
 
     };
 
@@ -851,7 +908,7 @@ var Main = {};
                     pageOut[0].style.opacity = 1;
                     $(pageOut).hide();
                 }
-                afterPageChange(pageIn, pgGoOut);
+                afterPageChange(forward, pageIn, pgGoOut);
             }
 
             lastPageUrl = pg.url;
@@ -859,6 +916,7 @@ var Main = {};
             if (pg.title) {
                 document.title = pg.title;
             }
+
         }
         function initPageInOut(pageIn, pageOut) {
 
@@ -882,13 +940,13 @@ var Main = {};
             var jqIn = {};
             jqIn.opacity = 1;
             var onCompleteIn = function () {
-                afterPageChange(pageIn, pgGoOut);
+                afterPageChange(forward, pageIn, pgGoOut);
             };
 
             var jqOut = {};
             jqOut.opacity = 0;
             var onCompleteOut = function () {
-                afterPageChange(pageIn, pgGoOut);
+                afterPageChange(forward, pageIn, pgGoOut);
             };
 
             var tweenIn = {opacity: jqIn.opacity, onComplete: onCompleteIn};
@@ -924,7 +982,7 @@ var Main = {};
                 first = true;
                 if (first && second) {
                     document.body.style.overflow = body_overflow;
-                    afterPageChange(pageIn, pgGoOut);
+                    afterPageChange(forward, pageIn, pgGoOut);
                 }
 
             };
@@ -935,7 +993,7 @@ var Main = {};
                 second = true;
                 if (first && second) {
                     document.body.style.overflow = body_overflow;
-                    afterPageChange(pageIn, pgGoOut);
+                    afterPageChange(forward, pageIn, pgGoOut);
                 }
 
             };
@@ -973,7 +1031,7 @@ var Main = {};
                 first = true;
                 if (first && second) {
                     document.body.style.overflow = body_overflow;
-                    afterPageChange(pageIn, pgGoOut);
+                    afterPageChange(forward, pageIn, pgGoOut);
                 }
 
             };
@@ -984,7 +1042,7 @@ var Main = {};
                 second = true;
                 if (first && second) {
                     document.body.style.overflow = body_overflow;
-                    afterPageChange(pageIn, pgGoOut);
+                    afterPageChange(forward, pageIn, pgGoOut);
                 }
 
             };
@@ -1007,11 +1065,17 @@ var Main = {};
 
         }
 
-        function afterPageChange(pageIn, pgGoOut) {
+        function afterPageChange(forward, pageIn, pgGoOut) {
             transitionInProgress = false;
             pageIn[0].style.overflow = "auto";
             if (pgGoOut) {
                 $(pgGoOut).remove();
+            }
+
+            if (forward) {
+                Main.device.addBackAction(Main.page.back);
+            } else {
+                Main.device.removeBackAction(Main.page.back);
             }
         }
 
@@ -2019,6 +2083,7 @@ var Main = {};
 
             Main.anim.to(fullScreenElement, duration, effectProp(effectFs), Main.util.isFunc(showFs) ? showFs : null);
 
+            Main.device.addBackAction(this.hide);
         };
 
 
@@ -2060,6 +2125,7 @@ var Main = {};
          */
         this.hide = function () {
             Main.anim.to(fullScreenElement, duration, effectProp(effectFs, true), cleanUp);
+            Main.device.removeBackAction(this.hide);
         };
 
         function addClose(content, close) {
@@ -2197,7 +2263,13 @@ var Main = {};
                         obj.onShow(obj.data);
                     }
                 }
+                //Main.device.addBackAction(this.back);
             });
+
+            var me = this;
+            function cardBackAction() {
+                me.back(this.obj);
+            }
 
         };
 
@@ -2392,6 +2464,7 @@ var Main = {};
                 if (is_close_btn && Main.util.isFunc(callback)) {//close button clicked
                     callback();
                 }
+
             }
         });
 
@@ -2428,13 +2501,13 @@ var Main = {};
             buttons: [!buttonText ? 'OK' : buttonText],
             fade: fade !== false, // default is fade
             closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
-            touchOutClose: true //close the dialog if the user touch outside it
+            touchOutClose: true //close the dialog if the user touch outside it                        
         });
     };
 
     function Dialog() {
 
-        function diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFn) {
+        function diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFn, bckHideFunc) {
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -2446,8 +2519,9 @@ var Main = {};
                     destroy();
                 }
                 if (Main.util.isFunc(obj.onHide)) {
-                    obj.onHide();
+                    obj.onHide.call(this);
                 }
+
             };
 
             function destroy() {
@@ -2457,6 +2531,8 @@ var Main = {};
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
                     dlg_cmp = null;
                 }
+
+                Main.device.removeBackAction(bckHideFunc);
 
                 //TODO: Unlock the orientation here
             }
@@ -2600,12 +2676,16 @@ var Main = {};
 
             var lytObj = {//used for  save layout value
                 layouts: {},
-                LYT_MAX: 20, //max. layout objects to save 
+                LYT_MAX: 20 //max. layout objects to save 
             };
 
             var resizeListenBind = resizeListen.bind(lytObj);
 
-            var objThis = new diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFunc);
+            var objThis = new diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFunc, bckHideFunc);
+
+            function bckHideFunc() {
+                return objThis.hide();
+            }
 
             if (obj.closeButton !== false) {
                 var close_el = document.createElement('span');
@@ -2671,18 +2751,32 @@ var Main = {};
 
             Main.dom.addListener(window, 'resize', resizeListenBind, false);
 
+
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
                 Main.anim.to(base, 300, {opacity: 1}, function () {
                     if (Main.util.isFunc(obj.onShow)) {
-                        obj.onShow.call(objThis);
+                        try {
+                            obj.onShow.call(objThis);
+                        } catch (e) {
+                            console.warn(e);
+                        }
                     }
+                    Main.device.addBackAction(bckHideFunc);
                 });
             } else {
                 base.style.opacity = 1;
                 if (Main.util.isFunc(obj.onShow)) {
-                    obj.onShow.call(objThis);
+                    try {
+                        obj.onShow.call(objThis);
+                    } catch (e) {
+                        console.warn(e);
+                    }
+
                 }
+                Main.device.addBackAction(bckHideFunc);
             }
+
+
 
             function touchCloseFunc(evt) {
                 var parent = evt.target;
@@ -2721,10 +2815,10 @@ var Main = {};
                             && lyt.containerTop
                             && lyt.containerWidth
                             && lyt.containerHeight
-                            && lyt.containerLeft == cb.left
-                            && lyt.containerTop == cb.top
-                            && lyt.containerWidth == cb.width
-                            && lyt.containerHeight == cb.height) {
+                            && lyt.containerLeft === cb.left
+                            && lyt.containerTop === cb.top
+                            && lyt.containerWidth === cb.width
+                            && lyt.containerHeight === cb.height) {
                         found_lyt = lyt;
                         break;
                     }
@@ -2775,8 +2869,6 @@ var Main = {};
 
                 console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
                 console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
-
-
 
 
                 var base_new_width = 0;
@@ -2844,8 +2936,8 @@ var Main = {};
                 base.style.top = compXY.y + 'px';
 
                 //check if the widow size still change before execution got here
-                if (prev_win_height != window.innerHeight
-                        || prev_win_width != window.innerWidth) {
+                if (prev_win_height !== window.innerHeight
+                        || prev_win_width !== window.innerWidth) {
                     //the window size changed before execution got here so check if
                     //we have the layout already stored
                     if (useKnownLayoutFigs.call(this, cb)) {
@@ -2923,6 +3015,7 @@ var Main = {};
         var menuCmp;
         var menuBtn;
         var resizeListenMnuBind;
+        var bckHideFns = []; //store hides function to be removed by back actions when menu is destroyed 
 
         function onClickOutsideHide(evt) {
             if (evt.target === menuBtn) {
@@ -2951,6 +3044,7 @@ var Main = {};
         function resizeListenMnu(evt) {
 
             alert('resizeListenMnu');
+
             if (!menuCmp) {
                 return;
             }
@@ -2988,15 +3082,19 @@ var Main = {};
                 menuCmp = null;
                 Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
                 Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
-
-
             }
+
+            for (var i in bckHideFns) {
+                Main.device.removeBackAction(bckHideFns[i]);
+            }
+            bckHideFns = [];//empty the hides functions
+
         }
 
         function menuThis(_this, menuCmp, mnuBody) {
 
             this.hide = function () {
-                destroy();
+                destroy.call(this);
             };
 
             this.getItems = function () {
@@ -3194,7 +3292,7 @@ var Main = {};
                 body_max_height: max_height,
                 main_style: style,
                 body_style: body_height_style
-            }
+            };
         }
 
         /**
@@ -3290,10 +3388,18 @@ var Main = {};
                 Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
 
 
+                var mnuThis = menuThis(this, menuCmp, mnuBody);
                 if (Main.util.isFunc(this.onShow)) {
-                    var mnuThis = menuThis(this, menuCmp, mnuBody);
-                    this.onShow.bind(mnuThis)();
+                    this.onShow.call(mnuThis);
                 }
+
+                if (!bckHideFns) {
+                    bckHideFns = [];
+                }
+
+                bckHideFns.push(mnuThis.hide);
+
+                Main.device.addBackAction(mnuThis.hide);
 
 
             }
@@ -3372,13 +3478,13 @@ var Main = {};
                 if ($(btns[i]).hasClass(active_class)) {
                     var next = i + this.direction;
                     if (btns[next]) {
-                        tabShow.bind(
+                        tabShow.call(
                                 {
                                     tabIndex: next,
                                     buttons: btns,
                                     tabBody: tab_body,
                                     fn: obj.onShow[id_prefix + btns[next].id]
-                                })();
+                                });
                     }
                     break;
                 }
