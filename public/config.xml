@@ -46,6 +46,11 @@
     <allow-intent href="mailto:*"/>
     <allow-intent href="geo:*"/>
 	
+	<config-file platform="android" parent="/manifest">
+		<application android:theme="@android:style/Theme.NoTitleBar">
+		
+		</application>
+	</config-file>
     
     
 </widget>

@@ -236,50 +236,50 @@ var Main = {};
             /*Go to cordova website to see the list of supported device for the events
              * below. The commented parts are not supported
              */
-            
+
             backbutton: {
                 name: 'backbutton',
                 supported: ['Android', 'BlackBerry 10' /*, 'iOS', 'Win32NT'*/, 'WinCE']
             },
             pause: {
                 name: 'pause',
-                supported:  ['Android', 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE']
+                supported: ['Android', 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE']
             },
             resume: {
                 name: 'resume',
-                supported:  ['Android', 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE']
+                supported: ['Android', 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE']
             },
             menubutton: {
                 name: 'menubutton',
-                supported:  ['Android', 'BlackBerry 10' /*, 'iOS', 'Win32NT', 'WinCE'*/]
+                supported: ['Android', 'BlackBerry 10' /*, 'iOS', 'Win32NT', 'WinCE'*/]
             },
             searchbutton: {
                 name: 'searchbutton',
-                supported:  ['Android' /*, 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE'*/]
+                supported: ['Android' /*, 'BlackBerry 10', 'iOS', 'Win32NT', 'WinCE'*/]
             }
         },
         constructor: function (config) {
             document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         },
-        isSupported: function(ev){
-            if(this.isTesting){//TESTING!!!
+        isSupported: function (ev) {
+            if (this.isTesting) {//TESTING!!!
                 console.log('REMIND: is testing!!! to be removed');
                 return true;
             }
-            
+
             var platf = device.platform;
-            if(ev.is === true){
+            if (ev.is === true) {
                 return true;
-            }else if(ev.is === false){
+            } else if (ev.is === false) {
                 return false;
             }
-            for(var n in ev.supported){
-                if(platf === ev.supported[n]){
+            for (var n in ev.supported) {
+                if (platf === ev.supported[n]) {
                     ev.is = true;
                     return ev.is;
                 }
             }
-            
+
             ev.is = false;
         },
         // deviceready Event Handler
@@ -287,7 +287,7 @@ var Main = {};
         // Bind any cordova events here. Common events are:
         // 'pause', 'resume', etc.
         onDeviceReady: function () {
-            
+
             this.isMobileDeviceReady = true;
             this.isActive = true;
 
@@ -320,7 +320,7 @@ var Main = {};
 
                 alert('onResume');
 
-            }, 1000);
+            }, 0);
 
         },
 
@@ -360,13 +360,20 @@ var Main = {};
             }
         },
 
-        removeBackAction: function (action) {
-            var c = 0;
+        removeBackAction: function (action, me_only) {
+            if(!action){
+                return;
+            }
+            var c = 1;
             for (var i = this.backActions.length - 1; i > -1; i--) {
-                c++;
+
                 if (action === this.backActions[i]) {
                     this.backActions.splice(i, c); //automatically clear all back actions upto to this point
                     break;
+                }
+
+                if (me_only !== true) {
+                    c++;
                 }
             }
         },
@@ -381,17 +388,17 @@ var Main = {};
 
         setMenuButtonAction: function (action) {
             if (this.isSupported(this.event.menubutton)) {
-            if (this.isMobileDeviceReady) {
-                this.menuButtonAction = action;
+                if (this.isMobileDeviceReady) {
+                    this.menuButtonAction = action;
+                }
             }
-        }
         },
         setSearchButtonAction: function (action) {
             if (this.isSupported(this.event.searchbutton)) {
-            if (this.isMobileDeviceReady) {
-                this.searchButtonAction = action;
+                if (this.isMobileDeviceReady) {
+                    this.searchButtonAction = action;
+                }
             }
-        }
         },
         getCategory: function () {
             return device_category;
@@ -875,6 +882,8 @@ var Main = {};
         var effDuration = 0.5;//default effect duration
         var lastPageUrl;
         var transitionInProgress = false;
+        var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+
         function swapShow(pg, transition, forward, pgGoOut) {
             var eff = transition, duration = effDuration;
             if (transition && !Main.util.isString(transition)) {//not string then object!
@@ -1068,15 +1077,29 @@ var Main = {};
         function afterPageChange(forward, pageIn, pgGoOut) {
             transitionInProgress = false;
             pageIn[0].style.overflow = "auto";
-            if (pgGoOut) {
-                $(pgGoOut).remove();
+
+            var backFn;
+
+            if (pgGoOut) {//get the page back function stored in the dom                
+                backFn = pgGoOut._game9ja_Dom_Hold_PgBack;
+                if (!backFn) {
+                    //then try this
+                    backFn = pgGoOut[0]._game9ja_Dom_Hold_PgBack;
+                }
+                $(pgGoOut).remove();//now remove
             }
 
             if (forward) {
-                Main.device.addBackAction(Main.page.back);
+                pageIn[0]._game9ja_Dom_Hold_PgBack = function () {//important!
+                    return Main.page.back();
+                };
+                Main.device.addBackAction(pageIn[0]._game9ja_Dom_Hold_PgBack);
             } else {
-                Main.device.removeBackAction(Main.page.back);
+
+                Main.device.removeBackAction(backFn);
             }
+
+
         }
 
         function showPg(p, transition, forward, pgGoOut, pgShowObj) {
@@ -2167,6 +2190,7 @@ var Main = {};
     function Card() {
         var viewHtmls = {};
         var cards = {};
+
         function load(container_id, file, fn) {
             if (!viewHtmls[container_id]) {
                 viewHtmls[container_id] = {};
@@ -2222,6 +2246,38 @@ var Main = {};
 
             }
 
+            //check if the card is nested. back button event will not respond to nested 
+            //card because of certain complications
+            var parent = cont.parentNode;
+            var isNestedCard = false;
+            while (parent && parent !== document.body) {
+                var parent_id = parent.id;
+                if (cards[parent_id]) {
+                    isNestedCard = true;
+                    break;
+                }
+
+                parent = parent.parentNode;
+            }
+            
+            //Also check if the card has embeded cards. back button event will not respond to nested 
+            //card because of certain complications            
+            for(var eid in cards){
+               if(eid === cont.id){
+                   continue;
+               }
+               var ebc = cont.querySelector("#"+eid); 
+               if(ebc){
+                   var crds = cards[eid];
+                   for(var n in crds){
+                       //remove the embeded card device back action
+                       Main.device.removeBackAction(crds[n].deviceCardBackFn, true);
+                       crds[n].isNestedCard = true;//mark as nested
+                       crds[n].deviceCardBackFn = null;//nullify the device back action
+                   }
+               } 
+            }
+
             load(cid, obj.url, function (html) {
                 //first update the last content in case of any change
                 var div = document.createElement('div');
@@ -2249,27 +2305,41 @@ var Main = {};
                 cont.style.opacity = '0';
 
                 cont.innerHTML = html;//set new content to the container
-                var cardObj = {url: obj.url, fade: obj.fade || obj.fadein || obj.fadeIn, content: cont.children};
+                var cardObj = {obj: obj, url: obj.url, fade: obj.fade || obj.fadein || obj.fadeIn, content: cont.children};
                 cds.push(cardObj);//now make it last as promised
+                
+                cardObj.isNestedCard = isNestedCard;
+                
+                //set the last argu of this card container.
+                var last_argu = last_crd.obj ? last_crd.obj : {container: obj.container, fade: cardObj.fade};
+
                 if (obj.fade || obj.fadein || obj.fadeIn) {
                     Main.anim.to(cont, 500, {opacity: 1}, function () {
                         if (Main.util.isFunc(obj.onShow)) {
                             obj.onShow(obj.data);
                         }
+                        createCardBackAction();
                     });
                 } else {
                     cont.style.opacity = '1';
                     if (Main.util.isFunc(obj.onShow)) {
                         obj.onShow(obj.data);
                     }
+                    createCardBackAction();
                 }
-                //Main.device.addBackAction(this.back);
-            });
+                function createCardBackAction() {
+                    if (!isNestedCard) {
+                        //we will not create back action for nested cards because of
+                        //some complications that could arise.
+                        cardObj.deviceCardBackFn = deviceCardBack.bind(last_argu);
+                        Main.device.addBackAction(cardObj.deviceCardBackFn);
+                    }
+                }
+                function deviceCardBack() {
+                    Main.card.back(this);
+                }
 
-            var me = this;
-            function cardBackAction() {
-                me.back(this.obj);
-            }
+            });
 
         };
 
@@ -2320,6 +2390,11 @@ var Main = {};
             var out_card = cds[last_index];
             cds.splice(last_index, 1);
 
+            if(!out_card.isNestedCard){
+                //only top level cards can have device back action and hence can be removed
+                Main.device.removeBackAction(out_card.deviceCardBackFn, true);
+            }
+            
             cont.innerHTML = ''; //clear
             cont.style.opacity = '0';
             var prev = cds[cds.length - 1];
@@ -2507,7 +2582,7 @@ var Main = {};
 
     function Dialog() {
 
-        function diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFn, bckHideFunc) {
+        function diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFn, deviceBackHideFunc) {
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -2532,7 +2607,7 @@ var Main = {};
                     dlg_cmp = null;
                 }
 
-                Main.device.removeBackAction(bckHideFunc);
+                Main.device.removeBackAction(deviceBackHideFunc);
 
                 //TODO: Unlock the orientation here
             }
@@ -2681,9 +2756,9 @@ var Main = {};
 
             var resizeListenBind = resizeListen.bind(lytObj);
 
-            var objThis = new diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFunc, bckHideFunc);
+            var objThis = new diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFunc, deviceBackHideFunc);
 
-            function bckHideFunc() {
+            function deviceBackHideFunc() {
                 return objThis.hide();
             }
 
@@ -2761,7 +2836,7 @@ var Main = {};
                             console.warn(e);
                         }
                     }
-                    Main.device.addBackAction(bckHideFunc);
+                    Main.device.addBackAction(deviceBackHideFunc);
                 });
             } else {
                 base.style.opacity = 1;
@@ -2773,7 +2848,7 @@ var Main = {};
                     }
 
                 }
-                Main.device.addBackAction(bckHideFunc);
+                Main.device.addBackAction(deviceBackHideFunc);
             }
 
 
@@ -3015,7 +3090,7 @@ var Main = {};
         var menuCmp;
         var menuBtn;
         var resizeListenMnuBind;
-        var bckHideFns = []; //store hides function to be removed by back actions when menu is destroyed 
+        var deviceBackHideFns = []; //store hides function to be removed by back actions when menu is destroyed 
 
         function onClickOutsideHide(evt) {
             if (evt.target === menuBtn) {
@@ -3084,10 +3159,10 @@ var Main = {};
                 Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
             }
 
-            for (var i in bckHideFns) {
-                Main.device.removeBackAction(bckHideFns[i]);
+            for (var i in deviceBackHideFns) {
+                Main.device.removeBackAction(deviceBackHideFns[i]);
             }
-            bckHideFns = [];//empty the hides functions
+            deviceBackHideFns = [];//empty the hides functions
 
         }
 
@@ -3393,11 +3468,11 @@ var Main = {};
                     this.onShow.call(mnuThis);
                 }
 
-                if (!bckHideFns) {
-                    bckHideFns = [];
+                if (!deviceBackHideFns) {
+                    deviceBackHideFns = [];
                 }
 
-                bckHideFns.push(mnuThis.hide);
+                deviceBackHideFns.push(mnuThis.hide);
 
                 Main.device.addBackAction(mnuThis.hide);
 

@@ -23,7 +23,8 @@ Main.on("pagecreate", function (arg) {
     document.body.addEventListener('keypress', Main.test.simulateBackButtonListener)
 
     callCard();
-
+    callCarda();
+    callCardn();
     function callCard() {
 
 
@@ -141,6 +142,252 @@ Main.on("pagecreate", function (arg) {
 
             Main.card.back('card-container', function () {
                 console.log('card 6 ---> card 5');
+            });
+        });
+
+    }
+
+
+    function callCarda() {
+
+
+        $('#btn-card0-next-a').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-a',
+                url: 'card_1a.html',
+                fade: true,
+                onShow: callCarda
+            });
+        });
+
+        $('#btn-card0-back-a').on('click', function () {
+
+            Main.card.back('card-container', function () {
+                console.log('card 1a ---> card 0a');
+            });
+        });
+
+
+        $('#btn-card1-next-a').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-a',
+                url: 'card_2a.html',
+                fade: true,
+                onShow: callCarda
+            });
+        });
+
+        $('#btn-card1-back-a').on('click', function () {
+
+            Main.card.back('card-container-a', function () {
+                console.log('card 2a ---> card 1a');
+            });
+        });
+
+
+
+        $('#btn-card2-next-a').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-a',
+                url: 'card_3a.html',
+                fade: true,
+                onShow: callCarda
+            });
+        });
+
+        $('#btn-card2-back-a').on('click', function () {
+
+            Main.card.back('card-container-a', function () {
+                console.log('card 3a ---> card 2a');
+            });
+        });
+
+
+
+        $('#btn-card3-next-a').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-a',
+                url: 'card_4a.html',
+                fade: true,
+                onShow: callCarda
+            });
+        });
+
+        $('#btn-card3-back-a').on('click', function () {
+
+            Main.card.back('card-container-a', function () {
+                console.log('card 4a ---> card 3a');
+            });
+        });
+
+
+
+        $('#btn-card4-next-a').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-a',
+                url: 'card_5a.html',
+                fade: true,
+                onShow: callCarda
+            });
+        });
+
+        $('#btn-card4-back-a').on('click', function () {
+
+            Main.card.back('card-container-a', function () {
+                console.log('card 5a ---> card 4a');
+            });
+        });
+
+
+
+        $('#btn-card5-next-a').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-a',
+                url: 'card_6a.html',
+                fade: true,
+                onShow: callCarda
+            });
+        });
+
+        $('#btn-card5-back-a').on('click', function () {
+
+            Main.card.back('card-container-a', function () {
+                console.log('card 6a ---> card 5a');
+            });
+        });
+
+    }
+
+
+    function callCardn() {
+
+
+        $('#btn-card0-next-n').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-n',
+                url: 'card_1n.html',
+                fade: true,
+                onShow: callCardn
+            });
+        });
+
+        $('#btn-card0-back-n').on('click', function () {
+
+            Main.card.back('card-container-n', function () {
+                console.log('card 1n ---> card 0n');
+            });
+        });
+
+
+        $('#btn-card1-next-n').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-n',
+                url: 'card_2n.html',
+                fade: true,
+                onShow: callCardn
+            });
+        });
+
+        $('#btn-card1-back-n').on('click', function () {
+
+            Main.card.back('card-container-n', function () {
+                console.log('card 2n ---> card 1n');
+            });
+        });
+
+
+
+        $('#btn-card2-next-n').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-n',
+                url: 'card_3n.html',
+                fade: true,
+                onShow: callCardn
+            });
+        });
+
+        $('#btn-card2-back-n').on('click', function () {
+
+            Main.card.back('card-container-n', function () {
+                console.log('card 3n ---> card 2n');
+            });
+        });
+
+
+
+        $('#btn-card3-next-n').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-n',
+                url: 'card_4n.html',
+                fade: true,
+                onShow: callCardn
+            });
+        });
+
+        $('#btn-card3-back-n').on('click', function () {
+
+            Main.card.back('card-container-n', function () {
+                console.log('card 4n ---> card 3n');
+            });
+        });
+
+
+
+        $('#btn-card4-next-n').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-n',
+                url: 'card_5n.html',
+                fade: true,
+                onShow: callCardn
+            });
+        });
+
+        $('#btn-card4-back-n').on('click', function () {
+
+            Main.card.back('card-container-n', function () {
+                console.log('card 5n ---> card 4n');
+            });
+        });
+
+
+
+        $('#btn-card5-next-n').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.card.to({
+                container: 'card-container-n',
+                url: 'card_6n.html',
+                fade: true,
+                onShow: callCardn
+            });
+        });
+
+        $('#btn-card5-back-n').on('click', function () {
+
+            Main.card.back('card-container-n', function () {
+                console.log('card 6n ---> card 5n');
             });
         });
 
