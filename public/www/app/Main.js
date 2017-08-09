@@ -16,6 +16,7 @@ var Main = {};
     var portriat_height;
     var appUrl = "app/";
     var listeners = {};
+    var deviceBackMeOnly = {};
     Main.controller = {}; // js in the controller folder will dynamically use this prototype
     Main.ro = {};// object for storing global access for rcall variables for making remote method calls
 
@@ -360,7 +361,7 @@ var Main = {};
             }
         },
 
-        removeBackAction: function (action, me_only) {
+        removeBackAction: function (action, specific) {
             if(!action){
                 return;
             }
@@ -372,7 +373,8 @@ var Main = {};
                     break;
                 }
 
-                if (me_only !== true) {
+                if (!specific
+                        ||  (specific && !deviceBackMeOnly[specific])) {
                     c++;
                 }
             }
@@ -2190,7 +2192,10 @@ var Main = {};
     function Card() {
         var viewHtmls = {};
         var cards = {};
-
+        var CARD_ME_ONLY = 'CARD_ME_ONLY_'+new Date().getTime();
+        
+        deviceBackMeOnly[CARD_ME_ONLY] = CARD_ME_ONLY;
+        
         function load(container_id, file, fn) {
             if (!viewHtmls[container_id]) {
                 viewHtmls[container_id] = {};
@@ -2271,7 +2276,7 @@ var Main = {};
                    var crds = cards[eid];
                    for(var n in crds){
                        //remove the embeded card device back action
-                       Main.device.removeBackAction(crds[n].deviceCardBackFn, true);
+                       Main.device.removeBackAction(crds[n].deviceCardBackFn, CARD_ME_ONLY);
                        crds[n].isNestedCard = true;//mark as nested
                        crds[n].deviceCardBackFn = null;//nullify the device back action
                    }
@@ -2382,17 +2387,19 @@ var Main = {};
 
             var cds = cards[cid];
 
-            if (!cds.length //important - must check if it is array 
+            if (!Main.util.isArray(cds) 
+                    || !cds.length //important - must check if it is array 
                     || cds.length < 2) {
                 return; // already at the begining
             }
+            
             var last_index = cds.length - 1;
             var out_card = cds[last_index];
             cds.splice(last_index, 1);
 
             if(!out_card.isNestedCard){
                 //only top level cards can have device back action and hence can be removed
-                Main.device.removeBackAction(out_card.deviceCardBackFn, true);
+                Main.device.removeBackAction(out_card.deviceCardBackFn, CARD_ME_ONLY);
             }
             
             cont.innerHTML = ''; //clear
