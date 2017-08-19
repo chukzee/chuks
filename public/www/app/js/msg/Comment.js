@@ -1,7 +1,7 @@
 
 /* global Main */
 
-Main.controller.Comment = {
+Ns.msg.Comment = {
     
     /**
      * this constructor is called once automatically by the framework

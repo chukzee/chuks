@@ -2,7 +2,7 @@
 
 /* global Main */
 
-Main.controller.Match = {
+Ns.game.Match = {
     hasMatchData: false,
     currentUserMatch: null,//set dynamically
     constructor: function(){

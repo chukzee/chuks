@@ -1,5 +1,5 @@
 
-Main.controller.VoiceCall = {
+Ns.msg.VoiceCall = {
     content : function(){
         
     }

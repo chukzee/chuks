@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 
-function run(n){
+function run(n) {
     console.log(n);
-    setTimeout(function(){
+    setTimeout(function () {
         console.log(n);
     }, 1000);
 }
@@ -28,12 +28,12 @@ n.push("d");
 n.push("e");
 var b = n.unshift('z', 'v');
 
-console.log('n ',n);
-console.log('b ',b);
+console.log('n ', n);
+console.log('b ', b);
 
 console.log('------------------TESTING BINARY OR-----------------');
 
-var obj ={
+var obj = {
     fade: true
 };
 
@@ -58,8 +58,16 @@ for (var i = 0; i < ps.length - 1; i++) {//yes 'i < ps.length-1' - skipping the 
     cObj = cObj[p];
 }
 console.log(window);
-var app_scripts = ['a','b','c'];
-var cat_scripts = ['1','2','3'];
+var app_scripts = ['a', 'b', 'c'];
+var cat_scripts = ['1', '2', '3'];
 var files = app_scripts.concat(cat_scripts);
 
 console.log(files);
+var _nsFiles = [];
+var file = 'path/to/long/Filename.js';
+var dot_index = file.indexOf('.');
+if (dot_index > -1) {
+    file = file.substring(0, dot_index);
+}
+_nsFiles.push(file);
+console.log(file);

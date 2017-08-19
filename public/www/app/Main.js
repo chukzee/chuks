@@ -13,6 +13,7 @@ var Main = {};
     var deviceUrl = "device/";
     var appNamespace = "MyApp"; // default namespace
     var _nsObjs = {};
+    var _nsFiles = [];
     var device_category;
     var portriat_width;
     var portriat_height;
@@ -3969,6 +3970,11 @@ var Main = {};
          * @returns {undefined}
          */
         function nsObjects(file) {
+            var dot_index = file.indexOf('.');
+            if (dot_index > -1) {
+                file = file.substring(0, dot_index);
+            }
+            _nsFiles.push(file);
 
             var ps = file.split('/');
             var cObj = window[appNamespace];
@@ -3976,13 +3982,16 @@ var Main = {};
 
             for (var i = 0; i < ps.length - 1; i++) {//yes 'i < ps.length-1' - skipping the file name  
                 var p = ps[i];
+
                 pstr += i > 0 ? "." + p : p;
-                if (cObj[p] && !_nsObjs[pstr]) {//NOT YET TESTED!!!
+                if (cObj[p] && !_nsObjs[pstr]) {
                     console.error("Application Error! cannot instantiate class object for " + file + " - object '" + appNamespace + "." + pstr + "' already exist!");
                     return;
+                } else if (!cObj[p]) {
+                    cObj[p] = {};
                 }
 
-                cObj[p] = {};
+
                 cObj = cObj[p];
 
             }
@@ -3990,6 +3999,7 @@ var Main = {};
             if (pstr) {
                 _nsObjs[pstr] = window[appNamespace][ps[0]];
             }
+
 
         }
 
@@ -4134,22 +4144,34 @@ var Main = {};
                          }
                          }*/
 
-                        var appNs = window[appNamespace];
-                        tranCls(appNs);
-                                                
-                        function tranCls(ns){
-                            if(!ns){
-                                return;
-                            }                            
-                            
-                            var construtorFn = ns['constructor'];
-                            if (Main.util.isFunc(construtorFn)) {
-                                construtorFn.call(ns);
-                            }                           
-                            for(var i in ns){
-                                tranCls(ns[i]);
+                        for (var n in _nsFiles) {
+                            var clazzObj = classObject(_nsFiles[n]);
+                            if (!clazzObj) {
+                                continue;
+                            }
+                            var construct = 'constructor';
+                            if (clazzObj.hasOwnProperty(construct)) {
+                                var construtorFn = clazzObj[construct];
+                                if (Main.util.isFunc(construtorFn)) {
+                                    construtorFn.call(clazzObj);
+                                }
                             }
                         }
+
+                        function classObject(classFile) {
+                            var sp = classFile.split('/');
+                            var appNs = window[appNamespace];
+                            var i;
+                            for (i in sp) {
+                                var p = sp[i];
+                                if (!appNs[p]) {
+                                    return;
+                                }
+                                appNs = appNs[p];
+                            }
+                            return appNs;
+                        }
+
 
                     }
             ).fail(function (data) {

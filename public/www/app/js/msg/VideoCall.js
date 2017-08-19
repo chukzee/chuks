@@ -1,5 +1,5 @@
 
-Main.controller.VideoCall = {
+Ns.msg.VideoCall = {
     content : function(){
         
     }

@@ -1,5 +1,5 @@
 
-Main.controller.Chat = {
+Ns.msg.Chat = {
 
     /**
      * this constructor is called once automatically by the framework

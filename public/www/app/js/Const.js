@@ -1,5 +1,5 @@
 
-Main.controller.Const = {
+Ns.Const = {
     
     /**
      * Max number of data to store in an array or object

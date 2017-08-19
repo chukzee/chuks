@@ -1,5 +1,5 @@
 
-Main.controller.Auth = {
+Ns.Auth = {
     
     constructor : function(){
         

@@ -1,7 +1,7 @@
 
 /* global Main */
 
-Main.controller.Bluetooth = {
+Ns.game.Bluetooth = {
 
     start: function (obj) {
 
