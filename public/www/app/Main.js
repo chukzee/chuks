@@ -4134,15 +4134,20 @@ var Main = {};
                          }
                          }*/
 
-
-                        for (var i in _nsObjs) {
-                            var props = Object.getOwnPropertyNames(_nsObjs[i]);
-                            for (var n in props) {
-                                var clazzObj = Main.controller[props[n]];
-                                var construtorFn = clazzObj['constructor'];
-                                if (Main.util.isFunc(construtorFn)) {
-                                    construtorFn.call(clazzObj);
-                                }
+                        var appNs = window[appNamespace];
+                        tranCls(appNs);
+                                                
+                        function tranCls(ns){
+                            if(!ns){
+                                return;
+                            }                            
+                            
+                            var construtorFn = ns['constructor'];
+                            if (Main.util.isFunc(construtorFn)) {
+                                construtorFn.call(ns);
+                            }                           
+                            for(var i in ns){
+                                tranCls(ns[i]);
                             }
                         }
 
