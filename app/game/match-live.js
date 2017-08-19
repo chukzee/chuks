@@ -9,7 +9,7 @@ class MatchLive extends Base {
         super(sObj);
     }
 
-    getContantsMatchList() {
+    async getContantsMatchList() {
 
         //TEST CODE SIMULATION BEGINS
          var obj = [];
@@ -52,7 +52,7 @@ class MatchLive extends Base {
 
     }
 
-    getGroupMatchList(group_name) {
+    async getGroupMatchList(group_name) {
 
         //TEST CODE SIMULATION BEGINS
         
@@ -96,7 +96,7 @@ class MatchLive extends Base {
 
     }
 
-    getTournamentMatchList(tournament_name) {
+    async getTournamentMatchList(tournament_name) {
 
         //TEST CODE SIMULATION BEGINS
         var obj = [];

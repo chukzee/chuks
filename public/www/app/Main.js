@@ -11,6 +11,8 @@ var Main = {};
     var pageRouteUrl;
     var isMainInit;
     var deviceUrl = "device/";
+    var appNamespace = "MyApp"; // default namespace
+    var _nsObjs = {};
     var device_category;
     var portriat_width;
     var portriat_height;
@@ -362,7 +364,7 @@ var Main = {};
         },
 
         removeBackAction: function (action, specific) {
-            if(!action){
+            if (!action) {
                 return;
             }
             var c = 1;
@@ -374,7 +376,7 @@ var Main = {};
                 }
 
                 if (!specific
-                        ||  (specific && !deviceBackMeOnly[specific])) {
+                        || (specific && !deviceBackMeOnly[specific])) {
                     c++;
                 }
             }
@@ -885,6 +887,7 @@ var Main = {};
         var lastPageUrl;
         var transitionInProgress = false;
         var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+        var currentPage;
 
         function swapShow(pg, transition, forward, pgGoOut) {
             var eff = transition, duration = effDuration;
@@ -923,6 +926,8 @@ var Main = {};
             }
 
             lastPageUrl = pg.url;
+
+            currentPage = pageIn;
 
             if (pg.title) {
                 document.title = pg.title;
@@ -1100,6 +1105,7 @@ var Main = {};
 
                 Main.device.removeBackAction(backFn);
             }
+
 
 
         }
@@ -1390,6 +1396,15 @@ var Main = {};
 
             load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj));
             return true;//important!
+        };
+
+        this.getUrl = function () {
+            for (var i = 0; i < pages.length; i++) {
+                if (pages[i].page === currentPage) {
+                    return pages[i].url;
+                }
+            }
+            return '';
         };
 
         var _pShowFn = function (obj) {
@@ -2192,10 +2207,10 @@ var Main = {};
     function Card() {
         var viewHtmls = {};
         var cards = {};
-        var CARD_ME_ONLY = 'CARD_ME_ONLY_'+new Date().getTime();
-        
+        var CARD_ME_ONLY = 'CARD_ME_ONLY_' + new Date().getTime();
+
         deviceBackMeOnly[CARD_ME_ONLY] = CARD_ME_ONLY;
-        
+
         function load(container_id, file, fn) {
             if (!viewHtmls[container_id]) {
                 viewHtmls[container_id] = {};
@@ -2264,23 +2279,23 @@ var Main = {};
 
                 parent = parent.parentNode;
             }
-            
+
             //Also check if the card has embeded cards. back button event will not respond to nested 
             //card because of certain complications            
-            for(var eid in cards){
-               if(eid === cont.id){
-                   continue;
-               }
-               var ebc = cont.querySelector("#"+eid); 
-               if(ebc){
-                   var crds = cards[eid];
-                   for(var n in crds){
-                       //remove the embeded card device back action
-                       Main.device.removeBackAction(crds[n].deviceCardBackFn, CARD_ME_ONLY);
-                       crds[n].isNestedCard = true;//mark as nested
-                       crds[n].deviceCardBackFn = null;//nullify the device back action
-                   }
-               } 
+            for (var eid in cards) {
+                if (eid === cont.id) {
+                    continue;
+                }
+                var ebc = cont.querySelector("#" + eid);
+                if (ebc) {
+                    var crds = cards[eid];
+                    for (var n in crds) {
+                        //remove the embeded card device back action
+                        Main.device.removeBackAction(crds[n].deviceCardBackFn, CARD_ME_ONLY);
+                        crds[n].isNestedCard = true;//mark as nested
+                        crds[n].deviceCardBackFn = null;//nullify the device back action
+                    }
+                }
             }
 
             load(cid, obj.url, function (html) {
@@ -2312,9 +2327,9 @@ var Main = {};
                 cont.innerHTML = html;//set new content to the container
                 var cardObj = {obj: obj, url: obj.url, fade: obj.fade || obj.fadein || obj.fadeIn, content: cont.children};
                 cds.push(cardObj);//now make it last as promised
-                
+
                 cardObj.isNestedCard = isNestedCard;
-                
+
                 //set the last argu of this card container.
                 var last_argu = last_crd.obj ? last_crd.obj : {container: obj.container, fade: cardObj.fade};
 
@@ -2387,21 +2402,21 @@ var Main = {};
 
             var cds = cards[cid];
 
-            if (!Main.util.isArray(cds) 
+            if (!Main.util.isArray(cds)
                     || !cds.length //important - must check if it is array 
                     || cds.length < 2) {
                 return; // already at the begining
             }
-            
+
             var last_index = cds.length - 1;
             var out_card = cds[last_index];
             cds.splice(last_index, 1);
 
-            if(!out_card.isNestedCard){
+            if (!out_card.isNestedCard) {
                 //only top level cards can have device back action and hence can be removed
                 Main.device.removeBackAction(out_card.deviceCardBackFn, CARD_ME_ONLY);
             }
-            
+
             cont.innerHTML = ''; //clear
             cont.style.opacity = '0';
             var prev = cds[cds.length - 1];
@@ -2453,8 +2468,10 @@ var Main = {};
             }
 
             if (el.addEventListener) {
+                el.removeEventListener(type, callback, capture);//first remove event of same type on same element with same listener
                 el.addEventListener(type, callback, capture);
             } else if (el.attachEvent) {//IE
+                el.detachEvent('on' + type, callback, capture);//first remove event of same type on same element with same listener
                 el.attachEvent('on' + type, callback, capture);
             }
         };
@@ -3539,8 +3556,18 @@ var Main = {};
         }
 
         for (var i = 0; i < btns.length; i++) {
-            $(btns[i]).off('click');
-            $(btns[i]).on('click', tabShow.bind(
+            /*
+             * Deprecated -  using Main.click() now. no need to off. that has been taken care of.
+             $(btns[i]).off('click');
+             $(btns[i]).on('click', tabShow.bind(
+             {
+             tabIndex: i,
+             buttons: btns,
+             tabBody: tab_body,
+             fn: obj.onShow[id_prefix + btns[i].id]
+             }));*/
+
+            Main.click(btns[i], tabShow.bind(
                     {
                         tabIndex: i,
                         buttons: btns,
@@ -3618,6 +3645,18 @@ var Main = {};
             }.bind({el: prevComp}));
         }
 
+    };
+    Main.click = function (el, callback, capture) {
+        if (Main.device.isMobileDeviceReady) {//implement mobile tap event
+            Main.dom.addListener(el, 'touchstart', null, capture);
+            Main.dom.addListener(el, 'touchend', callback, capture);
+        } else {
+            Main.dom.addListener(el, 'click', callback, capture);
+        }
+    };
+
+    Main.tap = function (el, callback, capture) {
+        Main.click(el, callback, capture);
     };
 
     Main.swipe = function (obj) {
@@ -3790,6 +3829,26 @@ var Main = {};
                         eval('var json = ' + res);//remove comments if present since they are not valid in json
 
                         var json = json;
+                        //setup the application namespace
+                        if (Main.util.isString(json.namespace)) {
+                            if (window[json.namespace]) {
+                                console.error("Application error! User defined namespace already exist - " + json.namespace);
+                                return;
+                            }
+                            appNamespace = json.namespace;
+                        } else if (Main.util.isString(appNamespace)) {
+                            if (window[appNamespace]) {
+                                console.error("Application error! Default namespace already exist - " + appNamespace);
+                                return;
+                            }
+                        } else {
+                            console.error("Application error! No namespace found - application must be provided with a namespace.");
+                            return;
+                        }
+
+                        window[appNamespace] = {};
+
+
                         var absolute_scripts = [],
                                 app_scripts = [],
                                 cat_scripts = [],
@@ -3800,6 +3859,15 @@ var Main = {};
                         var absolute_exe = [];
                         var app_exe = [];
                         var cat_exe = [];
+                        var is_build = false;
+                        if (json.build && json.build.prod) {
+                            is_build = true;
+                            //override the resources with that of the build since the
+                            //build takes precedence
+                            json.absolute = json.build.absolute;
+                            json.app = json.build.app;
+                            json[device_size_cat] = json.build[device_size_cat];
+                        }
 
                         if (json.absolute && Main.util.isArray(json.absolute.js)) {
                             absolute_scripts = json.absolute.js;
@@ -3845,13 +3913,37 @@ var Main = {};
                             queueIndex: -1,
                             queue: []
                         };
-                        if (track.total > 0) {
-                            loadRequiredFiles(absolute_styles, track, absoluteRoute, loadCss, absolute_exe);
-                            loadRequiredFiles(app_styles, track, appRoute, loadCss, app_exe);
-                            loadRequiredFiles(cat_styles, track, deviceRoute, loadCss, cat_exe);
-                            loadRequiredFiles(absolute_scripts, track, absoluteRoute, loadScript, absolute_exe);
-                            loadRequiredFiles(app_scripts, track, appRoute, loadScript, app_exe);
-                            loadRequiredFiles(cat_scripts, track, deviceRoute, loadScript, cat_exe);
+                        var is_path_absolute = true;
+
+                        var cssFilesHandler = function () {
+                            loadRequiredFiles(absolute_styles, track, absoluteRoute, loadCss, absolute_exe, is_path_absolute);
+                            loadRequiredFiles(app_styles, track, appRoute, loadCss, app_exe, !is_path_absolute);
+                            loadRequiredFiles(cat_styles, track, deviceRoute, loadCss, cat_exe, !is_path_absolute);
+                        };
+
+                        var jsFilesHandler = function () {
+                            loadRequiredFiles(absolute_scripts, track, absoluteRoute, loadScript, absolute_exe, is_path_absolute);
+                            loadRequiredFiles(app_scripts, track, appRoute, loadScript, app_exe, !is_path_absolute);
+                            loadRequiredFiles(cat_scripts, track, deviceRoute, loadScript, cat_exe, !is_path_absolute);
+                        };
+
+                        if (is_build) {
+                            cssFilesHandler();
+                            var files = app_scripts.concat(cat_scripts);//absolute js is not required for nsObjects 
+                            for (var n in files) {
+                                nsObjects(files[n]);
+                            }
+                            if (Main.util.isFunc(Main.build)) {
+                                Main.build();
+                            } else {
+                                console.error("Build tool fault detected! Main.build is not a function! Build tool is expected to create the function with relevant code of the js file embeded inside and the function appended to the main js file.");
+                                return;
+                            }
+                            loadDeviceMain(track.deviceCategory);
+
+                        } else if (track.total > 0) {
+                            cssFilesHandler();
+                            jsFilesHandler();
                         } else {//zero
                             loadDeviceMain(track.deviceCategory);
                         }
@@ -3861,10 +3953,47 @@ var Main = {};
                 console.log("could not get resource: ", pkg);
             });
 
-
         };
 
-        function loadRequiredFiles(files, track, route, callback, exceptions) {
+        /**
+         * Create the the relevant namepace object of the file<br>
+         * e.g if the file name is /path/to/long/Filename.js<br>
+         * and the app namespace is MyApp then the object MyApp.path.to.long 
+         * will be create in the order below:<br>
+         * <br>
+         * MyApp.path = {}<br>
+         * MyApp.path.to = {}<br>
+         * MyApp.pathto.long = {}<br>
+         * 
+         * @param {type} file
+         * @returns {undefined}
+         */
+        function nsObjects(file) {
+
+            var ps = file.split('/');
+            var cObj = window[appNamespace];
+            var pstr = "";
+
+            for (var i = 0; i < ps.length - 1; i++) {//yes 'i < ps.length-1' - skipping the file name  
+                var p = ps[i];
+                pstr += i > 0 ? "." + p : p;
+                if (cObj[p] && !_nsObjs[pstr]) {//NOT YET TESTED!!!
+                    console.error("Application Error! cannot instantiate class object for " + file + " - object '" + appNamespace + "." + pstr + "' already exist!");
+                    return;
+                }
+
+                cObj[p] = {};
+                cObj = cObj[p];
+
+            }
+
+            if (pstr) {
+                _nsObjs[pstr] = window[appNamespace][ps[0]];
+            }
+
+        }
+
+        function loadRequiredFiles(files, track, route, callback, exceptions, is_path_absolute) {
 
             for (var i = 0; i < files.length; i++) {
                 if (files[i].indexOf(0) === '/') {
@@ -3875,6 +4004,7 @@ var Main = {};
                 argu.push(track);
                 argu.push(route);
                 argu.push(exceptions);
+                argu.push(is_path_absolute);
                 track.queueIndex++;
                 if (track.queueIndex === 0) {
                     callback.apply(this, argu);
@@ -3928,7 +4058,7 @@ var Main = {};
             console.warn('Failed to load a required resource : ', this.file);
 
         }
-        function loadCss(file, track, route, exceptions) {
+        function loadCss(file, track, route, exceptions, is_path_absolute) {
             track.type = "css";
             track.file = route(file, track.type);
             track.exceptions = exceptions;
@@ -3943,7 +4073,12 @@ var Main = {};
             document.head.appendChild(link);
         }
 
-        function loadScript(file, track, route, exceptions) {
+        function loadScript(file, track, route, exceptions, is_path_absolute) {
+
+            //create the objects related to the namepace directory
+            if (!is_path_absolute) {
+                nsObjects(file);
+            }
 
             track.type = "js";
             track.file = route(file, track.type, track.deviceCategory);
@@ -3987,14 +4122,27 @@ var Main = {};
 
                         //console.log(Object.getOwnPropertyNames(Main.controller));
 
+                        /*Deprecated
+                         * 
+                         * var props = Object.getOwnPropertyNames(Main.controller);
+                         
+                         for (var n in props) {
+                         var clazzObj = Main.controller[props[n]];
+                         var construtorFn = clazzObj['constructor'];
+                         if (Main.util.isFunc(construtorFn)) {
+                         construtorFn.call(clazzObj);
+                         }
+                         }*/
 
-                        var props = Object.getOwnPropertyNames(Main.controller);
 
-                        for (var n in props) {
-                            var clazzObj = Main.controller[props[n]];
-                            var construtorFn = clazzObj['constructor'];
-                            if (Main.util.isFunc(construtorFn)) {
-                                construtorFn.call(clazzObj);
+                        for (var i in _nsObjs) {
+                            var props = Object.getOwnPropertyNames(_nsObjs[i]);
+                            for (var n in props) {
+                                var clazzObj = Main.controller[props[n]];
+                                var construtorFn = clazzObj['constructor'];
+                                if (Main.util.isFunc(construtorFn)) {
+                                    construtorFn.call(clazzObj);
+                                }
                             }
                         }
 
@@ -4062,3 +4210,19 @@ var Main = {};
 
     return Main;
 })();
+
+/*
+ * Below the build tool will append the Main.build function with
+ * the js resource files content wrapped inside
+ * 
+ * example is shown below
+ * 
+ * Main.build = function(){
+ * 
+ * //the js resource files content will be
+ * //embeded in body of this function. 
+ * 
+ * }
+ * 
+ * 
+ */

@@ -10,10 +10,10 @@ class Group extends Base {
 
     }
 
-    addMember(username) {
+    async addMember(username) {
     }
 
-    removeMember(username) {
+    async removeMember(username) {
 
     }
 
@@ -26,7 +26,7 @@ class Group extends Base {
      * @param {type} param - expected a user id or a function callback
      * @returns {undefined}
      */
-    getUserGroupNames(param) {
+    async getUserGroupNames(param) {
 
         simulateUserGroupNames(param);//TESTING!!!
 
@@ -39,7 +39,7 @@ class Group extends Base {
      * @param {type} group_name - the group name 
      * @returns {undefined}
      */
-    getGroupDetails(group_name) {
+    async getGroupDetails(group_name) {
 
         simulateGroupDetails(group_name);//TESTING!!!
 
@@ -54,7 +54,7 @@ class Group extends Base {
      * @param {type} param - expected a user id or a function callback
      * @returns {undefined}
      */
-    getUserGroupsInfo(param) {
+    async getUserGroupsInfo(param) {
 
         simulateUserGroupsInfo(param);//TESTING!!!
 

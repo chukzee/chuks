@@ -88,7 +88,7 @@ module.exports = function(){
      * for(var i in requireMod){
      * //No no no! Dont because of thread issue 
      * //even though it is widely believed node is thread safe.
-     * //Have you though of asyn operation and how it
+     * //Have you thought of asyn operation and how it
      * //may cause unexpected result if we make 'requireMod' variable
      * //have static access? There could be thread issues i strongly believe.
      * //Thus, we will rather instantiate on demand. Caution is the word here!

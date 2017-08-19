@@ -10,14 +10,14 @@ class Comment extends   Base {
 
     }
 
-    getHistory(gameId) {
+    async getHistory(gameId) {
 
         //TEST SIMULATION
         this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
 
     }
 
-    sendTo() {
+    async sendTo() {
 
     }
 

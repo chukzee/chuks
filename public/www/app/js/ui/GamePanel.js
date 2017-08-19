@@ -240,7 +240,7 @@ Main.controller.GamePanel = {
             ogv.showLeftContent(Main.controller.VideoCall.content.bind(obj));
         });
 
-        $('#game-view-footer-stats').on('click', function () {
+        $('#game-view-footer-spectators').on('click', function () {
             var title = 'Stats';
             if (leftPanelTitleComp.innerHTML === title) {
                 ogv.hideLeftContent();
@@ -248,7 +248,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.Stats.content.bind(obj));
+            ogv.showLeftContent(Main.controller.Spectators.content.bind(obj));
         });
 
         $('#game-view-right-panel-close').on('click', function () {
@@ -371,7 +371,7 @@ Main.controller.GamePanel = {
             width: 150,
             target: "#game-watch-menu",
             items: [
-                'Draw offer',
+                'Spectators',
                 'Draft variant', //for draft - we display the draft variant and the rules for the variant
                 'Rules applied',
                 'Rules',

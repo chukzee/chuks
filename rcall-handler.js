@@ -3,7 +3,7 @@
 
 var Response = require('./app/response');
 
-class RCallHandler extends Response{
+class RCallHandler extends Response {
 
     constructor(sObj, app, appLoader) {
         super();
@@ -11,7 +11,7 @@ class RCallHandler extends Response{
         app.route('/rcall')
                 .post(this.processInput.bind(this));
         this.appLoader = appLoader;
-        
+
     }
 
     processInput(req, res) {
@@ -19,17 +19,17 @@ class RCallHandler extends Response{
         console.log(req.body.action);
         if (req.body.action === 'init_variables') {
             this.initVariables(req.body.data);
-        } else if (req.body.action === 'remote_call'){
+        } else if (req.body.action === 'remote_call') {
             this.execMethod(req.body.data, res);
-        }else{
+        } else {
             this.replyError("Unknown request!");
         }
     }
 
     initVariables(classes) {
-        
-		var methodsMap = {};
-		
+
+        var methodsMap = {};
+
         for (var i in classes) {
             var clazz = classes[i];
             if (!clazz) {
@@ -39,23 +39,23 @@ class RCallHandler extends Response{
 
             //get the module using the qualified class name
             var Module = this.appLoader.getModule(clazz);
-            
+
             if (Module) {
                 //we already know it is a function because we check for that in the app loader.
                 var methods = Object.getOwnPropertyNames(Module.prototype);//NOTE : the super class methods are not included
-                for(var m in methods){
+                for (var m in methods) {
                     var mth = methods[m];
-                    if(mth === 'constructor'){//skip the constructor
+                    if (mth === 'constructor') {//skip the constructor
                         continue;
-                    }                    
-                    if(!methodsMap[clazz]){
+                    }
+                    if (!methodsMap[clazz]) {
                         methodsMap[clazz] = [];
                     }
-                    methodsMap[clazz].push(mth);                    
+                    methodsMap[clazz].push(mth);
                 }
-                
+
             } else {
-                this.replyError("No remote definition match class - "+clazz);
+                this.replyError("No remote definition match class - " + clazz);
                 return;
             }
         }
@@ -84,7 +84,7 @@ class RCallHandler extends Response{
                 //set the response object needed by the module
                 moduleInstance.response = respObj;
                 //call the method in the module and pass the parameters
-                console.log('input.param ',input.param);
+                console.log('input.param ', input.param);
                 moduleInstance[input.method].apply(moduleInstance, input.param ? input.param : []);
             } else {
                 errorFeedback(respObj, i);

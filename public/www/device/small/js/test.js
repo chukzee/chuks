@@ -395,6 +395,17 @@ Main.on("pagecreate", function (arg) {
 
 
 
+        $('#test-swipe-page').on('click', function () {
+            //alert('#btn-page1-next');
+
+            Main.page.show({
+                url: 'test-swipe.html',
+                effect: "slideleft",
+                duration: 3000,
+                data: {game: "testgame"}
+            });
+        });
+
         $('#test-card-page').on('click', function () {
             //alert('#btn-page1-next');
 

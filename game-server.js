@@ -24,21 +24,24 @@ var config = require('./config');
 var mongo = require('mongodb').MongoClient;
 var socketio = require('socket.io');
 var usersIO = null;
+var db;
 
 class Main {
 
     constructor() {
         this.init();
     }
-    init() {
+    async init() {
         var mongo_url = 'mongodb://' + config.MONGO_HOST + ':' + config.MONGO_PORT + '/' + config.MONGO_DB_NAME;
-        mongo.connect(mongo_url, function (err, db) {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log('Connected to mongo server at : ' + mongo_url);
-            }
-        });
+        try {
+            db = await mongo.connect(mongo_url);
+            console.log('Connected to mongo server at : ' + mongo_url);
+        } catch (e) {
+            console.error(e);
+            console.log("Server cannot start!");
+            process.exit(1);
+        }
+
         app.set('appSecret', config.jwtSecret); // secret gotten from the config file
         app.use(this.onRequestEntry.bind(this));//application level middleware
         app.set('appSecret', config.jwtSecret); // secret gotten from the config file
@@ -126,6 +129,10 @@ class ServerObject {
         this._shortid = require('shortid');
         this._moment = require('moment');
 
+    }
+
+    get db(){
+        return db;
     }
 
     get shortid() {

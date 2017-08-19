@@ -40,3 +40,26 @@ var obj ={
 var n = obj.fadein || obj.fade;
 
 console.log('n  = ', n);
+
+console.log('------------------TESTING OBJECT-----------------');
+
+var window = window || {};
+var appNamespace = "Ns";
+window[appNamespace] = {};
+
+var file = "a/b/c/d";
+var ps = file.split('/');
+
+var cObj = window[appNamespace];
+
+for (var i = 0; i < ps.length - 1; i++) {//yes 'i < ps.length-1' - skipping the file name  
+    var p = ps[i];
+    cObj[p] = {};
+    cObj = cObj[p];
+}
+console.log(window);
+var app_scripts = ['a','b','c'];
+var cat_scripts = ['1','2','3'];
+var files = app_scripts.concat(cat_scripts);
+
+console.log(files);

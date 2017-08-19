@@ -14,11 +14,11 @@ class PlayerRank extends Base{
         return (100 * match_wins / match_count) + this.RANK_FACTOR * match_count;
     }
 
-    getWeeklyRankList() {
+    async getWeeklyRankList() {
         
     }
 
-    getMonthlyRankList() {
+    async getMonthlyRankList() {
         
         //console.log(this.RANK_FACTOR +" after apply");
         //console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
@@ -26,7 +26,7 @@ class PlayerRank extends Base{
          
     }
 
-    getYearlyRankList() {
+    async getYearlyRankList() {
         
     }
 }

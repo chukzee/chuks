@@ -9,6 +9,22 @@ class User extends Base {
     constructor(sObj) {
 
     }
+    
+    auth(){
+        
+    }
+    
+    login(){
+        
+    }
+    
+    register(){
+        
+    }
+    
+    getInfo(){
+        
+    }
 
    
 }

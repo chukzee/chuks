@@ -41,8 +41,12 @@ Main.controller.GameHome = {
             modal: true,
             action: function (btn, value) {
                 if (value === 'Cancel') {
-                    if (Main.page.back()) {//making sure the page is not in transition
-                        this.hide();
+                    if (Main.page.getUrl() === Main.controller.GameHome.GAME_VIEW_B_HTML) {
+                        if (Main.page.back()) {//making sure the page is not in transition
+                            this.hide();
+                        }
+                    } else {
+                        this.hide();;
                     }
                 } else {//Play clicked
                     this.hide();
@@ -87,8 +91,12 @@ Main.controller.GameHome = {
             buttons: ['Cancel'],
             action: function (btn, value) {
                 if (value === 'Cancel') {
-                    if (Main.page.back()) {//making sure the page is not in transition
-                        this.hide();
+                    if (Main.page.getUrl() === Main.controller.GameHome.GAME_VIEW_B_HTML) {
+                        if (Main.page.back()) {//making sure the page is not in transition
+                            this.hide();
+                        }
+                    } else {
+                        this.hide();;
                     }
                 }
             },
