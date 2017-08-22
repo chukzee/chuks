@@ -4000,7 +4000,7 @@ var Main = {};
                 _nsObjs[pstr] = window[appNamespace][ps[0]];
             }
 
-
+            return true;
         }
 
         function loadRequiredFiles(files, track, route, callback, exceptions, is_path_absolute) {
@@ -4087,7 +4087,9 @@ var Main = {};
 
             //create the objects related to the namepace directory
             if (!is_path_absolute) {
-                nsObjects(file);
+                if(!nsObjects(file)){
+                    return;
+                }
             }
 
             track.type = "js";
