@@ -1,6 +1,6 @@
 
 
-Main.controller.Tournament = {
+Ns.view.Tournament = {
     
     
     /**

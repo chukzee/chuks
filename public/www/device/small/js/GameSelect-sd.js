@@ -70,8 +70,8 @@ Main.on("pagecreate", function (arg) {
     $('#test-game-watch').on('click', function () {
 
         //fake login
-        //.Main.controller.auth = {}; //fake auth
-        Main.controller.UserProfile.appUser = {//fake app user object
+        //Ns.Auth = {}; //fake auth
+        Ns.view.UserProfile.appUser = {//fake app user object
             id: "07038428492",
             fullName: "Chuks Alimele"
         };

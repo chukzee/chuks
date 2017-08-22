@@ -1,5 +1,5 @@
 
-Main.controller.Group = {
+Ns.view.Group = {
     
     
     

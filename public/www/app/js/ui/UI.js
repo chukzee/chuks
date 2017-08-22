@@ -1,7 +1,7 @@
 
 /* global Main */
 
-Main.controller.UI = {
+Ns.ui.UI = {
 
     gameViewHtml: null, //set dynamically depending on the device category
 
@@ -71,7 +71,7 @@ Main.controller.UI = {
             ],
             onSelect: function (evt) {
                 var item = this.item;
-                Main.controller.UI.showByMenuItem(item, data);
+                Ns.ui.UI.showByMenuItem(item, data);
                 //finally hide the menu
                 this.hide();
             }
@@ -92,7 +92,7 @@ Main.controller.UI = {
             width: 220,
             target: "#home-group-dropdown-menu",
             header: 'Jump to group',
-            items: groupItems(Main.controller.UserProfile.appUser.groupsBelong),
+            items: groupItems(Ns.view.UserProfile.appUser.groupsBelong),
             onSelect: function (evt) {
                 var item = this.item;
 
@@ -121,11 +121,11 @@ Main.controller.UI = {
             }
         });
 
-        Main.controller.Match.contactsMatchList();
-        Main.controller.Match.groupMatchList();
-        Main.controller.Match.tournamentMatchList();
+        Ns.game.Match.contactsMatchList();
+        Ns.game.Match.groupMatchList();
+        Ns.game.Match.tournamentMatchList();
 
-        Main.controller.GamePanel.setupOnHome();
+        Ns.ui.GamePanel.setupOnHome();
 
 
 
@@ -140,7 +140,7 @@ Main.controller.UI = {
                 Main.controller.GameHome.showGroupDetails(group);
             } else if (evt.target.id === 'home-group-pic') {
                 var group = document.getElementById('home-group-name').innerHTML;
-                Main.controller.UI.expandPhoto({type: 'group', id: group});
+                Ns.ui.UI.expandPhoto({type: 'group', id: group});
             }
         });
 
@@ -151,7 +151,7 @@ Main.controller.UI = {
                 Main.controller.GameHome.showTournamentDetails(tourn);
             } else if (evt.target.id === 'home-tournament-pic') {
                 var tourn = document.getElementById('home-tournament-name').innerHTML;
-                Main.controller.UI.expandPhoto({type: 'tournament', id: tourn});
+                Ns.ui.UI.expandPhoto({type: 'tournament', id: tourn});
             }
         });
 
@@ -164,29 +164,29 @@ Main.controller.UI = {
             if (group_index > 0) {
                 group_index--;
             }
-            group = Main.controller.UserProfile.appUser.groupsBelong[group_index];
+            group = Ns.view.UserProfile.appUser.groupsBelong[group_index];
 
             if (!group) {
                 return;
             }
 
-            Main.controller.Match.groupMatchList(group);
+            Ns.game.Match.groupMatchList(group);
 
         });
 
         $('#home-group-next').on('click', function () {
             var group;
-            if (group_index < Main.controller.UserProfile.appUser.groupsBelong.length - 1) {
+            if (group_index < Ns.view.UserProfile.appUser.groupsBelong.length - 1) {
                 group_index++;
             }
 
-            group = Main.controller.UserProfile.appUser.groupsBelong[group_index];
+            group = Ns.view.UserProfile.appUser.groupsBelong[group_index];
 
             if (!group) {
                 return;
             }
 
-            Main.controller.Match.groupMatchList(group);
+            Ns.game.Match.groupMatchList(group);
 
         });
 
@@ -196,29 +196,29 @@ Main.controller.UI = {
                 tourn_index--;
             }
 
-            tourn = Main.controller.UserProfile.appUser.tournamentList[tourn_index];
+            tourn = Ns.view.UserProfile.appUser.tournamentList[tourn_index];
 
             if (!tourn) {
                 return;
             }
 
-            Main.controller.Match.tournamentMatchList(tourn);
+            Ns.game.Match.tournamentMatchList(tourn);
 
         });
 
         $('#home-tournament-next').on('click', function () {
             var tourn;
-            if (tourn_index < Main.controller.UserProfile.appUser.tournamentList.length - 1) {
+            if (tourn_index < Ns.view.UserProfile.appUser.tournamentList.length - 1) {
                 tourn_index++;
             }
 
-            tourn = Main.controller.UserProfile.appUser.tournamentList[tourn_index];
+            tourn = Ns.view.UserProfile.appUser.tournamentList[tourn_index];
 
             if (!tourn) {
                 return;
             }
 
-            Main.controller.Match.tournamentMatchList(tourn);
+            Ns.game.Match.tournamentMatchList(tourn);
 
         });
 
@@ -228,7 +228,7 @@ Main.controller.UI = {
 
         switch (item) {
             case 'My Game':
-                var m = Main.controller.Match.currentUserMatch;
+                var m = Ns.game.Match.currentUserMatch;
                 if (m && (m.game_status.toLowercase() !== 'end')) {
                     Main.controller.GameHome.showGameView(m);
                 } else {
@@ -250,7 +250,7 @@ Main.controller.UI = {
                 Main.controller.GameHome.showPlayNotifications(data);
                 break;
             case 'Play robot':
-                var m = Main.controller.Match.currentUserMatch;
+                var m = Ns.game.Match.currentUserMatch;
 
                 Main.controller.GameHome.showGameViewB({robot: true, game_name: data.game});//TESTING - TO BE REMOVE
                 return;//TESTING - TO BE REMOVE

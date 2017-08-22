@@ -1,5 +1,5 @@
 
-Main.controller.Stats = {
+Ns.Stats = {
     content: function(){
         
     }

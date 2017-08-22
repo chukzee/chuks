@@ -1,7 +1,7 @@
 
 /* global Main */
 
-Main.controller.GamePanel = {
+Ns.ui.GamePanel = {
 
     gameAreaDimension: function (elem) {
 
@@ -62,7 +62,7 @@ Main.controller.GamePanel = {
                 checkPanelSizeFn.bind(this)();
             }
 
-            var dim = Main.controller.GamePanel.gameAreaDimension.bind(this)();
+            var dim = Ns.ui.GamePanel.gameAreaDimension.bind(this)();
             if (!dim) {
                 return;
             }
@@ -125,7 +125,7 @@ Main.controller.GamePanel = {
 
     ownGameView: function (data, panel_main, resizeFn, checkPanelSizeFn) {
 
-        Main.controller.GamePanel.fixSizeConfig(panel_main, resizeFn, checkPanelSizeFn);
+        Ns.ui.GamePanel.fixSizeConfig(panel_main, resizeFn, checkPanelSizeFn);
 
         $('#game-view-white-name').html(data.white_name);
         $('#game-view-white-pic').attr({src: data.white_pic});
@@ -158,7 +158,7 @@ Main.controller.GamePanel = {
         });
 
 
-        if (Main.controller.UserProfile.appUser.id === data.white_id) {
+        if (Ns.view.UserProfile.appUser.id === data.white_id) {
 
             $('#game-view-user-wld').html(data.white_wld);
             $('#game-view-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
@@ -167,7 +167,7 @@ Main.controller.GamePanel = {
             $('#game-view-opponent-activity').html(data.black_activity);
             $('#game-view-opponent-wld').html(data.black_wld);
 
-        } else if (Main.controller.UserProfile.appUser.id === data.black_id) {
+        } else if (Ns.view.UserProfile.appUser.id === data.black_id) {
 
             $('#game-view-user-wld').html(data.black_wld);
             $('#game-view-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
@@ -193,7 +193,7 @@ Main.controller.GamePanel = {
         if (Main.device.isXLarge()) {
             leftPanelTitleComp.innerHTML = titleChat;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.Chat.content.bind(obj));
+            ogv.showLeftContent(Ns.msg.Chat.content.bind(obj));
         }
 
         $('#game-view-footer-chat').on('click', function () {
@@ -204,7 +204,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.Chat.content.bind(obj));
+            ogv.showLeftContent(Ns.msg.Chat.content.bind(obj));
         });
 
         $('#game-view-footer-comments').on('click', function () {
@@ -215,7 +215,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.Comment.content.bind(obj));
+            ogv.showLeftContent(Ns.msg.Comment.content.bind(obj));
         });
 
         $('#game-view-footer-voice-call').on('click', function () {
@@ -226,7 +226,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.VoiceCall.content.bind(obj));
+            ogv.showLeftContent(Ns.msg.VoiceCall.content.bind(obj));
         });
 
         $('#game-view-footer-video-call').on('click', function () {
@@ -237,7 +237,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.VideoCall.content.bind(obj));
+            ogv.showLeftContent(Ns.msg.VideoCall.content.bind(obj));
         });
 
         $('#game-view-footer-spectators').on('click', function () {
@@ -248,7 +248,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Main.controller.Spectators.content.bind(obj));
+            ogv.showLeftContent(Ns.Spectators.content.bind(obj));
         });
 
         $('#game-view-right-panel-close').on('click', function () {
@@ -265,7 +265,7 @@ Main.controller.GamePanel = {
 
     ownGameViewB: function (data, panel_main, resizeFn, checkPanelSizeFn) {
 
-        Main.controller.GamePanel.fixSizeConfig(panel_main, resizeFn, checkPanelSizeFn);
+        Ns.ui.GamePanel.fixSizeConfig(panel_main, resizeFn, checkPanelSizeFn);
 
         $('#game-view-b-white-name').html(data.white_name);
         $('#game-view-b-white-pic').attr({src: data.white_pic});
@@ -297,7 +297,7 @@ Main.controller.GamePanel = {
         });
 
 
-        if (Main.controller.UserProfile.appUser.id === data.white_id) {
+        if (Ns.view.UserProfile.appUser.id === data.white_id) {
 
             $('#game-view-b-user-wld').html(data.white_wld);
             $('#game-view-b-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
@@ -306,7 +306,7 @@ Main.controller.GamePanel = {
             $('#game-view-b-opponent-activity').html(data.black_activity);
             $('#game-view-b-opponent-wld').html(data.black_wld);
 
-        } else if (Main.controller.UserProfile.appUser.id === data.black_id) {
+        } else if (Ns.view.UserProfile.appUser.id === data.black_id) {
 
             $('#game-view-b-user-wld').html(data.black_wld);
             $('#game-view-b-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
@@ -349,7 +349,7 @@ Main.controller.GamePanel = {
 
     watchGame: function (data, panel_main, resizeFn) {
 
-        Main.controller.GamePanel.fixSizeConfig(panel_main, resizeFn);
+        Ns.ui.GamePanel.fixSizeConfig(panel_main, resizeFn);
 
         $('#game-watch-white-name').html(data.white_name);
         $('#game-watch-white-countdown').html(data.white_countdown);
@@ -404,7 +404,7 @@ Main.controller.GamePanel = {
         if (Main.device.isXLarge()) {
             leftPanelTitleComp.innerHTML = titleComment;
             lefPanelBody.innerHTML = '';
-            gw.showLeftContent(Main.controller.Comment.content.bind(obj));
+            gw.showLeftContent(Ns.msg.Comment.content.bind(obj));
         }
 
 
@@ -416,7 +416,7 @@ Main.controller.GamePanel = {
             }
             leftPanelTitleComp.innerHTML = title;
             lefPanelBody.innerHTML = '';
-            gw.showLeftContent(Main.controller.Comment.content.bind(obj));
+            gw.showLeftContent(Ns.msg.Comment.content.bind(obj));
         });
 
         $('#game-watch-right-panel-close').on('click', function () {
@@ -464,31 +464,31 @@ Main.controller.GamePanel = {
             }
 
             //making sure all three game panel type are ready
-            if (!Main.controller.UI.gameViewHtml
-                    || !Main.controller.UI.gameViewBHtml
-                    || !Main.controller.UI.gameWatchHtml) {
+            if (!Ns.ui.UI.gameViewHtml
+                    || !Ns.ui.UI.gameViewBHtml
+                    || !Ns.ui.UI.gameWatchHtml) {
                 return;
             }
 
 
             var gamePanel = document.getElementById("home-game-panel");
-            if (Main.controller.Match.hasMatchData) {
-                var user = Main.controller.UserProfile.appUser;
+            if (Ns.game.Match.hasMatchData) {
+                var user = Ns.view.UserProfile.appUser;
                 if (first_match_data.white_id === user.id
                         || first_match_data.black_id === user.id) {
                     //show the current app user game
-                    gamePanel.innerHTML = Main.controller.UI.gameViewHtml;
+                    gamePanel.innerHTML = Ns.ui.UI.gameViewHtml;
                     Main.controller.GameView.Content(first_match_data);
 
                 } else {
                     //watch other players live
-                    gamePanel.innerHTML = Main.controller.UI.gameWatchHtml;
+                    gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml;
                     Main.controller.GameWatch.Content(match_data);
                 }
                 isGamePanelInit = true;
 
             } else if (!isGamePanelInit) {
-                gamePanel.innerHTML = Main.controller.UI.gameWatchHtml; //default - until match data is available
+                gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml; //default - until match data is available
 
                 //TODO - Show default message of say Not Match in the center of the game panel - with beautiful print
             }
@@ -497,16 +497,16 @@ Main.controller.GamePanel = {
 
 
         function getGameView(fn) {
-            if (Main.controller.UI.gameViewHtml) {
+            if (Ns.ui.UI.gameViewHtml) {
                 if (fn) {
-                    fn(Main.controller.UI.gameViewHtml);
+                    fn(Ns.ui.UI.gameViewHtml);
                 }
                 return;
             }
             var url = 'device/' + Main.device.getCategory() + '/' + Main.controller.GameHome.GAME_VIEW_HTML;
             Main.ajax.get(url,
                     function (res) {
-                        Main.controller.UI.gameViewHtml = res;
+                        Ns.ui.UI.gameViewHtml = res;
                         if (fn) {
                             fn(res);
                         }
@@ -521,16 +521,16 @@ Main.controller.GamePanel = {
 
 
         function getGameViewB(fn) {
-            if (Main.controller.UI.gameViewBHtml) {
+            if (Ns.ui.UI.gameViewBHtml) {
                 if (fn) {
-                    fn(Main.controller.UI.gameViewBHtml);
+                    fn(Ns.ui.UI.gameViewBHtml);
                 }
                 return;
             }
             var url = 'device/' + Main.device.getCategory() + '/' + Main.controller.GameHome.GAME_VIEW_B_HTML;
             Main.ajax.get(url,
                     function (res) {
-                        Main.controller.UI.gameViewBHtml = res;
+                        Ns.ui.UI.gameViewBHtml = res;
                         if (fn) {
                             fn(res);
                         }
@@ -545,16 +545,16 @@ Main.controller.GamePanel = {
 
 
         function getGameWatch(fn) {
-            if (Main.controller.UI.gameWatchHtml) {
+            if (Ns.ui.UI.gameWatchHtml) {
                 if (fn) {
-                    fn(Main.controller.UI.gameWatchHtml);
+                    fn(Ns.ui.UI.gameWatchHtml);
                 }
                 return;
             }
             var url = 'device/' + Main.device.getCategory() + '/' + Main.controller.GameHome.GAME_WATCH_HTML;
             Main.ajax.get(url,
                     function (res) {
-                        Main.controller.UI.gameWatchHtml = res;
+                        Ns.ui.UI.gameWatchHtml = res;
                         if (fn) {
                             fn(res);
                         }

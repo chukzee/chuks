@@ -36,7 +36,7 @@ Main.controller.GameView = {
         var upper_el = document.getElementById('game-view-main-upper');
         var lower_el = document.getElementById('game-view-main-lower');
 
-        Main.controller.GamePanel.ownGameView(data, panel_main, resizeMain);
+        Ns.ui.GamePanel.ownGameView(data, panel_main, resizeMain);
         
         function resizeMain(board_size, upper_height, lower_height){
             board_el.style.width = board_size + 'px';

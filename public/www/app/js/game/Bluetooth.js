@@ -138,7 +138,7 @@ Ns.game.Bluetooth = {
             }, 5000);
         }
 
-        console.log('Not fully implemented - Main.controller.Bluetooth.start');
+        console.log('Not fully implemented - Ns.game.Bluetooth.start');
 
         return true;
     }

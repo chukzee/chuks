@@ -4,7 +4,7 @@ Ns.Auth = {
     constructor : function(){
         
         this.login(function(user_info){
-            Main.controller.UserProfile.appUser = user_info;
+            Ns.view.UserProfile.appUser = user_info;
         });
         
     },

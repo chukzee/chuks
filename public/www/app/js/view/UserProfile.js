@@ -1,7 +1,7 @@
 
 /* global Main */
 
-Main.controller.UserProfile = {
+Ns.view.UserProfile = {
 
     appUser: {}, //set dynamically
 
@@ -45,7 +45,7 @@ Main.controller.UserProfile = {
                         .get(function (group_info_arr) {
                             //first save the groups info in memory
                             for (var i = 0; i < group_info_arr.length; i++) {
-                                Main.controller.Group.groupList[group_info_arr[i].name] = group_info_arr[i];
+                                Ns.view.Group.groupList[group_info_arr[i].name] = group_info_arr[i];
                             }
                             //get the groups in common
                             var c = whatsCommon(group_info_arr);
@@ -68,9 +68,9 @@ Main.controller.UserProfile = {
                 return [];
             }
 
-            var app_user_id = Main.controller.UserProfile.appUser.id;
+            var app_user_id = Ns.view.UserProfile.appUser.id;
 
-            var app_user_groups_belong = Main.controller.UserProfile.appUser.groupsBelong;
+            var app_user_groups_belong = Ns.view.UserProfile.appUser.groupsBelong;
 
             if (!app_user_groups_belong) {
                 //check the user list

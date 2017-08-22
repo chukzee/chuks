@@ -1,5 +1,5 @@
 
-Main.controller.Contacts = {
+Ns.view.Contacts = {
     content : function(){
         
     },

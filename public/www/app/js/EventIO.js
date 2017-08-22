@@ -1,6 +1,6 @@
 
 
-Main.controller.EventIO = {
+Ns.EventIO = {
     
     constructor : function(){
         

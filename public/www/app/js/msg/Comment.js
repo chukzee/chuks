@@ -27,7 +27,7 @@ Ns.msg.Comment = {
         this.lefPanelBody.innerHTML = "<div class='game9ja-comment'>"
                 + "<div  id='" + comment_content_id + "'  class='game9ja-comment-body'>"
                 + "</div>"
-                + Main.controller.UI.inputMsgHtml()
+                + Ns.ui.UI.inputMsgHtml()
                 + "</div>";
 
         var me = this;
@@ -52,7 +52,7 @@ Ns.msg.Comment = {
                             var msg = res[i].msg;
                             if (res[i].content_type === 'voice') {
                                 //a reply
-                                msg = Main.controller.UI.voiceMessageHtml(res[i].vioce_data_url, res[i].vioce_data_byte_size);
+                                msg = Ns.ui.UI.voiceMessageHtml(res[i].vioce_data_url, res[i].vioce_data_byte_size);
                             }
 
                             if (res[i].reply_user_id) {

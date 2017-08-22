@@ -1,4 +1,4 @@
-
+Ns.game={};
 var draft = {};
 
 var Draft9ja = draftFn.bind(draft); //bind the 'this' of draftFn to draft - this technique is twice faster than not using the bind method - I have tested it!!!

@@ -22,7 +22,7 @@ Ns.msg.Chat = {
 
         this.lefPanelBody.innerHTML = "<div class='game9ja-chat'>"
                 + "<div id='" + chat_content_id + "' class='game9ja-chat-body'></div>"
-                + Main.controller.UI.inputMsgHtml()
+                + Ns.ui.UI.inputMsgHtml()
                 + "</div>";
 
         var me = this;

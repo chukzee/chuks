@@ -12,17 +12,17 @@ Main.controller.GameHome = {
     GAME_WATCH_HTML: 'game-watch-ld.html',
 
     contactsMatchKey: function () {
-        return Main.controller.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
+        return Ns.view.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
     },
     groupMatchKey: function (group_name) {
-        return Main.controller.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
+        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
     },
     tournamentMatchKey: function (tournament) {
-        return Main.controller.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
+        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
     },
     showGameView: function (match) {
 
-        document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewHtml;
+        document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         Main.controller.GameView.Content(match);
 
 
@@ -31,7 +31,7 @@ Main.controller.GameHome = {
         //show a dialog to display startup settings
         Main.dialog.show({
             title: "Play Robot", //TODO - display a robot like photo alongside the title
-            content: Main.controller.UI.gameSettings(match.game_name),
+            content: Ns.ui.UI.gameSettings(match.game_name),
             fade: true,
             buttons: ['Cancel', 'Play'],
             closeButton: false,
@@ -39,7 +39,7 @@ Main.controller.GameHome = {
             action: function (btn, value) {
                 if (value === 'Play') {
                     
-                    document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+                    document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
                     //hide uneccessary component
                     document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
@@ -51,11 +51,11 @@ Main.controller.GameHome = {
         });
     },
     showGameWatch: function (match) {
-        document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameWatchHtml;
+        document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameWatchHtml;
         Main.controller.GameWatch.Content(match);
     },
     Content: function (data) {
-        Main.controller.UI.init(data);
+        Ns.ui.UI.init(data);
 
         checkOrientation();
 
@@ -124,13 +124,13 @@ Main.controller.GameHome = {
             onShow: function () {
                 //access ui component here
                 var me = this;
-                Main.controller.Bluetooth.start({
+                Ns.game.Bluetooth.start({
                     data: data,
                     container: container_id,
                     onReady: function (data) {
                         //do some final setup on the game panel
                         
-                        document.getElementById("home-game-panel").innerHTML = Main.controller.UI.gameViewBHtml;
+                        document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
                         //show bluetooth icon
                         document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
@@ -154,7 +154,7 @@ Main.controller.GameHome = {
             url:'tournament-details-ld.html',
             fade:true,
             data : tournament,
-            onShow: Main.controller.Tournament.content
+            onShow: Ns.view.Tournament.content
         });        
     },
     showGroupDetails: function (group) {
@@ -164,7 +164,7 @@ Main.controller.GameHome = {
             url:'group-details-ld.html',
             fade:true,
             data : group,
-            onShow: Main.controller.Group.content
+            onShow: Ns.view.Group.content
         });
 
     },
@@ -175,7 +175,7 @@ Main.controller.GameHome = {
             url:'play-notifications-ld.html',
             fade:true,            
             data : data,
-            onShow: Main.controller.PlayNotifications.content
+            onShow: Ns.view.PlayNotifications.content
         });
 
     },
@@ -189,7 +189,7 @@ Main.controller.GameHome = {
             url:'contacts-ld.html',
             fade:true,
             data : data,
-            onShow: Main.controller.Contacts.content
+            onShow: Ns.view.Contacts.content
         });
         
     },
@@ -205,7 +205,7 @@ Main.controller.GameHome = {
             url:'user-profile-ld.html',
             fade:true,
             data : data,
-            onShow: Main.controller.UserProfile.content
+            onShow: Ns.view.UserProfile.content
         });
     },
     showSettings: function (data) {

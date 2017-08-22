@@ -1,5 +1,5 @@
 
-Main.controller.Spectators = {
+Ns.Spectators = {
     content: function(){
         
     }

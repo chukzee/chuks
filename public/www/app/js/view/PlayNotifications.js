@@ -1,5 +1,5 @@
 
-Main.controller.PlayNotifications = {
+Ns.view.PlayNotifications = {
     content : function(){
         
     },

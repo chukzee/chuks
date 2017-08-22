@@ -20,7 +20,7 @@ Main.controller.GameWatch = {
             var el = document.getElementById('game-watch-right-content');
             el.style.width = '40%';
             el.style.display = 'block';
-            var dim = Main.controller.GamePanel.gameAreaDimension(elm);
+            var dim = Ns.ui.GamePanel.gameAreaDimension(elm);
             if (dim) {
                 //setting the sizes of the panels
                 Main.controller.GameWatch.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
@@ -86,7 +86,7 @@ Main.controller.GameWatch = {
 
         var rhs_el = document.getElementById('game-watch-right-content');
         var resizeMainFunc = Main.controller.GameWatch.resizeMain;
-        Main.controller.GamePanel.watchGame(data, panel_main, resizeMainFunc, checkPanelSize);
+        Ns.ui.GamePanel.watchGame(data, panel_main, resizeMainFunc, checkPanelSize);
 
         function checkPanelSize() {
             //right panel

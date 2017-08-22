@@ -46,7 +46,7 @@ Main.controller.GameWatch = {
         var upper_el = document.getElementById('game-watch-main-upper');
         var lower_el = document.getElementById('game-watch-main-lower');
 
-        Main.controller.GamePanel.watchGame(data, panel_main, resizeMain);
+        Ns.ui.GamePanel.watchGame(data, panel_main, resizeMain);
         
         function resizeMain(board_size, upper_height, lower_height){
             board_el.style.width = board_size + 'px';

@@ -10,16 +10,16 @@ Main.controller.GameHome = {
     GAME_WATCH_HTML: 'game-watch-sd.html',
 
     contactsMatchKey: function () {
-        return Main.controller.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
+        return Ns.view.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
     },
     groupMatchKey: function (group_name) {
-        return Main.controller.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
+        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
     },
     tournamentMatchKey: function (tournament) {
-        return Main.controller.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
+        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
     },
     Content: function (data) {
-        Main.controller.UI.init(data);
+        Ns.ui.UI.init(data);
     },
     showGameView: function (match) {
         Main.page.show({
@@ -34,7 +34,7 @@ Main.controller.GameHome = {
         //show a dialog to display startup settings
         Main.dialog.show({
             title: "Play Robot", //TODO - display a robot like photo alongside the title
-            content: Main.controller.UI.gameSettings(match.game_name),
+            content: Ns.ui.UI.gameSettings(match.game_name),
             fade: true,
             buttons: ['Cancel', 'Play'],
             closeButton: false,
@@ -103,7 +103,7 @@ Main.controller.GameHome = {
             onShow: function () {
                 //access ui component here
                 var me = this;
-                Main.controller.Bluetooth.start({
+                Ns.game.Bluetooth.start({
                     data: data,
                     container: container_id,
                     onReady: function (argu) {
@@ -137,7 +137,7 @@ Main.controller.GameHome = {
             url: 'tournament-details-sd.html',
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.Tournament.content,
+            onBeforeShow: Ns.view.Tournament.content,
             data: tournament
         });
     },
@@ -147,7 +147,7 @@ Main.controller.GameHome = {
             url: 'group-details-sd.html',
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.Group.content,
+            onBeforeShow: Ns.view.Group.content,
             data: group
         });
     },
@@ -157,7 +157,7 @@ Main.controller.GameHome = {
             url: 'play-notifications-sd.html',
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.PlayNotifications.content,
+            onBeforeShow: Ns.view.PlayNotifications.content,
             data: data
         });
     },
@@ -170,7 +170,7 @@ Main.controller.GameHome = {
             url: 'contacts-sd.html',
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.Contacts.content,
+            onBeforeShow: Ns.view.Contacts.content,
             data: data
         });
     },
@@ -186,7 +186,7 @@ Main.controller.GameHome = {
             url: 'user-profile-sd.html',
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.UserProfile.content,
+            onBeforeShow: Ns.view.UserProfile.content,
             data: data
         });
     },

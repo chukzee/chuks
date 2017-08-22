@@ -18,7 +18,7 @@ Main.controller.GameView = {
             var el = document.getElementById('game-view-right-content');
             el.style.width = '40%';
             el.style.display = 'block';
-            var dim = Main.controller.GamePanel.gameAreaDimension(elm);
+            var dim = Ns.ui.GamePanel.gameAreaDimension(elm);
             if (dim) {
                 //setting the sizes of the panels
                 Main.controller.GameView.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
@@ -78,7 +78,7 @@ Main.controller.GameView = {
         var rhs_el = document.getElementById('game-view-right-content');
         
         var resizeMainFunc = Main.controller.GameView.resizeMain;
-        Main.controller.GamePanel.ownGameView(data, panel_main, resizeMainFunc, checkPanelSize);
+        Ns.ui.GamePanel.ownGameView(data, panel_main, resizeMainFunc, checkPanelSize);
 
         function checkPanelSize() {
             //right panel

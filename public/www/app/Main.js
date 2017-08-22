@@ -2062,7 +2062,7 @@ var Main = {};
 
             if ((obj.el && obj.html) || (obj.el && obj.url) || (obj.url && obj.html)) {
                 throw new Error('Ambigious properties : must be only one of url , el , hmtl');
-                return;
+                //return;
             }
 
             /*if (fullScreenElement) {//remove old one
