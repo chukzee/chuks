@@ -73,6 +73,10 @@ public class Sources {
         return line_count;
     }
 
+    public int length() {
+        return contentList.size();
+    }
+
     public static class LineFile {
 
         private final String fileName;

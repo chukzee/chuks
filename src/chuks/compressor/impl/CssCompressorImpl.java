@@ -21,7 +21,9 @@ public class CssCompressorImpl implements Compressor{
 
     @Override
     public boolean compress(Sources sb, String outfile) throws AppBuilderException {
-        
+        if(sb == null || sb.length() == 0){
+            return false;
+        }
         return new YuiCompressor().compressCss(sb, outfile);
     }
 

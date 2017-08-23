@@ -23,6 +23,11 @@ public class JsCompressorImpl implements Compressor{
 
     @Override
     public boolean compress(Sources sb, String outfile) throws AppBuilderException {
+        
+        if(sb == null || sb.length() == 0){
+            return false;
+        }
+        
         if(new ClosureCompressor().compressJs(sb, outfile)){
             return true;
         }else if(new YuiCompressor().compressJs(sb, outfile)){
