@@ -312,8 +312,8 @@ public class AppBuilder {
         System.out.println("Succesfullly minified css...");
         System.out.println("Finishing build...");
         
-        createProdIncludeFile(dev_include);
-        createProdIndexPage(dev_include);
+        createProdIncludeFile(prod_include);
+        createProdIndexPage(prod_include);
 
         System.out.println("App build successfully.");
     }
@@ -627,7 +627,7 @@ public class AppBuilder {
         FileOutputStream out = null;
         try {
             String prod_json = gson.toJson(prod_include);
-            String file = webRoot + Config.BUILD_PATH + "/"+Config.INCLUDE_FILE;
+            String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/app/"+Config.INCLUDE_FILE);
             out = new FileOutputStream(file);
             out.write(prod_json.getBytes());
         } catch (FileNotFoundException ex) {
@@ -659,7 +659,7 @@ public class AppBuilder {
         html = html.replaceFirst("\\{app_js\\}", app_js);//replace {app_js}
         html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
 
-        String file = webRoot + Config.BUILD_PATH + "index.html";
+        String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/app/index.html");
         writeToFile(file, html);
 
     }
