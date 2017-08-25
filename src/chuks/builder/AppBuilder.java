@@ -119,21 +119,20 @@ public class AppBuilder {
         if (!workspace_dir.startsWith(root)) {
             workspace_dir = normalizeFileName(cwd + "/" + workspace_dir);
         }
-        
+
         //in order to avoid overwriting important file will must make sure the Config.INCLUDE_FILE
         //and the Config.INCLUDE_FILE files does not exist!
-    
-        if(!new File(workspace_dir).exists()){
+        if (!new File(workspace_dir).exists()) {
             System.err.println("The specified workspace does not exist!");
             return;
         }
-        
-        if(new File(workspace_dir).list().length > 0){
+
+        if (new File(workspace_dir).list().length > 0) {
             System.err.println("The specified workspace must be empty"
                     + "\nto avoid accidental overwriting of important files.");
             return;
         }
-        
+
         for (String p : Config.APP_DIR_STRUTURE) {
             File dir = new File(workspace_dir + p);
             dir.mkdir();//create the workspace directory structure
@@ -145,18 +144,18 @@ public class AppBuilder {
 
         //create develop index
         createDevIndexPage(workspace_dir);
-        
+
         //create device indexes for small, medium and large
         createDeviceIndexPage(workspace_dir);
-        
+
         //create the include file
         String inc_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.INCLUDE_FILE);
         writeToFile(inc_filename, str_inc);
-               
+
         String main_js_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.MAIN_JS_FILE);
         //writeToFile(main_js_filename, "the Main.js content goes here");//TODO
-        
-        System.err.println("TODO - Auto create the "+Config.MAIN_JS_FILE);// REMIND - store in the jar just has the index.html of build
+
+        System.err.println("TODO - Auto create the " + Config.MAIN_JS_FILE);// REMIND - store in the jar just has the index.html of build
 
         System.out.println("App workspace successfully created.");
     }
@@ -300,7 +299,7 @@ public class AppBuilder {
         prod_include.setNamespace(dev_include.getNamespace());
         prod_include.setAppName(dev_include.getAppName());
         prod_include.getBuild().setProd(true);
-        
+
         buildJs(dev_include, prod_include);
 
         System.out.println("Succesfullly minified javascript...");
@@ -309,7 +308,7 @@ public class AppBuilder {
 
         System.out.println("Succesfullly minified css...");
         System.out.println("Finishing build...");
-        
+
         createProdIncludeFile(prod_include);
         createProdIndexPage(prod_include);
 
@@ -376,7 +375,7 @@ public class AppBuilder {
 
         for (String d : Config.BIULD_DIR_STRUTURE) {
             dir = new File(webRoot + d);
-            if(!dir.mkdirs()){//create the build structure
+            if (!dir.mkdirs()) {//create the build structure
                 throw new AppBuilderException("could not prepare build directory.");
             }
         }
@@ -393,9 +392,9 @@ public class AppBuilder {
                     File dirTo = new File(normalizeFileName(webRoot + Config.BUILD_PATH + d));
                     boolean exist1 = dirFrom.exists();
                     boolean exist2 = dirTo.exists();
-                    
-                    System.out.println(exist1+"   "+exist2);
-                    
+
+                    System.out.println(exist1 + "   " + exist2);
+
                     FileUtils.copyDirectory(dirFrom, dirTo, false);
                 } catch (FileNotFoundException ex) {
                     //do nothing
@@ -435,10 +434,10 @@ public class AppBuilder {
                 }
 
                 sources.put("", "}");//wrapper end
-                fpath = "/app/"+ Config.JS_COMPILED_MAIN_FILE;
+                fpath = "/app/" + Config.JS_COMPILED_MAIN_FILE;
                 //prod_include.getBuild().getApp().setJs(new String[]{fpath});//NOT REQUIRED IN THIS CASE - SINCE THEY MERGE WITH THE Main.js
                 compiled_file_name = normalizeFileName(webRoot
-                        + Config.BUILD_PATH+fpath);
+                        + Config.BUILD_PATH + fpath);
 
             }
             break;
@@ -452,7 +451,7 @@ public class AppBuilder {
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath =  "/device/small/js/" + Config.JS_COMPILED_SMALL_FILE;
+                fpath = "/device/small/js/" + Config.JS_COMPILED_SMALL_FILE;
                 prod_include.getBuild().getSmall().setJs(new String[]{fpath});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
@@ -498,7 +497,6 @@ public class AppBuilder {
             default:
                 return;
         }
-        
 
         Compressor jscomp = CompressorFactory.getJsCompressor();
         jscomp.compress(sources, compiled_file_name);
@@ -622,9 +620,9 @@ public class AppBuilder {
     }
 
     private void createProdIncludeFile(Include prod_include) throws AppBuilderException {
-            String prod_json = gson.toJson(prod_include);
-            String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/app/"+Config.INCLUDE_FILE);
-            writeToFile(file, prod_json);        
+        String prod_json = gson.toJson(prod_include);
+        String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/app/" + Config.INCLUDE_FILE);
+        writeToFile(file, prod_json);
     }
 
     private void createProdIndexPage(Include include) throws AppBuilderException {
@@ -638,7 +636,8 @@ public class AppBuilder {
             html += s.nextLine() + "\n";
         }
         String app_js = Config.JS_COMPILED_MAIN_FILE;
-        html = html.replaceFirst("\\{app_js\\}", app_js);//replace {app_js}
+        String js_path = Config.MAIN_PATH.endsWith("/") ? Config.MAIN_PATH : Config.MAIN_PATH + "/";
+        html = html.replaceFirst("\\{app_js\\}", js_path + app_js);//replace {app_js}
         html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
 
         String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/index.html");
@@ -656,14 +655,14 @@ public class AppBuilder {
         while (s.hasNextLine()) {
             html += s.nextLine() + "\n";
         }
-        String main_js = Config.MAIN_PATH+Config.MAIN_JS_FILE;
+        String main_js = Config.MAIN_PATH + Config.MAIN_JS_FILE;
         html = html.replaceFirst("\\{main_js\\}", main_js);//replace {app_js}
         //html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
 
         String file = workspace + "index.html";
         writeToFile(file, html);
     }
-    
+
     private void createDeviceIndexPage(String workspace) throws AppBuilderException {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/device_index.html");
         if (in == null) {
@@ -674,11 +673,11 @@ public class AppBuilder {
         while (s.hasNextLine()) {
             html += s.nextLine() + "\n";
         }
-        writeToFile(normalizeFileName(workspace +"/device/small/index.html"), html);
-        writeToFile(normalizeFileName(workspace +"/device/medium/index.html"), html);
-        writeToFile(normalizeFileName(workspace +"/device/large/index.html"), html);
+        writeToFile(normalizeFileName(workspace + "/device/small/index.html"), html);
+        writeToFile(normalizeFileName(workspace + "/device/medium/index.html"), html);
+        writeToFile(normalizeFileName(workspace + "/device/large/index.html"), html);
     }
-    
+
     void writeToFile(String file, String content) throws AppBuilderException {
 
         FileOutputStream out = null;
