@@ -23,6 +23,7 @@ import org.json.JSONString;
 import chuks.compressor.Compressor;
 import chuks.compressor.CompressorFactory;
 import java.io.BufferedInputStream;
+import java.io.FileFilter;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.file.Path;
@@ -390,11 +391,6 @@ public class AppBuilder {
                 try {
                     File dirFrom = new File(normalizeFileName(webRoot + d));
                     File dirTo = new File(normalizeFileName(webRoot + Config.BUILD_PATH + d));
-                    boolean exist1 = dirFrom.exists();
-                    boolean exist2 = dirTo.exists();
-
-                    System.out.println(exist1 + "   " + exist2);
-
                     FileUtils.copyDirectory(dirFrom, dirTo, false);
                 } catch (FileNotFoundException ex) {
                     //do nothing
@@ -402,6 +398,25 @@ public class AppBuilder {
                     throw new AppBuilderException(ex);
                 }
             }
+        }
+        
+        try {
+            copyToLevelDeviceFiles("small");
+            copyToLevelDeviceFiles("medium");
+            copyToLevelDeviceFiles("large");
+        } catch (IOException ex) {
+            throw new AppBuilderException(ex);
+        }
+
+    }
+
+    private void copyToLevelDeviceFiles(String cat) throws IOException {
+        File dir1 = new File(normalizeFileName(webRoot + "device/" +cat));
+        File[] files = dir1.listFiles(File::isFile); // a normal files
+
+        for (File f : files) {
+            File dir2 = new File(normalizeFileName(webRoot + Config.BUILD_PATH + "/device/" + cat));
+            FileUtils.copyFileToDirectory(f, dir2, false);
         }
 
     }
