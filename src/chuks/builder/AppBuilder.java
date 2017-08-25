@@ -299,9 +299,7 @@ public class AppBuilder {
 
         prod_include.setNamespace(dev_include.getNamespace());
         prod_include.setAppName(dev_include.getAppName());
-
-        BuildObj build = new BuildObj();
-        build.setProd(true);
+        prod_include.getBuild().setProd(true);
         
         buildJs(dev_include, prod_include);
 
@@ -624,25 +622,9 @@ public class AppBuilder {
     }
 
     private void createProdIncludeFile(Include prod_include) throws AppBuilderException {
-        FileOutputStream out = null;
-        try {
             String prod_json = gson.toJson(prod_include);
             String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/app/"+Config.INCLUDE_FILE);
-            out = new FileOutputStream(file);
-            out.write(prod_json.getBytes());
-        } catch (FileNotFoundException ex) {
-            throw new AppBuilderException(ex);
-        } catch (IOException ex) {
-            throw new AppBuilderException(ex);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+            writeToFile(file, prod_json);        
     }
 
     private void createProdIndexPage(Include include) throws AppBuilderException {
@@ -697,11 +679,10 @@ public class AppBuilder {
         writeToFile(normalizeFileName(workspace +"/device/large/index.html"), html);
     }
     
-    void writeToFile(String path, String content) throws AppBuilderException {
+    void writeToFile(String file, String content) throws AppBuilderException {
 
         FileOutputStream out = null;
         try {
-            String file = webRoot + Config.BUILD_PATH + "index.html";
             out = new FileOutputStream(file);
             out.write(content.getBytes());
         } catch (FileNotFoundException ex) {
