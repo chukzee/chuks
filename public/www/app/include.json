@@ -96,11 +96,11 @@
         
         "js":[
             "cordova.js" ,
-            "app/lib/draftgame.js",
-            "app/lib/socket.io.js",
-            "app/lib/jquery-1.10.2.min.js",
-            //"app/lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
-            "app/lib/tween/TweenMax.min.js"
+            "lib/draftgame.js",
+            "lib/socket.io.js",
+            "lib/jquery-1.10.2.min.js",
+            //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
+            "lib/tween/TweenMax.min.js"
             //"/socket.io/socket.io.js" //deprecated
         ],
         

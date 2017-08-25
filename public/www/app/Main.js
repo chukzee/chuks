@@ -3827,9 +3827,22 @@ var Main = {};
 
             Main.ajax.get(pkg,
                     function (res) {
-                        eval('var json = ' + res);//remove comments if present since they are not valid in json
+                        
+                        //block comments directly is deprecated code that breaks when minified my minifying tool
+                        //because the json variable evaluated in the eval function is not minified thus breaking 
+                        //the code afte it.
+                        /* eval('var json = ' + res);//remove comments if present since they are not valid in json
+                           var json = json;//old - is breaks when minified 
+                        */
+                       
+                       var variable = "game9ja_eval_call_"+new Date().getTime();//unique variable name
+                        window[variable] = variable;//technique! to avoid minifying tools from breaking the
+                        // code, store the variable name to be used in the eval function in the window object 
+                        
+                        eval('window['+variable+'] = ' + res);//remove comments if present since they are not valid in json
 
-                        var json = json;
+                        
+                        var json = window[variable];
                         //setup the application namespace
                         if (Main.util.isString(json.namespace)) {
                             if (window[json.namespace]) {
@@ -3929,20 +3942,15 @@ var Main = {};
                         };
 
                         if (is_build) {
-                            cssFilesHandler();
-                            var files = app_scripts.concat(cat_scripts);//absolute js is not required for nsObjects 
-                            for (var n in files) {
-                                nsObjects(files[n]);
-                            }
                             if (Main.util.isFunc(Main.build)) {
                                 Main.build();
                             } else {
                                 console.error("Build tool fault detected! Main.build is not a function! Build tool is expected to create the function with relevant code of the js file embeded inside and the function appended to the main js file.");
                                 return;
                             }
-                            loadDeviceMain(track.deviceCategory);
-
-                        } else if (track.total > 0) {
+                        }
+                        
+                        if (track.total > 0) {
                             cssFilesHandler();
                             jsFilesHandler();
                         } else {//zero
