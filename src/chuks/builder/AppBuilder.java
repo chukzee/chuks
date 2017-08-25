@@ -659,7 +659,7 @@ public class AppBuilder {
         html = html.replaceFirst("\\{app_js\\}", app_js);//replace {app_js}
         html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
 
-        String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/app/index.html");
+        String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/index.html");
         writeToFile(file, html);
 
     }
