@@ -527,7 +527,7 @@ public class AppBuilder {
 
                 sources.put("", "}");//wrapper end
                 fpath = "/app/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getApp().setJs(new String[]{fpath});
+                prod_include.getBuild().getApp().setCss(new String[]{fpath});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
                         + fpath);
@@ -545,7 +545,7 @@ public class AppBuilder {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
                 fpath = "/device/small/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getSmall().setJs(new String[]{fpath});
+                prod_include.getBuild().getSmall().setCss(new String[]{fpath});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
                         + fpath);
@@ -562,7 +562,7 @@ public class AppBuilder {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
                 fpath = "/device/medium/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getMedium().setJs(new String[]{fpath});
+                prod_include.getBuild().getMedium().setCss(new String[]{fpath});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
                         + fpath);
@@ -579,7 +579,7 @@ public class AppBuilder {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
                 fpath = "/device/large/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getLarge().setJs(new String[]{fpath});
+                prod_include.getBuild().getLarge().setCss(new String[]{fpath});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
                         + fpath);
