@@ -25,9 +25,14 @@ import chuks.compressor.CompressorFactory;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import javax.lang.model.SourceVersion;
+import org.apache.commons.io.FileUtils;
+import sun.management.FileSystem;
 
 /**
  *
@@ -44,11 +49,11 @@ public class AppBuilder {
     }
 
     String getConfigFilePath() {
-        return nomalizeFileName(webRoot + Config.MAIN_PATH + Config.INCLUDE_FILE);
+        return normalizeFileName(webRoot + Config.MAIN_PATH + Config.INCLUDE_FILE);
     }
 
     String getMainJsFilePath() {
-        return nomalizeFileName(webRoot + Config.MAIN_PATH + Config.MAIN_JS_FILE);
+        return normalizeFileName(webRoot + Config.MAIN_PATH + Config.MAIN_JS_FILE);
     }
 
     StringBuilder readAll(String path) throws AppBuilderException {
@@ -96,6 +101,66 @@ public class AppBuilder {
         return data;
     }
 
+    private void createProject(String... args) throws AppBuilderException {
+        if (args.length != 3) {
+            System.err.println("invalid number of arguments");
+            Usage();
+            return;
+        }
+        String app_namepace = args[1];
+        if (SourceVersion.isName(app_namepace)) {
+            System.err.println("app namespace is not valid or not allowed - " + app_namepace);
+            return;
+        }
+        String workspace_dir = args[2];
+        Path path = new File("").toPath();
+        String root = path.getRoot().toString();
+        String cwd = path.toAbsolutePath().toString();
+        if (!workspace_dir.startsWith(root)) {
+            workspace_dir = normalizeFileName(cwd + "/" + workspace_dir);
+        }
+        
+        //in order to avoid overwriting important file will must make sure the Config.INCLUDE_FILE
+        //and the Config.INCLUDE_FILE files does not exist!
+    
+        if(!new File(workspace_dir).exists()){
+            System.err.println("The specified workspace does not exist!");
+            return;
+        }
+        
+        if(new File(workspace_dir).list().length > 0){
+            System.err.println("The specified workspace must be empty"
+                    + "\nto avoid accidental overwriting of important files.");
+            return;
+        }
+        
+        for (String p : Config.APP_DIR_STRUTURE) {
+            File dir = new File(workspace_dir + p);
+            dir.mkdir();//create the workspace directory structure
+        }
+
+        Include inc = new Include();
+        inc.setNamespace(app_namepace);
+        String str_inc = gson.toJson(inc, Include.class);
+
+        //create develop index
+        createDevIndexPage(workspace_dir);
+        
+        //create device indexes for small, medium and large
+        createDeviceIndexPage(workspace_dir);
+        
+        //create the include file
+        String inc_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.INCLUDE_FILE);
+        writeToFile(inc_filename, str_inc);
+               
+        String main_js_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.MAIN_JS_FILE);
+        //writeToFile(main_js_filename, "the Main.js content goes here");//TODO
+        
+        System.err.println("TODO - Auto create the "+Config.MAIN_JS_FILE);// REMIND - store in the jar just has the index.html of build
+
+        System.out.println("App workspace successfully created.");
+    }
+
     public boolean build(String web_root) throws AppBuilderException {
 
         if (web_root == null || web_root.isEmpty()) {
@@ -104,7 +169,7 @@ public class AppBuilder {
         if (!web_root.endsWith("/") && !web_root.endsWith("\\")) {
             web_root = web_root + '/';//since we expect a directory
         }
-        webRoot = nomalizeFileName(web_root);
+        webRoot = normalizeFileName(web_root);
         String str_json = readAll(getConfigFilePath()).toString();
         createBuild(str_json);
         return true;
@@ -114,6 +179,7 @@ public class AppBuilder {
     private static void Usage() {
         System.out.println("Usage:\n\n"
                 + "-b or --build [web_root_path] --->  builds the source into a build directory."
+                + "-c or --create [app_namespace] [web_root_path] --->  create the workspace of the application."
                 + "");
     }
 
@@ -157,6 +223,7 @@ public class AppBuilder {
     }
 
     public static void main(String... args) {
+
         AppBuilder ab = new AppBuilder();
         if (args.length == 0) {
             Scanner sc = new Scanner(System.in);
@@ -194,7 +261,13 @@ public class AppBuilder {
                 }
             } else if (("-c".equals(args[0]) || "--create".equals(args[0]))
                     && !args[1].isEmpty()) {
-                System.out.println("TODO!");
+
+                try {
+                    ab.createProject(args);
+                } catch (AppBuilderException ex) {
+                    Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                    System.err.println("App build failed!");
+                }
             } else {
                 Usage();
                 System.exit(1);
@@ -216,7 +289,11 @@ public class AppBuilder {
         return arr;
     }
 
-    private Include productionIncludeJson(Include dev_include) {
+    private void createBuild(String str_json) throws AppBuilderException {
+
+        Include dev_include = gson.fromJson(str_json, Include.class);
+
+        prepareDir();
 
         Include prod_include = new Include();
 
@@ -225,77 +302,57 @@ public class AppBuilder {
 
         BuildObj build = new BuildObj();
         build.setProd(true);
-
-        String css_file = Config.BUILD_PATH + Config.CSS_COMP_FILE;
-        String[] prod_css = new String[]{css_file};
-
-        build.getAbsolute().setCss(prod_css);
-
-        prod_include.setBuild(build);
-
-        return prod_include;
-
-    }
-
-    private void createBuild(String str_json) throws AppBuilderException {
-
-        Include include = gson.fromJson(str_json, Include.class);
-
-        prepareDir();
-
-        //String[] exceptions_files = this.getIncludeLoadExceptionsFiles(include);//NO
-        buildJs(include);
+        
+        buildJs(dev_include, prod_include);
 
         System.out.println("Succesfullly minified javascript...");
 
-        buildCss(include);
+        buildCss(dev_include, prod_include);
 
         System.out.println("Succesfullly minified css...");
-
         System.out.println("Finishing build...");
-        createProdIncludeFile(include);
-
-        createProdIndexPage(include);
+        
+        createProdIncludeFile(dev_include);
+        createProdIndexPage(dev_include);
 
         System.out.println("App build successfully.");
     }
 
-    public void buildJs(Include include) throws AppBuilderException {
+    public void buildJs(Include dev_include, Include prod_include) throws AppBuilderException {
 
-            
-        doBiuldJs("main", include);//does not need condition
-        
-        if (include.getSmall().getJs().length > 0) {
-            doBiuldJs("smaill", include);
+        doBiuldJs("main", dev_include, prod_include);//does not need condition
+
+        if (dev_include.getSmall().getJs().length > 0) {
+            doBiuldJs("small", dev_include, prod_include);
         }
 
-        if (include.getMedium().getJs().length > 0) {
-            doBiuldJs("medium", include);
+        if (dev_include.getMedium().getJs().length > 0) {
+            doBiuldJs("medium", dev_include, prod_include);
         }
 
-        if (include.getLarge().getJs().length > 0) {
-            doBiuldJs("large", include);
+        if (dev_include.getLarge().getJs().length > 0) {
+            doBiuldJs("large", dev_include, prod_include);
         }
 
     }
 
-    public void buildCss(Include include) throws AppBuilderException {
+    public void buildCss(Include dev_include, Include prod_include) throws AppBuilderException {
 
-        if (include.getApp().getCss().length > 0
-                || include.getApp().getCss().length > 0) {
-            doBuildCss("main", include);
+        if (dev_include.getApp().getCss().length > 0
+                || dev_include.getApp().getCss().length > 0) {
+            doBuildCss("main", dev_include, prod_include);
         }
 
-        if (include.getSmall().getCss().length > 0) {
-            doBuildCss("smaill", include);
+        if (dev_include.getSmall().getCss().length > 0) {
+            doBuildCss("small", dev_include, prod_include);
         }
 
-        if (include.getMedium().getCss().length > 0) {
-            doBuildCss("medium", include);
+        if (dev_include.getMedium().getCss().length > 0) {
+            doBuildCss("medium", dev_include, prod_include);
         }
 
-        if (include.getLarge().getCss().length > 0) {
-            doBuildCss("large", include);
+        if (dev_include.getLarge().getCss().length > 0) {
+            doBuildCss("large", dev_include, prod_include);
         }
 
     }
@@ -314,28 +371,55 @@ public class AppBuilder {
         folder.delete();
     }
 
-    private void prepareDir() {
+    private void prepareDir() throws AppBuilderException {
 
         File dir = new File(webRoot + Config.BUILD_PATH);
         deleteFolder(dir);
 
         for (String d : Config.BIULD_DIR_STRUTURE) {
             dir = new File(webRoot + d);
-            dir.mkdir();//create the build structure
+            if(!dir.mkdirs()){//create the build structure
+                throw new AppBuilderException("could not prepare build directory.");
+            }
+        }
+
+        System.out.println("Copying relevant files to build directory...");
+
+        for (String d : Config.APP_DIR_STRUTURE) {
+            if (d.endsWith("/resources")
+                    || d.endsWith("/fonts")
+                    || d.endsWith("/images")) {
+
+                try {
+                    File dirFrom = new File(normalizeFileName(webRoot + d));
+                    File dirTo = new File(normalizeFileName(webRoot + Config.BUILD_PATH + d));
+                    boolean exist1 = dirFrom.exists();
+                    boolean exist2 = dirTo.exists();
+                    
+                    System.out.println(exist1+"   "+exist2);
+                    
+                    FileUtils.copyDirectory(dirFrom, dirTo, false);
+                } catch (FileNotFoundException ex) {
+                    //do nothing
+                } catch (IOException ex) {
+                    throw new AppBuilderException(ex);
+                }
+            }
         }
 
     }
 
-    private void doBiuldJs(String cat, Include include) throws AppBuilderException {
+    private void doBiuldJs(String cat, Include dev_include, Include prod_include) throws AppBuilderException {
         Sources sources;
         String compiled_file_name;
+        String fpath = "";
         switch (cat) {
             case "main": {
 
                 System.out.println("Merging global js files...");
 
-                String[] abs = refacResPath(include.getAbsolute().getJs(), "");
-                String[] app = refacResPath(include.getApp().getJs(), "/app/js/");
+                String[] abs = refacResPath(dev_include.getAbsolute().getJs(), "");
+                String[] app = refacResPath(dev_include.getApp().getJs(), "/app/js/");
                 String[] mn = mergeArrays(abs, app);
 
                 String main_filename = getMainJsFilePath();
@@ -345,17 +429,18 @@ public class AppBuilder {
                 sources.put("", "Main.init({prod: true});");//initialize the app
                 sources.put("", "Main.build = function(){");//wrapper begin
 
-                String[] le_abs = refacResPath(include.getAbsolute().getLoadExceptions(), "");
-                String[] le_app = refacResPath(include.getApp().getLoadExceptions(), "/app/Load_exceptions/");
+                String[] le_abs = refacResPath(dev_include.getAbsolute().getLoadExceptions(), "");
+                String[] le_app = refacResPath(dev_include.getApp().getLoadExceptions(), "/app/Load_exceptions/");
                 String[] exceptions_files = mergeArrays(le_abs, le_app);
                 for (String filename : mn) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
 
                 sources.put("", "}");//wrapper end
-                compiled_file_name = nomalizeFileName(webRoot
-                        + Config.BUILD_PATH
-                        + Config.JS_COMPILED_MAIN_FILE);
+                fpath = "/app/"+ Config.JS_COMPILED_MAIN_FILE;
+                //prod_include.getBuild().getApp().setJs(new String[]{fpath});//NOT REQUIRED IN THIS CASE - SINCE THEY MERGE WITH THE Main.js
+                compiled_file_name = normalizeFileName(webRoot
+                        + Config.BUILD_PATH+fpath);
 
             }
             break;
@@ -363,69 +448,79 @@ public class AppBuilder {
 
                 System.out.println("Merging small device js files...");
 
-                String[] small = refacResPath(include.getSmall().getJs(), "/device/small/js/");
-                String[] exceptions_files = refacResPath(include.getSmall().getLoadExceptions(), "/device/small/Load_exceptions/");
+                String[] small = refacResPath(dev_include.getSmall().getJs(), "/device/small/js/");
+                String[] exceptions_files = refacResPath(dev_include.getSmall().getLoadExceptions(), "/device/small/Load_exceptions/");
+                sources = new Sources();
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath =  "/device/small/js/" + Config.JS_COMPILED_SMALL_FILE;
+                prod_include.getBuild().getSmall().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/small/js/"
-                        + Config.JS_COMPILED_SMALL_FILE);
+                        + fpath);
             }
             break;
             case "medium": {
 
                 System.out.println("Merging medium device js files...");
 
-                String[] medium = refacResPath(include.getMedium().getJs(), "/device/medium/js/");
-                String[] exceptions_files = refacResPath(include.getMedium().getLoadExceptions(), "/device/medium/Load_exceptions/");
+                String[] medium = refacResPath(dev_include.getMedium().getJs(), "/device/medium/js/");
+                String[] exceptions_files = refacResPath(dev_include.getMedium().getLoadExceptions(), "/device/medium/Load_exceptions/");
+                sources = new Sources();
                 for (String filename : medium) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath = "/device/medium/js/" + Config.JS_COMPILED_MEDIUM_FILE;
+                prod_include.getBuild().getMedium().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/medium/js/"
-                        + Config.JS_COMPILED_MEDIUM_FILE);
+                        + fpath);
             }
             break;
             case "large": {
 
                 System.out.println("Merging large device js files...");
 
-                String[] large = refacResPath(include.getLarge().getJs(), "/device/large/js/");
-                String[] exceptions_files = refacResPath(include.getLarge().getLoadExceptions(), "/device/large/Load_exceptions/");
+                String[] large = refacResPath(dev_include.getLarge().getJs(), "/device/large/js/");
+                String[] exceptions_files = refacResPath(dev_include.getLarge().getLoadExceptions(), "/device/large/Load_exceptions/");
+                sources = new Sources();
                 for (String filename : large) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath = "/device/large/js/" + Config.JS_COMPILED_LARGE_FILE;
+                prod_include.getBuild().getLarge().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/large/js/"
-                        + Config.JS_COMPILED_LARGE_FILE);
+                        + fpath);
 
             }
+            break;
+
             default:
                 return;
         }
+        
 
         Compressor jscomp = CompressorFactory.getJsCompressor();
         jscomp.compress(sources, compiled_file_name);
 
     }
 
-    private void doBuildCss(String cat, Include include) throws AppBuilderException {
+    private void doBuildCss(String cat, Include dev_include, Include prod_include) throws AppBuilderException {
         Sources sources;
         String compiled_file_name;
+        String fpath = "";
         switch (cat) {
             case "main": {
 
                 System.out.println("Merging global css files...");
 
-                String[] abs = refacResPath(include.getAbsolute().getCss(), "");
-                String[] app = refacResPath(include.getApp().getJs(), "/app/css/");
+                String[] abs = refacResPath(dev_include.getAbsolute().getCss(), "");
+                String[] app = refacResPath(dev_include.getApp().getCss(), "/app/css/");
                 String[] mn = mergeArrays(abs, app);
-                String[] le_abs = refacResPath(include.getAbsolute().getLoadExceptions(), "");
-                String[] le_app = refacResPath(include.getApp().getLoadExceptions(), "/app/Load_exceptions/");
+                String[] le_abs = refacResPath(dev_include.getAbsolute().getLoadExceptions(), "");
+                String[] le_app = refacResPath(dev_include.getApp().getLoadExceptions(), "/app/Load_exceptions/");
                 String[] exceptions_files = mergeArrays(le_abs, le_app);
                 sources = new Sources();
                 for (String filename : mn) {
@@ -433,9 +528,11 @@ public class AppBuilder {
                 }
 
                 sources.put("", "}");//wrapper end
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath = "/app/css/" + Config.CSS_COMPILED_MAIN_FILE;
+                prod_include.getBuild().getApp().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + Config.CSS_COMPILED_MAIN_FILE);
+                        + fpath);
 
             }
             break;
@@ -443,50 +540,55 @@ public class AppBuilder {
 
                 System.out.println("Merging small device css files...");
 
-                String[] small = refacResPath(include.getSmall().getCss(), "/device/small/css/");
-                String[] exceptions_files = refacResPath(include.getSmall().getLoadExceptions(), "/device/small/Load_exceptions/");
+                String[] small = refacResPath(dev_include.getSmall().getCss(), "/device/small/css/");
+                String[] exceptions_files = refacResPath(dev_include.getSmall().getLoadExceptions(), "/device/small/Load_exceptions/");
                 sources = new Sources();
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath = "/device/small/css/" + Config.CSS_COMPILED_MAIN_FILE;
+                prod_include.getBuild().getSmall().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/small/css/"
-                        + Config.CSS_COMPILED_SMALL_FILE);
+                        + fpath);
             }
             break;
             case "medium": {
 
                 System.out.println("Merging medium device css files...");
 
-                String[] medium = refacResPath(include.getMedium().getCss(), "/device/medium/css/");
-                String[] exceptions_files = refacResPath(include.getMedium().getLoadExceptions(), "/device/medium/Load_exceptions/");
+                String[] medium = refacResPath(dev_include.getMedium().getCss(), "/device/medium/css/");
+                String[] exceptions_files = refacResPath(dev_include.getMedium().getLoadExceptions(), "/device/medium/Load_exceptions/");
                 sources = new Sources();
                 for (String filename : medium) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath = "/device/medium/css/" + Config.CSS_COMPILED_MAIN_FILE;
+                prod_include.getBuild().getMedium().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/medium/css/"
-                        + Config.CSS_COMPILED_MEDIUM_FILE);
+                        + fpath);
             }
             break;
             case "large": {
 
                 System.out.println("Merging large device css files...");
 
-                String[] large = refacResPath(include.getLarge().getCss(), "/device/large/css/");
-                String[] exceptions_files = refacResPath(include.getLarge().getLoadExceptions(), "/device/large/Load_exceptions/");
+                String[] large = refacResPath(dev_include.getLarge().getCss(), "/device/large/css/");
+                String[] exceptions_files = refacResPath(dev_include.getLarge().getLoadExceptions(), "/device/large/Load_exceptions/");
                 sources = new Sources();
                 for (String filename : large) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                compiled_file_name = nomalizeFileName(webRoot
+                fpath = "/device/large/css/" + Config.CSS_COMPILED_MAIN_FILE;
+                prod_include.getBuild().getLarge().setJs(new String[]{fpath});
+                compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/large/css/"
-                        + Config.CSS_COMPILED_LARGE_FILE);
+                        + fpath);
 
             }
+            break;
+
             default:
                 return;
         }
@@ -496,39 +598,18 @@ public class AppBuilder {
 
     }
 
-    /*private String[] getIncludeJsFiles(Include include) {
-
-        String[] abs = refacResPath(include.getAbsolute().getJs(), "");
-        String[] app = refacResPath(include.getApp().getJs(), "/app/js/");
-        String[] small = refacResPath(include.getSmall().getJs(), "/device/small/js/");
-        String[] medium = refacResPath(include.getMedium().getJs(), "/device/medium/js/");
-        String[] large = refacResPath(include.getLarge().getJs(), "/device/large/js/");
-
-        return mergeArrays(abs, app, small, medium, large);
-    }*/
-    private String[] getIncludeCssFiles(Include include) {
-
-        String[] abs = refacResPath(include.getAbsolute().getCss(), "");
-        String[] app = refacResPath(include.getApp().getCss(), "/app/css/");
-        String[] small = refacResPath(include.getSmall().getCss(), "/device/small/css/");
-        String[] medium = refacResPath(include.getMedium().getCss(), "/device/medium/css/");
-        String[] large = refacResPath(include.getLarge().getCss(), "/device/large/css/");
-
-        return mergeArrays(abs, app, small, medium, large);
-    }
-
     private String[] refacResPath(String[] paths, String string) {
         String web_root = webRoot;
 
         for (int i = 0; i < paths.length; i++) {
             paths[i] = web_root + string + paths[i];
-            paths[i] = nomalizeFileName(paths[i]);
+            paths[i] = normalizeFileName(paths[i]);
         }
 
         return paths;
     }
 
-    public static String nomalizeFileName(String name) {
+    public static String normalizeFileName(String name) {
         String n = name;
         do {
             n = n.replaceAll("\\\\", "/");
@@ -542,12 +623,11 @@ public class AppBuilder {
         return n;
     }
 
-    private void createProdIncludeFile(Include include) throws AppBuilderException {
+    private void createProdIncludeFile(Include prod_include) throws AppBuilderException {
         FileOutputStream out = null;
         try {
-            Include prod_include = productionIncludeJson(include);
             String prod_json = gson.toJson(prod_include);
-            String file = webRoot + Config.BUILD_PATH + Config.INCLUDE_FILE;
+            String file = webRoot + Config.BUILD_PATH + "/"+Config.INCLUDE_FILE;
             out = new FileOutputStream(file);
             out.write(prod_json.getBytes());
         } catch (FileNotFoundException ex) {
@@ -566,7 +646,7 @@ public class AppBuilder {
     }
 
     private void createProdIndexPage(Include include) throws AppBuilderException {
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/builder/index.html");
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/build_index.html");
         if (in == null) {
             throw new AppBuilderException("Could not create index.html for build - html template resource not found. Make sure the installation is correct.");
         }
@@ -579,11 +659,51 @@ public class AppBuilder {
         html = html.replaceFirst("\\{app_js\\}", app_js);//replace {app_js}
         html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
 
+        String file = webRoot + Config.BUILD_PATH + "index.html";
+        writeToFile(file, html);
+
+    }
+
+    private void createDevIndexPage(String workspace) throws AppBuilderException {
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/dev_index.html");
+        if (in == null) {
+            throw new AppBuilderException("Could not create index.html for development - html template resource not found. Make sure the installation is correct.");
+        }
+        Scanner s = new Scanner(in);
+        String html = "";
+        while (s.hasNextLine()) {
+            html += s.nextLine() + "\n";
+        }
+        String main_js = Config.MAIN_PATH+Config.MAIN_JS_FILE;
+        html = html.replaceFirst("\\{main_js\\}", main_js);//replace {app_js}
+        //html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
+
+        String file = workspace + "index.html";
+        writeToFile(file, html);
+    }
+    
+    private void createDeviceIndexPage(String workspace) throws AppBuilderException {
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/device_index.html");
+        if (in == null) {
+            throw new AppBuilderException("Could not create index.html for development - html template resource not found. Make sure the installation is correct.");
+        }
+        Scanner s = new Scanner(in);
+        String html = "";
+        while (s.hasNextLine()) {
+            html += s.nextLine() + "\n";
+        }
+        writeToFile(normalizeFileName(workspace +"/device/small/index.html"), html);
+        writeToFile(normalizeFileName(workspace +"/device/medium/index.html"), html);
+        writeToFile(normalizeFileName(workspace +"/device/large/index.html"), html);
+    }
+    
+    void writeToFile(String path, String content) throws AppBuilderException {
+
         FileOutputStream out = null;
         try {
             String file = webRoot + Config.BUILD_PATH + "index.html";
             out = new FileOutputStream(file);
-            out.write(html.getBytes());
+            out.write(content.getBytes());
         } catch (FileNotFoundException ex) {
             throw new AppBuilderException(ex);
         } catch (IOException ex) {
@@ -597,7 +717,6 @@ public class AppBuilder {
                 Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }
 
 }

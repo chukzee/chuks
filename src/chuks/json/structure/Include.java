@@ -12,7 +12,7 @@ package chuks.json.structure;
 public class Include extends BaseObj{
     private String app_name = "";
     private String namespace = "";
-    private BuildObj build;
+    private BuildObj build = new BuildObj();
         
     public String getAppName() {
         return app_name;

@@ -3,13 +3,26 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/builder/Config.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/impl/JsCompressorImpl.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/json/structure/Include.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/json/structure/BuildObj.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/JsCompressor.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/resources/build_index.html</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/json/structure/Obj.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/resources/dev_index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/impl/closure/ClosureCompressor.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/resources/device_index.html</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/builder/Sources.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/impl/ugly/UglifyCompressor.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/impl/CssCompressorImpl.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/json/structure/BuildObj.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/test/Test.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/test/TestCmd.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/Compressor.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/impl/yui/YuiCompressor.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/json/structure/BaseObj.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/builder/AppBuilder.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/builder/exception/AppBuilderException.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/AppBuilder/src/chuks/compressor/impl/closure/ClosureCompressor.java</file>
         </group>
     </open-files>
 </project-private>
