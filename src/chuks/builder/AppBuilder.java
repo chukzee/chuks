@@ -299,8 +299,16 @@ public class AppBuilder {
 
         prod_include.setNamespace(dev_include.getNamespace());
         prod_include.setAppName(dev_include.getAppName());
-        prod_include.getBuild().setProd(true);
-
+        BuildObj build = prod_include.getBuild();
+        build.setProd(true);
+        build.setMergeJs(
+                mergeArrays(//absolute js will not be included here
+                        dev_include.getApp().getJs(),
+                        dev_include.getSmall().getJs(),
+                        dev_include.getMedium().getJs(),
+                        dev_include.getLarge().getJs()
+                )
+        );
         buildJs(dev_include, prod_include);
 
         System.out.println("Succesfullly minified javascript...");
@@ -399,7 +407,7 @@ public class AppBuilder {
                 }
             }
         }
-        
+
         try {
             copyToLevelDeviceFiles("small");
             copyToLevelDeviceFiles("medium");
@@ -411,7 +419,7 @@ public class AppBuilder {
     }
 
     private void copyToLevelDeviceFiles(String cat) throws IOException {
-        File dir1 = new File(normalizeFileName(webRoot + "device/" +cat));
+        File dir1 = new File(normalizeFileName(webRoot + "device/" + cat));
         File[] files = dir1.listFiles(File::isFile); // a normal files
 
         for (File f : files) {
@@ -424,7 +432,7 @@ public class AppBuilder {
     private void doBiuldJs(String cat, Include dev_include, Include prod_include) throws AppBuilderException {
         Sources sources;
         String compiled_file_name;
-        String fpath = "";
+        
         switch (cat) {
             case "main": {
 
@@ -449,10 +457,11 @@ public class AppBuilder {
                 }
 
                 sources.put("", "}");//wrapper end
-                fpath = "/app/" + Config.JS_COMPILED_MAIN_FILE;
                 //prod_include.getBuild().getApp().setJs(new String[]{fpath});//NOT REQUIRED IN THIS CASE - SINCE THEY MERGE WITH THE Main.js
                 compiled_file_name = normalizeFileName(webRoot
-                        + Config.BUILD_PATH + fpath);
+                        + Config.BUILD_PATH 
+                        + "/app/" 
+                        + Config.JS_COMPILED_MAIN_FILE);
 
             }
             break;
@@ -466,11 +475,12 @@ public class AppBuilder {
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath = "/device/small/js/" + Config.JS_COMPILED_SMALL_FILE;
-                prod_include.getBuild().getSmall().setJs(new String[]{fpath});
+                
+                prod_include.getBuild().getSmall().setJs(new String[]{Config.JS_COMPILED_SMALL_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/device/small/js/" 
+                        + Config.JS_COMPILED_SMALL_FILE);
             }
             break;
             case "medium": {
@@ -483,11 +493,12 @@ public class AppBuilder {
                 for (String filename : medium) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath = "/device/medium/js/" + Config.JS_COMPILED_MEDIUM_FILE;
-                prod_include.getBuild().getMedium().setJs(new String[]{fpath});
+                
+                prod_include.getBuild().getMedium().setJs(new String[]{Config.JS_COMPILED_MEDIUM_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/device/medium/js/" 
+                        + Config.JS_COMPILED_MEDIUM_FILE);
             }
             break;
             case "large": {
@@ -500,11 +511,12 @@ public class AppBuilder {
                 for (String filename : large) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath = "/device/large/js/" + Config.JS_COMPILED_LARGE_FILE;
-                prod_include.getBuild().getLarge().setJs(new String[]{fpath});
+                
+                prod_include.getBuild().getLarge().setJs(new String[]{Config.JS_COMPILED_LARGE_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/device/large/js/"
+                        + Config.JS_COMPILED_LARGE_FILE);
 
             }
             break;
@@ -521,7 +533,7 @@ public class AppBuilder {
     private void doBuildCss(String cat, Include dev_include, Include prod_include) throws AppBuilderException {
         Sources sources;
         String compiled_file_name;
-        String fpath = "";
+        
         switch (cat) {
             case "main": {
 
@@ -539,11 +551,12 @@ public class AppBuilder {
                 }
 
                 sources.put("", "}");//wrapper end
-                fpath = "/app/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getApp().setCss(new String[]{fpath});
+                
+                prod_include.getBuild().getApp().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/app/css/" 
+                        + Config.CSS_COMPILED_MAIN_FILE);
 
             }
             break;
@@ -557,11 +570,12 @@ public class AppBuilder {
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath = "/device/small/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getSmall().setCss(new String[]{fpath});
+                
+                prod_include.getBuild().getSmall().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/device/small/css/" 
+                        + Config.CSS_COMPILED_MAIN_FILE);
             }
             break;
             case "medium": {
@@ -574,11 +588,12 @@ public class AppBuilder {
                 for (String filename : medium) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath = "/device/medium/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getMedium().setCss(new String[]{fpath});
+                
+                prod_include.getBuild().getMedium().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/device/medium/css/"
+                        + Config.CSS_COMPILED_MAIN_FILE);
             }
             break;
             case "large": {
@@ -591,11 +606,12 @@ public class AppBuilder {
                 for (String filename : large) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                fpath = "/device/large/css/" + Config.CSS_COMPILED_MAIN_FILE;
-                prod_include.getBuild().getLarge().setCss(new String[]{fpath});
+                
+                prod_include.getBuild().getLarge().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + fpath);
+                        + "/device/large/css/" 
+                        + Config.CSS_COMPILED_MAIN_FILE);
 
             }
             break;
