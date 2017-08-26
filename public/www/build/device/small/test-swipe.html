@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Test Swipe</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../../app/Main.js"></script>
+    </head>
+    <body>
+        <div id="swipe-container" style="width: 100%; padding: 0; margin: 0; background: #aaa;">     
+            <div id="test-swipe-start" style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div id="test-swipe-move" style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div id="test-swipe-id" style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div id="test-swipe-mousemove" style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div id="test-swipe-mouseout" style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <!-- <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+            <div style="width: 100%; height: 100px; border-bottom: 1px #066 solid; padding: 0; margin: 0;"></div>
+             -->   
+        </div>
+        
+        <script>
+            var el = document.getElementById("test-swipe-id");
+            var left_count = 0;
+            var right_count = 0;
+            /*Main.swipe({
+                el: document.getElementById("swipe-container"),
+                left: function(){
+                    left_count++;
+                    el.innerHTML = 'left '+left_count;
+                    
+                    console.log('left '+left_count);
+                },
+                right:  function(){
+                    right_count++;
+                    el.innerHTML = 'right '+right_count;
+                    
+                    console.log('right '+right_count);
+                }
+            });*/
+            
+            var es = document.getElementById("test-swipe-start");
+            var em = document.getElementById("test-swipe-move");
+            var c = document.getElementById("swipe-container");
+            var start = 0;
+            var end = 0;
+            var move = 0;
+            c.addEventListener('touchstart', function(){
+                start++;
+                es.innerHTML = 'swipe start '+start;
+            }, false);
+    
+            c.addEventListener('touchmove', function(){
+                move++;
+                em.innerHTML = 'swipe move '+move;
+            }, false);
+            
+            c.addEventListener('touchend', function(){
+                end++;
+                el.innerHTML = 'swipe end '+end;
+            }, false);
+            
+            var emv = document.getElementById("test-swipe-mousemove");
+            var emo = document.getElementById("test-swipe-mouseout");
+            var mousemove = 0;
+            c.addEventListener('mousemove', function(){
+                mousemove++;
+                emv.innerHTML = 'mousemove '+mousemove;
+            }, false);
+            
+            var mouseout = 0;
+            c.addEventListener('mouseout', function(){
+                mouseout++;
+                emo.innerHTML = 'mouseout '+mouseout;
+            }, false);
+        </script>
+    </body>
+
+</html>

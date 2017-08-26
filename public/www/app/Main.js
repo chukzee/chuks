@@ -3827,21 +3827,21 @@ var Main = {};
 
             Main.ajax.get(pkg,
                     function (res) {
-                        
+
                         //block comments directly is deprecated code that breaks when minified my minifying tool
                         //because the json variable evaluated in the eval function is not minified thus breaking 
                         //the code afte it.
                         /* eval('var json = ' + res);//remove comments if present since they are not valid in json
-                           var json = json;//old - is breaks when minified 
-                        */
-                       
-                       var variable = "game9ja_eval_call_"+new Date().getTime();//unique variable name
+                         var json = json;//old - is breaks when minified 
+                         */
+
+                        var variable = "game9ja_eval_call_" + new Date().getTime();//unique variable name
                         window[variable] = variable;//technique! to avoid minifying tools from breaking the
                         // code, store the variable name to be used in the eval function in the window object 
-                        
-                        eval('window['+variable+'] = ' + res);//remove comments if present since they are not valid in json
 
-                        
+                        eval('window[' + variable + '] = ' + res);//remove comments if present since they are not valid in json
+
+
                         var json = window[variable];
                         //setup the application namespace
                         if (Main.util.isString(json.namespace)) {
@@ -3918,6 +3918,7 @@ var Main = {};
                             file: null, //set dynamically
                             type: null, //set dynamically
                             count: 0,
+                            isBuild: is_build,
                             total: absolute_styles.length
                                     + app_styles.length
                                     + cat_styles.length
@@ -3942,14 +3943,21 @@ var Main = {};
                         };
 
                         if (is_build) {
+                            for (var i in json.build.merge_js) {
+                                var merged_files = json.build.merge_js[i];
+                                if (!nsObjects(merged_files)) {
+                                    return;
+                                }
+                            }
                             if (Main.util.isFunc(Main.build)) {
                                 Main.build();
                             } else {
                                 console.error("Build tool fault detected! Main.build is not a function! Build tool is expected to create the function with relevant code of the js file embeded inside and the function appended to the main js file.");
                                 return;
                             }
+
                         }
-                        
+
                         if (track.total > 0) {
                             cssFilesHandler();
                             jsFilesHandler();
@@ -4094,9 +4102,11 @@ var Main = {};
         function loadScript(file, track, route, exceptions, is_path_absolute) {
 
             //create the objects related to the namepace directory
-            if (!is_path_absolute) {
-                if(!nsObjects(file)){
-                    return;
+            if (!track.isBuild) {// for development! - the nsObjects for buid is handled else here
+                if (!is_path_absolute) {
+                    if (!nsObjects(file)) {
+                        return;
+                    }
                 }
             }
 

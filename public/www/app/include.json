@@ -15,7 +15,10 @@
        "prod": false // the build tool will set this to true - this signifies the build should be used
        /*
        this css and js files goes below
-       
+        
+       "merge_js":{
+            //js file s merged in the build for creating namespace related object
+        },
        "absolute":{
         
         "css":[
