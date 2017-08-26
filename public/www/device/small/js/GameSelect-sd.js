@@ -40,7 +40,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-view-sd.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameView.Content,
+            onBeforeShow: Ns.GameView.Content,
             data: {
                 game: "name of game e.g chess , draft etc",
                 game_id: "3i393kj383k2c83j", //a unique id for this match
@@ -80,7 +80,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-watch-sd.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameWatch.Content,
+            onBeforeShow: Ns.GameWatch.Content,
             data: {
                 game: "name of game e.g chess , draft etc",
                 game_id: "3i393kj383k2c83j", //a unique id for this match
@@ -154,7 +154,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-sd.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "chess"
             }
@@ -167,7 +167,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-sd.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "draft"
             }
@@ -179,7 +179,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-sd.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "ludo"
             }
@@ -191,7 +191,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "solitaire"
             }
@@ -203,7 +203,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-sd.html",
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "whot"
             }

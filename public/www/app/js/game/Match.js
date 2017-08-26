@@ -31,10 +31,10 @@ Ns.game.Match = {
                 if (match_data.white_id === user.id
                         || match_data.black_id === user.id) {
                     //show the current app user game
-                    Main.controller.GameHome.showGameView(match_data);
+                    Ns.GameHome.showGameView(match_data);
                 } else {
                     //watch other players live
-                    Main.controller.GameHome.showGameWatch(match_data);
+                    Ns.GameHome.showGameWatch(match_data);
                 }
 
             },
@@ -80,13 +80,13 @@ Ns.game.Match = {
             var mat = matches[index];
             var key, param;
             if (mat.group_name) {
-                key = Main.controller.GameHome.groupMatchKey;
+                key = Ns.GameHome.groupMatchKey;
                 param = mat.group_name;
             } else if (mat.tournament_name) {
-                key = Main.controller.GameHome.tournamentMatchKey;
+                key = Ns.GameHome.tournamentMatchKey;
                 param = mat.tournament_name;
             } else {
-                key = Main.controller.GameHome.contactsMatchKey;
+                key = Ns.GameHome.contactsMatchKey;
             }
 
             matches.splice(index, 1);
@@ -120,7 +120,7 @@ Ns.game.Match = {
 
     contactsMatchList: function () {
 
-        var stored_matches = window.localStorage.getItem(Main.controller.GameHome.contactsMatchKey());
+        var stored_matches = window.localStorage.getItem(Ns.GameHome.contactsMatchKey());
 
         try {
             if (stored_matches) {
@@ -154,7 +154,7 @@ Ns.game.Match = {
                         if (matches.length) {
 
                             Ns.game.Match.liveMatchList('#home-contacts-live-games', matches);
-                            var key = Main.controller.GameHome.contactsMatchKey();
+                            var key = Ns.GameHome.contactsMatchKey();
                             window.localStorage.setItem(key, JSON.stringify(matches));
 
                         } else {
@@ -188,7 +188,7 @@ Ns.game.Match = {
         //show the first group live match list
 
 
-        var stored_matches = window.localStorage.getItem(Main.controller.GameHome.groupMatchKey(group.name));
+        var stored_matches = window.localStorage.getItem(Ns.GameHome.groupMatchKey(group.name));
 
         try {
             if (stored_matches) {
@@ -230,7 +230,7 @@ Ns.game.Match = {
                         var matches = data;
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-group-live-games', matches);
-                            var key = Main.controller.GameHome.groupMatchKey(matches[0].group_name);
+                            var key = Ns.GameHome.groupMatchKey(matches[0].group_name);
                             window.localStorage.setItem(key, JSON.stringify(matches));
                         } else {
                             //TODO - display no match found or something similar
@@ -259,7 +259,7 @@ Ns.game.Match = {
         }
 
         //show the first tournaments live match list
-        var stored_matches = window.localStorage.getItem(Main.controller.GameHome.tournamentMatchKey(tournament.name));
+        var stored_matches = window.localStorage.getItem(Ns.GameHome.tournamentMatchKey(tournament.name));
 
         try {
             if (stored_matches) {
@@ -300,7 +300,7 @@ Ns.game.Match = {
                         var matches = data;
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-tournaments-live-games', matches);
-                            var key = Main.controller.GameHome.tournamentMatchKey(matches[0].tournament_name);
+                            var key = Ns.GameHome.tournamentMatchKey(matches[0].tournament_name);
                             window.localStorage.setItem(key, JSON.stringify(matches));
                         } else {
                             //TODO - display no match found or something similar

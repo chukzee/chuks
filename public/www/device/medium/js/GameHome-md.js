@@ -5,7 +5,7 @@
 //Main.rcall.live(homeObj);
 
 
-Main.controller.GameHome = {
+Ns.GameHome = {
 
     GAME_VIEW_HTML: 'game-view-md.html',
     GAME_VIEW_B_HTML: 'game-view-b-md.html',
@@ -24,16 +24,16 @@ Main.controller.GameHome = {
         return window.screen.width > window.screen.height;
     },
     home: function () {
-        if (!Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameHome.isCurrentViewGamePanel = false;
-            Main.controller.GameHome.portraitView(true);
+        if (!Ns.GameHome.isLandscape()) {
+            Ns.GameHome.isCurrentViewGamePanel = false;
+            Ns.GameHome.portraitView(true);
         }
     },
     portraitView: function (fade_in) {
         var left_panel = document.getElementById('home-main');
         var right_panel = document.getElementById('home-game-panel');
         if (fade_in) {
-            if (!Main.controller.GameHome.isCurrentViewGamePanel) {
+            if (!Ns.GameHome.isCurrentViewGamePanel) {
                 right_panel.style.display = 'none';
 
                 left_panel.style.display = 'block';
@@ -50,7 +50,7 @@ Main.controller.GameHome = {
                 Main.anim.to('home-game-panel', 500, {opacity: 1});
             }
         } else {
-            if (!Main.controller.GameHome.isCurrentViewGamePanel) {
+            if (!Ns.GameHome.isCurrentViewGamePanel) {
                 left_panel.style.width = '100%';
                 right_panel.style.display = 'none';
             } else {
@@ -62,13 +62,13 @@ Main.controller.GameHome = {
     },
     showGameView: function (match) {
 
-        Main.controller.GameHome.isCurrentViewGamePanel = true;
+        Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
-        if (Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameView.Content(match);
+        if (Ns.GameHome.isLandscape()) {
+            Ns.GameView.Content(match);
         } else {
-            Main.controller.GameHome.portraitView(true);
-            Main.controller.GameView.Content(match);
+            Ns.GameHome.portraitView(true);
+            Ns.GameView.Content(match);
         }
     },
     showGameViewB: function (match) {
@@ -82,34 +82,34 @@ Main.controller.GameHome = {
             modal: true,
             action: function (btn, value) {
                 if (value === 'Cancel') {
-                    Main.controller.GameHome.home();
+                    Ns.GameHome.home();
                 }
                 this.hide();
             }
         });
 
-        Main.controller.GameHome.isCurrentViewGamePanel = true;
+        Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
         //hide uneccessary component
         document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
 
 
-        if (Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameViewB.Content(match);
+        if (Ns.GameHome.isLandscape()) {
+            Ns.GameViewB.Content(match);
         } else {
-            Main.controller.GameHome.portraitView(true);
-            Main.controller.GameViewB.Content(match);
+            Ns.GameHome.portraitView(true);
+            Ns.GameViewB.Content(match);
         }
     },
     showGameWatch: function (match) {
-        Main.controller.GameHome.isCurrentViewGamePanel = true;
+        Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameWatchHtml;
-        if (Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameWatch.Content(match);
+        if (Ns.GameHome.isLandscape()) {
+            Ns.GameWatch.Content(match);
         } else {
-            Main.controller.GameHome.portraitView(true);
-            Main.controller.GameWatch.Content(match);
+            Ns.GameHome.portraitView(true);
+            Ns.GameWatch.Content(match);
         }
     },
     Content: function (data) {
@@ -133,7 +133,7 @@ Main.controller.GameHome = {
                 right_panel.style.top = 0;
                 right_panel.style.bottom = 0;
 
-                if (Main.controller.GameHome.isLandscape()) {//landscape
+                if (Ns.GameHome.isLandscape()) {//landscape
                     left_panel.style.width = '40%';
                     left_panel.style.display = 'block';
 
@@ -142,7 +142,7 @@ Main.controller.GameHome = {
                     right_panel.style.display = 'block';
 
                 } else {//portrait
-                    Main.controller.GameHome.portraitView(false);
+                    Ns.GameHome.portraitView(false);
                 }
             }
         }
@@ -161,7 +161,7 @@ Main.controller.GameHome = {
             buttons: ['Cancel'],
             action: function (btn, value) {
                 if (value === 'Cancel') {
-                    Main.controller.GameHome.home();
+                    Ns.GameHome.home();
                 }
                 this.hide();
             },
@@ -181,18 +181,18 @@ Main.controller.GameHome = {
             }
         });
 
-        Main.controller.GameHome.isCurrentViewGamePanel = true;
+        Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
         //show bluetooth icon
         document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
 
         var match = {bluetooth: true, game_name: data.game};
-        if (Main.controller.GameHome.isLandscape()) {
-            Main.controller.GameViewB.Content(match);
+        if (Ns.GameHome.isLandscape()) {
+            Ns.GameViewB.Content(match);
         } else {
-            Main.controller.GameHome.portraitView(true);
-            Main.controller.GameViewB.Content(match);
+            Ns.GameHome.portraitView(true);
+            Ns.GameViewB.Content(match);
         }
 
     },

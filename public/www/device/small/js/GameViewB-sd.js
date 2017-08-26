@@ -3,12 +3,12 @@
 /* global Main */
 
 
-Main.controller.GameViewB = {
+Ns.GameViewB = {
     leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameViewB.leftPanelTitleComp) {
-            Main.controller.GameViewB.leftPanelTitleComp.innerHTML = '';
+        if (Ns.GameViewB.leftPanelTitleComp) {
+            Ns.GameViewB.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
@@ -26,7 +26,7 @@ Main.controller.GameViewB = {
         var negative_width = "-80%";//set to negative of the width we have in css file or the width we set programatically here
         if (el.style.right === '0%') {
             el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Main.controller.GameViewB.afterLeftContentHide);
+            Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Ns.GameViewB.afterLeftContentHide);
         }
     },
     Content: function (data) {

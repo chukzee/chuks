@@ -180,7 +180,7 @@ Ns.ui.GamePanel = {
 
         var leftPanelTitleComp = document.getElementById("game-view-right-panel-header-title");
         var lefPanelBody = document.getElementById("game-view-right-panel-body");
-        var ogv = Main.controller.GameView;
+        var ogv = Ns.GameView;
         ogv.leftPanelTitleComp = leftPanelTitleComp;
 
         var obj = {
@@ -319,7 +319,7 @@ Ns.ui.GamePanel = {
 
         var leftPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
         var lefPanelBody = document.getElementById("game-view-b-right-panel-body");
-        var ogvb = Main.controller.GameView;
+        var ogvb = Ns.GameView;
         ogvb.leftPanelTitleComp = leftPanelTitleComp;
 
         $('#game-view-b-bluetooth-icon').on('click', function () {
@@ -391,7 +391,7 @@ Ns.ui.GamePanel = {
 
         var leftPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
         var lefPanelBody = document.getElementById("game-watch-right-panel-body");
-        var gw = Main.controller.GameWatch;
+        var gw = Ns.GameWatch;
         gw.leftPanelTitleComp = leftPanelTitleComp;
 
         var obj = {
@@ -478,12 +478,12 @@ Ns.ui.GamePanel = {
                         || first_match_data.black_id === user.id) {
                     //show the current app user game
                     gamePanel.innerHTML = Ns.ui.UI.gameViewHtml;
-                    Main.controller.GameView.Content(first_match_data);
+                    Ns.GameView.Content(first_match_data);
 
                 } else {
                     //watch other players live
                     gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml;
-                    Main.controller.GameWatch.Content(match_data);
+                    Ns.GameWatch.Content(match_data);
                 }
                 isGamePanelInit = true;
 
@@ -503,7 +503,7 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            var url = 'device/' + Main.device.getCategory() + '/' + Main.controller.GameHome.GAME_VIEW_HTML;
+            var url = 'device/' + Main.device.getCategory() + '/' + Ns.GameHome.GAME_VIEW_HTML;
             Main.ajax.get(url,
                     function (res) {
                         Ns.ui.UI.gameViewHtml = res;
@@ -527,7 +527,7 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            var url = 'device/' + Main.device.getCategory() + '/' + Main.controller.GameHome.GAME_VIEW_B_HTML;
+            var url = 'device/' + Main.device.getCategory() + '/' + Ns.GameHome.GAME_VIEW_B_HTML;
             Main.ajax.get(url,
                     function (res) {
                         Ns.ui.UI.gameViewBHtml = res;
@@ -551,7 +551,7 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            var url = 'device/' + Main.device.getCategory() + '/' + Main.controller.GameHome.GAME_WATCH_HTML;
+            var url = 'device/' + Main.device.getCategory() + '/' + Ns.GameHome.GAME_WATCH_HTML;
             Main.ajax.get(url,
                     function (res) {
                         Ns.ui.UI.gameWatchHtml = res;

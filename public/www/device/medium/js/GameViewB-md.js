@@ -3,27 +3,27 @@
 /* global Main */
 
 
-Main.controller.GameViewB = {
+Ns.GameViewB = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
     leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameViewB.leftPanelTitleComp) {
-            Main.controller.GameViewB.leftPanelTitleComp.innerHTML = '';
+        if (Ns.GameViewB.leftPanelTitleComp) {
+            Ns.GameViewB.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
 
         var el = document.getElementById('game-view-b-right-content');
 
-        el.style.width = Main.controller.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
-        el.style.right = "-" + Main.controller.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
+        el.style.width = Ns.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
+        el.style.right = "-" + Ns.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
 
         if (window.screen.height > window.screen.width) {//portrait
-            el.style.width = Main.controller.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;//we set this width programatically here
-            el.style.right = "-" + Main.controller.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
+            el.style.width = Ns.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;//we set this width programatically here
+            el.style.right = "-" + Ns.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
         }
 
         el.style.display = 'block';//make visible
@@ -38,7 +38,7 @@ Main.controller.GameViewB = {
 
         if (el.style.right === '0%') {
             el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Main.controller.GameViewB.afterLeftContentHide);
+            Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Ns.GameViewB.afterLeftContentHide);
         }
     },
     Content: function (data) {
@@ -66,15 +66,15 @@ Main.controller.GameViewB = {
             var el = document.getElementById('game-view-b-right-content');
 
             if (window.screen.width > window.screen.height) {
-                el.style.width = Main.controller.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;
+                el.style.width = Ns.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;
             } else {
-                el.style.width = Main.controller.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;
+                el.style.width = Ns.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;
             }
 
         }
 
         $('#game-view-b-back-btn').on('click', function () {
-            Main.controller.GameHome.home();
+            Ns.GameHome.home();
         });
 
 

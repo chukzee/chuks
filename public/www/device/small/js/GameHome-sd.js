@@ -3,7 +3,7 @@
 /* global Main */
 
 
-Main.controller.GameHome = {
+Ns.GameHome = {
 
     GAME_VIEW_HTML: 'game-view-sd.html',
     GAME_VIEW_B_HTML: 'game-view-b-sd.html',
@@ -23,10 +23,10 @@ Main.controller.GameHome = {
     },
     showGameView: function (match) {
         Main.page.show({
-            url: Main.controller.GameHome.GAME_VIEW_HTML,
+            url: Ns.GameHome.GAME_VIEW_HTML,
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameView.Content,
+            onBeforeShow: Ns.GameView.Content,
             data: match});
 
     },
@@ -41,7 +41,7 @@ Main.controller.GameHome = {
             modal: true,
             action: function (btn, value) {
                 if (value === 'Cancel') {
-                    if (Main.page.getUrl() === Main.controller.GameHome.GAME_VIEW_B_HTML) {
+                    if (Main.page.getUrl() === Ns.GameHome.GAME_VIEW_B_HTML) {
                         if (Main.page.back()) {//making sure the page is not in transition
                             this.hide();
                         }
@@ -56,10 +56,10 @@ Main.controller.GameHome = {
         });
 
         Main.page.show({
-            url: Main.controller.GameHome.GAME_VIEW_B_HTML,
+            url: Ns.GameHome.GAME_VIEW_B_HTML,
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameViewB.Content,
+            onBeforeShow: Ns.GameViewB.Content,
             onShow: function () {
                 //hide uneccessary component
                 document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
@@ -71,10 +71,10 @@ Main.controller.GameHome = {
     },
     showGameWatch: function (match) {
         Main.page.show({
-            url: Main.controller.GameHome.GAME_WATCH_HTML,
+            url: Ns.GameHome.GAME_WATCH_HTML,
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameWatch.Content,
+            onBeforeShow: Ns.GameWatch.Content,
             data: match});
     },
     showBluetoothGame: function (data) {
@@ -91,7 +91,7 @@ Main.controller.GameHome = {
             buttons: ['Cancel'],
             action: function (btn, value) {
                 if (value === 'Cancel') {
-                    if (Main.page.getUrl() === Main.controller.GameHome.GAME_VIEW_B_HTML) {
+                    if (Main.page.getUrl() === Ns.GameHome.GAME_VIEW_B_HTML) {
                         if (Main.page.back()) {//making sure the page is not in transition
                             this.hide();
                         }
@@ -118,10 +118,10 @@ Main.controller.GameHome = {
         });
 
         Main.page.show({
-            url: Main.controller.GameHome.GAME_VIEW_B_HTML,
+            url: Ns.GameHome.GAME_VIEW_B_HTML,
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Main.controller.GameViewB.Content,
+            onBeforeShow: Ns.GameViewB.Content,
             onShow: function () {
                 //show bluetooth icon
                 document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';

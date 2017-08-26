@@ -19,8 +19,7 @@ var Main = {};
     var portriat_height;
     var appUrl = "app/";
     var listeners = {};
-    var deviceBackMeOnly = {};
-    Main.controller = {}; // js in the controller folder will dynamically use this prototype
+    var deviceBackMeOnly = {};    
     Main.ro = {};// object for storing global access for rcall variables for making remote method calls
 
     Main.helper = new function () {
@@ -4148,21 +4147,9 @@ var Main = {};
                         }
                         Main.page.init();
 
-                        //initialize controller objects with constructor
+                        //initialize namespace related objects by calling their constructors
 
-                        //console.log(Object.getOwnPropertyNames(Main.controller));
-
-                        /*Deprecated
-                         * 
-                         * var props = Object.getOwnPropertyNames(Main.controller);
-                         
-                         for (var n in props) {
-                         var clazzObj = Main.controller[props[n]];
-                         var construtorFn = clazzObj['constructor'];
-                         if (Main.util.isFunc(construtorFn)) {
-                         construtorFn.call(clazzObj);
-                         }
-                         }*/
+                        
 
                         for (var n in _nsFiles) {
                             var clazzObj = classObject(_nsFiles[n]);

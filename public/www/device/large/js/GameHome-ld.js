@@ -5,7 +5,7 @@
 //Main.rcall.live(homeObj);
 
 
-Main.controller.GameHome = {
+Ns.GameHome = {
 
     GAME_VIEW_HTML: 'game-view-ld.html',
     GAME_VIEW_B_HTML: 'game-view-b-ld.html',
@@ -23,7 +23,7 @@ Main.controller.GameHome = {
     showGameView: function (match) {
 
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
-        Main.controller.GameView.Content(match);
+        Ns.GameView.Content(match);
 
 
     },
@@ -44,7 +44,7 @@ Main.controller.GameHome = {
                     //hide uneccessary component
                     document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
                     
-                    Main.controller.GameViewB.Content(match);
+                    Ns.GameViewB.Content(match);
                 }
                 this.hide();
             }
@@ -52,7 +52,7 @@ Main.controller.GameHome = {
     },
     showGameWatch: function (match) {
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameWatchHtml;
-        Main.controller.GameWatch.Content(match);
+        Ns.GameWatch.Content(match);
     },
     Content: function (data) {
         Ns.ui.UI.init(data);
@@ -135,7 +135,7 @@ Main.controller.GameHome = {
                         //show bluetooth icon
                         document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
                         
-                        Main.controller.GameViewB.Content(data);
+                        Ns.GameViewB.Content(data);
                         
                         me.hide(); //call to close the dialog
                     }

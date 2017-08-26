@@ -10,7 +10,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-md.html",
             effect: "fade",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "chess"
             }
@@ -23,7 +23,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-md.html",
             effect: "fade",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "draft"
             }
@@ -35,7 +35,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-md.html",
             effect: "fade",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "ludo"
             }
@@ -47,7 +47,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-md.html",
             effect: "fade",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "solitaire"
             }
@@ -59,7 +59,7 @@ Main.on("pagecreate", function (arg) {
             url: "game-home-md.html",
             effect: "fade",
             duration: 500,
-            onBeforeShow: Main.controller.GameHome.Content,
+            onBeforeShow: Ns.GameHome.Content,
             data: {
                 game: "whot"
             }

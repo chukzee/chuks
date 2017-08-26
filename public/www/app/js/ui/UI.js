@@ -130,14 +130,14 @@ Ns.ui.UI = {
 
 
         $('#home-contacts-icon').on('click', function (evt) {
-            Main.controller.GameHome.showContacts(data);
+            Ns.GameHome.showContacts(data);
         });
 
         $('#home-group-header').on('click', function (evt) {
             if (evt.target.id === 'home-group-name'
                     || evt.target.id === 'home-group-status-message') {
                 var group = document.getElementById('home-group-name').innerHTML;
-                Main.controller.GameHome.showGroupDetails(group);
+                Ns.GameHome.showGroupDetails(group);
             } else if (evt.target.id === 'home-group-pic') {
                 var group = document.getElementById('home-group-name').innerHTML;
                 Ns.ui.UI.expandPhoto({type: 'group', id: group});
@@ -148,7 +148,7 @@ Ns.ui.UI = {
         $('#home-tournament-header').on('click', function (evt) {
             if (evt.target.id === 'home-tournament-name') {
                 var tourn = document.getElementById('home-tournament-name').innerHTML;
-                Main.controller.GameHome.showTournamentDetails(tourn);
+                Ns.GameHome.showTournamentDetails(tourn);
             } else if (evt.target.id === 'home-tournament-pic') {
                 var tourn = document.getElementById('home-tournament-name').innerHTML;
                 Ns.ui.UI.expandPhoto({type: 'tournament', id: tourn});
@@ -230,15 +230,15 @@ Ns.ui.UI = {
             case 'My Game':
                 var m = Ns.game.Match.currentUserMatch;
                 if (m && (m.game_status.toLowercase() !== 'end')) {
-                    Main.controller.GameHome.showGameView(m);
+                    Ns.GameHome.showGameView(m);
                 } else {
                     var Play_Notifications = 'Play Notifications';
                     var Invite_Players = 'Invite Players';
                     Main.confirm(function (option) {
                         if (option === Play_Notifications) {
-                            Main.controller.GameHome.showPlayNotifications(data);
+                            Ns.GameHome.showPlayNotifications(data);
                         } else if (option === Invite_Players) {
-                            Main.controller.GameHome.showInvitePlayers(data);
+                            Ns.GameHome.showInvitePlayers(data);
                         }
                     }, 'Sorry! You do not have any active game session!'
                             , 'NO ACTIVE GAME'
@@ -247,21 +247,21 @@ Ns.ui.UI = {
                 }
                 break;
             case 'Play notifications':
-                Main.controller.GameHome.showPlayNotifications(data);
+                Ns.GameHome.showPlayNotifications(data);
                 break;
             case 'Play robot':
                 var m = Ns.game.Match.currentUserMatch;
 
-                Main.controller.GameHome.showGameViewB({robot: true, game_name: data.game});//TESTING - TO BE REMOVE
+                Ns.GameHome.showGameViewB({robot: true, game_name: data.game});//TESTING - TO BE REMOVE
                 return;//TESTING - TO BE REMOVE
 
                 if (m && (m.game_status.toLowercase() !== 'live')) {
-                    Main.controller.GameHome.showGameViewB({robot: true, game_name: data.game});
+                    Ns.GameHome.showGameViewB({robot: true, game_name: data.game});
                 } else {
                     var Back_to_My_Game = 'Back to My Game';
                     Main.confirm(function (option) {
                         if (option === 'Back to My Game') {
-                            Main.controller.GameHome.showGameView(m);
+                            Ns.GameHome.showGameView(m);
                         }
                     }, 'Sorry! You currently have a live game session!<br/> You cannot have more than one live game session running at the same time.'
                             , 'NOT ALLOWED'
@@ -271,31 +271,31 @@ Ns.ui.UI = {
                 }
                 break;
             case 'Bluetooth game':
-                Main.controller.GameHome.showBluetoothGame(data);
+                Ns.GameHome.showBluetoothGame(data);
                 break;
             case 'Invite players':
-                Main.controller.GameHome.showInvitePlayers(data);
+                Ns.GameHome.showInvitePlayers(data);
                 break;
             case 'Contacts':
-                Main.controller.GameHome.showContacts(data);
+                Ns.GameHome.showContacts(data);
                 break;
             case 'Create group':
-                Main.controller.GameHome.showCreateGroup(data);
+                Ns.GameHome.showCreateGroup(data);
                 break;
             case 'Create tournament':
-                Main.controller.GameHome.showCreateTournament(data);
+                Ns.GameHome.showCreateTournament(data);
                 break;
             case 'Profile':
-                Main.controller.GameHome.showUserProfile(data);
+                Ns.GameHome.showUserProfile(data);
                 break;
             case 'Select game':
                 Main.page.home();//to the index page
                 break;
             case 'Settings':
-                Main.controller.GameHome.showSettings(data);
+                Ns.GameHome.showSettings(data);
                 break;
             case 'Help':
-                Main.controller.GameHome.showHelp(data);
+                Ns.GameHome.showHelp(data);
                 break;
             default:
 

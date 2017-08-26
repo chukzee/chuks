@@ -3,14 +3,14 @@
 /* global Main */
 
 
-Main.controller.GameWatch = {
+Ns.GameWatch = {
 
     leftPanelTitleComp: null,
     
     afterLeftContentHide: function () {
-        if (Main.controller.GameWatch.leftPanelTitleComp) {
-            Main.controller.GameWatch.leftPanelTitleComp.innerHTML = '';
-            Main.controller.GameWatch.isShowLeftPanel = false;
+        if (Ns.GameWatch.leftPanelTitleComp) {
+            Ns.GameWatch.leftPanelTitleComp.innerHTML = '';
+            Ns.GameWatch.isShowLeftPanel = false;
         }
     },
     showLeftContent: function (func) {
@@ -23,7 +23,7 @@ Main.controller.GameWatch = {
             var dim = Ns.ui.GamePanel.gameAreaDimension(elm);
             if (dim) {
                 //setting the sizes of the panels
-                Main.controller.GameWatch.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
+                Ns.GameWatch.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
             }
 
             func();
@@ -43,7 +43,7 @@ Main.controller.GameWatch = {
             Main.anim.to('game-watch-right-content', 500, {right: '0%'});
         }
         
-        Main.controller.GameWatch.isShowLeftPanel = true;
+        Ns.GameWatch.isShowLeftPanel = true;
     },
     hideLeftContent: function () {
 
@@ -52,14 +52,14 @@ Main.controller.GameWatch = {
             elm.style.width = '100%';
             var el = document.getElementById('game-watch-right-content');
             el.style.display = 'none';
-            Main.controller.GameWatch.afterLeftContentHide();
+            Ns.GameWatch.afterLeftContentHide();
         } else {
             var el = document.getElementById('game-watch-right-content');
             var negative_width = '-65%';//set to negative of the width we have in css file or the width we set programatically here
 
             if (el.style.right === '0%') {
                 el.style.display = 'block';//ensure visible        
-                Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Main.controller.GameWatch.afterLeftContentHide);
+                Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterLeftContentHide);
             }
         }
 
@@ -85,7 +85,7 @@ Main.controller.GameWatch = {
         var panel_main = document.getElementById('game-watch-main');
 
         var rhs_el = document.getElementById('game-watch-right-content');
-        var resizeMainFunc = Main.controller.GameWatch.resizeMain;
+        var resizeMainFunc = Ns.GameWatch.resizeMain;
         Ns.ui.GamePanel.watchGame(data, panel_main, resizeMainFunc, checkPanelSize);
 
         function checkPanelSize() {
@@ -100,7 +100,7 @@ Main.controller.GameWatch = {
                 rhs_el.style.right = '0%';//always visible
                 rhs_el.style.display = 'block';//always visible
                 
-                if(Main.controller.GameWatch.isShowLeftPanel){
+                if(Ns.GameWatch.isShowLeftPanel){
                     
                 }
                 
@@ -112,7 +112,7 @@ Main.controller.GameWatch = {
                 rhs_el.style.width = '65%';
                 rhs_el.style.display = 'block';//always visible
                 rhs_el.style.right = '-' + rhs_el.style.width;
-                Main.controller.GameWatch.afterLeftContentHide();
+                Ns.GameWatch.afterLeftContentHide();
 
             }
         }

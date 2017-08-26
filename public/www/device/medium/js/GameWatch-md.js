@@ -2,26 +2,26 @@
 
 /* global Main */
 
-Main.controller.GameWatch = {
+Ns.GameWatch = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
     leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameWatch.leftPanelTitleComp) {
-            Main.controller.GameWatch.leftPanelTitleComp.innerHTML = '';
+        if (Ns.GameWatch.leftPanelTitleComp) {
+            Ns.GameWatch.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
         var el = document.getElementById('game-watch-right-content');
 
-        el.style.width = Main.controller.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
-        el.style.right = "-" + Main.controller.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
+        el.style.width = Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
+        el.style.right = "-" + Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
 
         if (window.screen.height > window.screen.width) {//portrait
-            el.style.width = Main.controller.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;//we set this width programatically here
-            el.style.right = "-" + Main.controller.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
+            el.style.width = Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;//we set this width programatically here
+            el.style.right = "-" + Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
         }
 
         el.style.display = 'block';//make visible
@@ -36,7 +36,7 @@ Main.controller.GameWatch = {
 
         if (el.style.right === '0%') {
             el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Main.controller.GameWatch.afterLeftContentHide);
+            Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterLeftContentHide);
         }
     },
     Content: function (data) {
@@ -62,16 +62,16 @@ Main.controller.GameWatch = {
             var el = document.getElementById('game-watch-right-content');
 
             if (window.screen.width > window.screen.height) {
-                el.style.width = Main.controller.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;
+                el.style.width = Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;
             } else {
-                el.style.width = Main.controller.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;
+                el.style.width = Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;
             }
             
         }
         
   
         $('#game-watch-back-btn').on('click', function () {
-            Main.controller.GameHome.home();
+            Ns.GameHome.home();
         });
 
     }

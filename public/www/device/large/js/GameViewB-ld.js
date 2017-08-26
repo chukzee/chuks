@@ -3,12 +3,12 @@
 /* global Main */
 
 
-Main.controller.GameViewB = {
+Ns.GameViewB = {
     leftPanelTitleComp: null,
 
     afterLeftContentHide: function () {
-        if (Main.controller.GameViewB.leftPanelTitleComp) {
-            Main.controller.GameViewB.leftPanelTitleComp.innerHTML = '';
+        if (Ns.GameViewB.leftPanelTitleComp) {
+            Ns.GameViewB.leftPanelTitleComp.innerHTML = '';
         }
     },
     showLeftContent: function (func) {
@@ -21,7 +21,7 @@ Main.controller.GameViewB = {
             var dim = Ns.ui.GamePanel.gameAreaDimension(elm);
             if (dim) {
                 //setting the sizes of the panels
-                Main.controller.GameViewB.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
+                Ns.GameViewB.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
             }
 
             func();
@@ -44,14 +44,14 @@ Main.controller.GameViewB = {
             elm.style.width = '100%';
             var el = document.getElementById('game-view-b-right-content');
             el.style.display = 'none';
-            Main.controller.GameViewB.afterLeftContentHide();
+            Ns.GameViewB.afterLeftContentHide();
         } else {
             var el = document.getElementById('game-view-b-right-content');
             var negative_width = '-65%';//set to negative of the width we have in css file or the width we set programatically here
 
             if (el.style.right === '0%') {
                 el.style.display = 'block';//ensure visible        
-                Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Main.controller.GameViewB.afterLeftContentHide);
+                Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Ns.GameViewB.afterLeftContentHide);
             }
         }
     },
@@ -77,7 +77,7 @@ Main.controller.GameViewB = {
 
         var rhs_el = document.getElementById('game-view-b-right-content');
         
-        var resizeMainFunc = Main.controller.GameViewB.resizeMain;
+        var resizeMainFunc = Ns.GameViewB.resizeMain;
         Ns.ui.GamePanel.ownGameViewB(data, panel_main, resizeMainFunc, checkPanelSize);
 
         function checkPanelSize() {
@@ -98,7 +98,7 @@ Main.controller.GameViewB = {
                 rhs_el.style.width = '65%';
                 rhs_el.style.display = 'block';//always visible
                 rhs_el.style.right = '-' + rhs_el.style.width;
-                Main.controller.GameViewB.afterLeftContentHide();
+                Ns.GameViewB.afterLeftContentHide();
             }
         }
 
