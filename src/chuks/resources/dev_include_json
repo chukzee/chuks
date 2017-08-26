@@ -1,0 +1,145 @@
+
+
+
+{
+    "app_name": "{app_name}",
+    
+    "namespace": "{namespace}",
+     
+    /**
+    The build tool is responsible for automatically creating this property.   
+    */
+    "build":{
+        /*
+       "prod": false // the build tool will set this to true - this signifies the build should be used
+       
+       this css and js files goes below
+        
+       "merge_js":{
+            //js files merged in the build for creating namespace related object
+        },
+        */
+    },
+    
+    
+    /**
+     * css and js files required for all devices but loaded absolutely (absolute path) as specified. These files are loaded first
+     */
+    "absolute":{
+        
+        "css":[
+        ],
+        
+        "js":[
+            
+        ],
+        
+        /**
+         *These are js files that will not abort the application if not found.
+         *A typical case is failure to load cordova.js in the browser where it is
+         *typically not required
+         *
+         */
+        "load_exceptions":[
+            
+        ]
+        
+        
+    },
+    
+    /**
+     * css and js files required for all devices. These files are loaded second
+     */
+    "app": {
+        
+        "css": [
+
+        ],
+        
+        "js": [
+
+        ],
+        
+        /**
+         *These are js files that will not abort the application if not found.
+         *A typical case is failure to load cordova.js in the browser where it is
+         *typically not required
+         *
+         */
+        "load_exceptions":[
+            
+        ]
+    },
+
+    /**
+     * css and js files required for small size devices e.g smart phones
+     */
+    "small": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            
+        ],
+        
+        /**
+         *These are js files that will not abort the application if not found.
+         *A typical case is failure to load cordova.js in the browser where it is
+         *typically not required
+         *
+         */
+        "load_exceptions":[
+            
+        ] 
+    },
+
+    /**
+     * css and js files required for medium size devices e.g tablets 
+     */
+    "medium": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            
+        ],
+        
+        /**
+         *These are js files that will not abort the application if not found.
+         *A typical case is failure to load cordova.js in the browser where it is
+         *typically not required
+         *
+         */
+        "load_exceptions":[
+            
+        ]
+    },
+
+    /**
+     * css and js files required for large size devices e.g desktops and laptops 
+     */
+    "large": {
+
+        "css": [
+
+        ],
+
+        "js": [
+            
+        ],
+        
+        /**
+         *These are js files that will not abort the application if not found.
+         *A typical case is failure to load cordova.js in the browser where it is
+         *typically not required
+         *
+         */
+        "load_exceptions":[
+            
+        ]
+    }
+}

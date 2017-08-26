@@ -11,11 +11,11 @@ package chuks.json.structure;
  */
 abstract public class BaseObj {
     
-    Obj absolute;
-    Obj app;
-    Obj small;
-    Obj medium;
-    Obj large;
+    Obj absolute = new Obj();
+    Obj app = new Obj();
+    Obj small = new Obj();
+    Obj medium = new Obj();
+    Obj large = new Obj();
 
     public Obj getAbsolute() {
         return absolute == null? absolute = new Obj (): absolute;

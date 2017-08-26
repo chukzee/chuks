@@ -19,4 +19,7 @@ public class AppBuilderException extends Exception {
         super(ex);
     }
  
+    public AppBuilderException(String msg, Exception ex) {
+        super(msg, ex);
+    }
 }

@@ -22,6 +22,10 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import chuks.compressor.Compressor;
 import chuks.compressor.CompressorFactory;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import java.io.BufferedInputStream;
 import java.io.FileFilter;
 import java.io.InputStream;
@@ -102,63 +106,87 @@ public class AppBuilder {
         return data;
     }
 
-    private void createProject(String... args) throws AppBuilderException {
-        if (args.length != 3) {
-            System.err.println("invalid number of arguments");
-            Usage();
-            return;
-        }
-        String app_namepace = args[1];
-        if (SourceVersion.isName(app_namepace)) {
-            System.err.println("app namespace is not valid or not allowed - " + app_namepace);
-            return;
-        }
-        String workspace_dir = args[2];
-        Path path = new File("").toPath();
-        String root = path.getRoot().toString();
-        String cwd = path.toAbsolutePath().toString();
-        if (!workspace_dir.startsWith(root)) {
-            workspace_dir = normalizeFileName(cwd + "/" + workspace_dir);
+    private void createProject(String app_namespace, String workspace_dir) throws AppBuilderException {
+
+        if (!workspace_dir.endsWith("/")) {
+            workspace_dir = workspace_dir + "/";
         }
 
-        //in order to avoid overwriting important file will must make sure the Config.INCLUDE_FILE
-        //and the Config.INCLUDE_FILE files does not exist!
-        if (!new File(workspace_dir).exists()) {
-            System.err.println("The specified workspace does not exist!");
-            return;
+        File wrDir = new File(workspace_dir);
+        if (!wrDir.exists()) {
+            if (!wrDir.mkdirs()) {
+                throw new AppBuilderException("could not create workspace - "+wrDir.getAbsolutePath());
+            }
         }
 
+        //in order to avoid overwriting important file we must make sure 
+        //the Config.INCLUDE_FILE files does not exist!
         if (new File(workspace_dir).list().length > 0) {
-            System.err.println("The specified workspace must be empty"
-                    + "\nto avoid accidental overwriting of important files.");
+            System.out.println("The specified workspace must be empty "
+                    + "to avoid accidental overwriting of important files at:\n " + workspace_dir);
             return;
         }
 
         for (String p : Config.APP_DIR_STRUTURE) {
             File dir = new File(workspace_dir + p);
-            dir.mkdir();//create the workspace directory structure
+            //create the workspace directory structure
+            if (!dir.mkdirs()) {//create the workspace structure
+                throw new AppBuilderException("could not create workspace!.");
+            }
         }
 
-        Include inc = new Include();
+        /*Include inc = new Include();
         inc.setNamespace(app_namepace);
-        String str_inc = gson.toJson(inc, Include.class);
+        Gson pretty_gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+        
+        inc.setBuild(null);// do not appear - not neccessary
+        
+        String str_inc = pretty_gson.toJson(inc, Include.class);
+         */
+        try {
 
-        //create develop index
-        createDevIndexPage(workspace_dir);
+            //create develop index
+            createDevIndexPage(workspace_dir);
 
-        //create device indexes for small, medium and large
-        createDeviceIndexPage(workspace_dir);
+            //create device indexes for small, medium and large
+            createDeviceIndexPage(workspace_dir);
 
-        //create the include file
-        String inc_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.INCLUDE_FILE);
-        writeToFile(inc_filename, str_inc);
+            //create the include file
+            createDevIncludeFile(workspace_dir, app_namespace);
 
-        String main_js_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.MAIN_JS_FILE);
-        //writeToFile(main_js_filename, "the Main.js content goes here");//TODO
+            String main_js_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.MAIN_JS_FILE);
+            //writeToFile(main_js_filename, "the Main.js content goes here");//TODO
+            
+            System.err.println("TODO - Auto create the " + Config.MAIN_JS_FILE);// REMIND - store in the jar just has the index.html of build
+            
+            System.out.println("Workspace location: "+ wrDir.getAbsolutePath());
+            System.out.println("Project successfully created.");
+        } catch (AppBuilderException ex) {
+            //reverse process
+            clearDir(normalizeFileName(workspace_dir));
+            throw new AppBuilderException(ex);
+        } catch (Exception ex) {
+            //reverse process
+            clearDir(normalizeFileName(workspace_dir));
+            throw new AppBuilderException(ex);
+        }
+    }
 
-        System.err.println("TODO - Auto create the " + Config.MAIN_JS_FILE);// REMIND - store in the jar just has the index.html of build
-
-        System.out.println("App workspace successfully created.");
+    void clearDir(String dir) {
+        try {
+            File[] files = new File(dir).listFiles();
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        } catch (Exception e) {
+            //Do nothing
+        }
     }
 
     public boolean build(String web_root) throws AppBuilderException {
@@ -170,17 +198,28 @@ public class AppBuilder {
             web_root = web_root + '/';//since we expect a directory
         }
         webRoot = normalizeFileName(web_root);
-        String str_json = readAll(getConfigFilePath()).toString();
-        createBuild(str_json);
+        String str_json = null;
+        try {
+            str_json = readAll(getConfigFilePath()).toString();
+        } catch (AppBuilderException ex) {
+            if (ex.getCause() instanceof FileNotFoundException) {
+                throw new AppBuilderException("The specified web root is either not a project folder or the config file is missing.", ex);
+            }
+            throw new AppBuilderException(ex);
+        }
+        try {
+            createBuild(str_json);
+        } catch (AppBuilderException ex) {
+            //reverse process
+            clearDir(normalizeFileName(web_root + Config.BUILD_PATH));
+            throw new AppBuilderException(ex);
+        } catch (Exception ex) {
+            //reverse process
+            clearDir(normalizeFileName(web_root + Config.BUILD_PATH));
+            throw new AppBuilderException(ex);
+        }
         return true;
 
-    }
-
-    private static void Usage() {
-        System.out.println("Usage:\n\n"
-                + "-b or --build [web_root_path] --->  builds the source into a build directory."
-                + "-c or --create [app_namespace] [web_root_path] --->  create the workspace of the application."
-                + "");
     }
 
     //NOT YET FULLY IMPLEMENTED - VERSION SHOULD BE RETRIEVED FROM AN EXTERNAL FILE
@@ -233,44 +272,67 @@ public class AppBuilder {
 
         if (args.length == 0) {
 
-            Usage();
+            Help.show();
             System.exit(1);
         }
-        if (args.length == 1) {
-            if ("-v".equals(args[0]) || "--version".equals(args[0])) {
-                System.out.println(Config.APP_NAME + "\n" + getVersion());
-            } else {
+        if (args.length >= 1) {
+            if (null == args[0]) {
                 //specify the cause of the failure
-                if ("-b".equals(args[0]) || "--build".equals(args[0])) {
-                    System.err.println("Please specify the web root.");
-                }
 
-                Usage();
+                Help.show();
                 System.exit(1);
-            }
-        }
-        if (args.length >= 2) {
-            if (("-b".equals(args[0]) || "--build".equals(args[0]))
-                    && !args[1].isEmpty()) {
-                String path = args[1];
-                try {
-                    ab.build(path);
-                } catch (AppBuilderException ex) {
-                    Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
-                    System.err.println("App build failed!");
-                }
-            } else if (("-c".equals(args[0]) || "--create".equals(args[0]))
-                    && !args[1].isEmpty()) {
-
-                try {
-                    ab.createProject(args);
-                } catch (AppBuilderException ex) {
-                    Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
-                    System.err.println("App build failed!");
-                }
             } else {
-                Usage();
-                System.exit(1);
+                switch (args[0]) {
+                    case "-v":
+                    case "--version":
+                        System.out.println(Config.APP_NAME + "\n" + getVersion());
+                        break;
+                    case "-h":
+                    case "--help":
+                        Help.show();
+                        break;
+                    case "-b":
+                    case "--build":
+                        if (args.length != 2) {
+                            System.out.println("invalid number of arguments - app webroot must be provided!");
+                            Help.usage("-b");
+                            return;
+                        }
+                        try {
+                            String path = args[1];
+                            ab.build(path);
+                        } catch (AppBuilderException ex) {
+                            Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                            System.err.println("App build failed!");
+                        }
+                        break;
+                    case "-c":
+                    case "--create":
+                        if (args.length != 3) {
+                            System.out.println("invalid number of arguments");
+                            Help.usage("-c");
+                            return;
+                        }
+                        String app_namespace = args[1];
+                        if (!SourceVersion.isName(app_namespace)) {
+                            System.out.println("app namespace is not valid or not allowed - " + app_namespace);
+                            Help.usage("-c");
+                            return;
+                        }
+                        String workspace_dir = args[2];
+                        try {
+                            ab.createProject(app_namespace, workspace_dir);
+                        } catch (AppBuilderException ex) {
+                            Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                            System.err.println("App project creation failed!");
+                        }
+                        break;
+                    default:
+                        //specify the cause of the failure
+
+                        Help.show();
+                        System.exit(1);
+                }
             }
         }
     }
@@ -432,7 +494,7 @@ public class AppBuilder {
     private void doBiuldJs(String cat, Include dev_include, Include prod_include) throws AppBuilderException {
         Sources sources;
         String compiled_file_name;
-        
+
         switch (cat) {
             case "main": {
 
@@ -459,8 +521,8 @@ public class AppBuilder {
                 sources.put("", "}");//wrapper end
                 //prod_include.getBuild().getApp().setJs(new String[]{fpath});//NOT REQUIRED IN THIS CASE - SINCE THEY MERGE WITH THE Main.js
                 compiled_file_name = normalizeFileName(webRoot
-                        + Config.BUILD_PATH 
-                        + "/app/" 
+                        + Config.BUILD_PATH
+                        + "/app/"
                         + Config.JS_COMPILED_MAIN_FILE);
 
             }
@@ -475,11 +537,11 @@ public class AppBuilder {
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                
+
                 prod_include.getBuild().getSmall().setJs(new String[]{Config.JS_COMPILED_SMALL_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/small/js/" 
+                        + "/device/small/js/"
                         + Config.JS_COMPILED_SMALL_FILE);
             }
             break;
@@ -493,11 +555,11 @@ public class AppBuilder {
                 for (String filename : medium) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                
+
                 prod_include.getBuild().getMedium().setJs(new String[]{Config.JS_COMPILED_MEDIUM_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/medium/js/" 
+                        + "/device/medium/js/"
                         + Config.JS_COMPILED_MEDIUM_FILE);
             }
             break;
@@ -511,7 +573,7 @@ public class AppBuilder {
                 for (String filename : large) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                
+
                 prod_include.getBuild().getLarge().setJs(new String[]{Config.JS_COMPILED_LARGE_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
@@ -533,7 +595,7 @@ public class AppBuilder {
     private void doBuildCss(String cat, Include dev_include, Include prod_include) throws AppBuilderException {
         Sources sources;
         String compiled_file_name;
-        
+
         switch (cat) {
             case "main": {
 
@@ -551,11 +613,11 @@ public class AppBuilder {
                 }
 
                 sources.put("", "}");//wrapper end
-                
+
                 prod_include.getBuild().getApp().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/app/css/" 
+                        + "/app/css/"
                         + Config.CSS_COMPILED_MAIN_FILE);
 
             }
@@ -570,11 +632,11 @@ public class AppBuilder {
                 for (String filename : small) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                
+
                 prod_include.getBuild().getSmall().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/small/css/" 
+                        + "/device/small/css/"
                         + Config.CSS_COMPILED_MAIN_FILE);
             }
             break;
@@ -588,7 +650,7 @@ public class AppBuilder {
                 for (String filename : medium) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                
+
                 prod_include.getBuild().getMedium().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
@@ -606,11 +668,11 @@ public class AppBuilder {
                 for (String filename : large) {
                     sources.put(filename, readAll(filename, exceptions_files));
                 }
-                
+
                 prod_include.getBuild().getLarge().setCss(new String[]{Config.CSS_COMPILED_MAIN_FILE});
                 compiled_file_name = normalizeFileName(webRoot
                         + Config.BUILD_PATH
-                        + "/device/large/css/" 
+                        + "/device/large/css/"
                         + Config.CSS_COMPILED_MAIN_FILE);
 
             }
@@ -674,6 +736,33 @@ public class AppBuilder {
         String file = normalizeFileName(webRoot + Config.BUILD_PATH + "/index.html");
         writeToFile(file, html);
 
+    }
+
+    private void createDevIncludeFile(String workspace, String namespace) throws AppBuilderException {
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/dev_include_json");
+        if (in == null) {
+            throw new AppBuilderException("Could not create include.json for development - template resource not found. Make sure the installation is correct.");
+        }
+        Scanner s = new Scanner(in);
+        String json = "";
+        while (s.hasNextLine()) {
+            json += s.nextLine() + "\n";
+        }
+
+        json = json.replaceFirst("\\{namespace\\}", namespace);//replace {app_js}
+        json = json.replaceFirst("\\{app_name\\}", "App Name");//replace {app_name}
+
+        //verify if the json syntax is valid
+        try {
+            JsonParser jp = new JsonParser();
+            JsonElement je = jp.parse(json);
+
+        } catch (JsonSyntaxException e) {
+            throw new AppBuilderException("Invalid json syntax - possibly the internal resource file is corrupt or application not properly installed.", e);
+        }
+
+        String file = normalizeFileName(workspace + Config.MAIN_PATH + Config.INCLUDE_FILE);
+        writeToFile(file, json);
     }
 
     private void createDevIndexPage(String workspace) throws AppBuilderException {
