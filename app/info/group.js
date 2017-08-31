@@ -161,7 +161,7 @@ class Group extends Result {
      * added due to error. 
      * the flag 'committed' is used to track this error using the two phase
      * commit or rollback technique for MongoDB. If the 'committed' flag is false
-     * that means the member was not successfully add to the group and must be 
+     * that means the member was not successfully added to the group and must be 
      * removed using this method
      * 
      * @param {type} argu1
@@ -224,12 +224,16 @@ class Group extends Result {
     }
 
     /**
-     * Gets the group info of all the groups of the user specified
+     * Gets the group info of the groups array specified
      *      
      * @param {type} group_names_arr - expected a user id or a function callback
      * @returns {undefined}
      */
     async getGroupsInfoList(group_names_arr) {
+
+        if(!Array.isArray(group_names_arr)){
+            return [];
+        }
 
         //simulateUserGroupsInfo(group_names_arr);//TESTING!!!
         var oredArr = [];
@@ -298,46 +302,25 @@ class Group extends Result {
 
         return groups;
     }
-
-    simulateUserGroupsInfo(param) {
-
-        var arr = [];
-        for (var i = 0; i < 5; i++) {
-            var group = {
-                name: 'group_' + i,
-                status_message: 'status_message_' + i,
-                photo_url: 'photo_' + i,
-                created_by: 'created_by_' + i,
-                date_created: 'date_created_' + i,
-                total_members: 67,
-                total_admins: 3,
-                admin_users: simulateGroupMembers(3), //yes admin users are group member
-                members: simulateGroupMembers(67),
-
-            };
-
-            arr.push(group);
-        }
-
-        if (this.isFunc(param)) {
-            param();
-        } else {
-            this.replySuccess(arr);
-        }
-
-        function simulateGroupMembers(n) {
-            var members = [];
-            for (var i = 0; i < n; i++) {
-                members[i] = {
-                    user_id: i === 0 ? '07038428492' : 'user_id_' + i,
-                    full_name: i === 0 ? 'Chuks Alimele' : 'Firstname_' + i + ' Lastname_' + i,
-                    phone_no: i === 0 ? '07038428492' : '070' + i + '3' + '44' + '20' + i,
-                    date_joined: new Date().getTime() - 24 * i * 60 * 60 * 1000
-                };
-            }
-        }
-        ;
-
+    /**
+     * Get the list of groups belong to by this user. The list consist of 
+     * the group info.
+     * 
+     * @param {type} user_id
+     * @returns {nm$_group.Group.getGroupsInfoList.groups|Group.getGroupsInfoList.groups|Array|undefined|nm$_group.Group}
+     */
+    async getUserGroupsInfoList(user_id){
+        try {
+            
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            var user = await c.findOne({user_id: user_id});
+            
+            return this.getGroupsInfoList(user.groups_belong);
+            
+        } catch (e) {
+            this.error('could not get user groups info');
+            return this;
+        } 
     }
 
 }
