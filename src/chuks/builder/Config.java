@@ -11,6 +11,8 @@ package chuks.builder;
  */
 public interface Config {
 
+    String MAIN_JS_VERSION_FILE = "Main-0.0.1.js";
+
     String APP_NAME = "AppBuilder";
     String MAIN_PATH = "/app/";
     String INCLUDE_FILE = "include.json";

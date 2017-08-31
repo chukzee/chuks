@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileFilter;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -58,7 +59,12 @@ public class AppBuilder {
     }
 
     String getMainJsFilePath() {
-        return normalizeFileName(webRoot + Config.MAIN_PATH + Config.MAIN_JS_FILE);
+        String f = normalizeFileName(webRoot + Config.MAIN_PATH + Config.MAIN_JS_VERSION_FILE);
+        if(new File(f).exists()){
+            return f;
+        }else{
+            return normalizeFileName(webRoot + Config.MAIN_PATH + Config.MAIN_JS_FILE);
+        }
     }
 
     StringBuilder readAll(String path) throws AppBuilderException {
@@ -156,10 +162,8 @@ public class AppBuilder {
             //create the include file
             createDevIncludeFile(workspace_dir, app_namespace);
 
-            String main_js_filename = normalizeFileName(workspace_dir + Config.MAIN_PATH + Config.MAIN_JS_FILE);
-            //writeToFile(main_js_filename, "the Main.js content goes here");//TODO
-            
-            System.err.println("TODO - Auto create the " + Config.MAIN_JS_FILE);// REMIND - store in the jar just has the index.html of build
+            //create the main file
+            createDevMainFile(workspace_dir);
             
             System.out.println("Workspace location: "+ wrDir.getAbsolutePath());
             System.out.println("Project successfully created.");
@@ -738,6 +742,43 @@ public class AppBuilder {
 
     }
 
+    private void createDevMainFile(String workspace) throws AppBuilderException{
+         InputStream in  =null;
+          FileOutputStream out  = null;
+        try {
+            in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/"+Config.MAIN_JS_VERSION_FILE);
+            if (in == null) {
+                throw new AppBuilderException("Could not create "+Config.MAIN_JS_VERSION_FILE+" for development - template resource not found. Make sure the installation is correct.");
+            }
+            byte[] buff = new byte[1024];
+            int size = -1;
+            String file = normalizeFileName(workspace + Config.MAIN_PATH + Config.MAIN_JS_VERSION_FILE);
+            out = new FileOutputStream(file);
+            while(( size=in.read(buff))>-1){
+                out.write(buff, 0, size);
+            }  
+            out.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            if(in!=null){
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            if(out!=null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AppBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+    }
+    
     private void createDevIncludeFile(String workspace, String namespace) throws AppBuilderException {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("chuks/resources/dev_include_json");
         if (in == null) {
@@ -775,7 +816,7 @@ public class AppBuilder {
         while (s.hasNextLine()) {
             html += s.nextLine() + "\n";
         }
-        String main_js = Config.MAIN_PATH + Config.MAIN_JS_FILE;
+        String main_js = Config.MAIN_PATH + Config.MAIN_JS_VERSION_FILE;
         html = html.replaceFirst("\\{main_js\\}", main_js);//replace {app_js}
         //html = html.replaceFirst("\\{app_name\\}", include.getAppName());//replace {app_name}
 
