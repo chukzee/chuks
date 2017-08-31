@@ -1,12 +1,14 @@
 "use strict";
 
-var Base = require('../base');
+var Result = require('../result');
 
-class PlayerRank extends Base{
+class PlayerRank extends Result{
     
-    constructor(sObj) {
-        super(sObj);
-        this.RANK_FACTOR = 0.85;
+    
+    constructor(sObj, util) {
+        super();
+        this.sObj = sObj;
+        this.util = util;    
         console.log('PlayerRank');
     }
 

@@ -6,87 +6,18 @@
     "namespace": "Ns",
     
     /**
-    The build tool is responsible for automatically creating this property.
-    NOTE: The exact configuration of the js resources in development must be
-    inserted in this build property so also to enable the relevant app namespace
-    object to be created. This does not bother the css.
+    The build tool is responsible for automatically creating this property.   
     */
     "build":{
+        /*
        "prod": false // the build tool will set this to true - this signifies the build should be used
-       /*
+       
        this css and js files goes below
         
        "merge_js":{
-            //js file s merged in the build for creating namespace related object
+            //js files merged in the build for creating namespace related object
         },
-       "absolute":{
-        
-        "css":[
-        //css file list can be different from that during development
-        ],
-        
-        "js":[
-            //list of js files as it was in development - to enable the relevant app namespace
-            //object to be created.
-        ]
-       
-       },
-        
-        
-       "app":{
-        
-        "css":[
-        //css file list can be different from that during development
-        ],
-        
-        "js":[
-            //list of js files as it was in development - to enable the relevant app namespace
-            //object to be created.
-        ]
-       
-       },
-        
-       "small":{
-        
-        "css":[
-        //css file list can be different from that during development
-        ],
-        
-        "js":[
-            //list of js files as it was in development - to enable the relevant app namespace
-            //object to be created.
-        ]
-       
-       },
-        
-       "medium":{
-        
-        "css":[
-        //css file list can be different from that during development
-        ],
-        
-        "js":[
-            //list of js files as it was in development - to enable the relevant app namespace
-            //object to be created.
-        ]
-       
-       },
-        
-       "large":{
-        
-        "css":[
-        //css file list can be different from that during development
-        ],
-        
-        "js":[
-            //list of js files as it was in development - to enable the relevant app namespace
-            //object to be created.
-        ]
-       
-       }
-        
-       */
-      
+        */
     },
     
     /**
@@ -109,7 +40,7 @@
         
         /**
          *These are js files that will not abort the application if not found.
-         *A typical case is failure to load cordova in the browser where it is
+         *A typical case is failure to load cordova.js in the browser where it is
          *typically not required
          *
          */

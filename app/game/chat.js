@@ -1,17 +1,19 @@
 
 "use strict";
 
-var Base = require('../base');
+var Result = require('../result');
 
 
-class Chat extends   Base {
+class Chat extends   Result {
 
-    constructor(sObj) {
-        super(sObj);
+    constructor(sObj, util) {
+        super();
+        this.sObj = sObj;
+        this.util = util;  
 
     }
 
-    getHistory(gameId) {
+    getChats(gameId) {
 
 
         //TEST SIMULATION

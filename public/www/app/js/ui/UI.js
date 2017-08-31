@@ -46,6 +46,7 @@ Ns.ui.UI = {
         Main.tab({
             container: document.getElementById("home-tab-container"),
             onShow: {
+                
                 //"#home-contacts-matches": contactsMatchList,
                 //"#home-groups-matches": groupsMatchList,
                 //"#home-tournaments-matches": tournamentsMatchList

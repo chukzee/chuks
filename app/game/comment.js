@@ -1,16 +1,18 @@
 
 "use strict";
 
-var Base = require('../base');
+var Result = require('../result');
 
-class Comment extends   Base {
+class Comment extends   Result {
 
-    constructor(sObj) {
-        super(sObj);
+    constructor(sObj, util) {
+        super();
+        this.sObj = sObj;
+        this.util = util;  
 
     }
 
-    async getHistory(gameId) {
+    async getComments(gameId) {
 
         //TEST SIMULATION
         this.replySuccess(this.simulateHistory(gameId));//TESTING!!!

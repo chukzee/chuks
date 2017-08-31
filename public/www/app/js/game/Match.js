@@ -8,7 +8,7 @@ Ns.game.Match = {
     constructor: function(){
 
         var obj = {
-            match: 'game/MatchLive',
+            match: 'game/Match',
             //more may go below
         };
 
@@ -111,7 +111,7 @@ Ns.game.Match = {
             }
             //replace 
             window.localStorage.removeItem(key(param));
-            window.localStorage.setItem(key(param), stored_matches);
+            window.localStorage.setItem(key(param), JSON.stringify(stored_matches));
 
         }
 

@@ -34,7 +34,7 @@ Ns.msg.Comment = {
 
         Main.rcall.live(function () {
 
-            Main.ro.comment.getHistory(data.gameId)
+            Main.ro.comment.getComments(data.gameId)
                     .get(function (res) {
                         var contentHtml = '';
 

@@ -41,7 +41,7 @@ Ns.view.UserProfile = {
 
         if (!other_user_info) {
             Main.rcall.live(function () {
-                Main.ro.group.getUserGroupsInfo(other_user_id)
+                Main.ro.group.getUserGroupsInfoList(other_user_id)
                         .get(function (group_info_arr) {
                             //first save the groups info in memory
                             for (var i = 0; i < group_info_arr.length; i++) {

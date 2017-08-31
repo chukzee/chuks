@@ -31,7 +31,7 @@ Ns.msg.Chat = {
 
         Main.rcall.live(function () {
 
-            Main.ro.chat.getHistory(data.gameId)
+            Main.ro.chat.getChats(data.gameId)
                     .get(function (res) {
                         //TODO: hide loading indicator
 
