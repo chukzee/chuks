@@ -8,135 +8,267 @@ class Match extends Result {
     constructor(sObj, util) {
         super();
         this.sObj = sObj;
-        this.util = util;  
+        this.util = util;
     }
 
-    async getContantsMatchList() {
+    async sendMove(user_id, opponent_id, game_id, move) {
 
-        //TEST CODE SIMULATION BEGINS
-         var obj = [];
-         var len = 20;
-        for (var i = 0; i < len; i++) {
-            var content = {};
-            content.game_name= "chess";
-            content.game_id= "game_id";
-            content.white_id = i=== len-1?'07038428492':"white_id_"+i;
-            content.white_name = "Chuks_" + i + " Alimele_" + i;
-            content.white_pic = "white_pic_" + i + ".png";
-            content.white_large_pic = "white_large_pic_" + i + ".png";
-            content.white_activity= "thinking...";
-            content.white_countdown= "5:42";
-            content.white_wld= "W 3, L 2, D 5";
-            content.black_id = "black_id_" + i;
-            content.black_name = "Peter_" + i + " Okoro_" + i;
-            content.black_pic = "black_pic_" + i + ".png";
-            content.black_large_pic = "black_large_pic_" + i + ".png";
-            content.black_activity= "thinking...";
-            content.black_countdown= "5:42";
-            content.black_wld= "W 3, L 2, D 5";
-            content.game_id = "game_id_" + i;
-            content.game_elapse_time = i + " days";
-            content.game_views_count = "2" + i + " view";
-            content.game_score = "2-0";
-            content.game_status= "Live",
-            content.game_position= "The game position goes here";
-            content.game_duration= "the game duration goes here";
-            content.game_end_time = new Date().getTime();// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
-            content.game_pause_time = new Date().getTime();// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
-            
-            
-            obj.push(content);
+        //first quickly forward the move to the opponenct
+        var data = {
+            user_id: user_id,
+            opponent_id: opponent_id,
+            game_id: game_id,
+            move: move
+        };
+
+        this.sOb.redis.publish(sOb.PUBSUB_FORWARD_MOVE, data);
+
+        //save the move in the server asynchronously
+        var c = this.sObj.db.collection(this.sObj.col.moves);
+        c.updateOne({game_id: game_id}, {$push: {moves: move}})
+                .then(function (result) {
+                    //Acknowlege move sent by notifying the player that
+                    //the sever has receive the move and sent it to the
+                    return sOb.redis.publish(this.sOb.PUBSUB_ACKNOWLEGE_MOVE_SENT, data);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+
+        //next broadcast to the game spectators.
+
+        //so lets get the spectators view this game
+        var sc = this.sObj.db.collection(this.sObj.col.spectators);
+        var spectators = await sc.findOne({game_id: game_id}).toArray();
+
+        var spectators_ids = [];
+        for (var i = 0; i < spectators.length; i++) {
+            spectators_ids[i] = spectators[i].user_id;
         }
 
-        this.replySuccess(obj);
+        //now broadcast to the spectators
+        this.sOb.redis.publish(sOb.PUBSUB_BROADCAST_MOVE, {
+            game_id: game_id,
+            spectators_ids: spectators_ids,
+            move: move
+        });
 
-        //TEST CODE SIMULATION ENDS
 
-    }
-
-    async getGroupMatchList(group_name) {
-
-        //TEST CODE SIMULATION BEGINS
-        
-        var obj = [];
-        for (var i = 0; i < 20; i++) {
-            var content = {};
-            content.game_name= "chess";
-            content.game_id= "game_id";
-            content.group_name = group_name; // must be unique
-            content.white_id = "white_id_" + i;
-            content.white_name = "Chuks_" + i + " Alimele_" + i;
-            content.white_pic = "white_pic_" + i + ".png";
-            content.white_large_pic = "white_large_pic_" + i + ".png";
-            content.white_activity= "thinking...";
-            content.white_countdown= "5:42";
-            content.white_wld= "W 3, L 2, D 5";
-            content.black_id = "black_id_" + i;
-            content.black_name = "Peter_" + i + " Okoro_" + i;
-            content.black_pic = "black_pic_" + i + ".png";
-            content.black_large_pic = "black_large_pic_" + i + ".png";
-            content.black_activity= "thinking...";
-            content.black_countdown= "5:42";
-            content.black_wld= "W 3, L 2, D 5";
-            content.game_id = "game_id_" + i;
-            content.game_elapse_time = i + " days";
-            content.game_views_count = "2" + i + " view";
-            content.game_score = "2-0";
-            content.game_status = "Live";
-            content.game_position= "The game position goes here";
-            content.game_duration= "the game duration goes here";
-            content.game_end_time = new Date().getTime();// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
-            content.game_pause_time = new Date().getTime();// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
-            
-            
-            obj.push(content);
-        }
-
-        this.replySuccess(obj);
-        
-        //TEST CODE SIMULATION ENDS
 
     }
 
-    async getTournamentMatchList(tournament_name) {
+    getGamePosition(game_id) {
 
-        //TEST CODE SIMULATION BEGINS
-        var obj = [];
-        for (var i = 0; i < 20; i++) {
-            var content = {};
-            content.game_name= "chess";
-            content.game_id= "game_id";
-            content.tournament_name = tournament_name; // must be unique
-            content.white_id = "white_id_" + i;
-            content.white_name = "Chuks_" + i + " Alimele_" + i;
-            content.white_pic = "white_pic_" + i + ".png";
-            content.white_large_pic = "white_large_pic_" + i + ".png";
-            content.white_activity= "thinking...";
-            content.white_countdown= "5:42";
-            content.white_wld= "W 3, L 2, D 5";
-            content.black_id = "black_id_" + i;
-            content.black_name = "Peter_" + i + " Okoro_" + i;
-            content.black_pic = "black_pic_" + i + ".png";
-            content.black_large_pic = "black_large_pic_" + i + ".png";
-            content.black_activity= "thinking...";
-            content.black_countdown= "5:42";
-            content.black_wld= "W 3, L 2, D 5";
-            content.game_id = "game_id_" + i;
-            content.game_elapse_time = i + " days";
-            content.game_views_count = "2" + i + " view";
-            content.game_score = "2-0";
-            content.game_status = "Live";
-            content.game_position= "The game position goes here";
-            content.game_duration= "the game duration goes here";
-            content.game_end_time = new Date().getTime();// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
-            content.game_pause_time = new Date().getTime();// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
-            
-            obj.push(content);
+
+    }
+
+    /**
+     * 
+     * @param {type} user_id - id of user who made the request
+     * @param {type} opponent_id - id of the user requested
+     * @returns {undefined}
+     */
+    addRequest(user_id, opponent_id) {
+
+    }
+
+    start(user_id, opponent_id) {
+
+    }
+
+    resume(game_id) {
+
+    }
+
+    pause(game_id) {
+
+    }
+
+    end(user_id, opponent_id) {
+
+    }
+
+    async getContantsMatchList(obj) {
+        var game_name = obj.game_name;
+        var user_id = obj.user_id;
+        var skip = obj.skip - 0;
+        var limit = obj.limit - 0;
+
+
+        var c = this.sObj.db.collection(this.sObj.col.users);
+        var user = await c.findOne({user_id: user_id});
+        if (!Array.isArray(user.contacts)) {
+            return [];
         }
 
-        this.replySuccess(obj);
+        c = this.sObj.db.collection(this.sObj.col.matches);
+        var allQuery = {
+            $or: []
+        };
+        for (var i = 0; i < user.contacts.length; i++) {
+            var contact_user_id = user.contacts[i];
+
+            var query = {
+                $and: [
+                    {
+                        game_name: game_name
+                    },
+                    {
+                        game_status: 'live' //where game_status is live
+                    },
+                    {
+                        'players.user_id': contact_user_id //and contact_user_id is equal to user_id field in a document in players array
+                    }
+                ]
+            };
+            allQuery.$or.push(query);
+        }
+        var total = await c.count(allQuery);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: 0,
+            matches: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+        if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
+            var cursor = await c.find(allQuery);
+            var m;
+            while (await cursor.hasNext()) {
+                m = await cursor.next();
+                data.matches.push(m);
+                if (data.matches.length >= this.sObj.MAX_ALLOW_QUERY_SIZE) {
+                    break;
+                }
+            }
+
+        } else {
+            if (!Number.isInteger(skip)) {
+                skip = 0;
+            }
+            if (!Number.isInteger(limit)) {
+                limit = 0;
+            }
+            data.matches = await c.find(allQuery)
+                    .limit(limit)
+                    .skip(skip)
+                    .toArray();
+
+        }
+
+        return data;
+    }
+
+    async getGroupMatchList(obj) {
+        var game_name = obj.game_name;
+        var group_name = obj.group_name;
+        var skip = obj.skip - 0;
+        var limit = obj.limit - 0;
+
+        var query = {
+            group_name: group_name,
+            game_name: game_name,
+            game_status: 'live'
+        };
         
-        //TEST CODE SIMULATION ENDS
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: 0,
+            matches: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+        if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
+            var cursor = await c.find(query);
+            var m;
+            while (await cursor.hasNext()) {
+                m = await cursor.next();
+                data.matches.push(m);
+                if (data.matches.length >= this.sObj.MAX_ALLOW_QUERY_SIZE) {
+                    break;
+                }
+            }
+
+        } else {
+            if (!Number.isInteger(skip)) {
+                skip = 0;
+            }
+            if (!Number.isInteger(limit)) {
+                limit = 0;
+            }
+            data.matches = await c.find(query)
+                    .limit(limit)
+                    .skip(skip)
+                    .toArray();
+
+        }
+
+        return data;
+
+    }
+
+    async getTournamentMatchList(obj) {
+        var game_name = obj.game_name;
+        var tournament_name = obj.tournament_name;
+        var skip = obj.skip - 0;
+        var limit = obj.limit - 0;
+
+        var query = {
+            tournament_name: tournament_name,
+            game_name: game_name,
+            game_status: 'live'
+        };
+        
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: 0,
+            matches: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+        if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
+            var cursor = await c.find(query);
+            var m;
+            while (await cursor.hasNext()) {
+                m = await cursor.next();
+                data.matches.push(m);
+                if (data.matches.length >= this.sObj.MAX_ALLOW_QUERY_SIZE) {
+                    break;
+                }
+            }
+
+        } else {
+            if (!Number.isInteger(skip)) {
+                skip = 0;
+            }
+            if (!Number.isInteger(limit)) {
+                limit = 0;
+            }
+            data.matches = await c.find(query)
+                    .limit(limit)
+                    .skip(skip)
+                    .toArray();
+
+        }
+
+        return data;
 
     }
 }

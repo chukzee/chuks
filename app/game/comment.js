@@ -12,14 +12,29 @@ class Comment extends   Result {
 
     }
 
-    async getComments(gameId) {
+    async getGameComments(gameId) {
 
         //TEST SIMULATION
-        this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
+        //this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
 
     }
 
-    async sendTo() {
+    async getUserComment(user_id, gameId) {
+
+        //TEST SIMULATION
+        //this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
+
+    }
+
+    async add(user_id, game_id, comment) {
+
+    }
+
+    async like(user_id, game_id, comment_id) {
+
+    }
+
+    async dislike(user_id, game_id, comment_id) {
 
     }
 

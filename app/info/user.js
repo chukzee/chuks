@@ -100,64 +100,6 @@ class User extends Result {
         return "The operation was successful ";
     }
 
-    async addToGroup(user_id, group_name, is_admin) {
-
-        var group_col = this.sObj.db.collection(this.sObj.col.groups);
-        var me = this;
-        var memberObj = {};
-        var group_members = [];
-
-        return group_col.findOne({name: group_name})
-                .then(function (group) {
-                    if (!Array.isArray(group.members)) {
-                        group.members = [];
-                    }
-
-                    if (group.members.length >= me.sObj.MAX_GROUP_MEMBERS) {
-                        me.error("Maximum group members exceeded! Limit allowed is " + me.sObj.MAX_GROUP_MEMBERS + ".");
-                        return Promise.reject(me);
-                    }
-
-
-                    memberObj.user_id = user_id;
-                    memberObj.is_admin = is_admin;
-                    memberObj.date_joined = new Date();
-                    memberObj.committed = false;//we will commit the update if all 
-                    //operation is successful - the variable we help us detect if
-                    //the member addition is inconsistent so that we call remove it
-                    // when iterating members of a group and detected that the value is false.
-                    //This is our simple implementation of two phase commit or rollback 
-                    //recommended by MongoDB as an alternative for RDBMS like transaction
-
-                    group.members.push(memberObj);
-
-                    group_members = group.members; // set the group memeber - 
-                    //will be needed dow below for committing this operation
-
-                    return  group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
-                })
-                .then(function () {
-                    var user_col = this.sObj.db.collection(this.sObj.col.users);
-                    return user_col.findOne({user_id: user_id})
-                            .then(function (user) {
-                                if (!Array.isArray(user.groups_belong)) {
-                                    user.groups_belong = [];
-                                }
-                                user.groups_belong.push(group_name);
-                                return  user_col.update({user_id: user_id}, {$set: {groups_belong: user.groups_belong}}, {w: 'majority'});
-                            });
-                })
-                .then(function () {
-                    //now commit the change
-                    memberObj.committed = true;
-                    return group_col.update({name: group_name}, {$set: {members: group_members}}, {w: 'majority'});
-                })
-                .then(function () {
-                    return "User added to group successfully.";
-                });
-
-    }
-
     /**
      * Used to exist user from a group
      * 

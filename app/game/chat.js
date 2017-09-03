@@ -13,15 +13,28 @@ class Chat extends   Result {
 
     }
 
-    getChats(gameId) {
+    getGameChats(gameId) {
 
 
         //TEST SIMULATION
-        this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
+        //this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
 
     }
 
-    sendTo(msg) {
+    getUserChats(user_id, gameId) {
+
+
+        //TEST SIMULATION
+        //this.replySuccess(this.simulateHistory(gameId));//TESTING!!!
+
+    }
+
+    sendTo(user_id, opponent_id, game_id, msg) {
+
+    }
+    
+    
+    deliveryFeedback(sender_id, recipient_id, game_id, msg) {
 
     }
 

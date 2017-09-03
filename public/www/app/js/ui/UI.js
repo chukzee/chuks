@@ -58,7 +58,7 @@ Ns.ui.UI = {
             target: "#home-menu",
             items: [
                 'My game',
-                'Play notifications',
+                'Notifications', //all forms of notifications e.g play request notifications , group join requests sent by group admin, tournament game reminder e.tc. This shows a list view of mixed items. ie list items of different type of request.
                 'Play robot',
                 'Bluetooth game',
                 'Invite players',
