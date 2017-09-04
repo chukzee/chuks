@@ -1,7 +1,7 @@
 
 "use strict";
 
-var Result = require('../result'); 
+var Result = require('../result');
 var User = require('../info/user');
 
 class Group extends Result {
@@ -42,7 +42,7 @@ class Group extends Result {
             };
 
             //first check if the user is an admin
-            var admin = await req_col.findOne(adminQuery, {_id : 0});
+            var admin = await req_col.findOne(adminQuery, {_id: 0});
 
             if (!admin) {
                 this.error("Not authorize to send this request. Must be a group admin.");
@@ -90,7 +90,7 @@ class Group extends Result {
 
         var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
         try {
-            var request = await req_col.findOne({authorization_token: authorization_token}, {_id : 0});
+            var request = await req_col.findOne({authorization_token: authorization_token}, {_id: 0});
         } catch (e) {
 
             console.log(e);
@@ -123,7 +123,7 @@ class Group extends Result {
         var memberObj = {};
         var group_members = [];
 
-        return group_col.findOne({name: group_name}, {_id : 0})
+        return group_col.findOne({name: group_name}, {_id: 0})
                 .then(function (group) {
                     if (!Array.isArray(group.members)) {
                         group.members = [];
@@ -151,7 +151,7 @@ class Group extends Result {
                 })
                 .then(function () {
                     var user_col = this.sObj.db.collection(this.sObj.col.users);
-                    return user_col.findOne({user_id: user_id}, {_id : 0})
+                    return user_col.findOne({user_id: user_id}, {_id: 0})
                             .then(function (user) {
                                 if (!Array.isArray(user.groups_belong)) {
                                     user.groups_belong = [];
@@ -191,7 +191,7 @@ class Group extends Result {
 
             //check if the reason is because the group already exist
             try {
-                var g = await c.findOne({name: group.name}, {_id : 0});
+                var g = await c.findOne({name: group.name}, {_id: 0});
             } catch (e) {
                 console.log(e);//DO NOT DO THIS IN PRODUCTION
             }
@@ -225,7 +225,7 @@ class Group extends Result {
     async makeAdmin(user_id, new_admin_user_id, group_name) {
 
         try {
-            //find check if the user to do this is authorized
+            //find check if the user to do this is authorized - ie an admin - only admins can make another user admin
             var c = this.sObj.db.collection(this.sObj.col.groups);
 
             var adminQuery = {
@@ -243,14 +243,14 @@ class Group extends Result {
             };
 
             //first check if the user is an admin
-            var admin = await c.findOne(adminQuery, {_id : 0});
+            var admin = await c.findOne(adminQuery, {_id: 0});
 
             if (!admin) {
                 this.error("Not authorize to make another user an admin.");
                 return this;
             }
-            
-            //ok you a free to make one of you member an admin
+
+            //ok you are free to make one of your members an admin
             var newAdmin = {
                 $and: [
                     {
@@ -264,8 +264,21 @@ class Group extends Result {
                     }
                 ]
             };
-                
-            var result  = await c.updateOne({name: obj.group_name}, {$set: newAdmin}, {w: 'majority'});
+
+            var rs = await c.updateOne({name: group_name}, {$set: newAdmin}, {w: 'majority'});
+
+            var result = rs.result;
+            
+            if (result.n === 1 && result.nModified === 1) {
+                return "created admin succesfully.";
+            } else if (result.n === 1 && result.nModified === 0) {
+                return "member is already an admin";
+            } else {//should not happen
+                console.log(`Unexpected update result when creating group admin using mongodb update method.\n
+                             There appears to be duplicate record in group member`);
+                return  "created admin succesfully.";
+            }
+
         } catch (e) {
             this.error('could not edit group.');
             return this;
@@ -290,7 +303,7 @@ class Group extends Result {
         //simulateGroupDetails(group_name);//TESTING!!!
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
-            var group = await c.findOne({name: group_name}, {_id : 0});
+            var group = await c.findOne({name: group_name}, {_id: 0});
 
             //get the group members info
 
@@ -422,7 +435,7 @@ class Group extends Result {
 
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
-            var groups = await c.find({$or: oredArr}, {_id : 0}).toArray();
+            var groups = await c.find({$or: oredArr}, {_id: 0}).toArray();
 
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION
@@ -511,7 +524,7 @@ class Group extends Result {
         try {
 
             var c = this.sObj.db.collection(this.sObj.col.users);
-            var user = await c.findOne({user_id: user_id}, {_id : 0});
+            var user = await c.findOne({user_id: user_id}, {_id: 0});
 
             return this.getGroupsInfoList(user.groups_belong);
 

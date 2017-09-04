@@ -62,13 +62,27 @@ class Match extends Result {
 
     }
 
+    cancelPlayRequest(user_id, opponent_id) {
+
+    }
+    
+    rejectPlayRequest(user_id, opponent_id) {
+
+    }
+    
+    expirePlayRequest(user_id, opponent_id) {
+
+    }
+
+
+
     /**
      * 
      * @param {type} user_id - id of user who made the request
      * @param {type} opponent_id - id of the user requested
      * @returns {undefined}
      */
-    addRequest(user_id, opponent_id) {
+    sendPlayRequest(user_id, opponent_id) {
 
     }
 
@@ -84,6 +98,10 @@ class Match extends Result {
 
     }
 
+    abandon(user_id, opponent_id) {
+
+    }
+    
     end(user_id, opponent_id) {
 
     }

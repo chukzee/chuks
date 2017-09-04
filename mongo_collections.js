@@ -3,6 +3,7 @@
 var collections = ['users',
     'admins',
     'groups',
+    'group_join_requests',
     'tournaments',
     'matches',
     'spectators', //expires every certain period - say 24 hours - so create an index to take care of that
@@ -16,7 +17,7 @@ var collections = ['users',
 module.exports = function () {
     var col = {};
 
-    var ensureIndexes = function (d) {
+    var ensureIndexes = function (db) {
         var uinqueObj = {unique: true};
         var callback = function (err, result) {
             if (err) {
@@ -55,6 +56,12 @@ module.exports = function () {
         }
         , callback);
 
+        //group_join_requests
+        db.collection(col.group_join_requests).ensureIndex({
+            authorization_token: 1
+        }
+        , uinqueObj, callback);
+        
         //tournaments
         db.collection(col.tournaments).ensureIndex({
             name: 1
