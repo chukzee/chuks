@@ -33,7 +33,7 @@ class User extends Result {
         } catch (e) {
             //chec if the reason is because the user id already exist
             try {
-                var user = await c.findOne({user_id: userObj.user_id});
+                var user = await c.findOne({user_id: userObj.user_id}, {_id : 0}).toArray()[0];
             } catch (e) {
                 console.log(e);//DO NOT DO THIS IN PRODUCTION
             }
@@ -52,7 +52,7 @@ class User extends Result {
     async getInfo(user_id) {
         try {
             var c = this.sObj.db.collection(this.sObj.col.users);
-            var info = await c.findOne({user_id: user_id});
+            var info = await c.findOne({user_id: user_id}, {_id : 0}).toArray()[0];
             //this.sObj.db.close();
 
         } catch (e) {
@@ -72,7 +72,7 @@ class User extends Result {
         var c = this.sObj.db.collection(this.sObj.col.users);
 
         try {
-            var users = await c.find({$or: oredArr}).toArray();
+            var users = await c.find({$or: oredArr}, {_id : 0}).toArray();
             
         } catch (e) {
             this.error('could not get users.');
@@ -89,7 +89,7 @@ class User extends Result {
             this.util.copy(obj, setObj, fields);
 
             var c = this.sObj.db.collection(this.sObj.col.users);
-            var r = await c.findOneAndUpdate({user_id: obj.user_id, $set: setObj});
+            var r = await c.updateOne({user_id: obj.user_id, $set: setObj});
             //this.sObj.db.close();
 
         } catch (e) {
@@ -113,7 +113,7 @@ class User extends Result {
         var group_col = this.sObj.db.collection(this.sObj.col.groups);
         var me = this;
 
-        return group_col.findOne({name: group_name})
+        return group_col.findOne({name: group_name}, {_id : 0})
                 .then(function (group) {
                     if(!Array.isArray(group.members)){
                         group.members = [];

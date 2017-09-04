@@ -1,7 +1,7 @@
 
 "use strict";
 
-var Result = require('../result');
+var Result = require('../result'); 
 var User = require('../info/user');
 
 class Group extends Result {
@@ -40,33 +40,33 @@ class Group extends Result {
                     }
                 ]
             };
-            
+
             //first check if the user is an admin
-            var admin = await req_col.findOne(adminQuery);
-            
-            if(!admin){
+            var admin = await req_col.findOne(adminQuery, {_id : 0});
+
+            if (!admin) {
                 this.error("Not authorize to send this request. Must be a group admin.");
                 return this;
             }
-            
+
             var authorization_token; //TODO - A uuid like string
-            
+
             var gjDoc = {
-                authorization_token: authorization_token, 
+                authorization_token: authorization_token,
                 admin_user_id: from_user_id,
                 requested_user_id: to_user_id,
                 group_name: group_name
             };
-            
+
             await req_col.insertOne(gjDoc); //await the asynchronous process
 
             var data = {
                 group_name: group_name,
-                authorization_token:authorization_token,
-                acknowledge_received_by : to_user_id,//this will make the client send feedback to the server that it receive the data
-                acknowledge_received_action : ""//action to take by the serve if the acknowledgement
+                authorization_token: authorization_token,
+                acknowledge_received_by: to_user_id, //this will make the client send feedback to the server that it receive the data
+                acknowledge_received_action: ""//action to take by the serve if the acknowledgement
             };
-            
+
             this.sObj.redis.publish(this.sObj.PUBSUB_SEND_GROUP_JOIN_REQUEST, data);
 
         } catch (e) {
@@ -90,7 +90,7 @@ class Group extends Result {
 
         var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
         try {
-            var request = await req_col.findOne({authorization_token: authorization_token});
+            var request = await req_col.findOne({authorization_token: authorization_token}, {_id : 0});
         } catch (e) {
 
             console.log(e);
@@ -123,7 +123,7 @@ class Group extends Result {
         var memberObj = {};
         var group_members = [];
 
-        return group_col.findOne({name: group_name})
+        return group_col.findOne({name: group_name}, {_id : 0})
                 .then(function (group) {
                     if (!Array.isArray(group.members)) {
                         group.members = [];
@@ -151,7 +151,7 @@ class Group extends Result {
                 })
                 .then(function () {
                     var user_col = this.sObj.db.collection(this.sObj.col.users);
-                    return user_col.findOne({user_id: user_id})
+                    return user_col.findOne({user_id: user_id}, {_id : 0})
                             .then(function (user) {
                                 if (!Array.isArray(user.groups_belong)) {
                                     user.groups_belong = [];
@@ -189,9 +189,9 @@ class Group extends Result {
             await c.insertOne(group, {w: 'majority'});
         } catch (e) {
 
-            //chec if the reason is because the group already exist
+            //check if the reason is because the group already exist
             try {
-                var g = await c.findOne({name: group.name});
+                var g = await c.findOne({name: group.name}, {_id : 0});
             } catch (e) {
                 console.log(e);//DO NOT DO THIS IN PRODUCTION
             }
@@ -211,7 +211,7 @@ class Group extends Result {
         var editObj = {};
         var fields = ['status_message', 'photo_url'];
         this.util.copy(obj, editObj, fields);
-
+        var c = this.sObj.db.collection(this.sObj.col.groups);
         try {
             await c.updateOne({name: obj.group_name}, {$set: editObj}, {w: 'majority'});
         } catch (e) {
@@ -222,8 +222,56 @@ class Group extends Result {
         return true;//a default success message will be sent
     }
 
-    async makeAdmin(user_id, group_name) {
+    async makeAdmin(user_id, new_admin_user_id, group_name) {
 
+        try {
+            //find check if the user to do this is authorized
+            var c = this.sObj.db.collection(this.sObj.col.groups);
+
+            var adminQuery = {
+                $and: [
+                    {
+                        group_name: group_name
+                    },
+                    {
+                        'memmbers.user_id': user_id//query does not require positional $ operator to access the field
+                    },
+                    {
+                        'memmbers.is_admin': true//query does not require positional $ operator to access the field
+                    }
+                ]
+            };
+
+            //first check if the user is an admin
+            var admin = await c.findOne(adminQuery, {_id : 0});
+
+            if (!admin) {
+                this.error("Not authorize to make another user an admin.");
+                return this;
+            }
+            
+            //ok you a free to make one of you member an admin
+            var newAdmin = {
+                $and: [
+                    {
+                        group_name: group_name
+                    },
+                    {
+                        'memmbers.$.user_id': new_admin_user_id //using positional $ operator and dot '.' to access the user_id and set update the value
+                    },
+                    {
+                        'memmbers.$.is_admin': true //using positional $ operator and dot '.' to access the is_admin and set update the value
+                    }
+                ]
+            };
+                
+            var result  = await c.updateOne({name: obj.group_name}, {$set: newAdmin}, {w: 'majority'});
+        } catch (e) {
+            this.error('could not edit group.');
+            return this;
+        }
+
+        return true;//a default success message will be sent
     }
 
     async removeMember(user_id, exit_by, group_name, reason) {
@@ -242,7 +290,7 @@ class Group extends Result {
         //simulateGroupDetails(group_name);//TESTING!!!
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
-            var group = await c.findOne({name: group_name});
+            var group = await c.findOne({name: group_name}, {_id : 0});
 
             //get the group members info
 
@@ -325,8 +373,7 @@ class Group extends Result {
      * that means the member was not successfully added to the group and must be 
      * removed using this method
      * 
-     * @param {type} argu1
-     * @param {type} argu2
+     * @param {type} group_names_arr
      * @returns {undefined}
      */
     _removeFailedCommitMembers(group_names_arr) {
@@ -375,7 +422,7 @@ class Group extends Result {
 
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
-            var groups = await c.find({$or: oredArr}).toArray();
+            var groups = await c.find({$or: oredArr}, {_id : 0}).toArray();
 
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION
@@ -418,7 +465,7 @@ class Group extends Result {
             }
         }
 
-        if (hasFailedUncommitMember) {//remove 'fauked commit' members
+        if (hasFailedUncommitMember) {//remove 'failed commit' members
             this._removeFailedCommitMembers(fail_groups);
         }
 
@@ -464,7 +511,7 @@ class Group extends Result {
         try {
 
             var c = this.sObj.db.collection(this.sObj.col.users);
-            var user = await c.findOne({user_id: user_id});
+            var user = await c.findOne({user_id: user_id}, {_id : 0});
 
             return this.getGroupsInfoList(user.groups_belong);
 

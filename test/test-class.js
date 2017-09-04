@@ -1,4 +1,13 @@
 
+class MyTest{
+  
+    printMe(){
+        console.log('this is me');
+    }
+};
+
+module.exports = MyTest;
+
 class M{
     
     n(){

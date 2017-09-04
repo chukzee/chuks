@@ -1,4 +1,5 @@
 
+
 var mongo = require('mongodb').MongoClient;
 
 
@@ -39,21 +40,58 @@ function insertStuff(db) {
             });
 }
 
-function query1(db) {
-    db.collection('inventory').find({
-        $and :[{item:'postcard'},{"instock": {$elemMatch: {wharehouse: 'B', qty: 15}}}]
-    })
-            .toArray()
-            .then(function (value) {
-                for (var i = 0; i < value.length; i++) {
-                    console.dir(value[i]);
-                }
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
+async function query0(db) {
+    try {
+        var arr = await db.collection('inventory').find({}, {_id: 0}).toArray();
 
+        for (var i = 0; i < arr.length; i++) {
+            console.dir(arr[i]);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+async function query1(db) {
+    try {
+        var arr = await db.collection('inventory').find({
+            $and: [{item: 'postcard'}, {"instock": {$elemMatch: {wharehouse: 'B', qty: 15}}}]
+        }, {_id: 0}).toArray();
 
+        for (var i = 0; i < arr.length; i++) {
+            console.dir(arr[i]);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function query2(db) {
+    try {
+        var arr = await db.collection('inventory').find({
+            $or: [{'instock.qty': 5}, {'instock.qty': 60}]
+        }, {_id: 0}).toArray();
+
+        for (var i = 0; i < arr.length; i++) {
+            console.dir(arr[i]);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function update1(db) {
+    try {
+        var result = await db.collection('inventory').updateOne({
+            $and: [{item: 'postcard'}, {'instock.qty':98}]
+        },
+        {$set :{'instock.$.qty': 98}});
+
+        console.log('found = ',result.result.n);
+        console.log('modified = ',result.result.nModified);
+        console.log(result.result);
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 (async function () {
@@ -66,7 +104,11 @@ function query1(db) {
         });
         console.log('Connected to mongo server at : ' + mongo_url);
 
-        query1(db);
+        
+        //query1(db);
+        //query2(db);
+        update1(db);
+        query0(db);
 
     } catch (e) {
         console.error(e);

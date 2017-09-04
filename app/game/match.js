@@ -21,7 +21,7 @@ class Match extends Result {
             move: move
         };
 
-        this.sOb.redis.publish(sOb.PUBSUB_FORWARD_MOVE, data);
+        this.sOb.redis.publish(this.sOb.PUBSUB_FORWARD_MOVE, data);
 
         //save the move in the server asynchronously
         var c = this.sObj.db.collection(this.sObj.col.moves);
@@ -29,7 +29,7 @@ class Match extends Result {
                 .then(function (result) {
                     //Acknowlege move sent by notifying the player that
                     //the sever has receive the move and sent it to the
-                    return sOb.redis.publish(this.sOb.PUBSUB_ACKNOWLEGE_MOVE_SENT, data);
+                    return this.sOb.redis.publish(this.sOb.PUBSUB_ACKNOWLEGE_MOVE_SENT, data);
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -39,7 +39,7 @@ class Match extends Result {
 
         //so lets get the spectators view this game
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.findOne({game_id: game_id}).toArray();
+        var spectators = await sc.findOne({game_id: game_id}, {_id : 0}).toArray();
 
         var spectators_ids = [];
         for (var i = 0; i < spectators.length; i++) {
@@ -47,7 +47,7 @@ class Match extends Result {
         }
 
         //now broadcast to the spectators
-        this.sOb.redis.publish(sOb.PUBSUB_BROADCAST_MOVE, {
+        this.sOb.redis.publish(this.sObj.PUBSUB_BROADCAST_MOVE, {
             game_id: game_id,
             spectators_ids: spectators_ids,
             move: move
@@ -96,7 +96,7 @@ class Match extends Result {
 
 
         var c = this.sObj.db.collection(this.sObj.col.users);
-        var user = await c.findOne({user_id: user_id});
+        var user = await c.findOne({user_id: user_id}, {_id : 0});
         if (!Array.isArray(user.contacts)) {
             return [];
         }
@@ -137,7 +137,7 @@ class Match extends Result {
         }
 
         if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
-            var cursor = await c.find(allQuery);
+            var cursor = await c.find(allQuery, {_id : 0});
             var m;
             while (await cursor.hasNext()) {
                 m = await cursor.next();
@@ -154,7 +154,7 @@ class Match extends Result {
             if (!Number.isInteger(limit)) {
                 limit = 0;
             }
-            data.matches = await c.find(allQuery)
+            data.matches = await c.find(allQuery, {_id : 0})
                     .limit(limit)
                     .skip(skip)
                     .toArray();
@@ -176,6 +176,8 @@ class Match extends Result {
             game_status: 'live'
         };
         
+        var c = this.sObj.db.collection(this.sObj.col.groups);
+        
         var total = await c.count(query);
 
         var data = {
@@ -190,7 +192,7 @@ class Match extends Result {
         }
 
         if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
-            var cursor = await c.find(query);
+            var cursor = await c.find(query, {_id : 0});
             var m;
             while (await cursor.hasNext()) {
                 m = await cursor.next();
@@ -207,7 +209,7 @@ class Match extends Result {
             if (!Number.isInteger(limit)) {
                 limit = 0;
             }
-            data.matches = await c.find(query)
+            data.matches = await c.find(query, {_id : 0})
                     .limit(limit)
                     .skip(skip)
                     .toArray();
@@ -229,6 +231,8 @@ class Match extends Result {
             game_name: game_name,
             game_status: 'live'
         };
+
+        var c = this.sObj.db.collection(this.sObj.col.groups);
         
         var total = await c.count(query);
 
@@ -244,7 +248,7 @@ class Match extends Result {
         }
 
         if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
-            var cursor = await c.find(query);
+            var cursor = await c.find(query, {_id : 0});
             var m;
             while (await cursor.hasNext()) {
                 m = await cursor.next();
@@ -261,7 +265,7 @@ class Match extends Result {
             if (!Number.isInteger(limit)) {
                 limit = 0;
             }
-            data.matches = await c.find(query)
+            data.matches = await c.find(query, {_id : 0})
                     .limit(limit)
                     .skip(skip)
                     .toArray();
