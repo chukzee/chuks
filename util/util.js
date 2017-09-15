@@ -24,7 +24,7 @@ module.exports = function () {
         }
     };
 
-    this.length = function (v, fn) {
+    this.length = function (v) {
         if (v && v.length > -1) {
             return v.length;
         }
@@ -39,6 +39,7 @@ module.exports = function () {
         return typeof str === 'string';
     };
 
-};
+    return this;
+}();
 
 

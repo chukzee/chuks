@@ -3,16 +3,15 @@
 
 "use strict";
 
-var Result = require('../result');
+var WebApplication = require('../web-application');
+var User = require('../info/user');
 
-class Match extends Result {
+class Match extends WebApplication {
 
-    constructor(sObj, util) {
-        super();
-        this.sObj = sObj;
-        this.util = util;  
+    constructor(sObj, util, evt) {
+        super(sObj, util, evt);
     }
-    
+
     /**
      * Add the spectator to this match and notify all users viewing this match
      * Only spectators who are members of the either of the player's group 
@@ -37,26 +36,122 @@ class Match extends Result {
      * @param {type} game_start_time - used to expire the spectator document from the collection
      * @returns {Match}
      */
-    join(user_id, game_id, game_start_time){
-        
-        if(isNaN(new Date(game_start_time).getTime())){
-            error("invalid input - date start time must be provided and a valid date."); 
+    async join(user_id, game_id, game_start_time) {
+
+        if (isNaN(new Date(game_start_time).getTime())) {
+            error("invalid input - game start time must be provided and a valid date.");
             return this;
         }
-        
-        
-        
+
+        try {
+            
+            var required_fields = ['first_name', 'last_name', 'photo_url'];
+            var user = new User(this.sObj, this.util, this.evt).getInfo(user_id, required_fields);
+            if (!user) {
+                return 'unknown user';
+            }
+            
+            var sc = this.sObj.db.collection(this.sObj.col.spectators);
+            var f = await sc.findOne({
+                user_id: user_id,
+                game_id: game_id
+            });
+            
+            if (f) {
+                return 'already joined';
+            }
+            
+            await sc.insertOne({
+                game_id: game_id,
+                game_start_time: game_start_time,
+                user_id: user_id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                full_name: user.full_name,
+                photo_url: user.photo_url
+            });
+        } catch (e) {
+            this.error('could not join spectator');
+            return this;
+        }
+
+        return 'joined successfully';
     }
-    
-    leave(user_id, game_id){
+
+    async leave(user_id, game_id) {
+        try {
+            var spectator = await sc.findOneAndDelete({
+                game_id: game_id,
+                user_id: user_id
+            });
+        } catch (e) {
+            console.log(e);
+            return this.error('could not delete spectator');
+        }
         
-    }
-    
-    expire(game_id){
+        if(!spectator){
+            return this.error('no spectator');
+        }
         
+        return spectator;
     }
-    
-    
-    
-    
+
+    /**
+     * Get a list of spectators view the game with the specified game_id
+     * 
+     * @param {type} game_id
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {undefined}
+     */
+    async get(game_id, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            game_id = arguments[0].game_id;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.spectators);
+
+        var query = {
+            game_id: game_id
+        };
+
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: 0,
+            spectators: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+
+        data.spectators = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
+
+        return data;
+    }
+
 }

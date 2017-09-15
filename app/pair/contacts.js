@@ -1,3 +1,3 @@
 "use strict";
 
-var Result = require('../result');
+var Result = require('../web-application');

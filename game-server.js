@@ -24,13 +24,13 @@ var jwt = require('jsonwebtoken');
 var config = require('./config');
 var mongo = require('mongodb').MongoClient;
 var Redis = require('ioredis');
-var realtimeSession = require('realtime-session');
-var col = require('mongo_collections');
+var RealtimeSession = require('./realtime-session');
 var util = require('./util/util');
-var usersIO = null;
+var ServerObject = require('./server-object');
+var evt = require('./app/evt');
 var db;
 var redis;
-
+var sObj;
 
 class Main {
 
@@ -72,10 +72,16 @@ class Main {
 
         httpServer.listen(config.HTTP_PORT, config.HOST, this.onListenHttp.bind(this));//listen for http connections
 
-        const sObj = new ServerObject();
-        realtimeSession(httpServer, sObj, util);
-        new RCallHandler(sObj, util, app, appLoader);//initilize here! - For a reason I do not understand the express app object does not use the body parse if this initialization is done outside this async init method- the request body is undefined.But if this init method is not declared async it works normal.  Shocking... anyway!
+        sObj = new ServerObject(db, redis);
+        //initilize here! - For a reason I do not understand the express app object does not use the body parse if this initialization is done outside this async init method- the request body is undefined.But if this init method is not declared async it works normal.  Shocking... anyway!
+        
+        RealtimeSession(httpServer, appLoader, sObj, util, evt);
 
+        app.route('/rcall')
+                .post(function (req, res) {
+                    var rcallHandler = new RCallHandler(sObj, util, appLoader, evt);//Yes, create new rcall object for each request to avoid reference issue
+                    rcallHandler.processInput(req, res);
+                });
     }
     redirectToHttps(req, res) {
         //var req_host = req.headers['host'];//no need anyway
@@ -116,100 +122,36 @@ class Main {
     }
 }
 
-class ServerObject {
-
-    constructor() {
-
-        //var mysql = require('mysql');
-        //var Redis = require('ioredis');
-        this._shortid = require('shortid');
-        this._moment = require('moment');
-
-    }
-    /**
-     * Get the io socket ids of this user. If a callback is provided
-     * the method is asynchronous but if no callback then the method
-     * will wait asynchronuously until the id is returned using
-     *  ES7 async/await feature. Or throw exception if error occurs
-     * 
-     * @param {type} user_id -  the user id map to the io socket id
-     * @param {type} callback - the callback - if not provided the 
-     * method will wait using async/await -note that this may not be 
-     * ideal in most case in this game server.
-     * @returns {undefined}
-     */
-    async getUserSocks(user_id, callback) {
-
-        if (!callback) {
-            var user_sock_str = await this.redis.lpop("socket_id:" + user_id);
-            if(user_sock_str){
-                return JSON.parse(user_sock_str);
-            }
-            
-            return  null;
-            
-        } else {
-            this.redis.lrange('lrange', "socket_id:" + user_id, 0, -1, function (err, user_sock_str) {
-                if(err){
-                    console.log(err);
-                    return;
-                }
-                if(!user_sock_str){
-                    callback([]);//make as empty array instead
-                }
-                callback(JSON.parse(user_sock_str));
-            });
-        }
-    }
-
-    get MAX_GROUP_MEMBERS() {
-        return 300;
-    }
-
-    get MAX_ALLOW_QUERY_SIZE() {
-        return 500;
-    }
-
-    get db() {
-        return db;
-    }
-
-    get redis() {
-        return redis;
-    }
-
-    get shortid() {
-        return this._shortid;
-    }
-
-    get moment() {
-        return this._moment;
-    }
-
-    get usersIO() {
-        return usersIO;
-    }
-
-    get col() {
-        return col;
-    }
-
-    get PUBSUB_FORWARD_MOVE() {
-        return 'PUBSUB_FORWARD_MOVE';
-    }
-
-    get PUBSUB_USER_SESSION_SIZE_EXCEEDED() {
-        return 'PUBSUB_USER_SESSION_SIZE_EXCEEDED';
-    }
-
-    get PUBSUB_ACKNOWLEGE_MOVE_SENT() {
-        return 'PUBSUB_ACKNOWLEGE_MOVE_SENT';
-    }
-
-    get PUBSUB_SEND_GROUP_JOIN_REQUEST() {
-        return 'PUBSUB_SEND_GROUP_JOIN_REQUEST';
-    }
-}
-
 
 const main = new Main();
+
+
+if (process.platform === "win32") {
+  var rl = require("readline").createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  rl.on("SIGINT", function () {
+    process.emit("SIGINT");
+  });
+}
+
+process.on("SIGINT", function () {
+  //graceful shutdown
+  gracefulShutdown();
+});
+
+function gracefulShutdown(){
+    sObj.isShuttingDown = true;
+    console.log('\nShutting down...');
+    
+    //clear user sessions in this server instance
+    
+    
+    setTimeout(function(){
+        console.log('COME BACK FOR PROPER shutdown -  not using setTimeout!');
+        process.exit();
+    },2000);
+    
+}

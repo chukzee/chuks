@@ -1,16 +1,54 @@
 
 "use strict";
 
-var Result = require('../result');
+var WebApplication = require('../web-application');
+var User = require('../info/user');
+var PlayerRank = require('../info/player-ranks');
 
-class Match extends Result {
 
-    constructor(sObj, util) {
-        super();
-        this.sObj = sObj;
-        this.util = util;
+class Match extends WebApplication {
+
+    constructor(sObj, util, evt) {
+        super(sObj, util, evt);
     }
 
+    /**
+     * Stores the move and send it to the opponent.
+     * 
+     * The game move coordination is as follows:
+     * 
+     * - The first play makes a move and send it to opponent
+     *   with a serial number of 1
+     * - Then the second play upon receiving the move, makes his
+     *   move, increasing move serial number by one and sends it
+     *   to the opponent. And so on in that fashion
+     *   
+     * So, 
+     *   player_1 --> move.serial_no === 1 (ie start) 
+     *   player_2 --> move.serial_no === 2 (ie move.serial_no++ of player_1)
+     *   player_1 --> move.serial_no === 3 (ie move.serial_no++ of player_2) 
+     *   player_2 --> move.serial_no === 4 (ie move.serial_no++ of player_1) 
+     *   player_1 --> move.serial_no === 5 (ie move.serial_no++ of player_2) 
+     *   and so on...
+     *   
+     * The client side is expected to do this coordination.
+     * 
+     * Client must also make sure that it increase the serial number
+     * of the opponent move object to obtain its own move serial number
+     * Such care will avoid bug. An except will be in the case where the opponent
+     * loses his turn that the client move serial number will be exactly that
+     * of the opponent serial number - client make be very careful in this 
+     * move coordination and consider all scenarios to avoid bug of any kind.
+     * 
+     * 
+     *   
+     * 
+     * @param {type} user_id
+     * @param {type} opponent_id
+     * @param {type} game_id
+     * @param {type} move
+     * @returns {String}
+     */
     async sendMove(user_id, opponent_id, game_id, move) {
 
         //first quickly forward the move to the opponenct
@@ -21,25 +59,37 @@ class Match extends Result {
             move: move
         };
 
-        this.sOb.redis.publish(this.sOb.PUBSUB_FORWARD_MOVE, data);
+        this.send(this.evt.game_move, data, opponent_id);//forward move to the opponent
 
         //save the move in the server asynchronously
-        var c = this.sObj.db.collection(this.sObj.col.moves);
-        c.updateOne({game_id: game_id}, {$push: {moves: move}})
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var me = this;
+
+        //check if the move already exist - the move alread exist if its
+        //serial number match any in the document of this game id
+        c.findOne({game_id: game_id, 'moves.seria_no': move.serial_no})
+                .then(function (match) {
+                    if (match) {
+                        return; //move already store so avoid duplicate
+                    }
+                    return c.updateOne({game_id: game_id}, {$push: {moves: move}}); //moves array is the game position of the the game. it holds all the move of the game
+                })
                 .then(function (result) {
                     //Acknowlege move sent by notifying the player that
                     //the sever has receive the move and sent it to the
-                    return this.sOb.redis.publish(this.sOb.PUBSUB_ACKNOWLEGE_MOVE_SENT, data);
+                    data.move_sent = true;
+                    return me.send(me.evt.game_move_sent, data, user_id);
                 })
                 .catch(function (err) {
                     console.log(err);
                 });
 
+
         //next broadcast to the game spectators.
 
-        //so lets get the spectators view this game
+        //so lets get the spectators viewing this game
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.findOne({game_id: game_id}, {_id : 0}).toArray();
+        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
 
         var spectators_ids = [];
         for (var i = 0; i < spectators.length; i++) {
@@ -47,74 +97,388 @@ class Match extends Result {
         }
 
         //now broadcast to the spectators
-        this.sOb.redis.publish(this.sObj.PUBSUB_BROADCAST_MOVE, {
+        var data = {
             game_id: game_id,
-            spectators_ids: spectators_ids,
             move: move
-        });
-
-
-
-    }
-
-    getGamePosition(game_id) {
-
+        };
+        this.broadcast(this.evt.game_move, data, spectators_ids);
 
     }
-
-    cancelPlayRequest(user_id, opponent_id) {
-
-    }
-    
-    rejectPlayRequest(user_id, opponent_id) {
-
-    }
-    
-    expirePlayRequest(user_id, opponent_id) {
-
-    }
-
-
 
     /**
+     * The game position is all the array of moves for the
+     * specified game id.
      * 
-     * @param {type} user_id - id of user who made the request
-     * @param {type} opponent_id - id of the user requested
+     * Client is expected to use the array of moves to refresh
+     * the playing area (e.g game board) and determine the player
+     * whose turn is to play.
+     * 
+     * @param {type} game_id
      * @returns {undefined}
      */
-    sendPlayRequest(user_id, opponent_id) {
+    async getGamePosition(game_id) {
+        try {
 
+            var c = this.sObj.db.collection(this.sObj.col.matches);
+
+            //check if the move already exist - the move alread exist if its
+            //serial number match any in the document of this game id
+            var match = await c.findOne({game_id: game_id});
+
+        } catch (e) {
+            console.log(e);
+            this.error('could not get game position');
+            return this;
+        }
+
+        if (!match) {
+            return [];
+        }
+
+        var game_position = match.moves; // array of moves
+
+        return game_position;
     }
 
-    start(user_id, opponent_id) {
-
+    _findOneAndDeletMatchFixture(game_id) {
+        var sc = this.sObj.db.collection(this.sObj.col.match_fixtures);
+        return sc.findOneAndDelete({game_id: game_id}, {_id: 0});
     }
 
-    resume(game_id) {
-
+    _findOneAndDeletePlayRequest(game_id) {
+        var sc = this.sObj.db.collection(this.sObj.col.play_requests);
+        return sc.findOneAndDelete({game_id: game_id}, {_id: 0});
     }
 
-    pause(game_id) {
+    /**
+     * Starts the game by broadcasting the game start event to 
+     * the players. The game id provided is used to find the 
+     * game document object in 'play_requests' and 'match_fixtures'
+     * collections. And then relocated to 'matches' collections.
+     * If the second parameter is provided then the only the 
+     * oppropriate collection is searched. This is useful to
+     * reduce search load when you already know where to search
+     * 
+     * For a two players game like chess and draft
+     * the first player in the players array is the white ahd
+     * the second is the black.
+     * 
+     * @param {type} game_id - id of the game to start
+     * @param {type} fixture_type - (optional) whether it is play request or group or tournament match fixture.
+     * valid if paramater if provided are 'play request' and ' match fixture'
+     * @returns {undefined}
+     */
+    async start(game_id, fixture_type) {
+        var mtcObj;
+        if (fixture_type === 'match fixture') {
+            mtcObj = await this._findOneAndDeletMatchFixture(game_id);
+        } else if (fixture_type === 'play request') {
+            mtcObj = await this._findOneAndDeletePlayRequest(game_id);
+        } else {
+            mtcObj = await this._findOneAndDeletMatchFixture(game_id);
+            if (!mtcObj) {
+                mtcObj = await this._findOneAndDeletePlayRequest(game_id);
+            }
+        }
 
+        if (!mtcObj) {
+            return 'Not available!';
+        }
+
+        //modify accordingly and relocate the match obect to the 'matches' colllection
+
+        //but first add some more player info
+        var user = new User(this.sObj, this.util, this.evt);
+        var players_ids = mtcObj.players;
+        for (var i = 0; i < mtcObj.players.length; i++) {
+            if (typeof mtcObj.players[i] === 'object') {//just in case
+                players_ids[i] = mtcObj.players[i].user_id;
+            }
+        }
+        var required_fields = ['first_name', 'last_name', 'photo_url'];
+        var users = user.getInfoList(players_ids, required_fields);
+        if (!Array.isArray(users)) {
+            return 'could not start match - no player info';
+        }
+
+        var default_rules = this.sObj.game.get(mtcObj.game_name).getDefautRules();
+
+        //set the players as available
+        for (var i = 0; i < user.length; i++) {
+            users.available = true;//important! used to determine when a player abandons a game in which case it is set to false
+        }
+
+        var match = {
+            group_name: mtcObj.group_name ? mtcObj.group_name : '',
+            tournament_name: mtcObj.tournament_name ? mtcObj.tournament_name : '',
+            game_id: mtcObj.game_id,
+            game_name: mtcObj.game_name,
+            game_rules: mtcObj.game_rules ? mtcObj.game_rules : default_rules,
+            game_status: 'live',
+            game_start_time: new Date(),
+            moves: [], //game position
+            players: users
+        };
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var r = await c.insertOne(match, {w: 'majority'});
+
+        if (!r.result.n) {
+            return 'could not start game';
+        }
+
+        //broadcast the game start event to all the players concern
+        match.players = users;
+        this.broadcast(this.evt.game_start, match, players_ids);
+
+        return 'game started successfully';
     }
 
-    abandon(user_id, opponent_id) {
+    /**
+     * Resume a game that was pause/suspended.
+     * 
+     * @param {type} user_id - user id of the player attempting to resume the 
+     * game. This can be set to null if not resume by a player but by say
+     * an automatic operation. 
+     * @param {type} game_id
+     * @returns {undefined}
+     */
+    async resume(user_id, game_id) {
 
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        try {
+            var match = await c.findOneAndUpdate(
+                    {game_id: game_id},
+                    {$set: {pause_time: 0, game_status: 'live'}},
+                    {w: 'majority'}); //come back to confirm use of findOneAndUpdate
+
+            if (!match) {
+                return 'no game to resume';
+            }
+        } catch (e) {
+            this.error('could not resume game');
+            return this;
+        }
+
+        //broadcast the game resume event
+
+        var users_ids = [];
+        for (var i = 0; i < match.players.length; i++) {
+            if (match.players[i].user_id === user_id) {//yes skip, we will send his own separately
+                continue;
+            }
+            users_ids.push(match.players[i].user_id);
+        }
+
+        var sc = this.sObj.db.collection(this.sObj.col.spectators);
+        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+
+        for (var i = 0; i < spectators.length; i++) {
+            users_ids.push(spectators[i].user_id);
+        }
+
+        this.broadcast(this.evt.game_resume, match, users_ids); //broadcast to players except user_id
+
+        return match; //sent to player of user_id
     }
-    
-    end(user_id, opponent_id) {
 
+    async pause(user_id, game_id) {
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        try {
+            var match = await c.findOneAndUpdate(
+                    {game_id: game_id},
+                    {$set: {pause_time: new Date(), game_status: 'pause'}},
+                    {w: 'majority'}); //come back to confirm use of findOneAndUpdate
+
+            if (!match) {
+                return 'no game to pause';
+            }
+        } catch (e) {
+            this.error('could not pause game');
+            return this;
+        }
+
+        //broadcast the game pause event
+
+        var users_ids = [];
+        for (var i = 0; i < match.players.length; i++) {
+            if (match.players[i].user_id === user_id) {//yes skip, we will send his own separately
+                continue;
+            }
+            users_ids.push(match.players[i].user_id);
+        }
+
+        var sc = this.sObj.db.collection(this.sObj.col.spectators);
+        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+
+        for (var i = 0; i < spectators.length; i++) {
+            users_ids.push(spectators[i].user_id);
+        }
+
+        var data = {
+            pause_by: user_id,
+            match: match
+        };
+
+        this.broadcast(this.evt.game_pause, data, users_ids); //broadcast to players except user_id
+
+        return data; //sent to player of user_id
     }
 
-    async getContantsMatchList(obj) {
-        var game_name = obj.game_name;
-        var user_id = obj.user_id;
-        var skip = obj.skip - 0;
-        var limit = obj.limit - 0;
+    async abandon(user_id, game_id) {
 
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        try {
+            //count available players
+            var match = await c.findOne({game_id: game_id});
+
+            if (!match) {
+                return 'no game to abandon';
+            }
+
+            var available_count = 0;
+            for (var i = 0; i < match.players.length; i++) {
+                if (match.players[i].user_id === user_id) {
+                    match.players[i].available = false;
+                }
+                if (match.players[i].available) {
+                    available_count++;
+                }
+            }
+
+            var terminated = false; //signify the game is terminated after too many player have abandon the game
+
+            var game = this.sObj.game.get(match.game_name);
+
+            if (available_count < game.minPlayers()) {//below minimum players that will keep the game still on so end the game now.
+
+                await c.deleteOne({game_id: game_id}, {w: 'majority'});
+
+                //relocate the match document to the match_history collection
+                match.game_status = 'abandon'; //set the status to abandon
+                await c.insertOne(match);
+                terminated = true;
+            }
+
+
+        } catch (e) {
+            this.error('could not abandon game');
+            return this;
+        }
+
+        //broadcast the game abandon event
+
+        var data = {
+            abandon_by: user_id,
+            terminated: terminated, //signify that the game is terminated because too many players have abandon the game
+            terminate_reason: terminated ? "insufficient players available" : "", //particularly useful in multi player games like ludo, whot e.t.c
+            match: match
+        };
+
+        var users_ids = [];
+        for (var i = 0; i < match.players.length; i++) {
+            if (match.players[i].user_id === user_id) {//yes skip, we will send his own separately
+                continue;
+            }
+            users_ids.push(match.players[i].user_id);
+        }
+
+        var sc = this.sObj.db.collection(this.sObj.col.spectators);
+        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+
+        for (var i = 0; i < spectators.length; i++) {
+            users_ids.push(spectators[i].user_id);
+        }
+
+        this.broadcast(this.evt.game_abandon, data, users_ids); //broadcast to players except user_id
+
+        return data;
+    }
+    /**
+     * 
+     * @param {type} game_id - the game id
+     * @param {type} score - the game score
+     * @param {type} winner_user_id - the user id of the winner if there is
+     * a winner in the game. If not specified or a value of 0 or null will
+     * mean that the game ended in a draw
+     * @returns {String|nm$_match.Match}
+     */
+    async finish(game_id, score, winner_user_id) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            game_id = arguments[0].game_id;
+            score = arguments[0].score;
+            winner_user_id = arguments[0].winner_user_id;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        try {
+
+            var match = await c.findOneAndDelete({game_id: game_id}, {w: 'majority'});
+
+            if (!match) {
+                return 'no game to finish';
+            }
+            //relocate the match document to the match_history collection
+            match.game_status = 'finish'; //set the status to finish 
+            match.game_end_time = new Date();//set the time the match ended
+            match.score = score;
+            match.is_draw = winner_user_id ? false : true;
+            if(winner_user_id){
+                match.winner = winner_user_id;
+            }
+            
+            await c.insertOne(match);
+
+        } catch (e) {
+            this.error('could not abandon game');
+            return this;
+        }
+        //broadcast the game finish event to the players and spectators
+        var users_ids = [];
+        for (var i = 0; i < match.players.length; i++) {
+            users_ids.push(match.players[i].user_id);
+        }
+
+        var sc = this.sObj.db.collection(this.sObj.col.spectators);
+        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+
+        for (var i = 0; i < spectators.length; i++) {
+            users_ids.push(spectators[i].user_id);
+        }
+
+        this.broadcast(this.evt.game_finish, match, users_ids); //broadcast to all (players and spectators)
+
+        //update the players ranking
+        var rank = new PlayerRank(this.sObj, this.util, this.evt);
+        rank.updateRanking(match.players, winner_user_id);
+    }
+
+    /**
+     * Get matches played by the specified user contacts
+     * 
+     * @param {type} user_id
+     * @param {type} game_name
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {Array|nm$_match.Match.getContantsMatchList.data}
+     */
+    async getContantsMatchList(user_id, game_name, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            game_name = arguments[0].game_name;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
 
         var c = this.sObj.db.collection(this.sObj.col.users);
-        var user = await c.findOne({user_id: user_id}, {_id : 0});
+        var user = await c.findOne({user_id: user_id}, {_id: 0});
         if (!Array.isArray(user.contacts)) {
             return [];
         }
@@ -141,6 +505,21 @@ class Match extends Result {
             };
             allQuery.$or.push(query);
         }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+
         var total = await c.count(allQuery);
 
         var data = {
@@ -154,48 +533,55 @@ class Match extends Result {
             return data;
         }
 
-        if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
-            var cursor = await c.find(allQuery, {_id : 0});
-            var m;
-            while (await cursor.hasNext()) {
-                m = await cursor.next();
-                data.matches.push(m);
-                if (data.matches.length >= this.sObj.MAX_ALLOW_QUERY_SIZE) {
-                    break;
-                }
-            }
 
-        } else {
-            if (!Number.isInteger(skip)) {
-                skip = 0;
-            }
-            if (!Number.isInteger(limit)) {
-                limit = 0;
-            }
-            data.matches = await c.find(allQuery, {_id : 0})
-                    .limit(limit)
-                    .skip(skip)
-                    .toArray();
-
-        }
+        data.matches = await c.find(allQuery, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
 
         return data;
     }
 
-    async getGroupMatchList(obj) {
-        var game_name = obj.game_name;
-        var group_name = obj.group_name;
-        var skip = obj.skip - 0;
-        var limit = obj.limit - 0;
+    /**
+     * Get matches played in the specified group
+     * 
+     * @param {type} group_name
+     * @param {type} game_name
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {nm$_match.Match.getGroupMatchList.data}
+     */
+    async getGroupMatchList(group_name, game_name, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            group_name = arguments[0].group_name;
+            game_name = arguments[0].game_name;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
 
         var query = {
             group_name: group_name,
             game_name: game_name,
             game_status: 'live'
         };
-        
-        var c = this.sObj.db.collection(this.sObj.col.groups);
-        
+
         var total = await c.count(query);
 
         var data = {
@@ -209,40 +595,48 @@ class Match extends Result {
             return data;
         }
 
-        if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
-            var cursor = await c.find(query, {_id : 0});
-            var m;
-            while (await cursor.hasNext()) {
-                m = await cursor.next();
-                data.matches.push(m);
-                if (data.matches.length >= this.sObj.MAX_ALLOW_QUERY_SIZE) {
-                    break;
-                }
-            }
 
-        } else {
-            if (!Number.isInteger(skip)) {
-                skip = 0;
-            }
-            if (!Number.isInteger(limit)) {
-                limit = 0;
-            }
-            data.matches = await c.find(query, {_id : 0})
-                    .limit(limit)
-                    .skip(skip)
-                    .toArray();
-
-        }
+        data.matches = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
 
         return data;
-
     }
 
-    async getTournamentMatchList(obj) {
-        var game_name = obj.game_name;
-        var tournament_name = obj.tournament_name;
-        var skip = obj.skip - 0;
-        var limit = obj.limit - 0;
+    /**
+     * Get matches played in the specified tournament
+     * 
+     * @param {type} tournament_name
+     * @param {type} game_name
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {nm$_match.Match.getTournamentMatchList.data}
+     */
+    async getTournamentMatchList(tournament_name, game_name, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            tournament_name = arguments[0].tournament_name;
+            game_name = arguments[0].game_name;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
 
         var query = {
             tournament_name: tournament_name,
@@ -250,8 +644,6 @@ class Match extends Result {
             game_status: 'live'
         };
 
-        var c = this.sObj.db.collection(this.sObj.col.groups);
-        
         var total = await c.count(query);
 
         var data = {
@@ -265,30 +657,99 @@ class Match extends Result {
             return data;
         }
 
-        if (!Number.isInteger(skip) && !Number.isInteger(limit)) {
-            var cursor = await c.find(query, {_id : 0});
-            var m;
-            while (await cursor.hasNext()) {
-                m = await cursor.next();
-                data.matches.push(m);
-                if (data.matches.length >= this.sObj.MAX_ALLOW_QUERY_SIZE) {
-                    break;
-                }
-            }
 
-        } else {
-            if (!Number.isInteger(skip)) {
-                skip = 0;
-            }
-            if (!Number.isInteger(limit)) {
-                limit = 0;
-            }
-            data.matches = await c.find(query, {_id : 0})
-                    .limit(limit)
-                    .skip(skip)
-                    .toArray();
+        data.matches = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
 
+        return data;
+
+    }
+
+    /**
+     * Get match history of the specified user. To filter match based on
+     * contact, group and tournament, specify the filter in the second
+     * paramenter. If no filter or a value of all is specified then all
+     * match history is searched
+     * 
+     * @param {type} user_id - the id of the user whose match history will be 
+     * searched for
+     * @param {type} filter - filter to determine where search should be made.
+     * valid values are contact, group, tornament. If none of the valid values
+     * is provided then all search is made.
+     * @param {type} is_include_abandoned_matches - used to determine if abandon matches
+     * should be included in the search
+     * @param {type} skip - numbers of records to skip in the search
+     * @param {type} limit - maximum record to retrive
+     * @returns {nm$_match.Match.getUserMatchHistory.data}
+     */
+    async getUserMatchHistory(user_id, filter, is_include_abandoned_matches, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            filter = arguments[0].filter;
+            is_include_abandoned_matches = arguments[0].is_include_abandoned_matches;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
         }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+
+        var query = {
+            game_status: 'finish',
+            'players.user_id': user_id
+        };
+
+        if (filter === 'contact') {
+            query.group_name = '';
+            query.tournament_name = '';
+        }
+
+        if (filter === 'group') {
+            query.group_name = filter;
+        }
+
+        if (filter === 'tournament') {
+            query.tournament_name = filter;
+        }
+
+        if (is_include_abandoned_matches === true) {
+            query.game_status = 'abandon';
+        }
+
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: 0,
+            matches: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+
+        data.matches = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
 
         return data;
 

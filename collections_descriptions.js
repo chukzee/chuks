@@ -32,7 +32,7 @@ Structure of 'matches' collection documents
             game_elapse_time: ...., e.g 2 days 
             game_views_count: ....,
             game_score: ....,
-            game_status : ...., e.g  request, fixture, live , pause, end - these are the 5 differend status of the game
+            game_status : ....,  live and pause state only
             game_position: ....., 
             game_duration: .....,
             game_end_time: .....,;// this will expire the item in the local storage of the client end after 24 hours or less (depending on the design decision)
@@ -42,7 +42,34 @@ Structure of 'matches' collection documents
 
 
 
-Structure of 'groups' collection documents
+Structure of 'player_rankings' collection documents
+
+{
+    user_id: ...., //player user id
+    rank_score:...,e.g 424, 521, 832,
+    opponents:[ //an array of opponents
+                  {
+                    user_id:..., //opponent user id
+                    rank_score:...,e.g 424, 521, 832,
+                    outcome:..., e.g draw, win or loss
+                  },  
+                  {
+                    user_id:..., //opponent user id
+                    rank_score:...,e.g 524, 221, 854,
+                    outcome:..., e.g draw, win or loss
+                  },  
+                  {
+                    user_id:..., //opponent user id
+                    rank_score:...,e.g 124, 321, 424,
+                    outcome:..., e.g draw, win or loss
+                  },
+
+                  ... and so on
+               
+               ] 
+                             
+
+}
 
 TODO
 

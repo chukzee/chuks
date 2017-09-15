@@ -94,6 +94,27 @@ async function update1(db) {
     }
 }
 
+
+async function insert1(db) {
+    try {
+        var obj = {
+            item: "new_insert",
+            instock: [
+                {wharehouse: 'J', qty: 150},
+                {wharehouse: 'K', qty: 350}
+            ]
+        };
+        var result = await db.collection('inventory').insertOne(obj);
+
+        console.log(obj);
+        console.log('----------------');
+        console.log(result);
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 (async function () {
     var mongo_url = 'mongodb://' + "localhost" + ':' + 27017 + '/' + "chuks_test";
     try {
@@ -107,8 +128,9 @@ async function update1(db) {
         
         //query1(db);
         //query2(db);
-        update1(db);
-        query0(db);
+        //update1(db);
+        //query0(db);
+        insert1(db);
 
     } catch (e) {
         console.error(e);

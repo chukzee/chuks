@@ -1,15 +1,13 @@
 
 "use strict";
 
-var Result = require('../result');
+var WebApplication = require('../web-application');
 
 
-class VideoCall extends   Result {
+class VideoCall extends   WebApplication {
 
-    constructor(sObj, util) {
-        super();
-        this.sObj = sObj;
-        this.util = util;  
+    constructor(sObj, util, evt) {
+        super(sObj, util, evt);
     }
     
     getCallLog(user_id, from_time, to_time){

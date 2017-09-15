@@ -29,6 +29,9 @@
         ],
         
         "js":[
+            "device/small/test/js/test.js",
+            "device/small/test/simulate/js/simulate-user.js",
+            "device/small/test/simulate/js/simulate-group.js",
             "cordova.js" ,
             "lib/draftgame.js",
             "lib/socket.io.js",
@@ -102,8 +105,7 @@
             "view/PlayNotifications.js",
             "view/Group.js",
             "view/UserProfile.js",
-            "view/Contacts.js",
-            "EventIO.js"
+            "view/Contacts.js"
         ] 
     },
 
@@ -116,8 +118,7 @@
 
         ],
 
-        "js": [
-            "test.js", 
+        "js": [ 
             "GameHome-sd.js", 
             "GameSelect-sd.js",
             "GameView-sd.js",

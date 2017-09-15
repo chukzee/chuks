@@ -1,29 +1,35 @@
 
 "use strict";
 
-var Result = require('./app/result');
+var WebApplication = require('./app/web-application');
 
 class RCallHandler {
 
-    constructor(sObj, util, app, appLoader) {
+    constructor(sObj, util, appLoader, evt) {
         this.sObj = sObj;
         this.util = util;
+        this.evt = evt;
 
-        app.route('/rcall')
-                .post(this.processInput.bind(this));
         this.appLoader = appLoader;
     }
 
     replyError(error) {
-        this.reply(error ? error : "An error occur!", false);
+        return this.reply(error ? error : "An error occur!", false);
     }
 
     replySuccess(data) {
-        this.reply(data, true);
+        return this.reply(data, true);
     }
 
     reply(data, success) {
-        this.res.json({success: success, data: data});
+        var obj = {success: success, data: data};
+        if (this.res) {
+            return this.res.json(obj);
+        }
+        if (typeof this.done === 'function') {
+            this.done(obj);
+            this.done = null;//clear
+        }
     }
 
     processInput(req, res) {
@@ -64,6 +70,7 @@ class RCallHandler {
             }
 
             //get the module using the qualified class name
+
             var Module = this.appLoader.getModule(clazz);
 
             if (Module) {
@@ -94,7 +101,9 @@ class RCallHandler {
         this.replySuccess(methodsMap);
     }
 
-    execMethod(obj) {
+    execMethod(obj, done) {
+
+        this.done = done;
 
         var promise_arr = [];
         for (var i in obj) {
@@ -111,7 +120,7 @@ class RCallHandler {
             if (Module) {
                 //we already know it is a function because we check for that in the app loader.
                 //instantiate the module on demand - safe this way to avoid thread issues if any.
-                var moduleInstance = new Module(this.sObj, this.util);
+                var moduleInstance = new Module(this.sObj, this.util, this.evt);
 
                 //call the method in the module and pass the parameters                
                 //var rtv = moduleInstance[input.method].apply(moduleInstance, input.param ? input.param : []);
@@ -153,8 +162,8 @@ class RCallHandler {
         if (promise_arr.length === count) {
             //promise all
             Promise.all(promise_arr)
-                    .then(this.sendReturnedValues)//send all the success values
-                    .catch(this.sendReturnedError);//send the failed result if promise is rejected
+                    .then(this.sendReturnedValues.bind(this))//send all the success values
+                    .catch(this.sendReturnedError.bind(this));//send the failed result if promise is rejected
         }
     }
 
@@ -163,12 +172,16 @@ class RCallHandler {
         var returnedValues = [];
         for (var i in values) {
             var value = values[i];
-            if (value instanceof Result) {
-                //where Result type value is returned from the method
-                returnedValues.push({
-                    success: value.success,
-                    data: value.data === true ? 'Operation was successful' : value.data
-                });//collect the results for onward sending to the client
+            if (value instanceof WebApplication) {
+                //where WebApplication type value is returned from the method
+                if (!value.lastError) {
+                    returnedValues.push({
+                        success: value.success,
+                        data: value.data === true ? 'Operation was successful' : value.data
+                    });//collect the results for onward sending to the client
+                } else {
+                    return this.sendReturnedError(value);
+                }
             } else {
                 //where plain value is returned from the method
                 returnedValues.push({
@@ -188,7 +201,7 @@ class RCallHandler {
 
     sendReturnedError(errObj) {
         var errMsg;
-        if (errObj instanceof Result) {//the user return the error as result type
+        if (errObj instanceof WebApplication) {//the user return the error as result type
             errMsg = errObj.lastError;
         } else if (errObj instanceof Error) {//we will assume the error
             //  message is not user defined e.g io error so we will not show 

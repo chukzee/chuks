@@ -19,7 +19,8 @@ var Main = {};
     var portriat_height;
     var appUrl = "app/";
     var listeners = {};
-    var deviceBackMeOnly = {};    
+    var deviceBackMeOnly = {};
+    var socket;
     Main.ro = {};// object for storing global access for rcall variables for making remote method calls
 
     Main.helper = new function () {
@@ -184,6 +185,43 @@ var Main = {};
 
         }
     }
+
+    /**
+     * Add listerner
+     * 
+     * @param {type} event_name
+     * @param {type} callback
+     * @param {type} data
+     * @return {undefined}
+     */
+    Main.on = function (event_name, callback, data) {
+        if (Main.util.isFunc(callback)) {
+            if (!listeners[event_name]) {
+                listeners[event_name] = [];
+            }
+            listeners[event_name].push({fn: callback, data: data});
+        }
+    };
+
+    /**
+     * Remove listerner
+     * 
+     * @param {type} event_name
+     * @return {undefined}
+     */
+    Main.off = function (event_name) {
+        delete listeners[event_name];
+    };
+
+    /**
+     * Called when the application is ready
+     * @param {type} fn
+     * @return {undefined}
+     */
+    Main.ready = function (fn) {
+        Main.on("ready", fn);
+    };
+
 
     Main.ajax = {
         get: function () {
@@ -472,6 +510,90 @@ var Main = {};
 
     };
 
+    var EventIO = function () {
+        var evtListeners = {};
+        var is_midware_set;
+        this.on = function (event_name, listener) {
+            if (!Main.util.isFunc(listener)) {
+                return;
+            }
+            if (!evtListeners[event_name]) {
+                evtListeners[event_name] = [];
+            }
+            //avoid duplicate before registering the listener
+            if (evtListeners[event_name].indexOf(listener) === -1) {
+                evtListeners[event_name].push(listener);
+            }
+
+            if (!is_midware_set && socket) {
+                socket.on("message", msgMidware);
+                is_midware_set = true;
+            }
+        };
+
+        this.off = function (evt_name, func) {
+
+            if (evtListeners[evt_name] && !func) {
+                evtListeners[evt_name] = null;
+            } else if (evtListeners[evt_name]) {
+                var listeners = evtListeners[evt_name];
+                for (var f in listeners) {
+                    if (listeners[f] === func) {
+                        listeners[f].splice(f, 1);
+                    }
+                }
+            }
+        };
+
+        function msgMidware(msg) {
+            if (typeof msg === 'string') {//stringified json
+                try {
+                    msg = JSON.parse(msg);
+                } catch (e) {
+                    console.log(e);//invalid json
+                }
+            }
+
+            if (msg.acknowledge_delivery) {
+                var ack = {
+                    ack_msg_id: msg.ack_msg_id,
+                    acknowledge_delivery: msg.acknowledge_delivery
+                };
+                socket.emit('acknowledge_delivery', ack);
+            }
+
+            //more midware checks may go below before calling the listeners
+            
+            //-----
+            function Wrapper (event_name, data) {
+                this.type = event_name;
+                this.data = data;
+                this.socket = {};
+                this.socket.emit = function(evt_name, data, callback){
+                    socket.emit(evt_name, data, callback);
+                };
+            };
+            
+            //call the listeners for this event
+            var data = msg.data;
+            for (var evt in evtListeners) {
+                var len = evtListeners[evt].length;
+                if (evt === msg.event_name) {
+                    for (var k = 0; k < len; k++) {
+                        var listrner = evtListeners[evt][k]; //listener
+                        try {
+                            var wrapper = new Wrapper(msg.event_name, data);
+                            listrner(wrapper);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
+    };
 
     /*RCall is a technique design  by Chuks to remotely make calls to function.
      * This is done by specifying the class name and its method to access in the 
@@ -490,6 +612,104 @@ var Main = {};
         var rcallWaitingFn = [];
         var isGetRcallLive = false;
         var rcalFailures = {};
+        var rio;
+
+        Main.ready(function () {
+            if (!rio) {
+                rio = new RIO();
+            }
+        });
+
+        function RIO() {
+            var sucFnList = {};
+            var errFnList = {};
+            var serial = 0;
+            var reconnectFactor = 1;
+            var MAX_WAIT_CONNECT = 120; //60 seconds
+            var url = 'https://' + window.location.hostname + '/rcall';
+
+            if (window.io) {
+                sock();
+            }
+            var connTimerId = null;
+
+            this.checkConnect = function () {
+                if (!socket && window.io) {
+                    sock();
+                }
+                return socket && socket.connected === true;
+            };
+
+            this.send = function (_data, successFn, errorFn) {
+                serial++;
+                var uniqueNo = new Date().getTime() + "_" + serial;
+                var data = {
+                    _rcall_req_id: uniqueNo,
+                    data: _data
+                };
+                sucFnList[uniqueNo] = successFn;
+                errFnList[uniqueNo] = errorFn;
+
+                socket.emit('rcall_request', data);
+            };
+
+
+
+            function sock() {
+
+                socket = window.io.connect(url); //users is the socketio namespace used
+
+                socket.on('rcall_response', onRCallResponse);
+                socket.on('connect', onConnect);
+                socket.on('disconnect', onDisconnect);
+                socket.on('error', onErrorSocket);
+            }
+
+            function onRCallResponse(msg) {
+                var key = msg._rcall_req_id;
+
+                sucFnList[key](msg);
+
+                delete sucFnList[key];
+                delete errFnList[key];
+            }
+
+            function onConnect(msg) {
+                reconnectFactor = 1;
+                window.clearInterval(connTimerId);
+            }
+
+            function onDisconnect(msg) {
+                //alert('disconnect');
+                connTimerId = reconnectAfter(socket);
+            }
+
+            function onErrorSocket(msg) {
+                //alert('error');
+                connTimerId = reconnectAfter(socket);
+            }
+
+            function reconnectAfter(socket) {
+                if (reconnectFactor >= MAX_WAIT_CONNECT) {
+                    reconnectFactor /= 4; //restart the connect after 
+                    if (reconnectFactor < 1) {//just in case
+                        reconnectFactor = 1;
+                    }
+                } else {
+                    reconnectFactor *= 2; // increment the time to wait before trying again
+                }
+
+                return  window.setInterval(function () {
+                    if (socket.connected === false) {
+                        sucFnList = {};
+                        errFnList = {};
+                        socket.connect();
+                    }
+
+                }, reconnectFactor * 1000);
+            }
+        }
+
 
         this.live = function () {
             var objInst, fn;
@@ -662,11 +882,11 @@ var Main = {};
             var r;
             if (arguments.length === 1) {
                 if ((r = validateSingeArg(param))) {
-                    ajaxExec(r.objArr, r.callback);
+                    remoteExec(r.objArr, r.callback);
                 }
             } else {
                 if ((r = validateMultiArgs(arguments))) {
-                    ajaxExec(r.objArr, r.callback);
+                    remoteExec(r.objArr, r.callback);
                 }
             }
 
@@ -766,25 +986,38 @@ var Main = {};
                 return {objArr: o_arr, callback: obj.callback};
             }
 
-            function ajaxExec(objArr, callback) {
-                var data = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    param: JSON.stringify({action: 'remote_call', data: objArr})
-                };
+            function remoteExec(objArr, callback) {
 
-                Main.ajax.post('rcall', data,
-                        function (res) {
-                            var json = JSON.parse(res);
-                            callback(json);
+                if (rio.checkConnect()) {
+                    rio.send(objArr, successFn, errorFn);
+                } else {
+                    var data = {
+                        headers: {
+                            'Content-Type': 'application/json'
                         },
-                        function (statusText, status) {
-                            var respose = {};
-                            respose.success = false;
-                            respose.status = statusText;
-                            callback(respose);
-                        });
+                        param: JSON.stringify({action: 'remote_call', data: objArr})
+                    };
+
+                    Main.ajax.post('rcall', data, successFn, errorFn);
+                }
+
+                function successFn(res) {
+                    if(Main.util.isString(res)){
+                        try {//try check if it is json and convert if so
+                            res = JSON.parse(res);
+                        } catch (e) {
+                            //do nothing
+                        }
+                    }
+                    callback(res);
+                }
+                function errorFn(statusText, status) {
+                    var respose = {};
+                    respose.success = false;
+                    respose.status = statusText;
+                    callback(respose);
+                }
+
             }
         };
     }
@@ -825,7 +1058,10 @@ var Main = {};
                 evtList[evt_name] = [];
             }
             if (Main.util.isFunc(func)) {
-                evtList[evt_name].push(func);
+                //avoid duplicate
+                if (evtList[evt_name].indexOf(func) === -1) {
+                    evtList[evt_name].push(func);
+                }
             }
         };
         /**
@@ -836,15 +1072,15 @@ var Main = {};
          * @param {type} func - (option) the callback function attached to the event that should be removed only. If not specified the event and all its callbacks will be removed
          * @returns {undefined}
          */
-        this.remove = function (evt_name, func) {
+        this.off = function (evt_name, func) {
 
             if (evtList[evt_name] && !func) {
                 evtList[evt_name] = null;
             } else if (evtList[evt_name]) {
-                var evt = evtList[evt_name];
-                for (var f in evt) {
-                    if (evt[f] === func) {
-                        evt[f].splice(f, 1);
+                var listeners = evtList[evt_name];
+                for (var f in listeners) {
+                    if (listeners[f] === func) {
+                        listeners[f].splice(f, 1);
                     }
                 }
             }
@@ -879,6 +1115,7 @@ var Main = {};
 
 
     }
+
 
 
     function Page() {
@@ -2445,6 +2682,7 @@ var Main = {};
 
 
     Main.event = new Event();
+    Main.eventio = new EventIO();
     Main.rcall = new RCall();
     Main.page = new Page();
     Main.listview = new Listview();
@@ -3762,42 +4000,6 @@ var Main = {};
 
     };
 
-    /**
-     * Add listerner
-     * 
-     * @param {type} event_name
-     * @param {type} callback
-     * @param {type} data
-     * @return {undefined}
-     */
-    Main.on = function (event_name, callback, data) {
-        if (Main.util.isFunc(callback)) {
-            if (!listeners[event_name]) {
-                listeners[event_name] = [];
-            }
-            listeners[event_name].push({fn: callback, data: data});
-        }
-    };
-
-    /**
-     * Remove listerner
-     * 
-     * @param {type} event_name
-     * @return {undefined}
-     */
-    Main.off = function (event_name) {
-        delete listeners[event_name];
-    };
-
-    /**
-     * Called when the application is ready
-     * @param {type} fn
-     * @return {undefined}
-     */
-    Main.ready = function (fn) {
-        Main.on("ready", fn);
-
-    };
 
     /**
      * This method should be called by the first index page
@@ -4149,7 +4351,7 @@ var Main = {};
 
                         //initialize namespace related objects by calling their constructors
 
-                        
+
 
                         for (var n in _nsFiles) {
                             var clazzObj = classObject(_nsFiles[n]);

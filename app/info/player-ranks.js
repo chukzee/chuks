@@ -1,41 +1,56 @@
 "use strict";
 
-var Result = require('../result');
+var WebApplication = require('../web-application');
 
-class PlayerRank extends Result{
-    
-    
-    constructor(sObj, util) {
-        super();
-        this.sObj = sObj;
-        this.util = util;    
-        console.log('PlayerRank');
+class PlayerRank extends WebApplication {
+
+    constructor(sObj, util, evt) {
+        super(sObj, util, evt);
     }
 
     computeRank(match_count, match_wins) {
         return (100 * match_wins / match_count) + this.RANK_FACTOR * match_count;
     }
 
+    updateRanking(players, winner_user_id) {
+        var is_draw = winner_user_id ? false : true;
+
+        var c = this.sObj.db.collection(this.sObj.col.player_rankings);
+
+        for (var i = 0; i < players.length; i++) {
+            if (!players[i].available) {
+                continue;
+            }
+            var player_id = players[i].user_id;
+            for (var k = 0; k < players.length; k++) {
+                if (k === i) {
+                    continue;//skip same player
+                }
+                var opponent = {
+                    user_id: players[k].user_id,
+                    rank_score: players[k].rank_score,
+                    outcome: is_draw ? 'draw' : (winner_user_id === player_id ? 'win' : 'loss')
+                };
+
+                c.updateOne({user_id: players[i].user_id}, {$push: {opponents: opponent}});
+            }
+        }
+
+
+    }
+
     async getWeeklyRankList() {
-        
+
     }
 
     async getMonthlyRankList() {
-        
-        //console.log(this.RANK_FACTOR +" after apply");
-        //console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
-         
-         
+
+
     }
 
     async getYearlyRankList() {
-        
+
     }
 }
 
 module.exports = PlayerRank;
-
-//var p = new PlayerRank;
-
-//p['getMonthlyRankList'].apply(p, [1,2,3,4]);
-

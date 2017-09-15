@@ -87,6 +87,22 @@ console.log(Number.isInteger(ogg));
 console.log(Number.isInteger(Empty));
 console.log(Empty == 0);
 
+console.log("------------------------");
+
+function fn1(){
+    
+};
+
+function fn2(){
+    
+};
+
+var lis = [];
+
+lis.push(fn1);
+lis.push(fn1);
+lis.push(fn2);
+console.log(lis.indexOf(fn2));
 
 
 

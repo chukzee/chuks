@@ -1,39 +1,91 @@
 
 "use strict";
 
-var Result = require('../result');
+var WebApplication = require('../web-application');
+var crypto = require('crypto');
 
-class User extends Result {
+class User extends WebApplication {
 
-    constructor(sObj, util) {
-        super();
-        this.sObj = sObj;
-        this.util = util;
+    constructor(sObj, util, evt) {
+        super(sObj, util, evt);
+        this.crypto = crypto;
     }
 
-    async auth() {
-
-    }
-
-    async login() {
-
-    }
-
-    async register(obj) {
-        var c = this.sObj.db.collection(this.sObj.col.users);
-        var fields = ['user_id', 'phone_numbers', 'dob', 'address', 'email', 'country', 'zip_code'];
-        var userObj = {};
-        this.util.copy(obj, userObj, fields);
-        //more fields
-        userObj.player_ranking = 0;
+    async login(phone_no, password) {
         try {
 
+            var c = this.sObj.db.collection(this.sObj.col.users);
+
+            var user = await c.findOne({user_id: phone_no}, {_id: 0});
+            if (!user) {
+                return this.error('invalid username or password');
+            }
+            var protected_pass = await this._protectedPassword(password, user.password.salt, user.password.iterations);
+
+            if (user.password.hash.buffer.toString()//the saved hash is in binary type so we will access the buffer property of the binary object
+                    !== protected_pass.hash.toString()) {
+                return this.error('invalid username or password');
+            }
+
+            this._normalizeInfo(user);
+
+        } catch (e) {
+            console.log(e);
+            return this.error('could not login');
+        }
+
+        return user;
+    }
+
+    /**
+     * Registers a new user. The phone number is the user id used my our system
+     * to identiify a user. So popular alphanumeric usernames is not valid in 
+     * our system. So the client must verify the phone number of the user 
+     * 
+     * 
+     * @param {type} phone_no - user id of the user is the phone number the user
+     * used upon registration
+     * @param {type} password - password of the user
+     * @param {type} email - must be a verified email of the user
+     * @param {type} country - the country of the user - important for determining
+     * the zip code used for prefixing the user phone numbers
+     * @returns {nm$_user.User|String}
+     */
+    async register(phone_no, password, email, country) {
+
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            phone_no = arguments[0].phone_no;
+            password = arguments[0].password;
+            email = arguments[0].email;
+            country = arguments[0].country; // one main use for this is to obtain the zip code
+        }
+
+        try {
+            var user_id = phone_no;// the phone number is the user id
+            var phone_numbers = [phone_no];
+            var userObj = {
+                user_id: user_id,
+                password: await this._protectedPassword(password),
+                email: email,
+                full_name: email.substring(0, email.indexOf('@')), //default  full name of the user
+                country: country,
+                phone_numbers: phone_numbers,
+                player_ranking: 0 //set the player ranking
+            };
+
+
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            //more fields
             await c.insertOne(userObj, {w: 'majority'});
 
         } catch (e) {
+
             //chec if the reason is because the user id already exist
             try {
-                var user = await c.findOne({user_id: userObj.user_id}, {_id : 0}).toArray()[0];
+                var user = await c.findOne({user_id: userObj.user_id}, {_id: 0});
             } catch (e) {
                 console.log(e);//DO NOT DO THIS IN PRODUCTION
             }
@@ -49,32 +101,192 @@ class User extends Result {
         return 'Registered successfully.';
     }
 
-    async getInfo(user_id) {
-        try {
-            var c = this.sObj.db.collection(this.sObj.col.users);
-            var info = await c.findOne({user_id: user_id}, {_id : 0}).toArray()[0];
-            //this.sObj.db.close();
+    async _protectedPassword(password, _salt, _iterations) {
+        var salt = _salt || this.crypto.randomBytes(48).toString('base64');
+        var iterations = _iterations || 1000;
+        var me = this;
+        var hash = await new Promise(function (resolve, reject) {
+            me.crypto.pbkdf2(password, salt, iterations, 512, 'sha512', function (err, hash) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(hash);
+            });
+        });
 
-        } catch (e) {
-            this.error('could not get user info!');
-            console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
-            return this;
-        }
 
-        return info;
+        return {
+            salt: salt,
+            hash: hash,
+            iterations: iterations
+        };
     }
 
-    async getInfoList(user_id_arr) {
-        var oredArr = [];
-        for (var i = 0; i < user_id_arr.length; i++) {
-            oredArr = {user_id: user_id_arr[i]};
+    /**
+     * Edits the user informataion. This is useful after registration (ie keeping
+     * the registration as brief as possible after which the user can added
+     * additional info of himself)
+     * 
+     * If the first or last name of the user is provided the user full name is
+     * determined from either or both.
+     * 
+     * PLEASE NOTE: If additional phone number of the user is provided 
+     * the client must be make sure the phone number is verified before call
+     * this method remotely or sending the phone number to the server
+     * 
+     * @param {type} user_id - must be the user phone number he used in signing up
+     * @param {type} first_name - (optional) first name of the user
+     * @param {type} last_name - (optional) last name of the userr
+     * @param {type} additional_phone_no - (optional) the additional phone number
+     * of the user to save in the server. Note that the client must verify the 
+     * phone before saving it to the server
+     * @param {type} dob - (optional) date of birth of the user - this will be
+     * useful for sending our users birthday greetings
+     * @returns {User@call;error|String}
+     */
+    async editInfo(user_id, first_name, last_name, additional_phone_no, dob) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            first_name = arguments[0].first_name;
+            last_name = arguments[0].last_name;
+            additional_phone_no = arguments[0].additional_phone_no;
+            dob = arguments[0].dob; // one main use for this is to obtain the zip code
+        }
+
+        var editObj = {};
+
+        if (first_name) {
+            editObj.first_name = first_name;
+        }
+
+        if (last_name) {
+            editObj.last_name = last_name;
+        }
+
+        if (!isNaN(new Date(dob).getTime())) {
+            editObj.dob = dob;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.users);
+        var user = await c.findOne({user_id: user_id});
+        if (!user) {
+            return this.error('user not found!');
+        }
+
+        if (additional_phone_no
+                && user.phone_numbers.indexOf(additional_phone_no) === -1) {
+            user.phone_numbers.push(additional_phone_no);
+        }
+
+        editObj.phone_numbers = user.phone_numbers;
+
+        var user = await c.updateOne({user_id: user_id}, {$set: editObj});
+
+        return 'updated successfully.';
+    }
+
+    async addPhoneNumber(user_id, additional_phone_no) {
+        if (!additional_phone_no) {
+            return 'Nothing updated - no phone number provided.';
         }
         var c = this.sObj.db.collection(this.sObj.col.users);
+        var user = await c.findOne({user_id: user_id});
+        if (!user) {
+            return this.error('user not found!');
+        }
+        var editObj = {};
+        if (additional_phone_no
+                && user.phone_numbers.indexOf(additional_phone_no) === -1) {
+            user.phone_numbers.push(additional_phone_no);
+        } else {
+            return 'Nothing updated';
+        }
+
+        editObj.phone_numbers = user.phone_numbers;
+
+        var user = await c.updateOne({user_id: user_id}, {$set: editObj});
+
+        return 'updated successfully.';
+    }
+
+    _normalizeInfo(user) {
+
+        delete user.password; //delete this property - it must not pass through the wire.
+
+        if (user.first_name || user.last_name) {
+            if (user.first_name && !user.last_name) {
+                user.full_name = user.first_name;
+            } else if (!user.first_name && user.last_name) {
+                user.full_name = user.last_name;
+            } else {
+                user.full_name = user.first_name + " " + user.last_name;
+            }
+        }
+
+    }
+
+    async getInfo(user_id, required_fields) {
+        try {
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            var project = {};
+            project._id = 0; //hide this field
+            if (Array.isArray(required_fields)) {
+                var field_name;
+                for (var i = 0; i < required_fields.length; i++) {
+                    field_name = required_fields[i];
+                    project[field_name] = 1; //show this field
+                }
+            }
+            var user = await c.findOne({user_id: user_id}, project);
+            this._normalizeInfo(user);
+
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
+            return this.error('could not get user info!');
+            ;
+        }
+
+        return user;
+    }
+
+    async getInfoList(user_id_arr, required_fields) {
 
         try {
-            var users = await c.find({$or: oredArr}, {_id : 0}).toArray();
+
+            if (Array.isArray(user_id_arr)) {
+                return [];
+            }
             
+            if (user_id_arr.length === 0) {
+                return [];
+            }
+            
+            var project = {};
+            project._id = 0; //hide this field
+            if (Array.isArray(required_fields)) {
+                var field_name;
+                for (var i = 0; i < required_fields.length; i++) {
+                    field_name = required_fields[i];
+                    project[field_name] = 1; //show this field
+                }
+            }
+            var oredArr = [];
+            for (var i = 0; i < user_id_arr.length; i++) {
+                oredArr.push({user_id: user_id_arr[i]});
+            }
+            var c = this.sObj.db.collection(this.sObj.col.users);
+
+            var users = await c.find({$or: oredArr}, project).toArray();
+
+            for (var i = 0; i < users.length; i++) {
+                this._normalizeInfo(users[i]);
+            }
+
         } catch (e) {
+            console.log(e);
             this.error('could not get users.');
             return this;
         }
@@ -82,92 +294,36 @@ class User extends Result {
         return users;
     }
 
-    async editUserProfile(obj) {
+    async getGroupsBelong(user_id) {
+
         try {
-            var setObj = {};
-            var fields = ['phone_number', 'dob', 'status', 'player_rank'];
-            this.util.copy(obj, setObj, fields);
-
             var c = this.sObj.db.collection(this.sObj.col.users);
-            var r = await c.updateOne({user_id: obj.user_id, $set: setObj});
-            //this.sObj.db.close();
-
-        } catch (e) {
-            this.error('could not update user profile!');
-            console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
-            return this;
-        }
-        return "The operation was successful ";
-    }
-
-    /**
-     * Used to exist user from a group
-     * 
-     * @param {type} user_id - user being exited
-     * @param {type} exit_by user who authorized the exit -  must be either the user existing or the group admin
-     * @param {type} group_name - roup name
-     * @param {type} reason - reason for the exit 
-     * @returns {undefined}
-     */
-    async exitGroup(user_id, exit_by, group_name, reason) {
-        var group_col = this.sObj.db.collection(this.sObj.col.groups);
-        var me = this;
-
-        return group_col.findOne({name: group_name}, {_id : 0})
-                .then(function (group) {
-                    if(!Array.isArray(group.members)){
-                        group.members = [];
-                    }
-                    var isAdmin = false;
-                    if (user_id !== exit_by) {//check if the exit_by is an admin
-                        for (var i in group.members) {
-                            if (group.members[i] === exit_by) {
-                                isAdmin = group.members[i].is_admin;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!isAdmin && user_id !== exit_by) {
-                        me.error("Unauthorized operation! You must either the group admin or the user being removed!");
-                        return Promise.reject(me);
-                    }
-
-                    for (var i =0; i < group.members.length; i++) {
-
-                        if (user_id === group.members[i].user_id) {
-                            group.members[i].splice(i, 1);//remove the member
-                            i--;
-                        }
-                    }
-
-                    return group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
-                }).then(function (group) {
-            if (!Array.isArray(group.exited_members)) {
-                group.exited_members = [];
+            var user = await c.findOne({user_id: user_id}, {_id: 0});
+            if (!user) {
+                return [];
             }
-            var exitedMemberObj = {};
-            exitedMemberObj.user_id = user_id;
-            exitedMemberObj.reason = reason;
-            exitedMemberObj.exit_by = exit_by;
-            exitedMemberObj.exit_date = new Date();
+        } catch (e) {
+            console.log(e);
+            return this.error('could not get groups belong');
+        }
 
-
-            return group_col.update({name: group_name}, {$set: {exited_members: group.exited_members}}, {w: 'majority'});
-        });
-    }
-
-    async addToTournament(obj) {
-
-    }
-
-    async getGroupsBelong(param) {
-
-
+        return user.groups_belong ? user.groups_belong : [];
     }
 
     async getTournamentsBelong(user_id) {
 
+        try {
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            var user = await c.findOne({user_id: user_id}, {_id: 0});
+            if (!user) {
+                return [];
+            }
+        } catch (e) {
+            console.log(e);
+            return this.error('could not get tournaments belong');
+        }
+
+        return user.tournaments_belong ? user.tournaments_belong : [];
     }
 
 }
