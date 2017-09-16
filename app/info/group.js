@@ -62,6 +62,9 @@ class Group extends WebApplication {
         if (!this._is_lock) {
             return;
         }
+        
+        console.log('_unlock called');//TESTING!!!
+        
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
 
@@ -238,6 +241,13 @@ class Group extends WebApplication {
                     // when iterating members of a group and detected that the value is false.
                     //This is our simple implementation of two phase commit or rollback 
                     //recommended by MongoDB as an alternative for RDBMS like transaction
+
+                    //check if the member already exist
+                    for(var i=0; i<group.members.length; i++){
+                        if(group.members[i].user_id === user_id){
+                            return Promise.reject(`User already exist in the group - ${user_id}`);
+                        }
+                    }
 
                     group.members.push(memberObj);
 
