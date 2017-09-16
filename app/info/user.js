@@ -256,7 +256,7 @@ class User extends WebApplication {
 
         try {
 
-            if (Array.isArray(user_id_arr)) {
+            if (!Array.isArray(user_id_arr)) {
                 return [];
             }
             

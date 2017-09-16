@@ -149,7 +149,7 @@ function gracefulShutdown(){
     //clear user sessions in this server instance
     
     
-    setTimeout(function(){
+    setTimeout(function(){//TO BE REMOVE LATER - NOT THE BEST!
         console.log('COME BACK FOR PROPER shutdown -  not using setTimeout!');
         process.exit();
     },2000);

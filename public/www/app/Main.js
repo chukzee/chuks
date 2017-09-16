@@ -565,7 +565,7 @@ var Main = {};
             //more midware checks may go below before calling the listeners
             
             //-----
-            function Wrapper (event_name, data) {
+            function EventObject (event_name, data) {
                 this.type = event_name;
                 this.data = data;
                 this.socket = {};
@@ -582,8 +582,8 @@ var Main = {};
                     for (var k = 0; k < len; k++) {
                         var listrner = evtListeners[evt][k]; //listener
                         try {
-                            var wrapper = new Wrapper(msg.event_name, data);
-                            listrner(wrapper);
+                            var evt_obj = new EventObject(msg.event_name, data);
+                            listrner(evt_obj);
                         } catch (e) {
                             console.error(e);
                         }

@@ -213,6 +213,38 @@ function send(user_id, socket_ids, data) {
 
 }
 
+function afterUserDiscconnect(socket_id) {
+    var user_id;
+    sObj.redis.get('user_id:' + sObj.PROCESS_NS + socket_id)
+            .then(function (_user_id) {
+                user_id = _user_id;
+                if (!_user_id) {
+                    return;
+                }
+                //first remove this socket id from his list of session ids in redis - 
+                return sObj.redis.lrem("socket_id:" + user_id, socket_id, 1);//come back to confirm later
+            })
+            .then(function () {
+                //set his online status to offline
+                return sObj.redis.set('online_status:' + user_id, "offline");
+            })
+            .then(function () {
+                //publish PUBSUB_VERIFY_ONLINE_STATUS to be sure he is
+                //not connected elsewhere. If found online in another
+                //server then that server should modify the status 
+                //back to online
+
+                return sObj.redis.publish(sObj.PUBSUB_VERIFY_ONLINE_STATUS, user_id);
+            })
+            .then(function () {
+                //do nothing
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
+
+}
+
 module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
     sObj = _sObj;
     util = _util;
@@ -243,38 +275,6 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
          */
         function onUserDisconnect() {
             afterUserDiscconnect(socket.id);
-        }
-
-        function afterUserDiscconnect(socket_id) {
-            var user_id;
-            sObj.redis.get('user_id:' + sObj.PROCESS_NS + socket_id)
-                    .then(function (_user_id) {
-                        user_id = _user_id;
-                        if (!_user_id) {
-                            return;
-                        }
-                        //first remove this socket id from his list of session ids in redis - 
-                        return sObj.redis.lrem("socket_id:" + user_id, socket_id, 1);//come back to confirm later
-                    })
-                    .then(function () {
-                        //set his online status to offline
-                        return sObj.redis.set('online_status:' + user_id, "offline");
-                    })
-                    .then(function () {
-                        //publish PUBSUB_VERIFY_ONLINE_STATUS to be sure he is
-                        //not connected elsewhere. If found online in another
-                        //server then that server should modify the status 
-                        //back to online
-
-                        return sObj.redis.publish(sObj.PUBSUB_VERIFY_ONLINE_STATUS, user_id);
-                    })
-                    .then(function () {
-                        //do nothing
-                    })
-                    .catch(function (err) {
-                        console.log(err);
-                    });
-
         }
 
         function onRCallRequest(input) {
@@ -331,11 +331,13 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
 
                                 //now ensure the number same user session does not 
                                 //exceed our defined limit.
-                                if (count > sObj.MAX_SESSION_PER_SAME_USERNAME) {
+                                
+                                if (count > sObj.MAX_SESSION_PER_SAME_USER) {
                                     //remove the oldest of the same user session and publishing the
                                     //socket id via redis since we know that the socket may not be in this 
                                     //server
-                                    var excess_count = count - sObj.MAX_SESSION_PER_SAME_USERNAME;
+                                    var excess_count = count - sObj.MAX_SESSION_PER_SAME_USER;
+                                    
                                     for (var i = 0; i < excess_count; i++) {
 
                                         sObj.redis.lpop("socket_id:" + user_id)//get and remove the first on the list 

@@ -12,11 +12,12 @@ Main.on("pagecreate", function (arg) {
     Main.rcall.live(obj);
     
     Main.eventio.on('group_join_request', onGroupJionRequest)
-
+    var authorization_token;
     function onGroupJionRequest(obj){
         alert('onGroupJionRequest');
         alert(obj);
         console.log(obj);
+        authorization_token = obj.data.authorization_token;
     }
 
     $('#test-simulate-page').on('click', function () {
@@ -36,6 +37,7 @@ Main.on("pagecreate", function (arg) {
         <button id="btn-send-group-join-request" style="margin: 5px;">Send group join request</button>
         <button id="btn-accept-group-join-request" style="margin: 5px;">Accept group join request</button>
         <button id="btn-make-admin" style="margin: 5px;">Make admin</button>
+        <button id="btn-remove-admin-position" style="margin: 5px;">Remove admin position</button>
         <button id="btn-remove-member" style="margin: 5px;">Remove member</button>
         <button id="btn-get-group-info" style="margin: 5px;">Get group info</button>
         <button id="btn-get-groups-info-list" style="margin: 5px;">Get groups info list</button>
@@ -105,8 +107,6 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-accept-group-join-request').on('click', function () {
 
-        var authorization_token = 'ryyyrtrgt5';
-
         Main.ro.group.acceptGroupJoinRequest(authorization_token)
                 .get(function (data) {
                     alert(data);
@@ -161,8 +161,8 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-remove-member').on('click', function () {
 
-        var user_id = '07032710628';
-        var exist_by = '07023232323';
+        var user_id = '07023232323';
+        var exist_by = '07032710628';
         var group_name = 'Group1';
         var reason = 'a good reason';
 
@@ -214,7 +214,8 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-user-groups-info-list').on('click', function () {
 
-        var user_id = '07032710628';
+        //var user_id = '07032710628';
+        var user_id = '07023232323';
         
         Main.ro.group.getUserGroupsInfoList(user_id)
                 .get(function (data) {

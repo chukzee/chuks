@@ -70,13 +70,16 @@ class Match extends WebApplication {
         c.findOne({game_id: game_id, 'moves.seria_no': move.serial_no})
                 .then(function (match) {
                     if (match) {
-                        return; //move already store so avoid duplicate
+                        return; //move already stored so avoid duplicate
                     }
                     return c.updateOne({game_id: game_id}, {$push: {moves: move}}); //moves array is the game position of the the game. it holds all the move of the game
                 })
                 .then(function (result) {
+                    if(!result){
+                        return;
+                    }
                     //Acknowlege move sent by notifying the player that
-                    //the sever has receive the move and sent it to the
+                    //the sever has receive the move and sent it to the opponent
                     data.move_sent = true;
                     return me.send(me.evt.game_move_sent, data, user_id);
                 })

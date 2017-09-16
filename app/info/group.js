@@ -35,6 +35,9 @@ class Group extends WebApplication {
                     },
                     {
                         'members.is_admin': true
+                    },
+                    {
+                        'members.committed': true
                     }
                 ]
             };
@@ -54,7 +57,7 @@ class Group extends WebApplication {
                 requested_user_id: to_user_id,
                 group_name: group_name
             };
-            
+
             var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
             await req_col.insertOne(gjDoc); //await the asynchronous process
 
@@ -82,7 +85,7 @@ class Group extends WebApplication {
      * @param {type} authorization_token - this is the autorization sent by the admin to rhe user -  the server must confirm this token before adding the user to the group
      * @returns {undefined}
      */
-    async acceptGroupJionRequest(authorization_token) {
+    async acceptGroupJoinRequest(authorization_token) {
 
         var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
         try {
@@ -96,11 +99,11 @@ class Group extends WebApplication {
 
 
         if (!request) {
-            return this._addToGroup(request.requested_user_id, request.group_name, false);
+            return this.error("Unknown group join authoriztion token.");
         }
 
-        this.error("Unknown group join authoriztion token.");
-        return this;
+
+        return this._addToGroup(request.requested_user_id, request.group_name, false);
     }
 
     _groupMemberObj(user_id, is_admin, commit) {
@@ -121,13 +124,15 @@ class Group extends WebApplication {
 
         return group_col.findOne({name: group_name}, {_id: 0})
                 .then(function (group) {
-
+                    if(!group){
+                        return Promise.reject('Not a group');
+                    }
                     if (!Array.isArray(group.members)) {
                         group.members = [];
                     }
 
                     if (group.members.length >= me.sObj.MAX_GROUP_MEMBERS) {
-                        return "Maximum group members exceeded! Limit allowed is " + me.sObj.MAX_GROUP_MEMBERS + ".";
+                        return Promise.reject("Maximum group members exceeded! Limit allowed is " + me.sObj.MAX_GROUP_MEMBERS + ".");
                     }
 
                     memberObj = me._groupMemberObj(user_id, is_admin, false);
@@ -141,25 +146,29 @@ class Group extends WebApplication {
                     group.members.push(memberObj);
 
                     group_members = group.members; // set the group memeber - 
-                    //will be needed dow below for committing this operation
+                    //will be needed dow nbelow for committing this operation
 
-                    return  group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
+                    return  group_col.updateOne({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
                 })
                 .then(function () {
-                    var user_col = this.sObj.db.collection(this.sObj.col.users);
+                    var user_col = me.sObj.db.collection(me.sObj.col.users);
                     return user_col.findOne({user_id: user_id}, {_id: 0})
                             .then(function (user) {
                                 if (!Array.isArray(user.groups_belong)) {
                                     user.groups_belong = [];
                                 }
-                                user.groups_belong.push(group_name);
-                                return  user_col.update({user_id: user_id}, {$set: {groups_belong: user.groups_belong}}, {w: 'majority'});
+
+                                if (user.groups_belong.indexOf(group_name) === -1) {
+                                    user.groups_belong.push(group_name);
+                                }
+
+                                return  user_col.updateOne({user_id: user_id}, {$set: {groups_belong: user.groups_belong}}, {w: 'majority'});
                             });
                 })
                 .then(function () {
                     //now commit the change
                     memberObj.committed = true;
-                    return group_col.update({name: group_name}, {$set: {members: group_members}}, {w: 'majority'});
+                    return group_col.updateOne({name: group_name}, {$set: {members: group_members}}, {w: 'majority'});
                 })
                 .then(function () {
                     return "User added to group successfully.";
@@ -168,7 +177,8 @@ class Group extends WebApplication {
     }
 
     async createGroup(user_id, group_name, status_message, photo_url) {
-
+        
+        
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
@@ -185,13 +195,11 @@ class Group extends WebApplication {
             status_message: status_message,
             photo_url: photo_url,
             created_by: user_id,
-            members: [member],
-            admins: [member],
             date_created: member.date_joined ? member.date_joined : new Date()
         };
 
         try {
-            await c.insertOne(group, {w: 'majority'});
+            await c.insertOne(group, {w: 'majority'});//create the group
         } catch (e) {
 
             //check if the reason is because the group already exist
@@ -202,11 +210,20 @@ class Group extends WebApplication {
             }
 
             if (g) {
-                this.error('group \'' + group.name + '\' already exist!');
+                return this.error('group \'' + group.name + '\' already exist!');
             } else {
-                this.error('could not perform operaton!');
+                return this.error('could not perform operaton!');
             }
-            return this;
+        }
+
+        try {
+            await this._addToGroup(user_id, group_name, true); // add the member to the group and other neccessary things
+        } catch (e) {
+
+            console.log(e);//DO NOT DO THIS IN PRODUCTION
+
+            return this.error('could not perform operaton!');
+
         }
 
         return 'Created successfully.';
@@ -286,6 +303,9 @@ class Group extends WebApplication {
                     },
                     {
                         'members.is_admin': true//query does not require positional $ operator to access the field
+                    },
+                    {
+                        'members.committed': true
                     }
                 ]
             };
@@ -293,40 +313,82 @@ class Group extends WebApplication {
             //first check if the user is an admin
             var admin = await c.findOne(adminQuery, {_id: 0});
 
+
+
             if (!admin) {
                 return "Not authorized to make another user an admin.";
             }
 
             //ok you are free to make one of your members an admin
-            var newAdmin = {
-                $and: [
-                    {
-                        name: group_name
-                    },
-                    {
-                        'members.$.user_id': new_admin_user_id //using positional $ operator and dot '.' to access the user_id and set update the value
-                    },
-                    {
-                        'members.$.is_admin': true //using positional $ operator and dot '.' to access the is_admin and set update the value
-                    }
-                ]
-            };
+            /**
+             *
+             * @deprecated NOT WORKING AS EXPECTED IF UNCOMMITTED ENTRIES ARE INSIDE
+             *
+             var newAdminQuery = {
+             $and: [
+             {
+             name: group_name
+             },
+             {
+             'members.user_id': new_admin_user_id
+             },
+             {
+             'members.is_admin': false
+             },
+             {
+             'members.committed': true
+             }
+             ]
+             };
+             
+             
+             //var rs = await c.update(newAdminQuery, {$set: {'members.$.is_admin': true}}, { w: 'majority'});//NOT WORKING PROPERLY IF UNCOMMITTED ENTRIES IN INSIDE
+             
+             */
 
-            var rs = await c.updateOne({name: group_name}, {$set: newAdmin}, {w: 'majority'});
 
-            var result = rs.result;
+            var group = await c.findOne({name: group_name}, {_id: 0});
 
-            if (result.n === 1 && result.nModified === 1) {
-                return "created admin succesfully.";
-            } else if (result.n === 1 && result.nModified === 0) {
-                return "member is already an admin";
-            } else {//should not happen
-                console.log(`Unexpected update result when creating group admin using mongodb update method.\n
-                             There appears to be duplicate record in group member`);
-                return  "created admin succesfully.";
+            if (!group) {
+                return 'Not a group';
             }
 
+            if (!Array.isArray(group.members)) {
+                group.members = [];
+            }
+
+            var found_member;
+            for (var i = 0; i < group.members.length; i++) {
+                if (!group.members[i].committed) {
+                    group.members.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                if (group.members[i].user_id === new_admin_user_id) {
+                    if (group.members[i].is_admin) {
+                        return "member is already an admin";
+                    }
+                    group.members[i].is_admin = true;
+                    found_member = group.members[i];
+                }
+            }
+
+            if (!found_member) {
+                return `Admin member not found - ${new_admin_user_id}`;
+            }
+
+            await c.updateOne({name: group_name}, {$set: {members: group.members}});
+
+            console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
+
+            if (group.members.length === 0) {
+                return 'No member';
+            }
+
+            return "created admin succesfully.";
+
         } catch (e) {
+            console.log(e);
             this.error('could not perform operaton.');
             return this;
         }
@@ -334,7 +396,7 @@ class Group extends WebApplication {
         return true;//a default success message will be sent
     }
 
-    async removeAdminPositon(user_id, demoted_admin_user_id, group_name) {
+    async removeAdminPosition(user_id, demoted_admin_user_id, group_name) {
 
         try {
             //find check if the user to do this is authorized - ie an admin - only admins can make another user admin
@@ -343,9 +405,13 @@ class Group extends WebApplication {
 
             //first check if the user is an admin
             var group = await c.findOne({name: group_name}, {_id: 0});
-
+            if(!group){
+                return 'Not a group';
+            }
             for (var i = 0; i < group.members.length; i++) {
-                if (group.members[i].user_id === user_id && !group.members[i].is_admin) {
+                if (group.members[i].committed
+                        && group.members[i].user_id === user_id
+                        && !group.members[i].is_admin) {
                     return "Not authorized to make another user an admin.";
                 }
             }
@@ -355,37 +421,85 @@ class Group extends WebApplication {
                 return "Cannot demote the group creator!";
             }
 
+            /**
+             * @deprecated NOT WORKING AS EXPECTED IF UNCOMMITTED ENTRIES ARE INSIDE
+             //ok you are free to make one of your members an admin
+             var demotedAdminQuery = {
+             $and: [
+             {
+             name: group_name
+             },
+             {
+             'members.user_id': demoted_admin_user_id
+             },
+             {
+             'members.is_admin': true
+             },
+             {
+             'members.committed': true
+             }
+             ]
+             };
+             
+             //using positional $ operator and dot '.' to access the user_id and set update the value
+             
+             //do not use updateOne here but rather use update - since there is possibility of duplicates of uncommitted entries
+             //which will affect the result
+             var rs = await c.update(demotedAdminQuery, {$set: {'members.$.is_admin': false}}, {w: 'majority'});
+             
+             var result = rs.result;
+             
+             if (result.n > 0 && result.nModified > 0) {
+             return "demoted user succesfully.";
+             } else if (result.n > 0 && result.nModified === 0) {
+             return "member is already not an admin";
+             }
+             */
 
-            //ok you are free to make one of your members an admin
-            var newAdmin = {
-                $and: [
-                    {
-                        name: group_name
-                    },
-                    {
-                        'members.$.user_id': demoted_admin_user_id //using positional $ operator and dot '.' to access the user_id and set update the value
-                    },
-                    {
-                        'members.$.is_admin': false //using positional $ operator and dot '.' to access the is_admin and set update the value
-                    }
-                ]
-            };
 
-            var rs = await c.updateOne({name: group_name}, {$set: newAdmin}, {w: 'majority'});
+            var group = await c.findOne({name: group_name}, {_id: 0});
 
-            var result = rs.result;
-
-            if (result.n === 1 && result.nModified === 1) {
-                return "demoted user succesfully.";
-            } else if (result.n === 1 && result.nModified === 0) {
-                return "member is already not an admin";
-            } else {//should not happen
-                console.log(`Unexpected update result when creating group admin using mongodb update method.\n
-                             There appears to be duplicate record in group member`);
-                return  "demoted user succesfully.";
+            if (!group) {
+                return 'Not a group';
             }
 
+            if (!Array.isArray(group.members)) {
+                group.members = [];
+            }
+
+            var found_member;
+
+            for (var i = 0; i < group.members.length; i++) {
+                if (!group.members[i].committed) {
+                    group.members.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                if (group.members[i].user_id === demoted_admin_user_id) {
+                    if (!group.members[i].is_admin) {
+                        return "member was not an admin!";
+                    }
+                    group.members[i].is_admin = false;
+                    found_member = group.members[i];
+                }
+            }
+
+            if (!found_member) {
+                return `Admin member not found - ${demoted_admin_user_id}`;
+            }
+
+            await c.updateOne({name: group_name}, {$set: {members: group.members}});
+
+            console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
+
+            if (group.members.length === 0) {
+                return 'No member';
+            }
+
+            return "removed admin role succesfully.";
+
         } catch (e) {
+            console.log(e);
             this.error('could not perform operaton.');
             return this;
         }
@@ -396,18 +510,18 @@ class Group extends WebApplication {
     /**
      * Used to exist  or remove member from a group
      * 
-     * @param {type} user_id - user being exited
+     * @param {type} target_user_id - user being exited
      * @param {type} exit_by user who authorized the exit -  must be either the user existing or the group admin
      * @param {type} group_name - roup name
      * @param {type} reason - reason for the exit 
      * @returns {undefined}
      */
-    async removeMember(user_id, exit_by, group_name, reason) {
+    async removeMember(target_user_id, exit_by, group_name, reason) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
-            user_id = arguments[0].user_id;
+            target_user_id = arguments[0].user_id;
             exit_by = arguments[0].exit_by;
             group_name = arguments[0].group_name;
             reason = arguments[0].reason;
@@ -418,55 +532,77 @@ class Group extends WebApplication {
 
         return group_col.findOne({name: group_name}, {_id: 0})
                 .then(function (group) {
-
+                    if(!group){
+                        return Promise.reject('Not a group');
+                    }
                     if (!Array.isArray(group.members)) {
                         group.members = [];
                     }
-                    var isAdmin = false;
-                    if (user_id !== exit_by) {//check if the exit_by is an admin
-                        for (var i in group.members) {
-                            if (group.members[i] === exit_by) {
-                                isAdmin = group.members[i].is_admin;
-                                break;
-                            }
+                    var isExitByAdmin = false;
+                    var found_member;
+                    for (var i = 0; i < group.members.length; i++) {
+                        if (!group.members[i].committed) {
+                            group.members.splice(i, 1);//remove the uncommitted member
+                            i--;
+                            continue;
+                        }
+                        if (group.members[i].user_id === exit_by) {//check if the exit_by is an admin
+                            isExitByAdmin = group.members[i].is_admin;
+                        }
+
+                        if (group.members[i].user_id === target_user_id) {
+                            found_member = group.members[i];
+                            group.members.splice(i, 1);//remove the member temporarily
+                            i--;
+                            continue;
                         }
                     }
 
-                    if (!isAdmin && user_id !== exit_by) {
-                        return "Unauthorized operation! You must either the group admin or the user being removed!";
+                    if (!found_member) {
+                        return Promise.reject(`Member not found - ${target_user_id}`);
                     }
 
-                    //also admin cannot remove the creator of the group
-                    if (isAdmin && user_id !== group.created_by) {
-                        return "Unauthorized operation! You cannot remove the group creator!";
+
+                    if (!isExitByAdmin && target_user_id !== exit_by) {
+                        return Promise.reject("Unauthorized operation! You must either be the group admin or the user being removed!");
                     }
 
                     //also the group creator cannot remove himself because with him ther is no group
-                    if (user_id === group.created_by) {
-                        return "Sorry a user cannot exit a group he created!";
+                    if (target_user_id === group.created_by) {
+                        return Promise.reject("A user cannot exit a group he created!");
                     }
 
-                    for (var i = 0; i < group.members.length; i++) {
-
-                        if (user_id === group.members[i].user_id) {
-                            group.members[i].splice(i, 1);//remove the member
-                            i--;
-                        }
+                    //effect the removal
+                    if (!Array.isArray(group.exited_members)) {
+                        group.exited_members = [];
                     }
+                    var exitedMemberObj = {};
+                    exitedMemberObj.user_id = target_user_id;
+                    exitedMemberObj.reason = reason;
+                    exitedMemberObj.exit_by = exit_by;
+                    exitedMemberObj.exit_date = new Date();
 
-                    return group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
-                }).then(function (group) {
-            if (!Array.isArray(group.exited_members)) {
-                group.exited_members = [];
-            }
-            var exitedMemberObj = {};
-            exitedMemberObj.user_id = user_id;
-            exitedMemberObj.reason = reason;
-            exitedMemberObj.exit_by = exit_by;
-            exitedMemberObj.exit_date = new Date();
+                    console.log('group.exited_members', group.exited_members);
 
-            return group_col.update({name: group_name}, {$set: {exited_members: group.exited_members}}, {w: 'majority'});
-        });
+                    group.exited_members.push(exitedMemberObj);
+                    //but first remove the group name from the 'groups_belong' field 
+                    //array of the users collection
+                    var user_col = me.sObj.db.collection(me.sObj.col.users);
+                    return user_col.updateOne({user_id: target_user_id},
+                            {$pull: {
+                                    groups_belong: group_name
+                                }}, {w: 'majority'})
+                            .then(function () {
+                                return group_col.updateOne({name: group_name},
+                                        {$set: {
+                                                members: group.members,
+                                                exited_members: group.exited_members
+                                            }}, {w: 'majority'});
+                            });
+                })
+                .then(function (group) {
+                    return 'removed successfully.';
+                });
     }
 
     /**
@@ -497,14 +633,6 @@ class Group extends WebApplication {
             for (var k = 0; k < group_members.length; k++) {
                 if (!group_members[k].committed) {
                     hasFailedUncommitMember = true;
-                    /*
-                     * 
-                     var uncommitObj = {
-                     name: group.name,
-                     member_id: group_members[k].user_id
-                     };
-                     failed_commit_members.push(uncommitObj);
-                     */
                     group_members.splice(k, 1);//delete from the list.
                     k--;//go back one step
                     continue;//skip - obviously the group member was not properly added - we will correct that
@@ -541,7 +669,7 @@ class Group extends WebApplication {
                 }
             }
 
-            group.admins = Array.isArray(group.members) ? group.admins.filter(function (member) {
+            group.admins = Array.isArray(group.members) ? group.members.filter(function (member) {
                 return member.is_admin;
             }) : [];
 
@@ -572,26 +700,34 @@ class Group extends WebApplication {
      */
     _removeFailedCommitMembers(group_names_arr) {
 
-        if (!isArray(group_names_arr)) {
+        if (!Array.isArray(group_names_arr)) {
             group_names_arr = [group_names_arr]; //convert to array
         }
 
         var c = this.sObj.db.collection(this.sObj.col.groups);
-        var objFailedCommit = {};
 
-        var field = this.sObj.col.groups + '.members.committed';
+        for (var i = 0; i < group_names_arr.length; i++) {
+            c.findOne({name: group_names_arr[i]})
+                    .then(function (group) {
+                        var group_name = group.name;
+                        if (Array.isArray(group.members)
+                                || group.members.length === 0) {
+                            return;
+                        }
+                        for (var k = 0; k < group.members.length; k++) {
+                            if (!group.members[i].committed) {
+                                group.members.splice(k, 1);
+                                k--;
+                                continue;
+                            }
+                        }
 
-        objFailedCommit[field] = false;
-
-        //using $in operator to pick the docs to update and
-        //using the $pull operator remove the elements from the array of members not committed
-        c.update({name: {$in: group_names_arr}}, {$pull: objFailedCommit}, function (err, groups) {
-            if (err) {
-                console.log(err);//DO NOT DO THIS IN PRODUCTION - LOG TO ANOTHER PROCESS INSTEAD
-                return;
-            }
-
-        });
+                        c.updateOne({name: group_name}, {$set: {members: group.members}});
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+        }
 
     }
 
@@ -644,14 +780,6 @@ class Group extends WebApplication {
                 if (!group_members[k].committed) {
                     hasFailedUncommitMember = true;
                     found_failed_commit = true;
-                    /*@deprecated not neccessary
-                     * var uncommitObj = {
-                     name: groups[i].name,
-                     member_id: group_members[k].user_id
-                     };
-                     failed_commit_members.push(uncommitObj);
-                     */
-
                     group_members.splice(k, 1);//delete from the list.
                     k--;//go back one step
                     continue;//skip - obviously the group member was not properly added - we will correct that

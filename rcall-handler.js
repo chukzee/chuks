@@ -200,8 +200,11 @@ class RCallHandler {
     }
 
     sendReturnedError(errObj) {
+        
         var errMsg;
-        if (errObj instanceof WebApplication) {//the user return the error as result type
+        if (typeof errObj === 'string') {//the user return the error as string type
+            errMsg = errObj;
+        } else if (errObj instanceof WebApplication) {//the user return the error as WebApplication type
             errMsg = errObj.lastError;
         } else if (errObj instanceof Error) {//we will assume the error
             //  message is not user defined e.g io error so we will not show 

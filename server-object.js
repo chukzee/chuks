@@ -88,6 +88,10 @@ class ServerObject {
     get PROCESS_NS(){
         return this._proess_namespace;
     }
+    
+    get MAX_SESSION_PER_SAME_USER(){
+        return 10;
+    }
 
     get MAX_GROUP_MEMBERS() {
         return 300;
