@@ -73,7 +73,7 @@ class WebApplication {
                 is_broadcast: true,
                 data: _data,
                 user_ids: user_ids,
-                socket_ids: socket_ids,//array of arrays
+                socket_ids: socket_ids, //array of arrays
                 event_name: event_name,
                 acknowledge_delivery: acknowledge_delivery
             };
@@ -94,6 +94,64 @@ class WebApplication {
         this._lastError = reason;
         this._isError = !this.success;
         return this;
+    }
+
+    /**
+     * This method tries an operation for certain number
+     * of times asynchronously. 
+     * 
+     * @param {type} func - function to call 
+     * @param {type} _times - number of times to try
+     * @param {type} _wait_mills - delay before next try
+     * @returns {Promise}
+     */
+    _tryWith(func,_times, _wait_mills) {
+        var argu = [];
+        if(arguments.length > 3){
+            for(var i= 3; i < arguments.length; i++){
+                argu.push(arguments[i]);
+            }
+        }
+        
+        var time = _times || 10;
+        var wait_mills = _wait_mills || 50;
+        var try_count = 0;
+        var me = this;
+        
+        return new Promise(function (resolve, reject) {
+            run();
+            async function run() {
+                try_count++;
+                if (try_count > time) {
+                    return resolve(false);//resolve as false - do not reject!
+                }
+
+                try {
+                    if (await func.apply(me, argu)) {
+                        return resolve(true);//resolve as true
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+
+                console.log('setTimeout ', try_count);
+
+                setTimeout(run, wait_mills);
+            }
+
+        });
+    }
+
+    /**
+     * Called after the request for this class is done with.
+     * 
+     * This method will be implemented by subclassess
+     * 
+     * 
+     * @returns {undefined}
+     */
+    _onFinish() {
+
     }
 
     get lastError() {

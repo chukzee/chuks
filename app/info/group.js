@@ -9,6 +9,93 @@ class Group extends WebApplication {
     constructor(sObj, util, evt) {
         super(sObj, util, evt);
     }
+    
+
+    async _lock(group_name) {
+        console.log('here 1');
+        if(this._is_lock){
+            if(this._group_name_lock !== group_name){
+                throw new Error('Cannot lock more than one groups.');
+            }
+            return true;
+        }
+        console.log('here 2');
+        try {
+            var c = this.sObj.db.collection(this.sObj.col.groups);
+            
+            console.log('group_name', group_name);
+            console.log(await c.findOne({name: group_name}));//TESTING!!!
+            
+            var r = await c.updateOne({name: group_name}, {
+                $set: {
+                    _lock: true
+                }});
+
+           console.log('r.result.nModified', r.result.nModified);
+           console.log('r.result', r.result);
+           
+            if (r.result.nModified === 0) {
+                return false;
+            }
+
+            r = await c.updateOne({name: group_name}, {
+                $set: {
+                    _lock_time: new Date(),
+                    _lock_process_ns: this.sObj.PROCESS_NS
+                }});
+
+        } catch (e) {
+
+            console.log(e);
+
+            return false;
+        }
+        
+        this._group_name_lock = group_name;
+        
+        this._is_lock = true;
+        console.log('here 3');
+        return this._is_lock;
+    }
+
+    async _unlock() {
+        if (!this._is_lock) {
+            return;
+        }
+        try {
+            var c = this.sObj.db.collection(this.sObj.col.groups);
+
+            await c.updateOne({name: this._group_name_lock}, {
+                $set: {
+                    _lock: false,
+                    _lock_time: new Date(),
+                    _lock_process_ns: this.sObj.PROCESS_NS
+                }});
+
+        } catch (e) {
+            console.log(e);
+        }
+
+    }
+    
+    _onFinish(){
+        this._unlock();
+    }
+    
+    set _group_name_lock(name) {
+        this._grp_name_lock = name;
+    }
+    
+    get _group_name_lock() {
+        return this._grp_name_lock;
+    }
+    set _is_lock(b) {
+        this._islock = b;
+    }
+
+    get _is_lock() {
+        return this._islock;
+    }
 
     /**
      * Send group join request to a user. Only group admin can
@@ -116,7 +203,16 @@ class Group extends WebApplication {
     }
 
     async _addToGroup(user_id, group_name, is_admin) {
-
+        
+        //acquire lock with the specified number of trials
+        var lock_result = await this._tryWith(this._lock, 3, 0, group_name);
+        
+        console.log('lock_result', lock_result);
+        
+        if(!lock_result){
+            return 'Please try again later!'; //failed to acquire lock after the specifed number of trials
+        }
+        
         var group_col = this.sObj.db.collection(this.sObj.col.groups);
         var me = this;
         var memberObj = {};
@@ -124,7 +220,7 @@ class Group extends WebApplication {
 
         return group_col.findOne({name: group_name}, {_id: 0})
                 .then(function (group) {
-                    if(!group){
+                    if (!group) {
                         return Promise.reject('Not a group');
                     }
                     if (!Array.isArray(group.members)) {
@@ -177,8 +273,8 @@ class Group extends WebApplication {
     }
 
     async createGroup(user_id, group_name, status_message, photo_url) {
-        
-        
+
+
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
@@ -405,7 +501,7 @@ class Group extends WebApplication {
 
             //first check if the user is an admin
             var group = await c.findOne({name: group_name}, {_id: 0});
-            if(!group){
+            if (!group) {
                 return 'Not a group';
             }
             for (var i = 0; i < group.members.length; i++) {
@@ -532,7 +628,7 @@ class Group extends WebApplication {
 
         return group_col.findOne({name: group_name}, {_id: 0})
                 .then(function (group) {
-                    if(!group){
+                    if (!group) {
                         return Promise.reject('Not a group');
                     }
                     if (!Array.isArray(group.members)) {

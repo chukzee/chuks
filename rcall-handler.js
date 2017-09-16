@@ -158,12 +158,28 @@ class RCallHandler {
 
         var rtv = method.apply(classInstance, param ? param : []);
         promise_arr.push(rtv);
-
+        
         if (promise_arr.length === count) {
             //promise all
             Promise.all(promise_arr)
-                    .then(this.sendReturnedValues.bind(this))//send all the success values
-                    .catch(this.sendReturnedError.bind(this));//send the failed result if promise is rejected
+                    .then(function (value) {
+                        this.sendReturnedValues.bind(this)(value);//send all the success values
+                        try {
+                            classInstance._onFinish();
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                    }.bind(this))
+                    .catch(function (value) {
+                        this.sendReturnedError.bind(this)(value);//send the failed result if promise is rejected
+                        try {
+                            classInstance._onFinish();
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                    }.bind(this));
         }
     }
 
@@ -200,7 +216,7 @@ class RCallHandler {
     }
 
     sendReturnedError(errObj) {
-        
+
         var errMsg;
         if (typeof errObj === 'string') {//the user return the error as string type
             errMsg = errObj;
