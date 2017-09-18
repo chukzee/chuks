@@ -39,6 +39,31 @@ module.exports = function () {
         return typeof str === 'string';
     };
 
+    this.findMissing = function (arr1, arr2, func) {
+        var smaller = arr1;
+        var bigger = arr2;
+        if(smaller.length > bigger.length){
+             smaller = arr2;
+             bigger = arr1;
+        }
+        
+        if (smaller.length < bigger.length) {
+            for (var i = 0; i < bigger.length; i++) {
+                var found = false;
+                for (var k = 0; k < smaller.length; k++) {
+                    if (func(smaller[k], bigger[i])) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    return bigger[i];
+                }
+            }
+        }
+
+    };
+
     return this;
 }();
 

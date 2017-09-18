@@ -19,7 +19,7 @@ class PlayRequest extends WebApplication {
      * @returns {undefined}
      */
     async sendRequest(initiator_id, opponent_ids, game_name, game_rules) {
-        
+
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
@@ -28,9 +28,9 @@ class PlayRequest extends WebApplication {
             game_name = arguments[0].game_name;
             game_rules = arguments[0].game_rules;
         }
-        
+
         try {
-            
+
             if (!Array.isArray(opponent_ids)) {
                 opponent_ids = [opponent_ids]; //convert to array
             }
@@ -42,29 +42,36 @@ class PlayRequest extends WebApplication {
             }
 
             var game = this.sObj.game.get(game_name);
-            if(!game){
+            if (!game) {
                 return 'unknown game -' + game_name;
             }
-            
-            if(game.maxPlayers() > opponent_ids.length + 1){//plus the initiator
-                return this.error(game_name + " requires "+ game.maxPlayers() + " players maximum!.");
-            }            
-            
+
+            if (game.maxPlayers() > opponent_ids.length + 1) {//plus the initiator
+                return this.error(game_name + " requires " + game.maxPlayers() + " players maximum!.");
+            }
+
             var c = this.sObj.db.collection(this.sObj.col.matches);
 
             //check if the request user is playing game and terminate the request if true
             //but if the use game is paused the play request can still go on. Only live
             //game can stop the request
 
+            var players_ids = [];
 
-            if (opponent_ids.length <= 3) {
+            players_ids.push(initiator_id);// push in the initiator as the first player
+
+            for (var i = 0; i < opponent_ids.length; i++) {
+                players_ids.push(opponent_ids[i]);// push the other players in
+            }
+
+            if (players_ids.length <= 3) {
                 //ok for few opponents run the query individually - not much load wil be experienced  
-                for (var i = 0; i < opponent_ids.length; i++) {
+                for (var i = 0; i < players_ids.length; i++) {
                     var match = await c.findOne(
                             {
                                 $and: [
                                     {game_status: 'live'},
-                                    {'players.user_id': opponent_ids[i]}
+                                    {'players.user_id': players_ids[i]}
                                 ]});
 
                     if (match) {
@@ -79,17 +86,17 @@ class PlayRequest extends WebApplication {
                 //run a combined query - we do not want to over load the server
                 //if the query is much
                 var combined_query = {$or: []};
-                for (var i = 0; i < opponent_ids.length; i++) {
+                for (var i = 0; i < players_ids.length; i++) {
                     combined_query.$or.push({
                         $and: [
                             {game_status: 'live'},
-                            {'players.user_id': opponent_ids[i]}
+                            {'players.user_id': players_ids[i]}
                         ]});
                 }
                 var match = await c.findOne(combined_query);
                 if (match) {
                     return {
-                        msg: opponent_ids.length === 1 ? "Player already engaged in a match." : "One or more players already engaged in a match.",
+                        msg: players_ids.length === 1 ? "Player already engaged in a match." : "One or more players already engaged in a match.",
                         engaged_user_id: null, //in this case it is not provided - so the client must check  for null
                         match: match
                     };
@@ -101,25 +108,41 @@ class PlayRequest extends WebApplication {
             var c = this.sObj.db.collection(this.sObj.col.play_requests);
 
             var game_id = this.sObj.UniqueNumber; //assign unique number to the game id
-            var players = [];
 
-            players.push(initiator_id);// push in the initiator as the first player
+            var required_fields = ['first_name', 'last_name', 'photo_url'];
+            var user = new User(this.sObj, this.util, this.evt);
+            var players = user.getInfoList(players_ids, required_fields);
 
-            for (var i = 0; i < opponent_ids.length; i++) {
-                players.push(opponent_ids[i]);// push the other players in
+            if (user.lastError) {
+                return this.error('could to send play request.');
             }
+
+            if(!Array.isArray(players)){
+                console.log('This should not happen! user info list must return an array if not error was caught!');
+                return this.error('could to send play request.');
+            }
+
+            //check if the player info list is complete - ie match  the number requested for
             
+            var missing = this.util.findMissing(players_ids, players, function(p_id, p_info){
+                return p_id === p_info.user_id;
+            });
+
+            if(missing){
+                //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
+                return this.error('could not find player with user id - ' + missing);
+            }
+
             var data = {
                 game_id: game_id,
                 game_name: game_name,
                 game_rules: game_rules,
                 players: players
             };
-            
+
             await c.insertOne(data);
 
             //notify the other user(s)
-            
             this.broadcast(this.evt.play_request, data, opponent_ids);
 
             //set the expiry of the play request

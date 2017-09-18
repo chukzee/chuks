@@ -183,6 +183,8 @@ class Match extends WebApplication {
             return 'Not available!';
         }
 
+
+
         //modify accordingly and relocate the match obect to the 'matches' colllection
 
         //but first add some more player info
@@ -193,17 +195,45 @@ class Match extends WebApplication {
                 players_ids[i] = mtcObj.players[i].user_id;
             }
         }
+                
         var required_fields = ['first_name', 'last_name', 'photo_url'];
-        var users = user.getInfoList(players_ids, required_fields);
-        if (!Array.isArray(users)) {
-            return 'could not start match - no player info';
+        var players = user.getInfoList(players_ids, required_fields);
+
+        //check if the player info list is complete - ie match  the number requested for
+
+        var missing = this.util.findMissing(players_ids, players, function (p_id, p_info) {
+            return p_id === p_info.user_id;
+        });
+
+        if (missing) {
+            //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
+            return this.error('could not find player with user id - ' + missing);
+        }
+        
+        
+        //set playing status
+        var success_play_start;
+        var player_engaged;
+        for(var i = 0; i<players.length; i++){
+            success_play_start = await user.setPlaying(players[i.user_id]);
+            if(!success_play_start){
+                player_engaged = players;
+                break;
+            }
+        }
+        
+        if(!player_engaged){
+            return this.error({//clent should take note of this error object
+                player : player_engaged,
+                play_status: true //already engaged
+            });
         }
 
         var default_rules = this.sObj.game.get(mtcObj.game_name).getDefautRules();
 
         //set the players as available
         for (var i = 0; i < user.length; i++) {
-            users.available = true;//important! used to determine when a player abandons a game in which case it is set to false
+            players.available = true;//important! used to determine when a player abandons a game in which case it is set to false
         }
 
         var match = {
@@ -215,7 +245,7 @@ class Match extends WebApplication {
             game_status: 'live',
             game_start_time: new Date(),
             moves: [], //game position
-            players: users
+            players: players
         };
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
@@ -226,7 +256,7 @@ class Match extends WebApplication {
         }
 
         //broadcast the game start event to all the players concern
-        match.players = users;
+        match.players = players;
         this.broadcast(this.evt.game_start, match, players_ids);
 
         return 'game started successfully';
