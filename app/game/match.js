@@ -65,17 +65,10 @@ class Match extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.matches);
         var me = this;
 
-        //check if the move already exist - the move alread exist if its
-        //serial number match any in the document of this game id
-        c.findOne({game_id: game_id, 'moves.seria_no': move.serial_no})
-                .then(function (match) {
-                    if (match) {
-                        return; //move already stored so avoid duplicate
-                    }
-                    return c.updateOne({game_id: game_id}, {$push: {moves: move}}); //moves array is the game position of the the game. it holds all the move of the game
-                })
+
+        c.c.updateOne({game_id: game_id}, {$push: {moves: move}})//moves array is the game position of the the game. it holds all the move of the game
                 .then(function (result) {
-                    if(!result){
+                    if (!result) {
                         return;
                     }
                     //Acknowlege move sent by notifying the player that
@@ -84,7 +77,11 @@ class Match extends WebApplication {
                     return me.send(me.evt.game_move_sent, data, user_id);
                 })
                 .catch(function (err) {
-                    console.log(err);
+                    if (~err.message.indexOf('11000')) {
+                        //move already stored hence the duplicate key exception!
+                    } else {
+                        console.log(err);
+                    }
                 });
 
 
@@ -124,8 +121,6 @@ class Match extends WebApplication {
 
             var c = this.sObj.db.collection(this.sObj.col.matches);
 
-            //check if the move already exist - the move alread exist if its
-            //serial number match any in the document of this game id
             var match = await c.findOne({game_id: game_id});
 
         } catch (e) {
@@ -430,10 +425,10 @@ class Match extends WebApplication {
             match.game_end_time = new Date();//set the time the match ended
             match.score = score;
             match.is_draw = winner_user_id ? false : true;
-            if(winner_user_id){
+            if (winner_user_id) {
                 match.winner = winner_user_id;
             }
-            
+
             await c.insertOne(match);
 
         } catch (e) {

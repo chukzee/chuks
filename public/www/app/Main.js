@@ -650,10 +650,12 @@ var Main = {};
                 sucFnList[uniqueNo] = successFn;
                 errFnList[uniqueNo] = errorFn;
 
-                socket.emit('rcall_request', data);
+                socket.emit('rcall_request', data, rioCallback);
             };
 
-
+            function rioCallback(err){//is this really called - confirm later!
+                alert(err);
+            }
 
             function sock() {
 
@@ -4174,14 +4176,14 @@ var Main = {};
         };
 
         /**
-         * Create the the relevant namepace object of the file<br>
+         * Create the relevant namepace object of the file<br>
          * e.g if the file name is /path/to/long/Filename.js<br>
          * and the app namespace is MyApp then the object MyApp.path.to.long 
-         * will be create in the order below:<br>
+         * will be created in the order below:<br>
          * <br>
          * MyApp.path = {}<br>
          * MyApp.path.to = {}<br>
-         * MyApp.pathto.long = {}<br>
+         * MyApp.path.to.long = {}<br>
          * 
          * @param {type} file
          * @returns {undefined}

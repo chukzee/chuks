@@ -148,9 +148,4 @@ class Solitaire extends BaseGame{
 };
 
 
-module.exports = Game;
-module.exports = Chess;
-module.exports = Draft;
-module.exports = Ludo;
-module.exports = Solitaire;
-module.exports = Whot;
+module.exports = new Game();

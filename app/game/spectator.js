@@ -6,7 +6,7 @@
 var WebApplication = require('../web-application');
 var User = require('../info/user');
 
-class Match extends WebApplication {
+class Spectator extends WebApplication {
 
     constructor(sObj, util, evt) {
         super(sObj, util, evt);
@@ -155,3 +155,5 @@ class Match extends WebApplication {
     }
 
 }
+
+module.exports = Spectator;

@@ -204,7 +204,7 @@ class Group extends WebApplication {
             committed: !commit ? false : true
         };
     }
-
+    
     async _addToGroup(user_id, group_name, is_admin) {
         
         //acquire lock with the specified number of trials
@@ -226,10 +226,11 @@ class Group extends WebApplication {
                     if (!group) {
                         return Promise.reject('Not a group');
                     }
+                                        
                     if (!Array.isArray(group.members)) {
                         group.members = [];
-                    }
-
+                    }                   
+                                        
                     if (group.members.length >= me.sObj.MAX_GROUP_MEMBERS) {
                         return Promise.reject("Maximum group members exceeded! Limit allowed is " + me.sObj.MAX_GROUP_MEMBERS + ".");
                     }
@@ -252,24 +253,13 @@ class Group extends WebApplication {
                     group.members.push(memberObj);
 
                     group_members = group.members; // set the group memeber - 
-                    //will be needed dow nbelow for committing this operation
-
-                    return  group_col.updateOne({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
+                    //will be needed down below for committing this operation
+                    
+                    return  group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
                 })
                 .then(function () {
                     var user_col = me.sObj.db.collection(me.sObj.col.users);
-                    return user_col.findOne({user_id: user_id}, {_id: 0})
-                            .then(function (user) {
-                                if (!Array.isArray(user.groups_belong)) {
-                                    user.groups_belong = [];
-                                }
-
-                                if (user.groups_belong.indexOf(group_name) === -1) {
-                                    user.groups_belong.push(group_name);
-                                }
-
-                                return  user_col.updateOne({user_id: user_id}, {$set: {groups_belong: user.groups_belong}}, {w: 'majority'});
-                            });
+                    return  user_col.updateOne({user_id: user_id}, {$addToSet: {groups_belong: group_name}}, {w: 'majority'});
                 })
                 .then(function () {
                     //now commit the change
@@ -283,8 +273,8 @@ class Group extends WebApplication {
     }
 
     async createGroup(user_id, group_name, status_message, photo_url) {
-
-
+        
+    
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {

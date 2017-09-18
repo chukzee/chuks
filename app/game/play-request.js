@@ -35,14 +35,20 @@ class PlayRequest extends WebApplication {
                 opponent_ids = [opponent_ids]; //convert to array
             }
 
+            for (var i = 0; i < opponent_ids.length; i++) {
+                if (initiator_id === opponent_ids[i]) {
+                    return this.error('You cannot send play request to yourself!');
+                }
+            }
+
             var game = this.sObj.game.get(game_name);
             if(!game){
                 return 'unknown game -' + game_name;
             }
             
             if(game.maxPlayers() > opponent_ids.length + 1){//plus the initiator
-                return game_name + " requires "+ game.maxPlayers() + " players.";
-            }
+                return this.error(game_name + " requires "+ game.maxPlayers() + " players maximum!.");
+            }            
             
             var c = this.sObj.db.collection(this.sObj.col.matches);
 
@@ -52,7 +58,7 @@ class PlayRequest extends WebApplication {
 
 
             if (opponent_ids.length <= 3) {
-                //ok for few opponents run the query individually - not much load wil be experience  
+                //ok for few opponents run the query individually - not much load wil be experienced  
                 for (var i = 0; i < opponent_ids.length; i++) {
                     var match = await c.findOne(
                             {
@@ -61,7 +67,7 @@ class PlayRequest extends WebApplication {
                                     {'players.user_id': opponent_ids[i]}
                                 ]});
 
-                    if (!match) {
+                    if (match) {
                         return {
                             msg: "Player already engaged in a match.",
                             engaged_user_id: opponent_ids[i], //so that the client can specify which user is actually engaged
@@ -70,8 +76,8 @@ class PlayRequest extends WebApplication {
                     }
                 }
             } else {//for many opponents
-                //run an combined query - we do not want to over load the server
-                //is the query is much
+                //run a combined query - we do not want to over load the server
+                //if the query is much
                 var combined_query = {$or: []};
                 for (var i = 0; i < opponent_ids.length; i++) {
                     combined_query.$or.push({
@@ -81,10 +87,10 @@ class PlayRequest extends WebApplication {
                         ]});
                 }
                 var match = await c.findOne(combined_query);
-                if (!match) {
+                if (match) {
                     return {
                         msg: opponent_ids.length === 1 ? "Player already engaged in a match." : "One or more players already engaged in a match.",
-                        engaged_user_id: null, //in this case it is not provided - so the client must check 
+                        engaged_user_id: null, //in this case it is not provided - so the client must check  for null
                         match: match
                     };
                 }
@@ -112,7 +118,7 @@ class PlayRequest extends WebApplication {
             
             await c.insertOne(data);
 
-            //notify the other user
+            //notify the other user(s)
             
             this.broadcast(this.evt.play_request, data, opponent_ids);
 
@@ -126,7 +132,7 @@ class PlayRequest extends WebApplication {
             return this;
         }
 
-
+        return 'play request sent successfully.';
 
     }
 

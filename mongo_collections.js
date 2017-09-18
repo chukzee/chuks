@@ -5,10 +5,10 @@ var collections = ['users',
     'groups',
     'group_join_requests',
     'tournaments',
-    'matches',//store only live and paused matches
-    'match_fixtures',//stores matches schedules to begin in specified time - using in tournament - but can be done by group member too
-    'match_history',//store abandon , cancelled and finnished match
-    'play_requests',//stores play requests - this expires after certain period of time
+    'matches', //store only live and paused matches
+    'match_fixtures', //stores matches schedules to begin in specified time - using in tournament - but can be done by group member too
+    'match_history', //store abandon , cancelled and finnished match
+    'play_requests', //stores play requests - this expires after certain period of time
     'spectators', //expires every certain period - say 24 hours - so create an index to take care of that
     'comments', //
     'chats',
@@ -29,7 +29,7 @@ module.exports = function () {
             }
         };
 
-        
+
         //users
         db.collection(col.users).ensureIndex({
             user_id: 1
@@ -52,7 +52,8 @@ module.exports = function () {
 
         //groups
         db.collection(col.groups).ensureIndex({
-            name: 1
+            name: 1,
+            'members.user_id': 1// come back to check for correctness
         }
         , uinqueObj, callback);
 
@@ -66,10 +67,12 @@ module.exports = function () {
             authorization_token: 1
         }
         , uinqueObj, callback);
-        
+
         //tournaments
         db.collection(col.tournaments).ensureIndex({
-            name: 1
+            name: 1,
+            'officials.user_id': 1,// come back to check for correctness
+            'players.user_id': 1// come back to check for correctness
         }
         , uinqueObj, callback);
 
@@ -78,61 +81,62 @@ module.exports = function () {
             officials: 1
         }
         , callback);
-        
-        
+
+
         //matches
         db.collection(col.matches).ensureIndex({
-            game_id: 1
+            game_id: 1,
+            'moves.serial_no': 1// come back to check for correctness
         }
-        ,uinqueObj, callback);
-        
+        , uinqueObj, callback);
+
         db.collection(col.matches).ensureIndex({
             players: 1,
-            'players.user_id':1,// come back to check for correctness
-            game_name : 1,
-            game_status : 1
+            'players.user_id': 1, // come back to check for correctness
+            game_name: 1,
+            game_status: 1
         }
         , callback);
-        
+
         //match_fixtures        
         db.collection(col.match_fixtures).ensureIndex({
             game_id: 1
         }
-        ,uinqueObj, callback);
-        
+        , uinqueObj, callback);
+
         db.collection(col.match_fixtures).ensureIndex({
             players: 1,
-            'players.user_id':1,// come back to check for correctness
-            game_name : 1,
-            game_start_time : 1
+            'players.user_id': 1, // come back to check for correctness
+            game_name: 1,
+            game_start_time: 1
         }
         , callback);
-        
+
         //match_history
         db.collection(col.match_history).ensureIndex({
             game_id: 1
         }
-        ,uinqueObj, callback);
-        
+        , uinqueObj, callback);
+
         db.collection(col.match_history).ensureIndex({
             players: 1,
-            'players.user_id':1,// come back to check for correctness
-            game_name : 1,
-            game_status : 1
+            'players.user_id': 1, // come back to check for correctness
+            game_name: 1,
+            game_status: 1
         }
         , callback);
-        
+
         //play_requests
         db.collection(col.play_requests).ensureIndex({
             game_id: 1
         }
-        ,uinqueObj, callback);
-        
+        , uinqueObj, callback);
+
         db.collection(col.play_requests).ensureIndex({
             players: 1,
-            'players.user_id':1,// come back to check for correctness
-            game_name : 1,
-            request_time : 1
+            'players.user_id': 1, // come back to check for correctness
+            game_name: 1,
+            request_time: 1
         }
         , callback);
 
@@ -143,13 +147,13 @@ module.exports = function () {
             game_start_time: 1 //this will be be used to expire the document
         }
         , {expireAfterSeconds: 24 * 60 * 60}, callback);
-        
-        
+
+
         db.collection(col.spectators).ensureIndex({
             game_id: 1,
             user_id: 1
         }
-        ,  callback);
+        , callback);
 
     };
 
@@ -166,7 +170,7 @@ module.exports = function () {
     this.geCollections = function () {
         return col;
     };
-return this;
+    return this;
 };
 
 

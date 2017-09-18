@@ -1,7 +1,8 @@
 
 
 var mgcol = require('./mongo_collections')();
-var task = require('./app/task');
+var util = require('./util/util');
+var Task = require('./app/task');
 var game = require('./app/game/game');
 var shortid = require('shortid');
 var moment = require('moment');
@@ -19,6 +20,7 @@ class ServerObject {
         this._db = db;
         this._redis = redis;
         this._game = game;
+        this._task = new Task(this, util);
         //for every startup a unique number is initialized
         initial_unique = crypto.randomBytes(48)//secure random number
                 .toString('base64')//to base64
@@ -110,7 +112,7 @@ class ServerObject {
     }
     
     get task(){
-        return task;
+        return this._task;
     }
     
     get db() {
@@ -130,7 +132,7 @@ class ServerObject {
     }
 
     get game(){
-        this._game;
+        return this._game;
     }
 
     get col() {

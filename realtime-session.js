@@ -348,13 +348,14 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
                                                     return sObj.redis.publish(sObj.PUBSUB_USER_SESSION_SIZE_EXCEEDED, oldest_socket_id);
                                                 })
                                                 .catch(function (err) {
-                                                    console.log(err);//what can we do anyway - unfortunate
+                                                    console.log(err);//what can we do anyway?  unfortunate!
                                                 });
                                     }
                                 }
                             });
                 })
                 .catch(function (err) {
+                    console.log(err);
                     //if something went wrong then close the socket
                     socket.disconnect(true);//set to true to close the underlying connection
                 });
