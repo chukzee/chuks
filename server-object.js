@@ -12,7 +12,7 @@ var unique_count = 0;
 
 class ServerObject {
 
-    constructor(db, redis) {
+    constructor(db, redis, evt) {
 
         mgcol = mgcol.init(db);
         this._col = mgcol.geCollections();
@@ -20,7 +20,7 @@ class ServerObject {
         this._db = db;
         this._redis = redis;
         this._game = game;
-        this._task = new Task(this, util);
+        this._task = new Task(this, util , evt);
         //for every startup a unique number is initialized
         initial_unique = crypto.randomBytes(48)//secure random number
                 .toString('base64')//to base64

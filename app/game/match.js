@@ -164,13 +164,13 @@ class Match extends WebApplication {
                     player_engaged = players[i];
                     break;
                 }
-                var play_status_obj = await user.setPlaying(players[i].user_id);
+                var play_status_obj = await user._setPlaying(players[i].user_id);
                 if (play_status_obj.lastError) {//
                     return this.error('could not resume game');
                 }
                 was_idle.push({
                     player: players[i],
-                    marked_time: play_status_obj.play_modified_time
+                    marked_time: play_status_obj.play_begin_time
                 });
             }
 
@@ -179,14 +179,17 @@ class Match extends WebApplication {
         if (!player_engaged) {
             return true;
         }
+        
+        //at this point a player is engaged to roll back any changes made already
 
+        //
         for (var i = 0; i < was_idle.length; i++) {
             var was_idle_player = was_idle[i].player;
             var marked_time = was_idle[i].marked_time;
             //making sure the play status did not change between the time will
             //marked it and now
-            if (was_idle_player.play_modified_time === marked_time) {
-                await user.unsetPlaying(was_idle_player.user_id);
+            if (was_idle_player.play_begin_time === marked_time) {
+                await user._unsetPlaying(was_idle_player.user_id);
             }
         }
 
@@ -195,7 +198,6 @@ class Match extends WebApplication {
             player: player_engaged, //so we can access the player info
             play_status: true //already engaged
         });
-
 
     }
 
@@ -416,7 +418,7 @@ class Match extends WebApplication {
         };
 
         var user = new User(this.sObj, this.util, this.evt);
-        user.unsetPlaying(user_id);
+        user._unsetPlaying(user_id);
 
         this.broadcast(this.evt.game_pause, data, users_ids); //broadcast to players except user_id
 
@@ -459,7 +461,7 @@ class Match extends WebApplication {
             }
 
             var user = new User(this.sObj, this.util, this.evt);
-            user.unsetPlaying(user_id);
+            user._unsetPlaying(user_id);
 
         } catch (e) {
             this.error('could not abandon game');
@@ -543,7 +545,7 @@ class Match extends WebApplication {
         for (var i = 0; i < match.players.length; i++) {
             users_ids.push(match.players[i].user_id);
             if (match.players[i].available) {
-                user.unsetPlaying(match.players[i].user_id);
+                user._unsetPlaying(match.players[i].user_id);
             }
         }
 

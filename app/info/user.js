@@ -10,18 +10,46 @@ class User extends WebApplication {
         super(sObj, util, evt);
         this.crypto = crypto;
     }
-    
-    async setPlaying(user_id){
-        
+
+    async _setPlaying(user_id) {
+
+        try {
+            var r = await c.findOneAndUpdate({user_id: user_id},
+                    {$set: {
+                            playing: true,
+                            play_begin_time: new Date().getTime() //must be long type - the last play start or resume time
+                        }},
+                    {
+                        projection: {_id: 0, playing: 1, play_begin_time: 1},
+                        returnOriginal: false //return the updated document
+                    }
+            );
+        } catch (e) {
+            console.log(e);
+            return this.error('could not modify playing status');
+        }
+
         //must return object of this properties - do not change!
         return {
-            playing : true,
-            play_modified_time : play_modified_time
+            playing: true,
+            play_begin_time: r.play_begin_time
         };
     }
-    
-    async unsetPlaying(user_id){
-        
+
+    async _unsetPlaying(user_id) {
+        var c = this.sObj.db.collection(this.sObj.col.users);
+        try {
+            var r = await c.updateOne({user_id: user_id},
+                    {$set: {//NOTE: does not require setting play begin time
+                            playing: false
+                        }
+                    });
+        } catch (e) {
+            console.log(e);
+            return this.error('could not modify playing status');
+        }
+
+        return true;
     }
 
     async login(phone_no, password) {
@@ -65,7 +93,6 @@ class User extends WebApplication {
      * @returns {nm$_user.User|String}
      */
     async register(phone_no, password, email, country) {
-
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -126,7 +153,6 @@ class User extends WebApplication {
                 resolve(hash);
             });
         });
-
 
         return {
             salt: salt,
@@ -272,11 +298,11 @@ class User extends WebApplication {
             if (!Array.isArray(user_id_arr)) {
                 return [];
             }
-            
+
             if (user_id_arr.length === 0) {
                 return [];
             }
-            
+
             var project = {};
             project._id = 0; //hide this field
             if (Array.isArray(required_fields)) {
