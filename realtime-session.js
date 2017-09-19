@@ -5,8 +5,55 @@ var RCallHandler = require('./rcall-handler');
 var subscriber = new Redis();
 var rcallIO, sObj, util, evt;
 var unidentified_sock_ids = {};
+var once_retry_delivery = [];//array of objects
+var DELIVER_RETRY_INTERVAL = 60000;
 
 setInterval(checkUnidentifiedSock, 5000);
+
+setInterval(onceRetryDelivery, DELIVER_RETRY_INTERVAL);
+
+/**
+ * This method is called at interval to check of undelivered messages (ie message
+ * whose acknowledgement has not been received by any of the server instance).
+ * The method only tries to check once for these undelivered messages after 
+ * a given time and immediately delete it from the list.
+ * Other push mechanism we have aborted in this server will
+   ensure the message is eventually pushed to the client when he is online.
+ * 
+ * @returns {undefined}
+ */
+function onceRetryDelivery() {
+    var now = new Date().getTime();
+    for (var i = 0; i < once_retry_delivery.length; i++) {
+        var obj = once_retry_delivery[i];
+        var elapse_mills = now - obj.msg_time;
+        if(elapse_mills < DELIVER_RETRY_INTERVAL ){
+            continue;
+        }
+        
+        sObj.redis.lrange("user_message_queue:" + obj.user_id, 0, -1)
+                .then(doOnceRetryDeliveryMsg.bind(obj))// avoid closure bug by using bind function
+                .catch(function (err) {
+                    console.log(err);
+                });
+
+        //remove since we will only try it once - other push mechanism we have aborted here will
+        //ensure the message is eventually pushed to the client when he is online
+        once_retry_delivery.slice(i, 1);
+        i--;
+    }
+}
+
+function doOnceRetryDeliveryMsg(arr) {
+    for (var i = 0; i < arr.length; i++) {
+        var d = JSON.parse(arr[i]);
+        if (this.ack_msg_id === d.ack_msg_id) {
+            sObj.redis.publish(sObj.PUBSUB_DELIVERY_RESEND, arr[i]);
+            break;
+        }
+    }
+}
+
 
 function checkUnidentifiedSock() {
     if (!rcallIO) {
@@ -41,13 +88,13 @@ function init() {
         console.log("subcribed to : " + sObj.PUBSUB_DELIVER_MESSAGE);
     });
 
-    subscriber.subscribe(sObj.PUBSUB_ACKNOWLEDGE_DELIVERY_RESEND, function (err, count) {
+    subscriber.subscribe(sObj.PUBSUB_DELIVERY_RESEND, function (err, count) {
         if (err !== null) {
-            console.error("FAILED!!! Could not subcrbe " + sObj.PUBSUB_ACKNOWLEDGE_DELIVERY_RESEND);
+            console.error("FAILED!!! Could not subcrbe " + sObj.PUBSUB_DELIVERY_RESEND);
             return;
         }
 
-        console.log("subcribed to : " + sObj.PUBSUB_ACKNOWLEDGE_DELIVERY_RESEND);
+        console.log("subcribed to : " + sObj.PUBSUB_DELIVERY_RESEND);
     });
 
     subscriber.subscribe(sObj.PUBSUB_USER_SESSION_SIZE_EXCEEDED, function (err, count) {
@@ -78,8 +125,8 @@ function init() {
             case sObj.PUBSUB_DELIVER_MESSAGE:
                 deliverMessage(message);
                 break;
-            case sObj.PUBSUB_ACKNOWLEDGE_DELIVERY_RESEND:
-                acknowledgeDeliveryResend(message);
+            case sObj.PUBSUB_DELIVERY_RESEND:
+                deliveryResend(message);
                 break;
             case sObj.PUBSUB_USER_SESSION_SIZE_EXCEEDED:
                 closeUserSocket(message);
@@ -129,12 +176,19 @@ function verifyOnlineStatus(user_id) {
  * But do not expect acknowledgement for the sending.
  * So remove any acknowledgement flag before sending.
  * 
- * @param {type} data
+ * @param {type} msg
  * @returns {undefined} 
  */
-function acknowledgeDeliveryResend(data) {
-    data = JSON.parse(data);
+function deliveryResend(msg) {
 
+    var data = JSON.parse(msg);
+    
+    sObj.getSocketIDs(data.user_id, function(socket_ids){
+        var user_id = data.user_id;
+        delete data.user_id; //no longer required
+        send(user_id, socket_ids, data);
+    });
+    
 }
 
 function deliverMessage(data) {
@@ -153,7 +207,7 @@ function deliverMessage(data) {
         }
     } else {
 
-        var socket_ids = data.socket_ids; // array of strings
+        var socket_ids = data.socket_ids; // array of strings (socket ids)
         var user_id = data.user_id;
 
         delete data.socket_ids; //no longer required
@@ -166,9 +220,10 @@ function deliverMessage(data) {
  * emit data to the user 
  *
  *@param {type} user_id - id of the user of the socket_ids - a user can
- *have more than one socket id it he exist in more than one session at a
+ *have more than one socket id if he exist in more than one session at a
  *time
- * @param {type} socket_ids -must be an array - each user has a list of 
+ * @param {type} socket_ids -must be an array if all the connection session of
+ * the same user is to be considered  - each user has a list of 
  * sockets ids maintained by the redis server.\n
  * this allows the user to be served irrespective of the number
  * of devices they are connected from at the same time
@@ -183,9 +238,20 @@ function send(user_id, socket_ids, data) {
     if (!socket_ids || socket_ids.length === 0) {
         return;
     }
-    data.ack_msg_id = sObj.UniqueNumber; // set the acknowledgement message id
 
-    var atleat_one;
+
+    if (data.acknowledge_delivery) {
+        data.ack_msg_id = sObj.UniqueNumber; // set the acknowledgement message id
+        data.user_id = user_id;// set it back in this case
+        delete data.acknowledge_delivery; //not require for future resend
+        once_retry_delivery.push({
+            user_id : data.user_id,
+            ack_msg_id : data.ack_msg_id,
+            msg_time : data.msg_time
+        });
+        sObj.redis.rpush("user_message_queue:" + user_id, JSON.stringify(data));//add queue the message for pushing to the user when next online
+    }
+
     for (var i = 0; i < socket_ids.length; i++) {
         if (!socket_ids[i].startsWith(sObj.PROCESS_NS)) {
             continue;
@@ -198,17 +264,11 @@ function send(user_id, socket_ids, data) {
             afterUserDiscconnect(socket_id);
             continue;
         }
-        atleat_one = true;
+
         //REMIND - confirm later if there is any need to stringify the data - if socketio accepts object
         sock.emit("message", data); // do not pass any callback - because of memory issue - just being cautious
 
         console.log('sent through socket_id: ', socket_id);
-    }
-
-    if (atleat_one && data.acknowledge_delivery) {
-        data.user_id = user_id;
-        delete data.acknowledge_delivery; //delete to avoid exponential acknowledgements which is disastrous
-        sObj.redis.set("acknowledge_delivery:" + data.ack_msg_id, JSON.stringify(data));
     }
 
 }
@@ -291,25 +351,67 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
         //the client should detect connection event and 
         //send the username immediately to have his session
         //saved
-        function onSessionUserID(username) {
+        function onSessionUserID(user_id) {
             //ok the client has sent the username so
             //save it against the socket id for tracking his
             //socket
-            saveSession(socket, username);
+            saveSession(socket, user_id);
+
+            // push any pending unacknowledged message to the user
+            sObj.redis.lrange("user_message_queue:" + user_id, 0, -1)
+                    .then(function (arr) {
+                        //push the messages to the client immediately
+                        var now = new Date().getTime();
+                        for (var i = 0; i < arr.length; i++) {
+                            var d = JSON.parse(arr[i]);
+
+                            //check if the message has expired
+                            if (d.msg_ttl && d.msg_time) {
+                                elapse = now - d.msg_time;
+                                if (elapse > d.msg_ttl) {
+                                    //ok, the message has expired so remove it from the queue
+                                    sObj.redis.lrem("user_message_queue:" + user_id, arr[i], 1, function (err, result) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    });
+                                    continue;//next message please.
+                                }
+                            }
+                            
+                            deliveryResend(arr[i]);
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
         }
 
         function onAcknowledgeDelivery(msg) {
 
-            try {
+            //remove the message from the message queue
+            sObj.redis.lrange("user_message_queue:" + msg.user_id, 0, -1)
+                    .then(function (arr) {
+                        //push the messages to the client immediately
+                        for (var i = 0; i < arr.length; i++) {
+                            var d = JSON.parse(arr[i]);
 
-                //COME BACK
+                            if (d.ack_msg_id !== msg.ack_msg_id) {
+                                continue;
+                            }
+                            //here we've got the message we are looking for, so remove it now.
+                            sObj.redis.lrem("user_message_queue:" + msg.user_id, arr[i], 1, function (err, result) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
 
-                handleReceiveAcknowledgeAction(msg.acknowledge_received_action);
-
-
-            } catch (e) {
-                console.log(e);
-            }
+                            break;//we do not expect duplicates anyway
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
 
 
         }
@@ -331,13 +433,13 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
 
                                 //now ensure the number same user session does not 
                                 //exceed our defined limit.
-                                
+
                                 if (count > sObj.MAX_SESSION_PER_SAME_USER) {
                                     //remove the oldest of the same user session and publishing the
                                     //socket id via redis since we know that the socket may not be in this 
                                     //server
                                     var excess_count = count - sObj.MAX_SESSION_PER_SAME_USER;
-                                    
+
                                     for (var i = 0; i < excess_count; i++) {
 
                                         sObj.redis.lpop("socket_id:" + user_id)//get and remove the first on the list 
@@ -364,21 +466,3 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
     }
 
 };
-
-function handleReceiveAcknowledgeAction(action) {
-
-    if (!action) {
-        return;
-    }
-
-    switch (action) {
-        case 'TODO':
-
-            break;
-
-        default:
-
-            break;
-    }
-
-}

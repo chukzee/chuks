@@ -147,6 +147,57 @@ class Match extends WebApplication {
         var sc = this.sObj.db.collection(this.sObj.col.play_requests);
         return sc.findOneAndDelete({game_id: game_id}, {_id: 0});
     }
+    /**
+     * This method check when any of the specified players engaged in another game
+     * and invalidates the  process if a player is found to be engaged.
+     * 
+     * @param {type} user
+     * @param {type} players
+     * @returns {Match@call;error}
+     */
+    async _validatePlayersBegin(user, players) {
+        var was_idle = [];
+        for (var i = 0; i < players.length; i++) {
+
+            if (players[i].available) {
+                if (players[i].playing) {//already playing
+                    player_engaged = players[i];
+                    break;
+                }
+                var play_status_obj = await user.setPlaying(players[i].user_id);
+                if (play_status_obj.lastError) {//
+                    return this.error('could not resume game');
+                }
+                was_idle.push({
+                    player: players[i],
+                    marked_time: play_status_obj.play_modified_time
+                });
+            }
+
+        }
+
+        if (!player_engaged) {
+            return true;
+        }
+
+        for (var i = 0; i < was_idle.length; i++) {
+            var was_idle_player = was_idle[i].player;
+            var marked_time = was_idle[i].marked_time;
+            //making sure the play status did not change between the time will
+            //marked it and now
+            if (was_idle_player.play_modified_time === marked_time) {
+                await user.unsetPlaying(was_idle_player.user_id);
+            }
+        }
+
+        //send the error
+        return this.error({//clent should take note of this error object
+            player: player_engaged, //so we can access the player info
+            play_status: true //already engaged
+        });
+
+
+    }
 
     /**
      * Starts the game by broadcasting the game start event to 
@@ -195,7 +246,7 @@ class Match extends WebApplication {
                 players_ids[i] = mtcObj.players[i].user_id;
             }
         }
-                
+
         var required_fields = ['first_name', 'last_name', 'photo_url'];
         var players = user.getInfoList(players_ids, required_fields);
 
@@ -209,31 +260,17 @@ class Match extends WebApplication {
             //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
             return this.error('could not find player with user id - ' + missing);
         }
-        
-        
-        //set playing status
-        var success_play_start;
-        var player_engaged;
-        for(var i = 0; i<players.length; i++){
-            success_play_start = await user.setPlaying(players[i.user_id]);
-            if(!success_play_start){
-                player_engaged = players;
-                break;
-            }
-        }
-        
-        if(!player_engaged){
-            return this.error({//clent should take note of this error object
-                player : player_engaged,
-                play_status: true //already engaged
-            });
-        }
 
         var default_rules = this.sObj.game.get(mtcObj.game_name).getDefautRules();
 
         //set the players as available
         for (var i = 0; i < user.length; i++) {
             players.available = true;//important! used to determine when a player abandons a game in which case it is set to false
+        }
+
+        var v = await this._validatePlayersBegin(user, players);
+        if (v.lastError) {
+            return v.lastEror;
         }
 
         var match = {
@@ -273,29 +310,57 @@ class Match extends WebApplication {
      */
     async resume(user_id, game_id) {
 
+
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
-            var match = await c.findOneAndUpdate(
-                    {game_id: game_id},
-                    {$set: {pause_time: 0, game_status: 'live'}},
-                    {w: 'majority'}); //come back to confirm use of findOneAndUpdate
-
+            var match = await c.findOne({game_id: game_id});
             if (!match) {
                 return 'no game to resume';
             }
         } catch (e) {
+            console.log(e);
             this.error('could not resume game');
             return this;
         }
 
         //broadcast the game resume event
 
+        var user = new User(this.sObj, this.util, this.evt);
         var users_ids = [];
+        var players_ids = match.players;
         for (var i = 0; i < match.players.length; i++) {
-            if (match.players[i].user_id === user_id) {//yes skip, we will send his own separately
+            if (typeof match.players[i] === 'object') {//just in case
+                players_ids[i] = match.players[i].user_id;
+            }
+        }
+
+        var required_fields = ['first_name', 'last_name', 'photo_url'];
+        var players = user.getInfoList(players_ids, required_fields);
+
+        for (var i = 0; i < players.length; i++) {
+
+            if (players[i].user_id === user_id) {//yes skip, we will send his own separately
                 continue;
             }
-            users_ids.push(match.players[i].user_id);
+            users_ids.push(players[i].user_id);
+        }
+
+        var v = await this._validatePlayersBegin(user, players);
+        if (v.lastError) {
+            return v.lastEror;
+        }
+
+        try {
+            //update the game status
+            await c.updateOne(
+                    {game_id: game_id},
+                    {$set: {pause_time: 0, game_status: 'live'}},
+                    {w: 'majority'}); //come back to confirm use of findOneAndUpdate
+
+        } catch (e) {
+            console.log(e);
+            this.error('could not resume game');
+            return this;
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
@@ -306,6 +371,7 @@ class Match extends WebApplication {
         }
 
         this.broadcast(this.evt.game_resume, match, users_ids); //broadcast to players except user_id
+
 
         return match; //sent to player of user_id
     }
@@ -349,6 +415,9 @@ class Match extends WebApplication {
             match: match
         };
 
+        var user = new User(this.sObj, this.util, this.evt);
+        user.unsetPlaying(user_id);
+
         this.broadcast(this.evt.game_pause, data, users_ids); //broadcast to players except user_id
 
         return data; //sent to player of user_id
@@ -389,6 +458,8 @@ class Match extends WebApplication {
                 terminated = true;
             }
 
+            var user = new User(this.sObj, this.util, this.evt);
+            user.unsetPlaying(user_id);
 
         } catch (e) {
             this.error('could not abandon game');
@@ -459,16 +530,21 @@ class Match extends WebApplication {
                 match.winner = winner_user_id;
             }
 
+            var c = this.sObj.db.collection(this.sObj.col.match_history);
             await c.insertOne(match);
 
         } catch (e) {
-            this.error('could not abandon game');
+            this.error('could not finish game');
             return this;
         }
         //broadcast the game finish event to the players and spectators
         var users_ids = [];
+        var user = new User(this.sObj, this.util, this.evt);
         for (var i = 0; i < match.players.length; i++) {
             users_ids.push(match.players[i].user_id);
+            if (match.players[i].available) {
+                user.unsetPlaying(match.players[i].user_id);
+            }
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);

@@ -11,9 +11,14 @@ class WebApplication {
         this.success = false;
     }
 
-    send(event_name, _data, to_user_id, acknowledge_delivery) {
+    send(event_name, _data, to_user_id, acknowledge_delivery, message_ttl_in_seconds) {
         if (Array.isArray(to_user_id)) {
             return this.broadcast(_data, to_user_id, acknowledge_delivery);
+        }
+        
+        if(message_ttl_in_seconds > this.sObj.MAX_MSG_TTL){
+            message_ttl_in_seconds = this.sObj.MAX_MSG_TTL;
+            console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to max allow - ${this.sObj.MAX_MSG_TTL}`);
         }
 
         var me = this;
@@ -23,6 +28,8 @@ class WebApplication {
                 data: _data,
                 user_id: to_user_id,
                 socket_ids: socket_ids,
+                msg_time: new Date().getTime(),// must be long type please!
+                msg_ttl : me.sObj.DEFAULT_MSG_TTL || message_ttl_in_seconds,
                 event_name: event_name,
                 acknowledge_delivery: acknowledge_delivery
             };
@@ -31,10 +38,15 @@ class WebApplication {
         });
     }
 
-    broadcast(event_name, _data, to_user_id_arr, acknowledge_delivery) {
+    broadcast(event_name, _data, to_user_id_arr, acknowledge_delivery, message_ttl_in_seconds) {
 
         if (!Array.isArray(to_user_id_arr)) {
             throw new Error('invalid input parameter - third argument must be and array of user ids');
+        }
+        
+        if(message_ttl_in_seconds > this.sObj.MAX_MSG_TTL){
+            message_ttl_in_seconds = this.sObj.MAX_MSG_TTL;
+            console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to max allow - ${this.sObj.MAX_MSG_TTL}`);
         }
 
         var commandArr = [];
@@ -74,6 +86,8 @@ class WebApplication {
                 data: _data,
                 user_ids: user_ids,
                 socket_ids: socket_ids, //array of arrays
+                msg_time: new Date().getTime(),// must be long type please!
+                msg_ttl : me.sObj.DEFAULT_MSG_TTL || message_ttl_in_seconds,
                 event_name: event_name,
                 acknowledge_delivery: acknowledge_delivery
             };

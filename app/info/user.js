@@ -13,6 +13,11 @@ class User extends WebApplication {
     
     async setPlaying(user_id){
         
+        //must return object of this properties - do not change!
+        return {
+            playing : true,
+            play_modified_time : play_modified_time
+        };
     }
     
     async unsetPlaying(user_id){

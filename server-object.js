@@ -65,14 +65,25 @@ class ServerObject {
                     console.log(err);
                     return;
                 }
+                
                 console.log('here o ',socket_ids );
                 console.log('here o user_id',user_id );
+                
                 if (!socket_ids) {
                     callback([]);//make as empty array instead
                 }
                 callback(socket_ids);
             });
         }
+    }
+    
+    
+    get MAX_MSG_TTL(){//in seconds
+        return 2592000;// 30 days
+    }
+    
+    get DEFAULT_MSG_TTL(){//in seconds
+        return 86400;// 24 hours
     }
     
     set isShuttingDown(b){
@@ -142,8 +153,8 @@ class ServerObject {
     get PUBSUB_DELIVER_MESSAGE() {
         return 'PUBSUB_DELIVER_MESSAGE';
     }
-    get PUBSUB_ACKNOWLEDGE_DELIVERY_RESEND(){
-        return 'PUBSUB_ACKNOWLEDGE_DELIVERY_RESEND';
+    get PUBSUB_DELIVERY_RESEND(){
+        return 'PUBSUB_DELIVERY_RESEND';
     }
     get PUBSUB_USER_SESSION_SIZE_EXCEEDED() {
         return 'PUBSUB_USER_SESSION_SIZE_EXCEEDED';
