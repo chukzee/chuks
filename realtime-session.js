@@ -193,6 +193,7 @@ function deliveryResend(msg) {
 
 function deliverMessage(data) {
 
+
     data = JSON.parse(data);
 
     if (data.is_broadcast) {
@@ -231,9 +232,9 @@ function deliverMessage(data) {
  * @returns {undefined} */
 
 function send(user_id, socket_ids, data) {
-    console.log('user_id', user_id);
-    console.log('socket_ids', socket_ids);
-    console.log('data', data);
+    //console.log('user_id', user_id);
+    //console.log('socket_ids', socket_ids);
+    //console.log('data', data);
 
     if (!socket_ids || socket_ids.length === 0) {
         return;
@@ -264,7 +265,8 @@ function send(user_id, socket_ids, data) {
             afterUserDiscconnect(socket_id);
             continue;
         }
-
+        
+        
         //REMIND - confirm later if there is any need to stringify the data - if socketio accepts object
         sock.emit("message", data); // do not pass any callback - because of memory issue - just being cautious
 
@@ -360,24 +362,44 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
             // push any pending unacknowledged message to the user
             sObj.redis.lrange("user_message_queue:" + user_id, 0, -1)
                     .then(function (arr) {
+                        console.log(arr);
                         //push the messages to the client immediately
                         var now = new Date().getTime();
                         for (var i = 0; i < arr.length; i++) {
                             var d = JSON.parse(arr[i]);
-
+                            console.log('here');
                             //check if the message has expired
                             if (d.msg_ttl && d.msg_time) {
-                                elapse = now - d.msg_time;
+                                console.log('here 1');
+                                
+                                elapse = now - d.msg_time; //TESTING!!!
+                                
+                                //elapse = (now - d.msg_time)/1000; //CORRECT since msg_ttl is in seconds
+                                
                                 if (elapse > d.msg_ttl) {
+                                    
+                                    console.log('elapse ', elapse);
+                                    console.log('d.msg_ttl ', d.msg_ttl);
+                                    console.log('here 2');
+                                    console.log(user_id);
+                                    console.log(arr[i]);
+                                    console.log(JSON.stringify(JSON.stringify(d)));
+                                    console.log(JSON.stringify(arr[i]));
+                                    
+                                    
                                     //ok, the message has expired so remove it from the queue
-                                    sObj.redis.lrem("user_message_queue:" + user_id, arr[i], 1, function (err, result) {
+                                    sObj.redis.lrem("user_message_queue:" + user_id, arr[i], 0, function (err, result) {
                                         if (err) {
                                             console.log(err);
                                         }
+                                        
+                                        console.log('result',result);
                                     });
                                     continue;//next message please.
                                 }
                             }
+                            
+                            console.log('deliveryResend ');
                             
                             deliveryResend(arr[i]);
                         }

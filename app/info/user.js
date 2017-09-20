@@ -328,8 +328,8 @@ class User extends WebApplication {
             console.log(e);
             this.error('could not get users.');
             return this;
-        }
-
+        }        
+        
         return users;
     }
 

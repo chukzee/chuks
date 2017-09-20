@@ -166,7 +166,7 @@ class Match extends WebApplication {
                 }
                 var play_status_obj = await user._setPlaying(players[i].user_id);
                 if (play_status_obj.lastError) {//
-                    return this.error('could not resume game');
+                    return this.error('could not begin game');
                 }
                 was_idle.push({
                     player: players[i],
@@ -179,10 +179,9 @@ class Match extends WebApplication {
         if (!player_engaged) {
             return true;
         }
-        
-        //at this point a player is engaged to roll back any changes made already
 
-        //
+        //at this point a player is engaged so roll back any changes made already
+
         for (var i = 0; i < was_idle.length; i++) {
             var was_idle_player = was_idle[i].player;
             var marked_time = was_idle[i].marked_time;
@@ -236,8 +235,6 @@ class Match extends WebApplication {
             return 'Not available!';
         }
 
-
-
         //modify accordingly and relocate the match obect to the 'matches' colllection
 
         //but first add some more player info
@@ -249,11 +246,10 @@ class Match extends WebApplication {
             }
         }
 
-        var required_fields = ['first_name', 'last_name', 'photo_url'];
-        var players = user.getInfoList(players_ids, required_fields);
+        var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
+        var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
-
         var missing = this.util.findMissing(players_ids, players, function (p_id, p_info) {
             return p_id === p_info.user_id;
         });
@@ -329,15 +325,25 @@ class Match extends WebApplication {
 
         var user = new User(this.sObj, this.util, this.evt);
         var users_ids = [];
-        var players_ids = match.players;
+        var players_ids = [];
         for (var i = 0; i < match.players.length; i++) {
-            if (typeof match.players[i] === 'object') {//just in case
+            if (match.players[i].available) {//exclude players that might have abandon the game
                 players_ids[i] = match.players[i].user_id;
             }
         }
 
-        var required_fields = ['first_name', 'last_name', 'photo_url'];
-        var players = user.getInfoList(players_ids, required_fields);
+        var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
+        var players = await user.getInfoList(players_ids, required_fields);
+
+        //check if the player info list is complete - ie match the numbers requested for
+        var missing = this.util.findMissing(players_ids, players, function (p_id, p_info) {
+            return p_id === p_info.user_id;
+        });
+
+        if (missing) {
+            //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
+            return this.error('could not find player with user id - ' + missing);
+        }
 
         for (var i = 0; i < players.length; i++) {
 
@@ -373,7 +379,6 @@ class Match extends WebApplication {
         }
 
         this.broadcast(this.evt.game_resume, match, users_ids); //broadcast to players except user_id
-
 
         return match; //sent to player of user_id
     }

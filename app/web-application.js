@@ -91,6 +91,7 @@ class WebApplication {
                 event_name: event_name,
                 acknowledge_delivery: acknowledge_delivery
             };
+            
             me.sObj.redis.publish(me.sObj.PUBSUB_DELIVER_MESSAGE, JSON.stringify(data));
 
         });

@@ -46,7 +46,7 @@ class Spectator extends WebApplication {
         try {
             
             var required_fields = ['first_name', 'last_name', 'photo_url'];
-            var user = new User(this.sObj, this.util, this.evt).getInfo(user_id, required_fields);
+            var user = await new User(this.sObj, this.util, this.evt).getInfo(user_id, required_fields);
             if (!user) {
                 return 'unknown user';
             }

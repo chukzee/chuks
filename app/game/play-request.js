@@ -2,6 +2,7 @@
 "use strict";
 
 var WebApplication = require('../web-application');
+var User = require('../info/user');
 
 class PlayRequest extends WebApplication {
 
@@ -111,15 +112,15 @@ class PlayRequest extends WebApplication {
 
             var required_fields = ['first_name', 'last_name', 'photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
-            var players = user.getInfoList(players_ids, required_fields);
+            var players = await user.getInfoList(players_ids, required_fields);
 
             if (user.lastError) {
-                return this.error('could to send play request.');
+                return this.error('could not send play request.');
             }
 
             if(!Array.isArray(players)){
-                console.log('This should not happen! user info list must return an array if not error was caught!');
-                return this.error('could to send play request.');
+                console.log('This should not happen! user info list must return an array if no error was caught!');
+                return this.error('could not send play request.');
             }
 
             //check if the player info list is complete - ie match  the number requested for
@@ -143,7 +144,7 @@ class PlayRequest extends WebApplication {
             await c.insertOne(data);
 
             //notify the other user(s)
-            this.broadcast(this.evt.play_request, data, opponent_ids);
+            this.broadcast(this.evt.play_request, data, opponent_ids, true);
 
             //set the expiry of the play request
             var expiry = 5 * 60 * 60 * 1000;
@@ -151,7 +152,7 @@ class PlayRequest extends WebApplication {
 
         } catch (e) {
             console.log(e);
-            this.error('could to send play request.');
+            this.error('could not send play request.');
             return this;
         }
 
