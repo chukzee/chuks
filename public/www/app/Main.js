@@ -355,7 +355,7 @@ var Main = {};
         onResume: function () {
             this.isPaused = false;
             this.isActive = true;
-            setTimeout(function () {
+            window.setTimeout(function () {
                 //accoring to the cordova doc, put interative function call in setTimeout upon resume
                 //so as not to hang the application
 
@@ -611,7 +611,10 @@ var Main = {};
 
         var rcallWaitingFn = [];
         var isGetRcallLive = false;
+        var MAX_WAIT_CONNECT = 120; //60 seconds
         var rcalFailures = {};
+        var nextRCallLiveRetrySec = 2;
+        var retryLiveArgs = [];
         var rio;
 
         Main.ready(function () {
@@ -625,7 +628,7 @@ var Main = {};
             var errFnList = {};
             var serial = 0;
             var reconnectFactor = 1;
-            var MAX_WAIT_CONNECT = 120; //60 seconds
+            var last_conn_time = new Date().getTime();           
             var url = 'https://' + window.location.hostname + '/rcall';
 
             if (window.io) {
@@ -636,6 +639,18 @@ var Main = {};
             this.checkConnect = function () {
                 if (!socket && window.io) {
                     sock();
+                }
+                if(socket.connected && last_conn_time){
+                    var elapse = (new Date().getTime() - last_conn_time)/1000;
+                    var MAX_ELAPSE = 10;
+                    //attempt a socket connection. 
+                    //also possible no discconnect event was received
+                    //in which case our re-connection strategy will be useless
+                    //and the connection will be off indefinitely. So avoid
+                    //that indefinite loss of connection
+                    if(elapse > MAX_ELAPSE){
+                        connTimerId = reconnectAfter(socket);
+                    }
                 }
                 return socket && socket.connected === true;
             };
@@ -701,11 +716,12 @@ var Main = {};
                     reconnectFactor *= 2; // increment the time to wait before trying again
                 }
 
-                return  window.setInterval(function () {
+                return  window.setTimeout(function () {
                     if (socket.connected === false) {
                         sucFnList = {};
                         errFnList = {};
                         socket.connect();
+                        last_conn_time = new Date().getTime();
                     }
 
                 }, reconnectFactor * 1000);
@@ -715,7 +731,8 @@ var Main = {};
 
         this.live = function () {
             var objInst, fn;
-
+            var meThis = this;
+            
             if (arguments.length === 1) {
                 if (Main.util.isFunc(arguments[0])) {//where only function is passed
                     fn = arguments[0];
@@ -780,10 +797,10 @@ var Main = {};
                         isGetRcallLive = false;
                         var json = JSON.parse(res);
                         var data = json.data;
-                        if (!json.success) {
-                            rcallErr(data);
-                            return;
+                        if (json.error) {
+                            rcallErr(json.error);
                         }
+                        
                         for (var rem_classs in data) {
                             var rem_methods = data[rem_classs];
                             for (var variable in objInst) {
@@ -868,6 +885,7 @@ var Main = {};
                         rcallWaitingFn = [];
                     },
                     function (statusText, status) {
+                        retryCausedBy500X(status);                        
                         rcallErr('rcall failed! Could not get resource. Status text : ' + statusText);
                     });
 
@@ -875,6 +893,50 @@ var Main = {};
                 rcallWaitingFn = [];
                 isGetRcallLive = false;
                 console.warn(log);
+            }
+            /**
+             * Retry  initializing the rcall variables if the failure 
+             * is caused by server - possibly the server is off.
+             * So we want to be sure if the server is back the rcall
+             * variables will the initialied to avoid error caused by case
+             * where call to the remote methods throws:
+             * Uncaught TypeError: Cannot read property 'sendRequest' of undefined
+             * 
+             * So when the server is back a setTimeout will attempt to retry the 
+             * initialization of the rcall variables
+             * @param {interger} status 
+             * @returns {undefined}
+             */
+            function retryCausedBy500X(status){
+                if(status < 500){
+                    return;
+                }
+                
+                //at this point the error is cause by the server
+                //so we will continue to retry until the rcall variables
+                //are initialized
+                
+                if (nextRCallLiveRetrySec >= MAX_WAIT_CONNECT) {
+                    nextRCallLiveRetrySec /= 4; //retry after 
+                    if (nextRCallLiveRetrySec < 1) {//just in case
+                        nextRCallLiveRetrySec = 1;
+                    }
+                } else {
+                    nextRCallLiveRetrySec *= 2; // increment the time to wait before trying again
+                }
+                
+                window.setTimeout(function(){
+                    if (Object.getOwnPropertyNames(rcalFailures).length > 0) {
+                        
+                        console.log('rcalFailures', rcalFailures);
+                        
+                        //we are only interesed in initializing the rcall variables to 
+                        //avoid error caued by access remote method when not already created
+                        //ie Cannot read property 'TheMethod' of undefined
+                        meThis.live(rcalFailures);
+                    }                    
+                    
+                },nextRCallLiveRetrySec * 1000);
             }
 
 
@@ -1014,9 +1076,12 @@ var Main = {};
                     callback(res);
                 }
                 function errorFn(statusText, status) {
-                    var respose = {};
-                    respose.success = false;
-                    respose.status = statusText;
+                    var respose = {data:{}};
+                    if(status === 504){
+                        statusText = 'connection to the server has timed out!'; // we prefer this description
+                    }
+                    respose.data.success = false;
+                    respose.data.status = statusText;
                     callback(respose);
                 }
 

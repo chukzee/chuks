@@ -18,7 +18,7 @@ setInterval(onceRetryDelivery, DELIVER_RETRY_INTERVAL);
  * The method only tries to check once for these undelivered messages after 
  * a given time and immediately delete it from the list.
  * Other push mechanism we have aborted in this server will
-   ensure the message is eventually pushed to the client when he is online.
+ ensure the message is eventually pushed to the client when he is online.
  * 
  * @returns {undefined}
  */
@@ -27,10 +27,10 @@ function onceRetryDelivery() {
     for (var i = 0; i < once_retry_delivery.length; i++) {
         var obj = once_retry_delivery[i];
         var elapse_mills = now - obj.msg_time;
-        if(elapse_mills < DELIVER_RETRY_INTERVAL ){
+        if (elapse_mills < DELIVER_RETRY_INTERVAL) {
             continue;
         }
-        
+
         sObj.redis.lrange("user_message_queue:" + obj.user_id, 0, -1)
                 .then(doOnceRetryDeliveryMsg.bind(obj))// avoid closure bug by using bind function
                 .catch(function (err) {
@@ -182,13 +182,13 @@ function verifyOnlineStatus(user_id) {
 function deliveryResend(msg) {
 
     var data = JSON.parse(msg);
-    
-    sObj.getSocketIDs(data.user_id, function(socket_ids){
+
+    sObj.getSocketIDs(data.user_id, function (socket_ids) {
         var user_id = data.user_id;
         delete data.user_id; //no longer required
         send(user_id, socket_ids, data);
     });
-    
+
 }
 
 function deliverMessage(data) {
@@ -246,11 +246,11 @@ function send(user_id, socket_ids, data) {
         data.user_id = user_id;// set it back in this case
         delete data.acknowledge_delivery; //not require for future resend
         once_retry_delivery.push({
-            user_id : data.user_id,
-            ack_msg_id : data.ack_msg_id,
-            msg_time : data.msg_time
+            user_id: data.user_id,
+            ack_msg_id: data.ack_msg_id,
+            msg_time: data.msg_time
         });
-        sObj.redis.rpush("user_message_queue:" + user_id, JSON.stringify(data));//add queue the message for pushing to the user when next online
+        sObj.redis.rpush("user_message_queue:" + user_id, JSON.stringify(data));//queue the message for pushing to the user when next online
     }
 
     for (var i = 0; i < socket_ids.length; i++) {
@@ -265,8 +265,8 @@ function send(user_id, socket_ids, data) {
             afterUserDiscconnect(socket_id);
             continue;
         }
-        
-        
+
+
         //REMIND - confirm later if there is any need to stringify the data - if socketio accepts object
         sock.emit("message", data); // do not pass any callback - because of memory issue - just being cautious
 
@@ -284,7 +284,7 @@ function afterUserDiscconnect(socket_id) {
                     return;
                 }
                 //first remove this socket id from his list of session ids in redis - 
-                return sObj.redis.lrem("socket_id:" + user_id, socket_id, 1);//come back to confirm later
+                return sObj.redis.lrem("socket_id:" + user_id, 1, socket_id);
             })
             .then(function () {
                 //set his online status to offline
@@ -360,9 +360,10 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
             saveSession(socket, user_id);
 
             // push any pending unacknowledged message to the user
+
             sObj.redis.lrange("user_message_queue:" + user_id, 0, -1)
                     .then(function (arr) {
-                        console.log(arr);
+                        
                         //push the messages to the client immediately
                         var now = new Date().getTime();
                         for (var i = 0; i < arr.length; i++) {
@@ -371,36 +372,25 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
                             //check if the message has expired
                             if (d.msg_ttl && d.msg_time) {
                                 console.log('here 1');
-                                
-                                elapse = now - d.msg_time; //TESTING!!!
-                                
-                                //elapse = (now - d.msg_time)/1000; //CORRECT since msg_ttl is in seconds
-                                
+
+                                elapse = (now - d.msg_time)/1000;
+
                                 if (elapse > d.msg_ttl) {
-                                    
-                                    console.log('elapse ', elapse);
-                                    console.log('d.msg_ttl ', d.msg_ttl);
-                                    console.log('here 2');
-                                    console.log(user_id);
-                                    console.log(arr[i]);
-                                    console.log(JSON.stringify(JSON.stringify(d)));
-                                    console.log(JSON.stringify(arr[i]));
-                                    
-                                    
+
                                     //ok, the message has expired so remove it from the queue
-                                    sObj.redis.lrem("user_message_queue:" + user_id, arr[i], 0, function (err, result) {
+                                    sObj.redis.lrem("user_message_queue:" + user_id, 1, arr[i], function (err, result) {
                                         if (err) {
                                             console.log(err);
                                         }
-                                        
-                                        console.log('result',result);
+
                                     });
+
                                     continue;//next message please.
                                 }
                             }
-                            
+
                             console.log('deliveryResend ');
-                            
+
                             deliveryResend(arr[i]);
                         }
                     })
@@ -422,10 +412,11 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
                                 continue;
                             }
                             //here we've got the message we are looking for, so remove it now.
-                            sObj.redis.lrem("user_message_queue:" + msg.user_id, arr[i], 1, function (err, result) {
+                            sObj.redis.lrem("user_message_queue:" + msg.user_id, 1, arr[i], function (err, result) {
                                 if (err) {
                                     console.log(err);
                                 }
+                                console.log('ack received - removed ', result);
                             });
 
                             break;//we do not expect duplicates anyway

@@ -104,6 +104,14 @@ lis.push(fn1);
 lis.push(fn2);
 console.log(lis.indexOf(fn2));
 
+console.log('-----test join-----');
+var jn = [];
+jn.push('chuks1');
+jn.push('chuks2');
+jn.push('chuks3');
+
+var j = jn.join(';');
+console.log(j);
 
 
 

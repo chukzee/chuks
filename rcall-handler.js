@@ -14,15 +14,28 @@ class RCallHandler {
     }
 
     replyError(error) {
-        return this.reply(error ? error : "An error occur!", false);
+        return this.reply(false, error ? error : "An error occur!");
     }
 
     replySuccess(data) {
-        return this.reply(data, true);
+        return this.reply(true, data);
+    }
+    
+    replySuccessWithErrors(data, errors){
+        if(Array.isArray(errors)){
+            errors = errors.join('\n');
+        }
+        return this.reply(true, data, errors);
     }
 
-    reply(data, success) {
-        var obj = {success: success, data: data};
+    reply(success, rpl, err) {
+        if(rpl && rpl.data){
+            rpl = rpl.data;
+        }
+        var obj = {success: success, data: rpl};
+        if(err){
+           obj.error =  err;
+        }
         if (this.res) {
             return this.res.json(obj);
         }
@@ -61,12 +74,14 @@ class RCallHandler {
     initVariables(classes) {
 
         var methodsMap = {};
-
+        var init_errros = [];
         for (var i in classes) {
             var clazz = classes[i];
             if (!clazz) {
-                this.replyError("No class specified!");
-                return;
+                //this.replyError("No class specified!");
+                //return;
+                init_errros.push("No class specified!");
+                continue;//new
             }
 
             //get the module using the qualified class name
@@ -93,12 +108,19 @@ class RCallHandler {
                 }
 
             } else {
-                this.replyError("No remote definition match class - " + clazz);
-                return;
+
+                //this.replyError("No remote definition match class - " + clazz);
+                //return;
+                init_errros.push("No remote definition match class - " + clazz);
+                continue;//new
             }
         }
 
-        this.replySuccess(methodsMap);
+        if (init_errros.length === 0) {
+            this.replySuccess(methodsMap);
+        } else {//has error
+            this.replySuccessWithErrors(methodsMap, init_errros);
+        }
     }
 
     execMethod(obj, done) {
@@ -158,7 +180,7 @@ class RCallHandler {
 
         var rtv = method.apply(classInstance, param ? param : []);
         promise_arr.push(rtv);
-        
+
         if (promise_arr.length === count) {
             //promise all
             Promise.all(promise_arr)
