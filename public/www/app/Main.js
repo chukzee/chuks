@@ -557,6 +557,7 @@ var Main = {};
             if (msg.acknowledge_delivery) {
                 var ack = {
                     ack_msg_id: msg.ack_msg_id,
+                    user_id: msg.user_id,//important!
                     acknowledge_delivery: msg.acknowledge_delivery
                 };
                 socket.emit('acknowledge_delivery', ack);

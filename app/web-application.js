@@ -15,8 +15,8 @@ class WebApplication {
         if (Array.isArray(to_user_id)) {
             return this.broadcast(_data, to_user_id, acknowledge_delivery);
         }
-        
-        if(message_ttl_in_seconds > this.sObj.MAX_MSG_TTL){
+
+        if (message_ttl_in_seconds > this.sObj.MAX_MSG_TTL) {
             message_ttl_in_seconds = this.sObj.MAX_MSG_TTL;
             console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to max allow - ${this.sObj.MAX_MSG_TTL}`);
         }
@@ -28,10 +28,11 @@ class WebApplication {
                 data: _data,
                 user_id: to_user_id,
                 socket_ids: socket_ids,
-                msg_time: new Date().getTime(),// must be long type please!
-                msg_ttl : me.sObj.DEFAULT_MSG_TTL || message_ttl_in_seconds,
+                msg_time: new Date().getTime(), // must be long type please!
+                msg_ttl: me.sObj.DEFAULT_MSG_TTL || message_ttl_in_seconds,
                 event_name: event_name,
-                acknowledge_delivery: acknowledge_delivery
+                acknowledge_delivery: acknowledge_delivery,
+                resend_count: 0
             };
 
             me.sObj.redis.publish(me.sObj.PUBSUB_DELIVER_MESSAGE, JSON.stringify(data));
@@ -43,8 +44,8 @@ class WebApplication {
         if (!Array.isArray(to_user_id_arr)) {
             throw new Error('invalid input parameter - third argument must be and array of user ids');
         }
-        
-        if(message_ttl_in_seconds > this.sObj.MAX_MSG_TTL){
+
+        if (message_ttl_in_seconds > this.sObj.MAX_MSG_TTL) {
             message_ttl_in_seconds = this.sObj.MAX_MSG_TTL;
             console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to max allow - ${this.sObj.MAX_MSG_TTL}`);
         }
@@ -86,12 +87,13 @@ class WebApplication {
                 data: _data,
                 user_ids: user_ids,
                 socket_ids: socket_ids, //array of arrays
-                msg_time: new Date().getTime(),// must be long type please!
-                msg_ttl : me.sObj.DEFAULT_MSG_TTL || message_ttl_in_seconds,
+                msg_time: new Date().getTime(), // must be long type please!
+                msg_ttl: me.sObj.DEFAULT_MSG_TTL || message_ttl_in_seconds,
                 event_name: event_name,
-                acknowledge_delivery: acknowledge_delivery
+                acknowledge_delivery: acknowledge_delivery,
+                resend_count: 0
             };
-            
+
             me.sObj.redis.publish(me.sObj.PUBSUB_DELIVER_MESSAGE, JSON.stringify(data));
 
         });
@@ -120,19 +122,19 @@ class WebApplication {
      * @param {type} _wait_mills - delay before next try
      * @returns {Promise}
      */
-    _tryWith(func,_times, _wait_mills) {
+    _tryWith(func, _times, _wait_mills) {
         var argu = [];
-        if(arguments.length > 3){
-            for(var i= 3; i < arguments.length; i++){
+        if (arguments.length > 3) {
+            for (var i = 3; i < arguments.length; i++) {
                 argu.push(arguments[i]);
             }
         }
-        
+
         var time = _times || 10;
         var wait_mills = _wait_mills || 50;
         var try_count = 0;
         var me = this;
-        
+
         return new Promise(function (resolve, reject) {
             run();
             async function run() {

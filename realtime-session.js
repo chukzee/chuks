@@ -8,6 +8,7 @@ var unidentified_sock_ids = {};
 var once_retry_delivery = [];//array of objects
 var DELIVER_RETRY_INTERVAL = 60000;
 
+
 setInterval(checkUnidentifiedSock, 5000);
 
 setInterval(onceRetryDelivery, DELIVER_RETRY_INTERVAL);
@@ -186,6 +187,8 @@ function deliveryResend(msg) {
     sObj.getSocketIDs(data.user_id, function (socket_ids) {
         var user_id = data.user_id;
         delete data.user_id; //no longer required
+        data.acknowledge_delivery = true;
+        data.resend_count = !data.resend_count ? 1 : data.resend_count++;
         send(user_id, socket_ids, data);
     });
 
@@ -209,12 +212,9 @@ function deliverMessage(data) {
     } else {
 
         var socket_ids = data.socket_ids; // array of strings (socket ids)
-        var user_id = data.user_id;
-
         delete data.socket_ids; //no longer required
-        delete data.user_id; //no longer required
 
-        send(user_id, socket_ids, data);
+        send(data.user_id, socket_ids, data);
     }
 }
 /**
@@ -241,16 +241,17 @@ function send(user_id, socket_ids, data) {
     }
 
 
-    if (data.acknowledge_delivery) {
-        data.ack_msg_id = sObj.UniqueNumber; // set the acknowledgement message id
-        data.user_id = user_id;// set it back in this case
-        delete data.acknowledge_delivery; //not require for future resend
+    if (data.acknowledge_delivery && !data.resend_count) {//resend once
+        data.ack_msg_id = sObj.UniqueNumber; // set the acknowledgement message id  
+        data.user_id = user_id;//important!  
         once_retry_delivery.push({
             user_id: data.user_id,
             ack_msg_id: data.ack_msg_id,
             msg_time: data.msg_time
         });
         sObj.redis.rpush("user_message_queue:" + user_id, JSON.stringify(data));//queue the message for pushing to the user when next online
+    
+        console.log(data);
     }
 
     for (var i = 0; i < socket_ids.length; i++) {
@@ -311,6 +312,7 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
     sObj = _sObj;
     util = _util;
     evt = _evt;
+    
     var io = socketio(httpServer);
     rcallIO = io.of("/rcall"); //using users namespace
     init();
@@ -354,26 +356,27 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
         //send the username immediately to have his session
         //saved
         function onSessionUserID(user_id) {
+            
+            
             //ok the client has sent the username so
             //save it against the socket id for tracking his
             //socket
             saveSession(socket, user_id);
-
+            
             // push any pending unacknowledged message to the user
 
             sObj.redis.lrange("user_message_queue:" + user_id, 0, -1)
                     .then(function (arr) {
-                        
+
                         //push the messages to the client immediately
                         var now = new Date().getTime();
                         for (var i = 0; i < arr.length; i++) {
                             var d = JSON.parse(arr[i]);
-                            console.log('here');
+                            
                             //check if the message has expired
-                            if (d.msg_ttl && d.msg_time) {
-                                console.log('here 1');
+                            if (d.msg_ttl && d.msg_time) {                                
 
-                                elapse = (now - d.msg_time)/1000;
+                                elapse = (now - d.msg_time) / 1000;
 
                                 if (elapse > d.msg_ttl) {
 
@@ -389,7 +392,7 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
                                 }
                             }
 
-                            console.log('deliveryResend ');
+                            console.log('deliveryResend ', user_id);
 
                             deliveryResend(arr[i]);
                         }
@@ -400,13 +403,18 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
         }
 
         function onAcknowledgeDelivery(msg) {
-
+            
+            console.log('onAcknowledgeDelivery');
+            console.log('msg', msg);
+            
             //remove the message from the message queue
             sObj.redis.lrange("user_message_queue:" + msg.user_id, 0, -1)
                     .then(function (arr) {
                         //push the messages to the client immediately
                         for (var i = 0; i < arr.length; i++) {
                             var d = JSON.parse(arr[i]);
+
+                            console.log(d);
 
                             if (d.ack_msg_id !== msg.ack_msg_id) {
                                 continue;

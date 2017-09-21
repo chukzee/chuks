@@ -32,7 +32,7 @@ and open the template in the editor.
 .game9ja-live-games-list {
   position: relative;
   width: 100%;
-  height: 60px;
+  height: 70px;
   border-bottom-width: 0.0325em;
   border-bottom-color: #eee;
   border-bottom-style: solid;
@@ -46,7 +46,7 @@ and open the template in the editor.
 /*1st content is expected to show white player profile photo*/
 .game9ja-live-games-list > :nth-child(1) {
   position: absolute;
-  left: 5px;
+  left: 20px;
   top: 5px;
   height: 40px;
   width: 40px;
@@ -70,7 +70,7 @@ and open the template in the editor.
 /*2nd content is expected to show black player profile photo*/
 .game9ja-live-games-list > :nth-child(2) {
   position: absolute;
-  right: 5px;
+  right: 20px;
   top: 5px;
   height: 40px;
   width: 40px;
@@ -94,8 +94,8 @@ and open the template in the editor.
 /*3rd content is expected to show white player full name*/
 .game9ja-live-games-list > :nth-child(3) {
   position: absolute;
-  left: 50px;
-  top: 2px;
+  left: 5px;
+  bottom: 2px;
   width: 100px;
   color: #888;
   overflow: hidden;
@@ -105,7 +105,7 @@ and open the template in the editor.
 /*4th content is expected to show black player full name*/
 .game9ja-live-games-list > :nth-child(4) {
   position: absolute;
-  right: 50px;
+  right: 5px;
   bottom: 2px;
   width: 100px;
   text-align: right;
@@ -117,10 +117,9 @@ and open the template in the editor.
 /*5th content is expected to show game elapse time*/
 .game9ja-live-games-list > :nth-child(5) {
   position: absolute;
-  right: 50px;
+  left: 45%;
   top: 2px;
   width: 100px;
-  text-align: right;
   color: #aaa;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -131,7 +130,7 @@ and open the template in the editor.
 /*6th content is expected to show the game views count*/
 .game9ja-live-games-list > :nth-child(6) {
   position: absolute;
-  left: 50px;
+  left: 45%;
   bottom: 2px;
   width: 100px;
   color: #aaa;
