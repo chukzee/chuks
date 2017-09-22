@@ -151,7 +151,7 @@ class PlayRequest extends WebApplication {
             this.broadcast(this.evt.play_request, data, opponent_ids, true);
 
             //set the expiry of the play request
-            var expiry = 5 * 60 * 60 * 1000;
+            var expiry = this.sObj.GAME_MAX_WAIT_IN_SEC * 1000;
             this.sObj.task.later('EXPIRE_PLAY_REQUEST', expiry, game_id);
 
         } catch (e) {
@@ -177,7 +177,8 @@ class PlayRequest extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.play_requests);
         try {
             var r = await c.deleteOne({game_id: game_id});//delete and return the doc
-            if(r.result.nModified === 0){
+            
+            if(r.result.n === 0){
                return 'play request not found!'; 
             }
         } catch (e) {
@@ -201,35 +202,39 @@ class PlayRequest extends WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.play_requests);
         try {
-            var play_request = await c.findOneAndDelete({game_id: game_id}, {_id: 0});//delete and return the doc
-            if(!play_request){
+            var r = await c.findOneAndDelete({game_id: game_id},  {projection: {_id: 0}});//delete and return the doc
+            if(!r.value){
                return 'play request not found!'; 
             }
         } catch (e) {
             console.log(e);
             return this.error('could not reject the play request!');
         }
-
+        
+        var play_request_doc = r.value;
         //notify the initiator that his request is rejected
-        var initiator_id = play_request.players[0].uer_id;
-        this.send(this.evt.play_request_rejected, play_request, initiator_id);
+        var initiator_id = play_request_doc.players[0].uer_id;
+        this.send(this.evt.play_request_rejected, play_request_doc, initiator_id, true);
 
         return 'play request rejected successfully.';
     }
 
     _expire(game_id) {
-
+        
+        console.log('_expire', game_id);
+        
         var me = this;
         var c = this.sObj.db.collection(this.sObj.col.play_requests);
-        c.findOneAndDelete({game_id: game_id}, {_id: 0})//delete and return the doc
-                .then(function (err, play_request) {
+        c.findOneAndDelete({game_id: game_id},  {projection: {_id: 0}})//delete and return the doc
+                .then(function (result) {
+                    var play_request = result.value;
                     //notify the initiator  and his opponent that the request has expire.
                     //Normally the client iu is updated to reflect the expiration
                     var users_ids = [];
                     for (var i = 0; i < play_request.players.length; i++) {
                         users_ids[i] = play_request.players[i].user_id;
                     }
-                    this.broadcast(me.evt.play_request_expired, play_request, users_ids);
+                    me.broadcast(me.evt.play_request_expired, play_request, users_ids);
                 })
                 .catch(function (err) {
                     console.log("please seriouly address the error - could not expire the play request!");

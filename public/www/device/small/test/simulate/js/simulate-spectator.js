@@ -31,12 +31,11 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-join').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.spectator.join(user_id, group_name, status_message, photo_url)
+        var user_id = prompt('user_id', '');
+        var game_id = prompt('game_id', '');
+        var game_start_time = prompt('game_start_time', '');
+        
+        Main.ro.spectator.join(user_id, game_id, game_start_time)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -50,12 +49,11 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-leave').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
 
-        Main.ro.spectator.leave(user_id, group_name, status_message, photo_url)
+        var user_id = prompt('user_id', '');
+        var game_id = prompt('game_id', '');
+        
+        Main.ro.spectator.leave(user_id, game_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -69,12 +67,11 @@ Main.on("pagecreate", function (arg) {
   
     $('#btn-get').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.spectator.get(user_id, group_name, status_message, photo_url)
+        var game_id = prompt('game_id', '');
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
+        
+        Main.ro.spectator.get(game_id, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

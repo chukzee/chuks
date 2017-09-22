@@ -11,7 +11,13 @@ Main.on("pagecreate", function (arg) {
 
     Main.rcall.live(obj);
     
+    Main.eventio.on('comment', onComment);
 
+    function onComment(obj){
+        alert('onComment');
+        alert(obj);
+        console.log(obj);
+    }
     $('#test-simulate-page').on('click', function () {
         //alert('#btn-page1-next');
 
@@ -34,12 +40,11 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-get-game-comments').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var game_id = prompt('game_id', '');
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
 
-        Main.ro.comment.getGameComments(user_id, group_name, status_message, photo_url)
+        Main.ro.comment.getGameComments(game_id, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -53,12 +58,11 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-user-comments').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id', '07032710628');
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
 
-        Main.ro.comment.getUserComments(user_id, group_name, status_message, photo_url)
+        Main.ro.comment.getUserComments(user_id, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -72,12 +76,12 @@ Main.on("pagecreate", function (arg) {
        
     $('#btn-add').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id', '07032710628');
+        var game_id = prompt('game_id', '');
+        var msg_content = prompt('msg_content', '');
+        var msg_replied_id = prompt('msg_replied_id', '');
 
-        Main.ro.comment.add(user_id, group_name, status_message, photo_url)
+        Main.ro.comment.add(user_id, game_id, msg_content, msg_replied_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -91,12 +95,9 @@ Main.on("pagecreate", function (arg) {
        
     $('#btn-like').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var msg_id = prompt('msg_id', '');
 
-        Main.ro.comment.like(user_id, group_name, status_message, photo_url)
+        Main.ro.comment.like(msg_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -110,12 +111,9 @@ Main.on("pagecreate", function (arg) {
        
     $('#btn-dislike').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var msg_id = prompt('msg_id', '');
 
-        Main.ro.comment.dislike(user_id, group_name, status_message, photo_url)
+        Main.ro.comment.dislike(msg_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

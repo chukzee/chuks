@@ -80,15 +80,16 @@ class Spectator extends WebApplication {
 
     async leave(user_id, game_id) {
         try {
-            var spectator = await sc.findOneAndDelete({
+            var r = await sc.findOneAndDelete({
                 game_id: game_id,
                 user_id: user_id
-            });
+            }, {projection: {_id: 0}});
         } catch (e) {
             console.log(e);
             return this.error('could not delete spectator');
         }
         
+        var spectator = r.value;
         if(!spectator){
             return this.error('no spectator');
         }

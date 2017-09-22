@@ -138,14 +138,17 @@ class Match extends WebApplication {
         return game_position;
     }
 
-    _findOneAndDeletMatchFixture(game_id) {
+    async _findOneAndDeletMatchFixture(game_id) {
         var sc = this.sObj.db.collection(this.sObj.col.match_fixtures);
-        return sc.findOneAndDelete({game_id: game_id}, {_id: 0});
+        var r = await sc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
+        return r.value;
     }
 
-    _findOneAndDeletePlayRequest(game_id) {
+    async _findOneAndDeletePlayRequest(game_id) {
         var sc = this.sObj.db.collection(this.sObj.col.play_requests);
-        return sc.findOneAndDelete({game_id: game_id}, {_id: 0});
+        var r = await sc.findOneAndDelete({game_id: game_id},  {projection: {_id: 0}});
+        console.log(r);
+        return r.value;
     }
     /**
      * This method check when any of the specified players engaged in another game
@@ -157,6 +160,8 @@ class Match extends WebApplication {
      */
     async _validatePlayersBegin(user, players) {
         var was_idle = [];
+        var player_engaged;
+        
         for (var i = 0; i < players.length; i++) {
 
             if (players[i].available) {
@@ -205,7 +210,7 @@ class Match extends WebApplication {
      * the players. The game id provided is used to find the 
      * game document object in 'play_requests' and 'match_fixtures'
      * collections. And then relocated to 'matches' collections.
-     * If the second parameter is provided then the only the 
+     * If the second parameter is provided then only the 
      * oppropriate collection is searched. This is useful to
      * reduce search load when you already know where to search
      * 
@@ -292,7 +297,7 @@ class Match extends WebApplication {
 
         //broadcast the game start event to all the players concern
         match.players = players;
-        this.broadcast(this.evt.game_start, match, players_ids);
+        this.broadcast(this.evt.game_start, match, players_ids, true,  this.sObj.GAME_MAX_WAIT_IN_SEC);
 
         return 'game started successfully';
     }
@@ -307,7 +312,6 @@ class Match extends WebApplication {
      * @returns {undefined}
      */
     async resume(user_id, game_id) {
-
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
@@ -377,8 +381,9 @@ class Match extends WebApplication {
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);
         }
-
-        this.broadcast(this.evt.game_resume, match, users_ids); //broadcast to players except user_id
+        
+         //broadcast to players except user_id
+        this.broadcast(this.evt.game_resume, match, users_ids, true,  this.sObj.GAME_MAX_WAIT_IN_SEC);
 
         return match; //sent to player of user_id
     }
@@ -425,7 +430,7 @@ class Match extends WebApplication {
         var user = new User(this.sObj, this.util, this.evt);
         user._unsetPlaying(user_id);
 
-        this.broadcast(this.evt.game_pause, data, users_ids); //broadcast to players except user_id
+        this.broadcast(this.evt.game_pause, data, users_ids, true); //broadcast to players except user_id
 
         return data; //sent to player of user_id
     }
@@ -497,7 +502,7 @@ class Match extends WebApplication {
             users_ids.push(spectators[i].user_id);
         }
 
-        this.broadcast(this.evt.game_abandon, data, users_ids); //broadcast to players except user_id
+        this.broadcast(this.evt.game_abandon, data, users_ids, true); //broadcast to players except user_id
 
         return data;
     }
@@ -561,7 +566,7 @@ class Match extends WebApplication {
             users_ids.push(spectators[i].user_id);
         }
 
-        this.broadcast(this.evt.game_finish, match, users_ids); //broadcast to all (players and spectators)
+        this.broadcast(this.evt.game_finish, match, users_ids, true); //broadcast to all (players and spectators)
 
         //update the players ranking
         var rank = new PlayerRank(this.sObj, this.util, this.evt);
@@ -787,7 +792,7 @@ class Match extends WebApplication {
      * @param {type} user_id - the id of the user whose match history will be 
      * searched for
      * @param {type} filter - filter to determine where search should be made.
-     * valid values are contact, group, tornament. If none of the valid values
+     * valid values are contact, group, tournament. If none of the valid values
      * is provided then all search is made.
      * @param {type} is_include_abandoned_matches - used to determine if abandon matches
      * should be included in the search

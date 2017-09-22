@@ -39,12 +39,12 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-create-tournament').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var tournament_name = prompt('tournament_name','');
+        var status_message = prompt('status_message','');
+        var photo_url = prompt('photo_url','');
 
-        Main.ro.tourn.createTournament(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.createTournament(user_id, tournament_name, status_message, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -58,12 +58,9 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-edit-tournament').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var obj = {};
 
-        Main.ro.tourn.editTournament(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.editTournament(obj)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -77,12 +74,10 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-set-tournament-icon').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var photo_url = prompt('photo_url','');
 
-        Main.ro.tourn.setTournamentIcon(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.setTournamentIcon(user_id, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -96,12 +91,12 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-set-tournament-status').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var tournament_name = prompt('tournament_name','');
+        var status_message = prompt('status_message','');
+        var photo_url = prompt('photo_url','');
 
-        Main.ro.tourn.setTournamentStatus(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.setTournamentStatus(user_id, tournament_name, status_message, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -115,12 +110,11 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-add-official').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var tournament_name = prompt('tournament_name','');
+        var new_official_user_id = prompt('new_official_user_id','');
 
-        Main.ro.tourn.addOfficial(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.addOfficial(user_id, tournament_name, new_official_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -134,12 +128,11 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-remove-official').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var tournament_name = prompt('tournament_name','');
+        var official_user_id = prompt('official_user_id','');
 
-        Main.ro.tourn.removeOfficial(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.removeOfficial(user_id, tournament_name, official_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -153,12 +146,11 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-add-player').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var tournament_name = prompt('tournament_name','');
+        var player_user_id = prompt('player_user_id','');
 
-        Main.ro.tourn.addPlayer(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.addPlayer(user_id, tournament_name, player_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -172,12 +164,11 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-remove-player').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id','07032710628');
+        var tournament_name = prompt('tournament_name','');
+        var player_user_id = prompt('player_user_id','');
 
-        Main.ro.tourn.removePlayer(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.removePlayer(user_id, tournament_name, player_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -191,12 +182,9 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-tournament-info').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var tournament_name = prompt('tournament_name','');
 
-        Main.ro.tourn.getTournamentInfo(user_id, group_name, status_message, photo_url)
+        Main.ro.tourn.getTournamentInfo(tournament_name)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -210,12 +198,13 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-tournaments-info-list').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.tourn.getTournamentsInfoList(user_id, group_name, status_message, photo_url)
+        var tournament_names_arr = prompt('enter list of torunamen names separated by comma','');
+        if(tournament_names_arr){
+            tournament_names_arr = tournament_names_arr.split(',');
+        }else{
+            tournament_names_arr = [];
+        }
+        Main.ro.tourn.getTournamentsInfoList(tournament_names_arr)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

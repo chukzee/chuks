@@ -86,6 +86,10 @@ class ServerObject {
         return 86400;// 24 hours
     }
     
+    get GAME_MAX_WAIT_IN_SEC(){//in seconds
+        return 300;// 5 minutes
+    }
+    
     set isShuttingDown(b){
         this._is_shutting_down = b;
     }

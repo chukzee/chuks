@@ -46,9 +46,10 @@ function onceRetryDelivery() {
 }
 
 function doOnceRetryDeliveryMsg(arr) {
+        
     for (var i = 0; i < arr.length; i++) {
         var d = JSON.parse(arr[i]);
-        if (this.msg_id === d.msg_id) {
+        if (this.msg_id === d.msg_id) {                       
             sObj.redis.publish(sObj.PUBSUB_DELIVERY_RESEND, arr[i]);
             break;
         }
@@ -184,12 +185,10 @@ function deliveryResend(msg) {
 
     var data = JSON.parse(msg);
 
-    sObj.getSocketIDs(data.user_id, function (socket_ids) {
-        var user_id = data.user_id;
-        delete data.user_id; //no longer required
+    sObj.getSocketIDs(data.user_id, function (socket_ids) {           
         data.acknowledge_delivery = true;
         data.resend_count = !data.resend_count ? 1 : data.resend_count++;
-        send(user_id, socket_ids, data);
+        send(data.user_id, socket_ids, data);
     });
 
 }

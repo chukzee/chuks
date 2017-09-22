@@ -33,12 +33,13 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-htoh').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var player_1_id = prompt('player_1_id','07032710628');
+        var player_2_id = prompt('player_2_id','07023232323');
+        var is_include_abandoned_matches = prompt('is_include_abandoned_matches','');
+        var skip = prompt('skip','');
+        var limit = prompt('limit','');
 
-        Main.ro.stats.hToh(user_id, group_name, status_message, photo_url)
+        Main.ro.stats.hToh(player_1_id, player_2_id, is_include_abandoned_matches, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -52,12 +53,13 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-htoh-contact').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var player_1_id = prompt('player_1_id','07032710628');
+        var player_2_id = prompt('player_2_id','07023232323');
+        var is_include_abandoned_matches = prompt('is_include_abandoned_matches','');
+        var skip = prompt('skip','');
+        var limit = prompt('limit','');
 
-        Main.ro.stats.hTohContact(user_id, group_name, status_message, photo_url)
+        Main.ro.stats.hTohContact(player_1_id, player_2_id, is_include_abandoned_matches, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -71,12 +73,14 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-htoh-group').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var group_name = prompt('group_name','Group1');
+        var player_1_id = prompt('player_1_id','07032710628');
+        var player_2_id = prompt('player_2_id','07023232323');
+        var is_include_abandoned_matches = prompt('is_include_abandoned_matches','');
+        var skip = prompt('skip','');
+        var limit = prompt('limit','');
 
-        Main.ro.stats.hTohGroup(user_id, group_name, status_message, photo_url)
+        Main.ro.stats.hTohGroup(group_name, player_1_id, player_2_id, is_include_abandoned_matches, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -90,12 +94,14 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-htoh-torunament').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var tournament_name = prompt('tournament_name','07032710628');
+        var player_1_id = prompt('player_1_id','07032710628');
+        var player_2_id = prompt('player_2_id','07023232323');
+        var is_include_abandoned_matches = prompt('is_include_abandoned_matches','');
+        var skip = prompt('skip','');
+        var limit = prompt('limit','');
 
-        Main.ro.stats.hTohTournament(user_id, group_name, status_message, photo_url)
+        Main.ro.stats.hTohTournament(tournament_name, player_1_id, player_2_id, is_include_abandoned_matches, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

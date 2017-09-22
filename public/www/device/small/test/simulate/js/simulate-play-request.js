@@ -11,12 +11,27 @@ Main.on("pagecreate", function (arg) {
 
     Main.rcall.live(obj);
     
-    alert('play request.js');
-
-    Main.eventio.on('play_request', onPlayRequest)
-
+    Main.eventio.on('play_request', onPlayRequest);
+    Main.eventio.on('play_request_rejected', onPlayRequestRejected);
+    Main.eventio.on('play_request_expired', onPlayRequestExpired);
+    
+    var play_request_game_id;
+    
     function onPlayRequest(obj){
         alert('onPlayRequest');
+        alert(obj);
+        console.log(obj);
+        play_request_game_id = obj.data.game_id;
+    }
+    
+    function onPlayRequestRejected(obj){
+        alert('onPlayRequestRejected');
+        alert(obj);
+        console.log(obj);
+    }
+   
+    function onPlayRequestExpired(obj){
+        alert('onPlayRequestExpired');
         alert(obj);
         console.log(obj);
     }
@@ -60,7 +75,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-abort').on('click', function () {
 
-        var game_id = '07032710628';
+        var game_id = play_request_game_id;
 
         Main.ro.play_request.abort(game_id)
                 .get(function (data) {
@@ -76,7 +91,7 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-reject').on('click', function () {
 
-        var game_id = '07032710628';
+        var game_id = play_request_game_id;
 
         Main.ro.play_request.reject(game_id)
                 .get(function (data) {

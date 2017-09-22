@@ -11,6 +11,41 @@ Main.on("pagecreate", function (arg) {
 
     Main.rcall.live(obj);
     
+    Main.eventio.on('game_start', onGameStart);
+    Main.eventio.on('game_resume', onGameResume);
+    Main.eventio.on('game_pause', onGamePause);
+    Main.eventio.on('game_abandon', onGameAbandon);
+    Main.eventio.on('game_finish', onGameFinish);
+
+    function onGameStart(obj){
+        alert('onGameStart');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onGameResume(obj){
+        alert('onGameResume');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onGamePause(obj){
+        alert('onGamePause');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onGameAbandon(obj){
+        alert('onGameAbandon');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onGameFinish(obj){
+        alert('onGameFinish');
+        alert(obj);
+        console.log(obj);
+    }
 
     $('#test-simulate-page').on('click', function () {
         //alert('#btn-page1-next');
@@ -40,10 +75,10 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-send-move').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id', '07032710628');
+        var group_name = prompt('group_name', 'Group1');
+        var status_message = prompt('status_message', '');
+        var photo_url = prompt('photo_url', '');
 
         Main.ro.match.sendMove(user_id, group_name, status_message, photo_url)
                 .get(function (data) {
@@ -59,12 +94,9 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-get-game-position').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var game_id = prompt('game_id', '');
 
-        Main.ro.match.getGamePosition(user_id, group_name, status_message, photo_url)
+        Main.ro.match.getGamePosition(game_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -78,12 +110,10 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-start').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var game_id = prompt('game_id', '');
+        var fixture_type = prompt('fixture_type', '');
 
-        Main.ro.match.start(user_id, group_name, status_message, photo_url)
+        Main.ro.match.start(game_id, fixture_type)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -97,12 +127,10 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-resume').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id', '07032710628');
+        var game_id = prompt('game_id', '');
 
-        Main.ro.match.resume(user_id, group_name, status_message, photo_url)
+        Main.ro.match.resume(user_id, game_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -114,14 +142,29 @@ Main.on("pagecreate", function (arg) {
 
     });
    
+    $('#btn-pause').on('click', function () {
+
+        var user_id = prompt('user_id', '07032710628');
+        var game_id = prompt('game_id', '');
+
+        Main.ro.match.pause(user_id, game_id)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+    
     $('#btn-abandon').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id', '07032710628');
+        var game_id = prompt('game_id', '');
 
-        Main.ro.match.abandon(user_id, group_name, status_message, photo_url)
+        Main.ro.match.abandon(user_id, game_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -135,12 +178,13 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-finish').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var game_id = prompt('game_id', '');
+        var score = prompt('score', '');
+        var winner_user_id = prompt('winner_user_id', '');
+        
+        score = {};
 
-        Main.ro.match.finish(user_id, group_name, status_message, photo_url)
+        Main.ro.match.finish(game_id, score, winner_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -154,12 +198,12 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-contacts-match-list').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.match.getContactsMatchList(user_id, group_name, status_message, photo_url)
+        var user_id = prompt('user_id', '07032710628');
+        var game_name = prompt('game_name', 'chess');
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
+        
+        Main.ro.match.getContactsMatchList(user_id, game_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -173,12 +217,12 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-group-match-list').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.match.getGroupMatchList(user_id, group_name, status_message, photo_url)
+        var group_name = prompt('group_name', 'Group1');
+        var game_name = prompt('game_name', 'chess');
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
+        
+        Main.ro.match.getGroupMatchList(group_name, game_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -192,12 +236,12 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-tournament-match-list').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.match.getTournamentMatchList(user_id, group_name, status_message, photo_url)
+        var tournament_name = prompt('tournament_name', '');
+        var game_name = prompt('game_name', 'chess');
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
+        
+        Main.ro.match.getTournamentMatchList(tournament_name, game_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -211,12 +255,13 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-user-match-history').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
-
-        Main.ro.match.getUserMatchHistory(user_id, group_name, status_message, photo_url)
+        var user_id = prompt('user_id', '07032710628');
+        var filter = prompt('filter : valid values are contact, group, tournament', 'group');
+        var is_include_abandoned_matches = prompt('is_include_abandoned_matches', true);
+        var skip = prompt('skip', 0);
+        var limit = prompt('limit', 50);
+        
+        Main.ro.match.getUserMatchHistory(user_id, filter, is_include_abandoned_matches, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
