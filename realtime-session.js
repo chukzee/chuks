@@ -40,7 +40,7 @@ function onceRetryDelivery() {
 
         //remove since we will only try it once - other push mechanism we have aborted here will
         //ensure the message is eventually pushed to the client when he is online
-        once_retry_delivery.slice(i, 1);
+        once_retry_delivery.splice(i, 1);
         i--;
     }
 }
@@ -48,7 +48,7 @@ function onceRetryDelivery() {
 function doOnceRetryDeliveryMsg(arr) {
     for (var i = 0; i < arr.length; i++) {
         var d = JSON.parse(arr[i]);
-        if (this.ack_msg_id === d.ack_msg_id) {
+        if (this.msg_id === d.msg_id) {
             sObj.redis.publish(sObj.PUBSUB_DELIVERY_RESEND, arr[i]);
             break;
         }
@@ -242,11 +242,11 @@ function send(user_id, socket_ids, data) {
 
 
     if (data.acknowledge_delivery && !data.resend_count) {//resend once
-        data.ack_msg_id = sObj.UniqueNumber; // set the acknowledgement message id  
+        data.msg_id = sObj.UniqueNumber; // set the acknowledgement message id  
         data.user_id = user_id;//important!  
         once_retry_delivery.push({
             user_id: data.user_id,
-            ack_msg_id: data.ack_msg_id,
+            msg_id: data.msg_id,
             msg_time: data.msg_time
         });
         sObj.redis.rpush("user_message_queue:" + user_id, JSON.stringify(data));//queue the message for pushing to the user when next online
@@ -416,7 +416,7 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
 
                             console.log(d);
 
-                            if (d.ack_msg_id !== msg.ack_msg_id) {
+                            if (d.msg_id !== msg.msg_id) {
                                 continue;
                             }
                             //here we've got the message we are looking for, so remove it now.

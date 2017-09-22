@@ -64,7 +64,9 @@ class PlayRequest extends WebApplication {
             for (var i = 0; i < opponent_ids.length; i++) {
                 players_ids.push(opponent_ids[i]);// push the other players in
             }
-
+            
+            
+            
             if (players_ids.length <= 3) {
                 //ok for few opponents run the query individually - not much load wil be experienced  
                 for (var i = 0; i < players_ids.length; i++) {
@@ -110,10 +112,11 @@ class PlayRequest extends WebApplication {
 
             var game_id = this.sObj.UniqueNumber; //assign unique number to the game id
 
-            var required_fields = ['first_name', 'last_name', 'photo_url'];
+            var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
             var players = await user.getInfoList(players_ids, required_fields);
-
+            
+            
             if (user.lastError) {
                 return this.error('could not send play request.');
             }
@@ -122,7 +125,8 @@ class PlayRequest extends WebApplication {
                 console.log('This should not happen! user info list must return an array if no error was caught!');
                 return this.error('could not send play request.');
             }
-
+            
+            
             //check if the player info list is complete - ie match  the number requested for
             
             var missing = this.util.findMissing(players_ids, players, function(p_id, p_info){
@@ -172,7 +176,10 @@ class PlayRequest extends WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.play_requests);
         try {
-            await c.deleteOne({game_id: game_id});//delete and return the doc
+            var r = await c.deleteOne({game_id: game_id});//delete and return the doc
+            if(r.result.nModified === 0){
+               return 'play request not found!'; 
+            }
         } catch (e) {
             console.log(e);
             return this.error('could not abort the play request!');
@@ -184,7 +191,7 @@ class PlayRequest extends WebApplication {
     /**
      * The play request can be rejected by the user.
      * However this option may not be enabled by default
-     * since the play request expires after some time it
+     * since the play request expires after some time.
      * 
      * 
      * @param {type} game_id
@@ -195,6 +202,9 @@ class PlayRequest extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.play_requests);
         try {
             var play_request = await c.findOneAndDelete({game_id: game_id}, {_id: 0});//delete and return the doc
+            if(!play_request){
+               return 'play request not found!'; 
+            }
         } catch (e) {
             console.log(e);
             return this.error('could not reject the play request!');

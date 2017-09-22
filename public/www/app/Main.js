@@ -556,7 +556,7 @@ var Main = {};
 
             if (msg.acknowledge_delivery) {
                 var ack = {
-                    ack_msg_id: msg.ack_msg_id,
+                    msg_id: msg.msg_id,
                     user_id: msg.user_id,//important!
                     acknowledge_delivery: msg.acknowledge_delivery
                 };
@@ -612,7 +612,7 @@ var Main = {};
 
         var rcallWaitingFn = [];
         var isGetRcallLive = false;
-        var MAX_WAIT_CONNECT = 120; //60 seconds
+        var MAX_WAIT_CONNECT = 60; //60 seconds
         var rcalFailures = {};
         var nextRCallLiveRetrySec = 2;
         var retryLiveArgs = [];
@@ -635,13 +635,20 @@ var Main = {};
             if (window.io) {
                 sock();
             }
-            var connTimerId = null;
+            
+            
+            //We observed that some time the disconnection evetn is not fired
+            //thus making the connection lost forever. To avoid this, we will
+            //periodically check for connection and autmatically connect to the 
+            //server if discovered that this connection is lost
+            var imObj = {immediate: true};
+            window.setInterval(reconnectSocket.bind(imObj), MAX_WAIT_CONNECT);
 
             this.checkConnect = function () {
                 if (!socket && window.io) {
                     sock();
                 }
-                if(socket.connected && last_conn_time){
+                if(socket.connected === false && last_conn_time){
                     var elapse = (new Date().getTime() - last_conn_time)/1000;
                     var MAX_ELAPSE = 10;
                     //attempt a socket connection. 
@@ -650,7 +657,7 @@ var Main = {};
                     //and the connection will be off indefinitely. So avoid
                     //that indefinite loss of connection
                     if(elapse > MAX_ELAPSE){
-                        connTimerId = reconnectAfter(socket);
+                        reconnectSocket();
                     }
                 }
                 return socket && socket.connected === true;
@@ -666,12 +673,8 @@ var Main = {};
                 sucFnList[uniqueNo] = successFn;
                 errFnList[uniqueNo] = errorFn;
 
-                socket.emit('rcall_request', data, rioCallback);
-            };
-
-            function rioCallback(err){//is this really called - confirm later!
-                alert(err);
-            }
+                socket.emit('rcall_request', data);
+            };            
 
             function sock() {
 
@@ -693,21 +696,20 @@ var Main = {};
             }
 
             function onConnect(msg) {
-                reconnectFactor = 1;
-                window.clearInterval(connTimerId);
+                reconnectFactor = 1;                
             }
 
             function onDisconnect(msg) {
                 //alert('disconnect');
-                connTimerId = reconnectAfter(socket);
+                reconnectSocket();
             }
 
             function onErrorSocket(msg) {
                 //alert('error');
-                connTimerId = reconnectAfter(socket);
+                reconnectSocket();
             }
 
-            function reconnectAfter(socket) {
+            function reconnectSocket() {
                 if (reconnectFactor >= MAX_WAIT_CONNECT) {
                     reconnectFactor /= 4; //restart the connect after 
                     if (reconnectFactor < 1) {//just in case
@@ -716,8 +718,12 @@ var Main = {};
                 } else {
                     reconnectFactor *= 2; // increment the time to wait before trying again
                 }
-
-                return  window.setTimeout(function () {
+                var factor = reconnectFactor;
+                if(this.immediate){
+                    factor = 0;
+                }
+                
+                window.setTimeout(function () {
                     if (socket.connected === false) {
                         sucFnList = {};
                         errFnList = {};
@@ -725,7 +731,7 @@ var Main = {};
                         last_conn_time = new Date().getTime();
                     }
 
-                }, reconnectFactor * 1000);
+                }, factor * 1000);
             }
         }
 
@@ -1077,12 +1083,12 @@ var Main = {};
                     callback(res);
                 }
                 function errorFn(statusText, status) {
-                    var respose = {data:{}};
+                    var respose = {};
                     if(status === 504){
                         statusText = 'connection to the server has timed out!'; // we prefer this description
                     }
-                    respose.data.success = false;
-                    respose.data.status = statusText;
+                    respose.success = false;
+                    respose.data = statusText;
                     callback(respose);
                 }
 

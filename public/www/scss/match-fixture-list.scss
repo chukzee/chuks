@@ -21,49 +21,13 @@
      background-color: #eee;
 }
 
-/*1st content is expected to show white player profile photo*/
+/*1st content is expected to show white player full name*/
 .game9ja-match-fixture-list > :nth-child(1){
     position: absolute;
-    left : 5px;
-    top : 5px;
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    overflow: hidden;
-}
-.game9ja-match-fixture-list > :nth-child(1) > img{
-    position: absolute;
-    height: 40px;
-    width: 40px;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-/*2nd content is expected to show black player profile photo*/
-.game9ja-match-fixture-list > :nth-child(2){
-    position: absolute;
-    right : 5px;
-    top : 5px;
-    height: 40px;
-    width: 40px;    
-    border-radius: 50%;
-    cursor: pointer;
-    overflow: hidden;
-}
-.game9ja-match-fixture-list > :nth-child(2) > img{
-    position: absolute;
-    height: 40px;
-    width: 40px;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-/*3rd content is expected to show white player full name*/
-.game9ja-match-fixture-list > :nth-child(3){
-    position: absolute;
-    left : 50px;
-    top : 2px;
+    //left : 50px;//old
+    left: 5px;//new
+    //top : 2px;//old
+    bottom: 5px;//new
     width: 100px;
     color: #888;
     overflow: hidden;
@@ -71,10 +35,11 @@
     white-space: nowrap;
 }
 
-/*4th content is expected to show black player full name*/
-.game9ja-match-fixture-list > :nth-child(4){
+/*2nd content is expected to show black player full name*/
+.game9ja-match-fixture-list > :nth-child(2){
     position: absolute;
-    right : 50px;
+    //right : 50px;//old
+    right: 5px;//new
     bottom: 5px;
     width: 100px;
     text-align: right;
@@ -85,16 +50,67 @@
 }
 
 
-/*7th content is expected to show the game score and game status in a div container*/
-.game9ja-match-fixture-list > :nth-child(5){
+/*3rd content is expected to show the time in a div container*/
+.game9ja-match-fixture-list > :nth-child(3){
     position: absolute;
-    left : 35%;
-    top: 35%;
+    top: 5px;
     color: #998;
+    width: 100%;
+    text-align: center;
     font-size: 11px;
 }
 
 /*stlye the game score*/
-.game9ja-match-fixture-list > :nth-child(5) > :nth-child(1){
+.game9ja-match-fixture-list > :nth-child(3) > :nth-child(1){
     margin-right: 10px;
+}
+
+/*4th content is expected to show the VS in a div container*/
+.game9ja-match-fixture-list > :nth-child(4){
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+}
+
+
+/*5th content is expected to show white player profile photo*/
+.game9ja-match-fixture-list > :nth-child(5){
+    position: absolute;
+    //left : 5px;//old
+    left:20px;//new
+    top : 5px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+}
+.game9ja-match-fixture-list > :nth-child(5) > img{
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+/*6th content is expected to show black player profile photo*/
+.game9ja-match-fixture-list > :nth-child(6){
+    position: absolute;
+    //right : 5px;//old
+    right: 20px;//new
+    top : 5px;
+    height: 40px;
+    width: 40px;    
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+}
+.game9ja-match-fixture-list > :nth-child(6) > img{
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    cursor: pointer;
+    border-radius: 50%;
 }

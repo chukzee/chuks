@@ -43,8 +43,59 @@ and open the template in the editor.
 .game9ja-live-games-list:hover {
   background-color: #eee; }
 
-/*1st content is expected to show white player profile photo*/
+/*1st content is expected to show white player full name*/
 .game9ja-live-games-list > :nth-child(1) {
+  position: absolute;
+  left: 5px;
+  bottom: 2px;
+  width: 100px;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+/*2nd content is expected to show black player full name*/
+.game9ja-live-games-list > :nth-child(2) {
+  position: absolute;
+  right: 5px;
+  bottom: 2px;
+  width: 100px;
+  text-align: right;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+/*3rd content is expected to show game elapse time*/
+.game9ja-live-games-list > :nth-child(3) {
+  position: absolute;
+  margin: 0 auto;
+  top: 5px;
+  width: 100%;
+  text-align: center;
+  color: #aaa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  text-shadow: rgba(170, 170, 170, 0.9) 0px 0.3px 0.5px; }
+
+/*4th content is expected to show the game score and game status in a div container*/
+.game9ja-live-games-list > :nth-child(4) {
+  position: absolute;
+  margin: 0 auto;
+  top: 40%;
+  color: #998;
+  width: 100%;
+  text-align: center;
+  font-size: 12px; }
+
+/*stlye the game score*/
+.game9ja-live-games-list > :nth-child(4) > :nth-child(1) {
+  margin-right: 10px; }
+
+/*5th content is expected to show white player profile photo*/
+.game9ja-live-games-list > :nth-child(5) {
   position: absolute;
   left: 20px;
   top: 5px;
@@ -57,7 +108,7 @@ and open the template in the editor.
   cursor: pointer;
   overflow: hidden; }
 
-.game9ja-live-games-list > :nth-child(1) > img {
+.game9ja-live-games-list > :nth-child(5) > img {
   position: absolute;
   height: 40px;
   width: 40px;
@@ -67,8 +118,8 @@ and open the template in the editor.
   -ms-border-radius: 50%;
   border-radius: 50%; }
 
-/*2nd content is expected to show black player profile photo*/
-.game9ja-live-games-list > :nth-child(2) {
+/*6th content is expected to show black player profile photo*/
+.game9ja-live-games-list > :nth-child(6) {
   position: absolute;
   right: 20px;
   top: 5px;
@@ -81,7 +132,7 @@ and open the template in the editor.
   cursor: pointer;
   overflow: hidden; }
 
-.game9ja-live-games-list > :nth-child(2) > img {
+.game9ja-live-games-list > :nth-child(6) > img {
   position: absolute;
   height: 40px;
   width: 40px;
@@ -90,65 +141,5 @@ and open the template in the editor.
   -moz-border-radius: 50%;
   -ms-border-radius: 50%;
   border-radius: 50%; }
-
-/*3rd content is expected to show white player full name*/
-.game9ja-live-games-list > :nth-child(3) {
-  position: absolute;
-  left: 5px;
-  bottom: 2px;
-  width: 100px;
-  color: #888;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; }
-
-/*4th content is expected to show black player full name*/
-.game9ja-live-games-list > :nth-child(4) {
-  position: absolute;
-  right: 5px;
-  bottom: 2px;
-  width: 100px;
-  text-align: right;
-  color: #888;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; }
-
-/*5th content is expected to show game elapse time*/
-.game9ja-live-games-list > :nth-child(5) {
-  position: absolute;
-  left: 45%;
-  top: 2px;
-  width: 100px;
-  color: #aaa;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  text-shadow: rgba(170, 170, 170, 0.9) 0px 0.3px 0.5px; }
-
-/*6th content is expected to show the game views count*/
-.game9ja-live-games-list > :nth-child(6) {
-  position: absolute;
-  left: 45%;
-  bottom: 2px;
-  width: 100px;
-  color: #aaa;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px; }
-
-/*7th content is expected to show the game score and game status in a div container*/
-.game9ja-live-games-list > :nth-child(7) {
-  position: absolute;
-  left: 45%;
-  top: 35%;
-  color: #998;
-  font-size: 12px; }
-
-/*stlye the game score*/
-.game9ja-live-games-list > :nth-child(7) > :nth-child(1) {
-  margin-right: 10px; }
 
 /*# sourceMappingURL=live-games-list.css.map */

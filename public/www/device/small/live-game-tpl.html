@@ -12,8 +12,6 @@ and open the template in the editor.
 
     <body>
         <ul class="game9ja-live-games-list">
-            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{white_pic}" alt=" "/></li>
-            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{black_pic}" alt=""/></li>
             <li>
                 {white_name}
             </li>
@@ -24,11 +22,11 @@ and open the template in the editor.
                 {game_elapse_time}
             </li>
             <li>
-                {game_views_count}
-            </li>
-            <li>
                 <span>{game_score}</span><span>{game_status}</span>
             </li>
+            
+            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{white_pic}" alt=" "/></li>
+            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{black_pic}" alt=""/></li>
         </ul>
 
     </body>
