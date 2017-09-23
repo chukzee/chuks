@@ -34,6 +34,10 @@ class Evt{
         return 'game_resume';
     }
     
+    get game_pause(){
+        return 'game_pause';
+    }
+    
     get game_finish(){
         return 'game_finish';
     }

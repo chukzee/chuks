@@ -14,6 +14,8 @@ class User extends WebApplication {
     async _setPlaying(user_id) {
 
         try {
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            
             var r = await c.findOneAndUpdate({user_id: user_id},
                     {$set: {
                             playing: true,

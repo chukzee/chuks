@@ -146,7 +146,7 @@ class Match extends WebApplication {
 
     async _findOneAndDeletePlayRequest(game_id) {
         var sc = this.sObj.db.collection(this.sObj.col.play_requests);
-        var r = await sc.findOneAndDelete({game_id: game_id},  {projection: {_id: 0}});
+        var r = await sc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
         console.log(r);
         return r.value;
     }
@@ -161,7 +161,7 @@ class Match extends WebApplication {
     async _validatePlayersBegin(user, players) {
         var was_idle = [];
         var player_engaged;
-        
+
         for (var i = 0; i < players.length; i++) {
 
             if (players[i].available) {
@@ -267,8 +267,8 @@ class Match extends WebApplication {
         var default_rules = this.sObj.game.get(mtcObj.game_name).getDefautRules();
 
         //set the players as available
-        for (var i = 0; i < user.length; i++) {
-            players.available = true;//important! used to determine when a player abandons a game in which case it is set to false
+        for (var i = 0; i < players.length; i++) {
+            players[i].available = true;//important! used to determine when a player abandons a game in which case it is set to false
         }
 
         var v = await this._validatePlayersBegin(user, players);
@@ -297,7 +297,7 @@ class Match extends WebApplication {
 
         //broadcast the game start event to all the players concern
         match.players = players;
-        this.broadcast(this.evt.game_start, match, players_ids, true,  this.sObj.GAME_MAX_WAIT_IN_SEC);
+        this.broadcast(this.evt.game_start, match, players_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
         return 'game started successfully';
     }
@@ -331,7 +331,8 @@ class Match extends WebApplication {
         var users_ids = [];
         var players_ids = [];
         for (var i = 0; i < match.players.length; i++) {
-            if (match.players[i].available) {//exclude players that might have abandon the game
+            //exclude players that might have abandon the game
+            if (match.players[i].available) {
                 players_ids[i] = match.players[i].user_id;
             }
         }
@@ -348,8 +349,14 @@ class Match extends WebApplication {
             //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
             return this.error('could not find player with user id - ' + missing);
         }
-
+        
+        console.log('match.players', match.players);
+        console.log('players', players);
+        
+        
         for (var i = 0; i < players.length; i++) {
+            //set the players as available since we know they are available from the check above
+            players[i].available = true;//important! used to determine when a player abandons a game in which case it is set to false
 
             if (players[i].user_id === user_id) {//yes skip, we will send his own separately
                 continue;
@@ -364,17 +371,22 @@ class Match extends WebApplication {
 
         try {
             //update the game status
-            await c.updateOne(
+            var r = await c.findOneAndUpdate(
                     {game_id: game_id},
                     {$set: {pause_time: 0, game_status: 'live'}},
-                    {w: 'majority'});
+                    {
+                        projection:{_id: 0},
+                        returnOriginal: false, //return the updated document
+                        w: 'majority'
+                    });
 
         } catch (e) {
             console.log(e);
             this.error('could not resume game');
             return this;
         }
-
+        var updated_match = r.value;
+        
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
         var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
 
@@ -382,10 +394,12 @@ class Match extends WebApplication {
             users_ids.push(spectators[i].user_id);
         }
         
-         //broadcast to players except user_id
-        this.broadcast(this.evt.game_resume, match, users_ids, true,  this.sObj.GAME_MAX_WAIT_IN_SEC);
+        console.log('users_ids',users_ids);
+        
+        //broadcast to players except user_id
+        this.broadcast(this.evt.game_resume, updated_match, users_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
-        return match; //sent to player of user_id
+        return updated_match; //sent to player of user_id
     }
 
     async pause(user_id, game_id) {
@@ -395,10 +409,14 @@ class Match extends WebApplication {
             var r = await c.findOneAndUpdate(
                     {game_id: game_id},
                     {$set: {pause_time: new Date(), game_status: 'pause'}},
-                    {w: 'majority'});
-            
+                    {
+                        projection:{_id: 0},
+                        returnOriginal: false, //return the updated document
+                        w: 'majority'
+                    });
+
             var match = r.value;
-            
+
             if (!match) {
                 return 'no game to pause';
             }
@@ -430,8 +448,8 @@ class Match extends WebApplication {
         };
 
         var user = new User(this.sObj, this.util, this.evt);
-        user._unsetPlaying(user_id);
-
+        user._unsetPlaying(user_id);        
+        
         this.broadcast(this.evt.game_pause, data, users_ids, true); //broadcast to players except user_id
 
         return data; //sent to player of user_id
