@@ -1,7 +1,5 @@
 
 
-
-
 Main.on("pagecreate", function (arg) {
 
 
@@ -47,10 +45,10 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-create-group').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The best group';
-        var photo_url = 'group_url_1';
+        var user_id = prompt('user_id', '');
+        var group_name = prompt('group_name', '');
+        var status_message = prompt('status_message', '');
+        var photo_url = prompt('photo_url', '');
 
         Main.ro.group.createGroup(user_id, group_name, status_message, photo_url)
                 .get(function (data) {
@@ -67,10 +65,10 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-edit-group').on('click', function () {
 
-        var user_id = '07032710628';
-        var group_name = 'Group1';
-        var status_message = 'The great group';
-        var photo_url = 'group_url_again_1';
+        var user_id = prompt('user_id', '');
+        var group_name = prompt('group_name', '');
+        var status_message = prompt('status_message', '');
+        var photo_url = prompt('photo_url', '');
 
         Main.ro.group.editGroup(user_id, group_name, status_message, photo_url)
                 .get(function (data) {
@@ -87,9 +85,9 @@ Main.on("pagecreate", function (arg) {
         
     $('#btn-send-group-join-request').on('click', function () {
 
-        var from_user_id = '07032710628';
-        var to_user_id = '07023232323';
-        var group_name = 'Group1';
+        var from_user_id = prompt('from_user_id', '');
+        var to_user_id = prompt('to_user_id', '');
+        var group_name = prompt('group_name', '');
 
         Main.ro.group.sendGroupJoinRequest(from_user_id, to_user_id, group_name)
                 .get(function (data) {
@@ -106,7 +104,9 @@ Main.on("pagecreate", function (arg) {
     
     
     $('#btn-accept-group-join-request').on('click', function () {
-
+        
+        var authorization_token = prompt('authorization_token', '');
+        
         Main.ro.group.acceptGroupJoinRequest(authorization_token)
                 .get(function (data) {
                     alert(data);
@@ -123,9 +123,9 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-make-admin').on('click', function () {
 
-        var user_id = '07032710628';
-        var new_admin_user_id = '07023232323';
-        var group_name = 'Group1';
+        var user_id = prompt('user_id', '');
+        var new_admin_user_id = prompt('new_admin_user_id', '');
+        var group_name = prompt('group_name', '');
 
         Main.ro.group.makeAdmin(user_id, new_admin_user_id, group_name)
                 .get(function (data) {
@@ -142,9 +142,9 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-remove-admin-position').on('click', function () {
 
-        var user_id = '07032710628';
-        var demoted_admin_user_id = '07023232323';
-        var group_name = 'Group1';
+        var user_id = prompt('user_id', '');
+        var demoted_admin_user_id = prompt('demoted_admin_user_id', '');
+        var group_name = prompt('group_name', '');
 
         Main.ro.group.removeAdminPosition(user_id, demoted_admin_user_id, group_name)
                 .get(function (data) {
@@ -161,10 +161,10 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-remove-member').on('click', function () {
 
-        var user_id = '07023232323';
-        var exist_by = '07032710628';
-        var group_name = 'Group1';
-        var reason = 'a good reason';
+        var user_id = prompt('user_id', '');
+        var exist_by = prompt('exist_by', '');
+        var group_name = prompt('group_name', '');
+        var reason = prompt('reason', '');
 
         Main.ro.group.removeMember(user_id, exist_by, group_name, reason)
                 .get(function (data) {
@@ -180,7 +180,7 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-group-info').on('click', function () {
 
-        var group_name = 'Group1';
+        var group_name = prompt('group_name', '');
 
         Main.ro.group.getGroupInfo(group_name)
                 .get(function (data) {
@@ -197,8 +197,12 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-groups-info-list').on('click', function () {
 
-        var group_name_arr = ['Group1'];
-
+        var group_name_arr = prompt('enter group name separated by comma', '');
+        if(!group_name_arr){
+            group_name_arr = '';
+        }
+        group_name_arr = group_name_arr.split(',');
+        
         Main.ro.group.getGroupsInfoList(group_name_arr)
                 .get(function (data) {
                     alert(data);
@@ -214,8 +218,7 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-get-user-groups-info-list').on('click', function () {
 
-        //var user_id = '07032710628';
-        var user_id = '07023232323';
+        var user_id = prompt('user_id', '');
         
         Main.ro.group.getUserGroupsInfoList(user_id)
                 .get(function (data) {

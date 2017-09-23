@@ -10,7 +10,8 @@ class User extends WebApplication {
         super(sObj, util, evt);
         this.crypto = crypto;
     }
-
+    
+        
     async _setPlaying(user_id) {
 
         try {

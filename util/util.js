@@ -75,6 +75,27 @@ var Util = function () {
 
     };
 
+    /**
+     * Remove duplicate elements from the array
+     * @param {type} arr
+     * @returns {unresolved}
+     */
+    this.toSet = function(arr){
+        for (var i = 0; i < arr.length; i++) {
+            for (var k = 0; k < arr.length; k++) {
+                if (k === i) {
+                    continue;
+                }
+                if (arr[i] === arr[k]) {
+                    arr.splice(k, 1);
+                    k--;
+                    continue;
+                }
+            }
+        }
+        return arr;
+    };
+
     return this;
 }();
 
@@ -91,3 +112,8 @@ var r = Util.findMissing(arr1, arr2, function (a1, a2) {
 
 console.log(r);
 */
+
+var m = [0,3,3,3,3,3,3,4,3,4,1,1,0];
+Util.toSet(m);
+
+console.log(m);

@@ -324,7 +324,10 @@ class Match extends WebApplication {
             this.error('could not resume game');
             return this;
         }
-
+        
+        if(match.game_status === 'live'){
+            return  'game is already live!';
+        }
         //broadcast the game resume event
 
         var user = new User(this.sObj, this.util, this.evt);
@@ -349,10 +352,6 @@ class Match extends WebApplication {
             //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
             return this.error('could not find player with user id - ' + missing);
         }
-        
-        console.log('match.players', match.players);
-        console.log('players', players);
-        
         
         for (var i = 0; i < players.length; i++) {
             //set the players as available since we know they are available from the check above
