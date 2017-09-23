@@ -367,7 +367,7 @@ class Match extends WebApplication {
             await c.updateOne(
                     {game_id: game_id},
                     {$set: {pause_time: 0, game_status: 'live'}},
-                    {w: 'majority'}); //come back to confirm use of findOneAndUpdate
+                    {w: 'majority'});
 
         } catch (e) {
             console.log(e);
@@ -392,11 +392,13 @@ class Match extends WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
-            var match = await c.findOneAndUpdate(
+            var r = await c.findOneAndUpdate(
                     {game_id: game_id},
                     {$set: {pause_time: new Date(), game_status: 'pause'}},
-                    {w: 'majority'}); //come back to confirm use of findOneAndUpdate
-
+                    {w: 'majority'});
+            
+            var match = r.value;
+            
             if (!match) {
                 return 'no game to pause';
             }

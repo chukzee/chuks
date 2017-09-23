@@ -29,10 +29,11 @@ class User extends WebApplication {
             return this.error('could not modify playing status');
         }
 
+        var doc = r.value;
         //must return object of this properties - do not change!
         return {
             playing: true,
-            play_begin_time: r.play_begin_time
+            play_begin_time: doc.play_begin_time
         };
     }
 
