@@ -11,11 +11,25 @@ Main.on("pagecreate", function (arg) {
 
     Main.rcall.live(obj);
     
+    Main.eventio.on('game_move', onGameMove);
+    Main.eventio.on('game_move_sent', onGameMoveSent);
     Main.eventio.on('game_start', onGameStart);
     Main.eventio.on('game_resume', onGameResume);
     Main.eventio.on('game_pause', onGamePause);
     Main.eventio.on('game_abandon', onGameAbandon);
     Main.eventio.on('game_finish', onGameFinish);
+
+    function onGameMove(obj){
+        alert('onGameMove');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onGameMoveSent(obj){
+        alert('onGameMoveSent');
+        alert(obj);
+        console.log(obj);
+    }
 
     function onGameStart(obj){
         alert('onGameStart');
@@ -78,7 +92,9 @@ Main.on("pagecreate", function (arg) {
         var user_id = prompt('user_id', '');
         var opponent_id = prompt('opponent_id', '');
         var game_id = prompt('game_id', '');
-        var move = prompt('move', '');
+        var move = {
+            serial_no : prompt('move serial no', 0)
+        };
 
         Main.ro.match.sendMove(user_id, opponent_id, game_id, move)
                 .get(function (data) {

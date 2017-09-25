@@ -44,22 +44,48 @@ class Match extends WebApplication {
      *   
      * 
      * @param {type} user_id
-     * @param {type} opponent_id
+     * @param {type} opponent_ids - array of opponent ids. for two player games like 
+     * chess and draft it can be a single string. 
      * @param {type} game_id
-     * @param {type} move
+     * @param {type} move - the move. It must contain the serial_no field
      * @returns {String}
      */
-    async sendMove(user_id, opponent_id, game_id, move) {
+    async sendMove(user_id, opponent_ids, game_id, move) {
+
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            opponent_ids = arguments[0].opponent_ids;
+            game_id = arguments[0].game_id;
+            move = arguments[0].move; // one main use for this is to obtain the zip code
+        }
+
+        if (!Array.isArray(opponent_ids)) {
+            opponent_ids = [opponent_ids];
+        }
+
+        //make user only opponents ids are in the list
+        for (var i = 0; i < opponent_ids.length; i++) {
+            if (user_id === opponent_ids[i]) {
+                return this.error(`invalid input- expected only opponent id(s) but found user id - ${user_id}`);
+            }
+        }
+
+        //check if the move contains the serial_no field
+        if (!('serial_no' in move)) {
+            return this.error('invalid input - missing serial_no field in move object!');
+        }
+        
+        if (!isFinite(move.serial_no) || move.serial_no < 1) {
+            return this.error('invalid input - move serial number must be a positive integer number!');
+        }
 
         //first quickly forward the move to the opponenct
         var data = {
-            user_id: user_id,
-            opponent_id: opponent_id,
             game_id: game_id,
             move: move
         };
 
-        this.send(this.evt.game_move, data, opponent_id);//forward move to the opponent
+        this.broadcast(this.evt.game_move, data, opponent_ids, true);//forward move to the opponents
 
         //save the move in the server asynchronously
         var c = this.sObj.db.collection(this.sObj.col.matches);
@@ -72,11 +98,12 @@ class Match extends WebApplication {
                         return;
                     }
                     //Acknowlege move sent by notifying the player that
-                    //the sever has receive the move and sent it to the opponent
+                    //the sever has receive the move and sent it to the opponents
                     data.move_sent = true;
-                    return me.send(me.evt.game_move_sent, data, user_id);
+                    return me.send(me.evt.game_move_sent, data, user_id, true);
                 })
                 .catch(function (err) {
+
                     if (~err.message.indexOf('11000')) {
                         //move already stored hence the duplicate key exception!
                     } else {
@@ -85,7 +112,7 @@ class Match extends WebApplication {
                 });
 
 
-        //next broadcast to the game spectators.
+        //next, broadcast to the game spectators.
 
         //so lets get the spectators viewing this game
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
@@ -97,10 +124,6 @@ class Match extends WebApplication {
         }
 
         //now broadcast to the spectators
-        var data = {
-            game_id: game_id,
-            move: move
-        };
         this.broadcast(this.evt.game_move, data, spectators_ids);
 
     }
@@ -611,18 +634,18 @@ class Match extends WebApplication {
             skip = arguments[0].skip;
             limit = arguments[0].limit;
         }
-        
+
         var data = {
             skip: skip,
             limit: limit,
             total: 0,
             matches: []
         };
-        
+
         var c = this.sObj.db.collection(this.sObj.col.users);
         var user = await c.findOne({user_id: user_id}, {_id: 0});
-        
-        
+
+
         if (!Array.isArray(user.contacts) || user.contacts.length === 0) {
             return data;
         }
