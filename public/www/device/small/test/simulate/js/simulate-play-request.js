@@ -56,10 +56,15 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-send-request').on('click', function () {
 
-        var initiator_id = '07032710628';
-        var opponent_ids = '07023232323'; // or array of players ids e.g ludo
-        var game_name = 'chess';
+        var initiator_id = prompt('initiator_id', '');
+        var opponent_ids = prompt('enter opponent id(s) separated by comma if more than one ', ''); // or array of players ids e.g ludo
+        var game_name = prompt('game_name', '');
         var game_rules = {};
+        
+        if(!opponent_ids){
+            opponent_ids = '';
+        }
+        opponent_ids = opponent_ids.split(',');
 
         Main.ro.play_request.sendRequest(initiator_id, opponent_ids, game_name, game_rules)
                 .get(function (data) {
@@ -75,9 +80,9 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-abort').on('click', function () {
 
-        var game_id = play_request_game_id;
+        var play_request_game_id = prompt('play_request_game_id', '');
 
-        Main.ro.play_request.abort(game_id)
+        Main.ro.play_request.abort(play_request_game_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -91,9 +96,9 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-reject').on('click', function () {
 
-        var game_id = play_request_game_id;
+        var play_request_game_id = prompt('play_request_game_id', '');
 
-        Main.ro.play_request.reject(game_id)
+        Main.ro.play_request.reject(play_request_game_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

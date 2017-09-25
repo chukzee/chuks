@@ -309,7 +309,7 @@ class Chat extends   WebApplication {
         c.insertOne(chat_msg);
 
         //forward to the other user        
-        this.send(this.evt.game_chat , opponent_id, chat_msg);
+        this.send(this.evt.game_chat, chat_msg, opponent_id, true);
 
         return 'sent successfully';
     }
@@ -350,7 +350,7 @@ class Chat extends   WebApplication {
             members_ids[i] = group.members[i].user_id;
         }
         
-        this.broadcast(this.evt.group_chat , members_ids, chat_msg);
+        this.broadcast(this.evt.group_chat, chat_msg, members_ids, true);
         
         return 'sent successfully';        
     }
@@ -403,7 +403,7 @@ class Chat extends   WebApplication {
             
         }
         
-        this.broadcast(this.evt.tournament_inhouse_chat , members_ids, chat_msg);
+        this.broadcast(this.evt.tournament_inhouse_chat, chat_msg, members_ids, true);
 
         return 'sent successfully';        
     }
@@ -452,7 +452,7 @@ class Chat extends   WebApplication {
             
         }
         
-        this.broadcast(this.evt.tournament_general_chat, members_ids, chat_msg);
+        this.broadcast(this.evt.tournament_general_chat, chat_msg, members_ids, true);
         
         //REMIND: the client side should implement how those who are currenting
         //sending or viewing tournament general chat message can be updated on

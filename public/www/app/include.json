@@ -34,6 +34,7 @@
             "device/small/test/simulate/js/simulate-group.js",
             "device/small/test/simulate/js/simulate-chat.js",
             "device/small/test/simulate/js/simulate-comment.js",
+            "device/small/test/simulate/js/simulate-contact.js",
             "device/small/test/simulate/js/simulate-play-request.js",
             "device/small/test/simulate/js/simulate-match.js",
             "device/small/test/simulate/js/simulate-spectator.js",

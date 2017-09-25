@@ -9,12 +9,11 @@ class Group extends WebApplication {
     constructor(sObj, util, evt) {
         super(sObj, util, evt);
     }
-    
 
     async _lock(group_name) {
         console.log('here 1');
-        if(this._is_lock){
-            if(this._group_name_lock !== group_name){
+        if (this._is_lock) {
+            if (this._group_name_lock !== group_name) {
                 throw new Error('Cannot lock more than one groups.');
             }
             return true;
@@ -22,18 +21,18 @@ class Group extends WebApplication {
         console.log('here 2');
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
-            
+
             console.log('group_name', group_name);
             console.log(await c.findOne({name: group_name}));//TESTING!!!
-            
+
             var r = await c.updateOne({name: group_name}, {
                 $set: {
                     _lock: true
                 }});
 
-           console.log('r.result.nModified', r.result.nModified);
-           console.log('r.result', r.result);
-           
+            console.log('r.result.nModified', r.result.nModified);
+            console.log('r.result', r.result);
+
             if (r.result.nModified === 0) {
                 return false;
             }
@@ -50,9 +49,9 @@ class Group extends WebApplication {
 
             return false;
         }
-        
+
         this._group_name_lock = group_name;
-        
+
         this._is_lock = true;
         console.log('here 3');
         return this._is_lock;
@@ -62,9 +61,9 @@ class Group extends WebApplication {
         if (!this._is_lock) {
             return;
         }
-        
+
         console.log('_unlock called');//TESTING!!!
-        
+
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
 
@@ -80,15 +79,15 @@ class Group extends WebApplication {
         }
 
     }
-    
-    _onFinish(){
+
+    _onFinish() {
         this._unlock();
     }
-    
+
     set _group_name_lock(name) {
         this._grp_name_lock = name;
     }
-    
+
     get _group_name_lock() {
         return this._grp_name_lock;
     }
@@ -204,18 +203,18 @@ class Group extends WebApplication {
             committed: !commit ? false : true
         };
     }
-    
+
     async _addToGroup(user_id, group_name, is_admin) {
-        
+
         //acquire lock with the specified number of trials
         var lock_result = await this._tryWith(this._lock, 3, 0, group_name);
-        
+
         console.log('lock_result', lock_result);
-        
-        if(!lock_result){
+
+        if (!lock_result) {
             return 'Please try again later!'; //failed to acquire lock after the specifed number of trials
         }
-        
+
         var group_col = this.sObj.db.collection(this.sObj.col.groups);
         var me = this;
         var memberObj = {};
@@ -226,11 +225,11 @@ class Group extends WebApplication {
                     if (!group) {
                         return Promise.reject('Not a group');
                     }
-                                        
+
                     if (!Array.isArray(group.members)) {
                         group.members = [];
-                    }                   
-                                        
+                    }
+
                     if (group.members.length >= me.sObj.MAX_GROUP_MEMBERS) {
                         return Promise.reject("Maximum group members exceeded! Limit allowed is " + me.sObj.MAX_GROUP_MEMBERS + ".");
                     }
@@ -244,8 +243,8 @@ class Group extends WebApplication {
                     //recommended by MongoDB as an alternative for RDBMS like transaction
 
                     //check if the member already exist
-                    for(var i=0; i<group.members.length; i++){
-                        if(group.members[i].user_id === user_id){
+                    for (var i = 0; i < group.members.length; i++) {
+                        if (group.members[i].user_id === user_id) {
                             return Promise.reject(`User already exist in the group - ${user_id}`);
                         }
                     }
@@ -254,7 +253,7 @@ class Group extends WebApplication {
 
                     group_members = group.members; // set the group memeber - 
                     //will be needed down below for committing this operation
-                    
+
                     return  group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
                 })
                 .then(function () {
@@ -273,8 +272,8 @@ class Group extends WebApplication {
     }
 
     async createGroup(user_id, group_name, status_message, photo_url) {
-        
-    
+
+
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
@@ -770,7 +769,7 @@ class Group extends WebApplication {
             }) : [];
 
             group.total_members = this.util.length(group.members);
-            group.total_admin = this.util.length(group.admins);
+            group.total_admins = this.util.length(group.admins);
 
 
             //this.sObj.db.close();//not neccessary - the driver does the connection pooling automatically
@@ -901,6 +900,14 @@ class Group extends WebApplication {
 
         //at this point the users info was gotten correctly
         for (var i = 0; i < groups.length; i++) {
+            var group = groups[i];
+            group.admins = Array.isArray(group.members) ? group.members.filter(function (member) {
+                return member.is_admin;
+            }) : [];
+
+            group.total_members = this.util.length(group.members);
+            group.total_admins = this.util.length(group.admins);
+
 
             if (!Array.isArray(groups[i].members)) {
                 groups[i].members = [];//initialize
@@ -935,7 +942,9 @@ class Group extends WebApplication {
 
             var c = this.sObj.db.collection(this.sObj.col.users);
             var user = await c.findOne({user_id: user_id}, {_id: 0});
-
+            if (!user) {
+                return [];
+            }
             return this.getGroupsInfoList(user.groups_belong);
 
         } catch (e) {

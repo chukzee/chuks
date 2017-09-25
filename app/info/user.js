@@ -10,13 +10,12 @@ class User extends WebApplication {
         super(sObj, util, evt);
         this.crypto = crypto;
     }
-    
-        
+
     async _setPlaying(user_id) {
 
         try {
             var c = this.sObj.db.collection(this.sObj.col.users);
-            
+
             var r = await c.findOneAndUpdate({user_id: user_id},
                     {$set: {
                             playing: true,
@@ -58,7 +57,14 @@ class User extends WebApplication {
 
     async login(phone_no, password) {
         try {
-
+            if(!phone_no){
+                return this.error('No user id!');
+            }
+            
+            if(!password){
+                return this.error('No user password!');
+            }
+            
             var c = this.sObj.db.collection(this.sObj.col.users);
 
             var user = await c.findOne({user_id: phone_no}, {_id: 0});
@@ -105,6 +111,22 @@ class User extends WebApplication {
             password = arguments[0].password;
             email = arguments[0].email;
             country = arguments[0].country; // one main use for this is to obtain the zip code
+        }
+
+        if (!phone_no) {
+            return 'No user id (phone number) provided!';
+        }
+
+        if (!password) {
+            return 'No password!';
+        }
+
+        if (!email) {
+            return 'Must provide email address!';
+        }
+
+        if (!country) {
+            return 'Must specify your country!';
         }
 
         try {
@@ -256,8 +278,12 @@ class User extends WebApplication {
     }
 
     _normalizeInfo(user) {
-
+        if (!user) {
+            return;
+        }
         delete user.password; //delete this property - it must not pass through the wire.
+
+        user.full_name = '';
 
         if (user.first_name || user.last_name) {
             if (user.first_name && !user.last_name) {
@@ -266,6 +292,12 @@ class User extends WebApplication {
                 user.full_name = user.last_name;
             } else {
                 user.full_name = user.first_name + " " + user.last_name;
+            }
+        } else if (user.email && typeof user.email === 'string') {
+            //instead set the email username as the full name
+            var index = user.email.indexOf('@');
+            if (index > -1) {
+                user.full_name = user.email.substring(0, index);
             }
         }
 
@@ -332,8 +364,8 @@ class User extends WebApplication {
             console.log(e);
             this.error('could not get users.');
             return this;
-        }        
-        
+        }
+
         return users;
     }
 

@@ -39,16 +39,15 @@ class Spectator extends WebApplication {
     async join(user_id, game_id, game_start_time) {
 
         if (isNaN(new Date(game_start_time).getTime())) {
-            error("invalid input - game start time must be provided and a valid date.");
-            return this;
+            return this.error("invalid input - game start time must be provided and a valid date.");
         }
 
         try {
             
-            var required_fields = ['first_name', 'last_name', 'photo_url'];
+            var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
             var user = await new User(this.sObj, this.util, this.evt).getInfo(user_id, required_fields);
             if (!user) {
-                return 'unknown user';
+                return this.error('unknown user');
             }
             
             var sc = this.sObj.db.collection(this.sObj.col.spectators);

@@ -2,6 +2,7 @@
 "use strict";
 
 var WebApplication = require('../web-application');
+var User = require('../info/user');
 
 class Comment extends   WebApplication {
 
@@ -74,7 +75,7 @@ class Comment extends   WebApplication {
         }
 
         var user = new User(this.sObj, this.util);
-        var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var users = await user.getInfoList(user_ids, required_fields);
 
         //map the user info to thier corresponding comments
@@ -233,7 +234,7 @@ class Comment extends   WebApplication {
                     for (var i = 0; i < spectators.length; i++) {
                         spectators_ids.push(spectators[i].user_id);
                     }
-                    this.broadcast(this.evt.comment, spectators_ids, msg);
+                    this.broadcast(this.evt.comment, msg, spectators_ids);
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -256,11 +257,7 @@ class Comment extends   WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
 
-        c.findOne({msg_id: msg_id})
-                .then(function (comment) {
-                    comment.like++;
-                    return c.updateOne({msg_id: msg_id}, {$set: {like: comment.like}});
-                })
+        c.updateOne({msg_id: msg_id}, {$inc: {like: 1}})
                 .then(function (result) {
                     //do nothing       
                 })
@@ -283,11 +280,7 @@ class Comment extends   WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
 
-        c.findOne({msg_id: msg_id})
-                .then(function (comment) {
-                    comment.dislike++;
-                    return c.updateOne({msg_id: msg_id}, {$set: {dislike: comment.dislike}});
-                })
+        c.updateOne({msg_id: msg_id}, {$inc: {dislike: 1}})
                 .then(function (result) {
                     //do nothing       
                 })

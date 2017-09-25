@@ -23,30 +23,30 @@ Main.on("pagecreate", function (arg) {
             data: {game: "testgame"}
         });
     });
-    var user_id;
-    var password;
 
     Main.chuks = Main.chuks || {};
+    
     Main.chuks.onSessionIDRequest = Main.chuks.onSessionIDRequest || function (evt) {
         alert(evt.type);
         //for simplicity of test we will assume all the users in coming from one connection
-        evt.socket.emit('session_user_id', user_id);
+        socket = evt.socket;
+        
+        evt.socket.emit('session_user_id', Main.chuks.user_id);
+        
 
     };
 
     Main.eventio.on('session_user_id', Main.chuks.onSessionIDRequest);
 
-
-
     $('#btn-login').on('click', function () {
         user_id = prompt('user_id', '');
-        password = prompt('password', '');
+        var password = prompt('password', '');
 
         Main.ro.user.login(user_id, password)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
-
+                    Main.chuks.user_id = data.user_id;
                 })
                 .error(function (err) {
                     alert(err);
@@ -64,8 +64,9 @@ Main.on("pagecreate", function (arg) {
             phone_no: prompt('phone', ''),
             password: prompt('password', ''),
             email: prompt('email', ''),
-            country: prompt('country', ''),
-        }
+            country: prompt('country', '')
+        };
+        
         Main.ro.user.register(obj)
                 .get(function (data) {
                     alert(data);
@@ -140,11 +141,11 @@ Main.on("pagecreate", function (arg) {
     $('#btn-get-info-list').on('click', function () {
 
         var user_id_arr = prompt('enter user id separated by comma', '');
-        if(!user_id_arr){
+        if (!user_id_arr) {
             user_id_arr = '';
         }
         user_id_arr = user_id_arr.split(',');
-        
+
         Main.ro.user.getInfoList(user_id_arr)
                 .get(function (data) {
                     alert(data);
@@ -160,7 +161,7 @@ Main.on("pagecreate", function (arg) {
     $('#btn-get-groups-belong').on('click', function () {
 
         var user_id = prompt('user_id', '');
-    
+
         Main.ro.user.getGroupsBelong(user_id)
                 .get(function (data) {
                     alert(data);
@@ -175,9 +176,9 @@ Main.on("pagecreate", function (arg) {
 
 
     $('#btn-get-tournaments-belong').on('click', function () {
-        
+
         var user_id = prompt('user_id', '');
-        
+
         Main.ro.user.getTournamentsBelong(user_id)
                 .get(function (data) {
                     alert(data);

@@ -18,7 +18,7 @@ class WebApplication {
 
         if (message_ttl_in_seconds > this.sObj.MAX_MSG_TTL) {
             message_ttl_in_seconds = this.sObj.MAX_MSG_TTL;
-            console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to max allow - ${this.sObj.MAX_MSG_TTL}`);
+            console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to maximum allowed - ${this.sObj.MAX_MSG_TTL}`);
         }
 
         var me = this;
@@ -36,6 +36,7 @@ class WebApplication {
             };
 
             me.sObj.redis.publish(me.sObj.PUBSUB_DELIVER_MESSAGE, JSON.stringify(data));
+            console.log(data);
         });
     }
 
@@ -47,7 +48,7 @@ class WebApplication {
 
         if (message_ttl_in_seconds > this.sObj.MAX_MSG_TTL) {
             message_ttl_in_seconds = this.sObj.MAX_MSG_TTL;
-            console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to max allow - ${this.sObj.MAX_MSG_TTL}`);
+            console.log(`WARNING!!! message ttl of ${message_ttl_in_seconds} was reduced to maximum allowed - ${this.sObj.MAX_MSG_TTL}`);
         }
 
         var commandArr = [];
@@ -95,7 +96,7 @@ class WebApplication {
             };
 
             me.sObj.redis.publish(me.sObj.PUBSUB_DELIVER_MESSAGE, JSON.stringify(data));
-
+            
         });
     }
 

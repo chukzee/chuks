@@ -66,7 +66,7 @@ class Match extends WebApplication {
         var me = this;
 
 
-        c.c.updateOne({game_id: game_id}, {$push: {moves: move}})//moves array is the game position of the the game. it holds all the move of the game
+        c.updateOne({game_id: game_id}, {$push: {moves: move}})//moves array is the game position of the the game. it holds all the move of the game
                 .then(function (result) {
                     if (!result) {
                         return;
@@ -251,7 +251,7 @@ class Match extends WebApplication {
             }
         }
 
-        var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
@@ -324,8 +324,8 @@ class Match extends WebApplication {
             this.error('could not resume game');
             return this;
         }
-        
-        if(match.game_status === 'live'){
+
+        if (match.game_status === 'live') {
             return  'game is already live!';
         }
         //broadcast the game resume event
@@ -340,7 +340,7 @@ class Match extends WebApplication {
             }
         }
 
-        var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match the numbers requested for
@@ -352,7 +352,7 @@ class Match extends WebApplication {
             //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
             return this.error('could not find player with user id - ' + missing);
         }
-        
+
         for (var i = 0; i < players.length; i++) {
             //set the players as available since we know they are available from the check above
             players[i].available = true;//important! used to determine when a player abandons a game in which case it is set to false
@@ -374,7 +374,7 @@ class Match extends WebApplication {
                     {game_id: game_id},
                     {$set: {pause_time: 0, game_status: 'live'}},
                     {
-                        projection:{_id: 0},
+                        projection: {_id: 0},
                         returnOriginal: false, //return the updated document
                         w: 'majority'
                     });
@@ -385,16 +385,16 @@ class Match extends WebApplication {
             return this;
         }
         var updated_match = r.value;
-        
+
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
         var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
 
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);
         }
-        
-        console.log('users_ids',users_ids);
-        
+
+        console.log('users_ids', users_ids);
+
         //broadcast to players except user_id
         this.broadcast(this.evt.game_resume, updated_match, users_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
@@ -409,7 +409,7 @@ class Match extends WebApplication {
                     {game_id: game_id},
                     {$set: {pause_time: new Date(), game_status: 'pause'}},
                     {
-                        projection:{_id: 0},
+                        projection: {_id: 0},
                         returnOriginal: false, //return the updated document
                         w: 'majority'
                     });
@@ -447,8 +447,8 @@ class Match extends WebApplication {
         };
 
         var user = new User(this.sObj, this.util, this.evt);
-        user._unsetPlaying(user_id);        
-        
+        user._unsetPlaying(user_id);
+
         this.broadcast(this.evt.game_pause, data, users_ids, true); //broadcast to players except user_id
 
         return data; //sent to player of user_id
@@ -595,13 +595,13 @@ class Match extends WebApplication {
     /**
      * Get matches played by the specified user contacts
      * 
-     * @param {type} user_id
-     * @param {type} game_name
+     * @param {type} user_id - id of user whose contacts match will be searched for
+     * @param {type} game_name - the specified game
      * @param {type} skip
      * @param {type} limit
      * @returns {Array|nm$_match.Match.getContantsMatchList.data}
      */
-    async getContantsMatchList(user_id, game_name, skip, limit) {
+    async getContactsMatchList(user_id, game_name, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -611,11 +611,20 @@ class Match extends WebApplication {
             skip = arguments[0].skip;
             limit = arguments[0].limit;
         }
-
+        
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: 0,
+            matches: []
+        };
+        
         var c = this.sObj.db.collection(this.sObj.col.users);
         var user = await c.findOne({user_id: user_id}, {_id: 0});
-        if (!Array.isArray(user.contacts)) {
-            return [];
+        
+        
+        if (!Array.isArray(user.contacts) || user.contacts.length === 0) {
+            return data;
         }
 
         c = this.sObj.db.collection(this.sObj.col.matches);
@@ -657,12 +666,6 @@ class Match extends WebApplication {
 
         var total = await c.count(allQuery);
 
-        var data = {
-            skip: skip,
-            limit: limit,
-            total: 0,
-            matches: []
-        };
 
         if (!total) {
             return data;

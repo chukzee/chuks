@@ -112,7 +112,7 @@ class PlayRequest extends WebApplication {
 
             var game_id = this.sObj.UniqueNumber; //assign unique number to the game id
 
-            var required_fields = ['user_id', 'first_name', 'last_name', 'photo_url'];
+            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
             var players = await user.getInfoList(players_ids, required_fields);
             
@@ -149,7 +149,7 @@ class PlayRequest extends WebApplication {
 
             //notify the other user(s)
             this.broadcast(this.evt.play_request, data, opponent_ids, true);
-
+            
             //set the expiry of the play request
             var expiry = this.sObj.GAME_MAX_WAIT_IN_SEC * 1000;
             this.sObj.task.later('EXPIRE_PLAY_REQUEST', expiry, game_id);
@@ -228,6 +228,9 @@ class PlayRequest extends WebApplication {
         c.findOneAndDelete({game_id: game_id},  {projection: {_id: 0}})//delete and return the doc
                 .then(function (result) {
                     var play_request = result.value;
+                    if(!play_request){
+                        return;//no play request found - possibly  cancelled , rejected or the game is already started!
+                    }
                     //notify the initiator  and his opponent that the request has expire.
                     //Normally the client iu is updated to reflect the expiration
                     var users_ids = [];

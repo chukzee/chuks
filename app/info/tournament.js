@@ -81,7 +81,7 @@ class Tournament extends WebApplication {
     async _getInfo(user_id) {
 
         var u = new User(this.sObj, this.util, this.evt);
-        var required_fields = ['first_name', 'last_name', 'photo_url'];
+        var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
         var user = await u.getInfo(user_id, required_fields);
 
         var ofc = {

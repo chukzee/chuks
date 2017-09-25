@@ -75,12 +75,12 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-send-move').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
-        var group_name = prompt('group_name', 'Group1');
-        var status_message = prompt('status_message', '');
-        var photo_url = prompt('photo_url', '');
+        var user_id = prompt('user_id', '');
+        var opponent_id = prompt('opponent_id', '');
+        var game_id = prompt('game_id', '');
+        var move = prompt('move', '');
 
-        Main.ro.match.sendMove(user_id, group_name, status_message, photo_url)
+        Main.ro.match.sendMove(user_id, opponent_id, game_id, move)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -127,7 +127,7 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-resume').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var game_id = prompt('game_id', '');
 
         Main.ro.match.resume(user_id, game_id)
@@ -144,7 +144,7 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-pause').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var game_id = prompt('game_id', '');
 
         Main.ro.match.pause(user_id, game_id)
@@ -161,7 +161,7 @@ Main.on("pagecreate", function (arg) {
     
     $('#btn-abandon').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var game_id = prompt('game_id', '');
 
         Main.ro.match.abandon(user_id, game_id)
@@ -198,7 +198,7 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-contacts-match-list').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var game_name = prompt('game_name', 'chess');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
@@ -217,7 +217,7 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-group-match-list').on('click', function () {
 
-        var group_name = prompt('group_name', 'Group1');
+        var group_name = prompt('group_name', '');
         var game_name = prompt('game_name', 'chess');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
@@ -255,7 +255,7 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-user-match-history').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var filter = prompt('filter : valid values are contact, group, tournament', 'group');
         var is_include_abandoned_matches = prompt('is_include_abandoned_matches', true);
         var skip = prompt('skip', 0);

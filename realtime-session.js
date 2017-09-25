@@ -46,10 +46,10 @@ function onceRetryDelivery() {
 }
 
 function doOnceRetryDeliveryMsg(arr) {
-        
+
     for (var i = 0; i < arr.length; i++) {
         var d = JSON.parse(arr[i]);
-        if (this.msg_id === d.msg_id) {                       
+        if (this.msg_id === d.msg_id) {
             sObj.redis.publish(sObj.PUBSUB_DELIVERY_RESEND, arr[i]);
             break;
         }
@@ -58,6 +58,9 @@ function doOnceRetryDeliveryMsg(arr) {
 
 
 function checkUnidentifiedSock() {
+
+    console.log('unidentified_sock_ids', unidentified_sock_ids);
+
     if (!rcallIO) {
         return;
     }
@@ -185,7 +188,7 @@ function deliveryResend(msg) {
 
     var data = JSON.parse(msg);
 
-    sObj.getSocketIDs(data.user_id, function (socket_ids) {           
+    sObj.getSocketIDs(data.user_id, function (socket_ids) {
         data.acknowledge_delivery = true;
         data.resend_count = !data.resend_count ? 1 : data.resend_count++;
         send(data.user_id, socket_ids, data);
@@ -249,7 +252,7 @@ function send(user_id, socket_ids, data) {
             msg_time: data.msg_time
         });
         sObj.redis.rpush("user_message_queue:" + user_id, JSON.stringify(data));//queue the message for pushing to the user when next online
-    
+
         console.log(data);
     }
 
@@ -311,7 +314,7 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
     sObj = _sObj;
     util = _util;
     evt = _evt;
-    
+
     var io = socketio(httpServer);
     rcallIO = io.of("/rcall"); //using users namespace
     init();
@@ -355,57 +358,22 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
         //send the username immediately to have his session
         //saved
         function onSessionUserID(user_id) {
-            
-            
+
+
             //ok the client has sent the username so
             //save it against the socket id for tracking his
             //socket
             saveSession(socket, user_id);
-            
+
             // push any pending unacknowledged message to the user
-
-            sObj.redis.lrange("user_message_queue:" + user_id, 0, -1)
-                    .then(function (arr) {
-
-                        //push the messages to the client immediately
-                        var now = new Date().getTime();
-                        for (var i = 0; i < arr.length; i++) {
-                            var d = JSON.parse(arr[i]);
-                            
-                            //check if the message has expired
-                            if (d.msg_ttl && d.msg_time) {                                
-
-                                elapse = (now - d.msg_time) / 1000;
-
-                                if (elapse > d.msg_ttl) {
-
-                                    //ok, the message has expired so remove it from the queue
-                                    sObj.redis.lrem("user_message_queue:" + user_id, 1, arr[i], function (err, result) {
-                                        if (err) {
-                                            console.log(err);
-                                        }
-
-                                    });
-
-                                    continue;//next message please.
-                                }
-                            }
-
-                            console.log('deliveryResend ', user_id);
-
-                            deliveryResend(arr[i]);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err);
-                    });
+            checkUserMessageQueue(user_id);
         }
 
         function onAcknowledgeDelivery(msg) {
-            
+
             console.log('onAcknowledgeDelivery');
             console.log('msg', msg);
-            
+
             //remove the message from the message queue
             sObj.redis.lrange("user_message_queue:" + msg.user_id, 0, -1)
                     .then(function (arr) {
@@ -438,11 +406,17 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
     }
 
     function saveSession(socket, user_id) {
+        if(!user_id){
+            console.log('no user id');
+            return;
+        }
         //save the socket id in redis
         var socket_id = socket.id;
 
         //do two way may mapping of the user_id and socket_id
-
+        console.log('about to delete unidentified_sock_ids - '+socket_id);
+        console.log('about to delete unidentified_sock_ids user_id - '+user_id);
+        
         sObj.redis.set("user_id:" + sObj.PROCESS_NS + socket_id, user_id) //map user_id to socket_id
                 .then(function (result) {
                     //then map socket_id to user_id
@@ -450,7 +424,9 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
                             .then(function (count) {
 
                                 delete unidentified_sock_ids[socket_id]; //ok, delete since we now have the user session id 
-
+                                
+                                console.log('deleted unidentified_sock_ids - '+socket_id);
+                                
                                 //now ensure the number same user session does not 
                                 //exceed our defined limit.
 
@@ -485,4 +461,42 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
 
     }
 
+    function checkUserMessageQueue(user_id) {
+
+        sObj.redis.lrange("user_message_queue:" + user_id, 0, -1)
+                .then(function (arr) {
+
+                    //push the messages to the client immediately
+                    var now = new Date().getTime();
+                    for (var i = 0; i < arr.length; i++) {
+                        var d = JSON.parse(arr[i]);
+
+                        //check if the message has expired
+                        if (d.msg_ttl && d.msg_time) {
+
+                            elapse = (now - d.msg_time) / 1000;
+
+                            if (elapse > d.msg_ttl) {
+
+                                //ok, the message has expired so remove it from the queue
+                                sObj.redis.lrem("user_message_queue:" + user_id, 1, arr[i], function (err, result) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+
+                                });
+
+                                continue;//next message please.
+                            }
+                        }
+
+                        console.log('deliveryResend ', user_id);
+
+                        deliveryResend(arr[i]);
+                    }
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+    }
 };
