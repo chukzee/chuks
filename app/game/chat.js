@@ -52,7 +52,7 @@ class Chat extends   WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             chats: []
         };
 
@@ -102,7 +102,7 @@ class Chat extends   WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             chats: []
         };
 
@@ -153,7 +153,7 @@ class Chat extends   WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             chats: []
         };
 
@@ -205,7 +205,7 @@ class Chat extends   WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             chats: []
         };
 
@@ -264,7 +264,7 @@ class Chat extends   WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             chats: []
         };
 

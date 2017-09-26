@@ -137,7 +137,7 @@ class Spectator extends WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             spectators: []
         };
 

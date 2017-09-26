@@ -9,7 +9,7 @@ class Stats extends   WebApplication {
     constructor(sObj, util, evt) {
         super(sObj, util, evt);
     }
-    
+
     /**
      * Get head to head of two players in all competition
      * 
@@ -21,7 +21,7 @@ class Stats extends   WebApplication {
      * @param {type} limit
      * @returns {undefined}
      */
-    async hToh(player_1_id, player_2_id, is_include_abandoned_matches, skip, limit){
+    async hToh(player_1_id, player_2_id, is_include_abandoned_matches, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -45,20 +45,30 @@ class Stats extends   WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var c = this.sObj.db.collection(this.sObj.col.match_history);
 
         /*var query = {$and:[
-                 {game_status :'finish'},
-                 {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
-                 {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
+         {game_status :'finish'},
+         {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
+         {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
          ]};*/
-        
-        var query = {$and:[
-                 {game_status :'finish'},
-                 {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
-                 {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
-         ]}
- 
+
+        var query = {$and: [
+         {game_status: 'finish'},
+         {$or: [{'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id}
+         , {'players.0.user_id': player_2_id, 'players.1.user_id': player_1_id}]}
+         ]};
+
+        /*var query = {$and: [
+         {game_status: 'finish'},
+         {'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id}
+         ]}; */
+
+        /*var query = {$and: [
+                {game_status: 'finish'},
+                {'players.0.user_id': player_1_id},
+                {'players.1.user_id': player_2_id}
+            ]};*/
 
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
@@ -69,7 +79,7 @@ class Stats extends   WebApplication {
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             matches: []
         };
 
@@ -86,7 +96,7 @@ class Stats extends   WebApplication {
         return data;
 
     }
-        
+
     /**
      * Get head to head of two players of games played via contact
      * 
@@ -98,7 +108,7 @@ class Stats extends   WebApplication {
      * @param {type} limit
      * @returns {undefined}
      */
-    async hTohContact(player_1_id, player_2_id, is_include_abandoned_matches, skip, limit){
+    async hTohContact(player_1_id, player_2_id, is_include_abandoned_matches, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -122,28 +132,28 @@ class Stats extends   WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var c = this.sObj.db.collection(this.sObj.col.match_history);
 
-        var query = {$and:[
-                 {game_status :'finish'},
-                 {group_name :''},
-                 {tournament_name :''},
-                 {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
-                 {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
-         ]};
- 
- 
+        var query = {$and: [
+                {game_status: 'finish'},
+                {group_name: ''},
+                {tournament_name: ''},
+                {$or: [{'players.0.user_id': player_1_id}, {'players.0.user_id': player_2_id}]},
+                {$or: [{'players.1.user_id': player_1_id}, {'players.1.user_id': player_2_id}]}
+            ]};
+
+
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
         }
-        
-        
+
+
         var total = await c.count(query);
 
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             matches: []
         };
 
@@ -158,9 +168,9 @@ class Stats extends   WebApplication {
                 .toArray();
 
         return data;
-        
+
     }
-    
+
     /**
      * Get head to head of two players in the specified group
      * 
@@ -173,7 +183,7 @@ class Stats extends   WebApplication {
      * @param {type} limit
      * @returns {undefined}
      */
-    async hTohGroup(group_name, player_1_id, player_2_id, is_include_abandoned_matches, skip, limit){
+    async hTohGroup(group_name, player_1_id, player_2_id, is_include_abandoned_matches, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -198,26 +208,26 @@ class Stats extends   WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var c = this.sObj.db.collection(this.sObj.col.match_history);
 
-        var query = {$and:[
-                 {game_status :'finish'},
-                 {group_name :group_name},
-                 {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
-                 {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
-         ]};
-     
+        var query = {$and: [
+                {game_status: 'finish'},
+                {group_name: group_name},
+                {$or: [{'players.0.user_id': player_1_id}, {'players.0.user_id': player_2_id}]},
+                {$or: [{'players.1.user_id': player_1_id}, {'players.1.user_id': player_2_id}]}
+            ]};
+
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
         }
-        
-        
+
+
         var total = await c.count(query);
 
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             matches: []
         };
 
@@ -232,9 +242,9 @@ class Stats extends   WebApplication {
                 .toArray();
 
         return data;
-                
+
     }
-    
+
     /**
      * Get head to head of two players in the specified tournament
      * 
@@ -247,7 +257,7 @@ class Stats extends   WebApplication {
      * @param {type} limit
      * @returns {undefined}
      */
-    async hTohTournament(tournament_name, player_1_id, player_2_id, is_include_abandoned_matches, skip, limit){
+    async hTohTournament(tournament_name, player_1_id, player_2_id, is_include_abandoned_matches, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -272,26 +282,26 @@ class Stats extends   WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var c = this.sObj.db.collection(this.sObj.col.match_history);
 
-        var query = {$and:[
-                 {game_status :'finish'},
-                 {tournament_name :tournament_name},
-                 {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
-                 {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
-         ]};
-     
+        var query = {$and: [
+                {game_status: 'finish'},
+                {tournament_name: tournament_name},
+                {$or: [{'players.0.user_id': player_1_id}, {'players.0.user_id': player_2_id}]},
+                {$or: [{'players.1.user_id': player_1_id}, {'players.1.user_id': player_2_id}]}
+            ]};
+
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
         }
-        
-        
+
+
         var total = await c.count(query);
 
         var data = {
             skip: skip,
             limit: limit,
-            total: 0,
+            total: total,
             matches: []
         };
 
@@ -306,9 +316,9 @@ class Stats extends   WebApplication {
                 .toArray();
 
         return data;
-             
+
     }
-    
+
 }
 
 
