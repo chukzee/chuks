@@ -570,8 +570,8 @@ class Match extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
 
-            var match = await c.findOneAndDelete({game_id: game_id}, {w: 'majority'});
-
+            var r = await c.findOneAndDelete({game_id: game_id}, {w: 'majority'});
+            var match = r.value;
             if (!match) {
                 return 'no game to finish';
             }
@@ -869,7 +869,7 @@ class Match extends WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var c = this.sObj.db.collection(this.sObj.col.match_history);
 
         var query = {
             game_status: 'finish',
@@ -882,16 +882,16 @@ class Match extends WebApplication {
         }
 
         if (filter === 'group') {
-            query.group_name = filter;
+            query.group_name = {$ne:''};
         }
 
         if (filter === 'tournament') {
-            query.tournament_name = filter;
+            query.tournament_name = {$ne:''};
         }
 
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
-        }
+        }        
 
         var total = await c.count(query);
 

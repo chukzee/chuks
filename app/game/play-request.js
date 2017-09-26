@@ -17,9 +17,12 @@ class PlayRequest extends WebApplication {
      * @param {type} game_name - the name of the game e.g chess, draft , ludo e.t.c
      * @param {type} game_rules - (optional) the rules to apply in the game. If not provided
      *  then the default game rules is used when the game starts
+     * @param {type} group_name - the name of the user's group he selected
+     * a player to play with. The client should set this value to the group
+     * name if the user picks a player in his group profile page to play with.
      * @returns {undefined}
      */
-    async sendRequest(initiator_id, opponent_ids, game_name, game_rules) {
+    async sendRequest(initiator_id, opponent_ids, game_name, game_rules, group_name) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -28,6 +31,7 @@ class PlayRequest extends WebApplication {
             opponent_ids = arguments[0].opponent_ids;
             game_name = arguments[0].game_name;
             game_rules = arguments[0].game_rules;
+            group_name = arguments[0].group_name;
         }
 
         try {
@@ -139,6 +143,7 @@ class PlayRequest extends WebApplication {
             }
 
             var data = {
+                group_name : group_name? group_name : "",    
                 game_id: game_id,
                 game_name: game_name,
                 game_rules: game_rules,

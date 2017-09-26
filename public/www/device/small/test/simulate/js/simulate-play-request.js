@@ -60,13 +60,14 @@ Main.on("pagecreate", function (arg) {
         var opponent_ids = prompt('enter opponent id(s) separated by comma if more than one ', ''); // or array of players ids e.g ludo
         var game_name = prompt('game_name', '');
         var game_rules = {};
+        var group_name = prompt('enter group name (only if player is picked from group profile page)', '');
         
         if(!opponent_ids){
             opponent_ids = '';
         }
         opponent_ids = opponent_ids.split(',');
 
-        Main.ro.play_request.sendRequest(initiator_id, opponent_ids, game_name, game_rules)
+        Main.ro.play_request.sendRequest(initiator_id, opponent_ids, game_name, game_rules, group_name)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

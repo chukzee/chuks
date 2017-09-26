@@ -47,11 +47,17 @@ class Stats extends   WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
 
+        /*var query = {$and:[
+                 {game_status :'finish'},
+                 {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
+                 {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
+         ]};*/
+        
         var query = {$and:[
                  {game_status :'finish'},
                  {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
                  {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
-         ]};
+         ]}
  
 
         if (is_include_abandoned_matches === true) {
