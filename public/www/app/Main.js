@@ -557,24 +557,25 @@ var Main = {};
             if (msg.acknowledge_delivery) {
                 var ack = {
                     msg_id: msg.msg_id,
-                    user_id: msg.user_id,//important!
+                    user_id: msg.user_id, //important!
                     acknowledge_delivery: msg.acknowledge_delivery
                 };
                 socket.emit('acknowledge_delivery', ack);
             }
 
             //more midware checks may go below before calling the listeners
-            
+
             //-----
-            function EventObject (event_name, data) {
+            function EventObject(event_name, data) {
                 this.type = event_name;
                 this.data = data;
                 this.socket = {};
-                this.socket.emit = function(evt_name, data, callback){
+                this.socket.emit = function (evt_name, data, callback) {
                     socket.emit(evt_name, data, callback);
                 };
-            };
-            
+            }
+            ;
+
             //call the listeners for this event
             var data = msg.data;
             for (var evt in evtListeners) {
@@ -629,14 +630,14 @@ var Main = {};
             var errFnList = {};
             var serial = 0;
             var reconnectFactor = 1;
-            var last_conn_time = new Date().getTime();           
+            var last_conn_time = new Date().getTime();
             var url = 'https://' + window.location.hostname + '/rcall';
 
             if (window.io) {
                 sock();
             }
-            
-            
+
+
             //We observed that some time the disconnection evetn is not fired
             //thus making the connection lost forever. To avoid this, we will
             //periodically check for connection and autmatically connect to the 
@@ -648,15 +649,15 @@ var Main = {};
                 if (!socket && window.io) {
                     sock();
                 }
-                if(socket.connected === false && last_conn_time){
-                    var elapse = (new Date().getTime() - last_conn_time)/1000;
+                if (socket.connected === false && last_conn_time) {
+                    var elapse = (new Date().getTime() - last_conn_time) / 1000;
                     var MAX_ELAPSE = 10;
                     //attempt a socket connection. 
                     //also possible no discconnect event was received
                     //in which case our re-connection strategy will be useless
                     //and the connection will be off indefinitely. So avoid
                     //that indefinite loss of connection
-                    if(elapse > MAX_ELAPSE){
+                    if (elapse > MAX_ELAPSE) {
                         reconnectSocket();
                     }
                 }
@@ -674,7 +675,7 @@ var Main = {};
                 errFnList[uniqueNo] = errorFn;
 
                 socket.emit('rcall_request', data);
-            };            
+            };
 
             function sock() {
 
@@ -696,7 +697,7 @@ var Main = {};
             }
 
             function onConnect(msg) {
-                reconnectFactor = 1;                
+                reconnectFactor = 1;
             }
 
             function onDisconnect(msg) {
@@ -719,10 +720,10 @@ var Main = {};
                     reconnectFactor *= 2; // increment the time to wait before trying again
                 }
                 var factor = reconnectFactor;
-                if(this.immediate){
+                if (this.immediate) {
                     factor = 0;
                 }
-                
+
                 window.setTimeout(function () {
                     if (socket.connected === false) {
                         sucFnList = {};
@@ -739,7 +740,7 @@ var Main = {};
         this.live = function () {
             var objInst, fn;
             var meThis = this;
-            
+
             if (arguments.length === 1) {
                 if (Main.util.isFunc(arguments[0])) {//where only function is passed
                     fn = arguments[0];
@@ -807,7 +808,7 @@ var Main = {};
                         if (json.error) {
                             rcallErr(json.error);
                         }
-                        
+
                         for (var rem_classs in data) {
                             var rem_methods = data[rem_classs];
                             for (var variable in objInst) {
@@ -892,7 +893,7 @@ var Main = {};
                         rcallWaitingFn = [];
                     },
                     function (statusText, status) {
-                        retryCausedBy500X(status);                        
+                        retryCausedBy500X(status);
                         rcallErr('rcall failed! Could not get resource. Status text : ' + statusText);
                     });
 
@@ -914,15 +915,15 @@ var Main = {};
              * @param {interger} status 
              * @returns {undefined}
              */
-            function retryCausedBy500X(status){
-                if(status < 500){
+            function retryCausedBy500X(status) {
+                if (status < 500) {
                     return;
                 }
-                
+
                 //at this point the error is cause by the server
                 //so we will continue to retry until the rcall variables
                 //are initialized
-                
+
                 if (nextRCallLiveRetrySec >= MAX_WAIT_CONNECT) {
                     nextRCallLiveRetrySec /= 4; //retry after 
                     if (nextRCallLiveRetrySec < 1) {//just in case
@@ -931,19 +932,19 @@ var Main = {};
                 } else {
                     nextRCallLiveRetrySec *= 2; // increment the time to wait before trying again
                 }
-                
-                window.setTimeout(function(){
+
+                window.setTimeout(function () {
                     if (Object.getOwnPropertyNames(rcalFailures).length > 0) {
-                        
+
                         console.log('rcalFailures', rcalFailures);
-                        
+
                         //we are only interesed in initializing the rcall variables to 
                         //avoid error caued by access remote method when not already created
                         //ie Cannot read property 'TheMethod' of undefined
                         meThis.live(rcalFailures);
-                    }                    
-                    
-                },nextRCallLiveRetrySec * 1000);
+                    }
+
+                }, nextRCallLiveRetrySec * 1000);
             }
 
 
@@ -1073,7 +1074,7 @@ var Main = {};
                 }
 
                 function successFn(res) {
-                    if(Main.util.isString(res)){
+                    if (Main.util.isString(res)) {
                         try {//try check if it is json and convert if so
                             res = JSON.parse(res);
                         } catch (e) {
@@ -1084,7 +1085,7 @@ var Main = {};
                 }
                 function errorFn(statusText, status) {
                     var respose = {};
-                    if(status === 504){
+                    if (status === 504) {
                         statusText = 'connection to the server has timed out!'; // we prefer this description
                     }
                     respose.success = false;
@@ -1198,9 +1199,10 @@ var Main = {};
         var lastPageUrl;
         var transitionInProgress = false;
         var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+        var _game9ja_Dom_Hold_Has_Back_Action =  '_game9ja_Dom_Hold_Has_Back_Action_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var currentPage;
 
-        function swapShow(pg, transition, forward, pgGoOut) {
+        function swapShow(pg, transition, forward, pgGoOut, hasBackAction) {
             var eff = transition, duration = effDuration;
             if (transition && !Main.util.isString(transition)) {//not string then object!
                 eff = transition.effect;
@@ -1209,6 +1211,8 @@ var Main = {};
             var eff = eff ? eff.toLowerCase() : null;
             duration = duration ? duration : 0;
             var pageIn = pg.page;
+            pageIn[_game9ja_Dom_Hold_Has_Back_Action] = hasBackAction;
+            
             var pageOut;
 
             for (var i = 0; i < pages.length; i++) {
@@ -1399,19 +1403,21 @@ var Main = {};
             var backFn;
 
             if (pgGoOut) {//get the page back function stored in the dom                
-                backFn = pgGoOut._game9ja_Dom_Hold_PgBack;
+                backFn = pgGoOut[_game9ja_Dom_Hold_PgBack];
                 if (!backFn) {
                     //then try this
-                    backFn = pgGoOut[0]._game9ja_Dom_Hold_PgBack;
+                    backFn = pgGoOut[0][_game9ja_Dom_Hold_PgBack];
                 }
                 $(pgGoOut).remove();//now remove
             }
 
             if (forward) {
-                pageIn[0]._game9ja_Dom_Hold_PgBack = function () {//important!
-                    return Main.page.back();
-                };
-                Main.device.addBackAction(pageIn[0]._game9ja_Dom_Hold_PgBack);
+                if (pageIn[0][_game9ja_Dom_Hold_Has_Back_Action] !== false) {//yes strictly !== false
+                    pageIn[0][_game9ja_Dom_Hold_PgBack] = function () {//important!
+                        return Main.page.back();
+                    };
+                    Main.device.addBackAction(pageIn[0][_game9ja_Dom_Hold_PgBack]);
+                }
             } else {
 
                 Main.device.removeBackAction(backFn);
@@ -1421,7 +1427,7 @@ var Main = {};
 
         }
 
-        function showPg(p, transition, forward, pgGoOut, pgShowObj) {
+        function showPg(p, transition, forward, pgGoOut, pgShowObj, hasBackAction) {
 
             if (Main.util.isString(p)) {//is url string
                 for (var i = 0; i < pages.length; i++) {
@@ -1437,8 +1443,11 @@ var Main = {};
             }
 
             //call pagebeforeshow listerners
-
-            callListeners(listeners["pagebeforeshow"], {pageUrl: p.url, data: p.data});
+            var isIndexPage = false;
+            if (p === pages[0]) {
+                isIndexPage = true;
+            }
+            callListeners(listeners["pagebeforeshow"], {pageUrl: p.url, isIndexPage: isIndexPage, data: p.data});
 
             if (pgShowObj && pgShowObj.onBeforeShow) {
                 try {
@@ -1449,10 +1458,10 @@ var Main = {};
             }
 
             //now show
-            swapShow(p, transition, forward, pgGoOut);
+            swapShow(p, transition, forward, pgGoOut, hasBackAction);
 
             //call pageshow listerners
-            callListeners(listeners["pageshow"], {pageUrl: p.url, data: p.data});
+            callListeners(listeners["pageshow"], {pageUrl: p.url, isIndexPage: isIndexPage, data: p.data});
 
             if (pgShowObj && pgShowObj.onShow) {
                 try {
@@ -1534,7 +1543,7 @@ var Main = {};
             return cont;
         }
 
-        function load(p, transition, forward, data, pgShowObj) {
+        function load(p, transition, forward, data, pgShowObj, hasBackAction) {
             var url = Main.util.isString(p) ? p : p.url;
 
             for (var pg_index = 0; pg_index < pages.length; pg_index++) {
@@ -1548,7 +1557,7 @@ var Main = {};
                     if (pg_index === pages.length - 1) {
                         //skip the last in the page list -  the last page is already
                         //at the end so no need to make it last.
-                        showPg(url, transition, forward, null, pgShowObj);
+                        showPg(url, transition, forward, null, pgShowObj, hasBackAction);
                         return;
                     }
                     //now make it the last page
@@ -1569,8 +1578,8 @@ var Main = {};
                                 var lastPage = pages[pages.length - 1];
                                 //call relevant event listeners
                                 callListeners(listeners["ready"]);
-                                callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, data: lastPage.data});
-                                showPg(url, transition, forward, null, pgShowObj);
+                                callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, isIndexPage: false, data: lastPage.data});
+                                showPg(url, transition, forward, null, pgShowObj, hasBackAction);
                                 break;
                             }
                         }
@@ -1610,11 +1619,11 @@ var Main = {};
                     var lastPage = pages[pages.length - 1];
                     //call relevant event listeners
                     callListeners(listeners["ready"]);
-                    callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, data: lastPage.data});
+                    callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, isIndexPage: false, data: lastPage.data});
 
                 }
 
-                showPg(url, transition, forward, null, pgShowObj);
+                showPg(url, transition, forward, null, pgShowObj, hasBackAction);
             }).fail(function () {
                 console.log("could not get resource:", url);
             });
@@ -1634,7 +1643,9 @@ var Main = {};
                 transition = lastPage.transition;//use last page transition
             }
 
-            showPg(pages[0], transition, false, lastPage, _pShowFn(obj));
+            var pgOut = lastPage.page;
+
+            showPg(pages[0], transition, false, pgOut, _pShowFn(obj));
 
             //remove all pages except the home page
             for (var i = pages.length - 1; i > 0; i--) {// 'i > 0' ensures the home page in not removed
@@ -1705,7 +1716,7 @@ var Main = {};
             }
 
 
-            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj));
+            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj), (obj.hasBackAction === true));
             return true;//important!
         };
 
@@ -1737,7 +1748,7 @@ var Main = {};
                 };
 
                 callListeners(listeners["ready"]);
-                callListeners(listeners["pagecreate"], {pageUrl: pages[0].url});
+                callListeners(listeners["pagecreate"], {pageUrl: pages[0].url, isIndexPage: true});
 
                 showPg(pages[0], null, true);
                 isPageInit = true;//yes, must be here

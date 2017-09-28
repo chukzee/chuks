@@ -5,6 +5,7 @@
 
 Ns.GameHome = {
 
+    GAME_LOGIN_HTML: 'game-login-sd.html',
     GAME_VIEW_HTML: 'game-view-sd.html',
     GAME_VIEW_B_HTML: 'game-view-b-sd.html',
     GAME_WATCH_HTML: 'game-watch-sd.html',
@@ -18,8 +19,8 @@ Ns.GameHome = {
     tournamentMatchKey: function (tournament) {
         return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
     },
-    Content: function (data) {
-        Ns.ui.UI.init(data);
+    Content: function (selected_game) {
+        Ns.ui.UI.init(selected_game);
     },
     showGameView: function (match) {
         Main.page.show({

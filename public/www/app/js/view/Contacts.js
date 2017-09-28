@@ -1,4 +1,6 @@
 
+/* global Ns */
+
 Ns.view.Contacts = {
     content : function(){
         

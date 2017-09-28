@@ -6,8 +6,13 @@ Ns.Const = {
      * 
      * @type Number
      */
-    MAX_LIST_SIZE = 400,
+    MAX_LIST_SIZE: 400,
     
-}
+    /**
+     * The key used to retrieve the user info saved to the local storage
+     * @type String
+     */
+    AUTH_USER_KEY: 'AUTH_USER_KEY'
+};
 
 

@@ -1,8 +1,15 @@
-/* global Main */
+/* global Main, Ns */
 
 
 Main.on("pagecreate", function (arg) {
+   
+    if (!arg.isIndexPage) {
+        return;
+    }
+    
+    //at this point it is the index page which is what we want.
 
+    Ns.Auth.login();
 
     $('#game-select-chess').on('click', function () {
 
@@ -11,9 +18,7 @@ Main.on("pagecreate", function (arg) {
             effect: "fade",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: {
-                game: "chess"
-            }
+            data: 'chess'
         });
 
     });
@@ -24,9 +29,7 @@ Main.on("pagecreate", function (arg) {
             effect: "fade",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: {
-                game: "draft"
-            }
+            data: 'draft'
         });
     });
 
@@ -36,9 +39,7 @@ Main.on("pagecreate", function (arg) {
             effect: "fade",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: {
-                game: "ludo"
-            }
+            data: 'ludo'
         });
     });
 
@@ -48,9 +49,7 @@ Main.on("pagecreate", function (arg) {
             effect: "fade",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: {
-                game: "solitaire"
-            }
+            data: 'solitaire'
         });
     });
 
@@ -60,9 +59,7 @@ Main.on("pagecreate", function (arg) {
             effect: "fade",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: {
-                game: "whot"
-            }
+            data: 'whot'
         });
     });
 

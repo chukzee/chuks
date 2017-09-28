@@ -1,30 +1,89 @@
 
+/* global Ns, Main */
+
 Ns.Auth = {
-    
-    constructor : function(){
-        
-        this.login(function(user_info){
-            Ns.view.UserProfile.appUser = user_info;
-        });
-        
+
+    constructor: function () {
+
+        Main.eventio.on('session_user_id', this.onSessionIDRequest);
     },
-    
-    login: function(callback){
-                     
-        //Simulate successful login
-        //fake login
-       var user = {//fake app user object
-            id: "07038428492",
-            fullName: "Chuks Alimele",
-            groupsBelong: [{name: 'Grace', status_message:'this is the best group', photo: 'grace_photo.png'/*etc*/}, {name: 'Best Palyers', status_message:'this is the best group', photo: 'best_players_photo.png'/*etc*/}, {name: 'Omega', status_message:'this is the best group', photo: 'omega_photo.png'/*etc*/}],
-            //tournamentList comprise of tournamen belong and tournament listed in tournament search
-            tournamentList: [{name: 'Warri Championship', duration:'Feb-3-2017 to Mar-4-2017', photo: 'warri_champ_photo.png'/*etc*/}, {name: 'Sapele Champs', duration:'Feb-3-2017 to Mar-4-2017', photo: 'sapele_champ_photo.png'/*etc*/}, {name: 'Delta Big League', duration:'Feb-3-2017 to Mar-4-2017', photo: 'delta_league_photo.png'/*etc*/}],
-            tournamentCount: 200 // overall tournament count in the system (server)
-        };
-        
-        callback(user);
-              
+
+    login: function () {
+
+        try {
+            var user_info_str = window.localStorage.getItem(Ns.Const.AUTH_USER_KEY);
+            var user_info = JSON.parse(user_info_str);
+
+        } catch (e) {
+            console.warn(e);
+        }
+
+        if (!user_info && user_info.user_id) {
+            return;
+        }
+        Main.page.show({
+            url: Ns.GameHome.GAME_LOGIN_HTML,
+            effect: "fade",
+            duration: 500,
+            hasBackAction : false,//disable back button action
+            onBeforeShow: onLoginFormShow
+        });
+
+        function onLoginFormShow() {
+
+            $('#game-login-btn-login').on('click', function () {
+                
+                var errEl = document.getElementById('game-login-error');
+                var uEl = document.getElementById('game-login-user-id');
+                var pEl = document.getElementById('game-login-password');
+                
+                var user_id = uEl.value;
+                var password = pEl.value;
+                                
+                errEl.innerHTML = '';//clear
+                uEl.value = '';//clear
+                pEl.value = '';//clear
+
+                var obj = {
+                    user: 'info/User'
+                };
+
+                Main.rcall.live(obj, function () {
+                    Main.ro.user.login(user_id, password)
+                            .get(function (user_info) {
+                                Ns.view.UserProfile.appUser = user_info;
+                                window.localStorage.setItem(Ns.Const.AUTH_USER_KEY, JSON.stringify(user_info));
+                                Main.page.home();
+                            })
+                            .error(function (err) {
+                                errEl.innerHTML = err;
+                            });
+                });
+
+            });
+
+            $('#game-login-btn-signup').on('click', function () {
+                alert('TOD0 -  show signup page');
+            });
+
+
+            $('#game-login-forgot-password').on('click', function () {
+                alert('TOD0 -  show forgot-password page');
+            });
+
+        }
+
+
+    },
+
+    onSessionIDRequest: function (evt) {
+        var app_user = Ns.view.UserProfile.appUser;
+        if (!app_user || !app_user.user_id) {
+            return;
+        }
+        evt.socket.emit('session_user_id', app_user.user_id);
     }
+
 };
 
 

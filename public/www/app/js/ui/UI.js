@@ -1,52 +1,32 @@
 
-/* global Main */
+/* global Main, Ns */
 
 Ns.ui.UI = {
+
+    selectedGame: 'chess', //default is chess - set dynamically  when the user selects a type of game e.g chess, draft e.tc
 
     gameViewHtml: null, //set dynamically depending on the device category
 
     gameViewBHtml: null, //set dynamically depending on the device category
 
     gameWatchHtml: null, //set dynamically depending on the device category
-    
-    init: function (data) {
-        var game_name;
 
-        switch (data.game) {
-            case 'chess':
-                {
-                    game_name = 'Chess';
-                }
-                break;
-            case 'draft':
-                {
-                    game_name = 'Draft';
-                }
-                break;
-            case 'ludo':
-                {
-                    game_name = 'Ludo';
-                }
-                break;
-            case 'solitaire':
-                {
-                    game_name = 'Solitaire';
-                }
-                break;
-            case 'whot':
-                {
-                    game_name = 'Whot';
-                }
-                break;
-
+    init: function (selected_game) {
+        if (selected_game) {
+            this.selectedGame = selected_game;
         }
+
+        //to sentence case e.g chess --> Chess
+        var game_name = this.selectedGame.substring(0, 1).toUpperCase()
+                + this.selectedGame.substring(1).toLowerCase();
+
 
         document.getElementById("home-game-name").innerHTML = game_name;
 
         Main.tab({
             container: document.getElementById("home-tab-container"),
             onShow: {
-                
+
                 //"#home-contacts-matches": contactsMatchList,
                 //"#home-groups-matches": groupsMatchList,
                 //"#home-tournaments-matches": tournamentsMatchList
@@ -72,7 +52,7 @@ Ns.ui.UI = {
             ],
             onSelect: function (evt) {
                 var item = this.item;
-                Ns.ui.UI.showByMenuItem(item, data);
+                Ns.ui.UI.showByMenuItem(item);
                 //finally hide the menu
                 this.hide();
             }
@@ -93,7 +73,7 @@ Ns.ui.UI = {
             width: 220,
             target: "#home-group-dropdown-menu",
             header: 'Jump to group',
-            items: groupItems(Ns.view.UserProfile.appUser.groupsBelong),
+            items: groupItems(Ns.view.UserProfile.appUser.groups_belong),
             onSelect: function (evt) {
                 var item = this.item;
 
@@ -105,7 +85,7 @@ Ns.ui.UI = {
         //create the tournament drop down menu.
         Main.menu.create({
             width: 220,
-            height: 0.6 * window.innerHeight,//we have deprecated the use of window.screen.height and even window.outerHeight
+            height: 0.6 * window.innerHeight, //we have deprecated the use of window.screen.height and even window.outerHeight
             target: "#home-tournament-dropdown-menu",
             header: 'Search tournaments',
             items: [
@@ -131,7 +111,7 @@ Ns.ui.UI = {
 
 
         $('#home-contacts-icon').on('click', function (evt) {
-            Ns.GameHome.showContacts(data);
+            Ns.GameHome.showContacts();
         });
 
         $('#home-group-header').on('click', function (evt) {
@@ -165,7 +145,7 @@ Ns.ui.UI = {
             if (group_index > 0) {
                 group_index--;
             }
-            group = Ns.view.UserProfile.appUser.groupsBelong[group_index];
+            group = Ns.view.UserProfile.appUser.groups_belong[group_index];
 
             if (!group) {
                 return;
@@ -177,11 +157,11 @@ Ns.ui.UI = {
 
         $('#home-group-next').on('click', function () {
             var group;
-            if (group_index < Ns.view.UserProfile.appUser.groupsBelong.length - 1) {
+            if (group_index < Ns.view.UserProfile.appUser.groups_belong.length - 1) {
                 group_index++;
             }
 
-            group = Ns.view.UserProfile.appUser.groupsBelong[group_index];
+            group = Ns.view.UserProfile.appUser.groups_belong[group_index];
 
             if (!group) {
                 return;
@@ -197,7 +177,7 @@ Ns.ui.UI = {
                 tourn_index--;
             }
 
-            tourn = Ns.view.UserProfile.appUser.tournamentList[tourn_index];
+            tourn = Ns.view.Tournament.tournamentList[tourn_index];
 
             if (!tourn) {
                 return;
@@ -209,11 +189,11 @@ Ns.ui.UI = {
 
         $('#home-tournament-next').on('click', function () {
             var tourn;
-            if (tourn_index < Ns.view.UserProfile.appUser.tournamentList.length - 1) {
+            if (tourn_index < Ns.view.Tournament.tournamentList.length - 1) {
                 tourn_index++;
             }
 
-            tourn = Ns.view.UserProfile.appUser.tournamentList[tourn_index];
+            tourn = Ns.view.Tournament.tournamentList[tourn_index];
 
             if (!tourn) {
                 return;
@@ -225,7 +205,7 @@ Ns.ui.UI = {
 
     },
 
-    showByMenuItem: function (item, data) {
+    showByMenuItem: function (item) {
 
         switch (item) {
             case 'My Game':
@@ -237,9 +217,9 @@ Ns.ui.UI = {
                     var Invite_Players = 'Invite Players';
                     Main.confirm(function (option) {
                         if (option === Play_Notifications) {
-                            Ns.GameHome.showPlayNotifications(data);
+                            Ns.GameHome.showPlayNotifications();
                         } else if (option === Invite_Players) {
-                            Ns.GameHome.showInvitePlayers(data);
+                            Ns.GameHome.showInvitePlayers();
                         }
                     }, 'Sorry! You do not have any active game session!'
                             , 'NO ACTIVE GAME'
@@ -248,16 +228,16 @@ Ns.ui.UI = {
                 }
                 break;
             case 'Play notifications':
-                Ns.GameHome.showPlayNotifications(data);
+                Ns.GameHome.showPlayNotifications();
                 break;
             case 'Play robot':
                 var m = Ns.game.Match.currentUserMatch;
 
-                Ns.GameHome.showGameViewB({robot: true, game_name: data.game});//TESTING - TO BE REMOVE
+                Ns.GameHome.showGameViewB({robot: true, game_name: Ns.ui.UI.selectedGame});//TESTING - TO BE REMOVE
                 return;//TESTING - TO BE REMOVE
 
                 if (m && (m.game_status.toLowercase() !== 'live')) {
-                    Ns.GameHome.showGameViewB({robot: true, game_name: data.game});
+                    Ns.GameHome.showGameViewB({robot: true, game_name: Ns.ui.UI.selectedGame});
                 } else {
                     var Back_to_My_Game = 'Back to My Game';
                     Main.confirm(function (option) {
@@ -272,31 +252,31 @@ Ns.ui.UI = {
                 }
                 break;
             case 'Bluetooth game':
-                Ns.GameHome.showBluetoothGame(data);
+                Ns.GameHome.showBluetoothGame();
                 break;
             case 'Invite players':
-                Ns.GameHome.showInvitePlayers(data);
+                Ns.GameHome.showInvitePlayers();
                 break;
             case 'Contacts':
-                Ns.GameHome.showContacts(data);
+                Ns.GameHome.showContacts();
                 break;
             case 'Create group':
-                Ns.GameHome.showCreateGroup(data);
+                Ns.GameHome.showCreateGroup();
                 break;
             case 'Create tournament':
-                Ns.GameHome.showCreateTournament(data);
+                Ns.GameHome.showCreateTournament();
                 break;
             case 'Profile':
-                Ns.GameHome.showUserProfile(data);
+                Ns.GameHome.showUserProfile();
                 break;
             case 'Select game':
                 Main.page.home();//to the index page
                 break;
             case 'Settings':
-                Ns.GameHome.showSettings(data);
+                Ns.GameHome.showSettings();
                 break;
             case 'Help':
-                Ns.GameHome.showHelp(data);
+                Ns.GameHome.showHelp();
                 break;
             default:
 

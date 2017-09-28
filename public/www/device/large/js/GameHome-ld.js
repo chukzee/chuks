@@ -1,12 +1,13 @@
 
 
-/* global Main */
+/* global Main, Ns */
 
 //Main.rcall.live(homeObj);
 
 
 Ns.GameHome = {
-
+    
+    GAME_LOGIN_HTML: 'game-login-ld.html',
     GAME_VIEW_HTML: 'game-view-ld.html',
     GAME_VIEW_B_HTML: 'game-view-b-ld.html',
     GAME_WATCH_HTML: 'game-watch-ld.html',
@@ -54,8 +55,8 @@ Ns.GameHome = {
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameWatchHtml;
         Ns.GameWatch.Content(match);
     },
-    Content: function (data) {
-        Ns.ui.UI.init(data);
+    Content: function (selected_game) {
+        Ns.ui.UI.init(selected_game);
 
         checkOrientation();
 
@@ -101,7 +102,7 @@ Ns.GameHome = {
         }
 
     },
-    showBluetoothGame: function (data) {
+    showBluetoothGame: function () {
         //show a dialog to display startup settings
         var container_id = 'bluetooth-dialog-continer';
         var width = window.innerWidth * 0.3;
@@ -125,7 +126,7 @@ Ns.GameHome = {
                 //access ui component here
                 var me = this;
                 Ns.game.Bluetooth.start({
-                    data: data,
+                    data: Ns.ui.UI.selectedGame,
                     container: container_id,
                     onReady: function (data) {
                         //do some final setup on the game panel
@@ -168,50 +169,50 @@ Ns.GameHome = {
         });
 
     },
-    showPlayNotifications: function (data) {
+    showPlayNotifications: function () {
 
         Main.card.to({
             container: '#home-main',
             url:'play-notifications-ld.html',
             fade:true,            
-            data : data,
+            data : Ns.ui.UI.selectedGame,
             onShow: Ns.view.PlayNotifications.content
         });
 
     },
-    showInvitePlayers: function (data) {
+    showInvitePlayers: function () {
 
     },
-    showContacts: function (data) {
+    showContacts: function () {
         
         Main.card.to({
             container: '#home-main',
             url:'contacts-ld.html',
             fade:true,
-            data : data,
+            data : Ns.ui.UI.selectedGame,
             onShow: Ns.view.Contacts.content
         });
         
     },
-    showCreateGroup: function (data) {
+    showCreateGroup: function () {
 
     },
-    showCreateTournament: function (data) {
+    showCreateTournament: function () {
 
     },
-    showUserProfile: function (data) {
+    showUserProfile: function () {
         Main.card.to({
             container: '#home-main',
             url:'user-profile-ld.html',
             fade:true,
-            data : data,
+            data : Ns.ui.UI.selectedGame,
             onShow: Ns.view.UserProfile.content
         });
     },
-    showSettings: function (data) {
+    showSettings: function () {
 
     },
-    showHelp: function (data) {
+    showHelp: function () {
 
     }
 };

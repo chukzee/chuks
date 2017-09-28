@@ -1,6 +1,7 @@
 
 
-/* global Main */
+/* global Main, Ns */
+
 
 Ns.game.Match = {
     hasMatchData: false,
@@ -119,7 +120,7 @@ Ns.game.Match = {
     },
 
     contactsMatchList: function () {
-
+        
         var stored_matches = window.localStorage.getItem(Ns.GameHome.contactsMatchKey());
 
         try {
@@ -147,7 +148,7 @@ Ns.game.Match = {
 
         Main.rcall.live(function () {
 
-            Main.ro.match.getContantsMatchList()
+            Main.ro.match.getContactsMatchList()
                     .get(function (data) {
                         var matches = data;
 
@@ -178,8 +179,8 @@ Ns.game.Match = {
         var group_count;
         if (!group) {
             group_index = 0;
-            group = Ns.view.UserProfile.appUser.groupsBelong[group_index];//first group in the list
-            group_count = Ns.view.UserProfile.appUser.groupsBelong.length;
+            group = Ns.view.UserProfile.appUser.groups_belong[group_index];//first group in the list
+            group_count = Ns.view.UserProfile.appUser.groups_belong.length;
             if (!group) {
                 return;
             }

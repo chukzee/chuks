@@ -47,28 +47,11 @@ class Stats extends   WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.match_history);
 
-        /*var query = {$and:[
-         {game_status :'finish'},
-         {$or:[{'players.0.user_id': player_1_id},{'players.0.user_id': player_2_id}]},
-         {$or:[{'players.1.user_id': player_1_id},{'players.1.user_id': player_2_id}]}
-         ]};*/
-
         var query = {$and: [
-         {game_status: 'finish'},
-         {$or: [{'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id}
-         , {'players.0.user_id': player_2_id, 'players.1.user_id': player_1_id}]}
-         ]};
-
-        /*var query = {$and: [
-         {game_status: 'finish'},
-         {'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id}
-         ]}; */
-
-        /*var query = {$and: [
                 {game_status: 'finish'},
-                {'players.0.user_id': player_1_id},
-                {'players.1.user_id': player_2_id}
-            ]};*/
+                {$or: [{'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id},
+                        {'players.0.user_id': player_2_id, 'players.1.user_id': player_1_id}]}
+            ]};
 
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
@@ -138,8 +121,8 @@ class Stats extends   WebApplication {
                 {game_status: 'finish'},
                 {group_name: ''},
                 {tournament_name: ''},
-                {$or: [{'players.0.user_id': player_1_id}, {'players.0.user_id': player_2_id}]},
-                {$or: [{'players.1.user_id': player_1_id}, {'players.1.user_id': player_2_id}]}
+                {$or: [{'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id},
+                        {'players.0.user_id': player_2_id, 'players.1.user_id': player_1_id}]}
             ]};
 
 
@@ -213,8 +196,8 @@ class Stats extends   WebApplication {
         var query = {$and: [
                 {game_status: 'finish'},
                 {group_name: group_name},
-                {$or: [{'players.0.user_id': player_1_id}, {'players.0.user_id': player_2_id}]},
-                {$or: [{'players.1.user_id': player_1_id}, {'players.1.user_id': player_2_id}]}
+                {$or: [{'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id},
+                        {'players.0.user_id': player_2_id, 'players.1.user_id': player_1_id}]}
             ]};
 
         if (is_include_abandoned_matches === true) {
@@ -287,8 +270,8 @@ class Stats extends   WebApplication {
         var query = {$and: [
                 {game_status: 'finish'},
                 {tournament_name: tournament_name},
-                {$or: [{'players.0.user_id': player_1_id}, {'players.0.user_id': player_2_id}]},
-                {$or: [{'players.1.user_id': player_1_id}, {'players.1.user_id': player_2_id}]}
+                {$or: [{'players.0.user_id': player_1_id, 'players.1.user_id': player_2_id},
+                        {'players.0.user_id': player_2_id, 'players.1.user_id': player_1_id}]}
             ]};
 
         if (is_include_abandoned_matches === true) {

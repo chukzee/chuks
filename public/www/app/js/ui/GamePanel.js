@@ -1,5 +1,5 @@
 
-/* global Main */
+/* global Main, Ns */
 
 Ns.ui.GamePanel = {
 

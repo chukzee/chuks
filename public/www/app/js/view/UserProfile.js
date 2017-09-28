@@ -1,20 +1,20 @@
 
-/* global Main */
+/* global Main, Ns */
 
 Ns.view.UserProfile = {
 
-    appUser: {}, //set dynamically
+    appUser: null, //set after authenication 
 
     /**
      * holds list of user info against the user_id
      * e.g
      * //object structure
      * {
-     *  user_id_1 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., phone_no_list:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_2 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., phone_no_list:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_3 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., phone_no_list:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_4 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., phone_no_list:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_5 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., phone_no_list:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
+     *  user_id_1 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
+     *  user_id_2 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
+     *  user_id_3 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
+     *  user_id_4 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
+     *  user_id_5 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
      * }
      * @type type
      */
@@ -70,7 +70,7 @@ Ns.view.UserProfile = {
 
             var app_user_id = Ns.view.UserProfile.appUser.id;
 
-            var app_user_groups_belong = Ns.view.UserProfile.appUser.groupsBelong;
+            var app_user_groups_belong = Ns.view.UserProfile.appUser.groups_belong;
 
             if (!app_user_groups_belong) {
                 //check the user list

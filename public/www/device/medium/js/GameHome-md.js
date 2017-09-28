@@ -1,12 +1,13 @@
 
 
-/* global Main */
+/* global Main, Ns */
 
 //Main.rcall.live(homeObj);
 
 
 Ns.GameHome = {
 
+    GAME_LOGIN_HTML: 'game-login-md.html',
     GAME_VIEW_HTML: 'game-view-md.html',
     GAME_VIEW_B_HTML: 'game-view-b-md.html',
     GAME_WATCH_HTML: 'game-watch-md.html',
@@ -112,9 +113,9 @@ Ns.GameHome = {
             Ns.GameWatch.Content(match);
         }
     },
-    Content: function (data) {
+    Content: function (selected_game) {
 
-        Ns.ui.UI.init(data);
+        Ns.ui.UI.init(selected_game);
 
         checkOrientation();
 
@@ -147,7 +148,7 @@ Ns.GameHome = {
             }
         }
     },
-    showBluetoothGame: function (data) {
+    showBluetoothGame: function () {
         //show a dialog to display startup settings
         var container_id = 'bluetooth-dialog-continer';
         Main.dialog.show({
@@ -169,7 +170,7 @@ Ns.GameHome = {
                 //access ui component here
                 var me = this;
                 Ns.game.Bluetooth.start({
-                    data: data,
+                    data: Ns.ui.UI.selectedGame,
                     container: container_id,
                     onReady: function (argu) {
 
@@ -187,7 +188,7 @@ Ns.GameHome = {
         //show bluetooth icon
         document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
 
-        var match = {bluetooth: true, game_name: data.game};
+        var match = {bluetooth: true, game_name: Ns.ui.UI.selectedGame};
         if (Ns.GameHome.isLandscape()) {
             Ns.GameViewB.Content(match);
         } else {
@@ -216,49 +217,49 @@ Ns.GameHome = {
             onShow: Ns.view.Group.content
         });
     },
-    showPlayNotifications: function (data) {
+    showPlayNotifications: function () {
 
         Main.card.to({
             container: '#home-main',
             url: 'play-notifications-md.html',
             fade: true,
-            data: data,
+            data: Ns.ui.UI.selectedGame,
             onShow: Ns.view.PlayNotifications.content
         });
     },
-    showInvitePlayers: function (data) {
+    showInvitePlayers: function () {
 
     },
-    showContacts: function (data) {
+    showContacts: function () {
 
         Main.card.to({
             container: '#home-main',
             url: 'contacts-md.html',
             fade: true,
-            data: data,
+            data: Ns.ui.UI.selectedGame,
             onShow: Ns.view.Contacts.content
         });
     },
-    showCreateGroup: function (data) {
+    showCreateGroup: function () {
 
     },
-    showCreateTournament: function (data) {
+    showCreateTournament: function () {
 
     },
-    showUserProfile: function (data) {
+    showUserProfile: function () {
 
         Main.card.to({
             container: '#home-main',
             url: 'user-profile-md.html',
             fade: true,
-            data: data,
+            data: Ns.ui.UI.selectedGame,
             onShow: Ns.view.UserProfile.content
         });
     },
-    showSettings: function (data) {
+    showSettings: function () {
 
     },
-    showHelp: function (data) {
+    showHelp: function () {
 
     }
 };

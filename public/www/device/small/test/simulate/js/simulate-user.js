@@ -27,7 +27,7 @@ Main.on("pagecreate", function (arg) {
     Main.chuks = Main.chuks || {};
     
     Main.chuks.onSessionIDRequest = Main.chuks.onSessionIDRequest || function (evt) {
-        alert(evt.type);
+       // alert(evt.type);
         //for simplicity of test we will assume all the users in coming from one connection
         socket = evt.socket;
         

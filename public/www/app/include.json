@@ -99,6 +99,7 @@
         
         "js": [
             "Auth.js",
+            "Const.js",
             "game/Bluetooth.js",
             "msg/Chat.js",
             "msg/Comment.js",
@@ -163,7 +164,7 @@
         ],
 
         "js": [
-            "GameHome-ld.js", 
+            "GameHome-ld.js",
             "GameSelect-ld.js",
             "GameView-ld.js",
             "GameViewB-ld.js",
