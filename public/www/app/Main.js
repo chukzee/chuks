@@ -1199,7 +1199,7 @@ var Main = {};
         var lastPageUrl;
         var transitionInProgress = false;
         var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
-        var _game9ja_Dom_Hold_Has_Back_Action =  '_game9ja_Dom_Hold_Has_Back_Action_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+        var _game9ja_Dom_Hold_Has_Back_Action = '_game9ja_Dom_Hold_Has_Back_Action_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var currentPage;
 
         function swapShow(pg, transition, forward, pgGoOut, hasBackAction) {
@@ -1211,8 +1211,8 @@ var Main = {};
             var eff = eff ? eff.toLowerCase() : null;
             duration = duration ? duration : 0;
             var pageIn = pg.page;
-            pageIn[_game9ja_Dom_Hold_Has_Back_Action] = hasBackAction;
-            
+            pageIn[0][_game9ja_Dom_Hold_Has_Back_Action] = hasBackAction;
+
             var pageOut;
 
             for (var i = 0; i < pages.length; i++) {
@@ -1406,18 +1406,23 @@ var Main = {};
                 backFn = pgGoOut[_game9ja_Dom_Hold_PgBack];
                 if (!backFn) {
                     //then try this
-                    backFn = pgGoOut[0][_game9ja_Dom_Hold_PgBack];
+                    if (pgGoOut[0]) {
+                        backFn = pgGoOut[0][_game9ja_Dom_Hold_PgBack];
+                    }
                 }
                 $(pgGoOut).remove();//now remove
             }
 
             if (forward) {
-                if (pageIn[0][_game9ja_Dom_Hold_Has_Back_Action] !== false) {//yes strictly !== false
-                    pageIn[0][_game9ja_Dom_Hold_PgBack] = function () {//important!
+                var has_back_action = pageIn[0][_game9ja_Dom_Hold_Has_Back_Action] !== false;//yes strictly !==false
+                pageIn[0][_game9ja_Dom_Hold_PgBack] = function () {//important!
+                    if (this.has_back_action) {
                         return Main.page.back();
-                    };
-                    Main.device.addBackAction(pageIn[0][_game9ja_Dom_Hold_PgBack]);
-                }
+                    }
+                }.bind({has_back_action: has_back_action});
+
+                Main.device.addBackAction(pageIn[0][_game9ja_Dom_Hold_PgBack]);
+
             } else {
 
                 Main.device.removeBackAction(backFn);
