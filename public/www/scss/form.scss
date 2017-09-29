@@ -1,0 +1,38 @@
+
+$ctr_height: 40px;
+
+.game9ja-form{
+    position: relative;    
+    width : 80%;
+    max-width: 400px;
+    height : 100%;
+    font-size: 18px;
+    margin: auto;
+    //background-color :  activecaption;
+    top:0;
+    left:0;
+    > input{
+        border-top-width: 0px;
+        border-left-width: 0px;
+        border-right-width: 0px;
+        outline: none;
+        cursor: pointer;
+
+    }
+
+    > input[type=button]{
+        background: #307e4e;
+        color: white;
+        border-width: 0px;
+        font-size: 22px;
+    }
+
+    > *{
+        width: 100%;
+        height: $ctr_height;
+        position: relative;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+}

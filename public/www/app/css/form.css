@@ -1,0 +1,28 @@
+.game9ja-form {
+  position: relative;
+  width: 80%;
+  max-width: 400px;
+  height: 100%;
+  font-size: 18px;
+  margin: auto;
+  top: 0;
+  left: 0; }
+  .game9ja-form > input {
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    outline: none;
+    cursor: pointer; }
+  .game9ja-form > input[type=button] {
+    background: #307e4e;
+    color: white;
+    border-width: 0px;
+    font-size: 22px; }
+  .game9ja-form > * {
+    width: 100%;
+    height: 40px;
+    position: relative;
+    margin-top: 5px;
+    margin-bottom: 5px; }
+
+/*# sourceMappingURL=form.css.map */
