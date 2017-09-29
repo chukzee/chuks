@@ -16,15 +16,15 @@ $ctr_height: 40px;
         border-left-width: 0px;
         border-right-width: 0px;
         outline: none;
-        cursor: pointer;
 
     }
 
-    > input[type=button]{
+    > input[type=submit], input[type=button]{
         background: #307e4e;
         color: white;
         border-width: 0px;
         font-size: 22px;
+        cursor: pointer;
     }
 
     > *{
