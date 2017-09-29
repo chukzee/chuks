@@ -18,8 +18,9 @@ Ns.Auth = {
             console.warn(e);
         }
 
-        if (!user_info && user_info.user_id) {
-            return;
+        if (user_info && user_info.user_id) {//comment if not testing!!
+        //if (!user_info && user_info.user_id) {//uncomment if testing!!!
+            return;//leave
         }
         Main.page.show({
             url: Ns.GameHome.GAME_LOGIN_HTML,
