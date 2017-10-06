@@ -7,11 +7,6 @@
   margin: auto;
   top: 0;
   left: 0; }
-  .game9ja-form > input {
-    border-top-width: 0px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    outline: none; }
   .game9ja-form > input[type=submit], .game9ja-form input[type=button] {
     background: #307e4e;
     color: white;

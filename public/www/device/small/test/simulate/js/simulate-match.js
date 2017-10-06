@@ -14,7 +14,9 @@ Main.on("pagecreate", function (arg) {
     Main.eventio.on('game_move', onGameMove);
     Main.eventio.on('game_move_sent', onGameMoveSent);
     Main.eventio.on('game_start', onGameStart);
+    Main.eventio.on('watch_game_start', onWatchGameStart);
     Main.eventio.on('game_resume', onGameResume);
+    Main.eventio.on('watch_game_resume', onWatchGameResume);
     Main.eventio.on('game_pause', onGamePause);
     Main.eventio.on('game_abandon', onGameAbandon);
     Main.eventio.on('game_finish', onGameFinish);
@@ -37,8 +39,20 @@ Main.on("pagecreate", function (arg) {
         console.log(obj);
     }
 
+    function onWatchGameStart(obj){
+        alert('onWatchGameStart');
+        alert(obj);
+        console.log(obj);
+    }
+
     function onGameResume(obj){
         alert('onGameResume');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onWatchGameResume(obj){
+        alert('onWatchGameResume');
         alert(obj);
         console.log(obj);
     }

@@ -30,10 +30,18 @@ class Evt{
         return 'game_start';
     }
     
+    get watch_game_start(){
+        return 'watch_game_start';
+    }
+    
     get game_resume(){
         return 'game_resume';
     }
-    
+
+    get watch_game_resume(){
+        return 'watch_game_resume';
+    }
+        
     get game_pause(){
         return 'game_pause';
     }

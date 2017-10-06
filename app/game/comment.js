@@ -165,18 +165,20 @@ class Comment extends   WebApplication {
      * 
      * @param {type} user_id - user making the comment
      * @param {type} game_id - game id 
-     * @param {type} msg_content - comment
+     * @param {type} content - comment or the audio url if the content_type is audio
+     * @param {type} content_type - valid value are: text ; audio
      * @param {type} msg_replied_id - id of the comment message replied to
      * @returns {String}
      */
-    add(user_id, game_id, msg_content, msg_replied_id) {
+    add(user_id, game_id, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             game_id = arguments[0].game_id;
-            msg_content = arguments[0].msg_content;
+            content = arguments[0].msg_content; //text message or audio url if the comment is audio type (voice)
+            content_type = arguments[0].content_type;
             msg_replied_id = arguments[0].msg_replied_id;
         }
         
@@ -190,7 +192,8 @@ class Comment extends   WebApplication {
             game_id: game_id,
             user_id: user_id,
             msg_id: msg_id,
-            msg: msg_content,
+            content: content, //text message or audio url if the comment is audio type (voice)
+            content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
             like: 0,
             dislike: 0,
@@ -289,37 +292,6 @@ class Comment extends   WebApplication {
                 });
 
         return true;
-    }
-
-    /**
-     * This method is just a simulation
-     * 
-     * @param {type} gameId
-     * @returns {nm$_comment.Comment.simulateHistory.obj}
-     */
-    simulateHistory(gameId) {
-        var obj = [];
-
-        for (var i = 0; i < 10; i++) {
-            var content = {
-                user_id: i % 3 === 0 ? '07038428492' : '07022840304', //phone number
-                full_name: 'full_name',
-                profile_photo_url: '/user_photo_url.png', //the profile photo url of the user
-                reply_user_id: '08043839429', //the id of the user replied - (optional) ie available only if the message is a reply
-                reply_full_name: 'replied_user_full_name', //(optional) ie available only if the message is a reply
-                likes: 345, //number of likes
-                dislikes: 5, //number of dislikes
-                time: new Date().getTime(),
-                msg: "this is a simulated message " + i,
-                content_type: 'text', //e.g text or voice (as in WhatsApp)
-                vioce_data_url: 'path/voice_data', //the url of the voice data to download the voice from (as in WhatsApp)
-                vioce_data_byte_size: '2MB'
-            };
-
-            obj.push(content);
-        }
-
-        return obj;
     }
 
 }

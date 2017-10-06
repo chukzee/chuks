@@ -18,8 +18,8 @@ Ns.Auth = {
             console.warn(e);
         }
 
-        if (user_info && user_info.user_id) {//uncomment if in production!!!
-        //if (!user_info && user_info.user_id) {//uncomment if testing!!!
+       // if (user_info && user_info.user_id) {//uncomment later!!!
+        if (false) {//ccmment out later!!!
             return;//leave
         }
         Main.page.show({

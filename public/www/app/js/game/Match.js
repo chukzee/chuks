@@ -5,8 +5,8 @@
 
 Ns.game.Match = {
     hasMatchData: false,
-    currentUserMatch: null,//set dynamically
-    constructor: function(){
+    currentUserMatch: null, //set dynamically
+    constructor: function () {
 
         var obj = {
             match: 'game/Match',
@@ -14,10 +14,10 @@ Ns.game.Match = {
         };
 
         Main.rcall.live(obj);
-  
+
     },
     liveMatchList: function (container, matches) {
-        matches = Ns.game.Match.normalizeMatchList(matches);
+        
         //show the contacts live match list                   
 
         Main.listview.create({
@@ -28,9 +28,14 @@ Ns.game.Match = {
             //itemClass: "game9ja-live-games-list",
             onSelect: function (evt, match_data) {
                 var user = Ns.view.UserProfile.appUser;
-
-                if (match_data.white_id === user.id
-                        || match_data.black_id === user.id) {
+                var is_me_player = false;
+                for(var n in match_data.players){
+                    if( match_data.players[n].user_id === user.user_id){
+                        is_me_player = true;
+                        break;
+                    }
+                }
+                if (is_me_player) {
                     //show the current app user game
                     Ns.GameHome.showGameView(match_data);
                 } else {
@@ -51,76 +56,15 @@ Ns.game.Match = {
                     alert('onReady');
                 }
 
-                
+
             }
         });
 
 
     },
 
-    //NOT YET TESTED
-    normalizeMatchList: function (matches) {
-
-        //check for paused or ended matche and remove after certain hours
-        var expiry_hours = 24 * 60 * 60 * 1000;
-        var current_time = new Date().getTime();
-        for (var n in matches) {
-            var mat = matches[n];
-            if (mat.game_end_time && current_time > mat.game_end_time + expiry_hours) {
-                removeMatch(matches, n);
-            }
-
-            if (mat.game_pause_time && current_time > mat.game_pause_time + expiry_hours) {
-                removeMatch(matches, n);
-            }
-        }
-
-        //NOT YET TESTED
-        function removeMatch(matches, index) {
-
-            var mat = matches[index];
-            var key, param;
-            if (mat.group_name) {
-                key = Ns.GameHome.groupMatchKey;
-                param = mat.group_name;
-            } else if (mat.tournament_name) {
-                key = Ns.GameHome.tournamentMatchKey;
-                param = mat.tournament_name;
-            } else {
-                key = Ns.GameHome.contactsMatchKey;
-            }
-
-            matches.splice(index, 1);
-
-            var stored_matches = window.localStorage.getItem(key(param));
-            if (!stored_matches) {
-                return;
-            }
-            console.log('stored_matches', stored_matches);
-            try {
-                stored_matches = JSON.parse(stored_matches);
-            } catch (e) {
-                console.warn(e);
-                return;
-            }
-
-            for (var i = 0; i < stored_matches.length; i++) {
-                if (stored_matches[i].game_id === mat.game_id) {
-                    stored_matches.splice(i, 1);
-                    break;
-                }
-            }
-            //replace 
-            window.localStorage.removeItem(key(param));
-            window.localStorage.setItem(key(param), JSON.stringify(stored_matches));
-
-        }
-
-        return matches;
-    },
-
     contactsMatchList: function () {
-        
+
         var stored_matches = window.localStorage.getItem(Ns.GameHome.contactsMatchKey());
 
         try {
@@ -147,10 +91,20 @@ Ns.game.Match = {
         Ns.Util.lastContactsMatchRequestTime = now;
 
         Main.rcall.live(function () {
+            var user_id = Ns.view.UserProfile.appUser.user_id;
+            var game_name = Ns.ui.UI.selectedGame;
+            var skip = 0;
+            var limit = Ns.Const.MAX_LIST_SIZE;
 
-            Main.ro.match.getContactsMatchList()
+            Main.ro.match.getContactsMatchList(user_id, game_name, skip, limit)
                     .get(function (data) {
-                        var matches = data;
+
+                        var matches = data.matches;
+
+                        //sort the matches in descending order to show the latest matches first
+                        matches = matches.sort(function (mat1, mat2) {
+                            return mat1.game_start_time < mat2.game_start_time;
+                        });
 
                         if (matches.length) {
 
@@ -188,7 +142,6 @@ Ns.game.Match = {
 
         //show the first group live match list
 
-
         var stored_matches = window.localStorage.getItem(Ns.GameHome.groupMatchKey(group.name));
 
         try {
@@ -203,7 +156,7 @@ Ns.game.Match = {
         }
 
         //display group header info
-        document.getElementById('home-group-pic').src = group.photo;
+        document.getElementById('home-group-pic').src = group.photo_url;
         document.getElementById('home-group-name').innerHTML = group.name;
         document.getElementById('home-group-status-message').innerHTML = group.status_message;
         document.getElementById('home-group-page-number').innerHTML = (group_index + 1) + " of " + group_count;
@@ -226,9 +179,17 @@ Ns.game.Match = {
         Ns.Util.lastGroupMatchRequestTime[group_name] = now;
 
         Main.rcall.live(function () {
-            Main.ro.match.getGroupMatchList(group_name)
+            var game_name = Ns.ui.UI.selectedGame;
+            var skip = 0;
+            var limit = Ns.Const.MAX_LIST_SIZE;
+            Main.ro.match.getGroupMatchList(group_name, game_name, skip, limit)
                     .get(function (data) {
-                        var matches = data;
+                        var matches = data.matches;
+                        //sort the matches in descending order to show the latest matches first
+                        matches = matches.sort(function (mat1, mat2) {
+                            return mat1.game_start_time < mat2.game_start_time;
+                        });
+                        
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-group-live-games', matches);
                             var key = Ns.GameHome.groupMatchKey(matches[0].group_name);
@@ -273,7 +234,7 @@ Ns.game.Match = {
         }
 
         //display tournament header info
-        document.getElementById('home-tournament-pic').src = tournament.photo;
+        document.getElementById('home-tournament-pic').src = tournament.photo_url;
         document.getElementById('home-tournament-name').innerHTML = tournament.name;
         document.getElementById('home-tournament-duration').innerHTML = tournament.duration;
 
@@ -281,24 +242,32 @@ Ns.game.Match = {
 
     },
 
-    refreshTournamentsMatchList: function (tornamenent_name) {
+    refreshTournamentsMatchList: function (tournament_name) {
 
         var now = new Date().getTime();
         /*if(!lastTournamentMatchRequestTime[tornamenent_name]){
          lastTournamentMatchRequestTime[tornamenent_name] = now;
          }*/
-        var oldTime = Ns.Util.lastTournamentMatchRequestTime[tornamenent_name];
+        var oldTime = Ns.Util.lastTournamentMatchRequestTime[tournament_name];
         if (oldTime && now < oldTime + Ns.Util.REQUEST_RATE_INTERVAL * 1000) {
             return;
         }
 
-        Ns.Util.lastTournamentMatchRequestTime[tornamenent_name] = now;
+        Ns.Util.lastTournamentMatchRequestTime[tournament_name] = now;
 
         Main.rcall.live(function () {
-
-            Main.ro.match.getTournamentMatchList(tornamenent_name)
+            var game_name = Ns.ui.UI.selectedGame;
+            var skip = 0;
+            var limit = Ns.Const.MAX_LIST_SIZE;
+            Main.ro.match.getTournamentMatchList(tournament_name, game_name, skip, limit)
                     .get(function (data) {
-                        var matches = data;
+                        var matches = data.matches;
+                        
+                        //sort the matches in descending order to show the latest matches first
+                        matches = matches.sort(function (mat1, mat2) {
+                            return mat1.game_start_time < mat2.game_start_time;
+                        });
+                        
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-tournaments-live-games', matches);
                             var key = Ns.GameHome.tournamentMatchKey(matches[0].tournament_name);
@@ -309,7 +278,7 @@ Ns.game.Match = {
                         }
                     })
                     .error(function (err) {
-                        Ns.Util.lastTournamentMatchRequestTime[tornamenent_name] = oldTime;
+                        Ns.Util.lastTournamentMatchRequestTime[tournament_name] = oldTime;
                         //TODO - display error
 
                     });

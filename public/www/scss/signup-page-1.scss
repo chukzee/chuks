@@ -1,0 +1,31 @@
+
+$ctr_height: 40px;
+$zip_size : 35px;
+
+.game9ja-signup-page-1-phone-no{
+    position: relative;
+
+    > :nth-child(1){
+        position: relative;
+        width: $zip_size;
+        height: $zip_size;
+        height: 100%;
+    }
+    > :nth-child(2){
+        position: absolute;
+        top: 0;
+        left: $zip_size;
+        right: 0;
+        height: 100%;
+        
+        > :nth-child(1){
+            height: 100%;
+            width: 100%;
+        }
+
+    }
+}
+
+
+
+

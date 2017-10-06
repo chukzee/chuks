@@ -74,7 +74,7 @@ class Match extends WebApplication {
         if (!('serial_no' in move)) {
             return this.error('invalid input - missing serial_no field in move object!');
         }
-        
+
         if (!isFinite(move.serial_no) || move.serial_no < 1) {
             return this.error('invalid input - move serial number must be a positive integer number!');
         }
@@ -229,6 +229,100 @@ class Match extends WebApplication {
     }
 
     /**
+     * broadcast the watch_game_start or watch_game_resume event to users related in one way
+     * or the other to any of the players - ie via contacts or group.
+     * 
+     * If the match is a contact match the event is broadcasted to all the
+     * contacts of all the players.
+     * If the match is a group match the event is broadcasted to all the members
+     * of the group and also all the contacts off all the players
+     * 
+     * If the match is a tournament match the event is broadcasted to all the
+     * other players and officials.
+     *
+     * @param {type} match
+     * @param {type} event_name
+     * @returns {undefined}
+     */
+
+    async _broadcastWatchGame(match, event_name) {
+
+        var players = match;
+        var related_user_ids = [];
+        var players_ids = [];
+        for (var i = 0; i < players.length; i++) {
+            players_ids.push(players[i].user_id);
+            var contacts = players[i].contacts;
+            for (var i = 0; i < contacts.length; i++) {
+                related_user_ids.push(contacts[i]);
+            }
+        }
+
+
+
+
+        if (match.group_name) {
+            try {
+                var c = this.sObj.db.collection(this.sObj.col.groups);
+                var group = await c.findOne({name: match.group_name}, {_id: 0, members: 1});
+                if (group) {
+                    //add the group members user ids to the related_user_ids array
+                    for (var i = 0; i < group.members.length; i++) {
+                        if (group.members[i].committed) {
+                            if (players_ids.indexOf(group.members[i].user_id) > -1) {
+                                continue;//skip the players themselves
+                            }
+                            related_user_ids.push(group.members[i].user_id);
+
+                        }
+                    }
+                }
+
+            } catch (e) {
+                console.log(e);//DO NOT DO THIS IN PRODUCTION
+            }
+
+        }
+
+
+        if (match.tournament_name) {
+            try {
+                var c = this.sObj.db.collection(this.sObj.col.tournaments);
+                var tourn = await c.findOne({name: match.tournament_name}, {_id: 0, officials: 1, players: 1});
+                if (tourn) {
+                    //add the tournament officials user ids to the related_user_ids array
+                    for (var i = 0; i < tourn.officials.length; i++) {
+                        if (players_ids.indexOf(tourn.officials[i].user_id) > -1) {
+                            continue;//skip the players themselves
+                        }
+                        related_user_ids.push(tourn.officials[i].user_id);
+                    }
+
+                    //add the tournament players user ids to the related_user_ids array
+                    for (var i = 0; i < tourn.players.length; i++) {
+                        if (players_ids.indexOf(tourn.players[i].user_id) > -1) {
+                            continue;//skip the players themselves
+                        }
+                        related_user_ids.push(tourn.players[i].user_id);
+                    }
+
+                }
+
+            } catch (e) {
+                console.log(e);//DO NOT DO THIS IN PRODUCTION
+            }
+
+        }
+
+        //ensure no duplicate
+        this.util.toSet(related_user_ids);
+
+        //now broadcast to the related users
+        this.broadcast(event_name, match, related_user_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
+
+    }
+
+    /**
      * Starts the game by broadcasting the game start event to 
      * the players. The game id provided is used to find the 
      * game document object in 'play_requests' and 'match_fixtures'
@@ -274,7 +368,8 @@ class Match extends WebApplication {
             }
         }
 
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
+        var required_fields = ['contacts', 'groups_belong', 'user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
@@ -322,6 +417,10 @@ class Match extends WebApplication {
         match.players = players;
         this.broadcast(this.evt.game_start, match, players_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
+        //broadcast the watch_game_start event to users related in one way
+        //or the other to any of the players - ie via contacts or group
+        this._broadcastWatchGame(match, this.evt.watch_game_start);
+
         return 'game started successfully';
     }
 
@@ -363,7 +462,8 @@ class Match extends WebApplication {
             }
         }
 
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
+        var required_fields = ['contacts', 'groups_belong', 'user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match the numbers requested for
@@ -420,6 +520,10 @@ class Match extends WebApplication {
 
         //broadcast to players except user_id
         this.broadcast(this.evt.game_resume, updated_match, users_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
+
+        //broadcast the watch_game_resume event to users related in one way
+        //or the other to any of the players - ie via contacts or group
+        this._broadcastWatchGame(match, this.evt.watch_game_resume);
 
         return updated_match; //sent to player of user_id
     }
@@ -690,7 +794,7 @@ class Match extends WebApplication {
         var total = await c.count(allQuery);
 
         data.total = total;
-        
+
         if (!total) {
             return data;
         }
@@ -883,16 +987,16 @@ class Match extends WebApplication {
         }
 
         if (filter === 'group') {
-            query.group_name = {$ne:''};
+            query.group_name = {$ne: ''};
         }
 
         if (filter === 'tournament') {
-            query.tournament_name = {$ne:''};
+            query.tournament_name = {$ne: ''};
         }
 
         if (is_include_abandoned_matches === true) {
             query.game_status = 'abandon';
-        }        
+        }
 
         var total = await c.count(query);
 

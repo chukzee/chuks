@@ -33,21 +33,23 @@ class Tournament extends WebApplication {
         }
 
         try {
-            
+
             var c = this.sObj.db.collection(this.sObj.col.tournaments);
             var tourn = await c.findOne({name: tournament_name});
-            
+
             if (tourn) {
                 return 'Tournament name already exist!';
             }
-            
+
             var insObj = {
                 name: tournament_name,
                 user_id: user_id,
                 status_message: status_message,
-                photo_url: photo_url
+                photo_url: photo_url,
+                officials: [],
+                players: []
             };
-            
+
             var r = await c.insertOne(insObj);
             if (r.result.n === 1) {
                 return 'Tournament created successfully!';

@@ -12,4 +12,30 @@ input, textarea {
   -ms-user-select: auto;
   user-select: auto; }
 
+input, select {
+  border-top-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  outline: none; }
+
+input[type=checkbox] {
+  width: 25px;
+  height: 25px;
+  margin: 0;
+  padding: 0;
+  background: #ff0000;
+  border-radius: 3px; }
+
+.game9ja-error {
+  color: #dd2222; }
+
+.game9ja-unseen {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #22dd22;
+  color: #fff;
+  margin-left: 3px;
+  border-radius: 50%; }
+
 /*# sourceMappingURL=app-main.css.map */

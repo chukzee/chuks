@@ -281,7 +281,7 @@ class Chat extends   WebApplication {
         return data;
     }
 
-    async sendGameChat(user_id, opponent_id, game_id, msg) {
+    async sendGameChat(user_id, opponent_id, game_id, content, content_type) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -289,7 +289,8 @@ class Chat extends   WebApplication {
             user_id = arguments[0].user_id;
             opponent_id = arguments[0].opponent_id;
             game_id = arguments[0].game_id;
-            msg = arguments[0].msg;
+            content = arguments[0].content; //text message or audio url if the content is audio type (voice)
+            content_type = arguments[0].content_type;
         }
         
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -301,7 +302,8 @@ class Chat extends   WebApplication {
             user_id: user_id,
             opponent_id: opponent_id,
             msg_id: msg_id,
-            msg: msg,
+            content: content, //text message or audio url if the content is audio type (voice)
+            content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
             time: now.getTime()
         };
@@ -314,14 +316,15 @@ class Chat extends   WebApplication {
         return 'sent successfully';
     }
 
-    async sendGroupChat(user_id, group_name, msg) {
+    async sendGroupChat(user_id, group_name,  content, content_type) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             group_name = arguments[0].group_name;
-            msg = arguments[0].msg;
+            content = arguments[0].content; //text message or audio url if the content is audio type (voice)
+            content_type = arguments[0].content_type;
         }
         
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -332,7 +335,8 @@ class Chat extends   WebApplication {
             group_name: group_name,
             user_id: user_id,
             msg_id: msg_id,
-            msg: msg,
+            content: content, //text message or audio url if the content is audio type (voice)
+            content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
             time: now.getTime()
         };
@@ -355,14 +359,15 @@ class Chat extends   WebApplication {
         return 'sent successfully';        
     }
     
-    async sendTournamentInhouseChat(user_id, tournament_name, msg) {
+    async sendTournamentInhouseChat(user_id, tournament_name, content, content_type) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
-            msg = arguments[0].msg;
+            content = arguments[0].content; //text message or audio url if the content is audio type (voice)
+            content_type = arguments[0].content_type;
         }
         
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -374,7 +379,8 @@ class Chat extends   WebApplication {
             chat_type:'inhouse',
             user_id: user_id,
             msg_id: msg_id,
-            msg: msg,
+            content: content, //text message or audio url if the content is audio type (voice)
+            content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
             time: now.getTime()
         };
@@ -408,14 +414,15 @@ class Chat extends   WebApplication {
         return 'sent successfully';        
     }
     
-    async sendTournamentGeneralChat(user_id, tournament_name, msg) {
+    async sendTournamentGeneralChat(user_id, tournament_name, content, content_type) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
-            msg = arguments[0].msg;
+            content = arguments[0].content; //text message or audio url if the content is audio type (voice)
+            content_type = arguments[0].content_type;
         }
         
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -427,7 +434,8 @@ class Chat extends   WebApplication {
             chat_type:'general',
             user_id: user_id,
             msg_id: msg_id,
-            msg: msg,
+            content: content, //text message or audio url if the content is audio type (voice)
+            content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
             time: now.getTime()
         };

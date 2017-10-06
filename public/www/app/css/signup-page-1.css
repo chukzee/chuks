@@ -1,0 +1,18 @@
+.game9ja-signup-page-1-phone-no {
+  position: relative; }
+  .game9ja-signup-page-1-phone-no > :nth-child(1) {
+    position: relative;
+    width: 35px;
+    height: 35px;
+    height: 100%; }
+  .game9ja-signup-page-1-phone-no > :nth-child(2) {
+    position: absolute;
+    top: 0;
+    left: 35px;
+    right: 0;
+    height: 100%; }
+    .game9ja-signup-page-1-phone-no > :nth-child(2) > :nth-child(1) {
+      height: 100%;
+      width: 100%; }
+
+/*# sourceMappingURL=signup-page-1.css.map */
