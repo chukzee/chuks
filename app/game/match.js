@@ -234,11 +234,12 @@ class Match extends WebApplication {
      * 
      * If the match is a contact match the event is broadcasted to all the
      * contacts of all the players.
+     * 
      * If the match is a group match the event is broadcasted to all the members
      * of the group and also all the contacts off all the players
      * 
      * If the match is a tournament match the event is broadcasted to all the
-     * other players and officials.
+     * other players and officials and also all the contacts off all the players
      *
      * @param {type} match
      * @param {type} event_name
@@ -247,7 +248,7 @@ class Match extends WebApplication {
 
     async _broadcastWatchGame(match, event_name) {
 
-        var players = match;
+        var players = match.players;
         var related_user_ids = [];
         var players_ids = [];
         for (var i = 0; i < players.length; i++) {
@@ -257,8 +258,6 @@ class Match extends WebApplication {
                 related_user_ids.push(contacts[i]);
             }
         }
-
-
 
 
         if (match.group_name) {
