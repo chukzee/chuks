@@ -13,10 +13,10 @@ and open the template in the editor.
     <body>
         <ul class="game9ja-live-games-list">
             <li>
-                {white_name}
+                {players.0.full_name}<!--like in mongodb access the embedded array via the dot operator-->
             </li>
             <li>
-                {black_name}
+                {players.1.full_name}<!--like in mongodb access the embedded array via the dot operator-->
             </li>
             <li>
                 {game_elapse_time}
@@ -25,8 +25,8 @@ and open the template in the editor.
                 <span>{game_score}</span><span>{game_status}</span>
             </li>
             
-            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{white_pic}" alt=" "/></li>
-            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{black_pic}" alt=""/></li>
+            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{players.0.photo_url}" alt=" "/></li>
+            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{players.1.photo_url}" alt=""/></li>
         </ul>
 
     </body>

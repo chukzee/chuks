@@ -6,19 +6,33 @@
 Ns.game.Match = {
     hasMatchData: false,
     currentUserMatch: null, //set dynamically
+    _lstContactsMatch: null,//private - the contacts match listview
+    _lstGroupsMatch: null,//private - the groups match listview
+    _lstTournamentsMatch: null,//private - the tournaments match listview
+    
     constructor: function () {
 
         var obj = {
-            match: 'game/Match',
-            //more may go below
+            match: 'game/Match'
+                    //more may go below
         };
 
         Main.rcall.live(obj);
 
+        Main.eventio.on('game_start', this.onGameStart);
+        Main.eventio.on('watch_game_start', this.onWatchGameStart);
+        Main.eventio.on('game_resume', this.onGameResume);
+        Main.eventio.on('watch_game_resume', this.onWatchGameResume);
+        Main.eventio.on('game_pause', this.onGamePause);
+        Main.eventio.on('game_abandon', this.onGameAbandon);
+        Main.eventio.on('game_move', this.onGameMove);
+        Main.eventio.on('game_move_sent', this.onGameMoveSent);
+        Main.eventio.on('game_finish', this.onGameFinish);
+
+
     },
     liveMatchList: function (container, matches) {
-        
-        //show the contacts live match list                   
+
 
         Main.listview.create({
             container: container,
@@ -29,8 +43,8 @@ Ns.game.Match = {
             onSelect: function (evt, match_data) {
                 var user = Ns.view.UserProfile.appUser;
                 var is_me_player = false;
-                for(var n in match_data.players){
-                    if( match_data.players[n].user_id === user.user_id){
+                for (var n in match_data.players) {
+                    if (match_data.players[n].user_id === user.user_id) {
                         is_me_player = true;
                         break;
                     }
@@ -45,6 +59,22 @@ Ns.game.Match = {
 
             },
             onReady: function () {
+
+                switch (container) {
+                    case '#home-contacts-live-games':
+                        Ns.game.Match._lstContactsMatch = this;
+                        break;
+                    case '#home-group-live-games':
+                        Ns.game.Match._lstGroupsMatch = this;
+                        break;
+                    case '#home-tournaments-live-games':
+                        Ns.game.Match._lstTournamentsMatch = this;
+                        break;
+                    default:
+                        console.warn('WARNGING! unknow coontainer id for listview - ' + container);
+                        return;
+                }
+
                 for (var n in matches) {
                     this.prependItem(matches[n]);
                 }
@@ -189,7 +219,7 @@ Ns.game.Match = {
                         matches = matches.sort(function (mat1, mat2) {
                             return mat1.game_start_time < mat2.game_start_time;
                         });
-                        
+
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-group-live-games', matches);
                             var key = Ns.GameHome.groupMatchKey(matches[0].group_name);
@@ -262,12 +292,12 @@ Ns.game.Match = {
             Main.ro.match.getTournamentMatchList(tournament_name, game_name, skip, limit)
                     .get(function (data) {
                         var matches = data.matches;
-                        
+
                         //sort the matches in descending order to show the latest matches first
                         matches = matches.sort(function (mat1, mat2) {
                             return mat1.game_start_time < mat2.game_start_time;
                         });
-                        
+
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-tournaments-live-games', matches);
                             var key = Ns.GameHome.tournamentMatchKey(matches[0].tournament_name);
@@ -285,7 +315,98 @@ Ns.game.Match = {
 
         });
 
+    },
+
+    updateMatchListview: function(match){
+        if(match.group_name){
+            
+        }else if(match.tournament_name){
+            
+        }else{//contact match
+            
+        }
+        
+    },
+
+    prependMatchListview: function(match){
+        if(match.group_name){
+            Ns.game.Match._lstGroupsMatch.prependItem(match);
+        }else if(match.tournament_name){
+            Ns.game.Match._lstTournamentsMatch.prependItem(match);
+        }else{//contact match
+            Ns.game.Match._lstContactsMatch.prependItem(match);
+        }
+        
+        
+    },
+
+    onGameStart: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.prependMatchListview(match);
+        
+    },
+
+    onWatchGameStart: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.prependMatchListview(match);
+        
+    },
+
+    onGameResume: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.updateMatchListview(match);
+        
+    },
+
+    onWatchGameResume: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.updateMatchListview(match);
+        
+    },
+
+    onGamePause: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.updateMatchListview(match);
+        
+    },
+
+    onGameAbandon: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.updateMatchListview(match);
+        
+    },
+
+    onGameMove: function (obj) {
+        console.log(obj);
+        
+    },
+
+    onGameMoveSent: function (obj) {
+        console.log(obj);
+        
+    },
+
+    onGameFinish: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.updateMatchListview(match);
+        
+        
     }
+
 
 };
 

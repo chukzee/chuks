@@ -1,8 +1,6 @@
 
 Ns.view.Group = {
-    
-    
-    
+
     /**
      * holds array of group names the app user belong to
      * e.g
@@ -12,8 +10,8 @@ Ns.view.Group = {
      * 
      * @type type
      */
-    groupsBelong : [],
-    
+    groupsBelong: [],
+
     /**
      * holds list of group info against the group name
      * e.g
@@ -27,26 +25,32 @@ Ns.view.Group = {
      * }
      * @type type
      */
-    groupList : {}, 
-    
-    
+    groupList: {},
+
     /**
      * this constructor is called once automatically by the framework
      * 
      * @returns {undefined}
      */
-    constructor : function(){
-    
+    constructor: function () {
+
         var obj = {
             group: 'info/Group',
-                    //more may go below
+            //more may go below
         };
 
-        Main.rcall.live(obj);    
+        Main.rcall.live(obj);
+
+        Main.eventio.on('group_join_request', this.onGroupJionRequest)
+
     },
-    
-    content : function(){
-        
+
+    content: function () {
+
     },
+
+    onGroupJionRequest: function (obj) {
+        console.log(obj);
+    }
     //more goes below
 };

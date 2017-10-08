@@ -1,30 +1,37 @@
-
 <!DOCTYPE html>
-
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-
 <html>
     <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
 
         <div class="game9ja-tournament-details game9ja-section-container">
             <div><!--tournament logo pics-->                
-                <div><div><img src="../app/images/black_player.jpg" alt=""/></div></div>
+                <div><div><img  id="tournaments-details-photo-url"  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="" alt=""/></div></div>
                 <div>Tournament Name</div>
-                <div><div>Created by <i><strong>Chuks Alimele</strong></i> on <i>May 4, 2017</i></div></div>
-                <i id="tournament-details-back-btn" class="fa fa-arrow-left"></i>
+                <div><div>Created by 
+                        <i>
+                            <strong id="tournaments-details-created-by"></strong>
+                        </i> on
+                        <i id="tournaments-details-date-created"></i>
+                    </div>
+                </div>
+                <i class="fa fa-arrow-left"></i>
                 <i class="fa fa-edit"></i>
                 <i class="fa fa-ellipsis-v game9ja-header-item-right"></i>
             </div>
             <div> <!--tournament officials-->
                 <div>Officials</div>
 
-                <div class="game9a-horizontal-list">
+                <div  id="tournaments-details-officials" class="game9a-horizontal-list">
+                    <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
@@ -34,29 +41,15 @@ and open the template in the editor.
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
+                    -->
                 </div>
-                <!--horizontal list of officials go below---->
             </div>
 
             <div><!--players-->
-                <div><span>Players</span> <span>Season 3: 23/01/2017 to 23/03/2017 </span></div>
+                <div><span>Players</span> <span  id="tournaments-details-season"><!--Season 3: 23/01/2017 to 23/03/2017 --></span></div>
 
-                <div class="game9a-horizontal-list">
+                <div id="tournaments-details-players" class="game9a-horizontal-list">
+                   <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
@@ -66,29 +59,15 @@ and open the template in the editor.
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
-                    <div style="background: blue; width: 80px; height: 80px;">
-
-                    </div>
+                    -->
                 </div>
-                <!--horizontal list of players go below---->
             </div>
             <div><!--Fixtures-->
-                <div><span>Match fixtures</span> <span>Round 2</span></div>
+                <div><span>Match fixtures</span> <span id="tournaments-details-round"><!--Round 2--></span></div>
 
+                <div id="tournaments-details-match-fixtures">
                 <!--vertical list of fixtures go below---->
-
+                <!--
                 <ul class="game9ja-match-fixture-list">
 
                     <li>
@@ -138,7 +117,8 @@ and open the template in the editor.
                     <li><img  src="images/white_player.jpg" alt=" "/></li>
                     <li><img  src="images/black_player.jpg" alt=" "/></li>
                 </ul>
-
+                -->
+                </div>
             </div>
 
         </div>

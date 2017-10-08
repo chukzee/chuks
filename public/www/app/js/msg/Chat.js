@@ -6,14 +6,19 @@ Ns.msg.Chat = {
      * 
      * @returns {undefined}
      */
-    constructor : function(){
-        
+    constructor: function () {
+
         var obj = {
             chat: 'game/Chat',
-                    //more may go below
+            //more may go below
         };
 
         Main.rcall.live(obj);
+
+        Main.eventio.on('game_chat', this.onGameChat);
+        Main.eventio.on('group_chat', this.onGroupChat);
+        Main.eventio.on('tournament_inhouse_chat', this.onTournamentInhouseChat);
+        Main.eventio.on('tournament_general_chat', this.onTournamentGeneralChat);
 
     },
     content: function () {
@@ -72,7 +77,21 @@ Ns.msg.Chat = {
         }
     },
 
+    onGameChat: function(obj){
+        console.log(obj);
+    },
 
+    onGroupChat: function(obj){
+        console.log(obj);
+    },
+
+    onTournamentInhouseChat: function(obj){
+        console.log(obj);
+    },
+
+    onTournamentGeneralChat: function(obj){
+        console.log(obj);
+    }
 
 };
 

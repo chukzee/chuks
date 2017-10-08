@@ -9,30 +9,35 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../app/css/section-container.css" />
-        <link rel="stylesheet" href="../app/css/user-show-list.css" />
-        <link rel="stylesheet" href="../app/css/group-details.css" />
-        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+
     </head>
     <body>
 
         <div class="game9ja-group-details game9ja-section-container">
             <div><!--group profile pics-->                
-                <div><div><img src="../app/images/black_player.jpg" alt=""/></div></div>
-                <div>Group Name</div>
-                <div>Building chess players</div><!--Group profile status - expected to be a short phrase-->
+                <div><div><img  id="group-details-photo-url"  onerror="Main.helper.loadDefaultGroupPhoto(event)" src="" alt=""/></div></div>
+                <div id="group-details-group-name"></div>
+                <div id="group-details-status-message"></div><!--Group profile status - expected to be a short phrase-->
                 <i class="fa fa-arrow-left"></i>
                 <i class="fa fa-edit"></i>
                 <i class="fa fa-ellipsis-v game9ja-header-item-right"></i>
             </div>
             <div><!--group basic-->
-                <div><div>Created by <i><strong>Chuks Alimele</strong></i> on <i>May 4, 2017</i></div></div>
-                <div><div><span>58</span> members</div></div>
+                <div><div>Created by 
+                        <i>
+                            <strong  id="group-details-created-by"></strong>
+                        </i> on 
+                        <i  id="group-details-date-created"></i>
+                    </div>
+                </div>
+                <div><div><span id="group-details-members-count"></span> members</div></div>
                 <div><div>Custom Notifications</div></div>
             </div>
             <div> <!--group admins-->
                 <div>Group Admins</div>
-                <span>2</span>
+                <span  id="group-details-admins-count"></span>
+                <div  id="group-details-admins">
+                <!--
                 <ul class="game9ja-user-show-list">
 
                     <li><img  src="images/white_player.jpg" alt=" "/></li>
@@ -46,7 +51,7 @@ and open the template in the editor.
                     <li>
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li>show date joined group
                         22/01/2016
                     </li>
                 </ul>
@@ -62,7 +67,7 @@ and open the template in the editor.
                     </li>
 
                     <li>
-                        <!--READ !!!
+                        READ !!!
                         Exit Group button will replace Lets Play button if the 
                         list item is for that of the  current users of the app.
                         Note to avoid accidental exiting of group the clicking 
@@ -85,17 +90,22 @@ and open the template in the editor.
                         must be denied the ability to exit. This will therefore
                         prevent accidental exiting of the group
                                                 
-                        -->                        
+                                               
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li> show date joined group
                         21/09/2016
                     </li>
                 </ul>
+                
+                -->
+                </div>
             </div>
             
             <div><!--Other members-->
-                <div>Other Members</div>                
+                <div>Other Members</div>   
+                <div  id="group-details-members">
+                <!--
                 <ul class="game9ja-user-show-list">
 
                     <li><img  src="images/white_player.jpg" alt=" "/></li>
@@ -107,7 +117,7 @@ and open the template in the editor.
                     </li>
 
                     <li>
-                        <!--READ !!!
+                        READ !!!
                         Exit Group button will replace Lets Play button if the 
                         list item is for that of the  current users of the app.
                         Note to avoid accidental exiting of group the clicking 
@@ -130,10 +140,10 @@ and open the template in the editor.
                         must be denied the ability to exit. This will therefore
                         prevent accidental exiting of the group
                                                 
-                        -->
+                        
                         <input class="game9ja-exit-group-btn" type="button" value="Exit Group"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li> show date joined group
                         12/05/2017
                     </li>
                 </ul>
@@ -151,7 +161,7 @@ and open the template in the editor.
                     <li>
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li> show date joined group
                         04/05/2017
                     </li>
                 </ul>
@@ -169,7 +179,7 @@ and open the template in the editor.
                     <li>
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li>show date joined group
                         25/09/2016
                     </li>
                 </ul>
@@ -187,7 +197,7 @@ and open the template in the editor.
                     <li>
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li> show date joined group
                         04/05/2017
                     </li>
                 </ul>
@@ -205,7 +215,7 @@ and open the template in the editor.
                     <li>
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li> show date joined group
                         25/09/2016
                     </li>
                 </ul>
@@ -223,11 +233,12 @@ and open the template in the editor.
                     <li>
                         <input type="button" value="Lets play"/>
                     </li>
-                    <li><!-- show date joined group-->
+                    <li> show date joined group
                         04/03/2017
                     </li>
                 </ul>
-                
+                -->
+                </div>
             </div>
 
         </div>

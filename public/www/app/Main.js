@@ -1869,13 +1869,31 @@ var Main = {};
 
             for (var name in data) {
                 var value = data[name];
-                var tpl_name = '{' + name + '}';
-                var h;
-                do {
-                    h = html;
-                    html = html.replace(tpl_name, value);
-                } while (h !== html)
-
+                if (Main.util.isArray(value)) {
+                    var nm = name;
+                    for (var i = 0; i < value.length; i++) {
+                        for (var n in value[i]) {
+                            var v = value[i][n];
+                            name = nm + '.' + i + '.' + n;
+                            if(data[name]){
+                                console.warn("WARNING!!! ambigious object property '"+name+"'  which could cause unexpected result and must be avoided!");
+                            }
+                            var tpl_name = '{' + name + '}';
+                            var h;
+                            do {
+                                h = html;
+                                html = html.replace(tpl_name, v);
+                            } while (h !== html)
+                        }
+                    }
+                } else {
+                    var tpl_name = '{' + name + '}';
+                    var h;
+                    do {
+                        h = html;
+                        html = html.replace(tpl_name, value);
+                    } while (h !== html)
+                }
             }
 
             var content = $('<div '

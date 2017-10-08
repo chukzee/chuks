@@ -2,23 +2,25 @@
 /* global Main */
 
 Ns.msg.Comment = {
-    
+
     /**
      * this constructor is called once automatically by the framework
      * 
      * @returns {undefined}
      */
-    constructor : function(){
-                
+    constructor: function () {
+
         var obj = {
             comment: 'game/Comment'
                     //more may go below
         };
 
         Main.rcall.live(obj);
-      
+
+        Main.eventio.on('comment', this.onComment);
+
     },
-    
+
     content: function () {
         var data = this.data;
         //this.lefPanelBody - TODO
@@ -79,6 +81,10 @@ Ns.msg.Comment = {
 
                     });
         });
+    },
+    
+    onComment: function(obj){
+        console.log(obj);
     }
 
 };
