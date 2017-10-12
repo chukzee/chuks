@@ -6,10 +6,10 @@
 Ns.game.Match = {
     hasMatchData: false,
     currentUserMatch: null, //set dynamically
-    _lstContactsMatch: null,//private - the contacts match listview
-    _lstGroupsMatch: null,//private - the groups match listview
-    _lstTournamentsMatch: null,//private - the tournaments match listview
-    
+    _lstContactsMatch: null, //private - the contacts match listview
+    _lstGroupsMatch: null, //private - the groups match listview
+    _lstTournamentsMatch: null, //private - the tournaments match listview
+
     constructor: function () {
 
         var obj = {
@@ -33,7 +33,10 @@ Ns.game.Match = {
     },
     liveMatchList: function (container, matches) {
 
-
+        var now = new Date();
+        var now_00_hrs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        var _24_hrs = 60 * 60 * 24 * 1000;
+        
         Main.listview.create({
             container: container,
             scrollContainer: container,
@@ -55,6 +58,37 @@ Ns.game.Match = {
                 } else {
                     //watch other players live
                     Ns.GameHome.showGameWatch(match_data);
+                }
+
+            },
+            onRender: function (tpl_var, data) {
+
+                if (tpl_var === 'game_start_time') {
+
+                    var date = new Date(data[tpl_var]);
+
+                    console.log('TODO - consider the user time zone');
+
+                    var day = date.getDate();
+                    var month = date.getMonth() + 1;//plus one because it is zero based month
+                    var year = date.getFullYear();
+                    var hr = date.getHours();
+                    var min = date.getMinutes();
+                    var sec = date.getSeconds();
+
+                    var date_part = day + '/' + month + '/' + year;
+
+                    var day_00_hrs = new Date(year, date.getMonth(), day).getTime();
+
+                    if (now_00_hrs === day_00_hrs) {
+                        date_part = 'Today';
+                    } else if (now_00_hrs - day_00_hrs ===_24_hrs) {
+                        date_part = 'Yesterday';
+                    }
+
+                    var dateStr = date_part + ' ' + hr + ':' + min;
+
+                    return dateStr;
                 }
 
             },
@@ -317,94 +351,101 @@ Ns.game.Match = {
 
     },
 
-    updateMatchListview: function(match){
-        if(match.group_name){
-            
-        }else if(match.tournament_name){
-            
-        }else{//contact match
-            
+    updateMatchListview: function (match) {
+        if (!match) {
+            return;
         }
-        
+
+        if (match.group_name) {
+
+        } else if (match.tournament_name) {
+
+        } else {//contact match
+
+        }
+
     },
 
-    prependMatchListview: function(match){
-        if(match.group_name){
+    prependMatchListview: function (match) {
+        if (!match) {
+            return;
+        }
+        if (match.group_name) {
             Ns.game.Match._lstGroupsMatch.prependItem(match);
-        }else if(match.tournament_name){
+        } else if (match.tournament_name) {
             Ns.game.Match._lstTournamentsMatch.prependItem(match);
-        }else{//contact match
+        } else {//contact match
             Ns.game.Match._lstContactsMatch.prependItem(match);
         }
-        
-        
+
+
     },
 
     onGameStart: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.prependMatchListview(match);
-        
+
     },
 
     onWatchGameStart: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.prependMatchListview(match);
-        
+
     },
 
     onGameResume: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.updateMatchListview(match);
-        
+
     },
 
     onWatchGameResume: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.updateMatchListview(match);
-        
+
     },
 
     onGamePause: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.updateMatchListview(match);
-        
+
     },
 
     onGameAbandon: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.updateMatchListview(match);
-        
+
     },
 
     onGameMove: function (obj) {
         console.log(obj);
-        
+
     },
 
     onGameMoveSent: function (obj) {
         console.log(obj);
-        
+
     },
 
     onGameFinish: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.game.Match.updateMatchListview(match);
-        
-        
+
+
     }
 
 

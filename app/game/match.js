@@ -400,6 +400,7 @@ class Match extends WebApplication {
             game_name: mtcObj.game_name,
             game_rules: mtcObj.game_rules ? mtcObj.game_rules : default_rules,
             game_status: 'live',
+            game_score: '',
             game_start_time: new Date(),
             moves: [], //game position
             players: players

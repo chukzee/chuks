@@ -1721,7 +1721,7 @@ var Main = {};
             }
 
 
-            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj), (obj.hasBackAction === true));
+            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj), (obj.hasBackAction !== false));
             return true;//important!
         };
 
@@ -1875,11 +1875,18 @@ var Main = {};
                         for (var n in value[i]) {
                             var v = value[i][n];
                             name = nm + '.' + i + '.' + n;
-                            if(data[name]){
-                                console.warn("WARNING!!! ambigious object property '"+name+"'  which could cause unexpected result and must be avoided!");
+                            if (data[name]) {
+                                console.warn("WARNING!!! ambigious object property '" + name + "'  which could cause unexpected result and must be avoided!");
                             }
                             var tpl_name = '{' + name + '}';
                             var h;
+                            if (obj.onRender) {
+                                var rd_val = obj.onRender(name, data);
+                                if (typeof rd_val !== 'undefined') {
+                                    v = rd_val;
+                                }
+                            }
+
                             do {
                                 h = html;
                                 html = html.replace(tpl_name, v);
@@ -1889,9 +1896,16 @@ var Main = {};
                 } else {
                     var tpl_name = '{' + name + '}';
                     var h;
+                    var v = value;
+                    if (obj.onRender) {
+                        var rd_val = obj.onRender(name, data);
+                        if (typeof rd_val !== 'undefined') {
+                            v = rd_val;
+                        }
+                    }
                     do {
                         h = html;
-                        html = html.replace(tpl_name, value);
+                        html = html.replace(tpl_name, v);
                     } while (h !== html)
                 }
             }

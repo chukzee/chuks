@@ -113,6 +113,62 @@ jn.push('chuks3');
 var j = jn.join(';');
 console.log(j);
 
+//mama work
+var countries = [
+'Algeria',
+'Angola',
+'BotswanaBenin',
+'Burkina Faso',
+'Burundi',
+'Cameroon',
+'Cape Verde',
+'Central African Republic',
+'Chad',
+'Comoros',
+'Congo',
+'Cote Divoire',
+'Democratic Congo',
+'Djibouti',
+'Egypt',
+'Equatorial Guinea',
+'Eritrea',
+'Ethiopia',
+'Gabon',
+'Ghana',
+'Guinea Bissau',
+'Guinea',
+'Kenya',
+'Lesotho',
+'Liberia',
+'Libya',
+'Madagascar',
+'Malawi',
+'Mali',
+'Mauritania',
+'Mauritius',
+'Morocco',
+'Mozambique',
+'Namibia',
+'Niger',
+'Nigeria',
+'Rwanda',
+'Sao Tome and Principe',
+'Senegal',
+'Seychelles',
+'Sierra Leone',
+'Somalia',
+'South Africa',
+'Sudan',
+'Swaziland',
+'Tanzania',
+'The Gambia',
+'Togo',
+'Tunisia',
+'Uganda',
+'Zambia',
+'Zimbabwe'
+];
+
 
 
 
