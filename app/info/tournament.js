@@ -196,6 +196,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {officials: tourn.officials}});
+                
+        //set tournament belong of new official
+        var user_col = this.sObj.db.collection(this.sObj.col.users);
+         user_col.updateOne({user_id: new_official_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'official added successfully.';
     }
@@ -249,6 +253,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {officials: tourn.officials}});
+                
+        //remove from tournament belong of the official
+        var user_col = this.sObj.db.collection(this.sObj.col.users);
+         user_col.updateOne({user_id: official_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'Official removed successfully.';
 
@@ -312,6 +320,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {players: tourn.players}});
+                
+        //set tournament belong of new player
+        var user_col = this.sObj.db.collection(this.sObj.col.users);
+         user_col.updateOne({user_id: player_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'Player added successfully.';
     }
@@ -371,6 +383,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {players: tourn.players}});
+                
+        //remove from tournament belong of the player
+        var user_col = this.sObj.db.collection(this.sObj.col.users);
+         user_col.updateOne({user_id: player_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'Player removed successfully.';
     }

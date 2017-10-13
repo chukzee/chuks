@@ -20,6 +20,12 @@ Ns.view.Tournament = {
      */
     constructor : function(){
         
+        var obj = {
+            tourn: 'info/Tournament'
+        };
+
+        Main.rcall.live(obj);
+
     },
     
     content : function(){
@@ -32,6 +38,23 @@ Ns.view.Tournament = {
         });
     },
     
+    getUserTournamentsInfo: function (callback) {
+        
+        Main.rcall.live(function () {
+            Main.ro.tourn.getTournamentsInfoList(Ns.view.UserProfile.appUser.tournaments_belong)
+                    .get(function (tournaments) {
+                        if (tournaments.length === 0) {
+                            return;
+                        }
+                        Ns.view.Tournament.tournamentList = tournaments;
+
+                        callback(tournaments);
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                    });
+        });
+    },
     
     //more goes below
 };

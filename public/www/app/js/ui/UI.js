@@ -167,7 +167,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.groupMatchList(group);
+            Ns.game.Match.groupMatchList(group, group_index);
 
         });
 

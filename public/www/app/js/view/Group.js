@@ -1,31 +1,13 @@
 
+/* global Main, Ns */
+
 Ns.view.Group = {
 
     /**
-     * holds array of group names the app user belong to
-     * e.g
-     * //structure
-     * 
-     * ['group_name_1','group_name_2','group_name_3','group_name_4']
-     * 
-     * @type type
+     * list of groups info
+     * @type Array
      */
-    groupsBelong: [],
-
-    /**
-     * holds list of group info against the group name
-     * e.g
-     * //object structure
-     * {
-     *  group_name_1 : {name:..., photo:...,date_created:..., created_by: members : [...array of member user_id....] etc.}
-     *  group_name_2 : {name:..., photo:...,date_created:..., created_by: members : [...array of member user_id....] etc.}
-     *  group_name_3 : {name:..., photo:...,date_created:..., created_by: members : [...array of member user_id....] etc.}
-     *  group_name_4 : {name:..., photo:...,date_created:..., created_by: members : [...array of member user_id....] etc.}
-     *  group_name_5 : {name:..., photo:...,date_created:..., created_by: members : [...array of member user_id....] etc.}
-     * }
-     * @type type
-     */
-    groupList: {},
+    groupList: [],
 
     /**
      * this constructor is called once automatically by the framework
@@ -35,18 +17,35 @@ Ns.view.Group = {
     constructor: function () {
 
         var obj = {
-            group: 'info/Group',
-            //more may go below
+            group: 'info/Group'
         };
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('group_join_request', this.onGroupJionRequest)
+        Main.eventio.on('group_join_request', this.onGroupJionRequest);
 
     },
 
     content: function () {
 
+    },
+
+    getUserGroupsInfo: function (callback) {
+        
+        Main.rcall.live(function () {
+            Main.ro.group.getGroupsInfoList(Ns.view.UserProfile.appUser.groups_belong)
+                    .get(function (groups) {
+                        if (groups.length === 0) {
+                            return;
+                        }
+                        Ns.view.Group.groupList = groups;
+
+                        callback(groups);
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                    });
+        });
     },
 
     onGroupJionRequest: function (obj) {

@@ -36,7 +36,7 @@ Ns.game.Match = {
         var now = new Date();
         var now_00_hrs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
         var _24_hrs = 60 * 60 * 24 * 1000;
-        
+
         Main.listview.create({
             container: container,
             scrollContainer: container,
@@ -82,7 +82,7 @@ Ns.game.Match = {
 
                     if (now_00_hrs === day_00_hrs) {
                         date_part = 'Today';
-                    } else if (now_00_hrs - day_00_hrs ===_24_hrs) {
+                    } else if (now_00_hrs - day_00_hrs === _24_hrs) {
                         date_part = 'Yesterday';
                     }
 
@@ -193,41 +193,40 @@ Ns.game.Match = {
     },
 
     groupMatchList: function (group) {
-        var group_index;
-        var group_count;
-        if (!group) {
-            group_index = 0;
-            group = Ns.view.UserProfile.appUser.groups_belong[group_index];//first group in the list
-            group_count = Ns.view.UserProfile.appUser.groups_belong.length;
-            if (!group) {
-                return;
-            }
+
+        if (group) {
+            doGroupMatchList(group);
+        } else {
+            Ns.view.Group.getUserGroupsInfo(function (groups) {
+                doGroupMatchList(groups[0]);
+            });
         }
 
-        //show the first group live match list
 
-        var stored_matches = window.localStorage.getItem(Ns.GameHome.groupMatchKey(group.name));
+        function doGroupMatchList(group) {
 
-        try {
-            if (stored_matches) {
-                stored_matches = JSON.parse(stored_matches);
-                //show the group live match list
-                Ns.game.Match.liveMatchList('#home-group-live-games', stored_matches);
+            var stored_matches = window.localStorage.getItem(Ns.GameHome.groupMatchKey(group.name));
 
+            try {
+                if (stored_matches) {
+                    stored_matches = JSON.parse(stored_matches);
+                    //show the group live match list
+                    Ns.game.Match.liveMatchList('#home-group-live-games', stored_matches);
+                }
+            } catch (e) {
+                console.warn(e);
             }
-        } catch (e) {
-            console.warn(e);
+            document.getElementById('home-group-pic').src = group.photo_url;
+            document.getElementById('home-group-name').innerHTML = group.name;
+            document.getElementById('home-group-status-message').innerHTML = group.status_message;
+            var num = Ns.view.UserProfile.appUser.groups_belong.indexOf(group.name) + 1;
+            if (num > 0) {
+                num = '';
+            }
+            document.getElementById('home-group-page-number').innerHTML = num + " of " + Ns.view.UserProfile.appUser.groups_belong.length;
+
+            Ns.game.Match.refreshMyGroupsMatchList(group.name);
         }
-
-        //display group header info
-        document.getElementById('home-group-pic').src = group.photo_url;
-        document.getElementById('home-group-name').innerHTML = group.name;
-        document.getElementById('home-group-status-message').innerHTML = group.status_message;
-        document.getElementById('home-group-page-number').innerHTML = (group_index + 1) + " of " + group_count;
-
-        Ns.game.Match.refreshMyGroupsMatchList(group.name);
-
-
     },
 
     refreshMyGroupsMatchList: function (group_name) {
@@ -275,34 +274,36 @@ Ns.game.Match = {
 
     tournamentMatchList: function (tournament) {
 
-        if (!tournament) {
-            if (Main.util.isArray(Ns.view.Tournament.tournamentList)) {
-                tournament = Ns.view.Tournament.tournamentList[0];
-            }
-            if (!tournament) {
-                return;
-            }
+        if (tournament) {
+            doGroupMatchList(tournament);
+        } else {
+            Ns.view.Tournament.getUserTournamentsInfo(function (tournaments) {
+                doTournamentMatchList(tournaments[0]);
+            });
         }
 
-        //show the first tournaments live match list
-        var stored_matches = window.localStorage.getItem(Ns.GameHome.tournamentMatchKey(tournament.name));
 
-        try {
-            if (stored_matches) {
-                stored_matches = JSON.parse(stored_matches);
-                //show the tournaments live match list
-                Ns.game.Match.liveMatchList('#home-tournaments-live-games', stored_matches);
+        function doTournamentMatchList(tournament) {
+
+            var stored_matches = window.localStorage.getItem(Ns.GameHome.tournamentMatchKey(tournament.name));
+
+            try {
+                if (stored_matches) {
+                    stored_matches = JSON.parse(stored_matches);
+                    //show the tournaments live match list
+                    Ns.game.Match.liveMatchList('#home-tournaments-live-games', stored_matches);
+                }
+            } catch (e) {
+                console.warn(e);
             }
-        } catch (e) {
-            console.warn(e);
+
+            //display tournament header info
+            document.getElementById('home-tournament-pic').src = tournament.photo_url;
+            document.getElementById('home-tournament-name').innerHTML = tournament.name;
+            document.getElementById('home-tournament-duration').innerHTML = tournament.duration;
+
+            Ns.game.Match.refreshTournamentsMatchList(tournament);
         }
-
-        //display tournament header info
-        document.getElementById('home-tournament-pic').src = tournament.photo_url;
-        document.getElementById('home-tournament-name').innerHTML = tournament.name;
-        document.getElementById('home-tournament-duration').innerHTML = tournament.duration;
-
-        Ns.game.Match.refreshTournamentsMatchList(tournament);
 
     },
 
