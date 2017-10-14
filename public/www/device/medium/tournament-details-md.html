@@ -14,23 +14,24 @@ and open the template in the editor.
 
         <div class="game9ja-tournament-details game9ja-section-container">
             <div><!--tournament logo pics-->                
-                <div><div><img  id="tournaments-details-photo-url"  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="" alt=""/></div></div>
+                <div><div><img  id="tournament-details-photo-url"  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="" alt=""/></div></div>
                 <div>Tournament Name</div>
                 <div><div>Created by 
                         <i>
-                            <strong id="tournaments-details-created-by"></strong>
+                            <strong id="tournament-details-created-by"></strong>
                         </i> on
-                        <i id="tournaments-details-date-created"></i>
+                        <i id="tournament-details-date-created"></i>
                     </div>
                 </div>
-                <i class="fa fa-arrow-left"></i>
-                <i class="fa fa-edit"></i>
-                <i class="fa fa-ellipsis-v game9ja-header-item-right"></i>
+                <i id="tournament-details-back-btn" class="fa fa-arrow-left"></i>
+                <i id="tournament-details-edit" class="fa fa-edit"></i>
+                <i id="tournament-details-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
+
             </div>
             <div> <!--tournament officials-->
                 <div>Officials</div>
 
-                <div  id="tournaments-details-officials" class="game9a-horizontal-list">
+                <div  id="tournament-details-officials" class="game9a-horizontal-list">
                     <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
@@ -46,9 +47,9 @@ and open the template in the editor.
             </div>
 
             <div><!--players-->
-                <div><span>Players</span> <span  id="tournaments-details-season"><!--Season 3: 23/01/2017 to 23/03/2017 --></span></div>
+                <div><span>Players</span> <span  id="tournament-details-season"><!--Season 3: 23/01/2017 to 23/03/2017 --></span></div>
 
-                <div id="tournaments-details-players" class="game9a-horizontal-list">
+                <div id="tournament-details-players" class="game9a-horizontal-list">
                    <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
@@ -63,9 +64,9 @@ and open the template in the editor.
                 </div>
             </div>
             <div><!--Fixtures-->
-                <div><span>Match fixtures</span> <span id="tournaments-details-round"><!--Round 2--></span></div>
+                <div><span>Match fixtures</span> <span id="tournament-details-round"><!--Round 2--></span></div>
 
-                <div id="tournaments-details-match-fixtures">
+                <div id="tournament-details-match-fixtures">
                 <!--vertical list of fixtures go below---->
                 <!--
                 <ul class="game9ja-match-fixture-list">

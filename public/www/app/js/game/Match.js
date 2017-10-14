@@ -197,7 +197,9 @@ Ns.game.Match = {
         if (group) {
             doGroupMatchList(group);
         } else {
-            Ns.view.Group.getUserGroupsInfo(function (groups) {
+            var user = Ns.view.UserProfile.appUser;
+            
+            Ns.view.Group.getGroupsInfo(user, function (groups) {
                 doGroupMatchList(groups[0]);
             });
         }
@@ -277,8 +279,15 @@ Ns.game.Match = {
         if (tournament) {
             doGroupMatchList(tournament);
         } else {
-            Ns.view.Tournament.getUserTournamentsInfo(function (tournaments) {
+            
+            var user = Ns.view.UserProfile.appUser;
+            
+            Ns.view.Tournament.getTournamentsInfo(user, function (tournaments) {
                 doTournamentMatchList(tournaments[0]);
+                //get random tournament to suit the user delight
+                Ns.view.Tournament.randomGet(function (tournaments) {
+                    //do nothing!
+                });
             });
         }
 

@@ -196,10 +196,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {officials: tourn.officials}});
-                
+
         //set tournament belong of new official
         var user_col = this.sObj.db.collection(this.sObj.col.users);
-         user_col.updateOne({user_id: new_official_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
+        user_col.updateOne({user_id: new_official_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'official added successfully.';
     }
@@ -253,10 +253,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {officials: tourn.officials}});
-                
+
         //remove from tournament belong of the official
         var user_col = this.sObj.db.collection(this.sObj.col.users);
-         user_col.updateOne({user_id: official_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
+        user_col.updateOne({user_id: official_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'Official removed successfully.';
 
@@ -320,10 +320,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {players: tourn.players}});
-                
+
         //set tournament belong of new player
         var user_col = this.sObj.db.collection(this.sObj.col.users);
-         user_col.updateOne({user_id: player_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
+        user_col.updateOne({user_id: player_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'Player added successfully.';
     }
@@ -383,10 +383,10 @@ class Tournament extends WebApplication {
         var tourn = await c.updateOne(
                 {name: tournament_name},
                 {$set: {players: tourn.players}});
-                
+
         //remove from tournament belong of the player
         var user_col = this.sObj.db.collection(this.sObj.col.users);
-         user_col.updateOne({user_id: player_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
+        user_col.updateOne({user_id: player_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
         return 'Player removed successfully.';
     }
@@ -413,6 +413,87 @@ class Tournament extends WebApplication {
             query.$or.push({name: tournament_names_arr[i]});
         }
         var tourns = await c.find(query, {_id: 0}).toArray();
+
+        if (!tourns || !tourns.length) {
+            return [];
+        }
+
+        return tourns;
+    }
+    
+    /**
+     * Get the list of tournaments belong to by this user. The list consist of 
+     * the tournament info.
+     * 
+     * @param {type} user_id - id of the user
+     * @returns {Array|nm$_tournament.Tournament|Tournament.getTournamentsInfoList.tourns|nm$_tournament.Tournament.getTournamentsInfoList.tourns}
+     */
+    async getUserTournamentsInfoList(user_id) {
+        try {
+
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            var user = await c.findOne({user_id: user_id}, {_id: 0});
+            if (!user) {
+                return [];
+            }
+            return this.getTournamentsInfoList(user.tournaments_belong);
+
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION
+
+            this.error('could not get user Tournaments info');
+            return this;
+        }
+    }
+    
+    /**
+     * Search for tournaments whose name begins with the specified
+     * input string. The search is case-insensitive
+     * 
+     * @param {type} str_search - search string
+     * @param {type} limit - max record to return
+     * @returns {Array|Tournament.searchTournamentsInfoList.tourns|nm$_tournament.Tournament.searchTournamentsInfoList.tourns}
+     */
+    async searchTournamentsInfoList(str_search, limit) {
+
+        //NOTE: ideally the limit should not be more than 10 in many cases
+        //in the client app
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+        
+        //check if the user is already an official
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+
+        var tourns = await c.find({name: {$regex: '^' + str_search, $options: 'i'}}, {_id: 0})
+                .limit(limit)
+                .toArray();
+
+        if (!tourns || !tourns.length) {
+            return [];
+        }
+
+        return tourns;
+    }
+
+    /**
+     * Radomly selects the given number of tournament docs 
+     * from the tournaments collection
+     * 
+     * @param {type} size - the number of tournaments to selects
+     * @returns {Array|nm$_tournament.Tournament.getRandomTournamentsInfoList.tourns|Tournament.getRandomTournamentsInfoList.tourns}
+     */
+    async randomTournamentsInfoList(size) {
+        
+        if (size > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            size = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+        
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        //NOTE: according to mongodb doc, the sample can return duplicate docs
+        //occasionaly. However we do not care about that at this time anyway.
+        var tourns = await c.aggregate([{$sample: {size: size}}]);
 
         if (!tourns || !tourns.length) {
             return [];

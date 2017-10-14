@@ -5,22 +5,19 @@ Ns.view.UserProfile = {
 
     appUser: null, //set after authenication 
 
-    /**
-     * holds list of user info against the user_id
-     * e.g
-     * //object structure
-     * {
-     *  user_id_1 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_2 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_3 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_4 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     *  user_id_5 : {user_id:..., full_name:..., registered_phone_no:..., photo:..., profile_status:..., last_modified:..., contacts:[...], groups_belong :[...array of group name....], groups_in_common:[......], tournaments_belong:[....], }
-     * }
-     * @type type
-     */
-    userList: {},
+    userList: [],
 
     constructor: function () {
+
+        try {
+            var list = window.localStorage.getItem(Ns.Const.USER_LIST_KEY);
+            list = JSON.parse(list);
+            if (Main.util.isArray(list)) {
+                Ns.view.UserProfile.userList = list;
+            }
+        } catch (e) {
+            console.warn(e);
+        }
 
         var obj = {
             user: 'info/User',
@@ -36,10 +33,20 @@ Ns.view.UserProfile = {
      * @returns {undefined}
      */
     getGroupsInCommon: function (other_user_id, callback) {
-
-        var other_user_info = this.userList[other_user_id];
+        var other_user_info;
+        for (var i = 0; i < Ns.view.UserProfile.userList.length; i++) {
+            if (other_user_id === Ns.view.UserProfile.userList[i].user_id) {
+                other_user_info = Ns.view.UserProfile.userList[i];
+                break;
+            }
+        }
 
         if (!other_user_info) {
+            Ns.view.Group.getUserGroupsInfo(function (groups) {
+                //get the groups in common
+                var c = whatsCommon(groups);
+                callback(c);
+            })
             Main.rcall.live(function () {
                 Main.ro.group.getUserGroupsInfoList(other_user_id)
                         .get(function (group_info_arr) {
@@ -108,8 +115,150 @@ Ns.view.UserProfile = {
 
     },
 
-    content: function () {
+    content: function (user_id) {
+
+        //find the USER
+        Ns.view.UserProfile.getInfo(user_id, function (user) {
+            setContent(user);
+        });
+
+
+        function setContent(user) {
+            /*
+             "user-profile-photo-url"
+             "user-profile-full-name"
+             "user-profile-status-message"
+             "user-profile-phone-no"
+             "user-profile-back-btn"
+             "user-profile-edit"
+             "user-profile-other-phone-nos"            
+             "user-profile-ranking-position"            
+             "user-profile-ranking-date"            
+             "user-profile-ranking-score"                    
+             "user-profile-groups-belong-count"            
+             "user-profile-groups-belong"            
+             "user-profile-groups-in-common-count"            
+             "user-profile-groups-in-common"            
+             "user-profile-tournaments-belong-count"            
+             "user-profile-tournaments-belong"
+             */
+            
+            
+            if (!user) {
+                return;
+            }
+            
+            document.getElementById("user-profile-photo-url").src = user.photo_url;
+            document.getElementById("user-profile-full-name").innerHTML = user.full_name;
+            document.getElementById("user-profile-status-message").innerHTML = user.status_message;
+            document.getElementById("user-profile-phone-no").innerHTML = user.user_id;
+            //document.getElementById("user-profile-other-phone-nos").innerHTML = user.phone_nos;
+            document.getElementById("user-profile-ranking-position").innerHTML = user.player_ranking;
+            document.getElementById("user-profile-ranking-date").innerHTML = user.ranking_date;
+            document.getElementById("user-profile-ranking-score").innerHTML = user.ranking_score;
+            document.getElementById("user-profile-groups-belong-count").innerHTML = user.groups_belong.length;
+            //document.getElementById("user-profile-groups-in-common-count").innerHTML = groups_in_common_count;
+            document.getElementById("user-profile-tournaments-belong-count").innerHTML = user.tournaments_belong.length;
+            
+            //document.getElementById("user-profile-groups-belong").innerHTML = user.blablablah;
+            //document.getElementById("user-profile-groups-in-common").innerHTML = user.blablablah;
+            //document.getElementById("user-profile-tournaments-belong").innerHTML = user.blablablah;
+        }
 
     },
+
+    getInfo: function (user_id, callback, refresh) {
+        var user;
+        for (var i = 0; i < Ns.view.UserProfile.userList.length; i++) {
+            if (user_id === Ns.view.UserProfile.userList[i].user_id) {
+                user = Ns.view.UserProfile.userList[i];
+                callback(user);
+                if (!refresh) {
+                    return;
+                }
+            }
+        }
+
+        Main.rcall.live(function () {
+            Main.ro.user.getInfo(user_id)
+                    .get(function (user) {
+                        if (user && user.user_id) {
+                            Ns.view.UserProfile.merge(user);
+                            callback(user);
+                        }
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                    });
+        });
+
+
+    },
+
+    merge: function (users) {
+
+        if (!Main.util.isArray(users)) {
+            users = [users];
+        }
+        if (!Main.util.isArray(Ns.view.UserProfile.userList)) {
+            Ns.view.UserProfile.userList = [];
+        }
+        var old_len = Ns.view.UserProfile.userList.length;
+
+        for (var i = 0; i < users.length; i++) {
+            var found = false;
+            for (var k = 0; k < old_len; k++) {
+                var user = Ns.view.UserProfile.userList[k];
+                if (user.user_id === users[i].user_id) {
+                    user = users[i];//replace
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                Ns.view.UserProfile.userList.push(users[i]);
+            }
+        }
+
+        if (Ns.view.UserProfile.userList.length > Ns.Const.MAX_LIST_SIZE) {
+            var excess = Ns.view.UserProfile.userList.length - Ns.Const.MAX_LIST_SIZE;
+            Ns.view.UserProfile.userList.splice(0, excess);//cut off the excess from the top
+        }
+
+        Ns.view.UserProfile.save();
+    },
+
+    save: function () {
+        var list = Ns.view.UserProfile.userList;
+        if (Main.util.isArray(list)) {
+            window.localStorage.setItem(Ns.Const.USER_LIST_KEY, JSON.stringify(list));
+        }
+    },
+
+    getUsersInfo: function (user_id_arr, callback) {
+
+        Main.rcall.live(function () {
+
+            Main.ro.user.getInfoList(user_id_arr)
+                    .get(function (users) {
+                        if (!Main.util.isArray(users)) {//just in case
+                            callback([]);
+                            return;
+                        }
+                        Ns.view.UserProfile.merge(users);
+                        if (Main.util.isFunc(users)) {
+                            callback(users);
+                        }
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                    });
+
+        });
+
+
+    },
+
     //more goes below
 };

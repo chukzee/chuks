@@ -506,6 +506,13 @@ var Main = {};
                 }
             }
             return s;
+        },
+        
+        serilaNo: function(){
+            var serial = 0;
+            return function(){
+                return ++serial;
+            };
         }
 
     };

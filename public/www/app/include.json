@@ -134,7 +134,10 @@
             "GameSelect-sd.js",
             "GameView-sd.js",
             "GameViewB-sd.js",
-            "GameWatch-sd.js"
+            "GameWatch-sd.js",
+            "GameGroup-sd.js",
+            "GameTournament-sd.js",
+            "GameUserProfile-sd.js"
         ] 
     },
 
@@ -152,7 +155,10 @@
             "GameSelect-md.js",
             "GameView-md.js",
             "GameViewB-md.js",
-            "GameWatch-md.js"
+            "GameWatch-md.js",
+            "GameGroup-md.js",
+            "GameTournament-md.js",
+            "GameUserProfile-md.js"
         ]
     },
 
@@ -170,7 +176,10 @@
             "GameSelect-ld.js",
             "GameView-ld.js",
             "GameViewB-ld.js",
-            "GameWatch-ld.js"
+            "GameWatch-ld.js",
+            "GameGroup-ld.js",
+            "GameTournament-ld.js",
+            "GameUserProfile-ld.js"
         ]
     }
 }

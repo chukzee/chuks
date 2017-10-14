@@ -714,7 +714,7 @@ class Group extends WebApplication {
             var c = this.sObj.db.collection(this.sObj.col.groups);
             var group = await c.findOne({name: group_name}, {_id: 0});
             if (!group) {
-                return `unknown group name - ${group_name}`;
+                return this.error(`unknown group name - ${group_name}`);
             }
             //get the group members info
 
