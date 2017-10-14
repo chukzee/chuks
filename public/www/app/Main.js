@@ -513,7 +513,7 @@ var Main = {};
             return function(){
                 return ++serial;
             };
-        }
+        }()//yes
 
     };
 

@@ -493,7 +493,7 @@ class Tournament extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         //NOTE: according to mongodb doc, the sample can return duplicate docs
         //occasionaly. However we do not care about that at this time anyway.
-        var tourns = await c.aggregate([{$sample: {size: size}}]);
+        var tourns = await c.aggregate([{$sample: {size: size}}]).toArray();
 
         if (!tourns || !tourns.length) {
             return [];

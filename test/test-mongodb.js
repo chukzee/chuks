@@ -51,6 +51,22 @@ async function query0(db) {
         console.error(e);
     }
 }
+
+async function query3(db) {
+    try {
+        
+        var c = db.collection('inventory');
+        //NOTE: according to mongodb doc, the sample can return duplicate docs
+        //occasionaly. However we do not care about that at this time anyway.
+        var tourns = await c.aggregate([{$sample: {size: 3}}]).toArray();
+        
+        console.log(tourns);
+    } catch (e) {
+        console.log(e);
+    }
+
+    
+}
 async function query1(db) {
     try {
         var arr = await db.collection('inventory').find({
@@ -130,7 +146,8 @@ async function insert1(db) {
         //query2(db);
         //update1(db);
         //query0(db);
-        insert1(db);
+         query3(db);
+        //insert1(db);
 
     } catch (e) {
         console.error(e);
