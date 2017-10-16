@@ -61,24 +61,37 @@ Ns.ui.UI = {
         //create the group drop down menu.
 
         //the groupt items of the dropdown menu.
-        var groupItems = function (groups) {
-            var arr = [];
-            for (var n in groups) {
-                arr.push('<img onerror="Main.helper.loadDefaultGroupPhoto(event)" src = "' + groups[n].photo + '" style="width:30px; height:30px;" /><span>' + groups[n].name + '</span>');
-            }
-            return arr;
+        var groupItems = function (user, callback) {
+            
+            Ns.view.Group.getGroupsInfo(user, function (groups) {
+                var arr = [];
+                for (var n in groups) {
+                    arr.push('<img onerror="Main.helper.loadDefaultGroupPhoto(event)" src = "' + groups[n].photo_url + '" style="width:30px; height:30px;" /><span>' + groups[n].name + '</span>');
+                }
+                if (Main.util.isFunc(callback)) {
+                    callback(arr);
+                }
+                return arr;
+            });
+
         };
 
         Main.menu.create({
             width: 220,
             target: "#home-group-dropdown-menu",
             header: 'Jump to group',
-            items: groupItems(Ns.view.UserProfile.appUser.groups_belong),
+            items: null,//pls wait till onShow event is called since the items may not be ready 
             onSelect: function (evt) {
                 var item = this.item;
-
+                
                 //finally hide the menu
                 this.hide();
+            },
+            onShow: function () {
+                var me = this;
+                groupItems(Ns.view.UserProfile.appUser, function (items_arr) {
+                    me.setItems(items_arr);
+                });
             }
         });
 

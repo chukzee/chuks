@@ -46,7 +46,7 @@ Ns.view.Tournament = {
         function setContent(tournament) {
 
             /*
-             * 
+             "tournament-details-tournament-name"
              "tournament-details-photo-url"
              "tournament-details-created-by"
              "tournament-details-date-created"
@@ -66,6 +66,7 @@ Ns.view.Tournament = {
                 return;
             }
             
+            document.getElementById("tournament-details-tournament-name").innerHTML = tournament.name;
             document.getElementById("tournament-details-photo-url").src = tournament.photo_url;
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by;
             document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
@@ -170,7 +171,28 @@ Ns.view.Tournament = {
     },
 
     getTournamentsInfo: function (user, callback) {
-
+        
+        var trns = [];
+        //first check locally
+        var belong = user.tournaments_belong;
+        if (belong) {
+            for (var i = 0; i < belong.length; i++) {
+                for (var k = 0; k < Ns.view.Tournament.tournamentList.length; k++) {
+                    if (Ns.view.Tournament.tournamentList[k].name === belong[i]) {
+                        trns.push(Ns.view.Tournament.tournamentList[k]);
+                    }
+                }
+            }
+            
+            if (trns.length === belong.length) {//all was found locally
+                if (Main.util.isFunc(callback)) {
+                    callback(trns);
+                }
+                return;//so leave
+            }
+        }
+        //get remotelly
+        
         Main.rcall.live(function () {
             var id = user;
             if (user && user.user_id) {
@@ -183,7 +205,7 @@ Ns.view.Tournament = {
                             return;
                         }
                         Ns.view.Tournament.merge(tournaments);
-                        if (Main.util.isFunc(tournaments)) {
+                        if (Main.util.isFunc(callback)) {
                             callback(tournaments);
                         }
                     })
@@ -203,7 +225,7 @@ Ns.view.Tournament = {
                             return;
                         }
                         Ns.view.Tournament.merge(tournaments);
-                        if (Main.util.isFunc(tournaments)) {
+                        if (Main.util.isFunc(callback)) {
                             callback(tournaments);
                         }
                     })
@@ -223,7 +245,7 @@ Ns.view.Tournament = {
                             return;
                         }
                         Ns.view.Tournament.merge(tournaments);
-                        if (Main.util.isFunc(tournaments)) {
+                        if (Main.util.isFunc(callback)) {
                             callback(tournaments);
                         }
                     })

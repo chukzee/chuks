@@ -225,9 +225,10 @@ Ns.game.Match = {
             document.getElementById('home-group-status-message').innerHTML = group.status_message;
             var num = Ns.view.UserProfile.appUser.groups_belong.indexOf(group.name) + 1;
             if (num > 0) {
-                num = '';
+                document.getElementById('home-group-page-number').innerHTML = num + " of " + Ns.view.UserProfile.appUser.groups_belong.length;
+            }else{
+                document.getElementById('home-group-page-number').innerHTML ='---';
             }
-            document.getElementById('home-group-page-number').innerHTML = num + " of " + Ns.view.UserProfile.appUser.groups_belong.length;
 
             Ns.game.Match.refreshMyGroupsMatchList(group.name);
         }

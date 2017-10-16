@@ -39,7 +39,7 @@ and open the template in the editor.
   list-style-type: none; }
   .game9ja-user-show-list:hover {
     background-color: #eee; }
-  .game9ja-user-show-list > :nth-child(1) > div {
+  .game9ja-user-show-list > :nth-child(1) > :nth-child(1) {
     /*profile pic container to help centering and setting border radius*/
     width: 60px;
     height: 60px;
@@ -51,7 +51,7 @@ and open the template in the editor.
     -moz-border-radius: 50%;
     -ms-border-radius: 50%;
     border-radius: 50%; }
-    .game9ja-user-show-list > :nth-child(1) > div > img {
+    .game9ja-user-show-list > :nth-child(1) > :nth-child(1) > img {
       /*profile pic*/
       width: 100%;
       height: 100%;

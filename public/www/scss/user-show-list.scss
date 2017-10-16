@@ -22,7 +22,7 @@ $profile_img_size : $list_item_height - 2 * $hgap;
     }
 
 
-    > :nth-child(1) > div{/*profile pic container to help centering and setting border radius*/
+    > :nth-child(1) > :nth-child(1){/*profile pic container to help centering and setting border radius*/
         width: $profile_img_size;
         height: $profile_img_size;
         position: absolute;

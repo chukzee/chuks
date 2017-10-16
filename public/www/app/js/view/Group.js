@@ -40,6 +40,7 @@ Ns.view.Group = {
         function setContent(group) {
 
             /*
+             *"group-details-group-name"
              *"group-details-photo-url"
              "group-details-status-message"
              "group-details-back-btn"
@@ -57,13 +58,14 @@ Ns.view.Group = {
             if (!group) {
                 return;
             }
+            document.getElementById("group-details-group-name").innerHTML = group.name;
             document.getElementById("group-details-photo-url").src = group.photo_url;
             document.getElementById("group-details-status-message").innerHTML = group.status_message;
             document.getElementById("group-details-created-by").innerHTML = group.created_by;
             document.getElementById("group-details-date-created").innerHTML = group.date_created;
             document.getElementById("group-details-members-count").innerHTML = group.total_members;
             document.getElementById("group-details-admins-count").innerHTML = group.total_admins;
-            
+
             /*<ul class="game9ja-user-show-list">
              
              <li><img  src="images/white_player.jpg" alt=" "/></li>
@@ -83,17 +85,18 @@ Ns.view.Group = {
              </ul>*/
 
             var admins_html = '';
+            var app_user_id = Ns.view.UserProfile.appUser.user_id;
             for (var i = 0; i < group.admins.length; i++) {
                 var set_exit_group = group.members[i].user_id === app_user_id;
-                admins_html += Ns.view.Group.memberHmtl(group.admins[i], set_exit_group);
+                admins_html += Ns.view.Group.memberHtml(group.name, group.admins[i], set_exit_group);
             }
             document.getElementById("group-details-admins").innerHTML = admins_html;
 
             var members_html = '';
-            var app_user_id = Ns.view.UserProfile.appUser.user_id;
+
             for (var i = 0; i < group.members.length; i++) {
                 var set_exit_group = group.members[i].user_id === app_user_id;
-                members_html += Ns.view.Group.memberHmtl(group.members[i], set_exit_group);
+                members_html += Ns.view.Group.memberHtml(group.name, group.members[i], set_exit_group);
             }
             document.getElementById("group-details-members").innerHTML = members_html;
 
@@ -181,6 +184,27 @@ Ns.view.Group = {
         }
     },
     getGroupsInfo: function (user, callback) {
+        var grps = [];
+        //first check locally
+        var belong = user.groups_belong;
+        if (belong) {//so hopefully an object
+            for (var i = 0; i < belong.length; i++) {
+                for (var k = 0; k < Ns.view.Group.groupList.length; k++) {
+                    if (Ns.view.Group.groupList[k].name === belong[i]) {
+                        grps.push(Ns.view.Group.groupList[k]);
+                    }
+                }
+            }
+
+            if (grps.length === belong.length) {//all was found locally
+                if (Main.util.isFunc(callback)) {
+                    callback(grps);
+                }
+                return;//so leave
+            }
+        }
+
+        //get remotely
 
         Main.rcall.live(function () {
             var id = user;
@@ -194,7 +218,7 @@ Ns.view.Group = {
                             return;
                         }
                         Ns.view.Group.merge(groups);
-                        if (Main.util.isFunc(groups)) {
+                        if (Main.util.isFunc(callback)) {
                             callback(groups);
                         }
                     })
@@ -203,47 +227,79 @@ Ns.view.Group = {
                     });
         });
     },
-    memberHmtl: function (memObj, set_exit_group) {
+
+    memberHtml: function (group_name, memObj, set_exit_group) {
         var action_value = 'Lets play';
         var action_clazz = '';
         if (set_exit_group) {
             action_value = 'Exit Group';
             action_clazz = 'class="game9ja-exit-group-btn"';
         }
-        var click_handler = 'Ns.view.Group.onClickMember("'+memObj.user_id+'")';
-        if(memObj.is_admin){
-            clickEvt = 'Ns.view.Group.onClickAdmin("'+memObj.user_id+'")';
-        }
+        var onclick_action = 'onclick = \'Ns.view.Group.onClickMember(event, "' + group_name + '","' + memObj.user_id + '")\'';
+
 
         //var id_prefix = 'game-group-' + Main.util.serilaNo() + '-';
 
-        return '<ul onclick="'+click_handler+'" class="game9ja-user-show-list">'
+        return '<ul ' + onclick_action + ' class="game9ja-user-show-list">'
 
-                + '  <li><img  src="' + memObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=""/></li>'
+                + '  <li><img name="member_photo"  src="' + memObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>'
                 + '   <li>'
-                + '       ' + memObj.full_name 
+                + '       ' + memObj.full_name
                 + '   </li>'
                 + '    <li>'
-                + '        ' + memObj.user_id 
+                + '        ' + memObj.user_id
                 + '    </li>'
 
                 + '    <li>'
-                + '        <input ' + action_clazz + ' type="button" value="' + action_value + '"/>'
+                + '        <input  name="action"  ' + action_clazz + ' type="button" value="' + action_value + '"/>'
                 + '    </li>'
-                + '    <li>show date joined group'
-                + '         ' + memObj.date_joined 
+                + '    <li>'
+                + '         ' + memObj.date_joined
                 + '     </li>'
                 + ' </ul>';
     },
 
-    onClickMember : function(user_id){
-        alert(user_id);
+    onClickMember: function (evt, group_name, user_id) {
+
+        Ns.view.Group.getInfo(group_name, function (group) {
+            var member;
+            for (var i = 0; i < group.members.length; i++) {
+                if (group.members[i].user_id === user_id) {
+                    member = group.members[i];
+                    break;
+                }
+            }
+
+            if (evt.target.name === 'member_photo') {
+                Ns.view.Group.onClickMemberPhoto(group, member);
+            }
+
+
+            if (evt.target.name === 'action') {
+                if (evt.target.value.toLowerCase() === 'lets play') {
+                    Ns.view.Group.onClickLetsPlay(group, member);
+                }
+                if (evt.target.value.toLowerCase() === 'exit group') {
+                    Ns.view.Group.onClickExitGroup(group, member);
+                }
+            }
+
+        });
+
     },
 
-    onClickAdmin : function(user_id){
-        alert(user_id);
+    onClickMemberPhoto: function (group, member) {
+        alert('onClickMemberPhoto');
     },
-    
+
+    onClickLetsPlay: function (group, member) {
+        alert('onClicLetsPlay');
+    },
+
+    onClickExitGroup: function (group, member) {
+        alert('onClickExitGroup');
+    },
+
     onGroupJionRequest: function (obj) {
         console.log(obj);
     }

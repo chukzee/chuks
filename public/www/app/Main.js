@@ -507,10 +507,10 @@ var Main = {};
             }
             return s;
         },
-        
-        serilaNo: function(){
+
+        serilaNo: function () {
             var serial = 0;
-            return function(){
+            return function () {
                 return ++serial;
             };
         }()//yes
@@ -3831,12 +3831,23 @@ var Main = {};
 
                 var mnuBody = menuCmp.find('.game9ja-menu-body');
                 var els = [];
-
-                for (var i = 0; i < this.items.length; i++) {
-                    var t = this.items[i];
-                    var e = createMenuItem(this, menuThis, menuCmp, mnuBody, t);
-                    els.push(e);
+                var mnu_items = this.items;
+                if (Main.util.isFunc(mnu_items)) {
+                    mnu_items = mnu_items();
                 }
+
+                if (!Main.util.isArray(mnu_items)) {//convert to array which is what is expected
+                    mnu_items = [mnu_items];
+                }
+
+                for (var i = 0; i < mnu_items.length; i++) {
+                    var t = mnu_items[i];
+                    if (typeof t !== 'undefined' && t !== null) {
+                        var e = createMenuItem(this, menuThis, menuCmp, mnuBody, t);
+                        els.push(e);
+                    }
+                }
+
                 var children = $(menuCmp).children();
                 var last = children[children.length - 1];
                 $(last).append(els);
