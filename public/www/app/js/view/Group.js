@@ -210,28 +210,40 @@ Ns.view.Group = {
             action_value = 'Exit Group';
             action_clazz = 'class="game9ja-exit-group-btn"';
         }
+        var click_handler = 'Ns.view.Group.onClickMember("'+memObj.user_id+'")';
+        if(memObj.is_admin){
+            clickEvt = 'Ns.view.Group.onClickAdmin("'+memObj.user_id+'")';
+        }
 
-        var id_prefix = 'game-group-' + Main.util.serilaNo() + '-';
+        //var id_prefix = 'game-group-' + Main.util.serilaNo() + '-';
 
-        return '<ul class="game9ja-user-show-list" id="' + id_prefix + memObj.user_id + '">'
+        return '<ul onclick="'+click_handler+'" class="game9ja-user-show-list">'
 
-                + '  <li><img  src="' + memObj.photo_url + '"   onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=""/></li>'
+                + '  <li><img  src="' + memObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=""/></li>'
                 + '   <li>'
-                + '       "' + memObj.full_name + '"'
+                + '       ' + memObj.full_name 
                 + '   </li>'
                 + '    <li>'
-                + '        "' + memObj.user_id + '"'
+                + '        ' + memObj.user_id 
                 + '    </li>'
 
                 + '    <li>'
                 + '        <input ' + action_clazz + ' type="button" value="' + action_value + '"/>'
                 + '    </li>'
                 + '    <li>show date joined group'
-                + '         "' + memObj.date_joined + '"'
+                + '         ' + memObj.date_joined 
                 + '     </li>'
                 + ' </ul>';
     },
 
+    onClickMember : function(user_id){
+        alert(user_id);
+    },
+
+    onClickAdmin : function(user_id){
+        alert(user_id);
+    },
+    
     onGroupJionRequest: function (obj) {
         console.log(obj);
     }

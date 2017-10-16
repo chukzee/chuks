@@ -38,3 +38,9 @@ console.log(spf());
 console.log(spf());
 console.log(spf());
 console.log(spf());
+
+var options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' , hour:'numeric', minute:'numeric'};
+var date  = new Date();
+var date = new Date(Date.UTC(2012, 11, 20, 3, 0, 0));
+
+console.log(date.toLocaleString("en-US"));

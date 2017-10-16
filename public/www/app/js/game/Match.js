@@ -192,13 +192,15 @@ Ns.game.Match = {
 
     },
 
-    groupMatchList: function (group) {
+    groupMatchList: function (group_name) {
 
-        if (group) {
-            doGroupMatchList(group);
+        if (group_name) {
+            Ns.view.Group.getInfo(group_name, function (group) {
+                doGroupMatchList(group);
+            });
         } else {
             var user = Ns.view.UserProfile.appUser;
-            
+
             Ns.view.Group.getGroupsInfo(user, function (groups) {
                 doGroupMatchList(groups[0]);
             });
@@ -274,14 +276,21 @@ Ns.game.Match = {
 
     },
 
-    tournamentMatchList: function (tournament) {
+    tournamentMatchList: function (tournament_name) {
 
-        if (tournament) {
-            doGroupMatchList(tournament);
+        if (tournament_name) {
+            Ns.view.Tournament.getInfo(tournament_name, function (tournament) {
+                doTournamentMatchList(tournament);
+                //get random tournament to suit the user delight
+                Ns.view.Tournament.randomGet(function (tournaments) {
+                    //do nothing!
+                });
+            });
+
         } else {
-            
+
             var user = Ns.view.UserProfile.appUser;
-            
+
             Ns.view.Tournament.getTournamentsInfo(user, function (tournaments) {
                 doTournamentMatchList(tournaments[0]);
                 //get random tournament to suit the user delight
