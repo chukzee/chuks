@@ -163,11 +163,7 @@ function verifyOnlineStatus(user_id) {
             var sock = rcallIO.connected[socket_ids[i]];
             if (sock) {
                 //set to online
-                sObj.redis.set('online_status:' + user_id, "online", function (err, result) {
-                    if (err) {
-                        console.log(err);
-                    }
-                });
+                setOnline(user_id);
                 break;
             }
         }
@@ -175,6 +171,13 @@ function verifyOnlineStatus(user_id) {
     });
 }
 
+function setOnline(user_id) {
+    sObj.redis.set('online_status:' + user_id, "online", function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+    });
+}
 
 /**
  * Try to resend data we did not receive knowledgement.
@@ -406,7 +409,7 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
     }
 
     function saveSession(socket, user_id) {
-        if(!user_id){
+        if (!user_id) {
             console.log('no user id');
             return;
         }
@@ -414,9 +417,9 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
         var socket_id = socket.id;
 
         //do two way may mapping of the user_id and socket_id
-        console.log('about to delete unidentified_sock_ids - '+socket_id);
-        console.log('about to delete unidentified_sock_ids user_id - '+user_id);
-        
+        console.log('about to delete unidentified_sock_ids - ' + socket_id);
+        console.log('about to delete unidentified_sock_ids user_id - ' + user_id);
+
         sObj.redis.set("user_id:" + sObj.PROCESS_NS + socket_id, user_id) //map user_id to socket_id
                 .then(function (result) {
                     //then map socket_id to user_id
@@ -424,9 +427,12 @@ module.exports = function (httpServer, appLoader, _sObj, _util, _evt) {
                             .then(function (count) {
 
                                 delete unidentified_sock_ids[socket_id]; //ok, delete since we now have the user session id 
+
+                                //set the user status to online
+                                setOnline(user_id);
                                 
-                                console.log('deleted unidentified_sock_ids - '+socket_id);
-                                
+                                console.log('deleted unidentified_sock_ids - ' + socket_id);
+
                                 //now ensure the number same user session does not 
                                 //exceed our defined limit.
 

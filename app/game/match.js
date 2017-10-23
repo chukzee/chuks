@@ -66,17 +66,17 @@ class Match extends WebApplication {
         //make user only opponents ids are in the list
         for (var i = 0; i < opponent_ids.length; i++) {
             if (user_id === opponent_ids[i]) {
-                return this.error(`invalid input- expected only opponent id(s) but found user id - ${user_id}`);
+                return this.error(`Invalid input- expected only opponent id(s) but found user id - ${user_id}`);
             }
         }
 
         //check if the move contains the serial_no field
         if (!('serial_no' in move)) {
-            return this.error('invalid input - missing serial_no field in move object!');
+            return this.error('Invalid input - missing serial_no field in move object!');
         }
 
         if (!isFinite(move.serial_no) || move.serial_no < 1) {
-            return this.error('invalid input - move serial number must be a positive integer number!');
+            return this.error('Invalid input - move serial number must be a positive integer number!');
         }
 
         //first quickly forward the move to the opponenct
@@ -148,7 +148,7 @@ class Match extends WebApplication {
 
         } catch (e) {
             console.log(e);
-            this.error('could not get game position');
+            this.error('Could not get game position');
             return this;
         }
 
@@ -194,7 +194,7 @@ class Match extends WebApplication {
                 }
                 var play_status_obj = await user._setPlaying(players[i].user_id);
                 if (play_status_obj.lastError) {//
-                    return this.error('could not begin game');
+                    return this.error('Could not begin game');
                 }
                 was_idle.push({
                     player: players[i],
@@ -378,7 +378,7 @@ class Match extends WebApplication {
 
         if (missing) {
             //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
-            return this.error('could not find player with user id - ' + missing);
+            return this.error('Could not find player with user id - ' + missing);
         }
 
         var default_rules = this.sObj.game.get(mtcObj.game_name).getDefautRules();
@@ -410,7 +410,7 @@ class Match extends WebApplication {
         var r = await c.insertOne(match, {w: 'majority'});
 
         if (!r.result.n) {
-            return 'could not start game';
+            return 'Could not start game';
         }
 
         //broadcast the game start event to all the players concern
@@ -421,11 +421,11 @@ class Match extends WebApplication {
         //or the other to any of the players - ie via contacts or group
         this._broadcastWatchGame(match, this.evt.watch_game_start);
 
-        return 'game started successfully';
+        return 'Game started.';
     }
 
     /**
-     * Resume a game that was pause/suspended.
+     * Resume a game that was paused/suspended.
      * 
      * @param {type} user_id - user id of the player attempting to resume the 
      * game. This can be set to null if not resume by a player but by say
@@ -439,11 +439,11 @@ class Match extends WebApplication {
         try {
             var match = await c.findOne({game_id: game_id});
             if (!match) {
-                return 'no game to resume';
+                return 'No game to resume';
             }
         } catch (e) {
             console.log(e);
-            this.error('could not resume game');
+            this.error('Could not resume game');
             return this;
         }
 
@@ -473,7 +473,7 @@ class Match extends WebApplication {
 
         if (missing) {
             //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
-            return this.error('could not find player with user id - ' + missing);
+            return this.error('Could not find player with user id - ' + missing);
         }
 
         for (var i = 0; i < players.length; i++) {
@@ -504,7 +504,7 @@ class Match extends WebApplication {
 
         } catch (e) {
             console.log(e);
-            this.error('could not resume game');
+            this.error('Could not resume game');
             return this;
         }
         var updated_match = r.value;
@@ -534,7 +534,7 @@ class Match extends WebApplication {
         try {
             var r = await c.findOneAndUpdate(
                     {game_id: game_id},
-                    {$set: {pause_time: new Date(), game_status: 'pause'}},
+                    {$set: {pause_time: new Date(), game_status: 'paused'}},
                     {
                         projection: {_id: 0},
                         returnOriginal: false, //return the updated document
@@ -544,10 +544,10 @@ class Match extends WebApplication {
             var match = r.value;
 
             if (!match) {
-                return 'no game to pause';
+                return 'No game to pause';
             }
         } catch (e) {
-            this.error('could not pause game');
+            this.error('Could not pause game');
             return this;
         }
 
@@ -589,7 +589,7 @@ class Match extends WebApplication {
             var match = await c.findOne({game_id: game_id});
 
             if (!match) {
-                return 'no game to abandon';
+                return 'No game to abandon';
             }
 
             var available_count = 0;
@@ -620,7 +620,7 @@ class Match extends WebApplication {
             user._unsetPlaying(user_id);
 
         } catch (e) {
-            this.error('could not abandon game');
+            this.error('Could not abandon game');
             return this;
         }
 
@@ -629,7 +629,7 @@ class Match extends WebApplication {
         var data = {
             abandon_by: user_id,
             terminated: terminated, //signify that the game is terminated because too many players have abandon the game
-            terminate_reason: terminated ? "insufficient players available" : "", //particularly useful in multi player games like ludo, whot e.t.c
+            terminate_reason: terminated ? "Insufficient players available" : "", //particularly useful in multi player games like ludo, whot e.t.c
             match: match
         };
 
@@ -677,7 +677,7 @@ class Match extends WebApplication {
             var r = await c.findOneAndDelete({game_id: game_id}, {w: 'majority'});
             var match = r.value;
             if (!match) {
-                return 'no game to finish';
+                return 'No game to finish';
             }
             //relocate the match document to the match_history collection
             match.game_status = 'finish'; //set the status to finish 
@@ -692,7 +692,7 @@ class Match extends WebApplication {
             await c.insertOne(match);
 
         } catch (e) {
-            this.error('could not finish game');
+            this.error('Could not finish game');
             return this;
         }
         //broadcast the game finish event to the players and spectators
@@ -755,6 +755,7 @@ class Match extends WebApplication {
         }
 
         c = this.sObj.db.collection(this.sObj.col.matches);
+                                   
         var allQuery = {
             $or: []
         };
@@ -767,7 +768,14 @@ class Match extends WebApplication {
                         game_name: game_name
                     },
                     {
-                        game_status: 'live' //where game_status is live
+                        group_name: ''
+                    },
+                    {
+                        tournament_name: ''
+                    },
+                    {
+                        $or: [{game_status: 'live'}, {game_status: 'paused'}]//where game_status is live or paused
+                                /// game_status: 'live' //where game_status is live /*Deprecated*/
                     },
                     {
                         'players.user_id': contact_user_id //and contact_user_id is equal to user_id field in a document in players array
@@ -845,7 +853,9 @@ class Match extends WebApplication {
         var query = {
             group_name: group_name,
             game_name: game_name,
-            game_status: 'live'
+            //game_status: 'live'/*Deprecated*/
+            $or: [{game_status: 'live'}, {game_status: 'paused'}]//where game_status is live or paused
+
         };
 
         var total = await c.count(query);
@@ -907,7 +917,8 @@ class Match extends WebApplication {
         var query = {
             tournament_name: tournament_name,
             game_name: game_name,
-            game_status: 'live'
+            //game_status: 'live'/*Deprecated*/
+            $or: [{game_status: 'live'}, {game_status: 'paused'}]//where game_status is live or paused
         };
 
         var total = await c.count(query);

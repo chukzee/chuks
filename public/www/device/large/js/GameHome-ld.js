@@ -11,16 +11,8 @@ Ns.GameHome = {
     GAME_VIEW_HTML: 'game-view-ld.html',
     GAME_VIEW_B_HTML: 'game-view-b-ld.html',
     GAME_WATCH_HTML: 'game-watch-ld.html',
+    GAME_WAIT_HTML: 'wait-player-ld.html',
 
-    contactsMatchKey: function () {
-        return Ns.view.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
-    },
-    groupMatchKey: function (group_name) {
-        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
-    },
-    tournamentMatchKey: function (tournament) {
-        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
-    },
     showGameView: function (match) {
 
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
@@ -187,7 +179,7 @@ Ns.GameHome = {
         
         Main.card.to({
             container: '#home-main',
-            url:'contacts-ld.html',
+            url:'game-contacts-ld.html',
             fade:true,
             data : Ns.ui.UI.selectedGame,
             onShow: Ns.view.Contacts.content

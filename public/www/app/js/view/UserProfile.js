@@ -28,6 +28,18 @@ Ns.view.UserProfile = {
 
     },
 
+    isOnline: function (user_id, callback) {
+        Main.rcall.live(function () {
+            Main.ro.user.isOnline(user_id)
+                    .get(function (data) {
+                        callback(data);
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                    });
+        });
+    },
+
     /**
      * Gets an array of group in common between the specified user and the app user
      * @returns {undefined}
@@ -142,12 +154,12 @@ Ns.view.UserProfile = {
              "user-profile-tournaments-belong-count"            
              "user-profile-tournaments-belong"
              */
-            
-            
+
+
             if (!user) {
                 return;
             }
-            
+
             document.getElementById("user-profile-photo-url").src = user.photo_url;
             document.getElementById("user-profile-full-name").innerHTML = user.full_name;
             document.getElementById("user-profile-status-message").innerHTML = user.status_message;
@@ -159,7 +171,7 @@ Ns.view.UserProfile = {
             document.getElementById("user-profile-groups-belong-count").innerHTML = user.groups_belong.length;
             //document.getElementById("user-profile-groups-in-common-count").innerHTML = groups_in_common_count;
             document.getElementById("user-profile-tournaments-belong-count").innerHTML = user.tournaments_belong.length;
-            
+
             //document.getElementById("user-profile-groups-belong").innerHTML = user.blablablah;
             //document.getElementById("user-profile-groups-in-common").innerHTML = user.blablablah;
             //document.getElementById("user-profile-tournaments-belong").innerHTML = user.blablablah;
@@ -247,7 +259,7 @@ Ns.view.UserProfile = {
                             return;
                         }
                         Ns.view.UserProfile.merge(users);
-                        if (Main.util.isFunc(users)) {
+                        if (Main.util.isFunc(callback)) {
                             callback(users);
                         }
                     })

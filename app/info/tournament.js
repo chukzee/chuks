@@ -61,7 +61,7 @@ class Tournament extends WebApplication {
             }
         } catch (e) {
             console.log(e);
-            return this.error('could not create tournament!');
+            return this.error('Could not create tournament!');
         }
 
     }
@@ -138,10 +138,10 @@ class Tournament extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not set tournament status');
+            return this.error('Could not set tournament status');
         }
 
-        return "tournament status updated successfully";
+        return "Tournament status updated successfully";
     }
 
     async addOfficial(user_id, tournament_name, new_official_user_id) {
@@ -433,7 +433,7 @@ class Tournament extends WebApplication {
 
             var c = this.sObj.db.collection(this.sObj.col.users);
             var user = await c.findOne({user_id: user_id}, {_id: 0});
-            if (!user) {
+            if (!user || !user.tournaments_belong) {
                 return [];
             }
             return this.getTournamentsInfoList(user.tournaments_belong);
@@ -441,7 +441,7 @@ class Tournament extends WebApplication {
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION
 
-            this.error('could not get user Tournaments info');
+            this.error('Could not get user Tournaments info');
             return this;
         }
     }

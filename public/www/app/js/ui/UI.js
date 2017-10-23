@@ -62,7 +62,7 @@ Ns.ui.UI = {
 
         //the groupt items of the dropdown menu.
         var groupItems = function (user, callback) {
-            
+
             Ns.view.Group.getGroupsInfo(user, function (groups) {
                 var arr = [];
                 for (var n in groups) {
@@ -80,10 +80,10 @@ Ns.ui.UI = {
             width: 220,
             target: "#home-group-dropdown-menu",
             header: 'Jump to group',
-            items: null,//pls wait till onShow event is called since the items may not be ready 
+            items: null, //pls wait till onShow event is called since the items may not be ready 
             onSelect: function (evt) {
                 var item = this.item;
-                
+
                 //finally hide the menu
                 this.hide();
             },
@@ -216,6 +216,23 @@ Ns.ui.UI = {
 
         });
 
+    },
+
+    getView: function (file, callback) {
+        if (!Ns.ui._views_list) {
+            Ns.ui._views_list = {};
+        }
+        if (Ns.ui._views_list[file]) {
+            return callback(null, Ns.ui._views_list[file]);// node style
+        }
+        Main.ajax.get('device/' + Main.device.getCategory() + '/' + file,
+                function (html) {
+                    Ns.ui._views_list[file] = html;
+                    callback(null, html);// node style
+                },
+                function (err) {
+                    callback(err);// node style
+                });
     },
 
     showByMenuItem: function (item) {

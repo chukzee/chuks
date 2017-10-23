@@ -40,10 +40,10 @@ class Contact extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not add contact');
+            return this.error('Could not add contact');
         }
 
-        return 'contact added successfully.';
+        return 'Contact added successfully.';
     }
 
     /**
@@ -80,10 +80,10 @@ class Contact extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not add contacts');
+            return this.error('Could not add contacts');
         }
 
-        return 'contacts added successfully.';
+        return 'Contacts added successfully.';
     }
 
     /**
@@ -109,10 +109,10 @@ class Contact extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not remove contact');
+            return this.error('Could not remove contact');
         }
 
-        return 'contact removed successfully.';
+        return 'Contact removed successfully.';
     }
 
     /**
@@ -141,10 +141,10 @@ class Contact extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not remove contact(s)');
+            return this.error('Could not remove contact(s)');
         }
 
-        return 'contacts removed successfully.';
+        return 'Contacts removed successfully.';
     }
 
     /**
@@ -187,10 +187,10 @@ class Contact extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not save contacts');
+            return this.error('Could not save contacts');
         }
 
-        return 'contacts saved successfully.';
+        return 'Contacts saved successfully.';
     }
 
     /**
@@ -212,7 +212,7 @@ class Contact extends WebApplication {
 
             console.log(e);
 
-            return this.error('could not get contacts');
+            return this.error('Could not get contacts');
         }
 
         return doc ? (doc.contacts ? doc.contacts : []) : [];
@@ -238,12 +238,12 @@ class Contact extends WebApplication {
             var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
             var list = user.getInfoList(doc.contacts, required_fields);
             if (list.lastError) {
-                return this.error('could not get users contact info');
+                return this.error('Could not get users contact info');
             }
 
         } catch (e) {
             console.log(e);
-            return this.error('could not get contacts');
+            return this.error('Could not get contacts');
         }
 
         return list;

@@ -1,6 +1,6 @@
 
 
-/* global Main */
+/* global Main, Ns */
 
 
 Ns.GameHome = {
@@ -9,16 +9,8 @@ Ns.GameHome = {
     GAME_VIEW_HTML: 'game-view-sd.html',
     GAME_VIEW_B_HTML: 'game-view-b-sd.html',
     GAME_WATCH_HTML: 'game-watch-sd.html',
+    GAME_WAIT_HTML: 'wait-player-sd.html',
 
-    contactsMatchKey: function () {
-        return Ns.view.UserProfile.appUser.id + ":" + "CONTACTS_MATCH_KEY";
-    },
-    groupMatchKey: function (group_name) {
-        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH_KEY_PREFIX" + ":" + group_name;
-    },
-    tournamentMatchKey: function (tournament) {
-        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH_KEY_PREFIX" + ":" + tournament;
-    },
     Content: function (selected_game) {
         Ns.ui.UI.init(selected_game);
     },
@@ -32,6 +24,19 @@ Ns.GameHome = {
 
     },
     showGameViewB: function (match) {
+        
+        Main.page.show({
+            url: Ns.GameHome.GAME_VIEW_B_HTML,
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.GameViewB.Content,
+            onShow: function () {
+                //hide uneccessary component
+                document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
+            },
+            data: match
+        });
+        
         //show a dialog to display startup settings
         Main.dialog.show({
             title: "Play Robot", //TODO - display a robot like photo alongside the title
@@ -47,7 +52,8 @@ Ns.GameHome = {
                             this.hide();
                         }
                     } else {
-                        this.hide();;
+                        this.hide();
+                        ;
                     }
                 } else {//Play clicked
                     this.hide();
@@ -55,17 +61,6 @@ Ns.GameHome = {
 
             }
         });
-
-        Main.page.show({
-            url: Ns.GameHome.GAME_VIEW_B_HTML,
-            effect: "slideleft",
-            duration: 500,
-            onBeforeShow: Ns.GameViewB.Content,
-            onShow: function () {
-                //hide uneccessary component
-                document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
-            },
-            data: match});
 
 
 
@@ -76,9 +71,23 @@ Ns.GameHome = {
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.GameWatch.Content,
-            data: match});
+            data: match
+        });
     },
     showBluetoothGame: function (data) {
+        
+        Main.page.show({
+            url: Ns.GameHome.GAME_VIEW_B_HTML,
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.GameViewB.Content,
+            onShow: function () {
+                //show bluetooth icon
+                document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
+            },
+            data: {bluetooth: true, game_name: data.game}
+        });
+
         //show a dialog to display startup settings
         var container_id = 'bluetooth-dialog-continer';
         Main.dialog.show({
@@ -97,7 +106,8 @@ Ns.GameHome = {
                             this.hide();
                         }
                     } else {
-                        this.hide();;
+                        this.hide();
+                        ;
                     }
                 }
             },
@@ -118,17 +128,6 @@ Ns.GameHome = {
             }
         });
 
-        Main.page.show({
-            url: Ns.GameHome.GAME_VIEW_B_HTML,
-            effect: "slideleft",
-            duration: 500,
-            onBeforeShow: Ns.GameViewB.Content,
-            onShow: function () {
-                //show bluetooth icon
-                document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
-            },
-            data: {bluetooth: true, game_name: data.game}
-        });
 
 
     },
@@ -168,7 +167,7 @@ Ns.GameHome = {
     showContacts: function (data) {
 
         Main.page.show({
-            url: 'contacts-sd.html',
+            url: 'game-contacts-sd.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.Contacts.content,

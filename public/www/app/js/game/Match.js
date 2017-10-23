@@ -10,6 +10,16 @@ Ns.game.Match = {
     _lstGroupsMatch: null, //private - the groups match listview
     _lstTournamentsMatch: null, //private - the tournaments match listview
 
+    contactsMatchKey: function () {
+        return Ns.view.UserProfile.appUser.id + ":" + "CONTACT_MATCH" + ":" + Ns.ui.UI.selectedGame + ":";
+    },
+    groupMatchKey: function (group_name) {
+        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH"  + ":" + Ns.ui.UI.selectedGame + ":"+ group_name;
+    },
+    tournamentMatchKey: function (tournament) {
+        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH"  + ":" + Ns.ui.UI.selectedGame + ":" + tournament;
+    },
+    
     constructor: function () {
 
         var obj = {
@@ -129,7 +139,7 @@ Ns.game.Match = {
 
     contactsMatchList: function () {
 
-        var stored_matches = window.localStorage.getItem(Ns.GameHome.contactsMatchKey());
+        var stored_matches = window.localStorage.getItem(Ns.game.Match.contactsMatchKey());
 
         try {
             if (stored_matches) {
@@ -173,7 +183,7 @@ Ns.game.Match = {
                         if (matches.length) {
 
                             Ns.game.Match.liveMatchList('#home-contacts-live-games', matches);
-                            var key = Ns.GameHome.contactsMatchKey();
+                            var key = Ns.game.Match.contactsMatchKey();
                             window.localStorage.setItem(key, JSON.stringify(matches));
 
                         } else {
@@ -208,8 +218,10 @@ Ns.game.Match = {
 
 
         function doGroupMatchList(group) {
-
-            var stored_matches = window.localStorage.getItem(Ns.GameHome.groupMatchKey(group.name));
+            if (!group) {
+                return;
+            }
+            var stored_matches = window.localStorage.getItem(Ns.game.Match.groupMatchKey(group.name));
 
             try {
                 if (stored_matches) {
@@ -226,8 +238,8 @@ Ns.game.Match = {
             var num = Ns.view.UserProfile.appUser.groups_belong.indexOf(group.name) + 1;
             if (num > 0) {
                 document.getElementById('home-group-page-number').innerHTML = num + " of " + Ns.view.UserProfile.appUser.groups_belong.length;
-            }else{
-                document.getElementById('home-group-page-number').innerHTML ='---';
+            } else {
+                document.getElementById('home-group-page-number').innerHTML = '---';
             }
 
             Ns.game.Match.refreshMyGroupsMatchList(group.name);
@@ -260,7 +272,7 @@ Ns.game.Match = {
 
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-group-live-games', matches);
-                            var key = Ns.GameHome.groupMatchKey(matches[0].group_name);
+                            var key = Ns.game.Match.groupMatchKey(matches[0].group_name);
                             window.localStorage.setItem(key, JSON.stringify(matches));
                         } else {
                             //TODO - display no match found or something similar
@@ -303,8 +315,10 @@ Ns.game.Match = {
 
 
         function doTournamentMatchList(tournament) {
-
-            var stored_matches = window.localStorage.getItem(Ns.GameHome.tournamentMatchKey(tournament.name));
+            if (!tournament) {
+                return;
+            }
+            var stored_matches = window.localStorage.getItem(Ns.game.Match.tournamentMatchKey(tournament.name));
 
             try {
                 if (stored_matches) {
@@ -354,7 +368,7 @@ Ns.game.Match = {
 
                         if (matches.length) {
                             Ns.game.Match.liveMatchList('#home-tournaments-live-games', matches);
-                            var key = Ns.GameHome.tournamentMatchKey(matches[0].tournament_name);
+                            var key = Ns.game.Match.tournamentMatchKey(matches[0].tournament_name);
                             window.localStorage.setItem(key, JSON.stringify(matches));
                         } else {
                             //TODO - display no match found or something similar

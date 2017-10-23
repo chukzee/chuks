@@ -293,7 +293,7 @@ Ns.view.Group = {
     },
 
     onClickLetsPlay: function (group, member) {
-        alert('onClicLetsPlay');
+        Ns.game.PlayRequest.openPlayDialog(member, group.name);
     },
 
     onClickExitGroup: function (group, member) {

@@ -305,9 +305,9 @@ class Group extends WebApplication {
             }
 
             if (g) {
-                return this.error('group \'' + group.name + '\' already exist!');
+                return this.error('Group \'' + group.name + '\' already exist!');
             } else {
-                return this.error('could not perform operaton!');
+                return this.error('Could not perform operaton!');
             }
         }
 
@@ -317,7 +317,7 @@ class Group extends WebApplication {
 
             console.log(e);//DO NOT DO THIS IN PRODUCTION
 
-            return this.error('could not perform operaton!');
+            return this.error('Could not perform operaton!');
 
         }
 
@@ -375,7 +375,7 @@ class Group extends WebApplication {
             await c.updateOne({name: group_name}, {$set: setObj}, {w: 'majority'});
         } catch (e) {
             console.log(e);
-            this.error('could not edit group.');
+            this.error('Could not edit group.');
             return this;
         }
 
@@ -480,11 +480,11 @@ class Group extends WebApplication {
                 return 'No member';
             }
 
-            return "created admin succesfully.";
+            return "Created admin succesfully.";
 
         } catch (e) {
             console.log(e);
-            this.error('could not perform operaton.');
+            this.error('Could not perform operaton.');
             return this;
         }
 
@@ -595,7 +595,7 @@ class Group extends WebApplication {
 
         } catch (e) {
             console.log(e);
-            this.error('could not perform operaton.');
+            this.error('Could not perform operaton.');
             return this;
         }
 
@@ -714,7 +714,7 @@ class Group extends WebApplication {
             var c = this.sObj.db.collection(this.sObj.col.groups);
             var group = await c.findOne({name: group_name}, {_id: 0});
             if (!group) {
-                return this.error(`unknown group name - ${group_name}`);
+                return this.error(`Unknown group name - ${group_name}`);
             }
             //get the group members info
 
@@ -743,7 +743,7 @@ class Group extends WebApplication {
             var users_list = await new User(this.sObj, this.util).getInfoList(members_ids);
             //we expect an array of user info
             if (!Array.isArray(users_list)) {
-                this.error('could not get groups info');
+                this.error('Could not get groups info');
                 return this;
             }
 
@@ -775,7 +775,7 @@ class Group extends WebApplication {
             //this.sObj.db.close();//not neccessary - the driver does the connection pooling automatically
         } catch (e) {
             console.log(e);
-            this.error("could not get group info!");
+            this.error("Could not get group info!");
             return this;
         }
 
@@ -856,7 +856,7 @@ class Group extends WebApplication {
             }
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION
-            this.error("could not get groups info.");
+            this.error("Could not get groups info.");
             return this;
         }
         var members_ids = [];
@@ -894,7 +894,7 @@ class Group extends WebApplication {
         var users_list = await new User(this.sObj, this.util).getInfoList(members_ids);
         //we expect an array of user info
         if (!Array.isArray(users_list) || users_list.length === 0) {
-            this.error('could not get groups info');
+            this.error('Could not get groups info');
             return this;
         }
 
@@ -942,7 +942,7 @@ class Group extends WebApplication {
 
             var c = this.sObj.db.collection(this.sObj.col.users);
             var user = await c.findOne({user_id: user_id}, {_id: 0});
-            if (!user) {
+            if (!user || !user.groups_belong) {
                 return [];
             }
             return this.getGroupsInfoList(user.groups_belong);
@@ -950,7 +950,7 @@ class Group extends WebApplication {
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION
 
-            this.error('could not get user groups info');
+            this.error('Could not get user groups info');
             return this;
         }
     }

@@ -8,6 +8,7 @@ var Main = {};
 (function () {
 
     var isPageInit = false;
+    var transitionInProgress = false;
     var pageRouteUrl;
     var isMainInit;
     var deviceUrl = "device/";
@@ -366,6 +367,13 @@ var Main = {};
         },
 
         onBackButton: function () {
+            if(transitionInProgress){
+                //avoid a particular bug that results if the page
+                //is already in transition
+                alert('skipped onBackButton');
+                return;
+            }
+            
             alert('onBackButton');
             var action = this.backActions[this.backActions.length - 1];
 
@@ -1204,7 +1212,7 @@ var Main = {};
         var pages = [];
         var effDuration = 0.5;//default effect duration
         var lastPageUrl;
-        var transitionInProgress = false;
+        
         var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var _game9ja_Dom_Hold_Has_Back_Action = '_game9ja_Dom_Hold_Has_Back_Action_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var currentPage;

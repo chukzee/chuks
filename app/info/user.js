@@ -11,6 +11,16 @@ class User extends WebApplication {
         this.crypto = crypto;
     }
 
+    async isOnline(user_id) {
+        return this.sObj.redis.get('online_status:' + user_id)
+                .then(function (status) {
+
+                    console.log('status ', status);
+
+                    return status === "online";
+                });
+    }
+
     async _setPlaying(user_id) {
 
         try {
@@ -28,7 +38,7 @@ class User extends WebApplication {
             );
         } catch (e) {
             console.log(e);
-            return this.error('could not modify playing status');
+            return this.error('Could not modify playing status');
         }
 
         var doc = r.value;
@@ -49,7 +59,7 @@ class User extends WebApplication {
                     });
         } catch (e) {
             console.log(e);
-            return this.error('could not modify playing status');
+            return this.error('Could not modify playing status');
         }
 
         return true;
@@ -57,32 +67,32 @@ class User extends WebApplication {
 
     async login(phone_no, password) {
         try {
-            if(!phone_no){
+            if (!phone_no) {
                 return this.error('No user id!');
             }
-            
-            if(!password){
+
+            if (!password) {
                 return this.error('No user password!');
             }
-            
+
             var c = this.sObj.db.collection(this.sObj.col.users);
 
             var user = await c.findOne({user_id: phone_no}, {_id: 0});
             if (!user) {
-                return this.error('invalid username or password');
+                return this.error('Invalid username or password');
             }
             var protected_pass = await this._protectedPassword(password, user.password.salt, user.password.iterations);
 
             if (user.password.hash.buffer.toString()//the saved hash is in binary type so we will access the buffer property of the binary object
                     !== protected_pass.hash.toString()) {
-                return this.error('invalid username or password');
+                return this.error('Invalid username or password');
             }
 
             this._normalizeInfo(user);
 
         } catch (e) {
             console.log(e);
-            return this.error('could not login');
+            return this.error('Could not login');
         }
 
         return user;
@@ -157,9 +167,9 @@ class User extends WebApplication {
             }
 
             if (user) {
-                this.error('user \'' + user.user_id + '\' already exist!');
+                this.error('User \'' + user.user_id + '\' already exist!');
             } else {
-                this.error('could not register user!');
+                this.error('Could not register user!');
             }
             return this;
         }
@@ -238,7 +248,7 @@ class User extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.users);
         var user = await c.findOne({user_id: user_id});
         if (!user) {
-            return this.error('user not found!');
+            return this.error('User not found!');
         }
 
         if (additional_phone_no
@@ -260,7 +270,7 @@ class User extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.users);
         var user = await c.findOne({user_id: user_id});
         if (!user) {
-            return this.error('user not found!');
+            return this.error('User not found!');
         }
         var editObj = {};
         if (additional_phone_no
@@ -320,7 +330,7 @@ class User extends WebApplication {
 
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
-            return this.error('could not get user info!');
+            return this.error('Could not get user info!');
             ;
         }
 
@@ -362,7 +372,7 @@ class User extends WebApplication {
 
         } catch (e) {
             console.log(e);
-            this.error('could not get users.');
+            this.error('Could not get users.');
             return this;
         }
 
@@ -379,7 +389,7 @@ class User extends WebApplication {
             }
         } catch (e) {
             console.log(e);
-            return this.error('could not get groups belong');
+            return this.error('Could not get groups belong');
         }
 
         return user.groups_belong ? user.groups_belong : [];
@@ -395,7 +405,7 @@ class User extends WebApplication {
             }
         } catch (e) {
             console.log(e);
-            return this.error('could not get tournaments belong');
+            return this.error('Could not get tournaments belong');
         }
 
         return user.tournaments_belong ? user.tournaments_belong : [];

@@ -48,7 +48,7 @@ class PlayRequest extends WebApplication {
 
             var game = this.sObj.game.get(game_name);
             if (!game) {
-                return 'unknown game -' + game_name;
+                return this.error('Unknown game -' + game_name);
             }
 
             if (game.maxPlayers() > opponent_ids.length + 1) {//plus the initiator
@@ -62,15 +62,21 @@ class PlayRequest extends WebApplication {
             //game can stop the request
 
             var players_ids = [];
-
+            var opponents_online = [];
             players_ids.push(initiator_id);// push in the initiator as the first player
-
+            
+            var user = new User(this.sObj, this.util, this.evt);
+            
             for (var i = 0; i < opponent_ids.length; i++) {
+                
+                if(await user.isOnline(opponent_ids[i]) === true){
+                    opponents_online.push(opponent_ids[i]);
+                }
+                
                 players_ids.push(opponent_ids[i]);// push the other players in
             }
             
-            
-            
+                        
             if (players_ids.length <= 3) {
                 //ok for few opponents run the query individually - not much load wil be experienced  
                 for (var i = 0; i < players_ids.length; i++) {
@@ -83,8 +89,9 @@ class PlayRequest extends WebApplication {
 
                     if (match) {
                         return {
-                            msg: "Player already engaged in a match.",
-                            engaged_user_id: opponent_ids[i], //so that the client can specify which user is actually engaged
+                            opponents_online : opponents_online,
+                            msg: "Player already engaged in another match.",
+                            engaged_user_id: players_ids[i], //so that the client can specify which user is actually engaged
                             match: match
                         };
                     }
@@ -102,9 +109,17 @@ class PlayRequest extends WebApplication {
                 }
                 var match = await c.findOne(combined_query);
                 if (match) {
+                    var fnd_player_id;
+                    for(var k=0; k<match.players.length; k++){
+                        if(players_ids.indexOf(match.players[k].user_id) > -1){
+                            fnd_player_id = match.players[k].user_id;
+                            break;
+                        }
+                    }
                     return {
-                        msg: players_ids.length === 1 ? "Player already engaged in a match." : "One or more players already engaged in a match.",
-                        engaged_user_id: null, //in this case it is not provided - so the client must check  for null
+                        opponents_online : opponents_online,
+                        msg: players_ids.length === 1 ? "Player already engaged in another match." : "One or more players already engaged in another match.",
+                        engaged_user_id: fnd_player_id,
                         match: match
                     };
                 }
@@ -122,12 +137,12 @@ class PlayRequest extends WebApplication {
             
             
             if (user.lastError) {
-                return this.error('could not send play request.');
+                return this.error('Could not send play request.');
             }
 
             if(!Array.isArray(players)){
                 console.log('This should not happen! user info list must return an array if no error was caught!');
-                return this.error('could not send play request.');
+                return this.error('Could not send play request.');
             }
             
             
@@ -139,7 +154,7 @@ class PlayRequest extends WebApplication {
 
             if(missing){
                 //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
-                return this.error('could not find player with user id - ' + missing);
+                return this.error('Could not find player with user id - ' + missing);
             }
 
             var data = {
@@ -147,6 +162,7 @@ class PlayRequest extends WebApplication {
                 game_id: game_id,
                 game_name: game_name,
                 game_rules: game_rules,
+                opponents_online : opponents_online,
                 players: players
             };
 
@@ -161,11 +177,11 @@ class PlayRequest extends WebApplication {
 
         } catch (e) {
             console.log(e);
-            this.error('could not send play request.');
+            this.error('Could not send play request.');
             return this;
         }
 
-        return 'play request sent successfully.';
+        return data;
 
     }
 
@@ -188,10 +204,10 @@ class PlayRequest extends WebApplication {
             }
         } catch (e) {
             console.log(e);
-            return this.error('could not abort the play request!');
+            return this.error('Could not abort the play request!');
         }
 
-        return 'play request aborted successfully.';
+        return 'Play request aborted.';
     }
 
     /**
@@ -213,7 +229,7 @@ class PlayRequest extends WebApplication {
             }
         } catch (e) {
             console.log(e);
-            return this.error('could not reject the play request!');
+            return this.error('Could not reject the play request!');
         }
         
         var play_request_doc = r.value;
@@ -221,7 +237,7 @@ class PlayRequest extends WebApplication {
         var initiator_id = play_request_doc.players[0].uer_id;
         this.send(this.evt.play_request_rejected, play_request_doc, initiator_id, true);
 
-        return 'play request rejected successfully.';
+        return 'Play request rejected.';
     }
 
     _expire(game_id) {

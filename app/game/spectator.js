@@ -43,7 +43,7 @@ class Spectator extends WebApplication {
     async join(user_id, game_id, game_start_time) {
 
         if (isNaN(new Date(game_start_time).getTime())) {
-            return this.error("invalid input - game start time must be provided and a valid date.");
+            return this.error("Invalid input - game start time must be provided and a valid date.");
         }
 
         try {
@@ -51,7 +51,7 @@ class Spectator extends WebApplication {
             var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
             var user = await new User(this.sObj, this.util, this.evt).getInfo(user_id, required_fields);
             if (!user) {
-                return this.error('unknown user');
+                return this.error('Unknown user');
             }
 
             var sc = this.sObj.db.collection(this.sObj.col.spectators);
@@ -74,7 +74,7 @@ class Spectator extends WebApplication {
                 photo_url: user.photo_url
             });
         } catch (e) {
-            this.error('could not join spectator');
+            this.error('Could not join spectator');
             return this;
         }
 
@@ -85,7 +85,7 @@ class Spectator extends WebApplication {
         // by calling the get() method.
 
 
-        return 'joined successfully';
+        return 'Joined successfully';
     }
 
     /**
@@ -110,12 +110,12 @@ class Spectator extends WebApplication {
             }, {projection: {_id: 0}});
         } catch (e) {
             console.log(e);
-            return this.error('could not delete spectator');
+            return this.error('Could not delete spectator');
         }
 
         var spectator = r.value;
         if (!spectator) {
-            return this.error('no spectator');
+            return this.error('No spectator');
         }
 
 

@@ -96,7 +96,9 @@
             "group-details.css",
             "match-fixture-list.css",
             "simple-list.css",
-            "user-profile.css"
+            "user-profile.css",
+            "wait-player.css",
+            "game-contacts.css"
         ],
         
         "js": [
@@ -112,6 +114,7 @@
             "Util.js",
             "ui/UI.js",
             "game/Match.js",
+            "game/PlayRequest.js",
             "view/Tournament.js",
             "view/PlayNotifications.js",
             "view/Group.js",
