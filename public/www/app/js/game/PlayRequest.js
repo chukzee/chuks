@@ -42,10 +42,23 @@ Ns.game.PlayRequest = {
             var height = window.innerHeight * 0.35;
             var max_width = 400;
             var max_height = 350;
-            
-            if(max_height > window.innerHeight * 0.8){
+
+            if (max_height > window.innerHeight * 0.8) {
                 max_height = window.innerHeight * 0.8;
             }
+            
+            var countdown_play;
+            var feedback_msg;
+            
+            var countdownFn = function (value, finish) {
+                if (countdown_play) {
+                    countdown_play.innerHTML = value;
+                    if (finish) {
+                        feedback_msg.innerHTML = 'Player did not respond!';
+                    }
+                }
+
+            };
 
             Main.dialog.show({
                 title: '<spand>Play</span><i> ' + opponent.full_name + '</i>',
@@ -60,7 +73,7 @@ Ns.game.PlayRequest = {
                     if (value.indexOf('Cancel') === 0) {
 
                         this.hide();
-
+                        
                         if (play_request_data) {
                             Main.ro.play_request.abort(play_request_data.game_id)
                                     .get(function (resul) {
@@ -74,7 +87,8 @@ Ns.game.PlayRequest = {
                 },
                 onShow: function () {
                     var app_user = Ns.view.UserProfile.appUser;
-                    var feedback_msg = document.getElementById('game-wait-player-feedback-msg');
+                    feedback_msg = document.getElementById('game-wait-player-feedback-msg');
+                    countdown_play = document.getElementById('game-wait-player-countdown');
 
                     var own_online = document.getElementById('game-wait-player-own-online');
                     var opponent_online = document.getElementById('game-wait-player-opponent-online');
@@ -88,7 +102,7 @@ Ns.game.PlayRequest = {
                     document.getElementById('game-wait-player-own-name').innerHTML = app_user.full_name;
                     document.getElementById('game-wait-player-opponent-name').innerHTML = opponent.full_name;
 
-                    document.getElementById('game-wait-player-countdown').innerHTML = '5:00';
+                    
                     var initiator_id = app_user.user_id;
                     var opponent_ids = [opponent.user_id];
                     var game_name = Ns.ui.UI.selectedGame;
@@ -98,15 +112,14 @@ Ns.game.PlayRequest = {
                     Main.ro.play_request.sendRequest(initiator_id, opponent_ids, game_name, game_rules, group_name)
                             .get(function (data) {
 
-
                                 own_online.innerHTML = 'online';
                                 opponent_online.innerHTML = data.opponents_online.indexOf(opponent.user_id) > -1 ? 'online' : 'offline';
 
-                                if(data.engaged_user_id === opponent.user_id) {
+                                if (data.engaged_user_id === opponent.user_id) {
                                     opponent_busy.innerHTML = 'busy';
                                     own_busy.innerHTML = 'available';
                                     feedback_msg.innerHTML = 'Player is engaged in another game...';
-                                }else if(data.engaged_user_id === app_user.user_id) {
+                                } else if (data.engaged_user_id === app_user.user_id) {
                                     own_busy.innerHTML = 'busy';
                                     feedback_msg.innerHTML = 'Not allowed! You currently have a live game on.';
                                 } else {
@@ -114,6 +127,9 @@ Ns.game.PlayRequest = {
                                     opponent_busy.innerHTML = 'available';
                                     own_busy.innerHTML = 'available';
                                     feedback_msg.innerHTML = 'Waiting for player...';
+
+                                    Main.countdown.start(countdownFn, data.expire_after_secs, 'mm:ss');
+
                                 }
 
                             })
@@ -124,6 +140,9 @@ Ns.game.PlayRequest = {
 
 
 
+                }, 
+                onHide: function(){
+                    Main.countdown.stop(countdownFn);
                 }
             });
         });

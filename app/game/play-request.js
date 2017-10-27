@@ -163,6 +163,7 @@ class PlayRequest extends WebApplication {
                 game_name: game_name,
                 game_rules: game_rules,
                 opponents_online : opponents_online,
+                expire_after_secs: this.sObj.GAME_MAX_WAIT_IN_SEC,
                 players: players
             };
 
