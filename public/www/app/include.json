@@ -98,7 +98,8 @@
             "simple-list.css",
             "user-profile.css",
             "wait-player.css",
-            "game-contacts.css"
+            "game-contacts.css",
+            "play-notifications.css"
         ],
         
         "js": [

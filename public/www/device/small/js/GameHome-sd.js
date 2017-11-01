@@ -15,6 +15,9 @@ Ns.GameHome = {
         Ns.ui.UI.init(selected_game);
     },
     showGameView: function (match) {
+        
+        Ns.game.Match.currentUserMatch = match;
+        
         Main.page.show({
             url: Ns.GameHome.GAME_VIEW_HTML,
             effect: "slideleft",

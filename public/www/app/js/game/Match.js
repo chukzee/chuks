@@ -6,6 +6,7 @@
 Ns.game.Match = {
     hasMatchData: false,
     currentUserMatch: null, //set dynamically
+    currentRobotMatch : null, //set dynamically
     _lstContactsMatch: null, //private - the contacts match listview
     _lstGroupsMatch: null, //private - the groups match listview
     _lstTournamentsMatch: null, //private - the tournaments match listview
@@ -43,10 +44,10 @@ Ns.game.Match = {
     },
     liveMatchList: function (container, matches) {
 
-        var now = new Date();
+        /*var now = new Date();
         var now_00_hrs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
         var _24_hrs = 60 * 60 * 24 * 1000;
-
+        */
         Main.listview.create({
             container: container,
             scrollContainer: container,
@@ -74,31 +75,7 @@ Ns.game.Match = {
             onRender: function (tpl_var, data) {
 
                 if (tpl_var === 'game_start_time') {
-
-                    var date = new Date(data[tpl_var]);
-
-                    console.log('TODO - consider the user time zone');
-
-                    var day = date.getDate();
-                    var month = date.getMonth() + 1;//plus one because it is zero based month
-                    var year = date.getFullYear();
-                    var hr = date.getHours();
-                    var min = date.getMinutes();
-                    var sec = date.getSeconds();
-
-                    var date_part = day + '/' + month + '/' + year;
-
-                    var day_00_hrs = new Date(year, date.getMonth(), day).getTime();
-
-                    if (now_00_hrs === day_00_hrs) {
-                        date_part = 'Today';
-                    } else if (now_00_hrs - day_00_hrs === _24_hrs) {
-                        date_part = 'Yesterday';
-                    }
-
-                    var dateStr = date_part + ' ' + hr + ':' + min;
-
-                    return dateStr;
+                    return Ns.Util.formatTime(data[tpl_var]);
                 }
 
             },
@@ -259,10 +236,11 @@ Ns.game.Match = {
         Ns.Util.lastGroupMatchRequestTime[group_name] = now;
 
         Main.rcall.live(function () {
+            var user_id = Ns.view.UserProfile.appUser.user_id;
             var game_name = Ns.ui.UI.selectedGame;
             var skip = 0;
             var limit = Ns.Const.MAX_LIST_SIZE;
-            Main.ro.match.getGroupMatchList(group_name, game_name, skip, limit)
+            Main.ro.match.getGroupMatchList(user_id, group_name, game_name, skip, limit)
                     .get(function (data) {
                         var matches = data.matches;
                         //sort the matches in descending order to show the latest matches first
@@ -354,10 +332,11 @@ Ns.game.Match = {
         Ns.Util.lastTournamentMatchRequestTime[tournament_name] = now;
 
         Main.rcall.live(function () {
+            var user_id = Ns.view.UserProfile.appUser.user_id;
             var game_name = Ns.ui.UI.selectedGame;
             var skip = 0;
             var limit = Ns.Const.MAX_LIST_SIZE;
-            Main.ro.match.getTournamentMatchList(tournament_name, game_name, skip, limit)
+            Main.ro.match.getTournamentMatchList(user_id, tournament_name, game_name, skip, limit)
                     .get(function (data) {
                         var matches = data.matches;
 
@@ -417,7 +396,7 @@ Ns.game.Match = {
 
     onGameStart: function (obj) {
         console.log(obj);
-
+        
         var match = obj.data.match;
         Ns.game.Match.prependMatchListview(match);
 

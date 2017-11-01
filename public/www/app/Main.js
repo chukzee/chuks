@@ -3165,7 +3165,21 @@ var Main = {};
 
     function Dialog() {
 
-        function diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFn, deviceBackHideFunc) {
+        function diagThis(param) {
+            
+            var obj = param.obj, 
+                    dlg_cmp = param.dlg_cmp, 
+                    resizeListenBind = param.resizeListenBind,
+                    touchCloseFn = param.touchCloseFn,
+                    deviceBackHideFunc = param.deviceBackHideFunc,
+                    btns = param.btns;
+            
+            this.setButtonText = function(index, text){
+                    if(btns[index]){
+                        btns[index].value = text;
+                    }
+            }; 
+            
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -3332,15 +3346,25 @@ var Main = {};
                 Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
             }
 
-            var lytObj = {//used for  save layout value
+            var lytObj = {//used to  save layout value
                 layouts: {},
                 LYT_MAX: 20 //max. layout objects to save 
             };
 
             var resizeListenBind = resizeListen.bind(lytObj);
-
-            var objThis = new diagThis(obj, dlg_cmp, resizeListenBind, touchCloseFunc, deviceBackHideFunc);
-
+            
+            var obj_param = {
+                obj : obj,
+                dlg_cmp : dlg_cmp,
+                resizeListenBind :resizeListenBind,
+                touchCloseFunc :touchCloseFunc,
+                deviceBackHideFunc :deviceBackHideFunc,
+                btns : []
+            };
+            
+            var objThis = new diagThis(obj_param);
+            
+            
             function deviceBackHideFunc() {
                 return objThis.hide();
             }
@@ -3356,7 +3380,7 @@ var Main = {};
                 base.appendChild(close_el);
                 Main.dom.addListener(close_el, 'click', objThis.hide, false);
             }
-
+            
             if (obj.buttons) {//if present
 
                 for (var i = obj.buttons.length - 1; i > -1; i--) {
@@ -3364,6 +3388,8 @@ var Main = {};
                     btn.type = 'button';
                     btn.value = obj.buttons[i];
                     footer_el.appendChild(btn);
+                    
+                    obj_param.btns.push(btn);
                 }
 
                 Main.dom.addListener(footer_el, 'click', function (evt) {
@@ -3376,7 +3402,14 @@ var Main = {};
 
                 base.appendChild(footer_el);
             }
-
+            
+            objThis.setButtonText = function(index, text){
+                    if(el_btns[index]){
+                        el_btns[index].value = text;
+                    }
+                
+            };
+            
             var container;
             if (Main.util.isString(obj.container)) {
                 var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;

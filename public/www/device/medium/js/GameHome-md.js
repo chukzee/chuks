@@ -56,6 +56,8 @@ Ns.GameHome = {
     },
     showGameView: function (match) {
 
+        Ns.game.Match.currentUserMatch = match;
+        
         Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         if (Ns.GameHome.isLandscape()) {

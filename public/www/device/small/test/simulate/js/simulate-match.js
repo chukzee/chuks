@@ -247,12 +247,13 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-group-match-list').on('click', function () {
 
+        var user_id =  prompt('user_id', '');
         var group_name = prompt('group_name', '');
         var game_name = prompt('game_name', 'chess');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
         
-        Main.ro.match.getGroupMatchList(group_name, game_name, skip, limit)
+        Main.ro.match.getGroupMatchList(user_id, group_name, game_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -266,12 +267,13 @@ Main.on("pagecreate", function (arg) {
    
     $('#btn-get-tournament-match-list').on('click', function () {
 
+        var user_id =  prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var game_name = prompt('game_name', 'chess');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
         
-        Main.ro.match.getTournamentMatchList(tournament_name, game_name, skip, limit)
+        Main.ro.match.getTournamentMatchList(user_id, tournament_name, game_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

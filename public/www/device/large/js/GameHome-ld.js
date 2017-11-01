@@ -15,6 +15,8 @@ Ns.GameHome = {
 
     showGameView: function (match) {
 
+        Ns.game.Match.currentUserMatch = match;
+        
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         Ns.GameView.Content(match);
 

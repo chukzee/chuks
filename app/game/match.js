@@ -739,6 +739,18 @@ class Match extends WebApplication {
             limit = arguments[0].limit;
         }
 
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+        
         var data = {
             skip: skip,
             limit: limit,
@@ -755,7 +767,7 @@ class Match extends WebApplication {
         }
 
         c = this.sObj.db.collection(this.sObj.col.matches);
-                                   
+
         var allQuery = {
             $or: []
         };
@@ -774,7 +786,13 @@ class Match extends WebApplication {
                         tournament_name: ''
                     },
                     {
-                        $or: [{game_status: 'live'}, {game_status: 'paused'}]//where game_status is live or paused
+                        $or: [
+                            {game_status: 'live'},
+                            {$and: [
+                                    {game_status: 'paused'},
+                                    {'players.user_id': user_id}]}//restrict to the user own paused matches
+
+                        ]//where game_status is live or paused
                                 /// game_status: 'live' //where game_status is live /*Deprecated*/
                     },
                     {
@@ -785,18 +803,7 @@ class Match extends WebApplication {
             allQuery.$or.push(query);
         }
 
-        if (skip !== undefined && limit !== undefined) {
-            skip = skip - 0;
-            limit = limit - 0;
-        } else {
-            skip = 0;
-            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
-        }
-
-        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
-            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
-        }
-
+        
         var c = this.sObj.db.collection(this.sObj.col.matches);
 
         var total = await c.count(allQuery);
@@ -819,17 +826,19 @@ class Match extends WebApplication {
     /**
      * Get matches played in the specified group
      * 
+     * @param {type} user_id
      * @param {type} group_name
      * @param {type} game_name
      * @param {type} skip
      * @param {type} limit
      * @returns {nm$_match.Match.getGroupMatchList.data}
      */
-    async getGroupMatchList(group_name, game_name, skip, limit) {
+    async getGroupMatchList(user_id, group_name, game_name, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
             group_name = arguments[0].group_name;
             game_name = arguments[0].game_name;
             skip = arguments[0].skip;
@@ -854,7 +863,13 @@ class Match extends WebApplication {
             group_name: group_name,
             game_name: game_name,
             //game_status: 'live'/*Deprecated*/
-            $or: [{game_status: 'live'}, {game_status: 'paused'}]//where game_status is live or paused
+            $or: [
+                {game_status: 'live'},
+                {$and: [
+                        {game_status: 'paused'},
+                        {'players.user_id': user_id}]}//restrict to the user own paused matches
+
+            ]//where game_status is live or paused
 
         };
 
@@ -883,17 +898,19 @@ class Match extends WebApplication {
     /**
      * Get matches played in the specified tournament
      * 
+     * @param {type} user_id
      * @param {type} tournament_name
      * @param {type} game_name
      * @param {type} skip
      * @param {type} limit
      * @returns {nm$_match.Match.getTournamentMatchList.data}
      */
-    async getTournamentMatchList(tournament_name, game_name, skip, limit) {
+    async getTournamentMatchList(user_id, tournament_name, game_name, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
             game_name = arguments[0].game_name;
             skip = arguments[0].skip;
@@ -918,7 +935,13 @@ class Match extends WebApplication {
             tournament_name: tournament_name,
             game_name: game_name,
             //game_status: 'live'/*Deprecated*/
-            $or: [{game_status: 'live'}, {game_status: 'paused'}]//where game_status is live or paused
+            $or: [
+                {game_status: 'live'},
+                {$and: [
+                        {game_status: 'paused'},
+                        {'players.user_id': user_id}]}//restrict to the user own paused matches
+
+            ]//where game_status is live or paused
         };
 
         var total = await c.count(query);

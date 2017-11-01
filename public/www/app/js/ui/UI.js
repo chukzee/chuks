@@ -234,13 +234,13 @@ Ns.ui.UI = {
                     callback(err);// node style
                 });
     },
-
+    
     showByMenuItem: function (item) {
 
         switch (item) {
-            case 'My Game':
+            case 'My game':
                 var m = Ns.game.Match.currentUserMatch;
-                if (m && (m.game_status.toLowercase() !== 'end')) {
+                if (m && (m.game_status.toLowercase() !== 'end' && m.game_status.toLowercase() !== 'finish')) {
                     Ns.GameHome.showGameView(m);
                 } else {
                     var Play_Notifications = 'Play Notifications';
@@ -251,7 +251,7 @@ Ns.ui.UI = {
                         } else if (option === Invite_Players) {
                             Ns.GameHome.showInvitePlayers();
                         }
-                    }, 'Sorry! You do not have any active game session!'
+                    }, 'You do not have any active game session!'
                             , 'NO ACTIVE GAME'
                             , [Play_Notifications, Invite_Players]);
 
@@ -261,7 +261,7 @@ Ns.ui.UI = {
                 Ns.GameHome.showPlayNotifications();
                 break;
             case 'Play robot':
-                var m = Ns.game.Match.currentUserMatch;
+                var m = Ns.game.Match.currentRobotMatch;
 
                 Ns.GameHome.showGameViewB({robot: true, game_name: Ns.ui.UI.selectedGame});//TESTING - TO BE REMOVE
                 return;//TESTING - TO BE REMOVE

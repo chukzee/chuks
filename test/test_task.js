@@ -214,3 +214,4 @@ setTimeout(function(){
     console.log('stop');
     c.stop(cFn);//stop countdown
 }, 20000);*/
+

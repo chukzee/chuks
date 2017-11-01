@@ -23,3 +23,5 @@ console.log(sen.UniqueNumber);
 console.log(sen.UniqueNumber);
 console.log(sen.UniqueNumber);
 
+console.log(Date.getDate());
+
