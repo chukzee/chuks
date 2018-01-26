@@ -16,7 +16,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-play-notifications > .game9ja-play-notifications-header {
+.game9ja-header, .game9ja-play-notifications-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -45,7 +45,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-play-notifications > .game9ja-play-notifications-header {
+.game9ja-header, .game9ja-play-notifications-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -145,31 +145,11 @@ and open the template in the editor.
   .game9ja-back-btn {
     visibility: hidden;
     /*hide back button*/ } }
-.game9ja-play-notifications {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%; }
-  .game9ja-play-notifications > .game9ja-play-notifications-header > :nth-child(1) {
-    /*holding title*/
-    margin: 0 auto;
-    width: 200px;
-    height: 100%;
-    padding: 5px;
-    font-size: 18px;
-    text-align: center;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box; }
-  .game9ja-play-notifications > .game9ja-play-notifications-body {
-    /* holds center panel for game playiing area e.g game board*/
-    width: 100%;
-    overflow: hidden;
-    display: block;
-    position: absolute;
-    top: 50px;
-    bottom: 0; }
-    .game9ja-play-notifications > .game9ja-play-notifications-body > :nth-child(1) {
-      padding: 5px; }
+.game9ja-play-notifications-header > :nth-child(1) > :nth-child(1) {
+  font-size: 20px !important; }
+.game9ja-play-notifications-header > :nth-child(2) {
+  color: #ccc !important;
+  font-size: 11px;
+  font-style: italic; }
 
 /*# sourceMappingURL=play-notifications.css.map */

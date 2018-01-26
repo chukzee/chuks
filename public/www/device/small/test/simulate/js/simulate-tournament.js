@@ -41,10 +41,11 @@ Main.on("pagecreate", function (arg) {
 
         var user_id = prompt('user_id','07032710628');
         var tournament_name = prompt('tournament_name','');
+        var game = prompt('game','chess');
         var status_message = prompt('status_message','');
         var photo_url = prompt('photo_url','');
 
-        Main.ro.tourn.createTournament(user_id, tournament_name, status_message, photo_url)
+        Main.ro.tourn.createTournament(user_id, tournament_name, game,  status_message, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

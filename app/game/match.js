@@ -12,6 +12,74 @@ class Match extends WebApplication {
         super(sObj, util, evt);
     }
 
+    async fixGroupMatch(user_id, player_1_id, player_2_id, time) {
+
+    }
+
+    async fixTournamentMatch(tournament_name, user_id, player_1_id, player_2_id, kick_off_time) {
+        
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            tournament_name = arguments[0].tournament_name;
+            user_id = arguments[0].user_id;
+            player_1_id = arguments[0].player_1_id;
+            player_2_id = arguments[0].player_2_id;
+            kick_off_time = arguments[0].kick_off_time;
+        }
+        
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return `Tournament not found - ${tournament_name}`;
+        }
+
+        var officials = tourn.officials;
+
+        if (!isArray(officials) || officials.length === 0) {
+            return `No tournament official`;
+        }
+
+        if (officials.indexOf(user_id)) {
+            return `Not ${tournament_name} tournament official - ${user_id}`;
+        }
+
+        if (player_1_id === player_2_id) {
+            return `Both players cannot be the same - ${player_1_id}`;
+        }
+
+        var players = tourn.registered_players;
+
+        if (!isArray(players) || players.length === 0) {
+            return `No tournament player`;
+        }
+
+        if (players.indexOf(player_1_id)) {
+            return `Not ${tournament_name} tournament player - ${player_1_id}`;
+        }
+
+        if (players.indexOf(player_2_id)) {
+            return `Not ${tournament_name} tournament player - ${player_2_id}`;
+        }
+
+        var kick_off = new Date(kick_off_time).getTime();
+        if (isNaN(kick_off)) {
+            return `Invalid kick off time`;
+        }
+
+        if (kick_off - this.sObj.MATCH_SCHEDULE_OFFSET > new Date().getTime()) {
+            var mins = this.sObj.MATCH_SCHEDULE_OFFSET / 60000;
+            return `Kick off time too close - must be atleast ${mins} minutes later`;
+        }
+        
+        
+        
+        
+        
+
+    }
+
     /**
      * Stores the move and send it to the opponent.
      * 
@@ -161,7 +229,7 @@ class Match extends WebApplication {
         return game_position;
     }
 
-    async _findOneAndDeletMatchFixture(game_id) {
+    async _findOneAndDeleteMatchFixture(game_id) {
         var sc = this.sObj.db.collection(this.sObj.col.match_fixtures);
         var r = await sc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
         return r.value;
@@ -298,11 +366,11 @@ class Match extends WebApplication {
                     }
 
                     //add the tournament players user ids to the related_user_ids array
-                    for (var i = 0; i < tourn.players.length; i++) {
-                        if (players_ids.indexOf(tourn.players[i].user_id) > -1) {
+                    for (var i = 0; i < tourn.registered_players.length; i++) {
+                        if (players_ids.indexOf(tourn.registered_players[i].user_id) > -1) {
                             continue;//skip the players themselves
                         }
-                        related_user_ids.push(tourn.players[i].user_id);
+                        related_user_ids.push(tourn.registered_players[i].user_id);
                     }
 
                 }
@@ -342,11 +410,11 @@ class Match extends WebApplication {
     async start(game_id, fixture_type) {
         var mtcObj;
         if (fixture_type === 'match fixture') {
-            mtcObj = await this._findOneAndDeletMatchFixture(game_id);
+            mtcObj = await this._findOneAndDeleteMatchFixture(game_id);
         } else if (fixture_type === 'play request') {
             mtcObj = await this._findOneAndDeletePlayRequest(game_id);
         } else {
-            mtcObj = await this._findOneAndDeletMatchFixture(game_id);
+            mtcObj = await this._findOneAndDeleteMatchFixture(game_id);
             if (!mtcObj) {
                 mtcObj = await this._findOneAndDeletePlayRequest(game_id);
             }
@@ -750,7 +818,7 @@ class Match extends WebApplication {
         if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
-        
+
         var data = {
             skip: skip,
             limit: limit,
@@ -803,7 +871,7 @@ class Match extends WebApplication {
             allQuery.$or.push(query);
         }
 
-        
+
         var c = this.sObj.db.collection(this.sObj.col.matches);
 
         var total = await c.count(allQuery);

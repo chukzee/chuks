@@ -76,7 +76,7 @@ $torunament_img_height : 180px;
             cursor: pointer;
         }
     }
-    
+
     > :nth-child(2){/*tournament officials*/
         border-radius: 0px !important;
         position : relative;
@@ -90,10 +90,10 @@ $torunament_img_height : 180px;
             display: table-cell;
             vertical-align: bottom;
         }
-        
+
     }
 
-    > :nth-child(3){/*season player*/
+    > :nth-child(3){/*registered players*/
         border-radius: 0px !important;
         position : relative;
         > :nth-child(1){
@@ -104,29 +104,90 @@ $torunament_img_height : 180px;
             vertical-align: middle;
             @include box-sizing(box-sizing);
             border-bottom: $list_divider_width $list_divider_color solid;
-            
-            > :nth-child(1){//Player
-                position : absolute;
-                bottom : 0;
-                left : 0;
-                font-size: 20px; 
+
+            > :nth-child(1){//Registered players
+                            position : absolute;
+                            bottom : 0;
+                            left : 0;
+                            font-size: 20px; 
             }
-            
-            > :nth-child(2){//Season period
-                position : absolute;
-                bottom : 0;
-                right : $base_padding;
-                font-size: 12px;
+
+            > :nth-child(2){//Add
+                            position : absolute;
+                            bottom : 0;
+                            right : $base_padding;
+                            font-size: 14px;
+                            background-color: transparent;
+                            border-color: green;
+                            outline: none;
             }
         }
-        
+
     }
-    
-    
-    > :nth-child(4){/*match fixtures*/
+
+
+    > :nth-child(4){/*fixtures*/
         border-radius: 0px !important;
         position : relative;
+
         > :nth-child(1){
+            position : relative;
+            font-size: 14px;  
+            color : $font_color; 
+            height: 30px;
+            //vertical-align: middle;
+            @include box-sizing(box-sizing);
+            border-bottom: $list_divider_width $list_divider_color solid;
+
+            > :nth-child(1){//Season
+                            position : absolute;
+                            bottom : 0;
+                            left : 0;
+                            font-size: 20px;
+
+                            > :nth-child(1){// [number]
+                                            font-size: 24px;
+                                            //font-style: italic;
+                            }
+
+                            > :nth-child(2){// [date]
+                                            font-size: 11px;
+                                            margin-left: 30px;
+                            }
+            }
+
+
+            > :nth-child(2){// left and right arrow
+                            position : absolute;
+                            bottom : 0;
+                            right : $base_padding;
+                            font-size: 14px;
+            }
+        }
+
+        > :nth-child(2){
+            position : relative;
+            font-size: 14px;  
+            color : $font_color; 
+            height: 20px;
+            vertical-align: middle;
+            @include box-sizing(box-sizing);
+
+            > :nth-child(1){//[number] players
+                            position : absolute;
+                            bottom : 0;
+                            left : 0;
+                            font-size: 14px; 
+            }
+
+        }
+
+
+        > :nth-child(3){//player list
+                        position : relative;
+        }
+
+        > :nth-child(4){
             position : relative;
             font-size: 14px;  
             color : $font_color; 
@@ -134,23 +195,23 @@ $torunament_img_height : 180px;
             vertical-align: middle;
             @include box-sizing(box-sizing);
             border-bottom: $list_divider_width $list_divider_color solid;
-            
-            > :nth-child(1){//Player
-                position : absolute;
-                bottom : 0;
-                left : 0;
-                font-size: 20px; 
+
+            > :nth-child(1){//Match fixtures
+                            position : absolute;
+                            bottom : 0;
+                            left : 0;
+                            font-size: 20px; 
             }
-            
+
             > :nth-child(2){//Season period
-                position : absolute;
-                bottom : 0;
-                right : $base_padding;
-                font-size: 12px;
-                color: green;
-                font-style: bold;
+                            position : absolute;
+                            bottom : 0;
+                            right : $base_padding;
+                            font-size: 12px;
+                            color: green;
+                            font-style: bold;
             }
         }
-        
+
     }
 }

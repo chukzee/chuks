@@ -2882,7 +2882,7 @@ var Main = {};
                     }
                     var formatted_value = hr + ":" + min + ":" + sec;
 
-                } else if (pattern === 'mm:ss'){
+                } else if (pattern === 'mm:ss') {
 
                     var min = Math.floor(initial_value / 60);
                     var sec = initial_value - min * 60;
@@ -2893,7 +2893,7 @@ var Main = {};
                         sec = '0' + sec;
                     }
                     var formatted_value = min + ":" + sec;
-                }else{
+                } else {
                     formatted_value = initial_value;
                 }
 
@@ -2921,7 +2921,7 @@ var Main = {};
         };
 
     }
-    
+
     function Task() {
         var taskList = [];
         var interval_id = null;
@@ -3166,20 +3166,20 @@ var Main = {};
     function Dialog() {
 
         function diagThis(param) {
-            
-            var obj = param.obj, 
-                    dlg_cmp = param.dlg_cmp, 
+
+            var obj = param.obj,
+                    dlg_cmp = param.dlg_cmp,
                     resizeListenBind = param.resizeListenBind,
                     touchCloseFn = param.touchCloseFn,
                     deviceBackHideFunc = param.deviceBackHideFunc,
                     btns = param.btns;
-            
-            this.setButtonText = function(index, text){
-                    if(btns[index]){
-                        btns[index].value = text;
-                    }
-            }; 
-            
+
+            this.setButtonText = function (index, text) {
+                if (btns[index]) {
+                    btns[index].value = text;
+                }
+            };
+
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -3352,19 +3352,19 @@ var Main = {};
             };
 
             var resizeListenBind = resizeListen.bind(lytObj);
-            
+
             var obj_param = {
-                obj : obj,
-                dlg_cmp : dlg_cmp,
-                resizeListenBind :resizeListenBind,
-                touchCloseFunc :touchCloseFunc,
-                deviceBackHideFunc :deviceBackHideFunc,
-                btns : []
+                obj: obj,
+                dlg_cmp: dlg_cmp,
+                resizeListenBind: resizeListenBind,
+                touchCloseFunc: touchCloseFunc,
+                deviceBackHideFunc: deviceBackHideFunc,
+                btns: []
             };
-            
+
             var objThis = new diagThis(obj_param);
-            
-            
+
+
             function deviceBackHideFunc() {
                 return objThis.hide();
             }
@@ -3380,7 +3380,7 @@ var Main = {};
                 base.appendChild(close_el);
                 Main.dom.addListener(close_el, 'click', objThis.hide, false);
             }
-            
+
             if (obj.buttons) {//if present
 
                 for (var i = obj.buttons.length - 1; i > -1; i--) {
@@ -3388,7 +3388,7 @@ var Main = {};
                     btn.type = 'button';
                     btn.value = obj.buttons[i];
                     footer_el.appendChild(btn);
-                    
+
                     obj_param.btns.push(btn);
                 }
 
@@ -3402,14 +3402,15 @@ var Main = {};
 
                 base.appendChild(footer_el);
             }
-            
-            objThis.setButtonText = function(index, text){
-                    if(el_btns[index]){
-                        el_btns[index].value = text;
-                    }
-                
-            };
-            
+
+            /*
+            objThis.setButtonText = function (index, text) {
+                if (el_btns[index]) {
+                    el_btns[index].value = text;
+                }
+
+            };*/
+
             var container;
             if (Main.util.isString(obj.container)) {
                 var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
@@ -4118,6 +4119,9 @@ var Main = {};
             }
         }
 
+
+
+
         var btns = $(obj.container).find('.game9ja-tab-header').children();
         var tab_body = $(obj.container).find('.game9ja-tab-body')[0];
 
@@ -4126,6 +4130,21 @@ var Main = {};
         var active_class = 'game9ja-tab-active';
 
         //make sure a tab is active and the corresponding content showing
+
+        if (obj.activeTabIndex > -1 && obj.activeTabIndex < contents.length) {
+            for (var i = 0; i < contents.length; i++) {
+                if (i === obj.activeTabIndex) {
+                    contents[i].style.display === 'block';
+                    if (!$(btns[i]).hasClass(active_class)) {
+                        $(btns[i]).addClass(active_class);
+                    }
+                } else {
+                    contents[i].style.display === 'none';
+                    $(btns[i]).removeClass(active_class);
+                }
+            }
+        }
+
         for (var i = 0; i < contents.length; i++) {
             contents[i].style.position = 'absolute';
             contents[i].style.top = '0px';

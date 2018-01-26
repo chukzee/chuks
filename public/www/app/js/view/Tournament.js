@@ -55,8 +55,8 @@ Ns.view.Tournament = {
              "tournament-details-menu"    
              "tournament-details-officials"    
              "tournament-details-season"
-             "tournament-details-players"
-             "tournament-details-round"
+             "tournament-details-registered-players"
+             "tournament-details-stage"
              "tournament-details-match-fixtures"
              */
 
@@ -71,11 +71,11 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by;
             document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
             document.getElementById("tournament-details-season").innerHTML = tournament.season;
-            document.getElementById("tournament-details-round").innerHTML = tournament.round;
+            document.getElementById("tournament-details-stage").innerHTML = tournament.round;
             
             //document.getElementById("tournament-details-match-fixtures").innerHTML = tournament.match_fixture;
             //document.getElementById("tournament-details-officials").innerHTML = tournament.officials;
-            //document.getElementById("tournament-details-players").innerHTML = tournament.players;
+            //document.getElementById("tournament-details-registered-players").innerHTML = tournament.registered_players;
             
 
         }

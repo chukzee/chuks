@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../app/css/header-items.css" />
@@ -16,98 +16,51 @@ and open the template in the editor.
     </head>
     <body>
 
-        <div class="game9ja-play-notifications"  id="test">
+        <div class="game9ja-main">
+
             <div class="game9ja-play-notifications-header">
                 <div>
                     <span>Play Notifications</span>
-                    
                 </div>
+                <span>
+                    <span id="game-play-notifications-count"></span>
+                    player(s) waiting.
+                </span>
                 <i id="game-play-notifications-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
                 <i id="game-play-notifications-search" class="fa fa-search game9ja-header-item-right-a"></i>
                 <i id="game-play-notifications-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
             </div>
-            <div class="game9ja-play-notifications-body">
-                <div><span id="game-play-notifications-count"></span> player(s) waiting.</div>
-            <div id="game-play-notifications-list">    
-                <!-- 
-                <div><i style="position: relative; left: 5px;">Tournament </i><span style="position: relative; left: 5px;">Sapele championship</span></div>
-                <ul class="game9ja-user-show-list">
+            <div id="notifications-tab-container" class="game9ja-tab">
+                <div class="game9ja-tab-header">
+                    <button id="notifications-contact-tab-btn" class="game9ja-tab-active" >
+                        Contact
+                        <span class="game9ja-unseen"></span>
+                    </button>
+                    <button  id="notifications-group-tab-btn">
+                        Group
+                        <span class="game9ja-unseen"></span>
+                    </button>
+                    <button  id="notifications-tournament-tab-btn">
+                        Tournament
+                        <span class="game9ja-unseen"></span>
+                    </button>
+                </div>
 
-                    <li><img  src="../app/images/default_group.png" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
+                <div class="game9ja-tab-body">
+                    <div id="contact-notification-games">
+                        <!--contain user list for selecting games to start-->
+                    </div>
 
-                    <li>
-                        <input type="button" value="Start Game"/>
-                    </li>
-                    <li>
-                        Today, 10:34
-                    </li>
-                </ul>
-                
-                <div><i style="position: relative; left: 5px;">Contact </i><span style="position: relative; left: 5px;"></span></div>
-                <ul class="game9ja-user-show-list">
+                    <div id="group-notification-games">
+                        <!--contain user list for selecting games to start-->
+                    </div>
 
-                    <li><img  src="../app/images/default_group.png" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Start Game"/>
-                    </li>
-                    <li>
-                        Today, 10:34
-                    </li>
-                </ul>
-                
-                <div><i style="position: relative; left: 5px;">Group </i><span style="position: relative; left: 5px;">Grace for all</span></div>
-                <ul class="game9ja-user-show-list">
-                    
-                    <li><img  src="../app/images/default_group.png" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Start Game"/>
-                    </li>
-                    <li>
-                        Today, 10:34
-                    </li>
-                </ul>
-                
-                <div><i style="position: relative; left: 5px;">Contact </i><span style="position: relative; left: 5px;"></span></div>
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="../app/images/default_group.png" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Timed Out"/>
-                    </li>
-                    <li>
-                        Today, 10:34
-                    </li>
-                </ul>
-                -->
+                    <div id="tournament-notification-games">
+                        <!--contain user list for selecting games to start-->
+                    </div>
+                </div>                    
             </div>
-            </div>
+
         </div>
 
     </body>

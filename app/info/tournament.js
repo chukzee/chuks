@@ -21,13 +21,14 @@ class Tournament extends WebApplication {
         return typeof official === 'object';
     }
 
-    async createTournament(user_id, tournament_name, status_message, photo_url) {
+    async createTournament(user_id, tournament_name, game, status_message, photo_url) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
+            game = arguments[0].game;
             status_message = arguments[0].status_message;
             photo_url = arguments[0].photo_url;
         }
@@ -43,11 +44,13 @@ class Tournament extends WebApplication {
 
             var insObj = {
                 name: tournament_name,
+                game: game,
                 user_id: user_id,
                 status_message: status_message,
                 photo_url: photo_url,
                 officials: [],
-                players: []
+                registered_players: [],
+                seasons:[]
             };
 
             var r = await c.insertOne(insObj);
@@ -262,7 +265,7 @@ class Tournament extends WebApplication {
 
     }
 
-    async addPlayer(user_id, tournament_name, player_user_id) {
+    async registerPlayer(user_id, tournament_name, player_user_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -295,31 +298,31 @@ class Tournament extends WebApplication {
         }
 
         var is_player = false;
-        if (Array.isArray(tourn.players)) {
-            for (var i = 0; i < tourn.players.length; i++) {
-                if (tourn.players[i].user_id === user_id) {
+        if (Array.isArray(tourn.registered_players)) {
+            for (var i = 0; i < tourn.registered_players.length; i++) {
+                if (tourn.registered_players[i].user_id === user_id) {
                     is_player = true;
                 }
             }
         } else {
-            tourn.players = [];
+            tourn.registered_players = [];
         }
 
         if (is_player) {
             return 'Already a player in this tournament.';
         }
 
-        if (tourn.players.length > this.sObj.MAX_TOURNAMENT_PLAYERS) {
+        if (tourn.registered_players.length > this.sObj.MAX_TOURNAMENT_PLAYERS) {
             return 'Cannot add more players! Maximum exceeded - ' + this.sObj.MAX_TOURNAMENT_PLAYERS;
         }
 
         var playerInfo = await this._getInfo(player_user_id);
-        tourn.players.push(playerInfo);
+        tourn.registered_players.push(playerInfo);
 
-        //update the players
+        //update the registered_players
         var tourn = await c.updateOne(
                 {name: tournament_name},
-                {$set: {players: tourn.players}});
+                {$set: {registered_players: tourn.registered_players}});
 
         //set tournament belong of new player
         var user_col = this.sObj.db.collection(this.sObj.col.users);
@@ -361,14 +364,14 @@ class Tournament extends WebApplication {
         }
 
         var index_found = -1;
-        if (Array.isArray(tourn.players)) {
-            for (var i = 0; i < tourn.players.length; i++) {
-                if (tourn.players[i].user_id === user_id) {
+        if (Array.isArray(tourn.registered_players)) {
+            for (var i = 0; i < tourn.registered_players.length; i++) {
+                if (tourn.registered_players[i].user_id === user_id) {
                     index_found = i;
                 }
             }
         } else {
-            tourn.players = [];
+            tourn.registered_players = [];
         }
 
         if (index_found === -1) {
@@ -377,12 +380,12 @@ class Tournament extends WebApplication {
 
 
         //remove the player
-        tourn.players.splice(index_found, 1);
+        tourn.registered_players.splice(index_found, 1);
 
-        //update the players
+        //update the registered_players
         var tourn = await c.updateOne(
                 {name: tournament_name},
-                {$set: {players: tourn.players}});
+                {$set: {registered_players: tourn.registered_players}});
 
         //remove from tournament belong of the player
         var user_col = this.sObj.db.collection(this.sObj.col.users);

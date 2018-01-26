@@ -53,14 +53,14 @@ and open the template in the editor.
         box-sizing: border-box;
     }*/ }
     .game9ja-main > :nth-child(1) > :nth-child(1) {
-      /*live game name*/
+      /*Gameja Title*/
       position: absolute;
       top: 3px;
       font-size: 24px;
       text-align: center;
       width: 100%; }
     .game9ja-main > :nth-child(1) > :nth-child(2) {
-      /*Gameja Title*/
+      /*live game name*/
       position: absolute;
       left: 5px;
       bottom: 3px;

@@ -36,10 +36,10 @@ module.exports = {
     
    /**
      * The maximum number of session a single user can have at a time.
-     * It is possible fo a single user to have more than one session
+     * It is possible for a single user to have more than one session
      * if connected from different device. But we have to limit the
      * number by disconnnecting the oldest after each new one causes
-     * his number of session to go beyound our acceptable limit.
+     * his number of sessions to go beyound our acceptable limit.
      * 
      * @type Number
      */

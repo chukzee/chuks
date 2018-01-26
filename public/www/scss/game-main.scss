@@ -19,7 +19,7 @@
         top : 0;
         left : 0;
 
-        > :nth-child(1){/*live game name*/
+        > :nth-child(1){/*Gameja Title*/
             position: absolute;
             top: 3px;
             //margin-left: 50%;
@@ -34,7 +34,7 @@
             //background-repeat: no-repeat;
             //background: red;
         }
-        > :nth-child(2){/*Gameja Title*/
+        > :nth-child(2){/*live game name*/
             position: absolute;
             left: 5px;
             bottom: 3px;

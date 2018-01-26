@@ -9,19 +9,25 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/header-items.css" />
+        <link rel="stylesheet" href="../app/css/horizontal-list.css" />
+        <link rel="stylesheet" href="../app/css/section-container.css" />
+        <link rel="stylesheet" href="../app/css/user-show-list.css" />
+        <link rel="stylesheet" href="../app/css/tournament-details.css" />
+        <link rel="stylesheet" href="../app/css/match-fixture-list.css" />
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
     </head>
     <body>
 
-
         <div class="game9ja-tournament-details game9ja-section-container">
             <div><!--tournament logo pics-->                
-                <div><div><img  id="tournament-details-photo-url"  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="" alt=""/></div></div>
-                <div  id="tournament-details-tournament-name"><!--Tournament Name--></div>
+                <div><div><img  id="tournament-details-photo-url"  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div></div>
+                <div  id="tournament-details-tournament-name">Tournament Name</div>
                 <div><div>Created by 
                         <i>
-                            <strong id="tournament-details-created-by"><!--Alimele Chuks--></strong>
+                            <strong id="tournament-details-created-by">Alimele Chuks</strong>
                         </i> on
-                        <i id="tournament-details-date-created"><!--10/11/2017, 17:53--></i>
+                        <i id="tournament-details-date-created">10/11/2017, 17:53</i>
                     </div>
                 </div>
                 <i id="tournament-details-back-btn" class="fa fa-arrow-left"></i>
@@ -33,7 +39,6 @@ and open the template in the editor.
                 <div>Officials</div>
 
                 <div  id="tournament-details-officials" class="game9a-horizontal-list" >
-                    <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
@@ -58,7 +63,6 @@ and open the template in the editor.
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
-                    -->
                 </div>
                 <!--horizontal list of officials go below---->
             </div>
@@ -69,7 +73,6 @@ and open the template in the editor.
                     <button  id="tournament-details--registered-players-add">Add <!--visible only to tournament officials--> </button></div>
 
                 <div id="tournament-details-registered-players" class="game9a-horizontal-list">
-                    <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
@@ -94,7 +97,6 @@ and open the template in the editor.
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
-                    -->
                 </div>
                 <!--horizontal list of players go below---->
             </div>
@@ -104,8 +106,8 @@ and open the template in the editor.
                 <div>
                     <span>
                         Season 
-                        <span id="tournament-details-season-number"><!--1--></span>
-                        <span id="tournament-details-season-date"><!--23/01/2017--></span>
+                        <span id="tournament-details-season-number">1</span>
+                        <span id="tournament-details-season-date">23/01/2017</span>
 
                     </span>
                     <span>
@@ -116,13 +118,12 @@ and open the template in the editor.
                 </div>
                 <div>
                     <span>
-                        <span id="tournament-details-season-players-count"><!--4--></span> 
+                        <span id="tournament-details-season-players-count">4</span> 
                         players
                     </span> 
                 </div>
 
                 <div class="game9a-horizontal-list" id="tournament-details-season-players"><!--player list-->
-                    <!--
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
@@ -147,7 +148,6 @@ and open the template in the editor.
                     <div style="background: blue; width: 80px; height: 80px;">
 
                     </div>
-                    -->
                 </div>
 
 
@@ -155,14 +155,14 @@ and open the template in the editor.
                     <span>Match fixtures/results</span> 
                     <span>
                         <i class="fa fa-arrow-left" id="tournament-details-stage-previous"></i>
-                        <span id="tournament-details-stage"><!--e.g play offs, qualifiers, round 1,  round 2,  round 3 and so on --></span>
+                        <span id="tournament-details-stage">Round 2 <!--e.g play offs, qualifiers, round 1,  round 2,  round 3 and so on --></span>
                         <i class="fa fa-arrow-right" id="tournament-details-stage-next"></i>
                     </span>
                 </div>
 
                 <!--vertical list of fixtures go below---->
                 <div  id="tournament-details-match-fixtures">
-                    <!--
+                    
                     <ul class="game9ja-match-fixture-list">
                         <li>
                             Chuks Alimele Chuks Alimele Chuks Alimele Chuks Alimele Chuks Alimele Chuks Alimele
@@ -219,7 +219,6 @@ and open the template in the editor.
                         <li><img  src="images/black_player.jpg" alt=" "/></li>
 
                     </ul>
-                    -->
                 </div>
             </div>
 

@@ -402,9 +402,9 @@ class Chat extends   WebApplication {
             }
         }
         
-        if (Array.isArray(tourn.players)) {
-            for (var i = 0; i < tourn.players.length; i++) {
-                members_ids.push(tourn.players[i].user_id);
+        if (Array.isArray(tourn.registered_players)) {
+            for (var i = 0; i < tourn.registered_players.length; i++) {
+                members_ids.push(tourn.registered_players[i].user_id);
             }
             
         }
@@ -453,9 +453,9 @@ class Chat extends   WebApplication {
             }
         }
         
-        if (Array.isArray(tourn.players)) {
-            for (var i = 0; i < tourn.players.length; i++) {
-                members_ids.push(tourn.players[i].user_id);
+        if (Array.isArray(tourn.registered_players)) {
+            for (var i = 0; i < tourn.registered_players.length; i++) {
+                members_ids.push(tourn.registered_players[i].user_id);
             }
             
         }

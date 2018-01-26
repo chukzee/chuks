@@ -6,7 +6,7 @@ var collections = ['users',
     'group_join_requests',
     'tournaments',
     'matches', //store only live and paused matches
-    'match_fixtures', //stores matches schedules to begin in specified time - using in tournament - but can be done by group member too
+    'match_fixtures', //stores matches schedules to begin in specified time - usually in tournaments - but can be done by group member too
     'match_history', //store abandon , cancelled and finnished match
     'play_requests', //stores play requests - this expires after certain period of time
     'spectators', //expires every certain period - say 24 hours - so create an index to take care of that
