@@ -21,6 +21,167 @@ class Tournament extends WebApplication {
         return typeof official === 'object';
     }
 
+    async seasonNew(user_id, tournament_name, players_slots_count, start_time) {
+
+
+        
+    }
+
+    async seasonAddPlayer(user_id, tournament_name, seanson_number, player_id, slot) {
+
+        
+    }
+
+    async seasonRemovePlayer(user_id, tournament_name, seanson_number, player_id, slot) {
+
+        
+    }
+
+    async seasonGetPlayers(user_id, tournament_name,  seanson_number) {
+
+        
+    }  
+    
+    async seasonTrimSlots(user_id, tournament_name, seanson_number) {
+
+        
+    }    
+    
+    async seasonClear(user_id, tournament_name, seanson_number) {
+
+        
+    }     
+    
+    async seasonClearSlots(user_id, tournament_name, seanson_number) {
+
+        
+    }   
+    
+    async seasonSetSlots(user_id, tournament_name, seanson_number, slots_count) {
+
+        
+    }   
+    
+    async seasonSetStartTime(user_id, tournament_name, seanson_number) {
+
+        
+    }     
+    
+    async seasonCount(user_id, tournament_name) {
+
+        
+    }     
+    
+    /**
+     * Below is a sample of the tournament document structure 
+     * 
+     * 
+     var tourn = {
+     
+     name: 'tournament_name',
+     game: 'game',
+     user_id: 'user_id',
+     status_message: 'status_message',
+     photo_url: 'photo_url',
+     officials: [
+     'official_user_id_1',
+     'official_user_id_2',
+     'official_user_id_3',
+     'official_user_id_4'
+     ],
+     registered_players: [
+     'registered_player_user_id_1',
+     'registered_player_user_id_2',
+     'registered_player_user_id_3',
+     'registered_player_user_id_4'
+     ],
+     seasons: [
+     {
+     sn: 1,//season number
+     begin_time: '01/10/2017 08:45',
+     end_time: '01/10/2017 08:45',
+     winner: 'player_id_2',
+     status: 'before_live', //before_live, live, end
+     slots:[
+     {
+     sn:1,
+     player_id:'player_id_1'
+     },
+     {
+     sn:2,
+     player_id:'player_id_2'
+     },
+     {
+     sn:3,
+     player_id:'player_id_3'
+     },
+     {
+     sn:4,
+     player_id:'player_id_4'
+     }   
+     ]
+     },
+     {
+     sn: 2,//season number
+     begin_time: '01/10/2017 08:45',
+     end_time: '01/10/2017 08:45',
+     winner: 'player_id_2',
+     status: 'before_live', //before_live, live, end
+     slots:[
+     {
+     sn:1,
+     player_id:'player_id_1'
+     },
+     {
+     sn:2,
+     player_id:'player_id_2'
+     },
+     {
+     sn:3,
+     player_id:'player_id_3'
+     },
+     {
+     sn:4,
+     player_id:'player_id_4'
+     }   
+     ]
+     },
+     {
+     sn: 3,//season number
+     begin_time: '01/10/2017 08:45',
+     end_time: '01/10/2017 08:45',
+     winner: 'player_id_2',
+     status: 'before_live', //before_live, live, end
+     slots:[
+     {
+     sn:1,
+     player_id:'player_id_1'
+     },
+     {
+     sn:2,
+     player_id:'player_id_2'
+     },
+     {
+     sn:3,
+     player_id:'player_id_3'
+     },
+     {
+     sn:4,
+     player_id:'player_id_4'
+     }   
+     ]
+     }
+     ]
+     }
+     * 
+     * 
+     * @param {type} user_id
+     * @param {type} tournament_name
+     * @param {type} game
+     * @param {type} status_message
+     * @param {type} photo_url
+     * @returns {Tournament@call;error|String}
+     */
     async createTournament(user_id, tournament_name, game, status_message, photo_url) {
 
         //where one object is passed a paramenter then get the needed
@@ -50,7 +211,7 @@ class Tournament extends WebApplication {
                 photo_url: photo_url,
                 officials: [],
                 registered_players: [],
-                seasons:[]
+                seasons: []
             };
 
             var r = await c.insertOne(insObj);
@@ -423,7 +584,7 @@ class Tournament extends WebApplication {
 
         return tourns;
     }
-    
+
     /**
      * Get the list of tournaments belong to by this user. The list consist of 
      * the tournament info.
@@ -448,7 +609,7 @@ class Tournament extends WebApplication {
             return this;
         }
     }
-    
+
     /**
      * Search for tournaments whose name begins with the specified
      * input string. The search is case-insensitive
@@ -465,7 +626,7 @@ class Tournament extends WebApplication {
         if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
-        
+
         //check if the user is already an official
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
 
@@ -488,11 +649,11 @@ class Tournament extends WebApplication {
      * @returns {Array|nm$_tournament.Tournament.getRandomTournamentsInfoList.tourns|Tournament.getRandomTournamentsInfoList.tourns}
      */
     async randomTournamentsInfoList(size) {
-        
+
         if (size > this.sObj.MAX_ALLOW_QUERY_SIZE) {
             size = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
-        
+
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         //NOTE: according to mongodb doc, the sample can return duplicate docs
         //occasionaly. However we do not care about that at this time anyway.
