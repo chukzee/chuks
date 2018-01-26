@@ -21,57 +21,87 @@ class Tournament extends WebApplication {
         return typeof official === 'object';
     }
 
-    async seasonNew(user_id, tournament_name, players_slots_count, start_time) {
+    async seasonNew(user_id, tournament_name, slots_count, start_time) {
+
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
 
 
-        
     }
 
     async seasonAddPlayer(user_id, tournament_name, seanson_number, player_id, slot) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
+
     }
 
     async seasonRemovePlayer(user_id, tournament_name, seanson_number, player_id, slot) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
+
     }
 
-    async seasonGetPlayers(user_id, tournament_name,  seanson_number) {
+    async seasonGetPlayers(user_id, tournament_name, seanson_number) {
 
-        
+
     }  
-    
+
     async seasonTrimSlots(user_id, tournament_name, seanson_number) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
+
+
     }    
-    
+
     async seasonClear(user_id, tournament_name, seanson_number) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
+
     }     
-    
+
     async seasonClearSlots(user_id, tournament_name, seanson_number) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
     }   
-    
+
     async seasonSetSlots(user_id, tournament_name, seanson_number, slots_count) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
+
     }   
-    
+
     async seasonSetStartTime(user_id, tournament_name, seanson_number) {
 
-        
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return "Not authorized!";
+        }
+
     }     
-    
+
     async seasonCount(user_id, tournament_name) {
 
-        
+
     }     
-    
+
     /**
      * Below is a sample of the tournament document structure 
      * 
