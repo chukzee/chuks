@@ -23,17 +23,105 @@ class Tournament extends WebApplication {
 
     async seasonNew(user_id, tournament_name, slots_count, start_time) {
 
+        if (!user_id) {
+            return 'No username';
+        }
+
+        if (!tournament_name) {
+            return 'No tournament name';
+        }
+
+        slots_count = slots_count - 0;
+        if (isNaN(slots_count) || slots_count < 1) {
+            return 'Invalid number of slots - must be a number greater than 0';
+        }
+
+        if (isNaN(new Date(start_time).getTime())) {
+            return `Invalid season start time - ${start_time}`;
+        }
+
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
             return "Not authorized!";
         }
 
 
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+
+        var last_season = tourn.seasons[tourn.seasons.length - 1];
+        if (last_season) {
+
+            //check if the last season has ended - a new season be created only if
+            //the last season has ended
+
+            if (last_season.status !== 'end' && last_season.status !== 'cancel') {
+                return "Can not create new season when the last season has not yet ended!";
+            }
+
+            //check if the start time is valid - must be after the last season's end time
+            var last_end_time = new Date(last_season.end_time).getTime();
+
+            if (isNaN(last_end_time)) {
+                console.log(`WARNING!!! This should not be - ${tournament_name} tournament 
+                                last season (seanson ${last_season.sn}) end time is invalid.`);
+
+                return `Invalid last season end time - ${last_end_time}`;
+            }
+            var _24_hour = 24 * 60 * 60 * 1000;
+            if (new Date(start_time).getTime() < last_end_time + _24_hour) {
+                return `Invalid season start time - must be at least 24 hours after the last seanson ended`;
+            }
+        }
+
+        var new_season = {
+            sn: tourn.seasons.length++, //next season number
+            start_time: start_time,
+            end_time: '',//will be set automatically when the final game of the season is concluded or when the seanson is cancelled
+            winner: '',//will be set automatically when the final game of the season is concluded.
+            status: 'before-start', //before-start, start, end, cancel
+            rounds: [],
+            slots: []
+        };
+        
+        //Create the dummy rounds of the season. By dummy we mean all the
+        //rounds fixtures will be created with empty player id which will be
+        //modified eventually.
+        
+        
+        
+        
+        
+        //Create the empty slots of the season
+
+
+        
+        //add the season to seasons list of the tournament
+        tourn.seasons.push(new_season);
+        
+        
+        //update the tournament
+        
+        
+        
     }
 
     async seasonAddPlayer(user_id, tournament_name, seanson_number, player_id, slot) {
 
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
             return "Not authorized!";
+        }
+
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
         }
 
 
@@ -46,12 +134,28 @@ class Tournament extends WebApplication {
         }
 
 
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+
     }
 
     async seasonGetPlayers(user_id, tournament_name, seanson_number) {
 
 
-    }  
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+
+    }
 
     async seasonTrimSlots(user_id, tournament_name, seanson_number) {
 
@@ -61,7 +165,15 @@ class Tournament extends WebApplication {
 
 
 
-    }    
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+
+    }
 
     async seasonClear(user_id, tournament_name, seanson_number) {
 
@@ -70,7 +182,15 @@ class Tournament extends WebApplication {
         }
 
 
-    }     
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+    }
 
     async seasonClearSlots(user_id, tournament_name, seanson_number) {
 
@@ -78,7 +198,15 @@ class Tournament extends WebApplication {
             return "Not authorized!";
         }
 
-    }   
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+    }
 
     async seasonSetSlots(user_id, tournament_name, seanson_number, slots_count) {
 
@@ -87,7 +215,15 @@ class Tournament extends WebApplication {
         }
 
 
-    }   
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+    }
 
     async seasonSetStartTime(user_id, tournament_name, seanson_number) {
 
@@ -95,124 +231,45 @@ class Tournament extends WebApplication {
             return "Not authorized!";
         }
 
-    }     
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+    }
 
     async seasonCount(user_id, tournament_name) {
 
 
-    }     
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+    }
 
     /**
-     * Below is a sample of the tournament document structure 
      * 
      * 
-     var tourn = {
-     
-     name: 'tournament_name',
-     game: 'game',
-     user_id: 'user_id',
-     status_message: 'status_message',
-     photo_url: 'photo_url',
-     officials: [
-     'official_user_id_1',
-     'official_user_id_2',
-     'official_user_id_3',
-     'official_user_id_4'
-     ],
-     registered_players: [
-     'registered_player_user_id_1',
-     'registered_player_user_id_2',
-     'registered_player_user_id_3',
-     'registered_player_user_id_4'
-     ],
-     seasons: [
-     {
-     sn: 1,//season number
-     begin_time: '01/10/2017 08:45',
-     end_time: '01/10/2017 08:45',
-     winner: 'player_id_2',
-     status: 'before_live', //before_live, live, end
-     slots:[
-     {
-     sn:1,
-     player_id:'player_id_1'
-     },
-     {
-     sn:2,
-     player_id:'player_id_2'
-     },
-     {
-     sn:3,
-     player_id:'player_id_3'
-     },
-     {
-     sn:4,
-     player_id:'player_id_4'
-     }   
-     ]
-     },
-     {
-     sn: 2,//season number
-     begin_time: '01/10/2017 08:45',
-     end_time: '01/10/2017 08:45',
-     winner: 'player_id_2',
-     status: 'before_live', //before_live, live, end
-     slots:[
-     {
-     sn:1,
-     player_id:'player_id_1'
-     },
-     {
-     sn:2,
-     player_id:'player_id_2'
-     },
-     {
-     sn:3,
-     player_id:'player_id_3'
-     },
-     {
-     sn:4,
-     player_id:'player_id_4'
-     }   
-     ]
-     },
-     {
-     sn: 3,//season number
-     begin_time: '01/10/2017 08:45',
-     end_time: '01/10/2017 08:45',
-     winner: 'player_id_2',
-     status: 'before_live', //before_live, live, end
-     slots:[
-     {
-     sn:1,
-     player_id:'player_id_1'
-     },
-     {
-     sn:2,
-     player_id:'player_id_2'
-     },
-     {
-     sn:3,
-     player_id:'player_id_3'
-     },
-     {
-     sn:4,
-     player_id:'player_id_4'
-     }   
-     ]
-     }
-     ]
-     }
+     * 
      * 
      * 
      * @param {type} user_id
      * @param {type} tournament_name
      * @param {type} game
+     * @param {type} type
+     * @param {type} sets_count
      * @param {type} status_message
      * @param {type} photo_url
      * @returns {Tournament@call;error|String}
      */
-    async createTournament(user_id, tournament_name, game, status_message, photo_url) {
+    async createTournament(user_id, tournament_name, game, type, sets_count, status_message, photo_url) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -220,8 +277,41 @@ class Tournament extends WebApplication {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
             game = arguments[0].game;
+            type = arguments[0].type;
+            sets_count = arguments[0].sets_count;
             status_message = arguments[0].status_message;
             photo_url = arguments[0].photo_url;
+        }
+
+
+        if (type !== 'round-robin' && type !== 'single-elimination') {
+            return 'Tournament type must be round-robin or single-elimination.';
+        }
+
+        if (!tournament_name) {
+            return 'No tournament name.';
+        }
+
+        if (typeof tournament_name !== 'string') {
+            return 'Invalid tournament name.';
+        }
+
+
+        if (!game) {
+            return 'No game name.';
+        }
+
+        if (typeof game !== 'string') {
+            return 'Invalid game name.';
+        }
+
+
+        if (!sets_count || sets_count < 1) {
+            return 'number of sets must be at least 1.';
+        }
+
+        if (!status_message) {
+            status_message = '';
         }
 
         try {
@@ -233,9 +323,12 @@ class Tournament extends WebApplication {
                 return 'Tournament name already exist!';
             }
 
+
             var insObj = {
                 name: tournament_name,
                 game: game,
+                type: type, //round-robin and single-elimination 
+                sets_count: sets_count, // number of times two player will play each other before a winner is determined - max is 5
                 user_id: user_id,
                 status_message: status_message,
                 photo_url: photo_url,
