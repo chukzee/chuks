@@ -21,7 +21,7 @@ class Tournament extends WebApplication {
         return typeof official === 'object';
     }
 
-    async seasonNew(user_id, tournament_name, slots_count, start_time) {
+    async seasonNew(user_id, tournament_name, slots_count, players_count, start_time) {
 
         if (!user_id) {
             return 'No username';
@@ -34,6 +34,15 @@ class Tournament extends WebApplication {
         slots_count = slots_count - 0;
         if (isNaN(slots_count) || slots_count < 1) {
             return 'Invalid number of slots - must be a number greater than 0';
+        }
+
+        players_count = players_count - 0;
+        if (isNaN(players_count) || players_count < 1) {
+            return 'Invalid number of players - must be a number greater than 0';
+        }
+
+        if (players_count > this.sObj.MAX_TOURNAMENT_PLAYERS) {
+            return `Number of players cannot exceed max. of ${this.sObj.MAX_TOURNAMENT_PLAYERS}`;
         }
 
         if (isNaN(new Date(start_time).getTime())) {
@@ -81,33 +90,90 @@ class Tournament extends WebApplication {
         var new_season = {
             sn: tourn.seasons.length++, //next season number
             start_time: start_time,
-            end_time: '',//will be set automatically when the final game of the season is concluded or when the seanson is cancelled
-            winner: '',//will be set automatically when the final game of the season is concluded.
+            end_time: '', //will be set automatically when the final game of the season is concluded or when the seanson is cancelled
+            winner: '', //will be set automatically when the final game of the season is concluded.
             status: 'before-start', //before-start, start, end, cancel
             rounds: [],
             slots: []
         };
-        
+
         //Create the dummy rounds of the season. By dummy we mean all the
         //rounds fixtures will be created with empty player id which will be
         //modified eventually.
-        
-        
-        
-        
-        
+        var rounds;
+        if (tourn.type === 'round-robin') {
+            rounds = this._roundRobinRounds(players_count, tourn.sets_count);
+        } else if (tourn.type === 'single-elimination') {
+            rounds = this._singleEleminationRounds(players_count, tourn.sets_count);
+        } else {
+            return `Unknown type of tournament - ${tourn.type}`;
+        }
+
+        if (!isArray(rounds)) {
+            return rounds; // returns the error msg
+        }
+
+
+
+
         //Create the empty slots of the season
 
 
-        
+
         //add the season to seasons list of the tournament
         tourn.seasons.push(new_season);
-        
-        
+
+
         //update the tournament
-        
-        
-        
+
+
+
+    }
+
+    _fixturesStruct() {
+
+    }
+
+    _roundRobinRounds(players_count, sets_count) {
+
+        var rounds = [];
+        for (var i = 0; i < players_count; i++) {
+            var num = i + 1;
+            var rd = {
+                sn: num,
+                fixtures: this._fixturesStruct(num, sets_count)
+            };
+
+            rounds.push(rd);
+        }
+
+        return rounds;
+
+    }
+
+    _singleEleminationRounds(players_count, sets_count) {
+
+        if (players_count !== 4
+                && players_count !== 8
+                && players_count !== 16
+                && players_count !== 32
+                && players_count !== 64) {
+
+            return 'Invalid number of players of singel elimination tournament - expected 4, 8, 16, 32, 64';
+        }
+
+        var size = players_count;
+        while( size >= 4 ){
+            
+            for(var i=0; i<size; i++){
+                
+            }
+            
+            size /= 2; 
+        }
+
+
+
     }
 
     async seasonAddPlayer(user_id, tournament_name, seanson_number, player_id, slot) {
