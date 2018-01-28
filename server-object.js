@@ -122,6 +122,10 @@ class ServerObject {
         return 30;
     }
     
+    get MIN_TOURNAMENT_PLAYERS(){
+        return 4;
+    }
+    
     get MAX_TOURNAMENT_PLAYERS(){
         return 100;
     }

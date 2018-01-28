@@ -45,6 +45,10 @@ class Tournament extends WebApplication {
             return `Number of players cannot exceed max. of ${this.sObj.MAX_TOURNAMENT_PLAYERS}`;
         }
 
+        if (players_count < this.sObj.MIN_TOURNAMENT_PLAYERS) {
+            return `Number of players must be at least ${this.sObj.MIN_TOURNAMENT_PLAYERS}`;
+        }
+
         if (isNaN(new Date(start_time).getTime())) {
             return `Invalid season start time - ${start_time}`;
         }
@@ -109,15 +113,17 @@ class Tournament extends WebApplication {
             return `Unknown type of tournament - ${tourn.type}`;
         }
 
-        if (!isArray(rounds)) {
+        if (!isArray(rounds)) {//possibly a string
             return rounds; // returns the error msg
         }
 
-
-
-
         //Create the empty slots of the season
-
+        for (var i = 0; i < players_count; i++) {
+            new_season.slots[i] = {
+                sn: i + 1,
+                player_id: ''
+            };
+        }
 
 
         //add the season to seasons list of the tournament
@@ -130,22 +136,102 @@ class Tournament extends WebApplication {
 
     }
 
-    _fixturesStruct() {
+    /**
+     * Create the default structure object of the tournament season fixture
+     * 
+     * @param {type} slot_1 used to represent a dummy player when no player is set - like a container met to hold a particular thing
+     * @param {type} slot_2 used to represent a dummy player when no player is set - like a container met to hold a particular thing
+     * @param {type} sets_count represent the number of games to make a complete match
+     * @returns {nm$_tournament.Tournament._fixturesStruct.fixture}
+     */
+    _fixturesStruct(slot_1, slot_2, sets_count) {
+
+        var fixture = {
+            player_1: {
+                slot: slot_1, // used to represent a dummy player when no player is set.
+                user_id: ''//initially empty - will be updated dynamically
+            },
+            player_2: {
+                slot: slot_2, // used to represent a dummy player when no player is set.
+                user_id: ''//initially empty - will be updated dynamically
+            },
+            sets: []
+        };
+
+        // 'sets_count'  represent the number of games to make a complete match  
+        for (var i = 0; i < sets_count; i++) {
+            fixture.sets[i] = {
+                start_time: '', //will be set dynamically
+                end_time: '', //will be set dynamically
+                player_1_score: 0,
+                player_2_score: 0
+            };
+        }
+
+        return fixture;
 
     }
 
     _roundRobinRounds(players_count, sets_count) {
 
-        var rounds = [];
-        for (var i = 0; i < players_count; i++) {
-            var num = i + 1;
-            var rd = {
-                sn: num,
-                fixtures: this._fixturesStruct(num, sets_count)
-            };
+        //--- EVEN AND ODD NUMBER OF/PLAYERS-------
 
-            rounds.push(rd);
+        var rounds = [];
+        var is_even = players_count % 2 === 0;
+        var half = players_count / 2;
+        if (!is_even) {
+            half = (players_count + 1) / 2;
         }
+
+        var slot_1s = [];
+        var slot_2s = [];
+        for (var i = 1; i < half + 1; i++) {
+            slot_1s[i - 1] = i;
+            slot_2s[i - 1] = i + half;
+        }
+
+        var EMPTY = '-';
+
+        if (!is_even) {// if old number of players then add a dummy player
+            slot_2s[slot_2s.length - 1] = EMPTY;//DUMMY PLAYER - ANY PLAYER PAIRED WITH THIS DUMMY PLAYER WILL BE IDLE  ON THAT ROUND - ie will get a bye see https://en.wikipedia.org/wiki/Bye_%28sports%29
+        }
+
+        var total_rounds = slot_1s.length + slot_1s.length - 1;
+
+        for (var i = 0; i < total_rounds; i++) {
+            var ls1 = slot_1s[slot_1s.length - 1];
+            var ls2 = slot_2s[0];
+            for (var k = 0; k < half; k++) {
+                if (k < half - 1) {
+                    slot_1s[half - k - 1] = slot_1s[half - k - 2];
+                    slot_2s[k] = slot_2s[k + 1];
+                } else {
+                    slot_1s[1] = ls2; // set the 2 index which is index 1 to the initial first index of the other half array
+                    slot_2s[k] = ls1;
+                }
+            }
+
+            //after one rotation done, a new round of matches is created.
+
+            var match_count = half; // number of matches on this round
+            for (var n = 0; n < match_count; n++) {
+
+                if (slot_1s[n] === EMPTY || slot_2s[n] === EMPTY) {//in the case of odd number of players
+                    continue;//skip - the player will be idle in this round - gets a bye. see https://en.wikipedia.org/wiki/Bye_%28sports%29
+                }
+                var num = n + 1;
+                var rd = {
+                    sn: num,
+                    fixtures: this._fixturesStruct(slot_1s[n], slot_2s[n], sets_count)
+                };
+
+                rounds.push(rd);
+            }
+
+        }
+
+
+
 
         return rounds;
 
@@ -162,15 +248,9 @@ class Tournament extends WebApplication {
             return 'Invalid number of players of singel elimination tournament - expected 4, 8, 16, 32, 64';
         }
 
+        var rounds = [];
         var size = players_count;
-        while( size >= 4 ){
-            
-            for(var i=0; i<size; i++){
-                
-            }
-            
-            size /= 2; 
-        }
+
 
 
 
