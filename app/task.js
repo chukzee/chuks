@@ -1,5 +1,6 @@
 
 var PlayRequest = require('./game/play-request');
+var Tournament = require('./info/tournament');
 
 class Task {
 
@@ -35,6 +36,10 @@ class Task {
                 var game_id = obj.param;
                 new PlayRequest(this.sObj, this.util, this.evt)._expire(game_id);
                 return;
+            case 'START_TOURNAMENT_SEASON':
+                new Tournament(this.sObj, this.util, this.evt)._startSeason(obj.param);
+                return;    
+                
             default:
 
                 break;

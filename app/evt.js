@@ -2,6 +2,22 @@
 
 class Evt{
     
+    get season_start(){
+        return 'season_start';
+    }
+    
+    get season_cancel(){
+        return 'season_cancel';
+    }
+    
+    get season_delete(){
+        return 'season_delete';
+    }
+
+    get season_end(){
+        return 'season_end';
+    }
+        
     get game_move(){
         return 'game_move';
     }

@@ -13,16 +13,16 @@ var tourn = {
     photo_url: 'photo_url',
 
     officials: [
-        'official_user_id_1',
-        'official_user_id_2',
-        'official_user_id_3',
-        'official_user_id_4'
+        {},//info
+        {},//info
+        {},//info
+        {}//info
     ],
     registered_players: [
-        'registered_player_user_id_1',
-        'registered_player_user_id_2',
-        'registered_player_user_id_3',
-        'registered_player_user_id_4'
+        {},//info
+        {},//info
+        {},//info
+        {}//info
     ],
     seasons: [
         {
@@ -38,12 +38,12 @@ var tourn = {
                         {
                             player_1: {
                                 slot: 'player_1_slot_number', // used to represent a dummy player when no player is set.
-                                user_id:'player_1_user_id'
+                                id:'player_1_user_id'
                             },
                             
                             player_2: {
                                 slot: 'player_2_slot_number', // used to represent a dummy player when no player is set.
-                                user_id:'player_2_user_id'
+                                id:'player_2_user_id'
                             },
 
                             sets: [// 'sets'  store the number of games to make a complete match  
