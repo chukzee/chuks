@@ -663,7 +663,7 @@ class Tournament extends WebApplication {
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
             return this.error('Not authorized!');
         }
-        
+
         if (!reason) {
             return this.error('Extreme action requires a reason!');
         }
@@ -695,28 +695,14 @@ class Tournament extends WebApplication {
 
         //notify all relevant users - registered players and officials
         var data = {
+            official_id : user_id,
             tournament_name: tourn.name,
             season_number: current_season.sn,
             reason: reason //tournament comment room should also show this message
         };
 
-
-        var relevant_user_ids = [];
-
-        if (Array.isArray(tourn.officials)) {
-            for (var i = 0; i < tourn.officials.length; i++) {
-                relevant_user_ids[relevant_user_ids.length] = tourn.officials[i].user_id;
-            }
-        }
-
-        if (Array.isArray(tourn.registered_players)) {
-            for (var i = 0; i < tourn.registered_players.length; i++) {
-                relevant_user_ids[relevant_user_ids.length] = tourn.registered_players[i].user_id;
-            }
-        }
-
-        this.broadcast(this.evt.season_cancel, data, relevant_user_ids);
-
+        this._broadcastInHouse(tourn, this.evt.season_cancel, data);
+                
     }
 
     /**
@@ -739,7 +725,7 @@ class Tournament extends WebApplication {
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
             return this.error('Not authorized!');
         }
-        
+
         if (!reason) {
             return this.error('Extreme action requires a reason!');
         }
@@ -769,28 +755,14 @@ class Tournament extends WebApplication {
 
         //notify all relevant users - registered players and officials
         var data = {
+            official_id : user_id,
             tournament_name: tourn.name,
             season_number: current_season.sn,
             reason: reason //tournament comment room should also show this message
         };
 
-
-        var relevant_user_ids = [];
-
-        if (Array.isArray(tourn.officials)) {
-            for (var i = 0; i < tourn.officials.length; i++) {
-                relevant_user_ids[relevant_user_ids.length] = tourn.officials[i].user_id;
-            }
-        }
-
-        if (Array.isArray(tourn.registered_players)) {
-            for (var i = 0; i < tourn.registered_players.length; i++) {
-                relevant_user_ids[relevant_user_ids.length] = tourn.registered_players[i].user_id;
-            }
-        }
-
-        this.broadcast(this.evt.season_delete, data, relevant_user_ids);
-
+        this._broadcastInHouse(tourn, this.evt.season_delete, data);
+                                
     }
 
     async seasonCount(tournament_name) {
@@ -852,28 +824,33 @@ class Tournament extends WebApplication {
                                     start_time: season.start_time
                                 };
 
-
-                                var relevant_user_ids = [];
-
-                                if (Array.isArray(tourn.officials)) {
-                                    for (var i = 0; i < tourn.officials.length; i++) {
-                                        relevant_user_ids[relevant_user_ids.length] = tourn.officials[i].user_id;
-                                    }
-                                }
-
-                                if (Array.isArray(tourn.registered_players)) {
-                                    for (var i = 0; i < tourn.registered_players.length; i++) {
-                                        relevant_user_ids[relevant_user_ids.length] = tourn.registered_players[i].user_id;
-                                    }
-                                }
-
-                                me.broadcast(me.evt.season_start, data, relevant_user_ids);
+                                me._broadcastInHouse(tourn, me.evt.season_start, data);
+                                
                             });
 
                 });
 
 
 
+    }
+
+    _broadcastInHouse(tournObj, event, data) {
+
+        var relevant_user_ids = [];
+
+        if (Array.isArray(tournObj.officials)) {
+            for (var i = 0; i < tournObj.officials.length; i++) {
+                relevant_user_ids[relevant_user_ids.length] = tournObj.officials[i].user_id;
+            }
+        }
+
+        if (Array.isArray(tournObj.registered_players)) {
+            for (var i = 0; i < tournObj.registered_players.length; i++) {
+                relevant_user_ids[relevant_user_ids.length] = tournObj.registered_players[i].user_id;
+            }
+        }
+
+        this.broadcast(event, data, relevant_user_ids);
     }
 
     /**
