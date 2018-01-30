@@ -53,8 +53,10 @@ Ns.view.PlayNotifications = {
 
     onClickNotification: function (evt, game_id) {
 
-        var list = Ns.game.PlayRequest.playRequestList;
+        //COME BACK ABEG O!!!
 
+        //var list = Ns.game.PlayRequest.playRequestList ; // TODO- AND tournament fixtures - come back
+/*
         var up_coming;
         for (var i = 0; i < list.length; i++) {
             if (list[i].game_id === game_id) {
@@ -80,15 +82,15 @@ Ns.view.PlayNotifications = {
                 Ns.view.PlayNotifications.onClickGameStart(up_coming);
             }
         }
-
+*/
     },
 
-    getOpponents: function (play_request) {
+    getOpponents: function (up_coming) {
         var app_user_id = Ns.view.UserProfile.appUser.user_id;
         var opponents = [];
-        for (var i = 0; i < play_request.players.length; i++) {
-            if (play_request.players[i].user_id !== app_user_id) {
-                opponents.push(play_request.players[i]);
+        for (var i = 0; i < up_coming.players.length; i++) {
+            if (up_coming.players[i].user_id !== app_user_id) {
+                opponents.push(up_coming.players[i]);
             }
         }
         return opponents;

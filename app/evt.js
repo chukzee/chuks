@@ -17,6 +17,10 @@ class Evt{
     get season_end(){
         return 'season_end';
     }
+    
+    get notify_upcoming_match(){
+        return 'notify_upcoming_match';
+    }
         
     get game_move(){
         return 'game_move';

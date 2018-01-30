@@ -31,6 +31,9 @@ var tourn = {
             end_time: '01/10/2017 08:45', //will be set automatically when the final game of the season is concluded or when the seanson is cancelled
             winner: 'player_id_2', //will be set automatically when the final game of the season is concluded.
             status: 'before-start', //before-start, start, end, cancel
+            rules:{//game rules - each season will have its own rules
+                
+            },
             rounds: [
                 {
                     sn: 1, //first round
@@ -48,6 +51,7 @@ var tourn = {
 
                             sets: [// 'sets'  store the number of games to make a complete match  
                                 {
+                                    game_id: 'game_id',//important
                                     start_time: 'start_time',
                                     end_time: 'end_time',
                                     player_1_score: 0,

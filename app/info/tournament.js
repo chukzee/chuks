@@ -57,8 +57,18 @@ class Tournament extends WebApplication {
             return this.error(`Number of players must be at least ${this.sObj.MIN_TOURNAMENT_PLAYERS}`);
         }
 
-        if (isNaN(new Date(start_time).getTime())) {
+        var begin_time = new Date(start_time);
+        if (isNaN(begin_time.getTime())) {
             return this.error(`Invalid season start time - ${start_time}`);
+        }
+        var now = new Date().getTime();
+        if (begin_time.getTime() < now) {
+            return this.error(`Season start time can not be in the past .`);
+        }
+
+        var _15_mins = 15 * 60 * 1000;
+        if (begin_time.getTime() <= now + _15_mins) {
+            return this.error(`Season start time too close to current time.`);
         }
 
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
@@ -176,7 +186,9 @@ class Tournament extends WebApplication {
 
         // 'sets_count'  represent the number of games to make a complete match  
         for (var i = 0; i < sets_count; i++) {
+            var game_id = this.sObj.UniqueNumber; //assign unique number to the game id
             fixture.sets[i] = {
+                game_id: game_id,
                 start_time: '', //will be set dynamically
                 end_time: '', //will be set dynamically
                 player_1_score: 0,
@@ -587,6 +599,171 @@ class Tournament extends WebApplication {
 
     }
 
+    /**
+     * 
+     * @param {type} user_id
+     * @param {type} tournament_name
+     * @param {type} game_id
+     * @param {type} kickoff_time
+     * @returns {Tournament@call;error|String}
+     */
+    async seasonMatchKickOff(user_id, tournament_name, game_id, kickoff_time) {
+
+        if (!this._isTournamentOfficial(user_id, tournament_name)) {
+            return this.error('Not authorized!');
+        }
+
+        var begin_time = new Date(kickoff_time);
+        if (isNaN(begin_time.getTime())) {
+            return this.error(`Invalid kickoff time value- ${kickoff_time}`);
+        }
+
+        var now = new Date().getTime();
+        if (begin_time.getTime() < now) {
+            return this.error(`Kickoff time can not be in the past .`);
+        }
+
+        var _15_mins = 15 * 60 * 1000;
+        if (begin_time.getTime() <= now + _15_mins) {
+            return this.error(`Kickoff time too close to current time.`);
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        var seasons = tourn.seasons;
+        if (seasons.length === 0) {
+            return this.error(`No season found.`);
+        }
+        var last = seasons.length - 1;
+        var current_season = seasons[last];
+
+        if (current_season.status === 'cancel') {
+            return this.error(`Cannot set kickoff time - season ${seasons.length} is cancelled.`);
+        }
+
+        if (current_season.status === 'end') {
+            return this.error(`Cannot set kickoff time - season ${seasons.length} has ended.`);
+        }
+        var season_start_time = new Date(current_season.start_time);
+        if (begin_time.getTime() < season_start_time.getTime()) {
+            return this.error(`Kickoff time, ${begin_time} must be ahead of current season start time, ${season_start_time}`);
+        }
+
+        //find the match fixture with the give game id
+        var game_set;
+        var has_kickoff_time = false;
+        var rounds = current_season.rounds;
+        var players_ids = [];
+
+        for (var i = 0; i < rounds.length; i++) {
+            var fixtures = rounds[i].fixtures;
+            for (var j = 0; j < fixtures.length; j++) {
+                var sets = fixtures[j].sets;
+                for (var k = 0; k < sets.length; k++) {
+                    if (sets[k].game_id === game_id) {
+                        if (sets[k].start_time) {
+                            has_kickoff_time = true;
+                        }
+                        game_set = sets[k];//hold
+                        if (fixtures[j].player_1.id && fixtures[j].player_2.id) {
+                            players_ids.push(fixtures[j].player_1.id);
+                            players_ids.push(fixtures[j].player_2.id);
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!game_set) {
+            return this.error(`Cannot set kickoff time - fixture not found.`);
+        }
+
+        if (players_ids.length === 0) {
+            return this.error(`Cannot set kickoff time - one or more player not fixtured.`);
+        }
+
+        var sc = this.sObj.db.collection(this.sObj.col.match_fixtures);
+
+        if (has_kickoff_time) {
+            //find and delete the match fixture
+            var r = await sc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
+            if (!r.value) {
+                //ok check if the match has already start - which is most
+                //probably the reason it is not found in match_fixtures collection
+                var match = await c.findOne({game_id: game_id});
+                if (!match) {
+                    //that's right! the match has already started
+                    return 'Could not modify kickoff time - match already started.';
+                }
+                return this.error(`Could not modify kickoff time - fixture not found.`);
+            }
+        }
+
+        //now set the start time, our interest
+        game_set.start_time = kickoff_time;
+
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var user = new User(this.sObj, this.util, this.evt);
+        var players = await user.getInfoList(players_ids, required_fields);
+
+        if (user.lastError) {
+            return this.error('Could not set kickoff. Something went wrong.');
+        }
+
+        if (!Array.isArray(players)) {
+            console.log('This should not happen! user info list must return an array if no error was caught!');
+            return this.error('Could not set kickoff. Something is wrong.');
+        }
+
+        //check if the player info list is complete - ie match  the number requested for
+
+        var missing = this.util.findMissing(players_ids, players, function (p_id, p_info) {
+            return p_id === p_info.user_id;
+        });
+
+        if (missing) {
+            //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
+            return this.error('Could not find player with user id - ' + missing);
+        }
+
+        var matchObj = {
+            start_time: begin_time.getTime(),//important
+            tournament_name: tourn.name,
+            game_id: game_id,
+            game_name: tourn.game,
+            game_rules: current_season.rules,
+            players: players
+        };
+
+        var r = await c.insertOne(matchObj);
+        if (r.result.n > 1 || r.result.n < 1) {
+            return 'Could not set kickoff. Something is not right. ';
+        }
+
+        //update the tournament
+        await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+
+        var k_time = new Date(kickoff_time).getTime();
+        var now = new Date().getTime();
+        var _10_mins = 10 * 60 * 1000;
+        var delay = k_time - now - _10_mins;
+
+        this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will match send reminder to the player
+
+        var delay = k_time - now;
+        this.sObj.task.later('START_TOURNAMENT_MATCH', delay, game_id);//will automatically start the match when kickoff is reached
+
+        return 'Kickoff time set successfully.';
+
+    }
+
     async seasonStart(user_id, tournament_name, season_number, start_time) {
 
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
@@ -597,6 +774,11 @@ class Tournament extends WebApplication {
         if (isNaN(season_begin_time.getTime())) {
             return this.error(`Invalid start time value- ${start_time}`);
         }
+
+        if (season_begin_time.getTime() < new Date().getTime()) {
+            return this.error(`Season start time can not be in the past.`);
+        }
+
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
@@ -622,7 +804,7 @@ class Tournament extends WebApplication {
 
         var last_season = seasons[season_number - 1];
 
-        if (!this._validateSeasonStartTime(last_season.end_time, start_time)) {
+        if (last_season && !this._validateSeasonStartTime(last_season.end_time, start_time)) {
             return;
         }
 
@@ -631,7 +813,7 @@ class Tournament extends WebApplication {
         //update the tournament
         await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
-        var delay = new Date().getTime(start_time) - new Date().getTime();
+        var delay = new Date(start_time).getTime() - new Date().getTime();
 
         this.sObj.task.later('START_TOURNAMENT_SEASON', delay, {
             tournament_name: tournament_name,
@@ -695,14 +877,14 @@ class Tournament extends WebApplication {
 
         //notify all relevant users - registered players and officials
         var data = {
-            official_id : user_id,
+            official_id: user_id,
             tournament_name: tourn.name,
             season_number: current_season.sn,
             reason: reason //tournament comment room should also show this message
         };
 
         this._broadcastInHouse(tourn, this.evt.season_cancel, data);
-                
+
     }
 
     /**
@@ -755,14 +937,14 @@ class Tournament extends WebApplication {
 
         //notify all relevant users - registered players and officials
         var data = {
-            official_id : user_id,
+            official_id: user_id,
             tournament_name: tourn.name,
             season_number: current_season.sn,
             reason: reason //tournament comment room should also show this message
         };
 
         this._broadcastInHouse(tourn, this.evt.season_delete, data);
-                                
+
     }
 
     async seasonCount(tournament_name) {
@@ -814,7 +996,7 @@ class Tournament extends WebApplication {
 
                     season.status = 'start';// change the status fromm 'before-start' to 'start'
                     //update the tournament
-                    c.updateOne({name: obj.tournament_name}, {$set: {seasons: tourn.seasons}})
+                    return c.updateOne({name: obj.tournament_name}, {$set: {seasons: tourn.seasons}})
                             .then(function (result) {
 
                                 //notify all relevant users - registered players and officials
@@ -825,10 +1007,13 @@ class Tournament extends WebApplication {
                                 };
 
                                 me._broadcastInHouse(tourn, me.evt.season_start, data);
-                                
+
                             });
 
-                });
+                })
+                .catch(function (err) {
+                    console.log(err);//DO NOT DO THIS IN PRODUCTION
+                });;
 
 
 
@@ -853,6 +1038,85 @@ class Tournament extends WebApplication {
         this.broadcast(event, data, relevant_user_ids);
     }
 
+    /**
+     * This method is automatically called after the end of every tournament match
+     * to check if the last match of the season has ended so as to take appropriate
+     * action of signalling the end of the season.
+     * 
+     * @param {type} match
+     * @returns {undefined}
+     */
+    _checkSeasonEnd(match) {
+
+        //check if the final match of the season was played
+
+        var me = this;
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        c.findOne({name: match.tournament_name})
+                .then(function (tourn) {
+                    if (!tourn) {
+                        return; //tournament no longer exist!
+                    }
+
+                    var last_season = tourn.seasons[tourn.seasons.length - 1];
+                    var last_round = last_season.rounds[last_season.rounds.length - 1];
+                    var last_fixtures = last_round.fixtures;
+                    var last_fixt = last_fixtures[last_fixtures.length - 1];
+                    var last_set = last_fixt.sets[last_fixt.sets.length - 1];
+                    if (last_set.game_id !== match.game_id) {
+                        return;// leave - not the final match
+                    }
+
+                    //At this point the final match of the season just completed
+
+                    last_season.status = 'end';// change the status fromm 'start' to 'end'
+                    last_season.end_time = new Date();
+
+                    //update the tournament
+                    return c.updateOne({name: match.tournament_name}, {$set: {seasons: tourn.seasons}})
+                            .then(function (result) {
+
+                                //notify all relevant users - registered players and officials
+                                var data = {
+                                    tournament_name: tourn.name,
+                                    season_number: last_season.sn,
+                                    end_time: last_season.end_time
+                                };
+
+                                me._broadcastInHouse(tourn, me.evt.season_end, data);
+
+                            });
+
+                })
+                .catch(function (err) {
+                    console.log(err);//DO NOT DO THIS IN PRODUCTION
+                });;
+
+    }
+
+    _notifyUpcomingMatch(game_id) {
+        var me = this;
+
+        var c = this.sObj.db.collection(this.sObj.col.match_fixtures);
+        c.findOne({game_id: game_id})
+                .then(function (match) {
+                    if (!match) {
+                        return; //match fixture no longer exist!
+                    }
+                    
+                    //notify the players of their upcoming match
+                    var players_ids = [];
+                    players_ids.push(match.players[0].user_id);
+                    players_ids.push(match.players[1].user_id);
+                    
+                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids);
+                    
+                })
+                .catch(function (err) {
+                    console.log(err);//DO NOT DO THIS IN PRODUCTION
+                });
+    }
     /**
      * 
      * 

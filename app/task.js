@@ -1,6 +1,7 @@
 
 var PlayRequest = require('./game/play-request');
 var Tournament = require('./info/tournament');
+var Match = require('./game/match');
 
 class Task {
 
@@ -38,6 +39,14 @@ class Task {
                 return;
             case 'START_TOURNAMENT_SEASON':
                 new Tournament(this.sObj, this.util, this.evt)._startSeason(obj.param);
+                return;  
+            case 'START_TOURNAMENT_MATCH':
+                var game_id = obj.param;
+                new Match(this.sObj, this.util, this.evt).start(game_id, 'match-fixture');
+                return;   
+            case 'REMIND_TOURNAMENT_MATCH':
+                var game_id = obj.param;
+                new Tournament(this.sObj, this.util, this.evt)._notifyUpcomingMatch(game_id);
                 return;    
                 
             default:

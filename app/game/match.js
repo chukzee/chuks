@@ -4,6 +4,7 @@
 var WebApplication = require('../web-application');
 var User = require('../info/user');
 var PlayerRank = require('../info/player-ranks');
+var Tournament = require('./info/tournament');
 
 
 class Match extends WebApplication {
@@ -17,7 +18,7 @@ class Match extends WebApplication {
     }
 
     async fixTournamentMatch(tournament_name, user_id, player_1_id, player_2_id, kick_off_time) {
-        
+
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
@@ -27,7 +28,7 @@ class Match extends WebApplication {
             player_2_id = arguments[0].player_2_id;
             kick_off_time = arguments[0].kick_off_time;
         }
-        
+
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
 
@@ -72,11 +73,11 @@ class Match extends WebApplication {
             var mins = this.sObj.MATCH_SCHEDULE_OFFSET / 60000;
             return `Kick off time too close - must be atleast ${mins} minutes later`;
         }
-        
-        
-        
-        
-        
+
+
+
+
+
 
     }
 
@@ -395,12 +396,18 @@ class Match extends WebApplication {
      * game document object in 'play_requests' and 'match_fixtures'
      * collections. And then relocated to 'matches' collections.
      * If the second parameter is provided then only the 
-     * oppropriate collection is searched. This is useful to
+     * appropriate collection is searched. This is useful to
      * reduce search load when you already know where to search
      * 
      * For a two players game like chess and draft
      * the first player in the players array is the white ahd
      * the second is the black.
+     * 
+     * Note for match fixture as in tournament matches, this method 
+     * is called automatically by the server when the kickoff time for
+     * the match is reached. The respective players will thereafter recieve
+     * the game_start event from the server and are expected to begin playing
+     * afterwards.
      * 
      * @param {type} game_id - id of the game to start
      * @param {type} fixture_type - (optional) whether it is play request or group or tournament match fixture.
@@ -409,9 +416,9 @@ class Match extends WebApplication {
      */
     async start(game_id, fixture_type) {
         var mtcObj;
-        if (fixture_type === 'match fixture') {
+        if (fixture_type === 'match-fixture') {
             mtcObj = await this._findOneAndDeleteMatchFixture(game_id);
-        } else if (fixture_type === 'play request') {
+        } else if (fixture_type === 'play-request') {
             mtcObj = await this._findOneAndDeletePlayRequest(game_id);
         } else {
             mtcObj = await this._findOneAndDeleteMatchFixture(game_id);
@@ -480,6 +487,7 @@ class Match extends WebApplication {
         if (!r.result.n) {
             return 'Could not start game';
         }
+        
 
         //broadcast the game start event to all the players concern
         match.players = players;
@@ -759,6 +767,7 @@ class Match extends WebApplication {
             var c = this.sObj.db.collection(this.sObj.col.match_history);
             await c.insertOne(match);
 
+
         } catch (e) {
             this.error('Could not finish game');
             return this;
@@ -785,6 +794,13 @@ class Match extends WebApplication {
         //update the players ranking
         var rank = new PlayerRank(this.sObj, this.util, this.evt);
         rank.updateRanking(match.players, winner_user_id);
+
+        //End the season if the match is the last match of the tournament season
+        if (match.tournament_name) {
+            //check if the game is the last match of the tournament
+            var t = new Tournament(this.sObj, this.util, this.evt);
+            t._checkSeasonEnd(match);
+        }
     }
 
     /**
