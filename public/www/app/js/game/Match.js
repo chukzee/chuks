@@ -30,8 +30,12 @@ Ns.game.Match = {
 
         Main.rcall.live(obj);
 
+
+        Main.eventio.on('notify_upcoming_match', this.onNotifyUpComingMatch);//match reminder - ie say 10 mins before time
         Main.eventio.on('game_start', this.onGameStart);
+        Main.eventio.on('game_start_next_set', this.onGameStartNextSet);
         Main.eventio.on('watch_game_start', this.onWatchGameStart);
+        Main.eventio.on('watch_game_start_next_set', this.onWatchGameStartNextSet);
         Main.eventio.on('game_resume', this.onGameResume);
         Main.eventio.on('watch_game_resume', this.onWatchGameResume);
         Main.eventio.on('game_pause', this.onGamePause);
@@ -393,7 +397,14 @@ Ns.game.Match = {
 
 
     },
+    
+    onNotifyUpComingMatch: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
 
+    },
+    
     onGameStart: function (obj) {
         console.log(obj);
         
@@ -401,8 +412,24 @@ Ns.game.Match = {
         Ns.game.Match.prependMatchListview(match);
 
     },
+    
+    onGameStartNextSet: function (obj) {
+        console.log(obj);
+        
+        var match = obj.data.match;
+        Ns.game.Match.prependMatchListview(match);
 
+    },
+    
     onWatchGameStart: function (obj) {
+        console.log(obj);
+
+        var match = obj.data.match;
+        Ns.game.Match.prependMatchListview(match);
+
+    },
+
+    onWatchGameStartNextSet: function (obj) {
         console.log(obj);
 
         var match = obj.data.match;

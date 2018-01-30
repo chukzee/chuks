@@ -106,11 +106,12 @@ Main.on("pagecreate", function (arg) {
         var user_id = prompt('user_id', '');
         var opponent_id = prompt('opponent_id', '');
         var game_id = prompt('game_id', '');
+        var set = prompt('game set', 1);
         var move = {
             serial_no : prompt('move serial no', 0)
         };
 
-        Main.ro.match.sendMove(user_id, opponent_id, game_id, move)
+        Main.ro.match.sendMove(user_id, opponent_id, game_id, set, move)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -125,8 +126,9 @@ Main.on("pagecreate", function (arg) {
     $('#btn-get-game-position').on('click', function () {
 
         var game_id = prompt('game_id', '');
-
-        Main.ro.match.getGamePosition(game_id)
+        var set = prompt('game set', 1);
+        
+        Main.ro.match.getGamePosition(game_id, set)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

@@ -50,8 +50,16 @@ class Evt{
         return 'game_start';
     }
     
+    get game_start_next_set(){
+        return 'game_start_next_set';
+    }
+    
     get watch_game_start(){
         return 'watch_game_start';
+    }
+    
+    get watch_game_start_next_set(){
+        return 'watch_game_start_next_set';
     }
     
     get game_resume(){

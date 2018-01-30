@@ -15,14 +15,15 @@ class PlayRequest extends WebApplication {
      * @param {type} opponent_ids - id of the user or users requested. Can be
      *  an array of user ids for game of more than two players e.g ludo , whot
      * @param {type} game_name - the name of the game e.g chess, draft , ludo e.t.c
-     * @param {type} game_rules - (optional) the rules to apply in the game. If not provided
+     * @param {type} rules - (optional) the rules to apply in the game. If not provided
      *  then the default game rules is used when the game starts
      * @param {type} group_name - the name of the user's group he selected
      * a player to play with. The client should set this value to the group
      * name if the user picks a player in his group profile page to play with.
+     * @param {type} sets_count - number of games to play to make a complete match
      * @returns {undefined}
      */
-    async sendRequest(initiator_id, opponent_ids, game_name, game_rules, group_name) {
+    async sendRequest(initiator_id, opponent_ids, game_name, rules, group_name, sets_count) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -30,8 +31,10 @@ class PlayRequest extends WebApplication {
             initiator_id = arguments[0].initiator_id;
             opponent_ids = arguments[0].opponent_ids;
             game_name = arguments[0].game_name;
-            game_rules = arguments[0].game_rules;
+            rules = arguments[0].rules;
             group_name = arguments[0].group_name;
+            sets_count = arguments[0].sets_count;
+             
         }
 
         try {
@@ -161,7 +164,8 @@ class PlayRequest extends WebApplication {
                 group_name : group_name? group_name : "",    
                 game_id: game_id,
                 game_name: game_name,
-                game_rules: game_rules,
+                rules: rules,
+                sets_count: sets_count,
                 opponents_online : opponents_online,
                 expire_after_secs: this.sObj.GAME_MAX_WAIT_IN_SEC,
                 players: players

@@ -16,3 +16,7 @@ if(Array.isArray(tourn.registered_players)){
 }
 
 console.log(members);
+
+var a = [0,4];
+console.log(a[0]);
+console.log(a[1]);

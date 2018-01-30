@@ -39,14 +39,19 @@ var tourn = {
                     sn: 1, //first round
                     fixtures: [
                         {
+                            
                             player_1: {
                                 slot: 'player_1_slot_number', // used to represent a dummy player when no player is set.
-                                id:'player_1_user_id'
+                                id:'player_1_user_id',
+                                score: 0 //game score - a won set increase the value by 1 and a draw leave
+                                        // as same - NOTE this is not piont score which is 3-1-0 scoring system.
                             },
                             
                             player_2: {
                                 slot: 'player_2_slot_number', // used to represent a dummy player when no player is set.
-                                id:'player_2_user_id'
+                                id:'player_2_user_id',
+                                score: 0 //game score - a won set increase the value by 1 and a draw leave
+                                        // as same - NOTE this is not piont score which is 3-1-0 scoring system.
                             },
 
                             sets: [// 'sets'  store the number of games to make a complete match  
@@ -54,8 +59,8 @@ var tourn = {
                                     game_id: 'game_id',//important
                                     start_time: 'start_time',
                                     end_time: 'end_time',
-                                    player_1_score: 0,
-                                    player_2_score: 1,
+                                    points: [0, 0],//initialize the two point scores of the players to zero - NOTE: we are user 3-1-0 scoring as in football, also used in chess.
+                                    
                                 },
                                 {
                                     //... sets array element

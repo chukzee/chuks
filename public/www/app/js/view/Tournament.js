@@ -33,6 +33,13 @@ Ns.view.Tournament = {
 
         Main.rcall.live(obj);
 
+
+        
+        Main.eventio.on('season_start', this.onSeasonStart);
+        Main.eventio.on('season_cancel', this.onSeasonCancel);
+        Main.eventio.on('season_delete', this.onSeasonDelete);
+        Main.eventio.on('season_end', this.onSeasonEnd);
+        
     },
 
     content: function (tournament_name) {
@@ -254,6 +261,22 @@ Ns.view.Tournament = {
                     });
         });
     },
+    
+    onSeasonStart: function(obj){
+        
+    },
+    
+    onSeasonCancel: function(obj){
+        
+    },
+    
+    onSeasonDelete: function(obj){
+        
+    },
+    
+    onSeasonEnd: function(obj){
+        
+    }
 
     //more goes below
 };

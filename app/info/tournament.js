@@ -120,8 +120,8 @@ class Tournament extends WebApplication {
         };
 
         //Create the dummy rounds of the season. By dummy we mean all the
-        //rounds fixtures will be created with empty player id which will be
-        //modified eventually.
+        //rounds fixtures will be created with empty player id which can also be
+        //modified eventually by official.
         var rounds;
         if (tourn.type === 'round-robin') {
             rounds = this._roundRobinRounds(players_count, tourn.sets_count);
@@ -175,11 +175,15 @@ class Tournament extends WebApplication {
         var fixture = {
             player_1: {
                 slot: slot_1, // used to represent a dummy player when no player is set.
-                id: ''//initially empty - will be updated dynamically
+                id: '', //initially empty - will be updated dynamically
+                score: 0 //game score - a won set increases the value by 1 and a draw leave
+                        // as same - NOTE this is not piont score which is 3-1-0 scoring system.
             },
             player_2: {
                 slot: slot_2, // used to represent a dummy player when no player is set.
-                id: ''//initially empty - will be updated dynamically
+                id: '', //initially empty - will be updated dynamically
+                score: 0 //game score - a won set increases the value by 1 and a draw leave
+                        // as same - NOTE this is not piont score which is 3-1-0 scoring system.
             },
             sets: []
         };
@@ -191,8 +195,9 @@ class Tournament extends WebApplication {
                 game_id: game_id,
                 start_time: '', //will be set dynamically
                 end_time: '', //will be set dynamically
-                player_1_score: 0,
-                player_2_score: 0
+                points: [0, 0] //initialize the two point scores of the 
+                                //players to zero - NOTE: we are user 3-1-0 scoring system
+                                //as in football, also used in chess.
             };
         }
 
@@ -213,7 +218,7 @@ class Tournament extends WebApplication {
      */
     _roundRobinRounds(players_count, sets_count) {
 
-        //--- EVEN AND ODD NUMBER OF/PLAYERS-------
+        //--- WORKS FOR EVEN AND ODD NUMBER OF PLAYERS-------
 
         var rounds = [];
         var is_even = players_count % 2 === 0;
@@ -232,9 +237,9 @@ class Tournament extends WebApplication {
         var EMPTY = '-';
 
         if (!is_even) {// if old number of players then add a dummy player
-            slot_2s[slot_2s.length - 1] = EMPTY;//DUMMY PLAYER - ANY PLAYER PAIRED
-            // WITH THIS DUMMY PLAYER WILL BE IDLE  ON
-            //  THAT ROUND - ie will get a bye see https://en.wikipedia.org/wiki/Bye_%28sports%29
+            slot_2s[slot_2s.length - 1] = EMPTY;//DUMMY - ANY PLAYER PAIRED
+            // WITH THIS DUMMY WILL BE IDLE  ON
+            // THAT ROUND - ie will get a bye see https://en.wikipedia.org/wiki/Bye_%28sports%29
         }
 
         var total_rounds = slot_1s.length + slot_1s.length - 1;
@@ -247,12 +252,12 @@ class Tournament extends WebApplication {
                     slot_1s[half - k - 1] = slot_1s[half - k - 2];
                     slot_2s[k] = slot_2s[k + 1];
                 } else {
-                    slot_1s[1] = ls2; //yes index 1.  Set the 2 index which is index 1 to the initial first index of the other half array
+                    slot_1s[1] = ls2; //yes index 1.  Set the 2nd index which is index 1 to the initial first index of the other half array
                     slot_2s[k] = ls1;
                 }
             }
 
-            //after one rotation done, a new round of matches is created.
+            //after one complete rotation - ie a new round of matches created.
 
             var match_count = half; // number of matches on this round
             for (var n = 0; n < match_count; n++) {
@@ -281,7 +286,7 @@ class Tournament extends WebApplication {
      * Only the first round is assign slot numbers initially, since it is impossible
      * to know the slot numbers of the matches on the next round before the previous round
      * matches are completed. 
-     * So the system will automatically assign slot numbers to the next round upon complete
+     * So the system will automatically assign slot numbers to the next round upon completion
      * of current round.
      * 
      * @param {type} players_count - allow number of players ar 4, 8, 16, 32, 64
@@ -338,7 +343,7 @@ class Tournament extends WebApplication {
 
     }
 
-    //tricky - note to also modify the corresponding the rounds of the season.
+    //tricky - note to also modify the corresponding rounds of the season.
     async seasonAddPlayer(user_id, tournament_name, season_number, player_id, slot_number) {
 
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
@@ -402,11 +407,11 @@ class Tournament extends WebApplication {
 
         await c.updateOne({name: tournament_name}, {$push: {seasons: season}});
 
-        return 'Add player successfully.';
+        return 'Added player successfully.';
 
     }
 
-    //tricky - note to also modify the corresponding the rounds of the season.
+    //tricky - note to also modify the corresponding rounds of the season.
     async seasonRemovePlayer(user_id, tournament_name, season_number, player_id) {
 
         if (!this._isTournamentOfficial(user_id, tournament_name)) {
@@ -734,7 +739,7 @@ class Tournament extends WebApplication {
         }
 
         var matchObj = {
-            start_time: begin_time.getTime(),//important
+            start_time: begin_time.getTime(), //important
             tournament_name: tourn.name,
             game_id: game_id,
             game_name: tourn.game,
@@ -1013,7 +1018,8 @@ class Tournament extends WebApplication {
                 })
                 .catch(function (err) {
                     console.log(err);//DO NOT DO THIS IN PRODUCTION
-                });;
+                });
+        ;
 
 
 
@@ -1039,16 +1045,19 @@ class Tournament extends WebApplication {
     }
 
     /**
+     
      * This method is automatically called after the end of every tournament match
-     * to check if the last match of the season has ended so as to take appropriate
-     * action of signalling the end of the season.
+     * for purpose such as:
+     * 
+     * - to promote winners at the end one round to the next in single-elimination tournaments
+     * 
+     * - to check if the last match of the season has ended so as to take appropriate
+     *     action of signalling the end of the season.
      * 
      * @param {type} match
      * @returns {undefined}
      */
-    _checkSeasonEnd(match) {
-
-        //check if the final match of the season was played
+    _onTournamentMatchEnd(match) {
 
         var me = this;
 
@@ -1059,39 +1068,64 @@ class Tournament extends WebApplication {
                         return; //tournament no longer exist!
                     }
 
-                    var last_season = tourn.seasons[tourn.seasons.length - 1];
-                    var last_round = last_season.rounds[last_season.rounds.length - 1];
-                    var last_fixtures = last_round.fixtures;
-                    var last_fixt = last_fixtures[last_fixtures.length - 1];
-                    var last_set = last_fixt.sets[last_fixt.sets.length - 1];
-                    if (last_set.game_id !== match.game_id) {
-                        return;// leave - not the final match
+                    if (tourn.type === 'single-elimination') {
+                        me._promoteToNextRound(tourn, match);
                     }
 
-                    //At this point the final match of the season just completed
-
-                    last_season.status = 'end';// change the status fromm 'start' to 'end'
-                    last_season.end_time = new Date();
-
-                    //update the tournament
-                    return c.updateOne({name: match.tournament_name}, {$set: {seasons: tourn.seasons}})
-                            .then(function (result) {
-
-                                //notify all relevant users - registered players and officials
-                                var data = {
-                                    tournament_name: tourn.name,
-                                    season_number: last_season.sn,
-                                    end_time: last_season.end_time
-                                };
-
-                                me._broadcastInHouse(tourn, me.evt.season_end, data);
-
-                            });
+                    me._checkSeasonEnd(tourn, match);
 
                 })
                 .catch(function (err) {
                     console.log(err);//DO NOT DO THIS IN PRODUCTION
-                });;
+                });
+    }
+
+    _promoteToNextRound(tourn, match) {
+
+    }
+
+    /**
+     * Ends the season if the match is the last match of the tournament season.
+     * 
+     * 
+     * @param {type} tourn
+     * @param {type} match
+     * @returns {undefined}
+     */
+    _checkSeasonEnd(tourn, match) {
+
+        var me = this;
+        //check if the final match of the season was played
+
+        var last_season = tourn.seasons[tourn.seasons.length - 1];
+        var last_round = last_season.rounds[last_season.rounds.length - 1];
+        var last_fixtures = last_round.fixtures;
+        var last_fixt = last_fixtures[last_fixtures.length - 1];
+        var last_set = last_fixt.sets[last_fixt.sets.length - 1];
+        if (last_set.game_id !== match.game_id) {
+            return;// leave - not the final match
+        }
+
+        //At this point the final match of the season just completed
+
+        last_season.status = 'end';// change the status fromm 'start' to 'end'
+        last_season.end_time = new Date();
+
+        //update the tournament
+        c.updateOne({name: match.tournament_name}, {$set: {seasons: tourn.seasons}})
+                .then(function (result) {
+
+                    //notify all relevant users - registered players and officials
+                    var data = {
+                        tournament_name: tourn.name,
+                        season_number: last_season.sn,
+                        end_time: last_season.end_time
+                    };
+
+                    me._broadcastInHouse(tourn, me.evt.season_end, data);
+
+                });
+
 
     }
 
@@ -1104,14 +1138,14 @@ class Tournament extends WebApplication {
                     if (!match) {
                         return; //match fixture no longer exist!
                     }
-                    
+
                     //notify the players of their upcoming match
                     var players_ids = [];
                     players_ids.push(match.players[0].user_id);
                     players_ids.push(match.players[1].user_id);
-                    
+
                     me.broadcast(me.evt.notify_upcoming_match, match, players_ids);
-                    
+
                 })
                 .catch(function (err) {
                     console.log(err);//DO NOT DO THIS IN PRODUCTION

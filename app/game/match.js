@@ -116,15 +116,17 @@ class Match extends WebApplication {
      * @param {type} opponent_ids - array of opponent ids. for two player games like 
      * chess and draft it can be a single string. 
      * @param {type} game_id
+     * @param {type} set the serial number of the game set
      * @param {type} move - the move. It must contain the serial_no field
      * @returns {String}
      */
-    async sendMove(user_id, opponent_ids, game_id, move) {
+    async sendMove(user_id, opponent_ids, game_id, set, move) {
 
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             opponent_ids = arguments[0].opponent_ids;
             game_id = arguments[0].game_id;
+            set = arguments[0].set;
             move = arguments[0].move; // one main use for this is to obtain the zip code
         }
 
@@ -151,6 +153,7 @@ class Match extends WebApplication {
         //first quickly forward the move to the opponenct
         var data = {
             game_id: game_id,
+            set: set,
             move: move
         };
 
@@ -159,9 +162,11 @@ class Match extends WebApplication {
         //save the move in the server asynchronously
         var c = this.sObj.db.collection(this.sObj.col.matches);
         var me = this;
+        var set_index = set - 1;
+        var pObj = {};
+        pObj['sets.' + set_index + '.moves'] = move; //NOT YET TESTED - using the dot operator to access the array
 
-
-        c.updateOne({game_id: game_id}, {$push: {moves: move}})//moves array is the game position of the the game. it holds all the move of the game
+        c.updateOne({game_id: game_id}, {$push: pObj})//moves' array is the game position of the the game. it holds all the move of the game
                 .then(function (result) {
                     if (!result) {
                         return;
@@ -206,9 +211,10 @@ class Match extends WebApplication {
      * whose turn is to play.
      * 
      * @param {type} game_id
+     * @param {type} set the serial number of the game set
      * @returns {undefined}
      */
-    async getGamePosition(game_id) {
+    async getGamePosition(game_id, set) {
         try {
 
             var c = this.sObj.db.collection(this.sObj.col.matches);
@@ -225,7 +231,8 @@ class Match extends WebApplication {
             return [];
         }
 
-        var game_position = match.moves; // array of moves
+        var index = set - 1;
+        var game_position = match.sets[index].moves; // array of moves
 
         return game_position;
     }
@@ -390,6 +397,46 @@ class Match extends WebApplication {
 
     }
 
+    _startNextSet(c, match) {
+        
+        c.updateOne({game_id: match.game_id}, {$inc: {current_set: 1}})
+                .then(async function (result) {
+                    
+                    var players_ids = match.players;
+                    for (var i = 0; i < match.players.length; i++) {
+                        if (typeof match.players[i] === 'object') {//just in case
+                            players_ids[i] = match.players[i].user_id;
+                        }
+                    }
+
+                    //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
+                    var required_fields = ['contacts', 'groups_belong', 'user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+                    var players = await user.getInfoList(players_ids, required_fields);
+
+                    //check if the player info list is complete - ie match  the number requested for
+                    var missing = this.util.findMissing(players_ids, players, function (p_id, p_info) {
+                        return p_id === p_info.user_id;
+                    });
+
+                    if (missing) {
+                        //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
+                        return Promise.reject('Could not find player with user id - ' + missing);
+                    }
+
+                    //broadcast the game_start_next_set event to all the players concern
+                    match.players = players;
+                    this.broadcast(this.evt.game_start_next_set, match, players_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
+
+                    //broadcast the watch_game_start_next_set event to users related in one way
+                    //or the other to any of the players - ie via contacts or group
+                    this._broadcastWatchGame(match, this.evt.watch_game_start_next_set);
+
+                })
+                .catch(function (err) {
+                    console.log(err);//DO NOT DO THIS IN PRODUCTION, INSTEAD LOG TO ANOTHER PROCCESS
+                });
+    }
+
     /**
      * Starts the game by broadcasting the game start event to 
      * the players. The game id provided is used to find the 
@@ -468,16 +515,29 @@ class Match extends WebApplication {
             return v.lastEror;
         }
 
+        var sets = [];
+        for (var i = 0; i < mtcObj.sets_count; i++) {
+            sets[i] = {
+                sn: i + 1, //serial number                
+                moves: [], //game position
+                points: []//score point - user 3-1-0 scoring system as in football where a win is 3 points, draw is 1 and loss is zero
+            };
+
+        }
+
+        sets[0].start_time = new Date(); //set the start time of the first set
+
         var match = {
             group_name: mtcObj.group_name ? mtcObj.group_name : '',
             tournament_name: mtcObj.tournament_name ? mtcObj.tournament_name : '',
             game_id: mtcObj.game_id,
             game_name: mtcObj.game_name,
-            game_rules: mtcObj.game_rules ? mtcObj.game_rules : default_rules,
-            game_status: 'live',
-            game_score: '',
-            game_start_time: new Date(),
-            moves: [], //game position
+            status: 'live',
+            rules: mtcObj.rules ? mtcObj.rules : default_rules,            
+            scores: [0, 0],
+            start_time: new Date(),
+            current_set: 1, //first set - important!
+            sets: sets,
             players: players
         };
 
@@ -487,7 +547,7 @@ class Match extends WebApplication {
         if (!r.result.n) {
             return 'Could not start game';
         }
-        
+
 
         //broadcast the game start event to all the players concern
         match.players = players;
@@ -523,7 +583,7 @@ class Match extends WebApplication {
             return this;
         }
 
-        if (match.game_status === 'live') {
+        if (match.status === 'live') {
             return  'game is already live!';
         }
         //broadcast the game resume event
@@ -571,7 +631,7 @@ class Match extends WebApplication {
             //update the game status
             var r = await c.findOneAndUpdate(
                     {game_id: game_id},
-                    {$set: {pause_time: 0, game_status: 'live'}},
+                    {$set: {pause_time: 0, status: 'live'}},
                     {
                         projection: {_id: 0},
                         returnOriginal: false, //return the updated document
@@ -610,7 +670,7 @@ class Match extends WebApplication {
         try {
             var r = await c.findOneAndUpdate(
                     {game_id: game_id},
-                    {$set: {pause_time: new Date(), game_status: 'paused'}},
+                    {$set: {pause_time: new Date(), status: 'paused'}},
                     {
                         projection: {_id: 0},
                         returnOriginal: false, //return the updated document
@@ -687,7 +747,7 @@ class Match extends WebApplication {
                 await c.deleteOne({game_id: game_id}, {w: 'majority'});
 
                 //relocate the match document to the match_history collection
-                match.game_status = 'abandon'; //set the status to abandon
+                match.status = 'abandon'; //set the status to abandon
                 await c.insertOne(match);
                 terminated = true;
             }
@@ -728,38 +788,62 @@ class Match extends WebApplication {
 
         return data;
     }
+    
+    _updateMatchScores(match, winner_user_id){
+        var is_draw = false;
+        if(!winner_user_id){
+            is_draw = true;
+        }
+        
+        
+        return match;
+    }
+    
+    
     /**
      * 
      * @param {type} game_id - the game id
-     * @param {type} score - the game score
+     * @param {type} scores - array of the game scores of each players
      * @param {type} winner_user_id - the user id of the winner if there is
      * a winner in the game. If not specified or a value of 0 or null will
      * mean that the game ended in a draw
      * @returns {String|nm$_match.Match}
      */
-    async finish(game_id, score, winner_user_id) {
+    async finish(game_id, scores, winner_user_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             game_id = arguments[0].game_id;
-            score = arguments[0].score;
+            scores = arguments[0].scores;
             winner_user_id = arguments[0].winner_user_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
 
-            var r = await c.findOneAndDelete({game_id: game_id}, {w: 'majority'});
+            var r = await c.findOne({game_id: game_id});
+
             var match = r.value;
             if (!match) {
                 return 'No game to finish';
             }
+            
+            match = this._updateMatchScores(match, winner_user_id);
+            
+            //check all sets is played -  if not then automatically start the next set
+            if (match.current_set < match.sets.length) {
+                this._startNextSet(c, match);
+                return;
+            }
+
+            var r = await c.deleteOne({game_id: game_id}, {w: 'majority'});
+
             //relocate the match document to the match_history collection
-            match.game_status = 'finish'; //set the status to finish 
-            match.game_end_time = new Date();//set the time the match ended
-            match.score = score;
+            match.status = 'finish'; //set the status to finish 
+            match.end_time = new Date();//set the time the match ended
             match.is_draw = winner_user_id ? false : true;
+            
             if (winner_user_id) {
                 match.winner = winner_user_id;
             }
@@ -795,11 +879,12 @@ class Match extends WebApplication {
         var rank = new PlayerRank(this.sObj, this.util, this.evt);
         rank.updateRanking(match.players, winner_user_id);
 
-        //End the season if the match is the last match of the tournament season
+        //Handle end of tournament match
         if (match.tournament_name) {
-            //check if the game is the last match of the tournament
             var t = new Tournament(this.sObj, this.util, this.evt);
-            t._checkSeasonEnd(match);
+
+            t._onTournamentMatchEnd(match);
+
         }
     }
 
@@ -871,13 +956,13 @@ class Match extends WebApplication {
                     },
                     {
                         $or: [
-                            {game_status: 'live'},
+                            {status: 'live'},
                             {$and: [
-                                    {game_status: 'paused'},
+                                    {status: 'paused'},
                                     {'players.user_id': user_id}]}//restrict to the user own paused matches
 
-                        ]//where game_status is live or paused
-                                /// game_status: 'live' //where game_status is live /*Deprecated*/
+                        ]//where status is live or paused
+                                /// status: 'live' //where status is live /*Deprecated*/
                     },
                     {
                         'players.user_id': contact_user_id //and contact_user_id is equal to user_id field in a document in players array
@@ -946,14 +1031,14 @@ class Match extends WebApplication {
         var query = {
             group_name: group_name,
             game_name: game_name,
-            //game_status: 'live'/*Deprecated*/
+            //status: 'live'/*Deprecated*/
             $or: [
-                {game_status: 'live'},
+                {status: 'live'},
                 {$and: [
-                        {game_status: 'paused'},
+                        {status: 'paused'},
                         {'players.user_id': user_id}]}//restrict to the user own paused matches
 
-            ]//where game_status is live or paused
+            ]//where status is live or paused
 
         };
 
@@ -1018,14 +1103,14 @@ class Match extends WebApplication {
         var query = {
             tournament_name: tournament_name,
             game_name: game_name,
-            //game_status: 'live'/*Deprecated*/
+            //status: 'live'/*Deprecated*/
             $or: [
-                {game_status: 'live'},
+                {status: 'live'},
                 {$and: [
-                        {game_status: 'paused'},
+                        {status: 'paused'},
                         {'players.user_id': user_id}]}//restrict to the user own paused matches
 
-            ]//where game_status is live or paused
+            ]//where status is live or paused
         };
 
         var total = await c.count(query);
@@ -1095,7 +1180,7 @@ class Match extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.match_history);
 
         var query = {
-            game_status: 'finish',
+            status: 'finish',
             'players.user_id': user_id
         };
 
@@ -1113,7 +1198,7 @@ class Match extends WebApplication {
         }
 
         if (is_include_abandoned_matches === true) {
-            query.game_status = 'abandon';
+            query.status = 'abandon';
         }
 
         var total = await c.count(query);
