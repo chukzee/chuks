@@ -398,10 +398,10 @@ class Match extends WebApplication {
     }
 
     _startNextSet(c, match) {
-        
+
         c.updateOne({game_id: match.game_id}, {$inc: {current_set: 1}})
                 .then(async function (result) {
-                    
+
                     var players_ids = match.players;
                     for (var i = 0; i < match.players.length; i++) {
                         if (typeof match.players[i] === 'object') {//just in case
@@ -533,7 +533,7 @@ class Match extends WebApplication {
             game_id: mtcObj.game_id,
             game_name: mtcObj.game_name,
             status: 'live',
-            rules: mtcObj.rules ? mtcObj.rules : default_rules,            
+            rules: mtcObj.rules ? mtcObj.rules : default_rules,
             scores: [0, 0],
             start_time: new Date(),
             current_set: 1, //first set - important!
@@ -788,18 +788,48 @@ class Match extends WebApplication {
 
         return data;
     }
-    
-    _updateMatchScores(match, winner_user_id){
-        var is_draw = false;
-        if(!winner_user_id){
-            is_draw = true;
+
+    async _updateMatchScores(c, match, winner_user_id) {
+
+        var game_set = match.sets[match.current_set - 1];
+
+        for (var i = 0; i < match.players.length; i++) {
+
+            if (!winner_user_id) {//is draw
+                game_set.points[i] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                continue;
+            }
+
+            if (match.players[i].user_id === winner_user_id) {
+                game_set.points[i] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                match.scores[i] += 1;
+                break;
+            }
         }
-        
-        
+
+        try {
+
+            var r = await c.updateOne({game_id: match.game_id},
+                    {
+                        $set: {
+                            scores: match.scores,
+                            sets: match.sets
+                        }});
+
+
+            if (match.tournament_name) {
+                var t = new Tournament(this.sObj, this.util, this.evt);
+                t._updateScores(match, winner_user_id);
+            }
+
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IS PRODUCTION
+            return;//return nothing
+        }
+
         return match;
     }
-    
-    
+
     /**
      * 
      * @param {type} game_id - the game id
@@ -826,11 +856,15 @@ class Match extends WebApplication {
 
             var match = r.value;
             if (!match) {
-                return 'No game to finish';
+                this.error('No game to finish');
             }
-            
-            match = this._updateMatchScores(match, winner_user_id);
-            
+
+            match = this._updateMatchScores(c, match, winner_user_id);
+
+            if (!match) {
+                this.error('Could not finish game! something is not right');
+            }
+
             //check all sets is played -  if not then automatically start the next set
             if (match.current_set < match.sets.length) {
                 this._startNextSet(c, match);
@@ -843,7 +877,7 @@ class Match extends WebApplication {
             match.status = 'finish'; //set the status to finish 
             match.end_time = new Date();//set the time the match ended
             match.is_draw = winner_user_id ? false : true;
-            
+
             if (winner_user_id) {
                 match.winner = winner_user_id;
             }
@@ -882,7 +916,6 @@ class Match extends WebApplication {
         //Handle end of tournament match
         if (match.tournament_name) {
             var t = new Tournament(this.sObj, this.util, this.evt);
-
             t._onTournamentMatchEnd(match);
 
         }

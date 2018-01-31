@@ -13,15 +13,15 @@ var tourn = {
     photo_url: 'photo_url',
 
     officials: [
-        {},//info
-        {},//info
-        {},//info
+        {}, //info
+        {}, //info
+        {}, //info
         {}//info
     ],
     registered_players: [
-        {},//info
-        {},//info
-        {},//info
+        {}, //info
+        {}, //info
+        {}, //info
         {}//info
     ],
     seasons: [
@@ -31,36 +31,34 @@ var tourn = {
             end_time: '01/10/2017 08:45', //will be set automatically when the final game of the season is concluded or when the seanson is cancelled
             winner: 'player_id_2', //will be set automatically when the final game of the season is concluded.
             status: 'before-start', //before-start, start, end, cancel
-            rules:{//game rules - each season will have its own rules
-                
+            rules: {//game rules - each season will have its own rules
+
             },
             rounds: [
                 {
                     sn: 1, //first round
                     fixtures: [
                         {
-                            
+                            game_id: 'game_id', //important
+                            start_time: 'start_time',
+                            end_time: 'end_time',
                             player_1: {
                                 slot: 'player_1_slot_number', // used to represent a dummy player when no player is set.
-                                id:'player_1_user_id',
+                                id: 'player_1_user_id',
                                 score: 0 //game score - a won set increase the value by 1 and a draw leave
                                         // as same - NOTE this is not piont score which is 3-1-0 scoring system.
                             },
-                            
+
                             player_2: {
                                 slot: 'player_2_slot_number', // used to represent a dummy player when no player is set.
-                                id:'player_2_user_id',
+                                id: 'player_2_user_id',
                                 score: 0 //game score - a won set increase the value by 1 and a draw leave
                                         // as same - NOTE this is not piont score which is 3-1-0 scoring system.
                             },
 
                             sets: [// 'sets'  store the number of games to make a complete match  
                                 {
-                                    game_id: 'game_id',//important
-                                    start_time: 'start_time',
-                                    end_time: 'end_time',
-                                    points: [0, 0],//initialize the two point scores of the players to zero - NOTE: we are user 3-1-0 scoring as in football, also used in chess.
-                                    
+                                    points: [0, 0], //initialize the two point scores of the players to zero - NOTE: we are user 3-1-0 scoring as in football, also used in chess.
                                 },
                                 {
                                     //... sets array element

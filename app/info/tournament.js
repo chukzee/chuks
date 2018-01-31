@@ -173,6 +173,9 @@ class Tournament extends WebApplication {
     _fixturesStruct(slot_1, slot_2, sets_count) {
 
         var fixture = {
+            start_time: '', //will be set dynamically
+            end_time: '', //will be set dynamically
+            game_id: this.sObj.UniqueNumber, //assign unique number to the game id
             player_1: {
                 slot: slot_1, // used to represent a dummy player when no player is set.
                 id: '', //initially empty - will be updated dynamically
@@ -190,14 +193,11 @@ class Tournament extends WebApplication {
 
         // 'sets_count'  represent the number of games to make a complete match  
         for (var i = 0; i < sets_count; i++) {
-            var game_id = this.sObj.UniqueNumber; //assign unique number to the game id
+
             fixture.sets[i] = {
-                game_id: game_id,
-                start_time: '', //will be set dynamically
-                end_time: '', //will be set dynamically
                 points: [0, 0] //initialize the two point scores of the 
-                                //players to zero - NOTE: we are user 3-1-0 scoring system
-                                //as in football, also used in chess.
+                        //players to zero - NOTE: we are user 3-1-0 scoring system
+                        //as in football, also used in chess.
             };
         }
 
@@ -404,8 +404,13 @@ class Tournament extends WebApplication {
 
 
         //update the tournament
+        //await c.updateOne({name: tournament_name}, {$set: {seasons: tourn.seasons}});
 
-        await c.updateOne({name: tournament_name}, {$push: {seasons: season}});
+        var editObj = {};
+        var season_index = season_number - 1;
+        editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
+
+        await c.updateOne({name: tournament_name}, {$set: editObj});
 
         return 'Added player successfully.';
 
@@ -466,8 +471,13 @@ class Tournament extends WebApplication {
         }
 
         //update the tournament
+        //await c.updateOne({name: tournament_name}, {$set: {seasons: tourn.seasons}});
 
-        await c.updateOne({name: tournament_name}, {$push: {seasons: season}});
+        var editObj = {};
+        var season_index = season_number - 1;
+        editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
+
+        await c.updateOne({name: tournament_name}, {$set: editObj});
 
         return 'Removed player successfully.';
 
@@ -569,41 +579,6 @@ class Tournament extends WebApplication {
         return season.slots;
     }
 
-    async seasonClear(user_id, tournament_name, season_number) {
-
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
-        }
-
-
-        var c = this.sObj.db.collection(this.sObj.col.tournaments);
-        var tourn = await c.findOne({name: tournament_name});
-
-        if (!tourn) {
-            return this.error(`Tournament does not exist - ${tournament_name}`);
-        }
-
-        var seasons = tourn.seasons;
-        var current_season = seasons[season_number];
-        if (!current_season) {
-            return this.error(`Season ${season_number} not found.`);
-        }
-
-        if (season_number < seasons.length - 1) {
-            return this.error(`Not allowed - can only clear current unstarted season.`);
-        }
-
-        if (current_season.status !== 'before-start') {//ie 'start' or 'cancel' or 'end'
-            return this.error(`Not allowed - season ${season_number} aleady started.`);
-        }
-
-        //update the tournament
-        await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
-
-        return 'Cleared successfully.';
-
-    }
-
     /**
      * 
      * @param {type} user_id
@@ -660,7 +635,7 @@ class Tournament extends WebApplication {
         }
 
         //find the match fixture with the give game id
-        var game_set;
+        var match_fixture;
         var has_kickoff_time = false;
         var rounds = current_season.rounds;
         var players_ids = [];
@@ -668,25 +643,22 @@ class Tournament extends WebApplication {
         for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
-                var sets = fixtures[j].sets;
-                for (var k = 0; k < sets.length; k++) {
-                    if (sets[k].game_id === game_id) {
-                        if (sets[k].start_time) {
-                            has_kickoff_time = true;
-                        }
-                        game_set = sets[k];//hold
-                        if (fixtures[j].player_1.id && fixtures[j].player_2.id) {
-                            players_ids.push(fixtures[j].player_1.id);
-                            players_ids.push(fixtures[j].player_2.id);
-                        }
-
-                        break;
+                if (fixtures[j].game_id === game_id) {
+                    match_fixture = fixtures[j];//hold
+                    if (match_fixture.start_time) {
+                        has_kickoff_time = true;
                     }
+                    if (match_fixture.player_1.id && match_fixture.player_2.id) {
+                        players_ids.push(match_fixture.player_1.id);
+                        players_ids.push(match_fixture.player_2.id);
+                    }
+                    break;
                 }
+
             }
         }
 
-        if (!game_set) {
+        if (!match_fixture) {
             return this.error(`Cannot set kickoff time - fixture not found.`);
         }
 
@@ -712,7 +684,7 @@ class Tournament extends WebApplication {
         }
 
         //now set the start time, our interest
-        game_set.start_time = kickoff_time;
+        match_fixture.start_time = kickoff_time;
 
         var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
@@ -743,7 +715,7 @@ class Tournament extends WebApplication {
             tournament_name: tourn.name,
             game_id: game_id,
             game_name: tourn.game,
-            game_rules: current_season.rules,
+            rules: current_season.rules,
             players: players
         };
 
@@ -753,7 +725,12 @@ class Tournament extends WebApplication {
         }
 
         //update the tournament
-        await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+        //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+
+        var editObj = {};
+        editObj['seasons.' + last] = current_season; // using the dot operator to access the index of the array
+
+        await c.updateOne({name: tournament_name}, {$set: editObj});
 
         var k_time = new Date(kickoff_time).getTime();
         var now = new Date().getTime();
@@ -816,7 +793,13 @@ class Tournament extends WebApplication {
         current_season.start_time = season_begin_time;
 
         //update the tournament
-        await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+        //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+
+        var editObj = {};
+        var season_index = season_number - 1;
+        editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+        await c.updateOne({name: tournament_name}, {$set: editObj});
 
         var delay = new Date(start_time).getTime() - new Date().getTime();
 
@@ -878,7 +861,13 @@ class Tournament extends WebApplication {
         current_season.end_time = new Date();
 
         //update the tournament
-        await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+        //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
+
+        var editObj = {};
+        var season_index = season_number - 1;
+        editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+        await c.updateOne({name: tournament_name}, {$set: editObj});
 
         //notify all relevant users - registered players and officials
         var data = {
@@ -1069,10 +1058,10 @@ class Tournament extends WebApplication {
                     }
 
                     if (tourn.type === 'single-elimination') {
-                        me._promoteToNextRound(tourn, match);
+                        me._promoteToNextRound(c, tourn, match);
                     }
 
-                    me._checkSeasonEnd(tourn, match);
+                    me._checkSeasonEnd(c, tourn, match);
 
                 })
                 .catch(function (err) {
@@ -1080,7 +1069,136 @@ class Tournament extends WebApplication {
                 });
     }
 
-    _promoteToNextRound(tourn, match) {
+    /**
+     * Automatically called after the end of every last game set of single elimination
+     * tournament match (complete sets) to promeote the winner to the next round.
+     *  
+     * If the match ends in a draw after all sets, the default immplementation
+     * is that one of the players will be randomly picked by the server. 
+     * However future implementation may use more appropriate way of separating
+     * the players such as comparing the value of their board (as in chess), the 
+     * number of points accumulated since the start of the tournament and so on.
+     * But when nothing after all can not separate the players then the server will
+     * fall back to random picking of the winner (the lucky player).
+     * 
+     * @param {type} c
+     * @param {type} tourn
+     * @param {type} match
+     * @returns {undefined}
+     */
+    async _promoteToNextRound(c, tourn, match) {
+
+        //first determine the winner of the sets
+        var player_1_winner;
+        if (match.scores[0] > match.scores[1]) {// player_1 wins
+            player_1_winner = 0; //means false
+        } else if (match.scores[0] < match.scores[1]) {// player_1 losses
+            player_1_winner = 1;//means true
+        } else {//draw
+            player_1_winner = Math.floor(Math.random() * 2); // randomly get 0 and 1
+        }
+
+        var season_number = tourn.seasons.length - 1;
+        var current_season = tourn.seasons[season_number];
+
+        if (!current_season) {
+            console.log(`Season ${season_number} not found in ${tourn.name} tournamet - this should not happen at this point.`);
+            return;
+        }
+
+        var rounds = current_season.rounds;
+        var to = rounds.length - 1; //skip the last round
+        for (var i = 0; i < to; i++) {
+            var fixtures = rounds[i].fixtures;
+            for (var j = 0; j < fixtures.length; j++) {
+                if (fixtures[j].game_id === match.game_id) {
+                    var n = j % 2 === 0 ? j : (j - 1);
+                    var n_nxt = n / 2; //required index of fixtures in next round to be promoted to
+                    var next_round = rounds[i + 1];
+                    var next_fixture = next_round.fixtures[n_nxt];
+                    if (player_1_winner) {
+                        next_fixture.player_1.id = match.players[0].user_id;
+                        next_fixture.player_1.slot = fixtures[j].player_1.slot;
+                    } else {
+                        next_fixture.player_2.id = match.players[1].user_id;
+                        next_fixture.player_2.slot = fixtures[j].player_2.slot;
+                    }
+
+
+                    //update the tournament
+
+                    var editObj = {};
+                    var season_index = season_number - 1;
+                    editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+                    await c.updateOne({name: tourn.name}, {$set: editObj});
+
+                    break;
+                }
+            }
+        }
+
+
+    }
+
+    /**
+     * Automatically called after the end of every tournament match to update
+     * the score and points of the players on the tournament collection
+     * 
+     * @param {type} match
+     * @param {type} winner_user_id
+     * @returns {Tournament@call;error}
+     */
+    async _updateScores(match, winner_user_id) {
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+
+        var tourn = await c.findOne({name: match.tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${match.tournament_name}`);
+        }
+        var season_index = tourn.seasons.length - 1;
+        var current_season = tourn.seasons[tourn.seasons.length - 1];
+        if (!current_season) {
+            return this.error(`Season does not exist - ${tourn.seasons.length}`);
+        }
+
+        //find the fixture with the game id and set the scores
+        var rounds = current_season.rounds;
+
+        for (var i = 0; i < rounds.length; i++) {
+            var fixtures = rounds[i].fixtures;
+            for (var j = 0; j < fixtures.length; j++) {
+
+                if (fixtures[j].game_id === match.game_id) {
+
+                    fixtures[j].end_time = new Date();
+
+                    var set_index = match.current_set - 1;
+
+                    if (fixtures[j].player_1.id === winner_user_id) {
+                        fixtures[j].player_1.score += 1;
+                        fixtures[j].sets[set_index].points[0] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                    }
+
+                    if (fixtures[j].player_2.id === winner_user_id) {
+                        fixtures[j].player_2.score += 1;
+                        fixtures[j].sets[set_index].points[1] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                    }
+
+                    if (!winner_user_id) {//is draw
+                        fixtures[j].sets[set_index].points[0] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        fixtures[j].sets[set_index].points[1] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                    }
+                }
+            }
+        }
+
+        var editObj = {};
+        editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+        await c.updateOne({name: match.tournament_name}, {$set: editObj});
 
     }
 
@@ -1088,11 +1206,12 @@ class Tournament extends WebApplication {
      * Ends the season if the match is the last match of the tournament season.
      * 
      * 
+     * @param {type} c
      * @param {type} tourn
      * @param {type} match
      * @returns {undefined}
      */
-    _checkSeasonEnd(tourn, match) {
+    _checkSeasonEnd(c, tourn, match) {
 
         var me = this;
         //check if the final match of the season was played
@@ -1102,14 +1221,16 @@ class Tournament extends WebApplication {
         var last_fixtures = last_round.fixtures;
         var last_fixt = last_fixtures[last_fixtures.length - 1];
         var last_set = last_fixt.sets[last_fixt.sets.length - 1];
+
         if (last_set.game_id !== match.game_id) {
             return;// leave - not the final match
         }
 
         //At this point the final match of the season just completed
 
+        last_fixt.end_time = match.end_time;
         last_season.status = 'end';// change the status fromm 'start' to 'end'
-        last_season.end_time = new Date();
+        last_season.end_time = match.end_time;
 
         //update the tournament
         c.updateOne({name: match.tournament_name}, {$set: {seasons: tourn.seasons}})
