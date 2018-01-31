@@ -10,7 +10,36 @@ Main.on("pagecreate", function (arg) {
     };
 
     Main.rcall.live(obj);
-    
+
+
+    Main.eventio.on('season_start', onSeasonStart);
+    Main.eventio.on('season_cancel', onSeasonCancel);
+    Main.eventio.on('season_delete', onSeasonDelete);
+    Main.eventio.on('season_end', onSeasonEnd);
+
+    function onSeasonStart(obj) {
+        alert('onSeasonStart');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onSeasonCancel(obj) {
+        alert('onSeasonCancel');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onSeasonDelete(obj) {
+        alert('onSeasonDelete');
+        alert(obj);
+        console.log(obj);
+    }
+
+    function onSeasonEnd(obj) {
+        alert('onSeasonEnd');
+        alert(obj);
+        console.log(obj);
+    }
 
     $('#test-simulate-page').on('click', function () {
         //alert('#btn-page1-next');
@@ -23,29 +52,40 @@ Main.on("pagecreate", function (arg) {
         });
     });
 
-/*
-
-        <button id="btn-create-tournament" style="margin: 5px;">Create tournament</button>
-        <button id="btn-edit-tournament" style="margin: 5px;">Edit tournament</button>
-        <button id="btn-set-tournament-icon" style="margin: 5px;">Set tournament icon</button>
-        <button id="btn-set-tournament-status" style="margin: 5px;">Set tournament status</button>
-        <button id="btn-add-official" style="margin: 5px;">Add official</button>
-        <button id="btn-remove-official" style="margin: 5px;">Remove official</button>
-        <button id="btn-add-player" style="margin: 5px;">Add player</button>
-        <button id="btn-remove-player" style="margin: 5px;">Remove player</button>
-        <button id="btn-get-tournament-info" style="margin: 5px;">Get tournament info</button>
-        <button id="btn-get-tournaments-info-list" style="margin: 5px;">Get tournaments info list</button>
- */
+    /*
+     <button id="btn-create-tournament" style="margin: 5px;">Create tournament</button>
+     <button id="btn-edit-tournament" style="margin: 5px;">Edit tournament</button>
+     <button id="btn-set-tournament-icon" style="margin: 5px;">Set tournament icon</button>
+     <button id="btn-set-tournament-status" style="margin: 5px;">Set tournament status</button>
+     <button id="btn-add-official" style="margin: 5px;">Add official</button>
+     <button id="btn-remove-official" style="margin: 5px;">Remove official</button>
+     <button id="btn-register-player" style="margin: 5px;">Register player</button>
+     <button id="btn-remove-registered-player" style="margin: 5px;">Remove registered player</button>
+     <button id="btn-get-tournament-info" style="margin: 5px;">Get tournament info</button>
+     <button id="btn-get-tournaments-info-list" style="margin: 5px;">Get tournaments info list</button>
+     <button id="btn-season-new" style="margin: 5px;">Season new</button>
+     <button id="btn-season-add-player" style="margin: 5px;">Season add player</button>
+     <button id="btn-season-remove-player" style="margin: 5px;">Season remove player</button>
+     <button id="btn-season-get-players" style="margin: 5px;">Season get players</button>
+     <button id="btn-season-get-slots" style="margin: 5px;">Season get slots</button>
+     <button id="btn-season-match-kickoff" style="margin: 5px;">Season match kickoff</button>
+     <button id="btn-season-start" style="margin: 5px;">Season start</button>
+     <button id="btn-season-cancel" style="margin: 5px;">Season cancel</button>
+     <button id="btn-season-delete" style="margin: 5px;">Season delete</button>
+     <button id="btn-season-count" style="margin: 5px;">Season count</button>
+     <button id="btn-get-seasons" style="margin: 5px;">Get seasons</button>
+     
+     */
 
     $('#btn-create-tournament').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var tournament_name = prompt('tournament_name','');
-        var game = prompt('game','chess');
-        var status_message = prompt('status_message','');
-        var photo_url = prompt('photo_url','');
+        var user_id = prompt('user_id', '07032710628');
+        var tournament_name = prompt('tournament_name', '');
+        var game = prompt('game', 'chess');
+        var status_message = prompt('status_message', '');
+        var photo_url = prompt('photo_url', '');
 
-        Main.ro.tourn.createTournament(user_id, tournament_name, game,  status_message, photo_url)
+        Main.ro.tourn.createTournament(user_id, tournament_name, game, status_message, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -72,11 +112,11 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
+
     $('#btn-set-tournament-icon').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var photo_url = prompt('photo_url','');
+        var user_id = prompt('user_id', '07032710628');
+        var photo_url = prompt('photo_url', '');
 
         Main.ro.tourn.setTournamentIcon(user_id, photo_url)
                 .get(function (data) {
@@ -89,13 +129,13 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
+
     $('#btn-set-tournament-status').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var tournament_name = prompt('tournament_name','');
-        var status_message = prompt('status_message','');
-        var photo_url = prompt('photo_url','');
+        var user_id = prompt('user_id', '07032710628');
+        var tournament_name = prompt('tournament_name', '');
+        var status_message = prompt('status_message', '');
+        var photo_url = prompt('photo_url', '');
 
         Main.ro.tourn.setTournamentStatus(user_id, tournament_name, status_message, photo_url)
                 .get(function (data) {
@@ -108,12 +148,12 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
+
     $('#btn-add-official').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var tournament_name = prompt('tournament_name','');
-        var new_official_user_id = prompt('new_official_user_id','');
+        var user_id = prompt('user_id', '07032710628');
+        var tournament_name = prompt('tournament_name', '');
+        var new_official_user_id = prompt('new_official_user_id', '');
 
         Main.ro.tourn.addOfficial(user_id, tournament_name, new_official_user_id)
                 .get(function (data) {
@@ -126,12 +166,12 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
+
     $('#btn-remove-official').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var tournament_name = prompt('tournament_name','');
-        var official_user_id = prompt('official_user_id','');
+        var user_id = prompt('user_id', '07032710628');
+        var tournament_name = prompt('tournament_name', '');
+        var official_user_id = prompt('official_user_id', '');
 
         Main.ro.tourn.removeOfficial(user_id, tournament_name, official_user_id)
                 .get(function (data) {
@@ -144,14 +184,14 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
-    $('#btn-add-player').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var tournament_name = prompt('tournament_name','');
-        var player_user_id = prompt('player_user_id','');
+    $('#btn-register-player').on('click', function () {
 
-        Main.ro.tourn.addPlayer(user_id, tournament_name, player_user_id)
+        var user_id = prompt('user_id', '07032710628');
+        var tournament_name = prompt('tournament_name', '');
+        var player_user_id = prompt('player_user_id', '');
+
+        Main.ro.tourn.registerPlayer(user_id, tournament_name, player_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -162,14 +202,14 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
-    $('#btn-remove-player').on('click', function () {
 
-        var user_id = prompt('user_id','07032710628');
-        var tournament_name = prompt('tournament_name','');
-        var player_user_id = prompt('player_user_id','');
+    $('#btn-remove-registered-player').on('click', function () {
 
-        Main.ro.tourn.removePlayer(user_id, tournament_name, player_user_id)
+        var user_id = prompt('user_id', '07032710628');
+        var tournament_name = prompt('tournament_name', '');
+        var player_user_id = prompt('player_user_id', '');
+
+        Main.ro.tourn.removeRegisteredPlayer(user_id, tournament_name, player_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -180,10 +220,10 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
+
     $('#btn-get-tournament-info').on('click', function () {
 
-        var tournament_name = prompt('tournament_name','');
+        var tournament_name = prompt('tournament_name', '');
 
         Main.ro.tourn.getTournamentInfo(tournament_name)
                 .get(function (data) {
@@ -196,13 +236,13 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-    
+
     $('#btn-get-tournaments-info-list').on('click', function () {
 
-        var tournament_names_arr = prompt('enter list of torunamen names separated by comma','');
-        if(tournament_names_arr){
+        var tournament_names_arr = prompt('enter list of torunamen names separated by comma', '');
+        if (tournament_names_arr) {
             tournament_names_arr = tournament_names_arr.split(',');
-        }else{
+        } else {
             tournament_names_arr = [];
         }
         Main.ro.tourn.getTournamentsInfoList(tournament_names_arr)
@@ -216,5 +256,207 @@ Main.on("pagecreate", function (arg) {
                 });
 
     });
-           
+
+    $('#btn-season-new').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var players_count = prompt('players_count', '');
+        var start_time = prompt('start_time', '');
+
+        Main.ro.tourn.seasonNew(user_id, tournament_name, players_count, start_time)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-add-player').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+        var player_id = prompt('player_id', '');
+        var slot_number = prompt('slot_number', '');
+
+        Main.ro.tourn.seasonAddPlayer(user_id, tournament_name, season_number, player_id, slot_number)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+
+    $('#btn-season-remove-player').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+        var player_id = prompt('player_id', '');
+
+        Main.ro.tourn.seasonRemovePlayer(user_id, tournament_name, season_number, player_id)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-get-players').on('click', function () {
+
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+
+        Main.ro.tourn.seasonGetPlayers(tournament_name, season_number)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-get-slots').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+
+        Main.ro.tourn.seasonGetSlots(user_id, tournament_name, season_number)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-match-kickoff').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var game_id = prompt('game_id', '');
+        var kickoff_time = prompt('kickoff_time', '');
+
+        Main.ro.tourn.seasonMatchKickOff(user_id, tournament_name, game_id, kickoff_time)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-start').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+        var start_time = prompt('start_time', '');
+
+        Main.ro.tourn.seasonStart(user_id, tournament_name, season_number, start_time)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-cancel').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+        var reason = prompt('reason', '');
+
+        Main.ro.tourn.seasonCancel(user_id, tournament_name, season_number, reason)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-delete').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+        var reason = prompt('reason', '');
+
+        Main.ro.tourn.seasonDelete(user_id, tournament_name, season_number, reason)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-season-count').on('click', function () {
+
+        var tournament_name = prompt('tournament_name', '');
+
+        Main.ro.tourn.seasonCount(tournament_name)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-get-seasons').on('click', function () {
+
+        var tournament_name = prompt('tournament_name', '');
+
+        Main.ro.tourn.getSeasons(tournament_name)
+                .get(function (data) {
+                    alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    alert(err);
+                    console.log(err);
+                });
+
+    });
+
 });

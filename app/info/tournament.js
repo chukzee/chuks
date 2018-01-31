@@ -260,20 +260,22 @@ class Tournament extends WebApplication {
             //after one complete rotation - ie a new round of matches created.
 
             var match_count = half; // number of matches on this round
+            rounds[i] = {
+                sn: i + 1, //round number
+                fixtures: []
+            };
+            var f_index = -1;//important
             for (var n = 0; n < match_count; n++) {
 
                 if (slot_1s[n] === EMPTY || slot_2s[n] === EMPTY) {//in the case of odd number of players
                     continue;//skip - the player will be idle in this 
                     //round - gets a bye. see https://en.wikipedia.org/wiki/Bye_%28sports%29
                 }
-                var num = n + 1;
-                var rd = {
-                    sn: num,
-                    fixtures: this._fixturesStruct(slot_1s[n], slot_2s[n], sets_count)
-                };
+                f_index++;
+                rounds[i].fixtures[f_index] = this._fixturesStruct(slot_1s[n], slot_2s[n], sets_count);
 
-                rounds.push(rd);
             }
+
 
         }
 
@@ -289,7 +291,7 @@ class Tournament extends WebApplication {
      * So the system will automatically assign slot numbers to the next round upon completion
      * of current round.
      * 
-     * @param {type} players_count - allow number of players ar 4, 8, 16, 32, 64
+     * @param {type} players_count  allowed number of players are 4, 8, 16, 32, 64
      * @param {type} sets_count sets_count represent the number of games to make a complete match
      * @returns {String}
      */
@@ -310,19 +312,17 @@ class Tournament extends WebApplication {
         var slot_1 = 1;
         var slot_2 = 2;
         var is_first_round = true;
-
-        while (size >= 2) {
+        var i = 0;
+        while (size >= 1) {
 
             var match_count = size; // number of matches on this round
+            rounds[i] = {
+                sn: i + 1, //round number
+                fixtures: []
+            };
             for (var n = 0; n < match_count; n++) {
 
-                var num = n + 1;
-                var rd = {
-                    sn: num,
-                    fixtures: this._fixturesStruct(slot_1, slot_2, sets_count)
-                };
-
-                rounds.push(rd);
+                rounds[i].fixtures[n] = this._fixturesStruct(slot_1, slot_2, sets_count);
 
                 if (is_first_round) {//for now only the first round will have
                     // slot numbers - after the first round matches
@@ -338,9 +338,10 @@ class Tournament extends WebApplication {
             slot_1 = '';
             slot_2 = '';
             size /= 2;
+            i++;
         }
 
-
+        return rounds;
     }
 
     //tricky - note to also modify the corresponding rounds of the season.
@@ -1089,13 +1090,19 @@ class Tournament extends WebApplication {
     async _promoteToNextRound(c, tourn, match) {
 
         //first determine the winner of the sets
-        var player_1_winner;
+        var is_player_1_winner;
         if (match.scores[0] > match.scores[1]) {// player_1 wins
-            player_1_winner = 0; //means false
+            is_player_1_winner = 1; //means true
         } else if (match.scores[0] < match.scores[1]) {// player_1 losses
-            player_1_winner = 1;//means true
+            is_player_1_winner = 0;//means false
         } else {//draw
-            player_1_winner = Math.floor(Math.random() * 2); // randomly get 0 and 1
+
+            //In the future we may implement a more appropriate way of separating
+            //the players such as comparing the value of their board (as in chess), the 
+            //number of points accumulated since the start of the tournament and so on.
+            //But for now we go for just random picking a lucky winner.
+
+            is_player_1_winner = Math.floor(Math.random() * 2); // randomly get 0 and 1
         }
 
         var season_number = tourn.seasons.length - 1;
@@ -1116,12 +1123,22 @@ class Tournament extends WebApplication {
                     var n_nxt = n / 2; //required index of fixtures in next round to be promoted to
                     var next_round = rounds[i + 1];
                     var next_fixture = next_round.fixtures[n_nxt];
-                    if (player_1_winner) {
-                        next_fixture.player_1.id = match.players[0].user_id;
-                        next_fixture.player_1.slot = fixtures[j].player_1.slot;
+                    if (is_player_1_winner) {
+                        if (!next_fixture.player_1.id) {
+                            next_fixture.player_1.id = fixtures[j].player_1.id;
+                            next_fixture.player_1.slot = fixtures[j].player_1.slot;
+                        } else {
+                            next_fixture.player_2.id = fixtures[j].player_1.id;
+                            next_fixture.player_2.slot = fixtures[j].player_1.slot;
+                        }
                     } else {
-                        next_fixture.player_2.id = match.players[1].user_id;
-                        next_fixture.player_2.slot = fixtures[j].player_2.slot;
+                        if (!next_fixture.player_1.id) {
+                            next_fixture.player_1.id = fixtures[j].player_2.id;
+                            next_fixture.player_1.slot = fixtures[j].player_2.slot;
+                        } else {
+                            next_fixture.player_2.id = fixtures[j].player_2.id;
+                            next_fixture.player_2.slot = fixtures[j].player_2.slot;
+                        }
                     }
 
 
@@ -1134,10 +1151,10 @@ class Tournament extends WebApplication {
                     await c.updateOne({name: tourn.name}, {$set: editObj});
 
                     break;
+                    
                 }
             }
         }
-
 
     }
 

@@ -13,8 +13,11 @@ Main.on("pagecreate", function (arg) {
     
     Main.eventio.on('game_move', onGameMove);
     Main.eventio.on('game_move_sent', onGameMoveSent);
+    Main.eventio.on('notify_upcoming_match', onNotifyUpComingMatch);
     Main.eventio.on('game_start', onGameStart);
+    Main.eventio.on('game_start_next_set', onGameStartNextSet);
     Main.eventio.on('watch_game_start', onWatchGameStart);
+    Main.eventio.on('watch_game_start_next_set', onWatchGameStartNextSet);
     Main.eventio.on('game_resume', onGameResume);
     Main.eventio.on('watch_game_resume', onWatchGameResume);
     Main.eventio.on('game_pause', onGamePause);
@@ -33,8 +36,20 @@ Main.on("pagecreate", function (arg) {
         console.log(obj);
     }
 
+    function onNotifyUpComingMatch(obj){
+        alert('onNotifyUpComingMatch');
+        alert(obj);
+        console.log(obj);
+    }
+    
     function onGameStart(obj){
         alert('onGameStart');
+        alert(obj);
+        console.log(obj);
+    }
+    
+    function onGameStartNextSet(obj){
+        alert('onGameStartNextSet');
         alert(obj);
         console.log(obj);
     }
@@ -45,6 +60,12 @@ Main.on("pagecreate", function (arg) {
         console.log(obj);
     }
 
+    function onWatchGameStartNextSet(obj){
+        alert('onWatchGameStartNextSet');
+        alert(obj);
+        console.log(obj);
+    }
+    
     function onGameResume(obj){
         alert('onGameResume');
         alert(obj);
