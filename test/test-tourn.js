@@ -49,11 +49,11 @@ function promoteToNextRound(c, tourn, match) {
         is_player_1_winner = Math.floor(Math.random() * 2); // randomly get 0 and 1
     }
     
-    var season_number = tourn.seasons.length - 1;
-    var current_season = tourn.seasons[season_number];
+    var season_index = tourn.seasons.length - 1;
+    var current_season = tourn.seasons[season_index];
 
     if (!current_season) {
-        console.log(`Season ${season_number} not found in ${tourn.name} tournamet - this should not happen at this point.`);
+        console.log(`Season ${tourn.seasons.length} not found in ${tourn.name} tournamet - this should not happen at this point.`);
         return;
     }
 
@@ -89,7 +89,6 @@ function promoteToNextRound(c, tourn, match) {
                 //update the tournament
 
                 /*var editObj = {};
-                 var season_index = season_number - 1;
                  editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
                  
                  await c.updateOne({name: tourn.name}, {$set: editObj});

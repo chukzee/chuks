@@ -4,7 +4,7 @@
 var WebApplication = require('../web-application');
 var User = require('../info/user');
 var PlayerRank = require('../info/player-ranks');
-var Tournament = require('./info/tournament');
+var Tournament = require('../info/tournament');
 
 
 class Match extends WebApplication {

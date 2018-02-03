@@ -130,6 +130,10 @@ class ServerObject {
         return 100;
     }
     
+    get MAX_GAME_SETS(){
+        return 7;
+    }
+    
     get MATCH_SCHEDULE_OFFSET(){//allowable match schedule offset from current time in ms
         return 900000; //900000 ms is 15 mins
     }

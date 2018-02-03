@@ -71,13 +71,14 @@ module.exports = function () {
         //tournaments
         db.collection(col.tournaments).ensureIndex({
             name: 1,
-            'officials.user_id': 1,// come back to check for correctness
-            'players.user_id': 1// come back to check for correctness
+            'officials.user_id': 1// come back to check for correctness
+            //'registered_players.user_id': 1// DON'T PLEASE : to avoid the error:  mongodb cannot index parallel arrays
         }
         , uinqueObj, callback);
-
+        
         db.collection(col.tournaments).ensureIndex({
             created_by: 1,
+            date_created: 1,
             officials: 1
         }
         , callback);

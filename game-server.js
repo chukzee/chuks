@@ -31,6 +31,7 @@ var evt = require('./app/evt');
 var db;
 var redis;
 var sObj;
+var httpServer;
 
 class Main {
 
@@ -66,7 +67,7 @@ class Main {
         accRoute.use(this.accessRouteRequest.bind(this));
         //commented out since we now use reverse proxy - ngnix
         app.get('/*', this.serveFile.bind(this));//route for web client resources to server web pages
-        var httpServer = http.createServer(app);//NEW - we now use reverse proxy server - ngnix
+        httpServer = http.createServer(app);//NEW - we now use reverse proxy server - ngnix
         //var httpServer = http.createServer(this.redirectToHttps.bind(this));//create http server to redirect to https
         //secureHttpServer.listen(config.HTTPS_PORT, config.HOST, this.onListenHttps.bind(this));//listen for https connections        
 
@@ -148,10 +149,17 @@ function gracefulShutdown(){
     
     //clear user sessions in this server instance
     
+    console.log('COME BACK FOR APPROPRIATE GRACEFUL SHUTDOWN!');
+    process.exit(0);//COME BACK
     
-    setTimeout(function(){//TO BE REMOVE LATER - NOT THE BEST!
-        console.log('COME BACK FOR PROPER shutdown -  not using setTimeout!');
-        process.exit();
-    },2000);
+    /*httpServer.on('close',function(){
+        
+        console.log('COME BACK FOR MORE CLEANUP!');
+        
+        process.exit(0);
+    }); 
+    
+    
+    httpServer.close();*/
     
 }

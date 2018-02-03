@@ -54,9 +54,9 @@ Main.on("pagecreate", function (arg) {
 
     /*
      <button id="btn-create-tournament" style="margin: 5px;">Create tournament</button>
-     <button id="btn-edit-tournament" style="margin: 5px;">Edit tournament</button>
-     <button id="btn-set-tournament-icon" style="margin: 5px;">Set tournament icon</button>
-     <button id="btn-set-tournament-status" style="margin: 5px;">Set tournament status</button>
+     <button id="btn-set-icon" style="margin: 5px;">Set icon</button>
+     <button id="btn-set-status" style="margin: 5px;">Set status</button>
+     <button id="btn-set-game-sets-count" style="margin: 5px;">Set game sets count</button>
      <button id="btn-add-official" style="margin: 5px;">Add official</button>
      <button id="btn-remove-official" style="margin: 5px;">Remove official</button>
      <button id="btn-register-player" style="margin: 5px;">Register player</button>
@@ -79,13 +79,15 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-create-tournament').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var game = prompt('game', 'chess');
+        var type = prompt('tournament_type', '');
+        var sets_count = prompt('sets_count', '');
         var status_message = prompt('status_message', '');
         var photo_url = prompt('photo_url', '');
 
-        Main.ro.tourn.createTournament(user_id, tournament_name, game, status_message, photo_url)
+        Main.ro.tourn.createTournament(user_id, tournament_name, game, type, sets_count ,status_message, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -97,11 +99,13 @@ Main.on("pagecreate", function (arg) {
 
     });
 
-    $('#btn-edit-tournament').on('click', function () {
+    $('#btn-set-game-sets-count').on('click', function () {
 
-        var obj = {};
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+        var sets_count = prompt('sets_count', '');
 
-        Main.ro.tourn.editTournament(obj)
+        Main.ro.tourn.setGameSetsCount(user_id, tournament_name, sets_count)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -113,12 +117,13 @@ Main.on("pagecreate", function (arg) {
 
     });
 
-    $('#btn-set-tournament-icon').on('click', function () {
+    $('#btn-set-icon').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
         var photo_url = prompt('photo_url', '');
 
-        Main.ro.tourn.setTournamentIcon(user_id, photo_url)
+        Main.ro.tourn.setIcon(user_id, tournament_name, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -130,14 +135,14 @@ Main.on("pagecreate", function (arg) {
 
     });
 
-    $('#btn-set-tournament-status').on('click', function () {
+    $('#btn-set-status').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var status_message = prompt('status_message', '');
         var photo_url = prompt('photo_url', '');
 
-        Main.ro.tourn.setTournamentStatus(user_id, tournament_name, status_message, photo_url)
+        Main.ro.tourn.setStatus(user_id, tournament_name, status_message, photo_url)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -151,7 +156,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-add-official').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var new_official_user_id = prompt('new_official_user_id', '');
 
@@ -169,7 +174,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-remove-official').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var official_user_id = prompt('official_user_id', '');
 
@@ -187,7 +192,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-register-player').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var player_user_id = prompt('player_user_id', '');
 
@@ -205,7 +210,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-remove-registered-player').on('click', function () {
 
-        var user_id = prompt('user_id', '07032710628');
+        var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var player_user_id = prompt('player_user_id', '');
 

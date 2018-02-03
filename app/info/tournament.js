@@ -10,15 +10,16 @@ class Tournament extends WebApplication {
         super(sObj, util, evt);
     }
 
-    async _isTournamentOfficial(user_id, tournament_name) {
-        var c = this.sObj.db.collection(this.sObj.col.tournaments);
-        var official = await c.findOne(
-                {
-                    name: tournament_name,
-                    'officials.user_id': user_id
-                });
+    _isTournamentOfficial(tourn, user_id) {
+        if (Array.isArray(tourn.officials)) {
+            for (var i = 0; i < tourn.officials.length; i++) {
+                if (tourn.officials[i].user_id === user_id) {
+                    return true;
+                }
+            }
+        }
 
-        return typeof official === 'object';
+        return false;
     }
 
     /**
@@ -31,17 +32,21 @@ class Tournament extends WebApplication {
      */
     async seasonNew(user_id, tournament_name, players_count, start_time) {
 
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            players_count = arguments[0].players_count;
+            start_time = arguments[0].start_time;
+        }
+
+        players_count = players_count - 0;
+
         if (!user_id) {
             return this.error('No username');
         }
 
         if (!tournament_name) {
             return this.error('No tournament name');
-        }
-
-        slots_count = slots_count - 0;
-        if (isNaN(slots_count) || slots_count < 1) {
-            return this.error('Invalid number of slots - must be a number greater than 0');
         }
 
         players_count = players_count - 0;
@@ -71,16 +76,16 @@ class Tournament extends WebApplication {
             return this.error(`Season start time too close to current time.`);
         }
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
-        }
-
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
             return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
         }
 
 
@@ -110,7 +115,7 @@ class Tournament extends WebApplication {
         }
 
         var new_season = {
-            sn: tourn.seasons.length++, //next season number
+            sn: ++tourn.seasons.length, //next season number
             start_time: start_time,
             end_time: '', //will be set automatically when the final game of the season is concluded or when the seanson is cancelled
             winner: '', //will be set automatically when the final game of the season is concluded.
@@ -347,16 +352,26 @@ class Tournament extends WebApplication {
     //tricky - note to also modify the corresponding rounds of the season.
     async seasonAddPlayer(user_id, tournament_name, season_number, player_id, slot_number) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+            player_id = arguments[0].player_id;
+            slot_number = arguments[0].slot_number;
         }
 
+        season_number = season_number - 0;
+        slot_number = slot_number - 0;
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
             return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
         }
 
         //get the particular season
@@ -372,9 +387,16 @@ class Tournament extends WebApplication {
             return this.error(`Season ${season_number} not found.`);
         }
 
-        if (season.status !== 'before-start') {//ie 'start' or 'cancel' or 'end'
-            return this.error(`Can not add player - season ${season_number} already started.`);
+        switch (season.status) {
+            case 'start' :
+                return this.error(`Can not add player - season ${season_number} already started.`);
+            case 'end' :
+                return this.error(`Can not add player - season ${season_number} already ended.`);
+            case 'cancel' :
+                return this.error(`Can not add player - season ${season_number} is cancelled.`);
         }
+
+
 
         var slot;
         for (var i = 0; i < season.slots.length; i++) {
@@ -420,16 +442,24 @@ class Tournament extends WebApplication {
     //tricky - note to also modify the corresponding rounds of the season.
     async seasonRemovePlayer(user_id, tournament_name, season_number, player_id) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+            player_id = arguments[0].player_id;
         }
 
+        season_number = season_number - 0;
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
             return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
         }
 
         //get the particular season
@@ -445,8 +475,14 @@ class Tournament extends WebApplication {
             return this.error(`Season ${season_number} not found.`);
         }
 
-        if (season.status !== 'before-start') {//ie 'start' or 'cancel' or 'end'
-            return this.error(`Can not remove player - season ${season_number} already started.`);
+
+        switch (season.status) {
+            case 'start' :
+                return this.error(`Can not remove player - season ${season_number} already started.`);
+            case 'end' :
+                return this.error(`Can not remove player - season ${season_number} already ended.`);
+            case 'cancel' :
+                return this.error(`Can not remove player - season ${season_number} is cancelled.`);
         }
 
         for (var i = 0; i < season.slots.length; i++) {
@@ -486,6 +522,12 @@ class Tournament extends WebApplication {
 
     async seasonGetPlayers(tournament_name, season_number) {
 
+        if (arguments.length === 1) {
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+        }
+
+        season_number = season_number - 0;
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
@@ -550,10 +592,13 @@ class Tournament extends WebApplication {
     //tricky - note to also re-structure the rounds of the season.
     async seasonGetSlots(user_id, tournament_name, season_number) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
         }
 
+        season_number = season_number - 0;
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
@@ -562,6 +607,9 @@ class Tournament extends WebApplication {
             return this.error(`Tournament does not exist - ${tournament_name}`);
         }
 
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
+        }
 
 
         //get the particular season
@@ -590,8 +638,11 @@ class Tournament extends WebApplication {
      */
     async seasonMatchKickOff(user_id, tournament_name, game_id, kickoff_time) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            game_id = arguments[0].game_id;
+            kickoff_time = arguments[0].kickoff_time;
         }
 
         var begin_time = new Date(kickoff_time);
@@ -614,6 +665,10 @@ class Tournament extends WebApplication {
 
         if (!tourn) {
             return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
         }
 
         var seasons = tourn.seasons;
@@ -749,9 +804,14 @@ class Tournament extends WebApplication {
 
     async seasonStart(user_id, tournament_name, season_number, start_time) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+            start_time = arguments[0].start_time;
         }
+
+        season_number = season_number - 0;
 
         var season_begin_time = new Date(start_time);
         if (isNaN(season_begin_time.getTime())) {
@@ -770,8 +830,12 @@ class Tournament extends WebApplication {
             return this.error(`Tournament does not exist - ${tournament_name}`);
         }
 
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
+        }
+
         var seasons = tourn.seasons;
-        var current_season = seasons[season_number];
+        var current_season = seasons[season_number - 1];
         if (!current_season) {
             return this.error(`Season ${season_number} not found.`);
         }
@@ -781,13 +845,20 @@ class Tournament extends WebApplication {
             return this.error(`Not allowed - cannot start previous season.`);
         }
 
-        if (current_season.status !== 'before-start') {//ie 'start' or 'cancel' or 'end'
-            return this.error(`Season ${season_number} aleady started.`);
+
+        switch (current_season.status) {
+            case 'start' :
+                return this.error(`Season ${season_number} already started.`);
+            case 'end' :
+                return this.error(`Season ${season_number} already ended.`);
+            case 'cancel' :
+                return this.error(`Season ${season_number} is cancelled.`);
         }
 
-        var last_season = seasons[season_number - 1];
 
-        if (last_season && !this._validateSeasonStartTime(last_season.end_time, start_time)) {
+        var prev_season = seasons[season_number - 2];//season befor the current season
+
+        if (prev_season && !this._validateSeasonStartTime(prev_season.end_time, start_time)) {
             return;
         }
 
@@ -809,7 +880,7 @@ class Tournament extends WebApplication {
             season_number: season_number
         });
 
-        return 'Set successfully.';
+        return `Season ${season_number} starts ${start_time}`;
 
     }
 
@@ -831,9 +902,14 @@ class Tournament extends WebApplication {
      */
     async seasonCancel(user_id, tournament_name, season_number, reason) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+            reason = arguments[0].reason;
         }
+
+        season_number = season_number - 0;
 
         if (!reason) {
             return this.error('Extreme action requires a reason!');
@@ -846,8 +922,12 @@ class Tournament extends WebApplication {
             return this.error(`Tournament does not exist - ${tournament_name}`);
         }
 
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
+        }
+
         var seasons = tourn.seasons;
-        var current_season = seasons[season_number];
+        var current_season = seasons[season_number - 1];
         if (!current_season) {
             return this.error(`Season ${season_number} not found.`);
         }
@@ -899,9 +979,14 @@ class Tournament extends WebApplication {
      */
     async seasonDelete(user_id, tournament_name, season_number, reason) {
 
-        if (!this._isTournamentOfficial(user_id, tournament_name)) {
-            return this.error('Not authorized!');
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+            reason = arguments[0].reason;
         }
+
+        season_number = season_number - 0;
 
         if (!reason) {
             return this.error('Extreme action requires a reason!');
@@ -914,8 +999,12 @@ class Tournament extends WebApplication {
             return this.error(`Tournament does not exist - ${tournament_name}`);
         }
 
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
+        }
+
         var seasons = tourn.seasons;
-        var current_season = seasons[season_number];
+        var current_season = seasons[season_number - 1];
         if (!current_season) {
             return this.error(`Season ${season_number} not found.`);
         }
@@ -1105,11 +1194,11 @@ class Tournament extends WebApplication {
             is_player_1_winner = Math.floor(Math.random() * 2); // randomly get 0 and 1
         }
 
-        var season_number = tourn.seasons.length - 1;
-        var current_season = tourn.seasons[season_number];
+        var season_index = tourn.seasons.length - 1;
+        var current_season = tourn.seasons[season_index];
 
         if (!current_season) {
-            console.log(`Season ${season_number} not found in ${tourn.name} tournamet - this should not happen at this point.`);
+            console.log(`Season ${tourn.seasons.length} not found in ${tourn.name} tournamet - this should not happen at this point.`);
             return;
         }
 
@@ -1145,13 +1234,12 @@ class Tournament extends WebApplication {
                     //update the tournament
 
                     var editObj = {};
-                    var season_index = season_number - 1;
                     editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
 
                     await c.updateOne({name: tourn.name}, {$set: editObj});
 
                     break;
-                    
+
                 }
             }
         }
@@ -1320,29 +1408,33 @@ class Tournament extends WebApplication {
 
 
         if (type !== 'round-robin' && type !== 'single-elimination') {
-            return 'Tournament type must be round-robin or single-elimination.';
+            return this.error('Tournament type must be round-robin or single-elimination.');
         }
 
         if (!tournament_name) {
-            return 'No tournament name.';
+            return this.error('No tournament name.');
         }
 
         if (typeof tournament_name !== 'string') {
-            return 'Invalid tournament name.';
+            return this.error('Invalid tournament name.');
         }
 
 
         if (!game) {
-            return 'No game name.';
+            return this.error('No game name.');
         }
 
         if (typeof game !== 'string') {
-            return 'Invalid game name.';
+            return this.error('Invalid game name.');
         }
 
 
         if (!sets_count || sets_count < 1) {
-            return 'number of sets must be at least 1.';
+            return this.error('Number of sets must be at least 1.');
+        }
+
+        if (sets_count > this.sObj.MAX_GAME_SETS) {
+            return this.error(`Number of sets must not be greater than ${this.sObj.MAX_GAME_SETS}`);
         }
 
         if (!status_message) {
@@ -1355,19 +1447,30 @@ class Tournament extends WebApplication {
             var tourn = await c.findOne({name: tournament_name});
 
             if (tourn) {
-                return 'Tournament name already exist!';
+                return this.error('Tournament name already exist!');
             }
 
+            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+            var user = new User(this.sObj, this.util, this.evt);
+            var officialInfo = await user.getInfo(user_id, required_fields);
+
+            if (user.lastError) {
+                return this.error('Could not create tournament.');
+            }
+            if (!officialInfo) {
+                return this.error('Unknown user.');
+            }
 
             var insObj = {
                 name: tournament_name,
                 game: game,
+                created_by: officialInfo,
+                date_created: new Date(),
                 type: type, //round-robin and single-elimination 
                 sets_count: sets_count, // number of times two player will play each other before a winner is determined - max is 5
-                user_id: user_id,
                 status_message: status_message,
                 photo_url: photo_url,
-                officials: [],
+                officials: [officialInfo], // automatic official
                 registered_players: [],
                 seasons: []
             };
@@ -1379,7 +1482,7 @@ class Tournament extends WebApplication {
                 console.log('This should not happen! inserting more than one specified document when creating tournament!');
                 return 'Tournament created!';
             } else {
-                return 'Tournament was not creadted!';
+                return this.error('Tournament was not creadted!');
             }
         } catch (e) {
             console.log(e);
@@ -1388,38 +1491,124 @@ class Tournament extends WebApplication {
 
     }
 
-    /**
-     * As in multiple change of tournament info
-     * 
-     * @param {type} user_id
-     * @returns {undefined}
-     */
-    async editTournament(obj) {
+    async setGameSetsCount(user_id, tournament_name, sets_count) {
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            sets_count = arguments[0].photo_url;
+        }
 
+        if (!isFinite(sets_count) || sets_count < 1) {
+            return this.error('Game sets must be a nuber greater than zero!');
+        }
+
+        if (sets_count > this.sObj.MAX_GAME_SETS) {
+            return this.error(`Number of sets must not be greater than ${this.sObj.MAX_GAME_SETS}`);
+        }
+
+        //first check if the user is authorize to edit the tournament
+        try {
+            var c = this.sObj.db.collection(this.sObj.col.tournaments);
+            var tourn = await c.findOne({name: tournament_name});
+
+            if (!tourn) {
+                return this.error('Tournament not found - ' + tournament_name);
+            }
+
+            var is_official = false;
+
+            if (Array.isArray(tourn.officials)) {
+                for (var i = 0; i < tourn.officials.length; i++) {
+                    if (tourn.officials[i].user_id === user_id) {
+                        is_official = true;
+                    }
+                }
+            } else {
+                tourn.officials = [];
+            }
+
+            if (Array.isArray(tourn.seasons) && tourn.seasons.length > 0) {
+                var current_season = tourn.seasons[tourn.seasons.length - 1];
+                if (current_season.status === 'start') {
+                    return this.error('Not allowed! Cannot update the number of game sets for a season that has already started.');
+                }
+            }
+
+            //check if the user is authized
+            if (!is_official) {
+                return this.error('Not authorized!');
+            }
+
+            //at this point the user is authorized
+
+            var c = this.sObj.db.collection(this.sObj.col.tournaments);
+            await c.updateOne(
+                    {name: tournament_name},
+                    {
+                        $set: {sets_count: sets_count}
+                    });
+
+        } catch (e) {
+
+            console.log(e);
+
+            return this.error('Could not update tournament number of game sets');
+        }
+
+        return "Tournament number of game sets updated successfully";
     }
 
-    async setTournamentIcon(user_id) {
+    async setIcon(user_id, tournament_name, photo_url) {
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+            photo_url = arguments[0].photo_url;
+        }
 
+        //first check if the user is authorize to edit the tournament
+        try {
+
+
+            //at this point the user is authorized
+
+            if (!photo_url) {
+                return this.error('No icon specied!');
+            }
+
+
+            var c = this.sObj.db.collection(this.sObj.col.tournaments);
+
+            var tourn = await c.findOne({name: tournament_name});
+
+            if (!tourn) {
+                return this.error(`Tournament does not exist - ${tournament_name}`);
+            }
+
+            if (!this._isTournamentOfficial(tourn, user_id)) {
+                return this.error('Not authorized!');
+            }
+
+            await c.updateOne(
+                    {name: tournament_name},
+                    {
+                        $set: {photo_url: photo_url}
+                    });
+
+        } catch (e) {
+
+            console.log(e);
+
+            return this.error('Could not update tournament icon');
+        }
+
+        return "Tournament icon updated successfully";
     }
 
-    async _getInfo(user_id) {
-
-        var u = new User(this.sObj, this.util, this.evt);
-        var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
-        var user = await u.getInfo(user_id, required_fields);
-
-        var ofc = {
-            user_id: user_id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            full_name: user.full_name,
-            photo_url: user.photo_url
-        };
-
-        return ofc;
-    }
-
-    async setTournamentStatus(user_id, tournament_name, status_message, photo_url) {
+    async setStatus(user_id, tournament_name, status_message, photo_url) {
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
@@ -1431,11 +1620,6 @@ class Tournament extends WebApplication {
 
         //first check if the user is authorize to edit the tournament
         try {
-
-
-            if (!this._isTournamentOfficial(user_id, tournament_name)) {
-                return this.error('Not authorized!');
-            }
 
             //at this point the user is authorized
 
@@ -1450,6 +1634,17 @@ class Tournament extends WebApplication {
 
 
             var c = this.sObj.db.collection(this.sObj.col.tournaments);
+
+            var tourn = await c.findOne({name: tournament_name});
+
+            if (!tourn) {
+                return this.error(`Tournament does not exist - ${tournament_name}`);
+            }
+
+            if (!this._isTournamentOfficial(tourn, user_id)) {
+                return this.error('Not authorized!');
+            }
+
             await c.updateOne(
                     {name: tournament_name},
                     {
@@ -1482,14 +1677,16 @@ class Tournament extends WebApplication {
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
-            return 'Tournament not found - ' + tournament_name;
+            return this.error('Tournament not found - ' + tournament_name);
         }
 
         var is_official = false;
+
+
         if (Array.isArray(tourn.officials)) {
             for (var i = 0; i < tourn.officials.length; i++) {
                 if (tourn.officials[i].user_id === new_official_user_id) {
-                    return 'Already an official!';
+                    return this.error('Already an official!');
                 }
                 if (tourn.officials[i].user_id === user_id) {
                     is_official = true;
@@ -1501,17 +1698,28 @@ class Tournament extends WebApplication {
 
         //check if the user is authized
         if (!is_official) {
-            return 'Not authorized!';
+            return this.error('Not authorized!');
         }
 
         //check if the maximum official the tournament can have has exceeded
         if (tourn.officials.length > this.sObj.MAX_TOURNAMENT_OFFICIALS) {
-            return 'Cannot add more official! Maximum exceeded - ' + this.sObj.MAX_TOURNAMENT_OFFICIALS;
+            return this.error('Cannot add more official! Maximum exceeded - ' + this.sObj.MAX_TOURNAMENT_OFFICIALS);
         }
 
         //at this point the user is authorized
 
-        var officialInfo = await this._getInfo(new_official_user_id);
+
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var user = new User(this.sObj, this.util, this.evt);
+        var officialInfo = await user.getInfo(new_official_user_id, required_fields);
+
+        if (user.lastError) {
+            return this.error('Could not add official.');
+        }
+        if (!officialInfo) {
+            return this.error('Unknown user.');
+        }
+
         tourn.officials.push(officialInfo);
 
         //update the officials
@@ -1523,7 +1731,7 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: new_official_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return 'official added successfully.';
+        return this.error('official added successfully.');
     }
 
     async removeOfficial(user_id, tournament_name, official_user_id) {
@@ -1541,9 +1749,13 @@ class Tournament extends WebApplication {
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
-            return 'Tournament not found - ' + tournament_name;
+            return this.error('Tournament not found - ' + tournament_name);
         }
 
+        if (tourn.created_by.user_id === official_user_id) {
+            return this.error('Invalid action - the tournament creator is a permanent official and so cannot be removed!');
+        }
+        console.log(tourn.officials);
         var is_official = false;
         var index_found = -1;
         if (Array.isArray(tourn.officials)) {
@@ -1561,11 +1773,11 @@ class Tournament extends WebApplication {
 
         //check if the user is authized
         if (!is_official) {
-            return 'Not authorized!';
+            return this.error('Not authorized!');
         }
 
         if (index_found === -1) {
-            return 'Official not found!';
+            return this.error('Official not found!');
         }
 
         //now remove
@@ -1600,7 +1812,7 @@ class Tournament extends WebApplication {
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
-            return 'Tournament not found - ' + tournament_name;
+            return this.error('Tournament not found - ' + tournament_name);
         }
 
         var is_official = false;
@@ -1613,13 +1825,13 @@ class Tournament extends WebApplication {
         }
 
         if (!is_official) {
-            return 'Not authorized';
+            return this.error('Not authorized');
         }
 
         var is_player = false;
         if (Array.isArray(tourn.registered_players)) {
             for (var i = 0; i < tourn.registered_players.length; i++) {
-                if (tourn.registered_players[i].user_id === user_id) {
+                if (tourn.registered_players[i].user_id === player_user_id) {
                     is_player = true;
                 }
             }
@@ -1628,14 +1840,25 @@ class Tournament extends WebApplication {
         }
 
         if (is_player) {
-            return 'Already a player in this tournament.';
+            return this.error('Already a player in this tournament.');
         }
 
         if (tourn.registered_players.length > this.sObj.MAX_TOURNAMENT_PLAYERS) {
-            return 'Cannot add more players! Maximum exceeded - ' + this.sObj.MAX_TOURNAMENT_PLAYERS;
+            return this.error('Cannot add more players! Maximum exceeded - ' + this.sObj.MAX_TOURNAMENT_PLAYERS);
         }
 
-        var playerInfo = await this._getInfo(player_user_id);
+
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var user = new User(this.sObj, this.util, this.evt);
+        var playerInfo = await user.getInfo(player_user_id, required_fields);
+
+        if (user.lastError) {
+            return this.error('Could not register player.');
+        }
+        if (!playerInfo) {
+            return this.error('Unknown user.');
+        }
+
         tourn.registered_players.push(playerInfo);
 
         //update the registered_players
@@ -1666,7 +1889,7 @@ class Tournament extends WebApplication {
         var tourn = await c.findOne({name: tournament_name});
 
         if (!tourn) {
-            return 'Tournament not found - ' + tournament_name;
+            return this.error('Tournament not found - ' + tournament_name);
         }
 
         var is_official = false;
@@ -1679,13 +1902,13 @@ class Tournament extends WebApplication {
         }
 
         if (!is_official) {
-            return 'Not authorized';
+            return this.error('Not authorized');
         }
 
         var index_found = -1;
         if (Array.isArray(tourn.registered_players)) {
             for (var i = 0; i < tourn.registered_players.length; i++) {
-                if (tourn.registered_players[i].user_id === user_id) {
+                if (tourn.registered_players[i].user_id === player_user_id) {
                     index_found = i;
                 }
             }
@@ -1694,7 +1917,7 @@ class Tournament extends WebApplication {
         }
 
         if (index_found === -1) {
-            return 'Player not found!';
+            return this.error('Player not found!');
         }
 
 
