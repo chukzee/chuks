@@ -687,7 +687,7 @@ class Tournament extends WebApplication {
         }
         var season_start_time = new Date(current_season.start_time);
         if (begin_time.getTime() < season_start_time.getTime()) {
-            return this.error(`Kickoff time, ${begin_time} must be ahead of current season start time, ${season_start_time}`);
+            return this.error(`Kickoff time, ${begin_time} must be at least at or after the current season start time which is ${season_start_time}`);
         }
 
         //find the match fixture with the give game id
@@ -695,12 +695,35 @@ class Tournament extends WebApplication {
         var has_kickoff_time = false;
         var rounds = current_season.rounds;
         var players_ids = [];
+        var round_skip;
+        var fixture_skip;
+        var last_fixt;
 
         for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
-                if (fixtures[j].game_id === game_id) {
-                    match_fixture = fixtures[j];//hold
+                var current_fixt = fixtures[j];
+                if (j > 0) {
+                    last_fixt = fixtures[j - 1];
+                    if (!last_fixt.start_time) {
+                        round_skip = i + 1;
+                        fixture_skip = j + 1;
+                        break;
+                    }
+                }
+
+                if (i > 0 && j === 0) {
+                    var prev_fixtures = rounds[i - 1].fixtures;
+                    last_fixt = prev_fixtures[prev_fixtures.length - 1];
+                    if (!last_fixt.start_time) {
+                        round_skip = i + 1;
+                        fixture_skip = j + 1;
+                        break;
+                    }
+                }
+
+                if (current_fixt.game_id === game_id) {
+                    match_fixture = current_fixt;//hold
                     if (match_fixture.start_time) {
                         has_kickoff_time = true;
                     }
@@ -715,27 +738,36 @@ class Tournament extends WebApplication {
         }
 
         if (!match_fixture) {
-            return this.error(`Cannot set kickoff time - fixture not found.`);
+            return this.error(`Cannot set kickoff time - match fixture not found.`);
         }
 
         if (players_ids.length === 0) {
-            return this.error(`Cannot set kickoff time - one or more player not fixtured.`);
+            return this.error(`Cannot set kickoff time - one or more player has no match fixture. Make sure all slots are filled`);
+        }
+
+        if (round_skip > 0) {
+            return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
+        }
+
+        if (last_fixt && begin_time.getTime() < new Date(last_fixt.start_time).getTime()) {
+            return this.error(`Kickoff time must be at least at or after the last kickoff time set for match ${fixture_skip} on round ${round_skip} which is  ${last_fixt.start_time}.`);
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.match_fixtures);
 
         if (has_kickoff_time) {
-            //find and delete the match fixture
+            //find and delete the match fixture since we have to replace it!
             var r = await sc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
             if (!r.value) {
-                //ok check if the match has already start - which is most
-                //probably the reason it is not found in match_fixtures collection
+                //O.k check in the matches collection if the match has already start, which is most
+                //probably the reason it was not found in match_fixtures collection.
+                //So check the matches collection
+                sc = this.sObj.db.collection(this.sObj.col.matches);
                 var match = await c.findOne({game_id: game_id});
-                if (!match) {
+                if (match) {
                     //that's right! the match has already started
                     return 'Could not modify kickoff time - match already started.';
-                }
-                return this.error(`Could not modify kickoff time - fixture not found.`);
+                }               
             }
         }
 
@@ -776,7 +808,7 @@ class Tournament extends WebApplication {
         };
 
         var r = await c.insertOne(matchObj);
-        if (r.result.n > 1 || r.result.n < 1) {
+        if (r.result.n !== 1) {
             return 'Could not set kickoff. Something is not right. ';
         }
 
@@ -793,10 +825,10 @@ class Tournament extends WebApplication {
         var _10_mins = 10 * 60 * 1000;
         var delay = k_time - now - _10_mins;
 
-        this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will match send reminder to the player
+        this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will send match reminder to the players
 
         var delay = k_time - now;
-        this.sObj.task.later('START_TOURNAMENT_MATCH', delay, game_id);//will automatically start the match when kickoff is reached
+        this.sObj.task.later('START_TOURNAMENT_MATCH', delay, game_id);//will automatically start the match at kickoff time
 
         return 'Kickoff time set successfully.';
 
