@@ -637,7 +637,7 @@ class Tournament extends WebApplication {
      * @returns {Tournament@call;error|String}
      */
     async seasonMatchKickOff(user_id, tournament_name, game_id, kickoff_time) {
-
+        
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
@@ -652,7 +652,7 @@ class Tournament extends WebApplication {
 
         var now = new Date().getTime();
         if (begin_time.getTime() < now) {
-            return this.error(`Kickoff time can not be in the past .`);
+            return this.error(`Kickoff time can not be in the past.`);
         }
 
         var _15_mins = 15 * 60 * 1000;
@@ -660,8 +660,8 @@ class Tournament extends WebApplication {
             return this.error(`Kickoff time too close to current time.`);
         }
 
-        var c = this.sObj.db.collection(this.sObj.col.tournaments);
-        var tourn = await c.findOne({name: tournament_name});
+        var tc = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await tc.findOne({name: tournament_name});
 
         if (!tourn) {
             return this.error(`Tournament does not exist - ${tournament_name}`);
@@ -699,16 +699,18 @@ class Tournament extends WebApplication {
         var fixture_skip;
         var last_fixt;
 
-        for (var i = 0; i < rounds.length; i++) {
+
+        outer: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
                 var current_fixt = fixtures[j];
                 if (j > 0) {
                     last_fixt = fixtures[j - 1];
                     if (!last_fixt.start_time) {
-                        round_skip = i + 1;
-                        fixture_skip = j + 1;
-                        break;
+                        // last match of current round
+                        round_skip = i + 1;//current round
+                        fixture_skip = j;//last match
+                        break outer;
                     }
                 }
 
@@ -716,14 +718,16 @@ class Tournament extends WebApplication {
                     var prev_fixtures = rounds[i - 1].fixtures;
                     last_fixt = prev_fixtures[prev_fixtures.length - 1];
                     if (!last_fixt.start_time) {
-                        round_skip = i + 1;
-                        fixture_skip = j + 1;
-                        break;
+                        // last match of previous round
+                        round_skip = i; //previous round
+                        fixture_skip = prev_fixtures.length; //last match (but of the previous round)
+                        break outer;
                     }
                 }
 
+
                 if (current_fixt.game_id === game_id) {
-                    match_fixture = current_fixt;//hold
+                    match_fixture = current_fixt;//hold                                        
                     if (match_fixture.start_time) {
                         has_kickoff_time = true;
                     }
@@ -731,10 +735,19 @@ class Tournament extends WebApplication {
                         players_ids.push(match_fixture.player_1.id);
                         players_ids.push(match_fixture.player_2.id);
                     }
-                    break;
+                    break outer;
                 }
 
             }
+        }
+
+
+        if (round_skip > 0) {
+            return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
+        }
+
+        if (last_fixt && begin_time.getTime() < new Date(last_fixt.start_time).getTime()) {
+            return this.error(`Kickoff time must be at least at or after the last kickoff time set for match ${fixture_skip} on round ${round_skip} which is  ${last_fixt.start_time}.`);
         }
 
         if (!match_fixture) {
@@ -745,32 +758,36 @@ class Tournament extends WebApplication {
             return this.error(`Cannot set kickoff time - one or more player has no match fixture. Make sure all slots are filled`);
         }
 
-        if (round_skip > 0) {
-            return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
-        }
-
-        if (last_fixt && begin_time.getTime() < new Date(last_fixt.start_time).getTime()) {
-            return this.error(`Kickoff time must be at least at or after the last kickoff time set for match ${fixture_skip} on round ${round_skip} which is  ${last_fixt.start_time}.`);
-        }
-
-        var sc = this.sObj.db.collection(this.sObj.col.match_fixtures);
+        var mfc = this.sObj.db.collection(this.sObj.col.match_fixtures);
 
         if (has_kickoff_time) {
             //find and delete the match fixture since we have to replace it!
-            var r = await sc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
+            try {
+                var r = await mfc.findOneAndDelete({game_id: game_id}, {projection: {_id: 0}});
+            } catch (e) {
+                console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
+                return this.error('Oop! Something is wrong.');
+            }
+
             if (!r.value) {
                 //O.k check in the matches collection if the match has already start, which is most
                 //probably the reason it was not found in match_fixtures collection.
-                //So check the matches collection
-                sc = this.sObj.db.collection(this.sObj.col.matches);
-                var match = await c.findOne({game_id: game_id});
+                //So check the matches collection now
+                var ms = this.sObj.db.collection(this.sObj.col.matches);
+                try {
+                    var match = await ms.findOne({game_id: game_id});
+                } catch (e) {
+                    console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
+                    return this.error('Oop! Something is not OK.');
+                }
+
                 if (match) {
                     //that's right! the match has already started
                     return 'Could not modify kickoff time - match already started.';
-                }               
+                }
             }
         }
-
+        
         //now set the start time, our interest
         match_fixture.start_time = kickoff_time;
 
@@ -807,7 +824,13 @@ class Tournament extends WebApplication {
             players: players
         };
 
-        var r = await c.insertOne(matchObj);
+        try {
+            var r = await mfc.insertOne(matchObj);
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
+            return this.error('Oop! Something is not right.');
+        }
+
         if (r.result.n !== 1) {
             return 'Could not set kickoff. Something is not right. ';
         }
@@ -818,7 +841,13 @@ class Tournament extends WebApplication {
         var editObj = {};
         editObj['seasons.' + last] = current_season; // using the dot operator to access the index of the array
 
-        await c.updateOne({name: tournament_name}, {$set: editObj});
+        try {
+            await tc.updateOne({name: tournament_name}, {$set: editObj});
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
+            return this.error('Oop! Something went wrong.');
+        }
+
 
         var k_time = new Date(kickoff_time).getTime();
         var now = new Date().getTime();

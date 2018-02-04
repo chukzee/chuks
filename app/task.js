@@ -5,11 +5,11 @@ var Match = require('./game/match');
 
 class Task {
 
-    async constructor(sObj, util, evt) {
+    constructor(sObj, util, evt) {
         this.sObj = sObj;
         this.util = util;
         this.evt = evt;
-        this.list = await loadTasks();
+        this.list = this.loadTasks();
 
         for (var n in this.list) {
             if (list[n].repeat) {
