@@ -698,7 +698,8 @@ class Tournament extends WebApplication {
         var round_skip;
         var fixture_skip;
         var last_fixt;
-
+        var last_round_match;
+        var current_round;
 
         outer: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
@@ -717,6 +718,7 @@ class Tournament extends WebApplication {
                 if (i > 0 && j === 0) {
                     var prev_fixtures = rounds[i - 1].fixtures;
                     last_fixt = prev_fixtures[prev_fixtures.length - 1];
+                    last_round_match = last_fixt;
                     if (!last_fixt.start_time) {
                         // last match of previous round
                         round_skip = i; //previous round
@@ -727,7 +729,8 @@ class Tournament extends WebApplication {
 
 
                 if (current_fixt.game_id === game_id) {
-                    match_fixture = current_fixt;//hold                                        
+                    match_fixture = current_fixt;//hold   
+                    current_round = i+ 1;
                     if (match_fixture.start_time) {
                         has_kickoff_time = true;
                     }
@@ -742,6 +745,10 @@ class Tournament extends WebApplication {
         }
 
 
+        if(current_round > 1 && last_round_match && !last_round_match.end_time){
+            return this.error(`All matches in round ${current_round - 1} must be concluded before setting kickoff time for those in round ${current_round}.`);            
+        }
+        
         if (round_skip > 0) {
             return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
         }
@@ -757,6 +764,7 @@ class Tournament extends WebApplication {
         if (players_ids.length === 0) {
             return this.error(`Cannot set kickoff time - one or more player has no match fixture. Make sure all slots are filled`);
         }
+        
 
         var mfc = this.sObj.db.collection(this.sObj.col.match_fixtures);
 
@@ -820,6 +828,7 @@ class Tournament extends WebApplication {
             tournament_name: tourn.name,
             game_id: game_id,
             game_name: tourn.game,
+            sets_count: tourn.sets_count,
             rules: current_season.rules,
             players: players
         };
@@ -853,10 +862,11 @@ class Tournament extends WebApplication {
         var now = new Date().getTime();
         var _10_mins = 10 * 60 * 1000;
         var delay = k_time - now - _10_mins;
-
+        
         this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will send match reminder to the players
 
         var delay = k_time - now;
+        
         this.sObj.task.later('START_TOURNAMENT_MATCH', delay, game_id);//will automatically start the match at kickoff time
 
         return 'Kickoff time set successfully.';

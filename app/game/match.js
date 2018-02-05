@@ -524,7 +524,7 @@ class Match extends WebApplication {
             };
 
         }
-
+        
         sets[0].start_time = new Date(); //set the start time of the first set
 
         var match = {

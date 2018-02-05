@@ -10,52 +10,92 @@ class Task {
         this.util = util;
         this.evt = evt;
         this.list = this.loadTasks();
+        //The max setTimeout delay is 24.8 days which is (2^31 - 1) or 0x7FFFFFFF milliseconds.
+        //A value greater than that will cause wierd behaviour - executing instantly
 
+        this.JS_MAX_SET_TIME0UT_DELAY = Math.pow(2, 31) - 1; // which is (2^31 - 1) or 0x7FFFFFFF
         for (var n in this.list) {
             if (list[n].repeat) {
-                this.interval(list[n].cmd, list[n].delay, list[n].param);
+                //set the new intial delay 
+                list[n].delay = new Date(list[n].startTime).getTime() - new Date().getTime();
+                if(list[n].delay < 0){//some time is already lost - the best we can do is to continue from a logic point
+                    var mod = new Date().getTime() % list[n].interval;
+                    list[n].delay = list[n].interval - mod;
+                }
+                this.interval(list[n].cmd, list[n].intial_delay, list[n].interval, list[n].times, list[n].param);
             } else {
+                //set the new delay
+                list[n].delay = new Date(list[n].startTime).getTime() - new Date().getTime();
                 this.later(list[n].cmd, list[n].delay, list[n].param);
             }
         }
     }
 
-    interval(cmd, delay, param) {
+    interval(cmd, intial_delay, interval, times, param) {
         var obj = {
             cmd: cmd,
             task_id: this.sObj.UniqueNumber,
-            delay: delay,
-            nextTime: new Date().getTime() + delay,
+            delay: intial_delay,
+            interval: interval,
+            interval_id: null, //set dynamically
+            times: times,
+            startTime: intial_delay > -1 ? new Date().getTime() + intial_delay : new Date().getTime() + interval,
             repeat: true,
+            count_run: 0,
             param: param
         };
+
         this.saveTask(obj);
-        setInterval(this.interval.bind(this), delay, obj);
+
+        if (intial_delay > 0) {
+            this.runAt(obj, this.immInterval(obj).bind(this));
+        } else {
+            this.immInterval(obj);
+        }
+
+    }
+
+    immInterval(obj) {
+        var interval_id = setInterval(this.intervalFn.bind(this), obj.interval, obj);
+        obj.interval_id = interval_id;
     }
 
     later(cmd, delay, param) {
+        if (delay < 0) {
+            return;//do nothing - the time has expired
+        }
         var obj = {
             cmd: cmd,
             task_id: this.sObj.UniqueNumber,
             delay: delay,
-            nextTime: new Date().getTime() + delay,
+            startTime: new Date().getTime() + delay,
             repeat: false,
             param: param
         };
         this.saveTask(obj);
-        setTimeout(this.timeout.bind(this), delay, obj);
+        runAt(obj, this.timeoutFn.bind(this));
+    }
+
+    runAt(obj, fn) {
+
+        if (obj.delay > this.JS_MAX_SET_TIME0UT_DELAY) {//above 24.8 days - so apply this technique to go beyound the limit of 24.8 days
+            obj.delay -= this.JS_MAX_SET_TIME0UT_DELAY;
+            setTimeout(runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
+        } else {
+            setTimeout(fn, obj.delay, obj);
+        }
     }
 
     loadTasks() {
         this.list = [];
         //TODO - Load the task synchronizely
-        
+
 
         //after loading the task remove expired tasks
         var now = new Date().getTime();
 
         for (var i = 0; i < this.list.length; i++) {
-            if (!this.list[i].repeat && this.list[i].nextTime > now) {
+            if (!this.list[i].repeat && this.list[i].startTime > now) {
                 this.list.splice(i, 1);//remove expired tasks
             }
         }
@@ -63,17 +103,17 @@ class Task {
         var str_task = JSON.stringify(this.list);
 
         //delete the old file - important
-       /* 
-        fs.closeSync(fd);//close the file
-        fs.unlinkSync(file);//delete the file
-        
-        //create new file with the validated tasks.
-        fd = fs.openSync(file, 'a+'); //create and open the file
-        fs.writeSync(fd, str_task);//write
-        
-        */
-       
-       
+        /* 
+         fs.closeSync(fd);//close the file
+         fs.unlinkSync(file);//delete the file
+         
+         //create new file with the validated tasks.
+         fd = fs.openSync(file, 'a+'); //create and open the file
+         fs.writeSync(fd, str_task);//write
+         
+         */
+
+
         return this.list;
     }
 
@@ -91,7 +131,7 @@ class Task {
 
     }
 
-    interval(obj) {
+    intervalFn(obj) {
         switch (obj.cmd) {
 
             case '':
@@ -101,32 +141,41 @@ class Task {
                 break;
         }
 
-        obj.nextTime += obj.delay;
+        obj.count_run++;
+        if (obj.times > 0 && obj.count_run === obj.times) {
+            clearInterval(obj.interval_id);
+        }
     }
 
-    timeout(obj) {
+    async timeoutFn(obj) {
+        try {
 
-        switch (obj.cmd) {
-            case 'EXPIRE_PLAY_REQUEST':
-                var game_id = obj.param;
-                new PlayRequest(this.sObj, this.util, this.evt)._expire(game_id);
-                return;
-            case 'START_TOURNAMENT_SEASON':
-                new Tournament(this.sObj, this.util, this.evt)._startSeason(obj.param);
-                return;
-            case 'START_TOURNAMENT_MATCH':
-                var game_id = obj.param;
-                new Match(this.sObj, this.util, this.evt).start(game_id, 'match-fixture');
-                return;
-            case 'REMIND_TOURNAMENT_MATCH':
-                var game_id = obj.param;
-                new Tournament(this.sObj, this.util, this.evt)._notifyUpcomingMatch(game_id);
-                return;
+            switch (obj.cmd) {
+                case 'EXPIRE_PLAY_REQUEST':
+                    var game_id = obj.param;
+                    await new PlayRequest(this.sObj, this.util, this.evt)._expire(game_id);
+                    return;
+                case 'START_TOURNAMENT_SEASON':
+                    await new Tournament(this.sObj, this.util, this.evt)._startSeason(obj.param);
+                    return;
+                case 'START_TOURNAMENT_MATCH':
+                    var game_id = obj.param;
+                    await new Match(this.sObj, this.util, this.evt).start(game_id, 'match-fixture');
+                    return;
+                case 'REMIND_TOURNAMENT_MATCH':
+                    var game_id = obj.param;
+                    await new Tournament(this.sObj, this.util, this.evt)._notifyUpcomingMatch(game_id);
+                    return;
 
-            default:
+                default:
 
-                break;
+                    break;
+            }
+
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCCESS
         }
+
     }
 
 }
