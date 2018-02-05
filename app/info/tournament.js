@@ -1156,19 +1156,20 @@ class Tournament extends WebApplication {
     _startSeason(obj) {
 
         var me = this;
-
+        
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         c.findOne({name: obj.tournament_name})
                 .then(function (tourn) {
+                    
                     if (!tourn) {
                         return; //tournament no longer exist!
                     }
-
-                    var season = tourn.seasons[obj.season_number];
+                    
+                    var season = tourn.seasons[obj.season_number - 1];
                     if (!season) {
                         return;//season not found
                     }
-
+                    
                     season.status = 'start';// change the status fromm 'before-start' to 'start'
                     //update the tournament
                     return c.updateOne({name: obj.tournament_name}, {$set: {seasons: tourn.seasons}})
