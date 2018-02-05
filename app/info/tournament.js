@@ -72,6 +72,12 @@ class Tournament extends WebApplication {
         }
 
         var _15_mins = 15 * 60 * 1000;
+        
+        if(true){//TESTING! REMOVE LATER ABEG O!!!
+            console.log('TESTING! REMOVE LATER ABEG O!!!');
+            _15_mins = 20 * 1000; //TESTING! REMOVE LATER ABEG O!!!
+        }
+        
         if (begin_time.getTime() <= now + _15_mins) {
             return this.error(`Season start time too close to current time.`);
         }
@@ -656,6 +662,12 @@ class Tournament extends WebApplication {
         }
 
         var _15_mins = 15 * 60 * 1000;
+        
+        if(true){//TESTING! REMOVE LATER ABEG O!!!
+            console.log('TESTING! REMOVE LATER ABEG O!!!');
+            _15_mins = 20 * 1000; //TESTING! REMOVE LATER ABEG O!!!
+        }
+        
         if (begin_time.getTime() <= now + _15_mins) {
             return this.error(`Kickoff time too close to current time.`);
         }
@@ -861,6 +873,14 @@ class Tournament extends WebApplication {
         var k_time = new Date(kickoff_time).getTime();
         var now = new Date().getTime();
         var _10_mins = 10 * 60 * 1000;
+        
+        
+        if(true){//TESTING! REMOVE LATER ABEG O!!!
+            console.log('TESTING! REMOVE LATER ABEG O!!!');
+            _10_mins = 10 * 1000; //TESTING! REMOVE LATER ABEG O!!!
+        }
+        
+        
         var delay = k_time - now - _10_mins;
         
         this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will send match reminder to the players

@@ -73,14 +73,14 @@ class Task {
             param: param
         };
         this.saveTask(obj);
-        runAt(obj, this.timeoutFn.bind(this));
+        this.runAt(obj, this.timeoutFn.bind(this));
     }
 
     runAt(obj, fn) {
 
         if (obj.delay > this.JS_MAX_SET_TIME0UT_DELAY) {//above 24.8 days - so apply this technique to go beyound the limit of 24.8 days
             obj.delay -= this.JS_MAX_SET_TIME0UT_DELAY;
-            setTimeout(runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
+            setTimeout(this.runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
         } else {
             setTimeout(fn, obj.delay, obj);
         }
