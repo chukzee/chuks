@@ -406,7 +406,7 @@ class Tournament extends WebApplication {
             if (season.slots[i].sn === slot_number) {
                 slot = season.slots[i];
                 //slot.player_id = player_id;
-                editObj[`seasons.${season_index}.slots${i}.player_id`] = player_id;
+                editObj[`seasons.${season_index}.slots.${i}.player_id`] = player_id;
                 break;
             }
         }
@@ -422,11 +422,11 @@ class Tournament extends WebApplication {
             for (var k = 0; k < fixtures.length; k++) {
                 if (fixtures[k].player_1.slot === slot_number) {
                     //fixtures[k].player_1.id = player_id;
-                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_1.id`] = player_id;
+                    editObj[`seasons.${season_index}.rounds.${i}.fixtures.${k}.player_1.id`] = player_id;
                 }
                 if (fixtures[k].player_2.slot === slot_number) {
                     //fixtures[k].player_2.id = player_id;
-                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_2.id`] = player_id;
+                    editObj[`seasons.${season_index}.rounds$.{i}.fixtures.${k}.player_2.id`] = player_id;
                 }
             }
         }
