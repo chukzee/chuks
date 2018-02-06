@@ -426,7 +426,7 @@ class Tournament extends WebApplication {
                 }
                 if (fixtures[k].player_2.slot === slot_number) {
                     //fixtures[k].player_2.id = player_id;
-                    editObj[`seasons.${season_index}.rounds$.{i}.fixtures.${k}.player_2.id`] = player_id;
+                    editObj[`seasons.${season_index}.rounds.${i}.fixtures.${k}.player_2.id`] = player_id;
                 }
             }
         }
