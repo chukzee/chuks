@@ -120,8 +120,10 @@ class Tournament extends WebApplication {
 
         }
 
+        var season_number = tourn.seasons.length + 1;
+
         var new_season = {
-            sn: ++tourn.seasons.length, //next season number
+            sn: season_number, //next season number
             start_time: start_time,
             end_time: '', //will be set automatically when the final game of the season is concluded or when the seanson is cancelled
             winner: '', //will be set automatically when the final game of the season is concluded.
@@ -160,6 +162,13 @@ class Tournament extends WebApplication {
         //update the tournament
 
         await c.updateOne({name: tournament_name}, {$push: {seasons: new_season}});
+
+        var delay = new Date(start_time).getTime() - new Date().getTime();
+
+        this.sObj.task.later('START_TOURNAMENT_SEASON', delay, {
+            tournament_name: tournament_name,
+            season_number: season_number
+        });
 
         return 'New season created successfully';
     }
@@ -398,6 +407,17 @@ class Tournament extends WebApplication {
                 return this.error(`Can not add player - season ${season_number} is cancelled.`);
         }
 
+        var found;
+        for (var i = 0; i < tourn.registered_players.length; i++) {
+            if (tourn.registered_players[i].user_id === player_id) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            return this.error(`Can not added player! Please register ${player_id} in ${tournament_name} tournament before adding the player.`);
+        }
 
         var editObj = {};
 
@@ -492,7 +512,7 @@ class Tournament extends WebApplication {
         for (var i = 0; i < season.slots.length; i++) {
             if (season.slots[i].player_id === player_id) {
                 //season.slots[i].player_id = '';
-                editObj[`seasons.${season_index}.slots${i}.player_id`] = '';
+                editObj[`seasons.${season_index}.slots.${i}.player_id`] = '';
                 break;
             }
         }
@@ -505,21 +525,19 @@ class Tournament extends WebApplication {
             for (var k = 0; k < fixtures.length; k++) {
                 if (fixtures[k].player_1.id === player_id) {
                     //fixtures[k].player_1.id = '';
-                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_1.id`] = '';
+                    editObj[`seasons.${season_index}.rounds.${i}.fixtures.${k}.player_1.id`] = '';
                 }
                 if (fixtures[k].player_2.id === player_id) {
                     //fixtures[k].player_2.id = '';
-                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_2.id`] = '';
+                    editObj[`seasons.${season_index}.rounds.${i}.fixtures.${k}.player_2.id`] = '';
                 }
             }
         }
 
         //update the tournament
-        //await c.updateOne({name: tournament_name}, {$set: {seasons: tourn.seasons}});
-
-        var editObj = {};
-        //var season_index = season_number - 1;
-        //editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
+        if (Object.keys(editObj).length === 0) {
+            return 'No player to remove';
+        }
 
         await c.updateOne({name: tournament_name}, {$set: editObj});
 
@@ -1374,11 +1392,14 @@ class Tournament extends WebApplication {
 
 
                     //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+                    if (Object.keys(editObj).length === 0) {
+                        return;
+                    }
 
                     try {
                         await c.updateOne({name: tourn.name}, {$set: editObj});
                     } catch (e) {
-                        console.log(e)//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
+                        console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
                     }
 
 
@@ -1466,6 +1487,9 @@ class Tournament extends WebApplication {
 
 
         //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+        if (Object.keys(editObj).length === 0) {
+            return;
+        }
 
         await c.updateOne({name: match.tournament_name}, {$set: editObj});
 
