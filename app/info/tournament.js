@@ -72,12 +72,12 @@ class Tournament extends WebApplication {
         }
 
         var _15_mins = 15 * 60 * 1000;
-        
-        if(true){//TESTING! REMOVE LATER ABEG O!!!
+
+        if (true) {//TESTING! REMOVE LATER ABEG O!!!
             console.log('TESTING! REMOVE LATER ABEG O!!!');
             _15_mins = 20 * 1000; //TESTING! REMOVE LATER ABEG O!!!
         }
-        
+
         if (begin_time.getTime() <= now + _15_mins) {
             return this.error(`Season start time too close to current time.`);
         }
@@ -643,7 +643,7 @@ class Tournament extends WebApplication {
      * @returns {Tournament@call;error|String}
      */
     async seasonMatchKickOff(user_id, tournament_name, game_id, kickoff_time) {
-        
+
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
@@ -662,12 +662,12 @@ class Tournament extends WebApplication {
         }
 
         var _15_mins = 15 * 60 * 1000;
-        
-        if(true){//TESTING! REMOVE LATER ABEG O!!!
+
+        if (true) {//TESTING! REMOVE LATER ABEG O!!!
             console.log('TESTING! REMOVE LATER ABEG O!!!');
             _15_mins = 20 * 1000; //TESTING! REMOVE LATER ABEG O!!!
         }
-        
+
         if (begin_time.getTime() <= now + _15_mins) {
             return this.error(`Kickoff time too close to current time.`);
         }
@@ -742,7 +742,7 @@ class Tournament extends WebApplication {
 
                 if (current_fixt.game_id === game_id) {
                     match_fixture = current_fixt;//hold   
-                    current_round = i+ 1;
+                    current_round = i + 1;
                     if (match_fixture.start_time) {
                         has_kickoff_time = true;
                     }
@@ -757,10 +757,10 @@ class Tournament extends WebApplication {
         }
 
 
-        if(current_round > 1 && last_round_match && !last_round_match.end_time){
-            return this.error(`All matches in round ${current_round - 1} must be concluded before setting kickoff time for those in round ${current_round}.`);            
+        if (current_round > 1 && last_round_match && !last_round_match.end_time) {
+            return this.error(`All matches in round ${current_round - 1} must be concluded before setting kickoff time for those in round ${current_round}.`);
         }
-        
+
         if (round_skip > 0) {
             return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
         }
@@ -776,7 +776,7 @@ class Tournament extends WebApplication {
         if (players_ids.length === 0) {
             return this.error(`Cannot set kickoff time - one or more player has no match fixture. Make sure all slots are filled`);
         }
-        
+
 
         var mfc = this.sObj.db.collection(this.sObj.col.match_fixtures);
 
@@ -807,7 +807,7 @@ class Tournament extends WebApplication {
                 }
             }
         }
-        
+
         //now set the start time, our interest
         match_fixture.start_time = kickoff_time;
 
@@ -873,20 +873,20 @@ class Tournament extends WebApplication {
         var k_time = new Date(kickoff_time).getTime();
         var now = new Date().getTime();
         var _10_mins = 10 * 60 * 1000;
-        
-        
-        if(true){//TESTING! REMOVE LATER ABEG O!!!
+
+
+        if (true) {//TESTING! REMOVE LATER ABEG O!!!
             console.log('TESTING! REMOVE LATER ABEG O!!!');
             _10_mins = 10 * 1000; //TESTING! REMOVE LATER ABEG O!!!
         }
-        
-        
+
+
         var delay = k_time - now - _10_mins;
-        
+
         this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will send match reminder to the players
 
         var delay = k_time - now;
-        
+
         this.sObj.task.later('START_TOURNAMENT_MATCH', delay, game_id);//will automatically start the match at kickoff time
 
         return 'Kickoff time set successfully.';
@@ -953,14 +953,14 @@ class Tournament extends WebApplication {
             return;
         }
 
-        current_season.start_time = season_begin_time;
-
-        //update the tournament
-        //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
         var editObj = {};
         var season_index = season_number - 1;
-        editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+        //current_season.start_time = season_begin_time;
+        //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+        editObj[`seasons.${season_index}.start_time`] = season_begin_time;
 
         await c.updateOne({name: tournament_name}, {$set: editObj});
 
@@ -1029,16 +1029,20 @@ class Tournament extends WebApplication {
             return this.error(`Not allowed - cannot delete previous season.`);
         }
 
-        current_season.status = 'cancel'; //mark the season as 'cancel'
-        current_season.end_time = new Date();
+        //current_season.status = 'cancel'; //mark the season as 'cancel'
+        //current_season.end_time = new Date();
 
         //update the tournament
         //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
-        var editObj = {};
+        
         var season_index = season_number - 1;
-        editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
-
+        
+        var editObj = {};
+        //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+        editObj[`seasons.${season_index}.status`] = 'cancel';
+        editObj[`seasons.${season_index}.end_time`] = new Date();
+        
         await c.updateOne({name: tournament_name}, {$set: editObj});
 
         //notify all relevant users - registered players and officials
@@ -1156,23 +1160,26 @@ class Tournament extends WebApplication {
     _startSeason(obj) {
 
         var me = this;
-        
+
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         c.findOne({name: obj.tournament_name})
                 .then(function (tourn) {
-                    
+
                     if (!tourn) {
                         return; //tournament no longer exist!
                     }
-                    
+                    var season_index = obj.season_number - 1;
                     var season = tourn.seasons[obj.season_number - 1];
                     if (!season) {
                         return;//season not found
                     }
-                    
-                    season.status = 'start';// change the status fromm 'before-start' to 'start'
+
+                    //season.status = 'start';// change the status fromm 'before-start' to 'start'
+                    var editObj = {};
+                    editObj[`seasons.${season_index}.status`] = 'start';
+
                     //update the tournament
-                    return c.updateOne({name: obj.tournament_name}, {$set: {seasons: tourn.seasons}})
+                    return c.updateOne({name: obj.tournament_name}, {$set: editObj})
                             .then(function (result) {
 
                                 //notify all relevant users - registered players and officials
@@ -1294,7 +1301,12 @@ class Tournament extends WebApplication {
             return;
         }
 
+        var editObj = {};
+
+
         var rounds = current_season.rounds;
+
+
         var to = rounds.length - 1; //skip the last round
         for (var i = 0; i < to; i++) {
             var fixtures = rounds[i].fixtures;
@@ -1302,33 +1314,66 @@ class Tournament extends WebApplication {
                 if (fixtures[j].game_id === match.game_id) {
                     var n = j % 2 === 0 ? j : (j - 1);
                     var n_nxt = n / 2; //required index of fixtures in next round to be promoted to
-                    var next_round = rounds[i + 1];
+                    var nxt_rd_index = i + 1;
+                    var next_round = rounds[nxt_rd_index];
                     var next_fixture = next_round.fixtures[n_nxt];
+
                     if (is_player_1_winner) {
                         if (!next_fixture.player_1.id) {
-                            next_fixture.player_1.id = fixtures[j].player_1.id;
-                            next_fixture.player_1.slot = fixtures[j].player_1.slot;
+                            //next_fixture.player_1.id = fixtures[j].player_1.id;
+                            //next_fixture.player_1.slot = fixtures[j].player_1.slot;
+
+                            var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.id`;
+                            var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.slot`;
+                            editObj[prop1] = fixtures[j].player_1.id;
+                            editObj[prop2] = fixtures[j].player_1.slot;
+
                         } else {
-                            next_fixture.player_2.id = fixtures[j].player_1.id;
-                            next_fixture.player_2.slot = fixtures[j].player_1.slot;
+                            //next_fixture.player_2.id = fixtures[j].player_1.id;
+                            //next_fixture.player_2.slot = fixtures[j].player_1.slot;
+
+
+                            var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.id`;
+                            var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.slot`;
+                            editObj[prop1] = fixtures[j].player_1.id;
+                            editObj[prop2] = fixtures[j].player_1.slot;
+
+
                         }
                     } else {
                         if (!next_fixture.player_1.id) {
-                            next_fixture.player_1.id = fixtures[j].player_2.id;
-                            next_fixture.player_1.slot = fixtures[j].player_2.slot;
+                            //next_fixture.player_1.id = fixtures[j].player_2.id;
+                            //next_fixture.player_1.slot = fixtures[j].player_2.slot;
+
+                            var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.id`;
+                            var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.slot`;
+                            editObj[prop1] = fixtures[j].player_2.id;
+                            editObj[prop2] = fixtures[j].player_2.slot;
+
                         } else {
-                            next_fixture.player_2.id = fixtures[j].player_2.id;
-                            next_fixture.player_2.slot = fixtures[j].player_2.slot;
+                            //next_fixture.player_2.id = fixtures[j].player_2.id;
+                            //next_fixture.player_2.slot = fixtures[j].player_2.slot;
+
+                            var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.id`;
+                            var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.slot`;
+                            editObj[prop1] = fixtures[j].player_2.id;
+                            editObj[prop2] = fixtures[j].player_2.slot;
+
                         }
                     }
 
 
                     //update the tournament
 
-                    var editObj = {};
-                    editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
 
-                    await c.updateOne({name: tourn.name}, {$set: editObj});
+                    //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+                    try {
+                        await c.updateOne({name: tourn.name}, {$set: editObj});
+                    } catch (e) {
+                        console.log(e)//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
+                    }
+
 
                     break;
 
@@ -1361,6 +1406,8 @@ class Tournament extends WebApplication {
             return this.error(`Season does not exist - ${tourn.seasons.length}`);
         }
 
+        var editObj = {};
+
         //find the fixture with the game id and set the scores
         var rounds = current_season.rounds;
 
@@ -1375,25 +1422,43 @@ class Tournament extends WebApplication {
                     var set_index = match.current_set - 1;
 
                     if (fixtures[j].player_1.id === winner_user_id) {
-                        fixtures[j].player_1.score += 1;
-                        fixtures[j].sets[set_index].points[0] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                        //fixtures[j].player_1.score += 1;
+                        //fixtures[j].sets[set_index].points[0] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+
+                        var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.player_1.score`;
+                        var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
+                        editObj[prop1] = fixtures[j].player_1.score + 1;
+                        editObj[prop2] = fixtures[j].sets[set_index].points[0] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
+
                     }
 
                     if (fixtures[j].player_2.id === winner_user_id) {
-                        fixtures[j].player_2.score += 1;
-                        fixtures[j].sets[set_index].points[1] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                        //fixtures[j].player_2.score += 1;
+                        //fixtures[j].sets[set_index].points[1] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+
+                        var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.player_2.score`;
+                        var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${1}`;
+                        editObj[prop1] = fixtures[j].player_2.score + 1;
+                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
+
                     }
 
                     if (!winner_user_id) {//is draw
-                        fixtures[j].sets[set_index].points[0] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
-                        fixtures[j].sets[set_index].points[1] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        //fixtures[j].sets[set_index].points[0] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        //fixtures[j].sets[set_index].points[1] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
+
+                        var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
+                        var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${1}`;
+                        editObj[prop1] = fixtures[j].sets[set_index].points[0] + 1;//the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + 1;//the all players get 1 point for draw - note we are using 3-1-0 scoring system
+
                     }
                 }
             }
         }
 
-        var editObj = {};
-        editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+
+        //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
 
         await c.updateOne({name: match.tournament_name}, {$set: editObj});
 
@@ -1413,10 +1478,13 @@ class Tournament extends WebApplication {
         var me = this;
         //check if the final match of the season was played
 
-        var last_season = tourn.seasons[tourn.seasons.length - 1];
-        var last_round = last_season.rounds[last_season.rounds.length - 1];
+        var last_season_index = tourn.seasons.length - 1;
+        var last_season = tourn.seasons[last_season_index];
+        var last_round_index = last_season.rounds.length - 1;
+        var last_round = last_season.rounds[last_round_index];
         var last_fixtures = last_round.fixtures;
-        var last_fixt = last_fixtures[last_fixtures.length - 1];
+        var last_fixt_index = last_fixtures.length - 1;
+        var last_fixt = last_fixtures[last_fixt_index];
         var last_set = last_fixt.sets[last_fixt.sets.length - 1];
 
         if (last_set.game_id !== match.game_id) {
@@ -1425,12 +1493,21 @@ class Tournament extends WebApplication {
 
         //At this point the final match of the season just completed
 
-        last_fixt.end_time = match.end_time;
-        last_season.status = 'end';// change the status fromm 'start' to 'end'
-        last_season.end_time = match.end_time;
-
+        //last_fixt.end_time = match.end_time;
+        //last_season.status = 'end';// change the status fromm 'start' to 'end'
+        //last_season.end_time = match.end_time;
+        
+        var prop1 = `seasons.${last_season_index}.rounds.${last_round_index}.fixtures.${last_fixt_index}.end_time`;
+        var prop2 = `seasons.${last_season_index}.status`;
+        var prop3 = `seasons.${last_season_index}.end_time`;
+        
+        var editObj = {};
+        editObj[prop1] = match.end_time;
+        editObj[prop2] = 'end';
+        editObj[prop3] = match.status;
+        
         //update the tournament
-        c.updateOne({name: match.tournament_name}, {$set: {seasons: tourn.seasons}})
+        c.updateOne({name: match.tournament_name}, {$set: editObj})
                 .then(function (result) {
 
                     //notify all relevant users - registered players and officials
