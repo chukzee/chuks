@@ -381,13 +381,9 @@ class Tournament extends WebApplication {
         }
 
         //get the particular season
-        var season;
-        for (var i = 0; i < tourn.seasons.length; i++) {
-            if (tourn.seasons[i].sn === season_number) {
-                season = tourn.seasons[i];
-                break;
-            }
-        }
+        var season_index = season_number - 1;
+        var season = tourn.seasons[season_index];
+
 
         if (!season) {
             return this.error(`Season ${season_number} not found.`);
@@ -403,12 +399,14 @@ class Tournament extends WebApplication {
         }
 
 
+        var editObj = {};
 
         var slot;
         for (var i = 0; i < season.slots.length; i++) {
             if (season.slots[i].sn === slot_number) {
                 slot = season.slots[i];
-                slot.player_id = player_id;
+                //slot.player_id = player_id;
+                editObj[`seasons.${season_index}.slots${i}.player_id`] = player_id;
                 break;
             }
         }
@@ -423,10 +421,12 @@ class Tournament extends WebApplication {
             var fixtures = rounds[i].fixtures;
             for (var k = 0; k < fixtures.length; k++) {
                 if (fixtures[k].player_1.slot === slot_number) {
-                    fixtures[k].player_1.id = player_id;
+                    //fixtures[k].player_1.id = player_id;
+                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_1.id`] = player_id;
                 }
                 if (fixtures[k].player_2.slot === slot_number) {
-                    fixtures[k].player_2.id = player_id;
+                    //fixtures[k].player_2.id = player_id;
+                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_2.id`] = player_id;
                 }
             }
         }
@@ -435,9 +435,9 @@ class Tournament extends WebApplication {
         //update the tournament
         //await c.updateOne({name: tournament_name}, {$set: {seasons: tourn.seasons}});
 
-        var editObj = {};
-        var season_index = season_number - 1;
-        editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
+        //var editObj = {};
+
+        //editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
 
         await c.updateOne({name: tournament_name}, {$set: editObj});
 
@@ -470,12 +470,8 @@ class Tournament extends WebApplication {
 
         //get the particular season
         var season;
-        for (var i = 0; i < tourn.seasons.length; i++) {
-            if (tourn.seasons[i].sn === season_number) {
-                season = tourn.seasons[i];
-                break;
-            }
-        }
+        var season_index = season_number - 1;
+        var season = tourn.seasons[season_index];
 
         if (!season) {
             return this.error(`Season ${season_number} not found.`);
@@ -491,9 +487,12 @@ class Tournament extends WebApplication {
                 return this.error(`Can not remove player - season ${season_number} is cancelled.`);
         }
 
+        var editObj = {};
+
         for (var i = 0; i < season.slots.length; i++) {
             if (season.slots[i].player_id === player_id) {
-                season.slots[i].player_id = '';
+                //season.slots[i].player_id = '';
+                editObj[`seasons.${season_index}.slots${i}.player_id`] = '';
                 break;
             }
         }
@@ -505,10 +504,12 @@ class Tournament extends WebApplication {
             var fixtures = rounds[i].fixtures;
             for (var k = 0; k < fixtures.length; k++) {
                 if (fixtures[k].player_1.id === player_id) {
-                    fixtures[k].player_1.id = '';
+                    //fixtures[k].player_1.id = '';
+                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_1.id`] = '';
                 }
                 if (fixtures[k].player_2.id === player_id) {
-                    fixtures[k].player_2.id = '';
+                    //fixtures[k].player_2.id = '';
+                    editObj[`seasons.${season_index}.rounds${i}.fixtures${k}.player_2.id`] = '';
                 }
             }
         }
@@ -517,8 +518,8 @@ class Tournament extends WebApplication {
         //await c.updateOne({name: tournament_name}, {$set: {seasons: tourn.seasons}});
 
         var editObj = {};
-        var season_index = season_number - 1;
-        editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
+        //var season_index = season_number - 1;
+        //editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
 
         await c.updateOne({name: tournament_name}, {$set: editObj});
 
@@ -861,10 +862,10 @@ class Tournament extends WebApplication {
         //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
         var editObj = {};
-        
+
         //now set the start time, our interest
         //match_fixture.start_time = kickoff_time;
-        
+
         var prop = `seasons.${last}.rounds.${round_index}.fixtures.${match_fixt_index}.start_time`;
         editObj[prop] = kickoff_time; // using the dot operator to access the index of the array
 
@@ -1041,14 +1042,14 @@ class Tournament extends WebApplication {
         //update the tournament
         //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
-        
+
         var season_index = season_number - 1;
-        
+
         var editObj = {};
         //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
         editObj[`seasons.${season_index}.status`] = 'cancel';
         editObj[`seasons.${season_index}.end_time`] = new Date();
-        
+
         await c.updateOne({name: tournament_name}, {$set: editObj});
 
         //notify all relevant users - registered players and officials
@@ -1502,16 +1503,16 @@ class Tournament extends WebApplication {
         //last_fixt.end_time = match.end_time;
         //last_season.status = 'end';// change the status fromm 'start' to 'end'
         //last_season.end_time = match.end_time;
-        
+
         var prop1 = `seasons.${last_season_index}.rounds.${last_round_index}.fixtures.${last_fixt_index}.end_time`;
         var prop2 = `seasons.${last_season_index}.status`;
         var prop3 = `seasons.${last_season_index}.end_time`;
-        
+
         var editObj = {};
         editObj[prop1] = match.end_time;
         editObj[prop2] = 'end';
         editObj[prop3] = match.status;
-        
+
         //update the tournament
         c.updateOne({name: match.tournament_name}, {$set: editObj})
                 .then(function (result) {
