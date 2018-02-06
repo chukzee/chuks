@@ -712,11 +712,15 @@ class Tournament extends WebApplication {
         var last_fixt;
         var last_round_match;
         var current_round;
+        var round_index;
+        var match_fixt_index;
 
         outer: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
-                var current_fixt = fixtures[j];
+                round_index = i;
+                match_fixt_index = j;
+                var current_fixt = fixtures[match_fixt_index];
                 if (j > 0) {
                     last_fixt = fixtures[j - 1];
                     if (!last_fixt.start_time) {
@@ -808,9 +812,6 @@ class Tournament extends WebApplication {
             }
         }
 
-        //now set the start time, our interest
-        match_fixture.start_time = kickoff_time;
-
         var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var players = await user.getInfoList(players_ids, required_fields);
@@ -860,7 +861,12 @@ class Tournament extends WebApplication {
         //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
         var editObj = {};
-        editObj['seasons.' + last] = current_season; // using the dot operator to access the index of the array
+        
+        //now set the start time, our interest
+        //match_fixture.start_time = kickoff_time;
+        
+        var prop = `seasons.${last}.rounds.${round_index}.fixtures.${match_fixt_index}.start_time`;
+        editObj[prop] = kickoff_time; // using the dot operator to access the index of the array
 
         try {
             await tc.updateOne({name: tournament_name}, {$set: editObj});
