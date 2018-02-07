@@ -18,26 +18,26 @@ var fd = fs.openSync(file, 'r+');//open for reading and appending
  * @returns {undefined}
  */
 function saveTask(obj) {
-    this.tasks.push(obj);
-    if(this.tasks.length > 1){
+    this.queue.push(obj);
+    if (this.queue.length > 1) {
         return;
     }
-    
+
     doSave.bind(this)(obj, next.bind(this));
 
 }
 function next() {
 
-    var old = this.tasks.shift();
-    
+    var old = this.queue.shift();
+
     console.log(old);
-    
-    if(this.tasks.length === 0){
+
+    if (this.queue.length === 0) {
         return;
     }
-    var obj = this.tasks[0];
+    var obj = this.queue[0];
     doSave.bind(this)(obj, next.bind(this));
-    
+
 }
 function doSave(obj, done) {
 
@@ -71,8 +71,39 @@ function doSave(obj, done) {
     });
 }
 
-var b = {tasks: [], file: file};
 
-saveTask.bind(b)({a: 1, b: 2, c: 3});
-saveTask.bind(b)({a: 4, b: 5, c: 6});
-saveTask.bind(b)({a: 7, b: 8, c: 9});
+var b = {queue: [], file: file};
+
+var delay = 10 * 1000;
+var obj1 = {
+    classMethod: 'classMethod',
+    taskId: 1,
+    delay: delay,
+    startTime: new Date().getTime() + delay,
+    repeat: false,
+    param: 'param'
+};
+
+delay = 60 * 1000;
+var obj2 = {
+    classMethod: 'classMethod',
+    taskId: 1,
+    delay: delay,
+    startTime: new Date().getTime() + delay,
+    repeat: false,
+    param: 'param'
+};
+
+delay = 120 * 1000;
+var obj3 = {
+    classMethod: 'classMethod',
+    taskId: 1,
+    delay: delay,
+    startTime: new Date().getTime() + delay,
+    repeat: false,
+    param: 'param'
+};
+
+saveTask.bind(b)(obj1);
+saveTask.bind(b)(obj2);
+saveTask.bind(b)(obj3);
