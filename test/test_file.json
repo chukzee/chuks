@@ -1,0 +1,32 @@
+[
+    {
+        "classMethod": "classMethod",
+        "taskId": 1,
+        "delay": 10,
+        "interval": 30,
+        "startTime": 1518017742057,
+        "repeat": true,
+        "times": 3,
+        "param": "param"
+    },
+    {
+        "classMethod": "classMethod",
+        "taskId": 1,
+        "delay": 8,
+        "interval": 30,
+        "startTime": 1518017802057,
+        "repeat": true,
+        "times": 3,
+        "param": "param"
+    },
+    {
+        "classMethod": "classMethod",
+        "taskId": 1,
+        "delay": 7,
+        "interval": 30,
+        "startTime": 1518017862057,
+        "repeat": true,
+        "times": 3,
+        "param": "param"
+    }
+]

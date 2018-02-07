@@ -5,12 +5,15 @@ var mkdirp = require('mkdirp');
 
 class Task {
 
-    constructor(sObj, util, evt) {
+    constructor(sObj, util, evt, appLoader) {
+
         this.sObj = sObj;
         this.util = util;
         this.evt = evt;
+        this.__appLoader = appLoader;
         this.file = this.sObj.config.TASKS_FILE;
         this.queue = [];
+        this.tasksFn = {};
         this.loadTasks();
         //The max setTimeout delay is 24.8 days which is (2^31 - 1) or 0x7FFFFFFF milliseconds.
         //A value greater than that will cause wierd behaviour - executing instantly
@@ -33,14 +36,20 @@ class Task {
             param: param
         };
 
+        this.validateCall(obj);
         this.saveTask(obj);
+        this.doInterval(obj);
 
-        if (intial_delay > 0) {
+
+    }
+
+    doInterval(obj) {
+        
+        if (obj.delay > 0) {
             this.runAt(obj, this.immInterval(obj).bind(this));
         } else {
             this.immInterval(obj);
         }
-
     }
 
     immInterval(obj) {
@@ -60,7 +69,12 @@ class Task {
             repeat: false,
             param: param
         };
+        this.validateCall(obj);
         this.saveTask(obj);
+        this.doLater(obj);
+    }
+
+    doLater(obj) {
         this.runAt(obj, this.execFn.bind(this));
     }
 
@@ -127,6 +141,7 @@ class Task {
     }
 
     reRun(obj) {
+        this.validateCall(obj);
         if (obj.repeat) {
             //set the new intial delay 
             obj.delay = new Date(obj.startTime).getTime() - new Date().getTime();
@@ -134,11 +149,11 @@ class Task {
                 var mod = new Date().getTime() % obj.interval;
                 obj.delay = obj.interval - mod;
             }
-            this.interval(obj.classMethod, obj.intial_delay, obj.interval, obj.times, obj.param);
+            this.doInterval(obj);
         } else {
             //set the new delay
             obj.delay = new Date(obj.startTime).getTime() - new Date().getTime();
-            this.later(obj.classMethod, obj.delay, obj.param);
+            this.doLater(obj);
         }
     }
 
@@ -198,11 +213,34 @@ class Task {
         });
     }
 
+    validateCall(obj){
+
+        var index = obj.classMethod.lastIndexOf('/');
+        var clazz = obj.classMethod.substring(0, index);
+        var method = obj.classMethod.substring(index + 1);
+
+        //get the module using the qualified class name
+        var Module = this.__appLoader.getModule(clazz);
+        //execute the class method in the module
+
+        if (Module) {
+            //we already know it is a function because we check for that in the app loader.
+            //instantiate the module on demand - safe this way to avoid thread issues if any.
+            var moduleInstance = new Module(this.sObj, this.util, this.evt);
+            var fn = moduleInstance[method];
+            if (typeof fn !== 'function') {
+                throw Error(`Not a function - ${obj.classMethod}`);
+            }
+            this.tasksFn[obj.classMethod] = fn.bind(moduleInstance);
+        }        
+    }
+
     async execFn(obj) {
 
-
-        
-
+        var fn = this.tasksFn[obj.classMethod];
+        if(fn){
+            fn(obj.param);
+        }
 
         if (obj.count_run > -1) {
             obj.count_run++;

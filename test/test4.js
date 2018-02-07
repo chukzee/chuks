@@ -6,12 +6,14 @@ var mkdirp = require('mkdirp');
 
 class Task {
 
-    constructor(sObj, util, evt) {
+    constructor(sObj, util, evt, appLoader) {
         this.sObj = sObj;
         this.util = util;
         this.evt = evt;
+        this.appLoader = appLoader;
         this.file = this.sObj.config.TASKS_FILE;
         this.queue = [];
+        this.tasksFn = {};
         this.loadTasks();
         //The max setTimeout delay is 24.8 days which is (2^31 - 1) or 0x7FFFFFFF milliseconds.
         //A value greater than that will cause wierd behaviour - executing instantly
@@ -46,7 +48,7 @@ class Task {
 
         //after loading the task, remove expired tasks
         var now = new Date().getTime();
-        console.log(data);
+        
         var arr = JSON.parse(data);
         for (var i = 0; i < arr.length; i++) {
             console.log(arr[i].startTime - now);
@@ -77,27 +79,40 @@ class Task {
     }
 
     reRun(obj) {
+        this.validateCall(obj);
         if (obj.repeat) {
+            
+            console.log('old delay',obj.delay);
+            
             //set the new intial delay 
-            obj.delay = new Date(obj.startTime).getTime() - new Date().getTime();
-            if (obj.delay < 0) {//some time is already lost - the best we can do is to continue from a logic point
+            var diff = new Date(obj.startTime).getTime() - new Date().getTime();
+            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point
                 var mod = new Date().getTime() % obj.interval;
                 obj.delay = obj.interval - mod;
+            }else{
+                obj.delay = diff;
             }
-            this.interval(obj.classMethod, obj.intial_delay, obj.interval, obj.times, obj.param);
+            
+            console.log('new delay',obj.delay);
+            
+            this.doInterval(obj);
         } else {
             //set the new delay
             obj.delay = new Date(obj.startTime).getTime() - new Date().getTime();
-            this.later(obj.classMethod, obj.delay, obj.param);
+            this.doLater(obj);
         }
     }
 
-    interval() {
-        console.log('interval', arguments);
+    doInterval(obj) {
+        //console.log('interval', obj);
     }
 
-    later() {
-        console.log('later', arguments);
+    doLater(obj) {
+        //console.log('later', obj);
+    }
+    
+    validateCall(obj){
+        
     }
 
 }

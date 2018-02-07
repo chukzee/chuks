@@ -74,33 +74,39 @@ function doSave(obj, done) {
 
 var b = {queue: [], file: file};
 
-var delay = 10 * 1000;
+var delay = 1 *60 * 1000;
 var obj1 = {
     classMethod: 'classMethod',
     taskId: 1,
     delay: delay,
+    interval : 30,
     startTime: new Date().getTime() + delay,
-    repeat: false,
+    repeat: true,
+    times: 3,
     param: 'param'
 };
 
-delay = 60 * 1000;
+delay = 2 *60 * 1000;
 var obj2 = {
     classMethod: 'classMethod',
     taskId: 1,
     delay: delay,
+    interval : 30,
     startTime: new Date().getTime() + delay,
-    repeat: false,
+    repeat: true,
+    times: 3,
     param: 'param'
 };
 
-delay = 120 * 1000;
+delay = 3 *60 * 1000;
 var obj3 = {
     classMethod: 'classMethod',
     taskId: 1,
     delay: delay,
+    interval : 30,
     startTime: new Date().getTime() + delay,
-    repeat: false,
+    repeat: true,
+    times: 3,
     param: 'param'
 };
 
