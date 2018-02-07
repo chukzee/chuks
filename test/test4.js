@@ -56,7 +56,7 @@ class Task {
     }
 
     immInterval(obj) {
-        if(obj.delay > 0){
+        if (obj.delay > 0) {
             this.execFn.bind(this)(obj);
         }
         var intervalId = setInterval(this.execFn.bind(this), obj.interval, obj);
@@ -90,7 +90,7 @@ class Task {
             obj.delay -= this.JS_MAX_SET_TIME0UT_DELAY;
             setTimeout(this.runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
         } else {
-            
+
             setTimeout(fn, obj.delay, obj);
         }
     }
@@ -160,11 +160,9 @@ class Task {
 
             //set the new intial delay 
             var diff = new Date(obj.startTime).getTime() - new Date().getTime();
-            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point
-                
-                var mod = new Date().getTime() % obj.interval;
+            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point                
+                var mod = (-diff) % obj.interval;
                 obj.delay = obj.interval - mod;
-                console.log('obj.delay',obj.delay);
             } else {
                 obj.delay = diff;
             }
@@ -261,9 +259,15 @@ class Task {
     async execFn(obj) {
 
         var fn = this.tasksFn[obj.classMethod];
-        if (fn) {
-            fn(obj.param);
+
+        try {
+            if (fn) {
+                await fn(obj.param);
+            }
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
         }
+
 
         if (obj.count_run > -1) {
             obj.count_run++;

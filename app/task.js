@@ -3,6 +3,7 @@
 var fs = require("fs");
 var mkdirp = require('mkdirp');
 
+
 class Task {
 
     constructor(sObj, util, evt, appLoader) {
@@ -12,6 +13,7 @@ class Task {
         this.evt = evt;
         this.__appLoader = appLoader;
         this.file = this.sObj.config.TASKS_FILE;
+        this.fd = null;
         this.queue = [];
         this.tasksFn = {};
         this.loadTasks();
@@ -44,15 +46,18 @@ class Task {
     }
 
     doInterval(obj) {
-        
+
         if (obj.delay > 0) {
-            this.runAt(obj, this.immInterval(obj).bind(this));
+            this.runAt(obj, this.immInterval.bind(this));
         } else {
             this.immInterval(obj);
         }
     }
 
     immInterval(obj) {
+        if (obj.delay > 0) {
+            this.execFn.bind(this)(obj);
+        }
         var intervalId = setInterval(this.execFn.bind(this), obj.interval, obj);
         obj.intervalId = intervalId;
     }
@@ -84,6 +89,7 @@ class Task {
             obj.delay -= this.JS_MAX_SET_TIME0UT_DELAY;
             setTimeout(this.runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
         } else {
+
             setTimeout(fn, obj.delay, obj);
         }
     }
@@ -96,7 +102,7 @@ class Task {
 
         var path = this.util.getDir(this.file);
         mkdirp.sync(path);
-        var fd = fs.openSync(this.file, 'a+');//open for reading and appending
+        this.fd = fs.openSync(this.file, 'r+');//open for reading and appending
 
         var stats = fs.statSync(this.file);
         var size = stats['size'];
@@ -105,7 +111,7 @@ class Task {
         var length = size - readPos;
         var buffer = new Buffer(length);
 
-        fs.readSync(fd, buffer, 0, length, readPos);
+        fs.readSync(this.fd, buffer, 0, length, readPos);
 
         var data = buffer.toString(); //toString(0, length) did not work but toString() worked for me
 
@@ -115,10 +121,10 @@ class Task {
 
         //after loading the task, remove expired tasks
         var now = new Date().getTime();
-        
+
         var arr = JSON.parse(data);
         for (var i = 0; i < arr.length; i++) {
-            console.log(arr[i].startTime - now);
+
             if (!arr[i].repeat && arr[i].startTime < now) {
                 arr.splice(i, 1);//remove expired tasks
                 i--;
@@ -130,38 +136,33 @@ class Task {
 
         //delete the old file - important
 
-        fs.closeSync(fd);//close the file
+        fs.closeSync(this.fd);//close the file
         fs.unlinkSync(this.file);//delete the file
 
         //create new file with the validated tasks.
-        fd = fs.openSync(this.file, 'a+'); //create and open the file 
-        
+        this.fd = fs.openSync(this.file, 'w+'); //create and open the file 
+
         var str_tasks = '';
         if (arr.length > 0) {
             str_tasks = JSON.stringify(arr, null, 4);
         }
 
-        fs.writeSync(fd, str_tasks);//write
+        fs.writeSync(this.fd, str_tasks);//write
 
     }
 
     reRun(obj) {
         this.validateCall(obj);
         if (obj.repeat) {
-            
-            console.log('old delay',obj.delay);
-            
             //set the new intial delay 
             var diff = new Date(obj.startTime).getTime() - new Date().getTime();
-            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point
-                var mod = new Date().getTime() % obj.interval;
+            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point                
+                var mod = (-diff) % obj.interval;
                 obj.delay = obj.interval - mod;
-            }else{
+            } else {
                 obj.delay = diff;
             }
-            
-            console.log('new delay',obj.delay);
-            
+
             this.doInterval(obj);
         } else {
             //set the new delay
@@ -176,7 +177,7 @@ class Task {
             return;
         }
 
-        this.doSave.bind(this)(obj, next.bind(this));
+        this.doSave.bind(this)(obj, this.next.bind(this));
 
     }
 
@@ -184,18 +185,16 @@ class Task {
 
         var old = this.queue.shift();
 
-        //console.log(old);
-
         if (this.queue.length === 0) {
             return;
         }
         var obj = this.queue[0];
-        this.doSave.bind(this)(obj, next.bind(this));
+        this.doSave.bind(this)(obj, this.next.bind(this));
 
     }
 
     doSave(obj, done) {
-
+        var me = this;
         var str = JSON.stringify(obj, null, 4);
         fs.stat(this.file, function (err, stats) {
 
@@ -206,6 +205,7 @@ class Task {
             }
 
             var size = stats['size'];
+
             if (size === 0) {
                 str = '[\n' + str + '\n]';
             } else {
@@ -215,7 +215,7 @@ class Task {
 
             var buffer = new Buffer(str);//must be a buffer otherwise nodejs will refuse to position it as will expect. they will set the offset to zero and the positon to offset which is zero.What!
 
-            fs.write(fd, buffer, 0, buffer.length, size, function (err, writtenSize, wrttenData) {
+            fs.write(me.fd, buffer, 0, buffer.length, size, function (err, writtenSize, wrttenData) {
                 if (err) {
                     done();
                     console.log(err);
@@ -226,7 +226,7 @@ class Task {
         });
     }
 
-    validateCall(obj){
+    validateCall(obj) {
 
         var index = obj.classMethod.lastIndexOf('/');
         var clazz = obj.classMethod.substring(0, index);
@@ -245,15 +245,21 @@ class Task {
                 throw Error(`Not a function - ${obj.classMethod}`);
             }
             this.tasksFn[obj.classMethod] = fn.bind(moduleInstance);
-        }        
+        }
     }
 
     async execFn(obj) {
 
         var fn = this.tasksFn[obj.classMethod];
-        if(fn){
-            fn(obj.param);
+
+        try {
+            if (fn) {
+                await fn(obj.param);
+            }
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
         }
+
 
         if (obj.count_run > -1) {
             obj.count_run++;
@@ -264,6 +270,5 @@ class Task {
     }
 
 }
-
 
 module.exports = Task;

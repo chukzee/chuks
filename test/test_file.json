@@ -1,13 +1,13 @@
 [
     {
         "classMethod": "info/Class/Method",
-        "delay": 8473,
-        "interval": 8473,
+        "delay": 10912,
+        "interval": 20000,
         "intervalId": null,
         "times": 1000,
-        "startTime": 1518041353323,
+        "startTime": 1518045056818,
         "repeat": true,
         "count_run": 0,
-        "param": 1518041293322
+        "param": 1518044996818
     }
 ]
