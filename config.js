@@ -30,10 +30,14 @@ module.exports = {
     MONGO_PORT: 27017,
     /**
      * monogo database name
-     * @type Number
+     * @type String
      */
     MONGO_DB_NAME: 'game9jadb',
-    
+    /**
+     * 
+     * @type String
+     */
+    TASKS_FILE: __dirname + '/tasks_dir/tasks_save.tsk',
    /**
      * The maximum number of session a single user can have at a time.
      * It is possible for a single user to have more than one session

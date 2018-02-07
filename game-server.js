@@ -73,7 +73,7 @@ class Main {
 
         httpServer.listen(config.HTTP_PORT, config.HOST, this.onListenHttp.bind(this));//listen for http connections
 
-        sObj = new ServerObject(db, redis, evt);
+        sObj = new ServerObject(db, redis, evt, config);
         //initilize here! - For a reason I do not understand the express app object does not use the body parse if this initialization is done outside this async init method- the request body is undefined.But if this init method is not declared async it works normal.  Shocking... anyway!
         
         RealtimeSession(httpServer, appLoader, sObj, util, evt);

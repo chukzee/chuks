@@ -12,11 +12,12 @@ var unique_count = 0;
 
 class ServerObject {
 
-    constructor(db, redis, evt) {
+    constructor(db, redis, evt, config) {
 
         mgcol = mgcol.init(db);
         this._col = mgcol.geCollections();
-
+        
+        this._config = config;
         this._db = db;
         this._redis = redis;
         this._game = game;
@@ -77,6 +78,9 @@ class ServerObject {
         }
     }
     
+    get config(){
+        return this._config;
+    }
     
     get MAX_MSG_TTL(){//in seconds
         return 2592000;// 30 days

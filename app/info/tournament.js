@@ -165,7 +165,7 @@ class Tournament extends WebApplication {
 
         var delay = new Date(start_time).getTime() - new Date().getTime();
 
-        this.sObj.task.later('START_TOURNAMENT_SEASON', delay, {
+        this.sObj.task.later(delay, 'info/Tournament/_startSeason', {
             tournament_name: tournament_name,
             season_number: season_number
         });
@@ -908,11 +908,11 @@ class Tournament extends WebApplication {
 
         var delay = k_time - now - _10_mins;
 
-        this.sObj.task.later('REMIND_TOURNAMENT_MATCH', delay, game_id);//will send match reminder to the players
+        this.sObj.task.later(delay, 'info/Tournament/_notifyUpcomingMatch', game_id);//will send match reminder to the players
 
         var delay = k_time - now;
 
-        this.sObj.task.later('START_TOURNAMENT_MATCH', delay, game_id);//will automatically start the match at kickoff time
+        this.sObj.task.later( delay, 'info/Match/start', game_id);//will automatically start the match at kickoff time
 
         return 'Kickoff time set successfully.';
 
@@ -991,7 +991,7 @@ class Tournament extends WebApplication {
 
         var delay = new Date(start_time).getTime() - new Date().getTime();
 
-        this.sObj.task.later('START_TOURNAMENT_SEASON', delay, {
+        this.sObj.task.later(delay, 'info/Tournament/_startSeason', {
             tournament_name: tournament_name,
             season_number: season_number
         });

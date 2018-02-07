@@ -1,7 +1,7 @@
 
-var PlayRequest = require('./game/play-request');
-var Tournament = require('./info/tournament');
-var Match = require('./game/match');
+
+var fs = require("fs");
+var mkdirp = require('mkdirp');
 
 class Task {
 
@@ -9,6 +9,7 @@ class Task {
         this.sObj = sObj;
         this.util = util;
         this.evt = evt;
+        this.file = this.sObj.config.TASKS_FILE;
         this.list = this.loadTasks();
         //The max setTimeout delay is 24.8 days which is (2^31 - 1) or 0x7FFFFFFF milliseconds.
         //A value greater than that will cause wierd behaviour - executing instantly
@@ -18,26 +19,26 @@ class Task {
             if (list[n].repeat) {
                 //set the new intial delay 
                 list[n].delay = new Date(list[n].startTime).getTime() - new Date().getTime();
-                if(list[n].delay < 0){//some time is already lost - the best we can do is to continue from a logic point
+                if (list[n].delay < 0) {//some time is already lost - the best we can do is to continue from a logic point
                     var mod = new Date().getTime() % list[n].interval;
                     list[n].delay = list[n].interval - mod;
                 }
-                this.interval(list[n].cmd, list[n].intial_delay, list[n].interval, list[n].times, list[n].param);
+                this.interval(list[n].classMethod, list[n].intial_delay, list[n].interval, list[n].times, list[n].param);
             } else {
                 //set the new delay
                 list[n].delay = new Date(list[n].startTime).getTime() - new Date().getTime();
-                this.later(list[n].cmd, list[n].delay, list[n].param);
+                this.later(list[n].classMethod, list[n].delay, list[n].param);
             }
         }
     }
 
-    interval(cmd, intial_delay, interval, times, param) {
+    interval(intial_delay, interval, times, classMethod, param) {
         var obj = {
-            cmd: cmd,
-            task_id: this.sObj.UniqueNumber,
+            classMethod: classMethod,
+            taskId: this.sObj.UniqueNumber,
             delay: intial_delay,
             interval: interval,
-            interval_id: null, //set dynamically
+            intervalId: null, //set dynamically
             times: times,
             startTime: intial_delay > -1 ? new Date().getTime() + intial_delay : new Date().getTime() + interval,
             repeat: true,
@@ -56,17 +57,17 @@ class Task {
     }
 
     immInterval(obj) {
-        var interval_id = setInterval(this.intervalFn.bind(this), obj.interval, obj);
-        obj.interval_id = interval_id;
+        var intervalId = setInterval(this.intervalFn.bind(this), obj.interval, obj);
+        obj.intervalId = intervalId;
     }
 
-    later(cmd, delay, param) {
+    later(delay, classMethod, param) {
         if (delay < 0) {
             return;//do nothing - the time has expired
         }
         var obj = {
-            cmd: cmd,
-            task_id: this.sObj.UniqueNumber,
+            classMethod: classMethod,
+            taskId: this.sObj.UniqueNumber,
             delay: delay,
             startTime: new Date().getTime() + delay,
             repeat: false,
@@ -88,31 +89,50 @@ class Task {
 
     loadTasks() {
         this.list = [];
-        //TODO - Load the task synchronizely
+        //Load the task synchronously
+        //yes we need synchronous operation here in this case because we 
+        //need this initialization process to finish before anything else
 
+        var path = getDir(this.file);
+        mkdirp.sync(path);
+        var fd = fs.openSync(this.file, 'a+');//open for reading and appending
 
-        //after loading the task remove expired tasks
+        var stats = fs.statSync(this.file);
+        var size = stats['size'];
+
+        var readPos = 0;
+        var length = size - readPos;
+        var buffer = new Buffer(length);
+
+        fs.readSync(fd, buffer, 0, length, readPos);
+
+        var data = buffer.toString(); //toString(0, length) did not work but toString() worked for me
+
+        if (!data) {
+            return;
+        }
+
+        //after loading the task, remove expired tasks
         var now = new Date().getTime();
-
+        this.list = JSON.parse(data);
         for (var i = 0; i < this.list.length; i++) {
-            if (!this.list[i].repeat && this.list[i].startTime > now) {
+            if (!this.list.repeat && this.list.startTime > now) {
                 this.list.splice(i, 1);//remove expired tasks
             }
         }
 
-        var str_task = JSON.stringify(this.list);
 
         //delete the old file - important
-        /* 
-         fs.closeSync(fd);//close the file
-         fs.unlinkSync(file);//delete the file
-         
-         //create new file with the validated tasks.
-         fd = fs.openSync(file, 'a+'); //create and open the file
-         fs.writeSync(fd, str_task);//write
-         
-         */
 
+        fs.closeSync(fd);//close the file
+        fs.unlinkSync(this.file);//delete the file
+
+        //create new file with the validated tasks.
+        fd = fs.openSync(this.file, 'a+'); //create and open the file 
+
+        var str_tasks = JSON.stringify(this.list, null, 4);
+
+        fs.writeSync(fd, str_tasks);//write
 
         return this.list;
     }
@@ -120,19 +140,28 @@ class Task {
     saveTask(obj) {
 
         this.list.push(obj);
+        var str = JSON.stringify(obj, null, 4);
+        fs.stat(this.file, function (err, stats) {
+            var size = stats['size'];
+            if (size === 0) {
+                str = '[\n'+str+'\n]';
+            }else{
+                size = size - 2;//skip the last new line character and the closing bracket
+                str = ',\n'+str+'\n]';
+            }
 
-        /* fs.appendFile(file, str, function (err) {
-         if (err) {
-         console.log(err);
-         return;
-         }
-         //DO NOT initialize priceCollections[symbol][tf] here - DON'T EVER - causes unexpectedly strange result
-         });*/
+            fs.writeFile(this.file, str, size, function (err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
 
+            });
+        });
     }
 
     intervalFn(obj) {
-        switch (obj.cmd) {
+        switch (obj.classMethod) {
 
             case '':
                 return;
@@ -143,14 +172,14 @@ class Task {
 
         obj.count_run++;
         if (obj.times > 0 && obj.count_run === obj.times) {
-            clearInterval(obj.interval_id);
+            clearInterval(obj.intervalId);
         }
     }
 
     async timeoutFn(obj) {
         try {
 
-            switch (obj.cmd) {
+            switch (obj.classMethod) {
                 case 'EXPIRE_PLAY_REQUEST':
                     var game_id = obj.param;
                     await new PlayRequest(this.sObj, this.util, this.evt)._expire(game_id);

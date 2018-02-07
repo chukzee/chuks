@@ -1,3 +1,4 @@
+var path = require('path');
 
 var Util = function () {
 
@@ -96,6 +97,25 @@ var Util = function () {
         return arr;
     };
 
+    this.getDir = function(file) {
+        var index = -1;
+        if (path.sep === '\\') {
+            var index_1 = file.lastIndexOf('\\');
+            var index_2 = file.lastIndexOf('/');
+            index = index_1 > index_2 ? index_1 : index_2;
+
+        } else if (path.sep === '/') {
+            index = file.lastIndexOf('/');
+        }
+        if (index === -1) {
+            return file;
+        }
+
+        var dir = file.substring(0, index);
+
+        return dir;
+    };
+    
     return this;
 }();
 

@@ -178,7 +178,7 @@ class PlayRequest extends WebApplication {
             
             //set the expiry of the play request
             var expiry = this.sObj.GAME_MAX_WAIT_IN_SEC * 1000;
-            this.sObj.task.later('EXPIRE_PLAY_REQUEST', expiry, game_id);
+            this.sObj.task.later(expiry, 'game/PlayRequest/_expire', game_id);
 
         } catch (e) {
             console.log(e);
