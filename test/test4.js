@@ -4,14 +4,17 @@ var util = require('../util/util');
 var fs = require("fs");
 var mkdirp = require('mkdirp');
 
+
 class Task {
 
     constructor(sObj, util, evt, appLoader) {
+
         this.sObj = sObj;
         this.util = util;
         this.evt = evt;
-        this.appLoader = appLoader;
+        this.__appLoader = appLoader;
         this.file = this.sObj.config.TASKS_FILE;
+        this.fd = null;
         this.queue = [];
         this.tasksFn = {};
         this.loadTasks();
@@ -21,6 +24,77 @@ class Task {
         this.JS_MAX_SET_TIME0UT_DELAY = Math.pow(2, 31) - 1; // which is (2^31 - 1) or 0x7FFFFFFF
 
     }
+
+    interval(intial_delay, interval, times, classMethod, param) {
+        var obj = {
+            classMethod: classMethod,
+            taskId: this.sObj.UniqueNumber,
+            delay: intial_delay,
+            interval: interval,
+            intervalId: null, //set dynamically
+            times: times,
+            startTime: intial_delay > -1 ? new Date().getTime() + intial_delay : new Date().getTime() + interval,
+            repeat: true,
+            count_run: 0,
+            param: param
+        };
+
+        this.validateCall(obj);
+        this.saveTask(obj);
+        this.doInterval(obj);
+
+
+    }
+
+    doInterval(obj) {
+
+        if (obj.delay > 0) {
+            this.runAt(obj, this.immInterval.bind(this));
+        } else {
+            this.immInterval(obj);
+        }
+    }
+
+    immInterval(obj) {
+        if(obj.delay > 0){
+            this.execFn.bind(this)(obj);
+        }
+        var intervalId = setInterval(this.execFn.bind(this), obj.interval, obj);
+        obj.intervalId = intervalId;
+    }
+
+    later(delay, classMethod, param) {
+        if (delay < 0) {
+            return;//do nothing - the time has expired
+        }
+        var obj = {
+            classMethod: classMethod,
+            taskId: this.sObj.UniqueNumber,
+            delay: delay,
+            startTime: new Date().getTime() + delay,
+            repeat: false,
+            param: param
+        };
+        this.validateCall(obj);
+        this.saveTask(obj);
+        this.doLater(obj);
+    }
+
+    doLater(obj) {
+        this.runAt(obj, this.execFn.bind(this));
+    }
+
+    runAt(obj, fn) {
+
+        if (obj.delay > this.JS_MAX_SET_TIME0UT_DELAY) {//above 24.8 days - so apply this technique to go beyound the limit of 24.8 days
+            obj.delay -= this.JS_MAX_SET_TIME0UT_DELAY;
+            setTimeout(this.runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
+        } else {
+            
+            setTimeout(fn, obj.delay, obj);
+        }
+    }
+
     loadTasks() {
 
         //Load the task synchronously
@@ -29,7 +103,7 @@ class Task {
 
         var path = this.util.getDir(this.file);
         mkdirp.sync(path);
-        var fd = fs.openSync(this.file, 'a+');//open for reading and appending
+        this.fd = fs.openSync(this.file, 'r+');//open for reading and appending
 
         var stats = fs.statSync(this.file);
         var size = stats['size'];
@@ -38,7 +112,7 @@ class Task {
         var length = size - readPos;
         var buffer = new Buffer(length);
 
-        fs.readSync(fd, buffer, 0, length, readPos);
+        fs.readSync(this.fd, buffer, 0, length, readPos);
 
         var data = buffer.toString(); //toString(0, length) did not work but toString() worked for me
 
@@ -48,7 +122,7 @@ class Task {
 
         //after loading the task, remove expired tasks
         var now = new Date().getTime();
-        
+
         var arr = JSON.parse(data);
         for (var i = 0; i < arr.length; i++) {
             console.log(arr[i].startTime - now);
@@ -63,38 +137,40 @@ class Task {
 
         //delete the old file - important
 
-        fs.closeSync(fd);//close the file
+        fs.closeSync(this.fd);//close the file
         fs.unlinkSync(this.file);//delete the file
 
         //create new file with the validated tasks.
-        fd = fs.openSync(this.file, 'a+'); //create and open the file 
-        
+        this.fd = fs.openSync(this.file, 'w+'); //create and open the file 
+
         var str_tasks = '';
         if (arr.length > 0) {
             str_tasks = JSON.stringify(arr, null, 4);
         }
 
-        fs.writeSync(fd, str_tasks);//write
+        fs.writeSync(this.fd, str_tasks);//write
 
     }
 
     reRun(obj) {
         this.validateCall(obj);
         if (obj.repeat) {
-            
-            console.log('old delay',obj.delay);
-            
+
+            console.log('old delay', obj.delay);
+
             //set the new intial delay 
             var diff = new Date(obj.startTime).getTime() - new Date().getTime();
             if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point
+                
                 var mod = new Date().getTime() % obj.interval;
                 obj.delay = obj.interval - mod;
-            }else{
+                console.log('obj.delay',obj.delay);
+            } else {
                 obj.delay = diff;
             }
-            
-            console.log('new delay',obj.delay);
-            
+
+            console.log('new delay', obj.delay);
+
             this.doInterval(obj);
         } else {
             //set the new delay
@@ -103,19 +179,102 @@ class Task {
         }
     }
 
-    doInterval(obj) {
-        //console.log('interval', obj);
+    saveTask(obj) {
+        this.queue.push(obj);
+        if (this.queue.length > 1) {
+            return;
+        }
+
+        this.doSave.bind(this)(obj, this.next.bind(this));
+
     }
 
-    doLater(obj) {
-        //console.log('later', obj);
+    next() {
+
+        var old = this.queue.shift();
+
+        //console.log(old);
+
+        if (this.queue.length === 0) {
+            return;
+        }
+        var obj = this.queue[0];
+        this.doSave.bind(this)(obj, this.next.bind(this));
+
     }
-    
-    validateCall(obj){
-        
+
+    doSave(obj, done) {
+        var me = this;
+        var str = JSON.stringify(obj, null, 4);
+        fs.stat(this.file, function (err, stats) {
+
+            if (err) {
+                done();
+                console.log(err);
+                return;
+            }
+
+            var size = stats['size'];
+
+            if (size === 0) {
+                str = '[\n' + str + '\n]';
+            } else {
+                size = size - 2;//skip the last new line character and the closing bracket
+                str = ',\n' + str + '\n]';
+            }
+
+            var buffer = new Buffer(str);//must be a buffer otherwise nodejs will refuse to position it as will expect. they will set the offset to zero and the positon to offset which is zero.What!
+
+            fs.write(me.fd, buffer, 0, buffer.length, size, function (err, writtenSize, wrttenData) {
+                if (err) {
+                    done();
+                    console.log(err);
+                    return;
+                }
+                done();
+            });
+        });
+    }
+
+    validateCall(obj) {
+
+        var index = obj.classMethod.lastIndexOf('/');
+        var clazz = obj.classMethod.substring(0, index);
+        var method = obj.classMethod.substring(index + 1);
+
+        //get the module using the qualified class name
+        var Module = this.__appLoader.getModule(clazz);
+        //execute the class method in the module
+
+        if (Module) {
+            //we already know it is a function because we check for that in the app loader.
+            //instantiate the module on demand - safe this way to avoid thread issues if any.
+            var moduleInstance = new Module(this.sObj, this.util, this.evt);
+            var fn = moduleInstance[method];
+            if (typeof fn !== 'function') {
+                throw Error(`Not a function - ${obj.classMethod}`);
+            }
+            this.tasksFn[obj.classMethod] = fn.bind(moduleInstance);
+        }
+    }
+
+    async execFn(obj) {
+
+        var fn = this.tasksFn[obj.classMethod];
+        if (fn) {
+            fn(obj.param);
+        }
+
+        if (obj.count_run > -1) {
+            obj.count_run++;
+        }
+        if (obj.times > 0 && obj.count_run === obj.times) {
+            clearInterval(obj.intervalId);
+        }
     }
 
 }
+
 
 var sObj = {
     config: {
@@ -123,4 +282,28 @@ var sObj = {
     }
 };
 
-new Task(sObj, util);
+var appLoader = (function () {
+    var requireMod = {};
+
+    requireMod['info/Class'] = function () {
+        this.Method = function (param) {
+            var date = new Date();
+            console.log(`${date} - elapse = ${date.getTime() - param}`);
+        };
+    };
+
+    this.getModule = function (qualifiedClassName) {
+        return requireMod[qualifiedClassName];
+    };
+    return this;
+})();
+
+var task = new Task(sObj, util, null, appLoader);
+
+console.log(`${new Date()}`);
+
+//task.later(60000, 'info/Class/Method', new Date().getTime());
+//task.later(120000, 'info/Class/Method', new Date().getTime());
+
+//task.interval(60000, 20000, 1000, 'info/Class/Method', new Date().getTime());
+

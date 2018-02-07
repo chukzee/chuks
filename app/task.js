@@ -115,10 +115,12 @@ class Task {
 
         //after loading the task, remove expired tasks
         var now = new Date().getTime();
+        
         var arr = JSON.parse(data);
         for (var i = 0; i < arr.length; i++) {
-            if (!arr[i].repeat && arr[i].startTime > now) {
-                arr[i].splice(i, 1);//remove expired tasks
+            console.log(arr[i].startTime - now);
+            if (!arr[i].repeat && arr[i].startTime < now) {
+                arr.splice(i, 1);//remove expired tasks
                 i--;
                 continue;
             }
@@ -133,8 +135,11 @@ class Task {
 
         //create new file with the validated tasks.
         fd = fs.openSync(this.file, 'a+'); //create and open the file 
-
-        var str_tasks = JSON.stringify(arr, null, 4);
+        
+        var str_tasks = '';
+        if (arr.length > 0) {
+            str_tasks = JSON.stringify(arr, null, 4);
+        }
 
         fs.writeSync(fd, str_tasks);//write
 
@@ -143,12 +148,20 @@ class Task {
     reRun(obj) {
         this.validateCall(obj);
         if (obj.repeat) {
+            
+            console.log('old delay',obj.delay);
+            
             //set the new intial delay 
-            obj.delay = new Date(obj.startTime).getTime() - new Date().getTime();
-            if (obj.delay < 0) {//some time is already lost - the best we can do is to continue from a logic point
+            var diff = new Date(obj.startTime).getTime() - new Date().getTime();
+            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point
                 var mod = new Date().getTime() % obj.interval;
                 obj.delay = obj.interval - mod;
+            }else{
+                obj.delay = diff;
             }
+            
+            console.log('new delay',obj.delay);
+            
             this.doInterval(obj);
         } else {
             //set the new delay
