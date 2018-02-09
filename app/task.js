@@ -102,7 +102,7 @@ class Task {
 
         var path = this.util.getDir(this.file);
         mkdirp.sync(path);
-        this.fd = fs.openSync(this.file, 'r+');//open for reading and appending
+        this.fd = fs.openSync(this.file, 'a+');//open for reading and appending
 
         var stats = fs.statSync(this.file);
         var size = stats['size'];

@@ -212,7 +212,7 @@ class Group extends WebApplication {
         console.log('lock_result', lock_result);
 
         if (!lock_result) {
-            return 'Please try again later!'; //failed to acquire lock after the specifed number of trials
+            return 'Server busy!'; //failed to acquire lock after the specifed number of trials
         }
 
         var group_col = this.sObj.db.collection(this.sObj.col.groups);

@@ -399,8 +399,7 @@ class Tournament extends WebApplication {
         }
 
         switch (season.status) {
-            case 'start' :
-                return this.error(`Can not add player - season ${season_number} already started.`);
+            //case 'start' //not required any more for some good reasons - instead, we will check the specific match fixture and avoid displacing players whose matches have already started
             case 'end' :
                 return this.error(`Can not add player - season ${season_number} already ended.`);
             case 'cancel' :
@@ -435,11 +434,24 @@ class Tournament extends WebApplication {
             return this.error(`Slot ${slot_number} not found.`);
         }
 
-        //modify the corresponding rounds fixtures
+        var nowTime = new Date().getTime();
         var rounds = season.rounds;
         for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var k = 0; k < fixtures.length; k++) {
+
+                //check if the fixture kickoff time is set and close by
+                if (fixtures[k].start_time) {
+                    var _15_mins = 15 * 60 * 1000;
+                    var diff = nowTime - new Date(fixtures[k].start_time).getTime();
+                    if (diff <= 0) {
+                        return this.error(`Not allowed! Cannot replace another player whose match has already started at ${fixtures[k].start_time}.`);
+                    }else if (diff <= _15_mins){
+                        return this.error(`Not allowed! Cannot replace another player whose match kickoff time of ${fixtures[k].start_time} is close by.`);                        
+                    }
+                }
+
+                //modify the corresponding rounds fixtures
                 if (fixtures[k].player_1.slot === slot_number) {
                     //fixtures[k].player_1.id = player_id;
                     editObj[`seasons.${season_index}.rounds.${i}.fixtures.${k}.player_1.id`] = player_id;
@@ -453,15 +465,16 @@ class Tournament extends WebApplication {
 
 
         //update the tournament
-        //await c.updateOne({name: tournament_name}, {$set: {seasons: tourn.seasons}});
 
-        //var editObj = {};
+        var r = await c.updateOne({name: tournament_name, 'seasons.sn': season_number}, {$set: editObj});
 
-        //editObj['seasons.' + season_index] = season; // using the dot operator to access the index of the array
-
-        await c.updateOne({name: tournament_name}, {$set: editObj});
-
-        return 'Added player successfully.';
+        if (r.result.nModified > 0) {
+            return 'Added player successfully.';
+        } else if (r.result.n > 0 && r.result.nModified === 0) {
+            return 'Nothing changed. Possibly, player already addded.';
+        } else {
+            return 'Condition not met!';
+        }
 
     }
 
@@ -499,8 +512,7 @@ class Tournament extends WebApplication {
 
 
         switch (season.status) {
-            case 'start' :
-                return this.error(`Can not remove player - season ${season_number} already started.`);
+            //case 'start' //not required any more for some good reasons - instead, we will check the specific match fixture and avoid displacing players whose matches have already started
             case 'end' :
                 return this.error(`Can not remove player - season ${season_number} already ended.`);
             case 'cancel' :
@@ -518,11 +530,24 @@ class Tournament extends WebApplication {
         }
 
 
-        //modify the corresponding rounds fixtures
+        var nowTime = new Date().getTime();
         var rounds = season.rounds;
         for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var k = 0; k < fixtures.length; k++) {
+
+                //check if the fixture kickoff time is set and close by
+                if (fixtures[k].start_time) {
+                    var _15_mins = 15 * 60 * 1000;
+                    var diff = nowTime - new Date(fixtures[k].start_time).getTime();
+                    if (diff <= 0) {
+                        return this.error(`Not allowed! Cannot remove a player whose match has already started at ${fixtures[k].start_time}.`);
+                    }else if (diff <= _15_mins){
+                        return this.error(`Not allowed! Cannot remove a player whose match kickoff time of ${fixtures[k].start_time} is close by.`);                        
+                    }
+                }
+                
+                //modify the corresponding rounds fixtures
                 if (fixtures[k].player_1.id === player_id) {
                     //fixtures[k].player_1.id = '';
                     editObj[`seasons.${season_index}.rounds.${i}.fixtures.${k}.player_1.id`] = '';
@@ -539,9 +564,15 @@ class Tournament extends WebApplication {
             return 'No player to remove';
         }
 
-        await c.updateOne({name: tournament_name}, {$set: editObj});
+        var r = await c.updateOne({name: tournament_name, 'seasons.sn': season_number}, {$set: editObj});
 
-        return 'Removed player successfully.';
+        if (r.result.nModified > 0) {
+            return 'Removed player successfully.';
+        } else if (r.result.n > 0 && r.result.nModified === 0) {
+            return 'Nothing changed. Possibly, player not found.';
+        } else {
+            return 'Condition not met!';
+        }
 
     }
 
@@ -706,8 +737,9 @@ class Tournament extends WebApplication {
         if (seasons.length === 0) {
             return this.error(`No season found.`);
         }
-        var last = seasons.length - 1;
-        var current_season = seasons[last];
+        var last_season_number = seasons.length;
+        var last_season_index = last_season_number - 1;
+        var current_season = seasons[last_season_index];
 
         if (current_season.status === 'cancel') {
             return this.error(`Cannot set kickoff time - season ${seasons.length} is cancelled.`);
@@ -877,18 +909,17 @@ class Tournament extends WebApplication {
         }
 
         //update the tournament
-        //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
         var editObj = {};
 
         //now set the start time, our interest
         //match_fixture.start_time = kickoff_time;
 
-        var prop = `seasons.${last}.rounds.${round_index}.fixtures.${match_fixt_index}.start_time`;
+        var prop = `seasons.${last_season_index}.rounds.${round_index}.fixtures.${match_fixt_index}.start_time`;
         editObj[prop] = kickoff_time; // using the dot operator to access the index of the array
 
         try {
-            await tc.updateOne({name: tournament_name}, {$set: editObj});
+            await tc.updateOne({name: tournament_name, 'seasons.sn': last_season_number}, {$set: editObj});
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
             return this.error('Oop! Something went wrong.');
@@ -912,7 +943,7 @@ class Tournament extends WebApplication {
 
         var delay = k_time - now;
 
-        this.sObj.task.later( delay, 'info/Match/start', game_id);//will automatically start the match at kickoff time
+        this.sObj.task.later(delay, 'info/Match/start', game_id);//will automatically start the match at kickoff time
 
         return 'Kickoff time set successfully.';
 
@@ -983,11 +1014,10 @@ class Tournament extends WebApplication {
         var season_index = season_number - 1;
 
         //current_season.start_time = season_begin_time;
-        //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
 
         editObj[`seasons.${season_index}.start_time`] = season_begin_time;
 
-        await c.updateOne({name: tournament_name}, {$set: editObj});
+        await c.updateOne({name: tournament_name, 'seasons.sn': season_number}, {$set: editObj});
 
         var delay = new Date(start_time).getTime() - new Date().getTime();
 
@@ -1058,8 +1088,6 @@ class Tournament extends WebApplication {
         //current_season.end_time = new Date();
 
         //update the tournament
-        //await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
-
 
         var season_index = season_number - 1;
 
@@ -1068,17 +1096,26 @@ class Tournament extends WebApplication {
         editObj[`seasons.${season_index}.status`] = 'cancel';
         editObj[`seasons.${season_index}.end_time`] = new Date();
 
-        await c.updateOne({name: tournament_name}, {$set: editObj});
+        var r = await c.updateOne({name: tournament_name, 'seasons.sn': season_number}, {$set: editObj});
 
-        //notify all relevant users - registered players and officials
-        var data = {
-            official_id: user_id,
-            tournament_name: tourn.name,
-            season_number: current_season.sn,
-            reason: reason //tournament comment room should also show this message
-        };
+        if (r.result.nModified > 0) {
 
-        this._broadcastInHouse(tourn, this.evt.season_cancel, data);
+            //notify all relevant users - registered players and officials
+            var data = {
+                official_id: user_id,
+                tournament_name: tourn.name,
+                season_number: current_season.sn,
+                reason: reason //tournament comment room should also show this message
+            };
+
+            this._broadcastInHouse(tourn, this.evt.season_cancel, data);
+
+        } else if (r.result.n > 0 && r.result.nModified === 0) {
+            return `Nothing changed. Possibly, season ${current_season.sn} is already cancelled.`;
+        } else {
+            return 'Condition not met!';
+        }
+
 
     }
 
