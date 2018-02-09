@@ -2,7 +2,7 @@
     {
         "classMethod": "info/Tournament/_startSeason",
         "taskId": "16_ID_g2b4ptaW42Dz4DHe2KLCGFxSXQLwDTeIeemEHWis9Jok4VDjkEXZVm0pNQcwJMZq",
-        "delay": 1844738187,
+        "delay": 1843407112,
         "startTime": 1520035200002,
         "repeat": false,
         "param": {
@@ -13,7 +13,7 @@
     {
         "classMethod": "info/Tournament/_startSeason",
         "taskId": "16_ID_1IvMVftgfXfTHmdxRzToUsfiUre_NAIM4b7orvztnhTy--rJ0JZEFSWaVUgk_Mvk",
-        "delay": 1844738186,
+        "delay": 1843407110,
         "startTime": 1520035200002,
         "repeat": false,
         "param": {
@@ -24,7 +24,7 @@
     {
         "classMethod": "info/Tournament/_startSeason",
         "taskId": "16_ID_thI9uCqc9hB96nFIplW6tY3I5Tq0tacNCjaCJFriCWaznQrdsa9DKfzL6cuFMahT",
-        "delay": 1844738184,
+        "delay": 1843407109,
         "startTime": 1520035200001,
         "repeat": false,
         "param": {
@@ -35,7 +35,7 @@
     {
         "classMethod": "info/Tournament/_startSeason",
         "taskId": "16_ID_hPbE7qyUuLgpZdyYTkHRzLD4JJrCLDar5BA0pm5taaJq58sJ7gnIeQihMFzu2bD4",
-        "delay": 1844738184,
+        "delay": 1843407109,
         "startTime": 1520035200001,
         "repeat": false,
         "param": {
@@ -46,7 +46,7 @@
     {
         "classMethod": "info/Tournament/_startSeason",
         "taskId": "16_ID_bkT6ZYj7p7cuNHdx1Mxa6fibbBxwcYU7vz4WJvjq5SOA45Khtm5ikmtxAJgcLZn-",
-        "delay": 1844738185,
+        "delay": 1843407110,
         "startTime": 1520035200002,
         "repeat": false,
         "param": {
@@ -55,14 +55,19 @@
         }
     },
     {
-        "classMethod": "info/Tournament/_startSeason",
-        "taskId": "17_ID_0RJlP6jsSHpEKITvw5Nflb9-v77vO7hPB4ToJRfCyRSzcQ45qgKfIAbRyrSygMai",
-        "delay": 98183,
-        "startTime": 1518190560000,
+        "classMethod": "info/Tournament/_notifyUpcomingMatch",
+        "taskId": "1_ID_zEuXwHtV86cRgp9hfi4sx_s0o_CZ1_3-CP1CXij78u_NbD3D8GZYyHGJCrhrXoHf",
+        "delay": 377111,
+        "startTime": 1518192170004,
         "repeat": false,
-        "param": {
-            "tournament_name": "tourn0",
-            "season_number": 1
-        }
+        "param": "2_ID_0RJlP6jsSHpEKITvw5Nflb9-v77vO7hPB4ToJRfCyRSzcQ45qgKfIAbRyrSygMai"
+    },
+    {
+        "classMethod": "info/Match/start",
+        "taskId": "2_ID_zEuXwHtV86cRgp9hfi4sx_s0o_CZ1_3-CP1CXij78u_NbD3D8GZYyHGJCrhrXoHf",
+        "delay": 387116,
+        "startTime": 1518192180009,
+        "repeat": false,
+        "param": "2_ID_0RJlP6jsSHpEKITvw5Nflb9-v77vO7hPB4ToJRfCyRSzcQ45qgKfIAbRyrSygMai"
     }
 ]

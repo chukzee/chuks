@@ -441,13 +441,15 @@ class Tournament extends WebApplication {
             for (var k = 0; k < fixtures.length; k++) {
 
                 //check if the fixture kickoff time is set and close by
-                if (fixtures[k].start_time) {
+                if ((slot_number === fixtures[k].player_1.slot
+                        || slot_number === fixtures[k].player_2.slot)
+                        && fixtures[k].start_time) {
                     var _15_mins = 15 * 60 * 1000;
-                    var diff = nowTime - new Date(fixtures[k].start_time).getTime();
+                    var diff = new Date(fixtures[k].start_time).getTime() - nowTime;
                     if (diff <= 0) {
                         return this.error(`Not allowed! Cannot replace another player whose match has already started at ${fixtures[k].start_time}.`);
-                    }else if (diff <= _15_mins){
-                        return this.error(`Not allowed! Cannot replace another player whose match kickoff time of ${fixtures[k].start_time} is close by.`);                        
+                    } else if (diff <= _15_mins) {
+                        return this.error(`Not allowed! Cannot replace another player whose match kickoff time of ${fixtures[k].start_time} is close by.`);
                     }
                 }
 
@@ -537,16 +539,19 @@ class Tournament extends WebApplication {
             for (var k = 0; k < fixtures.length; k++) {
 
                 //check if the fixture kickoff time is set and close by
-                if (fixtures[k].start_time) {
+                if ((player_id === fixtures[k].player_1.id
+                        || player_id === fixtures[k].player_2.id)
+                        && fixtures[k].start_time) {
+
                     var _15_mins = 15 * 60 * 1000;
-                    var diff = nowTime - new Date(fixtures[k].start_time).getTime();
+                    var diff = new Date(fixtures[k].start_time).getTime() - nowTime;
                     if (diff <= 0) {
                         return this.error(`Not allowed! Cannot remove a player whose match has already started at ${fixtures[k].start_time}.`);
-                    }else if (diff <= _15_mins){
-                        return this.error(`Not allowed! Cannot remove a player whose match kickoff time of ${fixtures[k].start_time} is close by.`);                        
+                    } else if (diff <= _15_mins) {
+                        return this.error(`Not allowed! Cannot remove a player whose match kickoff time of ${fixtures[k].start_time} is close by.`);
                     }
                 }
-                
+
                 //modify the corresponding rounds fixtures
                 if (fixtures[k].player_1.id === player_id) {
                     //fixtures[k].player_1.id = '';
