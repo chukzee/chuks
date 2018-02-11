@@ -37,7 +37,7 @@ module.exports = {
      * 
      * @type String
      */
-    TASKS_FILE: __dirname + '/tasks_dir/tasks_save.tsk',
+    TASKS_FILE: __dirname + '/tasks_persist_dir/tasks_saved.json',
    /**
      * The maximum number of session a single user can have at a time.
      * It is possible for a single user to have more than one session

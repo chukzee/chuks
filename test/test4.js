@@ -334,14 +334,14 @@ class Task {
             var moduleInstance = new Module(this.sObj, this.util, this.evt);
             var fn = moduleInstance[method];
             if (typeof fn !== 'function') {
-                throw Error(`Could not find '${obj.classMethod}' - '${method}' method was not found in '${clazz}' class`);
+                throw Error(`Could not locate '${obj.classMethod}' - '${method}' method was not found in '${clazz}' class`);
             }
             this.task[obj.classMethod] = {
                 fn: fn,
                 _this: moduleInstance
             };
         } else {
-            throw Error(`Could not find '${obj.classMethod}' - '${clazz}' class could not be found`);
+            throw Error(`Could not locate '${obj.classMethod}' - '${clazz}' class could not be found`);
         }
     }
 
@@ -396,8 +396,8 @@ var task = new Task(sObj, util, null, appLoader);
 
 console.log(`${new Date()}`);
 
-task.later(60000, 'info/Class/Method', new Date().getTime());
-task.later(120000, 'info/Class/Method', new Date().getTime());
+//task.later(60000, 'info/Class/Method', new Date().getTime());
+//task.later(120000, 'info/Class/Method', new Date().getTime());
 
 //task.interval(60000, 20000, 1000, 'info/Class/Method', new Date().getTime());
 

@@ -758,7 +758,16 @@ class Tournament extends WebApplication {
             return this.error(`Kickoff time, ${begin_time} must be at least at or after the current season start time which is ${season_start_time}`);
         }
 
+        var _10_mins = 10 * 60 * 1000;
+
+
+        if (true) {//TESTING! REMOVE THIS 'IF' BLOCK LATER ABEG O!!!
+            console.log('TESTING! REMOVE LATER ABEG O!!!');
+            _10_mins = 10 * 1000; //TESTING! REMOVE LATER ABEG O!!!
+        }
+
         //find the match fixture with the give game id
+
         var match_fixture;
         var has_kickoff_time = false;
         var rounds = current_season.rounds;
@@ -770,6 +779,7 @@ class Tournament extends WebApplication {
         var current_round;
         var round_index;
         var match_fixt_index;
+        var nowTime = new Date().getTime();
 
         outer: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
@@ -804,6 +814,15 @@ class Tournament extends WebApplication {
                     match_fixture = current_fixt;//hold   
                     current_round = i + 1;
                     if (match_fixture.start_time) {
+                        var time_remain = new Date(match_fixture.start_time).getTime() - nowTime;
+                        if (time_remain <= 0) {
+                            return this.error(`Cannot modify kickoff time of a match already started at ${match_fixture.start_time}.`);
+                        } else if (time_remain <= _10_mins) {
+                            var time_span = time_remain >= 60000 ? Math.round(time_remain / 60000) : Math.round(time_remain / 1000); //in minutes and seconds
+                            var tm_str = time_remain >= 60000 ? (time_span > 1 ? 'minutes' : 'minute') : (time_span > 1 ? 'seconds' : 'second');
+                            return this.error(`Cannot modify kickoff time of a match set to begin in about ${time_span} ${tm_str} time at ${match_fixture.start_time}.`);
+                        }
+
                         has_kickoff_time = true;
                     }
                     if (match_fixture.player_1.id && match_fixture.player_2.id) {
@@ -933,14 +952,6 @@ class Tournament extends WebApplication {
 
         var k_time = new Date(kickoff_time).getTime();
         var now = new Date().getTime();
-        var _10_mins = 10 * 60 * 1000;
-
-
-        if (true) {//TESTING! REMOVE LATER ABEG O!!!
-            console.log('TESTING! REMOVE LATER ABEG O!!!');
-            _10_mins = 10 * 1000; //TESTING! REMOVE LATER ABEG O!!!
-        }
-
 
         var delay = k_time - now - _10_mins;
 
@@ -948,7 +959,7 @@ class Tournament extends WebApplication {
 
         var delay = k_time - now;
 
-        this.sObj.task.later(delay, 'info/Match/start', game_id);//will automatically start the match at kickoff time
+        this.sObj.task.later(delay, 'game/Match/start', game_id);//will automatically start the match at kickoff time
 
         return 'Kickoff time set successfully.';
 

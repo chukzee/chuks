@@ -332,14 +332,14 @@ class Task {
             var moduleInstance = new Module(this.sObj, this.util, this.evt);
             var fn = moduleInstance[method];
             if (typeof fn !== 'function') {
-                throw Error(`Could not find '${obj.classMethod}' - '${method}' method was not found in '${clazz}' class`);
+                throw Error(`Could not locate '${obj.classMethod}' - '${method}' method was not found in '${clazz}' class`);
             }
             this.task[obj.classMethod] = {
                 fn: fn,
                 _this: moduleInstance
             };
         } else {
-            throw Error(`Could not find '${obj.classMethod}' - '${clazz}' class could not be found`);
+            throw Error(`Could not locate '${obj.classMethod}' - '${clazz}' class could not be found`);
         }
     }
 
