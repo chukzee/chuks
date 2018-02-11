@@ -76,7 +76,7 @@ class Task {
 
         obj.taskId = this.sObj.UniqueNumber;
         obj.intervalId = null; //set dynamically
-        obj.startTime = o.intial_delay > -1 ? new Date().getTime() + o.intial_delay : new Date().getTime() + o.interval;
+        obj.startTime = obj.delay > -1 ? new Date().getTime() + obj.delay : new Date().getTime() + obj.interval;
         obj.repeat = true;
         obj.count_run = 0;
 
@@ -148,7 +148,7 @@ class Task {
         }
 
         obj.taskId = this.sObj.UniqueNumber;
-        obj.startTime = new Date().getTime() + o.delay;
+        obj.startTime = new Date().getTime() + obj.delay;
         obj.repeat = false;
         obj.count_run = 0;
 
