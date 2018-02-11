@@ -3,18 +3,17 @@
     "delay": 60000,
     "classMethod": "info/Class/Method",
     "param": [
-        1518356999332
+        1518359773165
     ],
     "startTime": null,
     "repeat": false,
     "count_run": 0
-}
-],
+},
 {
     "delay": 120000,
     "classMethod": "info/Class/Method",
     "param": [
-        1518356999340
+        1518359773182
     ],
     "startTime": null,
     "repeat": false,

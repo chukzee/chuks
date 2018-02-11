@@ -57,7 +57,7 @@ class Task {
             obj.delay = o.delay;
             obj.interval = o.interval;
             obj.times = o.times;
-            obj.param = Array.isArray(o.param)? o.param : [o.param];
+            obj.param = Array.isArray(o.param) ? o.param : [o.param];
         } else if (arguments.length >= 4) {
 
             obj.delay = arguments[0];
@@ -133,7 +133,7 @@ class Task {
         if (arguments.length === 1) {
             obj.delay = o.delay;
             obj.classMethod = o.classMethod;
-            obj.param = Array.isArray(o.param)? o.param : [o.param];
+            obj.param = Array.isArray(o.param) ? o.param : [o.param];
         } else if (arguments.length >= 2) {
 
             obj.delay = arguments[0];
@@ -184,8 +184,11 @@ class Task {
 
         var path = this.util.getDir(this.file);
         mkdirp.sync(path);
-        this.fd = fs.openSync(this.file, 'a+');//open for reading and appending
-
+        if (fs.existsSync(this.file)) {
+            this.fd = fs.openSync(this.file, 'r+');            
+        } else {
+            this.fd = fs.openSync(this.file, 'w+');
+        }
         var stats = fs.statSync(this.file);
         var size = stats['size'];
 
