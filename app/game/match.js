@@ -324,69 +324,78 @@ class Match extends WebApplication {
 
     async _broadcastWatchGame(match, event_name) {
 
-        var players = match.players;
-        var related_user_ids = [];
-        var players_ids = [];
-        for (var i = 0; i < players.length; i++) {
-            players_ids.push(players[i].user_id);
-            var contacts = players[i].contacts;
-            for (var i = 0; i < contacts.length; i++) {
-                related_user_ids.push(contacts[i]);
+        try {
+
+
+            var players = match.players;
+            var related_user_ids = [];
+            var players_ids = [];
+            //collect the players contacts
+            for (var i = 0; i < players.length; i++) {
+                players_ids.push(players[i].user_id);
+                var contacts = players[i].contacts;
+                if (Array.isArray(contacts)) {
+                    for (var i = 0; i < contacts.length; i++) {
+                        related_user_ids.push(contacts[i]);
+                    }
+                }
             }
-        }
 
 
-        if (match.group_name) {
-            try {
-                var c = this.sObj.db.collection(this.sObj.col.groups);
-                var group = await c.findOne({name: match.group_name}, {_id: 0, members: 1});
-                if (group) {
-                    //add the group members user ids to the related_user_ids array
-                    for (var i = 0; i < group.members.length; i++) {
-                        if (group.members[i].committed) {
-                            if (players_ids.indexOf(group.members[i].user_id) > -1) {
+            if (match.group_name) {
+                try {
+                    var c = this.sObj.db.collection(this.sObj.col.groups);
+                    var group = await c.findOne({name: match.group_name}, {_id: 0, members: 1});
+                    if (group) {
+                        //add the group members user ids to the related_user_ids array
+                        for (var i = 0; i < group.members.length; i++) {
+                            if (group.members[i].committed) {
+                                if (players_ids.indexOf(group.members[i].user_id) > -1) {
+                                    continue;//skip the players themselves
+                                }
+                                related_user_ids.push(group.members[i].user_id);
+
+                            }
+                        }
+                    }
+
+                } catch (e) {
+                    console.log(e);//DO NOT DO THIS IN PRODUCTION
+                }
+
+            }
+
+
+            if (match.tournament_name) {
+                try {
+                    var c = this.sObj.db.collection(this.sObj.col.tournaments);
+                    var tourn = await c.findOne({name: match.tournament_name}, {_id: 0, officials: 1, registered_players: 1});
+                    if (tourn) {
+                        //add the tournament officials user ids to the related_user_ids array
+                        for (var i = 0; i < tourn.officials.length; i++) {
+                            if (players_ids.indexOf(tourn.officials[i].user_id) > -1) {
                                 continue;//skip the players themselves
                             }
-                            related_user_ids.push(group.members[i].user_id);
-
+                            related_user_ids.push(tourn.officials[i].user_id);
                         }
+
+                        //add the tournament players user ids to the related_user_ids array
+                        for (var i = 0; i < tourn.registered_players.length; i++) {
+                            if (players_ids.indexOf(tourn.registered_players[i].user_id) > -1) {
+                                continue;//skip the players themselves
+                            }
+                            related_user_ids.push(tourn.registered_players[i].user_id);
+                        }
+
                     }
+
+                } catch (e) {
+                    console.log(e);//DO NOT DO THIS IN PRODUCTION
                 }
 
-            } catch (e) {
-                console.log(e);//DO NOT DO THIS IN PRODUCTION
             }
-
-        }
-
-
-        if (match.tournament_name) {
-            try {
-                var c = this.sObj.db.collection(this.sObj.col.tournaments);
-                var tourn = await c.findOne({name: match.tournament_name}, {_id: 0, officials: 1, players: 1});
-                if (tourn) {
-                    //add the tournament officials user ids to the related_user_ids array
-                    for (var i = 0; i < tourn.officials.length; i++) {
-                        if (players_ids.indexOf(tourn.officials[i].user_id) > -1) {
-                            continue;//skip the players themselves
-                        }
-                        related_user_ids.push(tourn.officials[i].user_id);
-                    }
-
-                    //add the tournament players user ids to the related_user_ids array
-                    for (var i = 0; i < tourn.registered_players.length; i++) {
-                        if (players_ids.indexOf(tourn.registered_players[i].user_id) > -1) {
-                            continue;//skip the players themselves
-                        }
-                        related_user_ids.push(tourn.registered_players[i].user_id);
-                    }
-
-                }
-
-            } catch (e) {
-                console.log(e);//DO NOT DO THIS IN PRODUCTION
-            }
-
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION
         }
 
         //ensure no duplicate
@@ -462,7 +471,7 @@ class Match extends WebApplication {
      * @returns {undefined}
      */
     async start(game_id, fixture_type) {
-        console.log('game_id', game_id);
+
         var mtcObj;
         if (fixture_type === 'match-fixture') {
             mtcObj = await this._findOneAndDeleteMatchFixture(game_id);
@@ -484,6 +493,7 @@ class Match extends WebApplication {
         //but first add some more player info
         var user = new User(this.sObj, this.util, this.evt);
         var players_ids = mtcObj.players;
+
         for (var i = 0; i < mtcObj.players.length; i++) {
             if (typeof mtcObj.players[i] === 'object') {//just in case
                 players_ids[i] = mtcObj.players[i].user_id;
@@ -525,7 +535,7 @@ class Match extends WebApplication {
             };
 
         }
-        
+
         sets[0].start_time = new Date(); //set the start time of the first set
 
         var match = {
@@ -548,7 +558,6 @@ class Match extends WebApplication {
         if (!r.result.n) {
             return 'Could not start game';
         }
-
 
         //broadcast the game start event to all the players concern
         match.players = players;

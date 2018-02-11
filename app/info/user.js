@@ -149,7 +149,10 @@ class User extends WebApplication {
                 full_name: email.substring(0, email.indexOf('@')), //default  full name of the user
                 country: country,
                 phone_numbers: phone_numbers,
-                player_ranking: 0 //set the player ranking
+                player_ranking: 0, //set the player ranking
+                contacts:[],
+                groups_belong: [],
+                tournaments_belong: []
             };
 
 

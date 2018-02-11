@@ -86,7 +86,7 @@ function init() {
 
     subscriber.subscribe(sObj.PUBSUB_DELIVER_MESSAGE, function (err, count) {
         if (err !== null) {
-            console.error("FAILED!!! Could not subcrbe " + sObj.PUBSUB_DELIVER_MESSAGE);
+            console.error("FAILED!!! Could not subscribe " + sObj.PUBSUB_DELIVER_MESSAGE);
             return;
         }
 
@@ -95,7 +95,7 @@ function init() {
 
     subscriber.subscribe(sObj.PUBSUB_DELIVERY_RESEND, function (err, count) {
         if (err !== null) {
-            console.error("FAILED!!! Could not subcrbe " + sObj.PUBSUB_DELIVERY_RESEND);
+            console.error("FAILED!!! Could not subscribe " + sObj.PUBSUB_DELIVERY_RESEND);
             return;
         }
 
@@ -104,7 +104,7 @@ function init() {
 
     subscriber.subscribe(sObj.PUBSUB_USER_SESSION_SIZE_EXCEEDED, function (err, count) {
         if (err !== null) {
-            console.error("FAILED!!! Could not subcrbe " + sObj.PUBSUB_USER_SESSION_SIZE_EXCEEDED);
+            console.error("FAILED!!! Could not subscribe " + sObj.PUBSUB_USER_SESSION_SIZE_EXCEEDED);
             return;
         }
 
@@ -114,7 +114,7 @@ function init() {
 
     subscriber.subscribe(sObj.PUBSUB_VERIFY_ONLINE_STATUS, function (err, count) {
         if (err !== null) {
-            console.error("FAILED!!! Could not subcrbe " + sObj.PUBSUB_VERIFY_ONLINE_STATUS);
+            console.error("FAILED!!! Could not subscribe " + sObj.PUBSUB_VERIFY_ONLINE_STATUS);
             return;
         }
 
