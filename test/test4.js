@@ -16,8 +16,8 @@ class Task {
         this.file = this.sObj.config.TASKS_FILE;
         this.fd = null;
         this.queue = [];
-        this.tasksFn = {};
-        this.loadTasks();
+        this.task = {};
+        this._loadTasks();
         //The max setTimeout delay is 24.8 days which is (2^31 - 1) or 0x7FFFFFFF milliseconds.
         //A value greater than that will cause wierd behaviour - executing instantly
 
@@ -25,77 +25,158 @@ class Task {
 
     }
 
-    interval(intial_delay, interval, times, classMethod, param) {
-        var obj = {
-            classMethod: classMethod,
-            taskId: this.sObj.UniqueNumber,
-            delay: intial_delay,
-            interval: interval,
-            intervalId: null, //set dynamically
-            times: times,
-            startTime: intial_delay > -1 ? new Date().getTime() + intial_delay : new Date().getTime() + interval,
-            repeat: true,
-            count_run: 0,
-            param: param
-        };
+    /**
+     * Executes a task periodically. The task is persistent in the sense that
+     * even if the server goes off, the task is remembered the moment the server come back and
+     * continues in the exact expected occurrence.
+     * 
+     * valid arguments signatures are:
+     * -One argument - expects and object.
+     * -Two or more argument.
+     * 
+     * the singnature of object paramenter is:
+     * var obj = {
+     *      classMethod: classMethod, // the callee method - must be a string represent the mehod to call one of the method of the class in the app folder e.g game/Match/start.
+     *      delay: delay, // initial delay
+     *      interval: interval,
+     *      times: times,
+     *      param: param
+     *  };
+     * 
+     * for more than one argument the signation is:
+     * 
+     * interval(intial_delay, interval, times, classMethod, param_0, param_1, param_2,......,param_N)
+     * 
+     * @param {type} o
+     * @returns {undefined}
+     */
+    interval(o) {
+        var obj = {};
+        if (arguments.length === 1) {
+            obj.classMethod = o.classMethod;
+            obj.delay = o.delay;
+            obj.interval = o.interval;
+            obj.times = o.times;
+            obj.param = Array.isArray(o.param)? o.param : [o.param];
+        } else if (arguments.length >= 4) {
 
-        this.validateCall(obj);
-        this.saveTask(obj);
-        this.doInterval(obj);
+            obj.delay = arguments[0];
+            obj.interval = arguments[1];
+            obj.times = arguments[2];
+            obj.classMethod = arguments[3];
+            obj.param = [];
+            for (var i = 4; i < arguments.length; i++) {
+                obj.param.push(arguments[i]);
+            }
 
-
-    }
-
-    doInterval(obj) {
-
-        if (obj.delay > 0) {
-            this.runAt(obj, this.immInterval.bind(this));
         } else {
-            this.immInterval(obj);
+            throw new Error('Invalid number of arguments- must be 1 (for object) or at least 4 reqular paramenters');
+        }
+
+
+        obj.taskId = this.sObj.UniqueNumber;
+        obj.intervalId = null; //set dynamically
+        obj.startTime = o.intial_delay > -1 ? new Date().getTime() + o.intial_delay : new Date().getTime() + o.interval;
+        obj.repeat = true;
+        obj.count_run = 0;
+
+
+        this._validateCall(obj);
+        this._saveTask(obj);
+        this._doInterval(obj);
+
+
+    }
+
+    _doInterval(obj) {
+
+        if (obj.delay > 0) {
+            this._runAt(obj, this._immInterval.bind(this));
+        } else {
+            this._immInterval(obj);
         }
     }
 
-    immInterval(obj) {
+    _immInterval(obj) {
         if (obj.delay > 0) {
-            this.execFn.bind(this)(obj);
+            this._execFn.bind(this)(obj);
         }
-        var intervalId = setInterval(this.execFn.bind(this), obj.interval, obj);
+        var intervalId = setInterval(this._execFn.bind(this), obj.interval, obj);
         obj.intervalId = intervalId;
     }
 
-    later(delay, classMethod, param) {
-        if (delay < 0) {
+    /**
+     * Executes a task after a given delay . The task is persistent in the sense that
+     * even if the server goes off, the task is remembered the moment the server come back and
+     * continues in the exact expected occurrence.
+     * 
+     * valid arguments signatures are:
+     * -One argument - expects and object.
+     * -Two or more argument.
+     * 
+     * the singnature of object paramenter is:
+     * var obj = {
+     *      classMethod: classMethod, // the callee method - must be a string represent the mehod to call one of the method of the class in the app folder e.g game/Match/start.
+     *      delay: delay, // initial delay
+     *      param: param
+     *  };
+     * 
+     * for more than one argument the signation is:
+     * 
+     * later(delay, classMethod, param_0, param_1, param_2,......,param_N)
+     * 
+     * @param {type} o
+     * @returns {undefined}
+     */
+    later(o) {
+        var obj = {};
+        if (arguments.length === 1) {
+            obj.delay = o.delay;
+            obj.classMethod = o.classMethod;
+            obj.param = Array.isArray(o.param)? o.param : [o.param];
+        } else if (arguments.length >= 2) {
+
+            obj.delay = arguments[0];
+            obj.classMethod = arguments[1];
+            obj.param = [];
+            for (var i = 2; i < arguments.length; i++) {
+                obj.param.push(arguments[i]);
+            }
+
+        } else {
+            throw new Error('Invalid number of arguments- must be 1 (for object) or at least 2 reqular paramenters');
+        }
+
+        obj.taskId = this.sObj.UniqueNumber;
+        obj.startTime = new Date().getTime() + o.delay;
+        obj.repeat = false;
+        obj.count_run = 0;
+
+        if (obj.delay < 0) {
             return;//do nothing - the time has expired
         }
-        var obj = {
-            classMethod: classMethod,
-            taskId: this.sObj.UniqueNumber,
-            delay: delay,
-            startTime: new Date().getTime() + delay,
-            repeat: false,
-            param: param
-        };
-        this.validateCall(obj);
-        this.saveTask(obj);
-        this.doLater(obj);
+
+        this._validateCall(obj);
+        this._saveTask(obj);
+        this._doLater(obj);
     }
 
-    doLater(obj) {
-        this.runAt(obj, this.execFn.bind(this));
+    _doLater(obj) {
+        this._runAt(obj, this._execFn.bind(this));
     }
 
-    runAt(obj, fn) {
+    _runAt(obj, fn) {
 
         if (obj.delay > this.JS_MAX_SET_TIME0UT_DELAY) {//above 24.8 days - so apply this technique to go beyound the limit of 24.8 days
             obj.delay -= this.JS_MAX_SET_TIME0UT_DELAY;
-            setTimeout(this.runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
+            setTimeout(this._runAt, this.JS_MAX_SET_TIME0UT_DELAY, obj, fn);
         } else {
 
             setTimeout(fn, obj.delay, obj);
         }
     }
 
-    loadTasks() {
+    _loadTasks() {
 
         //Load the task synchronously
         //yes we need synchronous operation here in this case because we 
@@ -131,7 +212,7 @@ class Task {
                 i--;
                 continue;
             }
-            this.reRun(arr[i]);
+            this._reRun(arr[i]);
         }
 
 
@@ -152,8 +233,8 @@ class Task {
 
     }
 
-    reRun(obj) {
-        this.validateCall(obj);
+    _reRun(obj) {
+        this._validateCall(obj);
         if (obj.repeat) {
 
             console.log('old delay', obj.delay);
@@ -169,25 +250,25 @@ class Task {
 
             console.log('new delay', obj.delay);
 
-            this.doInterval(obj);
+            this._doInterval(obj);
         } else {
             //set the new delay
             obj.delay = new Date(obj.startTime).getTime() - new Date().getTime();
-            this.doLater(obj);
+            this._doLater(obj);
         }
     }
 
-    saveTask(obj) {
+    _saveTask(obj) {
         this.queue.push(obj);
         if (this.queue.length > 1) {
             return;
         }
 
-        this.doSave.bind(this)(obj, this.next.bind(this));
+        this._doSave.bind(this)(obj, this._next.bind(this));
 
     }
 
-    next() {
+    _next() {
 
         var old = this.queue.shift();
 
@@ -197,11 +278,11 @@ class Task {
             return;
         }
         var obj = this.queue[0];
-        this.doSave.bind(this)(obj, this.next.bind(this));
+        this._doSave.bind(this)(obj, this._next.bind(this));
 
     }
 
-    doSave(obj, done) {
+    _doSave(obj, done) {
         var me = this;
         var str = JSON.stringify(obj, null, 4);
         fs.stat(this.file, function (err, stats) {
@@ -234,7 +315,7 @@ class Task {
         });
     }
 
-    validateCall(obj) {
+    _validateCall(obj) {
 
         var index = obj.classMethod.lastIndexOf('/');
         var clazz = obj.classMethod.substring(0, index);
@@ -250,19 +331,24 @@ class Task {
             var moduleInstance = new Module(this.sObj, this.util, this.evt);
             var fn = moduleInstance[method];
             if (typeof fn !== 'function') {
-                throw Error(`Not a function - ${obj.classMethod}`);
+                throw Error(`Could not find '${obj.classMethod}' - '${method}' method was not found in '${clazz}' class`);
             }
-            this.tasksFn[obj.classMethod] = fn.bind(moduleInstance);
+            this.task[obj.classMethod] = {
+                fn: fn,
+                _this: moduleInstance
+            };
+        } else {
+            throw Error(`Could not find '${obj.classMethod}' - '${clazz}' class could not be found`);
         }
     }
 
-    async execFn(obj) {
+    async _execFn(obj) {
 
-        var fn = this.tasksFn[obj.classMethod];
+        var t = this.task[obj.classMethod];
 
         try {
-            if (fn) {
-                await fn(obj.param);
+            if (t.fn) {
+                await t.fn.apply(t._this, obj.param);
             }
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION - INSTEAD LOG TO ANOTHER PROCESS
@@ -290,9 +376,10 @@ var appLoader = (function () {
     var requireMod = {};
 
     requireMod['info/Class'] = function () {
+        this.name = 'This name';
         this.Method = function (param) {
             var date = new Date();
-            console.log(`${date} - elapse = ${date.getTime() - param}`);
+            console.log(`${date} - elapse = ${date.getTime() - param} - name = ${this.name}`);
         };
     };
 
@@ -306,8 +393,8 @@ var task = new Task(sObj, util, null, appLoader);
 
 console.log(`${new Date()}`);
 
-//task.later(60000, 'info/Class/Method', new Date().getTime());
-//task.later(120000, 'info/Class/Method', new Date().getTime());
+task.later(60000, 'info/Class/Method', new Date().getTime());
+task.later(120000, 'info/Class/Method', new Date().getTime());
 
 //task.interval(60000, 20000, 1000, 'info/Class/Method', new Date().getTime());
 

@@ -910,7 +910,7 @@ class Tournament extends WebApplication {
         }
 
         if (r.result.n !== 1) {
-            return 'Could not set kickoff. Something is not right. ';
+            return this.error('Could not set kickoff. Something is not right. ');
         }
 
         //update the tournament

@@ -462,6 +462,7 @@ class Match extends WebApplication {
      * @returns {undefined}
      */
     async start(game_id, fixture_type) {
+        console.log('game_id', game_id);
         var mtcObj;
         if (fixture_type === 'match-fixture') {
             mtcObj = await this._findOneAndDeleteMatchFixture(game_id);
