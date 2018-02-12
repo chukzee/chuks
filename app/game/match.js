@@ -879,6 +879,20 @@ class Match extends WebApplication {
                 return this.error('No game to finish');
             }
 
+            //check if the winner is a valid player id
+            if (winner_user_id) {
+                var is_valid_player = false;
+                for (var i = 0; i < match.players.length; i++) {
+                    if (match.players[i].user_id === winner_user_id) {
+                        is_valid_player = true;
+                        break;
+                    }
+                }
+                if(!is_valid_player){
+                    return this.error(`${winner_user_id} is not a player of the specified game!`);
+                }
+            }
+
             //update the end_time and status after the last set of the match is played
             if (match.current_set === match.sets.length) {
                 var now_date = new Date();

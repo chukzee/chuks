@@ -1,104 +1,24 @@
 [
-{
-    "delay": 67632,
-    "classMethod": "info/Tournament/_startSeason",
-    "param": [
-        {
-            "tournament_name": "tourn0",
-            "season_number": 1
-        }
-    ],
-    "taskId": "16_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518434640003,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 1468807326,
-    "classMethod": "info/Tournament/_notifyUpcomingMatch",
-    "param": [
-        "1_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "17_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1519903910004,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 1468817326,
-    "classMethod": "game/Match/start",
-    "param": [
-        "1_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "18_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1519903920005,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 50924,
-    "classMethod": "info/Tournament/_notifyUpcomingMatch",
-    "param": [
-        "1_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "19_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518435230000,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 60924,
-    "classMethod": "game/Match/start",
-    "param": [
-        "1_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "20_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518435240001,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 17489,
-    "classMethod": "info/Tournament/_notifyUpcomingMatch",
-    "param": [
-        "2_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "27_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518435350000,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 27489,
-    "classMethod": "game/Match/start",
-    "param": [
-        "2_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "28_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518435360001,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 60007,
-    "classMethod": "info/Tournament/_notifyUpcomingMatch",
-    "param": [
-        "3_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "29_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518435410000,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 70007,
-    "classMethod": "game/Match/start",
-    "param": [
-        "3_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-    ],
-    "taskId": "30_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
-    "startTime": 1518435420001,
-    "repeat": false,
-    "count_run": 0
-}
+    {
+        "delay": 1456819326,
+        "classMethod": "info/Tournament/_notifyUpcomingMatch",
+        "param": [
+            "1_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
+        ],
+        "taskId": "17_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
+        "startTime": 1519903910004,
+        "repeat": false,
+        "count_run": 0
+    },
+    {
+        "delay": 1456829324,
+        "classMethod": "game/Match/start",
+        "param": [
+            "1_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
+        ],
+        "taskId": "18_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr",
+        "startTime": 1519903920005,
+        "repeat": false,
+        "count_run": 0
+    }
 ]
