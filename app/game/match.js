@@ -408,6 +408,8 @@ class Match extends WebApplication {
 
     _startNextSet(c, match) {
 
+        var me = this;
+
         c.updateOne({game_id: match.game_id}, {$inc: {current_set: 1}})
                 .then(async function (result) {
 
@@ -417,13 +419,13 @@ class Match extends WebApplication {
                             players_ids[i] = match.players[i].user_id;
                         }
                     }
-
+                    var user = new User(me.sObj, me.util, me.evt);
                     //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
                     var required_fields = ['contacts', 'groups_belong', 'user_id', 'first_name', 'last_name', 'email', 'photo_url'];
                     var players = await user.getInfoList(players_ids, required_fields);
 
                     //check if the player info list is complete - ie match  the number requested for
-                    var missing = this.util.findMissing(players_ids, players, function (p_id, p_info) {
+                    var missing = me.util.findMissing(players_ids, players, function (p_id, p_info) {
                         return p_id === p_info.user_id;
                     });
 
@@ -434,11 +436,11 @@ class Match extends WebApplication {
 
                     //broadcast the game_start_next_set event to all the players concern
                     match.players = players;
-                    this.broadcast(this.evt.game_start_next_set, match, players_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
+                    me.broadcast(me.evt.game_start_next_set, match, players_ids, true, me.sObj.GAME_MAX_WAIT_IN_SEC);
 
                     //broadcast the watch_game_start_next_set event to users related in one way
                     //or the other to any of the players - ie via contacts or group
-                    this._broadcastWatchGame(match, this.evt.watch_game_start_next_set);
+                    me._broadcastWatchGame(match, me.evt.watch_game_start_next_set);
 
                 })
                 .catch(function (err) {
@@ -531,7 +533,7 @@ class Match extends WebApplication {
             sets[i] = {
                 sn: i + 1, //serial number                
                 moves: [], //game position
-                points: []//score point - user 3-1-0 scoring system as in football where a win is 3 points, draw is 1 and loss is zero
+                points: [0 , 0]//score point - user 3-1-0 scoring system as in football where a win is 3 points, draw is 1 and loss is zero
             };
 
         }
@@ -800,24 +802,29 @@ class Match extends WebApplication {
     }
 
     async _updateMatchScores(c, match, winner_user_id) {
-
-        var game_set = match.sets[match.current_set - 1];
-
-        for (var i = 0; i < match.players.length; i++) {
-
-            if (!winner_user_id) {//is draw
-                game_set.points[i] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
-                continue;
-            }
-
-            if (match.players[i].user_id === winner_user_id) {
-                game_set.points[i] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
-                match.scores[i] += 1;
-                break;
-            }
-        }
-
+        
+        console.log('_updateMatchScores match', match);
+        console.log('_updateMatchScores match.current_set', match.current_set);
+        console.log('_updateMatchScores match.sets', match.sets);
+        
         try {
+            var game_set = match.sets[match.current_set - 1];
+
+            for (var i = 0; i < match.players.length; i++) {
+
+                if (!winner_user_id) {//is draw
+                    game_set.points[i] += 1; //all players get 1 point for draw - note we are using 3-1-0 scoring system
+                    continue;
+                }
+
+                if (match.players[i].user_id === winner_user_id) {
+                    game_set.points[i] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                    match.scores[i] += 1;
+                    break;
+                }
+            }
+
+
 
             var r = await c.updateOne({game_id: match.game_id},
                     {
@@ -843,39 +850,36 @@ class Match extends WebApplication {
     /**
      * 
      * @param {type} game_id - the game id
-     * @param {type} scores - array of the game scores of each players
      * @param {type} winner_user_id - the user id of the winner if there is
      * a winner in the game. If not specified or a value of 0 or null will
      * mean that the game ended in a draw
      * @returns {String|nm$_match.Match}
      */
-    async finish(game_id, scores, winner_user_id) {
+    async finish(game_id, winner_user_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             game_id = arguments[0].game_id;
-            scores = arguments[0].scores;
             winner_user_id = arguments[0].winner_user_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
 
-            var r = await c.findOne({game_id: game_id});
-
-            var match = r.value;
-            if (!match) {
-                this.error('No game to finish');
-            }
-
-            match = this._updateMatchScores(c, match, winner_user_id);
+            var match = await c.findOne({game_id: game_id});
 
             if (!match) {
-                this.error('Could not finish game! something is not right');
+                return this.error('No game to finish');
             }
 
-            //check all sets is played -  if not then automatically start the next set
+            match = await this._updateMatchScores(c, match, winner_user_id);
+
+            if (!match) {
+                return this.error('Could not finish game! something is not right');
+            }
+
+            //check if all sets is played -  if not then automatically start the next set
             if (match.current_set < match.sets.length) {
                 this._startNextSet(c, match);
                 return;

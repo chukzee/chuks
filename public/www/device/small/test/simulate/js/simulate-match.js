@@ -232,12 +232,9 @@ Main.on("pagecreate", function (arg) {
     $('#btn-finish').on('click', function () {
 
         var game_id = prompt('game_id', '');
-        var score = prompt('score', '');
         var winner_user_id = prompt('winner_user_id', '');
         
-        score = {};
-
-        Main.ro.match.finish(game_id, score, winner_user_id)
+        Main.ro.match.finish(game_id, winner_user_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

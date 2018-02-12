@@ -1539,7 +1539,6 @@ class Tournament extends WebApplication {
         }
 
 
-        //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
         if (Object.keys(editObj).length === 0) {
             return;
         }
