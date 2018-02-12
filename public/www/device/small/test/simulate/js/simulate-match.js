@@ -25,79 +25,79 @@ Main.on("pagecreate", function (arg) {
     Main.eventio.on('game_finish', onGameFinish);
 
     function onGameMove(obj){
-        alert('onGameMove');
-        alert(obj);
+        //alert('onGameMove');
+        //alert(obj);
         console.log(obj);
     }
 
     function onGameMoveSent(obj){
-        alert('onGameMoveSent');
-        alert(obj);
+        //alert('onGameMoveSent');
+        //alert(obj);
         console.log(obj);
     }
 
     function onNotifyUpComingMatch(obj){
-        alert('onNotifyUpComingMatch');
-        alert(obj);
+        //alert('onNotifyUpComingMatch');
+        //alert(obj);
         console.log(obj);
     }
     
     function onGameStart(obj){
-        alert('onGameStart');
-        alert(obj);
+        //alert('onGameStart');
+        //alert(obj);
         console.log(obj);
     }
     
     function onGameStartNextSet(obj){
-        alert('onGameStartNextSet');
-        alert(obj);
+        //alert('onGameStartNextSet');
+        //alert(obj);
         console.log(obj);
     }
 
     function onWatchGameStart(obj){
-        alert('onWatchGameStart');
-        alert(obj);
+        //alert('onWatchGameStart');
+        //alert(obj);
         console.log(obj);
     }
 
     function onWatchGameStartNextSet(obj){
-        alert('onWatchGameStartNextSet');
-        alert(obj);
+        //alert('onWatchGameStartNextSet');
+        //alert(obj);
         console.log(obj);
     }
     
     function onGameResume(obj){
-        alert('onGameResume');
-        alert(obj);
+        //alert('onGameResume');
+        //alert(obj);
         console.log(obj);
     }
 
     function onWatchGameResume(obj){
-        alert('onWatchGameResume');
-        alert(obj);
+        //alert('onWatchGameResume');
+        //alert(obj);
         console.log(obj);
     }
 
     function onGamePause(obj){
-        alert('onGamePause');
-        alert(obj);
+        //alert('onGamePause');
+        //alert(obj);
         console.log(obj);
     }
 
     function onGameAbandon(obj){
-        alert('onGameAbandon');
-        alert(obj);
+        //alert('onGameAbandon');
+        //alert(obj);
         console.log(obj);
     }
 
     function onGameFinish(obj){
-        alert('onGameFinish');
-        alert(obj);
+        //alert('onGameFinish');
+        //alert(obj);
         console.log(obj);
     }
 
     $('#test-simulate-page').on('click', function () {
-        //alert('#btn-page1-next');
+        ////alert('#btn-page1-next');
 
         Main.page.show({
             url: 'test/simulate/simulate-test-1.html',
@@ -134,11 +134,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.match.sendMove(user_id, opponent_id, game_id, set, move)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -151,11 +151,11 @@ Main.on("pagecreate", function (arg) {
         
         Main.ro.match.getGamePosition(game_id, set)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -168,11 +168,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.match.start(game_id, fixture_type)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -185,11 +185,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.match.resume(user_id, game_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -202,11 +202,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.match.pause(user_id, game_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -219,11 +219,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.match.abandon(user_id, game_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -236,11 +236,11 @@ Main.on("pagecreate", function (arg) {
         
         Main.ro.match.finish(game_id, winner_user_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -255,11 +255,11 @@ Main.on("pagecreate", function (arg) {
         
         Main.ro.match.getContactsMatchList(user_id, game_name, skip, limit)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -275,11 +275,11 @@ Main.on("pagecreate", function (arg) {
         
         Main.ro.match.getGroupMatchList(user_id, group_name, game_name, skip, limit)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -295,11 +295,11 @@ Main.on("pagecreate", function (arg) {
         
         Main.ro.match.getTournamentMatchList(user_id, tournament_name, game_name, skip, limit)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -315,11 +315,11 @@ Main.on("pagecreate", function (arg) {
         
         Main.ro.match.getUserMatchHistory(user_id, filter, is_include_abandoned_matches, skip, limit)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 

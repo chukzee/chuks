@@ -18,26 +18,26 @@ Main.on("pagecreate", function (arg) {
     Main.eventio.on('season_end', onSeasonEnd);
 
     function onSeasonStart(obj) {
-        alert('onSeasonStart');
-        alert(obj);
+        ///alert('onSeasonStart');
+        //alert(obj);
         console.log(obj);
     }
 
     function onSeasonCancel(obj) {
-        alert('onSeasonCancel');
-        alert(obj);
+        //alert('onSeasonCancel');
+        //alert(obj);
         console.log(obj);
     }
 
     function onSeasonDelete(obj) {
-        alert('onSeasonDelete');
-        alert(obj);
+        //alert('onSeasonDelete');
+        //alert(obj);
         console.log(obj);
     }
 
     function onSeasonEnd(obj) {
-        alert('onSeasonEnd');
-        alert(obj);
+        //alert('onSeasonEnd');
+        //alert(obj);
         console.log(obj);
     }
 
@@ -89,11 +89,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.createTournament(user_id, tournament_name, game, type, sets_count ,status_message, photo_url)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -107,11 +107,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.setGameSetsCount(user_id, tournament_name, sets_count)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -125,11 +125,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.setIcon(user_id, tournament_name, photo_url)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -144,11 +144,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.setStatus(user_id, tournament_name, status_message, photo_url)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -162,11 +162,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.addOfficial(user_id, tournament_name, new_official_user_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -180,11 +180,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.removeOfficial(user_id, tournament_name, official_user_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -198,11 +198,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.registerPlayer(user_id, tournament_name, player_user_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -216,11 +216,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.removeRegisteredPlayer(user_id, tournament_name, player_user_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -232,11 +232,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.getTournamentInfo(tournament_name)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -252,11 +252,11 @@ Main.on("pagecreate", function (arg) {
         }
         Main.ro.tourn.getTournamentsInfoList(tournament_names_arr)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -271,11 +271,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonNew(user_id, tournament_name, players_count, start_time)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -291,11 +291,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonAddPlayer(user_id, tournament_name, season_number, player_id, slot_number)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -311,11 +311,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonRemovePlayer(user_id, tournament_name, season_number, player_id)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -328,11 +328,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonGetPlayers(tournament_name, season_number)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -346,11 +346,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonGetSlots(user_id, tournament_name, season_number)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -365,11 +365,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonMatchKickOff(user_id, tournament_name, game_id, kickoff_time)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -384,11 +384,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonStart(user_id, tournament_name, season_number, start_time)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -403,11 +403,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonCancel(user_id, tournament_name, season_number, reason)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -422,11 +422,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonDelete(user_id, tournament_name, season_number, reason)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -438,11 +438,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.seasonCount(tournament_name)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 
@@ -454,11 +454,11 @@ Main.on("pagecreate", function (arg) {
 
         Main.ro.tourn.getSeasons(tournament_name)
                 .get(function (data) {
-                    alert(data);
+                    //alert(data);
                     console.log(data);
                 })
                 .error(function (err) {
-                    alert(err);
+                    //alert(err);
                     console.log(err);
                 });
 

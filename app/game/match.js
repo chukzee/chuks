@@ -409,8 +409,15 @@ class Match extends WebApplication {
     _startNextSet(c, match) {
 
         var me = this;
+        var now_date = new Date();
+        var edit = {};
+        var prev_set_index = match.current_set - 1;//yes
+        var next_set_index = prev_set_index + 1;//yes
 
-        c.updateOne({game_id: match.game_id}, {$inc: {current_set: 1}})
+        edit[`sets.${prev_set_index}.end_time`] = now_date;
+        edit[`sets.${next_set_index}.start_time`] = now_date;
+
+        c.updateOne({game_id: match.game_id}, {$inc: {current_set: 1}, $set: edit})
                 .then(async function (result) {
 
                     var players_ids = match.players;
@@ -439,7 +446,7 @@ class Match extends WebApplication {
                     me.broadcast(me.evt.game_start_next_set, match, players_ids, true, me.sObj.GAME_MAX_WAIT_IN_SEC);
 
                     //broadcast the watch_game_start_next_set event to users related in one way
-                    //or the other to any of the players - ie via contacts or group
+                    //or the other to any of the players - ie via contacts or group or tournament
                     me._broadcastWatchGame(match, me.evt.watch_game_start_next_set);
 
                 })
@@ -532,8 +539,10 @@ class Match extends WebApplication {
         for (var i = 0; i < mtcObj.sets_count; i++) {
             sets[i] = {
                 sn: i + 1, //serial number                
+                start_time: "",
+                end_time: "",
                 moves: [], //game position
-                points: [0 , 0]//score point - user 3-1-0 scoring system as in football where a win is 3 points, draw is 1 and loss is zero
+                points: [0, 0]//score point - user 3-1-0 scoring system as in football where a win is 3 points, draw is 1 and loss is zero
             };
 
         }
@@ -549,6 +558,7 @@ class Match extends WebApplication {
             rules: mtcObj.rules ? mtcObj.rules : default_rules,
             scores: [0, 0],
             start_time: new Date(),
+            end_time: "", //to be set at the end of the last game set
             current_set: 1, //first set - important!
             sets: sets,
             players: players
@@ -566,7 +576,7 @@ class Match extends WebApplication {
         this.broadcast(this.evt.game_start, match, players_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
         //broadcast the watch_game_start event to users related in one way
-        //or the other to any of the players - ie via contacts or group
+        //or the other to any of the players - ie via contacts or group or tournament
         this._broadcastWatchGame(match, this.evt.watch_game_start);
 
         return 'Game started.';
@@ -670,7 +680,7 @@ class Match extends WebApplication {
         this.broadcast(this.evt.game_resume, updated_match, users_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
         //broadcast the watch_game_resume event to users related in one way
-        //or the other to any of the players - ie via contacts or group
+        //or the other to any of the players - ie via contacts or group or tournament
         this._broadcastWatchGame(match, this.evt.watch_game_resume);
 
         return updated_match; //sent to player of user_id
@@ -802,11 +812,7 @@ class Match extends WebApplication {
     }
 
     async _updateMatchScores(c, match, winner_user_id) {
-        
-        console.log('_updateMatchScores match', match);
-        console.log('_updateMatchScores match.current_set', match.current_set);
-        console.log('_updateMatchScores match.sets', match.sets);
-        
+
         try {
             var game_set = match.sets[match.current_set - 1];
 
@@ -873,6 +879,14 @@ class Match extends WebApplication {
                 return this.error('No game to finish');
             }
 
+            //update the end_time and status after the last set of the match is played
+            if (match.current_set === match.sets.length) {
+                var now_date = new Date();
+                match.status = 'finish'; //set the status to finish 
+                match.end_time = now_date;//set the time the match ended
+                match.sets[match.sets.length - 1].end_time = match.end_time; // set the time the last game set ended which is same as the time the match ended
+            }
+
             match = await this._updateMatchScores(c, match, winner_user_id);
 
             if (!match) {
@@ -888,8 +902,6 @@ class Match extends WebApplication {
             var r = await c.deleteOne({game_id: game_id}, {w: 'majority'});
 
             //relocate the match document to the match_history collection
-            match.status = 'finish'; //set the status to finish 
-            match.end_time = new Date();//set the time the match ended
             match.is_draw = winner_user_id ? false : true;
 
             if (winner_user_id) {

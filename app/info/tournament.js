@@ -1324,6 +1324,8 @@ class Tournament extends WebApplication {
                         return; //tournament no longer exist!
                     }
 
+                    console.log('_onTournamentMatchEnd', tourn.type);
+
                     if (tourn.type === 'single-elimination') {
                         me._promoteToNextRound(c, tourn, match);
                     }
@@ -1498,7 +1500,12 @@ class Tournament extends WebApplication {
 
                 if (fixtures[j].game_id === match.game_id) {
 
-                    fixtures[j].end_time = new Date();
+                    //fixtures[j].end_time = new Date();
+
+                    if (match.end_time) {
+                        var prop0 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.end_time`;
+                        editObj[prop0] = match.end_time;
+                    }
 
                     var set_index = match.current_set - 1;
 
