@@ -2260,7 +2260,7 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: player_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return 'Player added successfully.';
+        return 'Player registered successfully.';
     }
 
     async removeRegisteredPlayer(user_id, tournament_name, player_user_id) {
@@ -2323,7 +2323,7 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: player_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return 'Player removed successfully.';
+        return 'Player deregistered successfully.';
     }
 
     async getTournamentInfo(tournament_name) {
