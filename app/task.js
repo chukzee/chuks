@@ -242,7 +242,7 @@ class Task {
 
             //set the new intial delay 
             var diff = new Date(obj.startTime).getTime() - new Date().getTime();
-            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point                
+            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logical point                
                 var mod = (-diff) % obj.interval;
                 obj.delay = obj.interval - mod;
             } else {
@@ -324,7 +324,6 @@ class Task {
 
         //get the module using the qualified class name
         var Module = this.__appLoader.getModule(clazz);
-        //execute the class method in the module
 
         if (Module) {
             //we already know it is a function because we check for that in the app loader.

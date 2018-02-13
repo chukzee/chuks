@@ -5,12 +5,12 @@
             <url>test/test1.js</url>
             <bookmark id="1">
                 <name/>
-                <line>116</line>
+                <line>0</line>
                 <key/>
             </bookmark>
             <bookmark id="2">
                 <name/>
-                <line>119</line>
+                <line>0</line>
                 <key/>
             </bookmark>
         </file>
@@ -18,6 +18,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test-tourn.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test1.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/task.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/spectator.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/chat.js</file>
@@ -28,6 +29,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/evt.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/info/contact.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/comment.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app-loader.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/stats.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/game-server.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test4.js</file>

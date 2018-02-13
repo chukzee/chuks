@@ -1563,8 +1563,8 @@ class Tournament extends WebApplication {
      * @param {type} match
      * @returns {undefined}
      */
-    _checkSeasonEnd(c, tourn, match) {
-
+    _checkSeasonEnd(c, tourn, match) {                
+        
         var me = this;
         //check if the final match of the season was played
 
@@ -1577,7 +1577,8 @@ class Tournament extends WebApplication {
         var last_fixt = last_fixtures[last_fixt_index];
         var last_set = last_fixt.sets[last_fixt.sets.length - 1];
 
-        if (last_set.game_id !== match.game_id) {
+        if (last_fixt.game_id !== match.game_id 
+                || match.current_set < match.sets.length) {
             return;// leave - not the final match
         }
 
@@ -1594,7 +1595,8 @@ class Tournament extends WebApplication {
         var editObj = {};
         editObj[prop1] = match.end_time;
         editObj[prop2] = 'end';
-        editObj[prop3] = match.status;
+        editObj[prop3] = match.end_time;
+        
 
         //update the tournament
         c.updateOne({name: match.tournament_name}, {$set: editObj})
@@ -1604,7 +1606,7 @@ class Tournament extends WebApplication {
                     var data = {
                         tournament_name: tourn.name,
                         season_number: last_season.sn,
-                        end_time: last_season.end_time
+                        end_time: match.end_time
                     };
 
                     me._broadcastInHouse(tourn, me.evt.season_end, data);

@@ -401,3 +401,9 @@ console.log(`${new Date()}`);
 
 //task.interval(60000, 20000, 1000, 'info/Class/Method', new Date().getTime());
 
+
+var n = 5 || 0;
+var m = 0 || 3;
+
+console.log(n);
+console.log(m);
