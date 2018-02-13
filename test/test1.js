@@ -1,6 +1,8 @@
 
-var n = 5 || 0;
-var m = 0 || 3;
+var n = [4,2,5,1,3];
+
+n.sort(function(a, b){
+    return a<b;
+});
 
 console.log(n);
-console.log(m);

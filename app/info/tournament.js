@@ -364,6 +364,135 @@ class Tournament extends WebApplication {
         return rounds;
     }
 
+    /**
+     * Get the given season table standings of a round-robin tournament
+     * 
+     * @param {type} tournament_name
+     * @param {type} season_number
+     * @returns {Tournament@call;error|nm$_tournament.Tournament.seasonTableStandingsRR.standings|nm$_tournament.exports.seasonTableStandingsRR.standings}
+     */
+    async seasonTableStandingsRR(tournament_name, season_number) {
+
+        if (arguments.length === 1) {
+            tournament_name = arguments[0].tournament_name;
+            season_number = arguments[0].season_number;
+        }
+
+        season_number = season_number - 0;
+
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+
+        if (tourn.type !== 'round-robin') {
+            return this.error(`Invalid request! ${tournament_name} is not a round-robin tournament.`);
+        }
+
+        //get the particular season
+        var season_index = season_number - 1;
+        var season = tourn.seasons[season_index];
+
+
+        if (!season) {
+            return this.error(`Season ${season_number} not found.`);
+        }
+
+        var players_ids = [];
+        for (var i = 0; i < season.slots.length; i++) {
+            var player_id = season.slots[i].player_id;
+            if (player_id) {
+                players_ids.push(player_id);
+            }
+        }
+
+        var user = new User(this.sObj, this.util, this.evt);
+
+        //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var standings = await user.getInfoList(players_ids, required_fields);
+
+        //check if the player info list is complete - ie match  the number requested for
+        var missing = this.util.findMissing(players_ids, standings, function (p_id, p_info) {
+            return p_id === p_info.user_id;
+        });
+
+        if (missing) {
+            //we know that length of players_ids cannot be less than that of players so 'missing' is definitely a string
+            return this.error('Could not find player with user id - ' + missing);
+        }
+
+        var rounds = season.rounds;
+
+        for (var i = 0; i < standings.length; i++) {
+            standings[i].total_points = 0;
+            standings[i].total_played = 0;
+            standings[i].total_wins = 0;
+            standings[i].total_draws = 0;
+            standings[i].total_losses = 0;
+
+            for (var j = 0; j < rounds.length; j++) {
+                var fixtures = rounds[j].fixtures;
+                for (var k = 0; k < fixtures.length; k++) {
+                    var sets = fixtures[k].sets;
+                    for (var n = 0; n < sets.length; n++) {
+                        //count the number of games played - if either points is
+                        // greater then zero that means a game is played since
+                        // there must be a win or draw
+                        if (sets[n].points[0] > 0 || sets[n].points[1] > 0) {
+                                                        
+                            //add up the points
+                            if (fixtures[k].player_1.id === standings[i].user_id) {
+                                standings[i].total_played++;
+                                standings[i].total_points += sets[n].points[0];
+                                switch (sets[n].points[0]) {
+                                    case 3 :
+                                        standings[i].total_wins++;
+                                        break;
+                                    case 1 :
+                                        standings[i].total_draws++;
+                                        break;
+                                    case 0 :
+                                        standings[i].total_losses++;
+                                        break;
+                                }
+                            }
+                            if (fixtures[k].player_2.id === standings[i].user_id) {
+                                standings[i].total_played++;
+                                standings[i].total_points += sets[n].points[1];
+                                switch (sets[n].points[1]) {
+                                    case 3 :
+                                        standings[i].total_wins++;
+                                        break;
+                                    case 1 :
+                                        standings[i].total_draws++;
+                                        break;
+                                    case 0 :
+                                        standings[i].total_losses++;
+                                        break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        }
+
+        //sort the positions in desending order
+
+        standings.sort(function (p1, p2) {
+            return p1.total_points < p2.total_points;
+        });
+
+        return standings;
+    }
+
     //tricky - note to also modify the corresponding rounds of the season.
     async seasonAddPlayer(user_id, tournament_name, season_number, player_id, slot_number) {
 
@@ -1563,8 +1692,8 @@ class Tournament extends WebApplication {
      * @param {type} match
      * @returns {undefined}
      */
-    _checkSeasonEnd(c, tourn, match) {                
-        
+    _checkSeasonEnd(c, tourn, match) {
+
         var me = this;
         //check if the final match of the season was played
 
@@ -1577,7 +1706,7 @@ class Tournament extends WebApplication {
         var last_fixt = last_fixtures[last_fixt_index];
         var last_set = last_fixt.sets[last_fixt.sets.length - 1];
 
-        if (last_fixt.game_id !== match.game_id 
+        if (last_fixt.game_id !== match.game_id
                 || match.current_set < match.sets.length) {
             return;// leave - not the final match
         }
@@ -1596,7 +1725,7 @@ class Tournament extends WebApplication {
         editObj[prop1] = match.end_time;
         editObj[prop2] = 'end';
         editObj[prop3] = match.end_time;
-        
+
 
         //update the tournament
         c.updateOne({name: match.tournament_name}, {$set: editObj})

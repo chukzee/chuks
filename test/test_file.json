@@ -1,6 +1,6 @@
 [
     {
-        "delay": 31498,
+        "delay": 2928,
         "interval": 20000,
         "times": 1000,
         "classMethod": "info/Class/Method",

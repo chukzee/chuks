@@ -74,6 +74,8 @@ Main.on("pagecreate", function (arg) {
      <button id="btn-season-delete" style="margin: 5px;">Season delete</button>
      <button id="btn-season-count" style="margin: 5px;">Season count</button>
      <button id="btn-get-seasons" style="margin: 5px;">Get seasons</button>
+     <button id="btn-season-table-standings" style="margin: 5px;">Season Table Standings</button>
+    
      
      */
 
@@ -464,4 +466,22 @@ Main.on("pagecreate", function (arg) {
 
     });
 
+    $('#btn-season-table-standings').on('click', function () {
+
+        var tournament_name = prompt('tournament_name', '');
+        var season_number = prompt('season_number', '');
+
+        Main.ro.tourn.seasonTableStandingsRR(tournament_name, season_number)
+                .get(function (data) {
+                    //alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    //alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    
 });
