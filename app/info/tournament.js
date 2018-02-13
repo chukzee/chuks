@@ -282,6 +282,7 @@ class Tournament extends WebApplication {
             var match_count = half; // number of matches on this round
             rounds[i] = {
                 sn: i + 1, //round number
+                stage: 'Round ' + (i + 1),
                 fixtures: []
             };
             var f_index = -1;//important
@@ -333,11 +334,26 @@ class Tournament extends WebApplication {
         var slot_2 = 2;
         var is_first_round = true;
         var i = 0;
+        var stage = '';
         while (size >= 1) {
 
             var match_count = size; // number of matches on this round
+            switch (size) {
+                case 1:
+                    stage = 'Final';
+                    break;
+                case 2:
+                    stage = 'Semi final';
+                    break;
+                case 4:
+                    stage = 'Quater final';
+                    break;
+                default:
+                    stage = 'Round ' + (i + 1);
+            }
             rounds[i] = {
                 sn: i + 1, //round number
+                stage: stage,
                 fixtures: []
             };
             for (var n = 0; n < match_count; n++) {
@@ -444,7 +460,7 @@ class Tournament extends WebApplication {
                         // greater then zero that means a game is played since
                         // there must be a win or draw
                         if (sets[n].points[0] > 0 || sets[n].points[1] > 0) {
-                                                        
+
                             //add up the points
                             if (fixtures[k].player_1.id === standings[i].user_id) {
                                 standings[i].total_played++;
@@ -1312,8 +1328,8 @@ class Tournament extends WebApplication {
         }
 
         var last = seasons.length - 1;
-        if (season_number < last) {
-            return this.error(`Not allowed - cannot delete previous season.`);
+        if (season_number < seasons.length) {
+            return this.error(`Not allowed - cannot delete previous season. Please start from season ${seasons.length}.`);
         }
 
         seasons.splice(last, 1);//delete the season from the array
