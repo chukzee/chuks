@@ -1468,19 +1468,11 @@ class Tournament extends WebApplication {
     async _promoteToNextRound(c, tourn, match) {
 
         //first determine the winner of the sets
-        var is_player_1_winner;
-        if (match.scores[0] > match.scores[1]) {// player_1 wins
-            is_player_1_winner = 1; //means true
-        } else if (match.scores[0] < match.scores[1]) {// player_1 losses
-            is_player_1_winner = 0;//means false
-        } else {//draw
+        var is_player_1_winner = false;
 
-            //In the future we may implement a more appropriate way of separating
-            //the players such as comparing the value of their board (as in chess), the 
-            //number of points accumulated since the start of the tournament and so on.
-            //But for now we go for just random picking a lucky winner.
-
-            is_player_1_winner = Math.floor(Math.random() * 2); // randomly get 0 and 1
+        var winner = this._determineWinner(tourn, match);
+        if (winner === match.players[0].user_id) {
+            is_player_1_winner = true;
         }
 
         var season_index = tourn.seasons.length - 1;
@@ -1723,18 +1715,18 @@ class Tournament extends WebApplication {
 
         //At this point the final match of the season just completed
 
-        //last_fixt.end_time = match.end_time;
-        //last_season.status = 'end';// change the status fromm 'start' to 'end'
-        //last_season.end_time = match.end_time;
+        var winner = this._determineWinner(tourn, match);
 
         var prop1 = `seasons.${last_season_index}.rounds.${last_round_index}.fixtures.${last_fixt_index}.end_time`;
         var prop2 = `seasons.${last_season_index}.status`;
         var prop3 = `seasons.${last_season_index}.end_time`;
+        var prop4 = `seasons.${last_season_index}.winner`;
 
         var editObj = {};
         editObj[prop1] = match.end_time;
         editObj[prop2] = 'end';
         editObj[prop3] = match.end_time;
+        editObj[prop4] = winner;
 
 
         //update the tournament
@@ -1755,6 +1747,53 @@ class Tournament extends WebApplication {
 
     }
 
+    _betterPlayer(tourn, player_1_id, player_2_id) {
+        var slot_1, slot_2;
+        for (var i = 0; i < tourn.slots.length; i++) {
+            if (tourn.slots[i].player_id === player_1_id) {
+                slot_1 = tourn.slots[i];
+                if (slot_2) {
+                    break;
+                }
+            }
+            if (tourn.slots[i].player_id === player_2_id) {
+                slot_2 = tourn.slots[i];
+                if (slot_1) {
+                    break;
+                }
+            }
+        }
+
+        var compare = this._resultsCompare(slot_1, slot_2);
+        if (compare < 0) {
+            return slot_1.player_id;
+        } else if (compare > 0) {
+            return slot_2.player_id;
+        } else {
+            return;
+        }
+    }
+    /**
+     * Uses the following three paramenters to compare results listed
+     * in order of their importance below:
+     * 
+     * 1. total_points  (most important)
+     * 2. total_wins
+     * 3. total_draws (least important)
+     * 
+     * @param {type} a
+     * @param {type} b
+     * @returns {Number}
+     */
+    _resultsCompare(a, b) {
+        if (b.total_points === a.total_points && b.total_wins === a.total_wins)
+            return b.total_draws - a.total_draws;//important
+
+        if (b.total_points === a.total_points)
+            return b.total_wins - a.total_wins;//important
+
+        return b.total_points - a.total_points;//important
+    }
     /**
      * Sort the positions in desending order according to thier general performance
      * using the following three paramenters to determine thier positions listed
@@ -1768,32 +1807,42 @@ class Tournament extends WebApplication {
      * @returns {unresolved}
      */
     _resultStandings(results) {
-        return results.sort(function (a, b) {
-            if (b.total_points === a.total_points && b.total_wins === a.total_wins)
-                return b.total_draws - a.total_draws;
-
-            if (b.total_points === a.total_points)
-                return b.total_wins - a.total_wins;
-
-            return b.total_points - a.total_points;
-        });
+        return results.sort(this._resultsCompare);
     }
 
     _determineWinner(tourn, match) {
 
-        var slots = this._resultStandings(tourn.slots);
-
-        var winner_by_points = slots.max(function () {
-
-        });
-
         if (tourn.type === this.sObj.SINGLE_ELIMINATION) {
+            if (match.scores[0] > match.scores[1]) {// player_1 wins
+                return match.players[0].user_id;
+            } else if (match.scores[0] < match.scores[1]) {// player_2 wins
+                return match.players[1].user_id;
+            } else {//draw
+                
+                //In the case of draw the server will compare their general performances 
+                //since the start of the season to determine who goes through. Where this does
+                //not still separate them, the server will just randomly pick a winner - like penalty in soccer
+                
+                //In the future we may add more implementions separating
+                //the players such as comparing the value of their board (as in chess).
+                
+                var better_player = this._betterPlayer(tourn, match.players[0].user_id, match.players[1].user_id);
+                if (better_player) {
+                    return better_player;
+                } else {
+                    //randomly pick a player
+                    var index = Math.floor(Math.random() * 2);
+                    index = index > 1 ? 1 : index;//just to be sure the random number is not greater than 1
+                    return match.players[index].user_id;
+                }
+            }
 
         }
 
 
         if (tourn.type === this.sObj.ROUND_ROBIN) {
-
+            var standings = this._resultStandings(tourn.slots);
+            return standings[0].player_id;// the player at the summit.
         }
 
 
@@ -2467,7 +2516,7 @@ class Tournament extends WebApplication {
     }
 
     /**
-     * Radomly selects the given number of tournament docs 
+     * Randomly selects the given number of tournament docs 
      * from the tournaments collection
      * 
      * @param {type} size - the number of tournaments to selects

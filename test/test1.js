@@ -51,7 +51,7 @@ var slots = [{
         total_points: 10,
         total_wins: 5,
         total_draws: 5
-    },  {
+    }, {
         total_points: 10,
         total_wins: 5,
         total_draws: 2
@@ -59,26 +59,49 @@ var slots = [{
         total_points: 10,
         total_wins: 5,
         total_draws: 3
-    },{
+    }, {
         total_points: 12,
         total_wins: 5,
         total_draws: 1
-    },{
+    }, {
         total_points: 12,
         total_wins: 4,
         total_draws: 3
     }];
 
-
-slots.sort(function (a, b) {
+var _resultCompare = function (a, b) {
     if (b.total_points === a.total_points && b.total_wins === a.total_wins)
         return b.total_draws - a.total_draws;
-    
+
     if (b.total_points === a.total_points)
         return b.total_wins - a.total_wins;
-        
+
     return b.total_points - a.total_points;
-});
+};
+
+slots.sort(_resultCompare);
 
 
 console.log(slots);
+
+console.log('------------');
+var c1 = {
+        total_points: 12,
+        total_wins: 7,
+        total_draws: 3
+    };
+
+var c2 = {
+        total_points: 12,
+        total_wins: 5,
+        total_draws: 1
+    };
+var compare = _resultCompare(c1,c2);
+    
+if(compare < 0){
+    console.log('c1');
+}else if(compare > 0){
+    console.log('c2');
+}else{
+    
+}    
