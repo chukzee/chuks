@@ -136,9 +136,9 @@ class Tournament extends WebApplication {
         //rounds fixtures will be created with empty player id which can also be
         //modified eventually by official.
         var rounds;
-        if (tourn.type === 'round-robin') {
+        if (tourn.type === this.sObj.ROUND_ROBIN) {
             rounds = this._roundRobinRounds(players_count, tourn.sets_count);
-        } else if (tourn.type === 'single-elimination') {
+        } else if (tourn.type === this.sObj.SINGLE_ELIMINATION) {
             rounds = this._singleEleminationRounds(players_count, tourn.sets_count);
         } else {
             return this.error(`Unknown type of tournament - ${tourn.type}`);
@@ -343,19 +343,23 @@ class Tournament extends WebApplication {
         while (size >= 1) {
 
             var match_count = size; // number of matches on this round
-            switch (size) {
-                case 1:
-                    stage = 'Final';
-                    break;
-                case 2:
-                    stage = 'Semi final';
-                    break;
-                case 4:
-                    stage = 'Quater final';
-                    break;
-                default:
-                    stage = 'Round ' + (i + 1);
+
+            if (size === 1) {
+                stage = this.sObj.FINAL;
+            } else if (size === 2 && players_count > 4) {
+                //By our policy if the number of players are 4, the first round of 
+                //matches will not be called Semi final but Round 1 which makes better sense
+
+                stage = this.sObj.SEMI_FINAL;
+            } else if (size === 4 && players_count > 8) {
+                //By our policy if the number of players are 8, the first round of 
+                //matches will not be called Quater final but Round 1 which makes better sense
+
+                stage = this.sObj.QUATER_FINAL;
+            } else {
+                stage = 'Round ' + (i + 1);
             }
+
             rounds[i] = {
                 sn: i + 1, //round number
                 stage: stage,
@@ -410,8 +414,8 @@ class Tournament extends WebApplication {
         }
 
 
-        if (tourn.type !== 'round-robin') {
-            return this.error(`Invalid request! ${tournament_name} is not a round-robin tournament.`);
+        if (tourn.type !== this.sObj.ROUND_ROBIN) {
+            return this.error(`Invalid request! ${tournament_name} is not a ${this.sObj.ROUND_ROBIN} tournament.`);
         }
 
         //get the particular season
@@ -452,7 +456,7 @@ class Tournament extends WebApplication {
         for (var i = 0; i < standings.length; i++) {
 
             for (var j = 0; j < slots.length; j++) {
-                if(standings[i].user_id === slots[j].player_id){
+                if (standings[i].user_id === slots[j].player_id) {
                     standings[i].total_points = slots[j].total_points;
                     standings[i].total_wins = slots[j].total_wins;
                     standings[i].total_losses = slots[j].total_losses;
@@ -464,11 +468,8 @@ class Tournament extends WebApplication {
 
         }
 
-        //sort the positions in desending order
-
-        standings.sort(function (p1, p2) {
-            return p1.total_points < p2.total_points;
-        });
+        //sort the positions in desending order according to thier general performance
+        standings = this._resultStandings(standings);
 
         return standings;
     }
@@ -1435,7 +1436,7 @@ class Tournament extends WebApplication {
 
                     console.log('_onTournamentMatchEnd', tourn.type);
 
-                    if (tourn.type === 'single-elimination') {
+                    if (tourn.type === me.sObj.SINGLE_ELIMINATION) {
                         me._promoteToNextRound(c, tourn, match);
                     }
 
@@ -1626,17 +1627,17 @@ class Tournament extends WebApplication {
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
                         editObj[prop1] = fixtures[j].player_1.score + 1;
                         editObj[prop2] = fixtures[j].sets[set_index].points[0] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
-                        
+
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
-                        var incEdit = {};                        
+                        var incEdit = {};
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = 3;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_wins`] = 1;
-                        
+
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_losses`] = 1;//loss
-                        
+
                     }
 
                     if (fixtures[j].player_2.id === winner_user_id) {
@@ -1650,11 +1651,11 @@ class Tournament extends WebApplication {
 
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
-                        var incEdit = {};                        
+                        var incEdit = {};
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = 3;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_wins`] = 1;
-                        
+
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_losses`] = 1;//loss
                     }
@@ -1670,11 +1671,11 @@ class Tournament extends WebApplication {
 
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
-                        var incEdit = {};                        
+                        var incEdit = {};
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_draws`] = 1;
-                        
+
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_draws`] = 1;
@@ -1754,6 +1755,50 @@ class Tournament extends WebApplication {
 
     }
 
+    /**
+     * Sort the positions in desending order according to thier general performance
+     * using the following three paramenters to determine thier positions listed
+     * in order of their importance below:
+     * 
+     * 1. total_points  (most important)
+     * 2. total_wins
+     * 3. total_draws (least important)
+     * 
+     * @param {type} results
+     * @returns {unresolved}
+     */
+    _resultStandings(results) {
+        return results.sort(function (a, b) {
+            if (b.total_points === a.total_points && b.total_wins === a.total_wins)
+                return b.total_draws - a.total_draws;
+
+            if (b.total_points === a.total_points)
+                return b.total_wins - a.total_wins;
+
+            return b.total_points - a.total_points;
+        });
+    }
+
+    _determineWinner(tourn, match) {
+
+        var slots = this._resultStandings(tourn.slots);
+
+        var winner_by_points = slots.max(function () {
+
+        });
+
+        if (tourn.type === this.sObj.SINGLE_ELIMINATION) {
+
+        }
+
+
+        if (tourn.type === this.sObj.ROUND_ROBIN) {
+
+        }
+
+
+    }
+
     _notifyUpcomingMatch(game_id) {
         var me = this;
 
@@ -1806,8 +1851,8 @@ class Tournament extends WebApplication {
         }
 
 
-        if (type !== 'round-robin' && type !== 'single-elimination') {
-            return this.error('Tournament type must be round-robin or single-elimination.');
+        if (type !== this.sObj.ROUND_ROBIN && type !== this.sObj.SINGLE_ELIMINATION) {
+            return this.error(`Tournament type must be ${this.sObj.ROUND_ROBIN} or ${this.sObj.SINGLE_ELIMINATION}.`);
         }
 
         if (!tournament_name) {

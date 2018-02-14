@@ -77,7 +77,12 @@ var tourn = {
             slots: [//NOTE: any modification of the player_id in any slot here will require a corresponding update in the season fixtures - see above
                 {
                     sn: 1, //first slot
-                    player_id: 'player_id_1'// empty by default.
+                    player_id: 'player_id_1', // empty by default.
+                    total_points: 0,
+                    total_wins: 0,
+                    total_losses: 0,
+                    total_draws: 0,
+                    total_played: 0
                 },
                 {
                     //... slots array element

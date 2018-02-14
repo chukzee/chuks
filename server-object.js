@@ -122,6 +122,26 @@ class ServerObject {
         return 500;
     }
     
+    get ROUND_ROBIN(){
+        return 'round-robin';//Please do not change! Since the data has entered the database.
+    }
+    
+    get SINGLE_ELIMINATION(){
+        return 'single-elimination';//Please do not change! Since the data has entered the database.
+    }
+    
+    get FINAL(){
+        return 'Final';//Please do not change! Since the data has entered the database.
+    }
+    
+    get SEMI_FINAL(){
+        return 'Semi final';//Please do not change! Since the data has entered the database.
+    }
+    
+    get QUATER_FINAL(){
+        return 'Quater final';//Please do not change! Since the data has entered the database.
+    }
+    
     get MAX_TOURNAMENT_OFFICIALS(){
         return 30;
     }
