@@ -59,7 +59,8 @@ Ns.view.Tournament = {
              "tournament-details-date-created"
              "tournament-details-back-btn"    
              "tournament-details-edit"    
-             "tournament-details-menu"    
+             "tournament-details-menu"        
+             "tournament-details-tournament-type"
              "tournament-details-officials"    
              "tournament-details-season"
              "tournament-details-registered-players"
@@ -76,6 +77,7 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-tournament-name").innerHTML = tournament.name;
             document.getElementById("tournament-details-photo-url").src = tournament.photo_url;
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by;
+            document.getElementById("tournament-details-tournament-type").innerHTML = tournament.type;
             document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
             document.getElementById("tournament-details-season").innerHTML = tournament.season;
             document.getElementById("tournament-details-stage").innerHTML = tournament.round;
@@ -83,6 +85,14 @@ Ns.view.Tournament = {
             //document.getElementById("tournament-details-match-fixtures").innerHTML = tournament.match_fixture;
             //document.getElementById("tournament-details-officials").innerHTML = tournament.officials;
             //document.getElementById("tournament-details-registered-players").innerHTML = tournament.registered_players;
+            
+            var btn_standings = document.getElementById("tournament-details-season-table-standings");
+            
+            if(tournament.type === 'round-robin'){
+                btn_standings.style.display = 'block';//show
+            }else if(tournament.type === 'single-elimination'){
+                btn_standings.style.display = 'none';//hide
+            }
             
 
         }

@@ -64,8 +64,7 @@ and open the template in the editor.
       /*tournament name*/
       font-weight: 700;
       color: #444;
-      padding-left: 5px;
-      padding-right: 5px;
+      padding: 5px;
       box-sizing: border-box; }
     .game9ja-tournament-details > :nth-child(1) > :nth-child(3) {
       /*tournament creator and date created*/
@@ -74,6 +73,7 @@ and open the template in the editor.
       color: #777;
       padding-left: 5px;
       padding-right: 5px;
+      padding-bottom: 5px;
       box-sizing: border-box;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -92,6 +92,17 @@ and open the template in the editor.
       bottom: 10px;
       right: 10px;
       cursor: pointer; }
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(6) {
+      /*Tournament type*/
+      color: white;
+      cursor: pointer; }
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(7) {
+      /*Tournament type*/
+      font-weight: 700;
+      color: #444;
+      padding-left: 5px;
+      padding-right: 5px;
+      box-sizing: border-box; }
   .game9ja-tournament-details > :nth-child(2) {
     /*tournament officials*/
     border-radius: 0px !important;
@@ -163,7 +174,7 @@ and open the template in the editor.
       position: relative;
       font-size: 14px;
       color: #444;
-      height: 20px;
+      height: 30px;
       vertical-align: middle;
       -webkit-box-sizing: box-sizing;
       box-sizing: box-sizing; }
@@ -172,6 +183,14 @@ and open the template in the editor.
         bottom: 0;
         left: 0;
         font-size: 14px; }
+      .game9ja-tournament-details > :nth-child(4) > :nth-child(2) > :nth-child(2) {
+        position: absolute;
+        bottom: 0;
+        right: 5px;
+        font-size: 14px;
+        background-color: transparent;
+        border-color: green;
+        outline: none; }
     .game9ja-tournament-details > :nth-child(4) > :nth-child(3) {
       position: relative; }
     .game9ja-tournament-details > :nth-child(4) > :nth-child(4) {

@@ -43,8 +43,7 @@ $torunament_img_height : 180px;
         >:nth-child(2){/*tournament name*/
             font-weight: 700;  
             color : $font_color;
-            padding-left : $base_padding;
-            padding-right : $base_padding;
+            padding : $base_padding;
             box-sizing: border-box;
             //background-color: blue;
         }
@@ -54,6 +53,7 @@ $torunament_img_height : 180px;
             color: #777;
             padding-left : $base_padding;
             padding-right : $base_padding;
+            padding-bottom : $base_padding;
             box-sizing: border-box;            
             overflow: hidden;
             text-overflow: ellipsis;
@@ -67,13 +67,23 @@ $torunament_img_height : 180px;
             left: $base_padding * 2;
             cursor: pointer;
         }
-
         >:nth-child(5){/*edit botton*/
             color: black; 
             position: absolute;
             bottom: $base_padding * 2;
             right: $base_padding * 2;
             cursor: pointer;
+        }     
+        >:nth-child(6){/*Tournament type*/
+            color: white;
+            cursor: pointer;
+        }        
+        >:nth-child(7){/*Tournament type*/
+            font-weight: 700;  
+            color : $font_color;
+            padding-left : $base_padding;
+            padding-right : $base_padding;
+            box-sizing: border-box; 
         }
     }
 
@@ -169,7 +179,7 @@ $torunament_img_height : 180px;
             position : relative;
             font-size: 14px;  
             color : $font_color; 
-            height: 20px;
+            height: 30px;
             vertical-align: middle;
             @include box-sizing(box-sizing);
 
@@ -180,6 +190,15 @@ $torunament_img_height : 180px;
                             font-size: 14px; 
             }
 
+            > :nth-child(2){//Table standing
+                            position : absolute;
+                            bottom : 0;
+                            right : $base_padding;
+                            font-size: 14px;
+                            background-color: transparent;
+                            border-color: green;
+                            outline: none;
+            }
         }
 
 
