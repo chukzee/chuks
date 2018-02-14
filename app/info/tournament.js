@@ -154,7 +154,12 @@ class Tournament extends WebApplication {
         for (var i = 0; i < players_count; i++) {
             new_season.slots[i] = {
                 sn: i + 1,
-                player_id: ''
+                player_id: '',
+                total_points: 0,
+                total_wins: 0,
+                total_losses: 0,
+                total_draws: 0,
+                total_played: 0
             };
         }
 
@@ -442,59 +447,18 @@ class Tournament extends WebApplication {
             return this.error('Could not find player with user id - ' + missing);
         }
 
-        var rounds = season.rounds;
+        var slots = season.slots;
 
         for (var i = 0; i < standings.length; i++) {
-            standings[i].total_points = 0;
-            standings[i].total_played = 0;
-            standings[i].total_wins = 0;
-            standings[i].total_draws = 0;
-            standings[i].total_losses = 0;
 
-            for (var j = 0; j < rounds.length; j++) {
-                var fixtures = rounds[j].fixtures;
-                for (var k = 0; k < fixtures.length; k++) {
-                    var sets = fixtures[k].sets;
-                    for (var n = 0; n < sets.length; n++) {
-                        //count the number of games played - if either points is
-                        // greater then zero that means a game is played since
-                        // there must be a win or draw
-                        if (sets[n].points[0] > 0 || sets[n].points[1] > 0) {
-
-                            //add up the points
-                            if (fixtures[k].player_1.id === standings[i].user_id) {
-                                standings[i].total_played++;
-                                standings[i].total_points += sets[n].points[0];
-                                switch (sets[n].points[0]) {
-                                    case 3 :
-                                        standings[i].total_wins++;
-                                        break;
-                                    case 1 :
-                                        standings[i].total_draws++;
-                                        break;
-                                    case 0 :
-                                        standings[i].total_losses++;
-                                        break;
-                                }
-                            }
-                            if (fixtures[k].player_2.id === standings[i].user_id) {
-                                standings[i].total_played++;
-                                standings[i].total_points += sets[n].points[1];
-                                switch (sets[n].points[1]) {
-                                    case 3 :
-                                        standings[i].total_wins++;
-                                        break;
-                                    case 1 :
-                                        standings[i].total_draws++;
-                                        break;
-                                    case 0 :
-                                        standings[i].total_losses++;
-                                        break;
-                                }
-                            }
-                        }
-
-                    }
+            for (var j = 0; j < slots.length; j++) {
+                if(standings[i].user_id === slots[j].player_id){
+                    standings[i].total_points = slots[j].total_points;
+                    standings[i].total_wins = slots[j].total_wins;
+                    standings[i].total_losses = slots[j].total_losses;
+                    standings[i].total_draws = slots[j].total_draws;
+                    standings[i].total_played = slots[j].total_played;
+                    break;
                 }
             }
 
@@ -1522,7 +1486,7 @@ class Tournament extends WebApplication {
         var current_season = tourn.seasons[season_index];
 
         if (!current_season) {
-            console.log(`Season ${tourn.seasons.length} not found in ${tourn.name} tournamet - this should not happen at this point.`);
+            console.log(`Season ${tourn.seasons.length} not found in ${tourn.name} tournament - this should not happen at this point.`);
             return;
         }
 
@@ -1662,7 +1626,17 @@ class Tournament extends WebApplication {
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
                         editObj[prop1] = fixtures[j].player_1.score + 1;
                         editObj[prop2] = fixtures[j].sets[set_index].points[0] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
-
+                        
+                        var p1_slot_index = fixtures[j].player_1.slot - 1;
+                        var p2_slot_index = fixtures[j].player_2.slot - 1;
+                        var incEdit = {};                        
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = 3;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_wins`] = 1;
+                        
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_losses`] = 1;//loss
+                        
                     }
 
                     if (fixtures[j].player_2.id === winner_user_id) {
@@ -1674,6 +1648,15 @@ class Tournament extends WebApplication {
                         editObj[prop1] = fixtures[j].player_2.score + 1;
                         editObj[prop2] = fixtures[j].sets[set_index].points[1] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
 
+                        var p2_slot_index = fixtures[j].player_2.slot - 1;
+                        var p1_slot_index = fixtures[j].player_1.slot - 1;
+                        var incEdit = {};                        
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = 3;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_wins`] = 1;
+                        
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_losses`] = 1;//loss
                     }
 
                     if (!winner_user_id) {//is draw
@@ -1685,6 +1668,16 @@ class Tournament extends WebApplication {
                         editObj[prop1] = fixtures[j].sets[set_index].points[0] + 1;//the all players get 1 point for draw - note we are using 3-1-0 scoring system
                         editObj[prop2] = fixtures[j].sets[set_index].points[1] + 1;//the all players get 1 point for draw - note we are using 3-1-0 scoring system
 
+                        var p1_slot_index = fixtures[j].player_1.slot - 1;
+                        var p2_slot_index = fixtures[j].player_2.slot - 1;
+                        var incEdit = {};                        
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_draws`] = 1;
+                        
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_draws`] = 1;
                     }
                 }
             }
@@ -1695,7 +1688,7 @@ class Tournament extends WebApplication {
             return;
         }
 
-        await c.updateOne({name: match.tournament_name}, {$set: editObj});
+        await c.updateOne({name: match.tournament_name}, {$inc: incEdit, $set: editObj});
 
     }
 

@@ -871,8 +871,8 @@ class Match extends WebApplication {
         }
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
-        try {
-
+        try {                        
+            
             var match = await c.findOne({game_id: game_id});
 
             if (!match) {
