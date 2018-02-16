@@ -18,8 +18,8 @@ setInterval(onceRetryDelivery, DELIVER_RETRY_INTERVAL);
  * whose acknowledgement has not been received by any of the server instance).
  * The method only tries to check once for these undelivered messages after 
  * a given time and immediately delete it from the list.
- * Other push mechanism we have aborted in this server will
- ensure the message is eventually pushed to the client when he is online.
+ * Other push mechanism we have adopted in this server will
+ * ensure the message is eventually pushed to the client when he is online.
  * 
  * @returns {undefined}
  */
@@ -38,7 +38,7 @@ function onceRetryDelivery() {
                     console.log(err);
                 });
 
-        //remove since we will only try it once - other push mechanism we have aborted here will
+        //remove since we will only try it once - other push mechanism we have adopted here will
         //ensure the message is eventually pushed to the client when he is online
         once_retry_delivery.splice(i, 1);
         i--;
@@ -181,8 +181,8 @@ function setOnline(user_id) {
 
 /**
  * Try to resend data we did not receive knowledgement.
- * But do not expect acknowledgement for the sending.
- * So remove any acknowledgement flag before sending.
+ * But do not expect acknowledgement for the resending.
+ * So remove any acknowledgement flag before resending.
  * 
  * @param {type} msg
  * @returns {undefined} 
@@ -193,7 +193,7 @@ function deliveryResend(msg) {
 
     sObj.getSocketIDs(data.user_id, function (socket_ids) {
         data.acknowledge_delivery = true;
-        data.resend_count = !data.resend_count ? 1 : data.resend_count++;
+        data.resend_count = !data.resend_count ? 1 : ++data.resend_count;
         send(data.user_id, socket_ids, data);
     });
 
@@ -230,7 +230,7 @@ function deliverMessage(data) {
  *time
  * @param {type} socket_ids -must be an array if all the connection session of
  * the same user is to be considered  - each user has a list of 
- * sockets ids maintained by the redis server.\n
+ * sockets ids maintained by the redis server.
  * this allows the user to be served irrespective of the number
  * of devices they are connected from at the same time
  * @param {type} data - data to send to the user

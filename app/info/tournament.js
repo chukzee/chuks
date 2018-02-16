@@ -1862,8 +1862,9 @@ class Tournament extends WebApplication {
                     var players_ids = [];
                     players_ids.push(match.players[0].user_id);
                     players_ids.push(match.players[1].user_id);
-
-                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids);
+                    
+                    var _10_mins = 10 * 60 * 1000;
+                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids, true , _10_mins);
 
                 })
                 .catch(function (err) {
