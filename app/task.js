@@ -224,7 +224,7 @@ class Task {
                 }
 
                 if (allowed.indexOf(arr[i].machineId) === -1) {
-                    console.log('this.sObj.machineId',this.sObj.machineId);
+                    
                     console.log('Detected task that was not created in this server machine - foreign machine id is ' + arr[i].machineId
                             +'\nDo you want to run all tasks from "'+arr[i].machineId+'" machine, (y/n)?');
                     var b = new Buffer(10);

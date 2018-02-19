@@ -1380,9 +1380,8 @@ class Tournament extends WebApplication {
                         return;//season not found
                     }
 
-                    //season.status = 'start';// change the status fromm 'before-start' to 'start'
                     var editObj = {};
-                    editObj[`seasons.${season_index}.status`] = 'start';
+                    editObj[`seasons.${season_index}.status`] = 'start';// change the status fromm 'before-start' to 'start'
 
                     //update the tournament
                     return c.updateOne({name: obj.tournament_name}, {$set: editObj})
@@ -1452,8 +1451,6 @@ class Tournament extends WebApplication {
                         return; //tournament no longer exist!
                     }
 
-                    console.log('_onTournamentMatchEnd', tourn.type);
-
                     if (tourn.type === me.sObj.SINGLE_ELIMINATION) {
                         me._promoteToNextRound(c, tourn, match);
                     }
@@ -1503,12 +1500,11 @@ class Tournament extends WebApplication {
 
         var editObj = {};
 
-
         var rounds = current_season.rounds;
 
-
         var to = rounds.length - 1; //skip the last round
-        for (var i = 0; i < to; i++) {
+        
+        for (var i = 0; i < to ; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
                 if (fixtures[j].game_id === match.game_id) {
@@ -1520,8 +1516,6 @@ class Tournament extends WebApplication {
 
                     if (is_player_1_winner) {
                         if (!next_fixture.player_1.id) {
-                            //next_fixture.player_1.id = fixtures[j].player_1.id;
-                            //next_fixture.player_1.slot = fixtures[j].player_1.slot;
 
                             var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.id`;
                             var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.slot`;
@@ -1529,9 +1523,6 @@ class Tournament extends WebApplication {
                             editObj[prop2] = fixtures[j].player_1.slot;
 
                         } else {
-                            //next_fixture.player_2.id = fixtures[j].player_1.id;
-                            //next_fixture.player_2.slot = fixtures[j].player_1.slot;
-
 
                             var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.id`;
                             var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.slot`;
@@ -1542,8 +1533,6 @@ class Tournament extends WebApplication {
                         }
                     } else {
                         if (!next_fixture.player_1.id) {
-                            //next_fixture.player_1.id = fixtures[j].player_2.id;
-                            //next_fixture.player_1.slot = fixtures[j].player_2.slot;
 
                             var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.id`;
                             var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_1.slot`;
@@ -1551,8 +1540,6 @@ class Tournament extends WebApplication {
                             editObj[prop2] = fixtures[j].player_2.slot;
 
                         } else {
-                            //next_fixture.player_2.id = fixtures[j].player_2.id;
-                            //next_fixture.player_2.slot = fixtures[j].player_2.slot;
 
                             var prop1 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.id`;
                             var prop2 = `seasons.${season_index}.rounds.${nxt_rd_index}.fixtures.${n_nxt}.player_2.slot`;
@@ -1564,9 +1551,7 @@ class Tournament extends WebApplication {
 
 
                     //update the tournament
-
-
-                    //editObj['seasons.' + season_index] = current_season; // using the dot operator to access the index of the array
+                    
                     if (Object.keys(editObj).length === 0) {
                         return;
                     }
@@ -1576,9 +1561,8 @@ class Tournament extends WebApplication {
                     } catch (e) {
                         console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
                     }
-
-
-                    break;
+                    
+                    return; //done
 
                 }
             }
@@ -1620,8 +1604,6 @@ class Tournament extends WebApplication {
 
                 if (fixtures[j].game_id === match.game_id) {
 
-                    //fixtures[j].end_time = new Date();
-
                     if (match.end_time) {
                         var prop0 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.end_time`;
                         editObj[prop0] = match.end_time;
@@ -1630,8 +1612,6 @@ class Tournament extends WebApplication {
                     var set_index = match.current_set - 1;
 
                     if (fixtures[j].player_1.id === winner_user_id) {
-                        //fixtures[j].player_1.score += 1;
-                        //fixtures[j].sets[set_index].points[0] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
 
                         var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.player_1.score`;
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
@@ -1651,8 +1631,6 @@ class Tournament extends WebApplication {
                     }
 
                     if (fixtures[j].player_2.id === winner_user_id) {
-                        //fixtures[j].player_2.score += 1;
-                        //fixtures[j].sets[set_index].points[1] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
 
                         var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.player_2.score`;
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${1}`;
@@ -1671,13 +1649,11 @@ class Tournament extends WebApplication {
                     }
 
                     if (!winner_user_id) {//is draw
-                        //fixtures[j].sets[set_index].points[0] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
-                        //fixtures[j].sets[set_index].points[1] += 1; //the all players get 1 point for draw - note we are using 3-1-0 scoring system
 
                         var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${1}`;
-                        editObj[prop1] = fixtures[j].sets[set_index].points[0] + 1;//the all players get 1 point for draw - note we are using 3-1-0 scoring system
-                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + 1;//the all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        editObj[prop1] = fixtures[j].sets[set_index].points[0] + 1;//all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + 1;//all players get 1 point for draw - note we are using 3-1-0 scoring system
 
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
@@ -1699,7 +1675,11 @@ class Tournament extends WebApplication {
             return;
         }
 
-        await c.updateOne({name: match.tournament_name}, {$inc: incEdit, $set: editObj});
+        try {
+            await c.updateOne({name: match.tournament_name}, {$inc: incEdit, $set: editObj});
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
+        }
 
     }
 
