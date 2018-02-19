@@ -891,6 +891,24 @@ class Tournament extends WebApplication {
         var match_fixt_index;
         var nowTime = new Date().getTime();
 
+
+        var found_game_id = false;
+        
+        //Check if the game id exists
+        outer0: for (var i = 0; i < rounds.length; i++) {
+            var fixtures = rounds[i].fixtures;
+            for (var j = 0; j < fixtures.length; j++) {
+                if (fixtures[j].game_id === game_id) {
+                    found_game_id = true;
+                    break outer0;
+                }
+            }
+        }
+        
+        if(!found_game_id){
+            return 'Game id not found.';
+        }
+
         outer: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
@@ -1747,17 +1765,17 @@ class Tournament extends WebApplication {
 
     }
 
-    _betterPlayer(tourn, player_1_id, player_2_id) {
+    _betterPlayer(season, player_1_id, player_2_id) {
         var slot_1, slot_2;
-        for (var i = 0; i < tourn.slots.length; i++) {
-            if (tourn.slots[i].player_id === player_1_id) {
-                slot_1 = tourn.slots[i];
+        for (var i = 0; i < season.slots.length; i++) {
+            if (season.slots[i].player_id === player_1_id) {
+                slot_1 = season.slots[i];
                 if (slot_2) {
                     break;
                 }
             }
-            if (tourn.slots[i].player_id === player_2_id) {
-                slot_2 = tourn.slots[i];
+            if (season.slots[i].player_id === player_2_id) {
+                slot_2 = season.slots[i];
                 if (slot_1) {
                     break;
                 }
@@ -1811,7 +1829,8 @@ class Tournament extends WebApplication {
     }
 
     _determineWinner(tourn, match) {
-
+        var season = tourn.seasons[tourn.seasons.length - 1];
+        
         if (tourn.type === this.sObj.SINGLE_ELIMINATION) {
             if (match.scores[0] > match.scores[1]) {// player_1 wins
                 return match.players[0].user_id;
@@ -1826,7 +1845,7 @@ class Tournament extends WebApplication {
                 //In the future we may add more implementions separating
                 //the players such as comparing the value of their board (as in chess).
                 
-                var better_player = this._betterPlayer(tourn, match.players[0].user_id, match.players[1].user_id);
+                var better_player = this._betterPlayer(season, match.players[0].user_id, match.players[1].user_id);
                 if (better_player) {
                     return better_player;
                 } else {
@@ -1840,8 +1859,8 @@ class Tournament extends WebApplication {
         }
 
 
-        if (tourn.type === this.sObj.ROUND_ROBIN) {
-            var standings = this._resultStandings(tourn.slots);
+        if (tourn.type === this.sObj.ROUND_ROBIN) {            
+            var standings = this._resultStandings(season.slots);
             return standings[0].player_id;// the player at the summit.
         }
 

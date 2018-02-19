@@ -40,6 +40,14 @@ var Util = function () {
         return typeof str === 'string';
     };
 
+    function escapeRegExp(string) {//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); //$& means the whole string
+    }
+
+    this.replaceAll = function (str, find, replacement) {
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replacement);
+    };
+
     this.findMissing = function (arr1, arr2, func) {
         var smaller = arr1;
         var bigger = arr2;
@@ -81,7 +89,7 @@ var Util = function () {
      * @param {type} arr
      * @returns {unresolved}
      */
-    this.toSet = function(arr){
+    this.toSet = function (arr) {
         for (var i = 0; i < arr.length; i++) {
             for (var k = 0; k < arr.length; k++) {
                 if (k === i) {
@@ -97,7 +105,7 @@ var Util = function () {
         return arr;
     };
 
-    this.getDir = function(file) {
+    this.getDir = function (file) {
         var index = -1;
         if (path.sep === '\\') {
             var index_1 = file.lastIndexOf('\\');
@@ -115,26 +123,27 @@ var Util = function () {
 
         return dir;
     };
-    
+
+
     return this;
 }();
 
 module.exports = Util;
 
 /*Testing!!!
-var arr1 = [{user_id: 1}, {user_id: 2}, {user_id: 3}, {user_id: 4}];
-var arr2 = [1, 2, 3,4];
-
-var r = Util.findMissing(arr1, arr2, function (a1, a2) {
-    return a1.user_id === a2;
-});
-
-
-console.log(r);
-*/
+ var arr1 = [{user_id: 1}, {user_id: 2}, {user_id: 3}, {user_id: 4}];
+ var arr2 = [1, 2, 3,4];
+ 
+ var r = Util.findMissing(arr1, arr2, function (a1, a2) {
+ return a1.user_id === a2;
+ });
+ 
+ 
+ console.log(r);
+ */
 /*
-var m = [0,3,3,3,3,3,3,4,3,4,1,1,0];
-Util.toSet(m);
-
-console.log(m);
-*/
+ var m = [0,3,3,3,3,3,3,4,3,4,1,1,0];
+ Util.toSet(m);
+ 
+ console.log(m);
+ */

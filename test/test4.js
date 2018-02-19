@@ -75,6 +75,7 @@ class Task {
 
 
         obj.taskId = this.sObj.UniqueNumber;
+        obj.machineId = this.sObj.machineId;
         obj.intervalId = null; //set dynamically
         obj.startTime = obj.delay > -1 ? new Date().getTime() + obj.delay : new Date().getTime() + obj.interval;
         obj.repeat = true;
@@ -148,9 +149,11 @@ class Task {
         }
 
         obj.taskId = this.sObj.UniqueNumber;
+        obj.machineId = this.sObj.machineId;
         obj.startTime = new Date().getTime() + obj.delay;
         obj.repeat = false;
         obj.count_run = 0;
+        
 
         if (obj.delay < 0) {
             return;//do nothing - the time has expired
@@ -185,7 +188,7 @@ class Task {
         var path = this.util.getDir(this.file);
         mkdirp.sync(path);
         if (fs.existsSync(this.file)) {
-            this.fd = fs.openSync(this.file, 'r+');            
+            this.fd = fs.openSync(this.file, 'r+');
         } else {
             this.fd = fs.openSync(this.file, 'w+');
         }
@@ -208,16 +211,69 @@ class Task {
         var now = new Date().getTime();
 
         var arr = JSON.parse(data);
+        var disallowed = [];
+        var allowed = [];
+        var runables = [];
         for (var i = 0; i < arr.length; i++) {
+            
             console.log(arr[i].startTime - now);
+            
+            if (!arr[i].machineId) {
+                continue;
+            }
+            
+            if (arr[i].machineId !== this.sObj.machineId) {
+                if (disallowed.indexOf(arr[i].machineId) > -1) {
+                    console.log('disallowed ', disallowed, arr[i].machineId);
+                    continue;
+                }
+
+                if (allowed.indexOf(arr[i].machineId) === -1) {
+                    console.log('Detected task that was not created in this server machine - foreign machine id is ' + arr[i].machineId
+                            +'\nDo you want to run all tasks from "'+arr[i].machineId+'" machine, (y/n)?');
+                    var b = new Buffer(10);
+                    var n = fs.readSync(process.stdin.fd, b, 0, b.length);
+                    var d = b.toString('utf8', 0, n).toLowerCase();
+                    if (d.endsWith('\r\n')) {//windows
+                        d = d.substring(0, d.length - 2);
+                    } else if (d.endsWith('\n')) {//linux
+                        d = d.substring(0, d.length - 1);
+                    }
+                    if (d !== 'yes' && d !== 'y') {
+                        if (d !== 'no' && d !== 'n') {
+                            console.log('Invalid answer - please type yes or no!');
+                            i--;
+                            continue;
+                        }
+                        
+                        disallowed.push(arr[i].machineId);
+                        continue;
+                    }
+                    allowed.push(arr[i].machineId);
+                }
+            }
+
             if (!arr[i].repeat && arr[i].startTime < now) {
                 arr.splice(i, 1);//remove expired tasks
                 i--;
                 continue;
             }
-            this._reRun(arr[i]);
+            
+            //just collect the runable tasks - do not run immediately
+            //to avoid event loop blocking interference I observed when
+            // reading from the command line which affect the timer result
+            //ie unexpected trigger intervals.
+            
+            runables.push(arr[i]);//importnat! safer this way.
+            
         }
 
+        //now rerun all the runnable. safer this way!
+        for (var i = 0; i < runables.length; i++) {
+            this._reRun(runables[i]);
+        }
+
+        console.log('allowed', allowed);
 
         //delete the old file - important
 
@@ -370,6 +426,8 @@ class Task {
 
 
 var sObj = {
+    
+    machineId : 'EEEEEEEEE',
     config: {
         TASKS_FILE: __dirname + '/test_file.json'
     }
@@ -398,12 +456,12 @@ console.log(`${new Date()}`);
 
 //task.later(60000, 'info/Class/Method', new Date().getTime());
 //task.later(120000, 'info/Class/Method', new Date().getTime());
+/*
+task.interval(60000, 20000, 1000, 'info/Class/Method', new Date().getTime());
+task.interval(120000, 20000, 1000, 'info/Class/Method', new Date().getTime());
+task.interval(180000, 20000, 1000, 'info/Class/Method', new Date().getTime());
+task.interval(240000, 20000, 1000, 'info/Class/Method', new Date().getTime());
+task.interval(300000, 20000, 1000, 'info/Class/Method', new Date().getTime());
+task.interval(360000, 20000, 1000, 'info/Class/Method', new Date().getTime());
 
-//task.interval(60000, 20000, 1000, 'info/Class/Method', new Date().getTime());
-
-
-var n = 5 || 0;
-var m = 0 || 3;
-
-console.log(n);
-console.log(m);
+*/

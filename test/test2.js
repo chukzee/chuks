@@ -1,46 +1,59 @@
 
 
-var u ={
-    n : 3,
-    get: function(){
-        console.log(this.n);
-    },
-    pick: function(){
-        this.get();
+var execSync = require('child_process').execSync;
+
+//windows
+var cmd = "wmic csproduct get uuid";
+var options = {};//come back
+var str = execSync(cmd, options);
+var split = str.toString().trim().split(" ");
+var id = '';
+var arr = [];
+for (var i = 0; i < split.length; i++) {
+    var s = split[i].trim();
+    if (s) {
+        arr.push(s);
     }
 }
 
-u.pick();
+id = arr[arr.length - 1];//last in the array
+console.log(id);
 
-var cobj= {}; 
+console.log('a=b'.split('a=')[1]);
+console.log(process.platform);
 
-for(var i=5; i > -1; i--){
-    var obj = {
-        a:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+i,
-        b:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        c:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        d:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        e:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        f:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        g:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        h:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 
-        i:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        j:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        k:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        l:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        m:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        n:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        o:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        p:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        q:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        r:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        s:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    };
-    
-    
-    cobj[i+"aab"] = obj;
-    
+
+function getMachineID(cmd, marker) {
+    var os_id = '';
+    try {
+
+        var options = {encoding: 'utf8'};
+        var str = execSync(cmd, options);        
+        var split = str.toString().trim().split("\n");
+        var arr = [];
+        for (var i = 0; i < split.length; i++) {
+            var s = split[i].trim();
+            if (s) {
+                arr.push(s);
+            }
+        }
+        for(var i=0; i<arr.length; i++){
+            if(arr[i]===marker){
+                return arr[i+1].trim();
+            }else if(arr[i].startsWith(marker)){
+                return arr[i].substring(marker.length).trim();
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+
+    return os_id;
 }
 
-console.log(cobj);
-//console.log('cobj');
+console.log(getMachineID('wmic bios get serialnumber', 'SerialNumber'));
+
+console.log('Detected task that was not created in the server machine.\nDo you want to run?');
+
+
+
