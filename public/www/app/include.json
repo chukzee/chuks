@@ -99,7 +99,8 @@
             "user-profile.css",
             "wait-player.css",
             "game-contacts.css",
-            "play-notifications.css"
+            "play-notifications.css",
+            "table-standings"
         ],
         
         "js": [

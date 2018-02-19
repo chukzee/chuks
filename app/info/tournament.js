@@ -1827,6 +1827,7 @@ class Tournament extends WebApplication {
                 
                 var better_player = this._betterPlayer(season, match.players[0].user_id, match.players[1].user_id);
                 if (better_player) {
+                    console.log('better_player', better_player);
                     return better_player;
                 } else {
                     //randomly pick a player
