@@ -22,7 +22,7 @@ class ServerObject {
         this._db = db;
         this._redis = redis;
         this._game = game;
-        this._task = new Task(this, util, evt, appLoader);
+        
         //for every startup a unique number is initialized
         initial_unique = crypto.randomBytes(48)//secure random number
                 .toString('base64')//to base64
@@ -58,6 +58,7 @@ class ServerObject {
             console.log(`Server Machine ID: ${this._machine_id}`);
         }
 
+        this._task = new Task(this, util, evt, appLoader);
 
         function getMachineID(cmd, marker) {
             var os_id = '';
