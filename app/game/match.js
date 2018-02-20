@@ -811,6 +811,87 @@ class Match extends WebApplication {
         return data;
     }
 
+    async _updateWDL(match, winner_user_id) {
+
+        var player_1_id = match.players[0].user_id;
+        var player_2_id = match.players[``].user_id;
+
+        var c = this.sObj.db.collection(this.sObj.col.wdl);
+        try {
+            var queryObj = {$or: [
+                    {'first.player_id': player_1_id, 'second.player_id': player_2_id},
+                    {'first.player_id': player_2_id, 'second.player_id': player_1_id}
+                ]};
+
+            var wdl = await c.findOne(queryObj);
+
+            if (!wdl) {
+                wdl = {
+                    first: {
+                        player_id: player_1_id,
+                        contant: {}, //object
+                        groups: [], //array of groups
+                        tournaments: []//array of tournaments
+                    },
+                    second: {
+                        player_id: player_2_id,
+                        contant: {}, //object
+                        groups: [], //array of groups
+                        tournaments: []//array of tournaments
+                    }
+                };
+            }
+            var editObj;
+
+            if (match.group_name) {
+                var index = -1;
+                var found = false;
+                var arr = wdl.first.groups;
+                for (var i = 0; i < arr.length; i++) {
+                    index = i;
+                    if (arr[i].name === match.tournament_name) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    index++;//move to next index - for implicitly creating a new element of array as in javascript
+                    editObj[`first.groups.${index}.name`] = match.group_name;
+                    editObj[`second.groups.${index}.name`] = match.group_name;
+                }
+
+
+            } else if (match.tournament_name) {
+                var index = -1;
+                var found = false;
+                var arr = wdl.first.tournaments;
+                for (var i = 0; i < arr.length; i++) {
+                    index = i;
+                    if (arr[i].name === match.tournament_name) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    index++;//move to next index - for implicitly creating a new element of array as in javascript
+                    editObj[`first.tournaments.${index}.name`] = match.tournament_name;
+                    editObj[`second.tournaments.${index}.name`] = match.tournament_name;
+                }
+
+            } else {
+
+            }
+
+            await c.updateOne(queryObj, {$set: editObj});
+
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IS PRODUCTION
+            return;//return nothing
+        }
+
+        return wdl;
+    }
+
     async _updateMatchScores(c, match, winner_user_id) {
 
         try {
@@ -871,8 +952,8 @@ class Match extends WebApplication {
         }
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
-        try {                        
-            
+        try {
+
             var match = await c.findOne({game_id: game_id});
 
             if (!match) {
@@ -888,7 +969,7 @@ class Match extends WebApplication {
                         break;
                     }
                 }
-                if(!is_valid_player){
+                if (!is_valid_player) {
                     return this.error(`${winner_user_id} is not a player of the specified game!`);
                 }
             }
@@ -904,7 +985,13 @@ class Match extends WebApplication {
             match = await this._updateMatchScores(c, match, winner_user_id);
 
             if (!match) {
-                return this.error('Could not finish game! something is not right');
+                return this.error('Could not finish game! Something is not right');
+            }
+
+            var wdl = await this._updateWDL(match, winner_user_id);
+
+            if (!wdl) {
+                return this.error('Could not finish game! Something went wrong');
             }
 
             //check if all sets is played -  if not then automatically start the next set

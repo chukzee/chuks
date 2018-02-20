@@ -12,6 +12,7 @@ var collections = ['users',
     'spectators', //expires every certain period - say 24 hours - so create an index to take care of that
     'comments', //
     'chats',
+    'wdl',//stores the numbers of wins , draws and losses between two players tournament, group and contact matches
     'video_calls',
     'voice_calls',
     'player_rankings'
@@ -153,6 +154,13 @@ module.exports = function () {
         db.collection(col.spectators).ensureIndex({
             game_id: 1,
             user_id: 1
+        }
+        , callback);
+        
+        //wdl - wins, draws, losses
+        db.collection(col.wdl).ensureIndex({
+            'first.player_id': 1,
+            'second.player_id': 1
         }
         , callback);
 
