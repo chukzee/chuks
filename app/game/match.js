@@ -814,7 +814,8 @@ class Match extends WebApplication {
     async _updateWDL(match, winner_user_id) {
 
         var player_1_id = match.players[0].user_id;
-        var player_2_id = match.players[``].user_id;
+        var player_2_id = match.players[1].user_id;
+        var is_draw = winner_user_id ? true : false;
 
         var c = this.sObj.db.collection(this.sObj.col.wdl);
         try {
@@ -829,19 +830,29 @@ class Match extends WebApplication {
                 wdl = {
                     first: {
                         player_id: player_1_id,
-                        contant: {}, //object
+                        contact: {                          
+                            wins:0,
+                            draws:0,
+                            losses:0  
+                        }, 
                         groups: [], //array of groups
                         tournaments: []//array of tournaments
                     },
                     second: {
                         player_id: player_2_id,
-                        contant: {}, //object
+                        contact: {
+                            wins:0,
+                            draws:0,
+                            losses:0
+                        }, 
                         groups: [], //array of groups
                         tournaments: []//array of tournaments
                     }
                 };
             }
-            var editObj;
+            var $set = {};
+            var $inc = {};
+            var editObj = {}
 
             if (match.group_name) {
                 var index = -1;
@@ -856,8 +867,27 @@ class Match extends WebApplication {
                 }
                 if (!found) {
                     index++;//move to next index - for implicitly creating a new element of array as in javascript
-                    editObj[`first.groups.${index}.name`] = match.group_name;
-                    editObj[`second.groups.${index}.name`] = match.group_name;
+                    
+                    $set[`first.groups.${index}.name`] = match.group_name;
+                    $set[`first.groups.${index}.wins`] = 0;
+                    $set[`first.groups.${index}.draws`] = 0;
+                    $set[`first.groups.${index}.losses`] = 0;
+
+                    $set[`second.groups.${index}.name`] = match.group_name;
+                    $set[`second.groups.${index}.wins`] = 0;
+                    $set[`second.groups.${index}.draws`] = 0;
+                    $set[`second.groups.${index}.losses`] = 0;
+                    
+                    editObj['$set'] = $set;
+                }
+                
+                if(is_draw){
+                    $inc[`first.groups.${index}.draws`] = 1;
+                    $inc[`second.groups.${index}.draws`] = 1;
+                }else if (winner_user_id === player_1_id){
+                    $inc[`first.groups.${index}.wins`] = 1;
+                }else if (winner_user_id === player_1_id){
+                    $inc[`second.groups.${index}.wins`] = 1;
                 }
 
 
@@ -874,15 +904,45 @@ class Match extends WebApplication {
                 }
                 if (!found) {
                     index++;//move to next index - for implicitly creating a new element of array as in javascript
-                    editObj[`first.tournaments.${index}.name`] = match.tournament_name;
-                    editObj[`second.tournaments.${index}.name`] = match.tournament_name;
+                    
+                    $set[`first.tournaments.${index}.name`] = match.tournament_name;
+                    $set[`first.tournaments.${index}.wins`] = 0;
+                    $set[`first.tournaments.${index}.draws`] = 0;
+                    $set[`first.tournaments.${index}.losses`] = 0;
+
+                    $set[`second.tournaments.${index}.name`] = match.tournament_name;
+                    $set[`second.tournaments.${index}.wins`] = 0;
+                    $set[`second.tournaments.${index}.draws`] = 0;
+                    $set[`second.tournaments.${index}.losses`] = 0;    
+                    
+                    editObj['$set'] = $set;
                 }
 
-            } else {
+                if(is_draw){
+                    $inc[`first.tournaments.${index}.draws`] = 1;
+                    $inc[`second.tournaments.${index}.draws`] = 1;
+                }else if (winner_user_id === player_1_id){
+                    $inc[`first.tournaments.${index}.wins`] = 1;
+                }else if (winner_user_id === player_1_id){
+                    $inc[`second.tournaments.${index}.wins`] = 1;
+                }
+                
+            } else {//contact
 
+                if(is_draw){
+                    $inc[`first.contact.draws`] = 1;
+                    $inc[`second.contact.draws`] = 1;
+                }else if (winner_user_id === player_1_id){
+                    $inc[`first.contact.wins`] = 1;
+                }else if (winner_user_id === player_1_id){
+                    $inc[`second.contact.wins`] = 1;
+                }
+                
             }
 
-            await c.updateOne(queryObj, {$set: editObj});
+            editObj['$inc'] = $inc;
+            
+            await c.updateOne(queryObj, editObj);
 
         } catch (e) {
             console.log(e);//DO NOT DO THIS IS PRODUCTION
