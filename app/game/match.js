@@ -886,8 +886,10 @@ class Match extends WebApplication {
                     $inc[`second.groups.${index}.draws`] = 1;
                 }else if (winner_user_id === player_1_id){
                     $inc[`first.groups.${index}.wins`] = 1;
-                }else if (winner_user_id === player_1_id){
+					$inc[`second.groups.${index}.losses`] = 1;
+                }else if (winner_user_id === player_2_id){
                     $inc[`second.groups.${index}.wins`] = 1;
+					$inc[`first.groups.${index}.losses`] = 1;
                 }
 
 
@@ -923,8 +925,10 @@ class Match extends WebApplication {
                     $inc[`second.tournaments.${index}.draws`] = 1;
                 }else if (winner_user_id === player_1_id){
                     $inc[`first.tournaments.${index}.wins`] = 1;
-                }else if (winner_user_id === player_1_id){
+					$inc[`second.tournaments.${index}.losses`] = 1;
+                }else if (winner_user_id === player_2_id){
                     $inc[`second.tournaments.${index}.wins`] = 1;
+					$inc[`first.tournaments.${index}.losses`] = 1;
                 }
                 
             } else {//contact
@@ -934,8 +938,10 @@ class Match extends WebApplication {
                     $inc[`second.contact.draws`] = 1;
                 }else if (winner_user_id === player_1_id){
                     $inc[`first.contact.wins`] = 1;
-                }else if (winner_user_id === player_1_id){
+					$inc[`second.contact.losses`] = 1;
+                }else if (winner_user_id === player_2_id){
                     $inc[`second.contact.wins`] = 1;
+					$inc[`first.contact.losses`] = 1;
                 }
                 
             }

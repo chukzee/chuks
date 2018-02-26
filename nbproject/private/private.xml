@@ -18,6 +18,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test-tourn.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test3.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test1.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/task.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/spectator.js</file>
@@ -37,6 +38,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test6.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test8.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/info/player-ranks.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test2.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/config.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test_file.json</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/README/tournament/sample_tournament_obj.js</file>
@@ -45,6 +47,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/game/play-request.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test-mongodb.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/mongo_collections.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/tasks_persist_dir/tasks_saved.json</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/info/group.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test-mac.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/info/tournament.js</file>
@@ -52,6 +55,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/realtime-session.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/app/web-application.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test7.js</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/util/util.js</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/Game9ja/test/test5.js</file>
         </group>
     </open-files>
