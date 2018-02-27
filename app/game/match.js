@@ -830,21 +830,21 @@ class Match extends WebApplication {
                 wdl = {
                     first: {
                         player_id: player_1_id,
-                        contact: {                          
-                            wins:0,
-                            draws:0,
-                            losses:0  
-                        }, 
+                        contact: {
+                            wins: 0,
+                            draws: 0,
+                            losses: 0
+                        },
                         groups: [], //array of groups
                         tournaments: []//array of tournaments
                     },
                     second: {
                         player_id: player_2_id,
                         contact: {
-                            wins:0,
-                            draws:0,
-                            losses:0
-                        }, 
+                            wins: 0,
+                            draws: 0,
+                            losses: 0
+                        },
                         groups: [], //array of groups
                         tournaments: []//array of tournaments
                     }
@@ -852,7 +852,7 @@ class Match extends WebApplication {
             }
             var $set = {};
             var $inc = {};
-            var editObj = {}
+            var editObj = {};
 
             if (match.group_name) {
                 var index = -1;
@@ -860,14 +860,14 @@ class Match extends WebApplication {
                 var arr = wdl.first.groups;
                 for (var i = 0; i < arr.length; i++) {
                     index = i;
-                    if (arr[i].name === match.tournament_name) {
+                    if (arr[i].name === match.group_name) {
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
                     index++;//move to next index - for implicitly creating a new element of array as in javascript
-                    
+
                     $set[`first.groups.${index}.name`] = match.group_name;
                     $set[`first.groups.${index}.wins`] = 0;
                     $set[`first.groups.${index}.draws`] = 0;
@@ -877,19 +877,19 @@ class Match extends WebApplication {
                     $set[`second.groups.${index}.wins`] = 0;
                     $set[`second.groups.${index}.draws`] = 0;
                     $set[`second.groups.${index}.losses`] = 0;
-                    
+
                     editObj['$set'] = $set;
                 }
-                
-                if(is_draw){
+
+                if (is_draw) {
                     $inc[`first.groups.${index}.draws`] = 1;
                     $inc[`second.groups.${index}.draws`] = 1;
-                }else if (winner_user_id === wdl.first.player_id){
+                } else if (winner_user_id === wdl.first.player_id) {
                     $inc[`first.groups.${index}.wins`] = 1;
-					$inc[`second.groups.${index}.losses`] = 1;
-                }else if (winner_user_id === wdl.second.player_id){
+                    $inc[`second.groups.${index}.losses`] = 1;
+                } else if (winner_user_id === wdl.second.player_id) {
                     $inc[`second.groups.${index}.wins`] = 1;
-					$inc[`first.groups.${index}.losses`] = 1;
+                    $inc[`first.groups.${index}.losses`] = 1;
                 }
 
 
@@ -906,7 +906,7 @@ class Match extends WebApplication {
                 }
                 if (!found) {
                     index++;//move to next index - for implicitly creating a new element of array as in javascript
-                    
+
                     $set[`first.tournaments.${index}.name`] = match.tournament_name;
                     $set[`first.tournaments.${index}.wins`] = 0;
                     $set[`first.tournaments.${index}.draws`] = 0;
@@ -915,39 +915,39 @@ class Match extends WebApplication {
                     $set[`second.tournaments.${index}.name`] = match.tournament_name;
                     $set[`second.tournaments.${index}.wins`] = 0;
                     $set[`second.tournaments.${index}.draws`] = 0;
-                    $set[`second.tournaments.${index}.losses`] = 0;    
-                    
+                    $set[`second.tournaments.${index}.losses`] = 0;
+
                     editObj['$set'] = $set;
                 }
 
-                if(is_draw){
+                if (is_draw) {
                     $inc[`first.tournaments.${index}.draws`] = 1;
                     $inc[`second.tournaments.${index}.draws`] = 1;
-                }else if (winner_user_id === wdl.first.player_id){
+                } else if (winner_user_id === wdl.first.player_id) {
                     $inc[`first.tournaments.${index}.wins`] = 1;
-					$inc[`second.tournaments.${index}.losses`] = 1;
-                }else if (winner_user_id === wdl.second.player_id){
+                    $inc[`second.tournaments.${index}.losses`] = 1;
+                } else if (winner_user_id === wdl.second.player_id) {
                     $inc[`second.tournaments.${index}.wins`] = 1;
-					$inc[`first.tournaments.${index}.losses`] = 1;
+                    $inc[`first.tournaments.${index}.losses`] = 1;
                 }
-                
+
             } else {//contact
 
-                if(is_draw){
+                if (is_draw) {
                     $inc[`first.contact.draws`] = 1;
                     $inc[`second.contact.draws`] = 1;
-                }else if (winner_user_id === wdl.first.player_id){
+                } else if (winner_user_id === wdl.first.player_id) {
                     $inc[`first.contact.wins`] = 1;
-					$inc[`second.contact.losses`] = 1;
-                }else if (winner_user_id === wdl.second.player_id){
+                    $inc[`second.contact.losses`] = 1;
+                } else if (winner_user_id === wdl.second.player_id) {
                     $inc[`second.contact.wins`] = 1;
-					$inc[`first.contact.losses`] = 1;
+                    $inc[`first.contact.losses`] = 1;
                 }
-                
+
             }
 
             editObj['$inc'] = $inc;
-            
+
             await c.updateOne(queryObj, editObj);
 
         } catch (e) {
