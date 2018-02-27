@@ -884,10 +884,10 @@ class Match extends WebApplication {
                 if(is_draw){
                     $inc[`first.groups.${index}.draws`] = 1;
                     $inc[`second.groups.${index}.draws`] = 1;
-                }else if (winner_user_id === player_1_id){
+                }else if (winner_user_id === wdl.first.player_id){
                     $inc[`first.groups.${index}.wins`] = 1;
 					$inc[`second.groups.${index}.losses`] = 1;
-                }else if (winner_user_id === player_2_id){
+                }else if (winner_user_id === wdl.second.player_id){
                     $inc[`second.groups.${index}.wins`] = 1;
 					$inc[`first.groups.${index}.losses`] = 1;
                 }
@@ -923,10 +923,10 @@ class Match extends WebApplication {
                 if(is_draw){
                     $inc[`first.tournaments.${index}.draws`] = 1;
                     $inc[`second.tournaments.${index}.draws`] = 1;
-                }else if (winner_user_id === player_1_id){
+                }else if (winner_user_id === wdl.first.player_id){
                     $inc[`first.tournaments.${index}.wins`] = 1;
 					$inc[`second.tournaments.${index}.losses`] = 1;
-                }else if (winner_user_id === player_2_id){
+                }else if (winner_user_id === wdl.second.player_id){
                     $inc[`second.tournaments.${index}.wins`] = 1;
 					$inc[`first.tournaments.${index}.losses`] = 1;
                 }
@@ -936,10 +936,10 @@ class Match extends WebApplication {
                 if(is_draw){
                     $inc[`first.contact.draws`] = 1;
                     $inc[`second.contact.draws`] = 1;
-                }else if (winner_user_id === player_1_id){
+                }else if (winner_user_id === wdl.first.player_id){
                     $inc[`first.contact.wins`] = 1;
 					$inc[`second.contact.losses`] = 1;
-                }else if (winner_user_id === player_2_id){
+                }else if (winner_user_id === wdl.second.player_id){
                     $inc[`second.contact.wins`] = 1;
 					$inc[`first.contact.losses`] = 1;
                 }
