@@ -126,7 +126,17 @@ class Stats extends   WebApplication {
 			
 			obj.second.overall.notation = `W ${obj.second.overall.wins} D ${obj.second.overall.draws} L ${obj.second.overall.losses}`;
 			
+			//we want to return the result in the order the player ids were passed to this method
+			var wdlObj = {};
 			
+			if(obj.first.player_id === player_1_id){
+				wdlObj.first = obj.first;
+				wdlObj.second = obj.second;
+			}else{
+				//swap to reflect the order the player ids were passed to this method
+				wdlObj.first = obj.second;
+				wdlObj.second = obj.first;
+			}
 			
 			
 		} catch (e) {
@@ -134,7 +144,7 @@ class Stats extends   WebApplication {
             return;//return nothing
         }
 	
-		return obj;
+		return wdlObj;
 	}
 
     /**
