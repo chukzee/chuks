@@ -2601,7 +2601,7 @@ class Tournament extends WebApplication {
             }
 
             if (user_trns.length === 0) {
-                return this.randomTournamentsInfoList(10);
+                return this.randomTournamentsInfoList(this.sObj.MIN_TOURNAMENT_LIST);
             }
 
 
