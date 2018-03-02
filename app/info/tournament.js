@@ -2452,7 +2452,7 @@ class Tournament extends WebApplication {
             var group_members = res[i].members;
             for(var k=0; k<group_members.length; k++){//committed
                 if(group_members[k].committed === false){
-                    continue;
+                    continue;//skip member not yet committed
                 }
                 if (related_user_ids.indexOf(group_members[k].user_id) > -1) {
                     continue;//skip to avoid duplicate
@@ -2491,12 +2491,12 @@ class Tournament extends WebApplication {
         //collect the tournaments names making sure no duplicate exist
 
         for (var i = 0; i < result.length; i++) {
-            var tourns_arr = result[i].tournaments_belong;
-            for (var k = 0; k < tourns_arr.length; k++) {
-                if (tourns.indexOf(tourns_arr[k]) > -1) {
+            var tournaments_belong = result[i].tournaments_belong;
+            for (var k = 0; k < tournaments_belong.length; k++) {
+                if (tourns.indexOf(tournaments_belong[k]) > -1) {
                     continue;//skip to avoid duplicate
                 }
-                tourns.push(tourns_arr[k]);
+                tourns.push(tournaments_belong[k]);
             }
         }
 
