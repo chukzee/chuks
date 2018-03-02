@@ -2432,15 +2432,39 @@ class Tournament extends WebApplication {
 
     async _relatedTournaments(user) {
 
-        var c = this.sObj.db.collection(this.sObj.col.users);
-        var query = {$or: []};
 
-        var related_user_ids = user.contacts;
+        var related_user_ids = user.contacts || [];
+
+        var c_grp = this.sObj.db.collection(this.sObj.col.groups);
+        var grp_query = {$or: []};
+        
+        var grp_query = {$or: []};
+        var groups_belong= user.groups_belong;
+        for (var i = 0; i < groups_belong.length; i++) {
+            grp_query.$or.push({
+                name: groups_belong[i]
+            });
+        }
+        
+        var res = await c_grp.findOne(grp_query, {_id: 0, members: 1});
+        
+        for(var i=0; i < res.length; i++){
+            var group_members = res[i].members;
+            for(var k=0; k<group_members.length; k++){//committed
+                if(group_members[k].committed === false){
+                    continue;
+                }
+                if (related_user_ids.indexOf(group_members[k].user_id) > -1) {
+                    continue;//skip to avoid duplicate
+                }
+                related_user_ids.push(group_members[k].user_id);
+            }
+        }
 
 
-
+        var usr_query = {$or: []};
         for (var i = 0; i < related_user_ids.length; i++) {
-            query.$or.push({
+            usr_query.$or.push({
                 user_id: related_user_ids[i]
             });
         }
@@ -2448,10 +2472,13 @@ class Tournament extends WebApplication {
         if (related_user_ids.length === 0) {
             return [];
         }
+        
+        var c_usr = this.sObj.db.collection(this.sObj.col.users);
+        
 
-        var result = await c.findOne(query, {_id: 0, tournaments_belong: 1, rel_tourns_update_time: 1});
+        var result = await c_usr.findOne(usr_query, {_id: 0, tournaments_belong: 1});
 
-        c.updateOne({user_id: user.user_id}, {$set: {rel_tourns_update_time: new Date()}})
+        c_usr.updateOne({user_id: user.user_id}, {$set: {rel_tourns_update_time: new Date()}})
                 .then(function (r) {
                     //do nothing
                 })
@@ -2464,7 +2491,7 @@ class Tournament extends WebApplication {
         //collect the tournaments names making sure no duplicate exist
 
         for (var i = 0; i < result.length; i++) {
-            var tourns_arr = result[i];
+            var tourns_arr = result[i].tournaments_belong;
             for (var k = 0; k < tourns_arr.length; k++) {
                 if (tourns.indexOf(tourns_arr[k]) > -1) {
                     continue;//skip to avoid duplicate

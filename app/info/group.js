@@ -290,7 +290,8 @@ class Group extends WebApplication {
             status_message: status_message,
             photo_url: photo_url,
             created_by: user_id,
-            date_created: member.date_joined ? member.date_joined : new Date()
+            date_created: member.date_joined ? member.date_joined : new Date(),
+            members:[]
         };
 
         try {
