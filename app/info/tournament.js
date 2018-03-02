@@ -2429,7 +2429,18 @@ class Tournament extends WebApplication {
 
         return 'Player deregistered successfully.';
     }
-
+    
+    /**
+     * Get tournaments related one way or the other to the user.
+     * 
+     * The policy for getting the related tournaments is as follows:
+     * 
+     * 1) get all the tournaments belong to by the contacts of the user.
+     * 2) get all the tournaments belong to by the members of the user groups
+     * 
+     * @param {type} user
+     * @returns {Array|nm$_tournament.Tournament._relatedTournaments.tourns|nm$_tournament.exports._relatedTournaments.tourns}
+     */
     async _relatedTournaments(user) {
 
 
@@ -2590,11 +2601,20 @@ class Tournament extends WebApplication {
             }
 
             if (user_trns.length === 0) {
-                return [];
+                return this.randomTournamentsInfoList(10);
             }
 
 
-            return this.getTournamentsInfoList(user_trns);
+            var list =  this.getTournamentsInfoList(user_trns);
+
+            if(list.length < 10){
+                var rand_list = randomTournamentsInfoList(10);
+                for(var i=0; i<rand_list.length; i++){
+                    list.push(rand_list[i]);
+                }
+            }
+
+            return list;
 
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION
