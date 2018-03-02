@@ -217,6 +217,10 @@ class ServerObject {
     get MATCH_SCHEDULE_OFFSET() {//allowable match schedule offset from current time in ms
         return 900000; //900000 ms is 15 mins
     }
+    
+    get MIN_TOURNAMENT_LIST(){//min number of tournaments to return otherwise random search will be made to complete the minimum numbers
+        return 50;
+    }
 
     get task() {
         return this._task;

@@ -2606,9 +2606,10 @@ class Tournament extends WebApplication {
 
 
             var list =  this.getTournamentsInfoList(user_trns);
-
-            if(list.length < 10){
-                var rand_list = randomTournamentsInfoList(10);
+            
+            if(list.length < this.sObj.MIN_TOURNAMENT_LIST){
+                var size = this.sObj.MIN_TOURNAMENT_LIST - list.length;
+                var rand_list = randomTournamentsInfoList(size);
                 for(var i=0; i<rand_list.length; i++){
                     list.push(rand_list[i]);
                 }
