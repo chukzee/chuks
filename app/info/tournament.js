@@ -2601,15 +2601,15 @@ class Tournament extends WebApplication {
             }
 
             if (user_trns.length === 0) {
-                return this.randomTournamentsInfoList(this.sObj.MIN_TOURNAMENT_LIST);
+                return await this.randomTournamentsInfoList(this.sObj.MIN_TOURNAMENT_LIST);
             }
 
 
             var list =  this.getTournamentsInfoList(user_trns);
-            
+           
             if(list.length < this.sObj.MIN_TOURNAMENT_LIST){
                 var size = this.sObj.MIN_TOURNAMENT_LIST - list.length;
-                var rand_list = randomTournamentsInfoList(size);
+                var rand_list = await this.randomTournamentsInfoList(size);
                 for(var i=0; i<rand_list.length; i++){
                     list.push(rand_list[i]);
                 }
