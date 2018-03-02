@@ -2436,17 +2436,17 @@ class Tournament extends WebApplication {
         var related_user_ids = user.contacts || [];
 
         var c_grp = this.sObj.db.collection(this.sObj.col.groups);
-        var grp_query = {$or: []};
         
-        var grp_query = {$or: []};
+        
+        var oredArr = [];
         var groups_belong= user.groups_belong;
         for (var i = 0; i < groups_belong.length; i++) {
-            grp_query.$or.push({
+            oredArr.push({
                 name: groups_belong[i]
             });
         }
         
-        var res = await c_grp.findOne(grp_query, {_id: 0, members: 1});
+        var res = await c_grp.findOne({$or: oredArr}, {_id: 0, members: 1});
         
         for(var i=0; i < res.length; i++){
             var group_members = res[i].members;
@@ -2462,9 +2462,9 @@ class Tournament extends WebApplication {
         }
 
 
-        var usr_query = {$or: []};
+        var oredArr = [];
         for (var i = 0; i < related_user_ids.length; i++) {
-            usr_query.$or.push({
+            oredArr.push({
                 user_id: related_user_ids[i]
             });
         }
@@ -2476,7 +2476,7 @@ class Tournament extends WebApplication {
         var c_usr = this.sObj.db.collection(this.sObj.col.users);
         
 
-        var result = await c_usr.findOne(usr_query, {_id: 0, tournaments_belong: 1});
+        var result = await c_usr.findOne({$or:oredArr}, {_id: 0, tournaments_belong: 1});
 
         c_usr.updateOne({user_id: user.user_id}, {$set: {rel_tourns_update_time: new Date()}})
                 .then(function (r) {
