@@ -34,12 +34,12 @@ Ns.view.Tournament = {
         Main.rcall.live(obj);
 
 
-        
+
         Main.eventio.on('season_start', this.onSeasonStart);
         Main.eventio.on('season_cancel', this.onSeasonCancel);
         Main.eventio.on('season_delete', this.onSeasonDelete);
         Main.eventio.on('season_end', this.onSeasonEnd);
-        
+
     },
 
     content: function (tournament_name) {
@@ -73,7 +73,7 @@ Ns.view.Tournament = {
             if (!tournament) {
                 return;
             }
-            
+
             document.getElementById("tournament-details-tournament-name").innerHTML = tournament.name;
             document.getElementById("tournament-details-photo-url").src = tournament.photo_url;
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by;
@@ -81,19 +81,19 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
             document.getElementById("tournament-details-season").innerHTML = tournament.season;
             document.getElementById("tournament-details-stage").innerHTML = tournament.round;
-            
+
             //document.getElementById("tournament-details-match-fixtures").innerHTML = tournament.match_fixture;
             //document.getElementById("tournament-details-officials").innerHTML = tournament.officials;
             //document.getElementById("tournament-details-registered-players").innerHTML = tournament.registered_players;
-            
+
             var btn_standings = document.getElementById("tournament-details-season-table-standings");
-            
-            if(tournament.type === 'round-robin'){
+
+            if (tournament.type === 'round-robin') {
                 btn_standings.style.display = 'block';//show
-            }else if(tournament.type === 'single-elimination'){
+            } else if (tournament.type === 'single-elimination') {
                 btn_standings.style.display = 'none';//hide
             }
-            
+
 
         }
 
@@ -155,7 +155,7 @@ Ns.view.Tournament = {
 
 
         Main.rcall.live(function () {
-            Main.ro.tournament.getTournamentInfo(tournament_name)
+            Main.ro.tourn.getTournamentInfo(tournament_name)
                     .get(function (tournament) {
                         if (tournament && tournament.name) {
                             Ns.view.Tournament.merge(tournament);
@@ -188,28 +188,59 @@ Ns.view.Tournament = {
     },
 
     getTournamentsInfo: function (user, callback) {
-        
+
         var trns = [];
         //first check locally
-        var belong = user.tournaments_belong;
-        if (belong) {
-            for (var i = 0; i < belong.length; i++) {
+        var user_trns = [];
+
+        if (user.tournaments_belong) {
+            for (var i = 0; i < user.tournaments_belong.length; i++) {
+                if (user_trns.indexOf(user.tournaments_belong[i]) > -1) {
+                    continue;
+                }
+                user_trns.push(user.tournaments_belong[i]);
+            }
+        }
+
+        if (user.related_tournaments) {
+            for (var i = 0; i < user.related_tournaments.length; i++) {
+                if (user_trns.indexOf(user.related_tournaments[i]) > -1) {
+                    continue;
+                }
+                user_trns.push(user.related_tournaments[i]);
+            }
+        }
+        
+        if (user.favourite_tournaments) {
+            
+            for (var i = 0; i < user.favourite_tournaments.length; i++) {
+                if (user_trns.indexOf(user.favourite_tournaments[i]) > -1) {
+                    continue;
+                }
+                user_trns.push(user.favourite_tournaments[i]);
+            }
+        }
+
+
+        if (user_trns) {
+            for (var i = 0; i < user_trns.length; i++) {
                 for (var k = 0; k < Ns.view.Tournament.tournamentList.length; k++) {
-                    if (Ns.view.Tournament.tournamentList[k].name === belong[i]) {
+                    if (Ns.view.Tournament.tournamentList[k].name === user_trns[i]) {
                         trns.push(Ns.view.Tournament.tournamentList[k]);
                     }
                 }
             }
-            
-            if (trns.length === belong.length) {//all was found locally
+
+            if (trns.length === user_trns.length) {//all was found locally
                 if (Main.util.isFunc(callback)) {
                     callback(trns);
                 }
                 return;//so leave
             }
         }
-        //get remotelly
-        
+
+        //get remotely
+
         Main.rcall.live(function () {
             var id = user;
             if (user && user.user_id) {
@@ -271,21 +302,21 @@ Ns.view.Tournament = {
                     });
         });
     },
-    
-    onSeasonStart: function(obj){
-        
+
+    onSeasonStart: function (obj) {
+
     },
-    
-    onSeasonCancel: function(obj){
-        
+
+    onSeasonCancel: function (obj) {
+
     },
-    
-    onSeasonDelete: function(obj){
-        
+
+    onSeasonDelete: function (obj) {
+
     },
-    
-    onSeasonEnd: function(obj){
-        
+
+    onSeasonEnd: function (obj) {
+
     }
 
     //more goes below

@@ -893,7 +893,7 @@ class Tournament extends WebApplication {
 
 
         var found_game_id = false;
-        
+
         //Check if the game id exists
         outer0: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
@@ -904,8 +904,8 @@ class Tournament extends WebApplication {
                 }
             }
         }
-        
-        if(!found_game_id){
+
+        if (!found_game_id) {
             return 'Game id not found.';
         }
 
@@ -1503,8 +1503,8 @@ class Tournament extends WebApplication {
         var rounds = current_season.rounds;
 
         var to = rounds.length - 1; //skip the last round
-        
-        for (var i = 0; i < to ; i++) {
+
+        for (var i = 0; i < to; i++) {
             var fixtures = rounds[i].fixtures;
             for (var j = 0; j < fixtures.length; j++) {
                 if (fixtures[j].game_id === match.game_id) {
@@ -1551,7 +1551,7 @@ class Tournament extends WebApplication {
 
 
                     //update the tournament
-                    
+
                     if (Object.keys(editObj).length === 0) {
                         return;
                     }
@@ -1561,7 +1561,7 @@ class Tournament extends WebApplication {
                     } catch (e) {
                         console.log(e);//DO NOT DO THIS IN PRODUCTION -  INSTEAD LOG TO ANOTHER PROCESS
                     }
-                    
+
                     return; //done
 
                 }
@@ -1810,21 +1810,21 @@ class Tournament extends WebApplication {
 
     _determineWinner(tourn, match) {
         var season = tourn.seasons[tourn.seasons.length - 1];
-        
+
         if (tourn.type === this.sObj.SINGLE_ELIMINATION) {
             if (match.scores[0] > match.scores[1]) {// player_1 wins
                 return match.players[0].user_id;
             } else if (match.scores[0] < match.scores[1]) {// player_2 wins
                 return match.players[1].user_id;
             } else {//draw
-                
+
                 //In the case of draw the server will compare their general performances 
                 //since the start of the season to determine who goes through. Where this does
                 //not still separate them, the server will just randomly pick a winner - like penalty in soccer
-                
+
                 //In the future we may add more implementions separating
                 //the players such as comparing the value of their board (as in chess).
-                
+
                 var better_player = this._betterPlayer(season, match.players[0].user_id, match.players[1].user_id);
                 if (better_player) {
                     console.log('better_player', better_player);
@@ -1840,7 +1840,7 @@ class Tournament extends WebApplication {
         }
 
 
-        if (tourn.type === this.sObj.ROUND_ROBIN) {            
+        if (tourn.type === this.sObj.ROUND_ROBIN) {
             var standings = this._resultStandings(season.slots);
             return standings[0].player_id;// the player at the summit.
         }
@@ -1862,9 +1862,9 @@ class Tournament extends WebApplication {
                     var players_ids = [];
                     players_ids.push(match.players[0].user_id);
                     players_ids.push(match.players[1].user_id);
-                    
+
                     var _10_mins = 10 * 60 * 1000;
-                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids, true , _10_mins);
+                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids, true, _10_mins);
 
                 })
                 .catch(function (err) {
@@ -2430,6 +2430,52 @@ class Tournament extends WebApplication {
         return 'Player deregistered successfully.';
     }
 
+    async _relatedTournaments(user) {
+
+        var c = this.sObj.db.collection(this.sObj.col.users);
+        var query = {$or: []};
+
+        var related_user_ids = user.contacts;
+
+
+
+        for (var i = 0; i < related_user_ids.length; i++) {
+            query.$or.push({
+                user_id: related_user_ids[i]
+            });
+        }
+
+        if (related_user_ids.length === 0) {
+            return [];
+        }
+
+        var result = await c.findOne(query, {_id: 0, tournaments_belong: 1, rel_tourns_update_time: 1});
+
+        c.updateOne({user_id: user.user_id}, {$set: {rel_tourns_update_time: new Date()}})
+                .then(function (r) {
+                    //do nothing
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+
+        var tourns = [];
+
+        //collect the tournaments names making sure no duplicate exist
+
+        for (var i = 0; i < result.length; i++) {
+            var tourns_arr = result[i];
+            for (var k = 0; k < tourns_arr.length; k++) {
+                if (tourns.indexOf(tourns_arr[k]) > -1) {
+                    continue;//skip to avoid duplicate
+                }
+                tourns.push(tourns_arr[k]);
+            }
+        }
+
+        return tourns;
+    }
+
     async getTournamentInfo(tournament_name) {
 
         //check if the user is already an official
@@ -2472,10 +2518,56 @@ class Tournament extends WebApplication {
 
             var c = this.sObj.db.collection(this.sObj.col.users);
             var user = await c.findOne({user_id: user_id}, {_id: 0});
-            if (!user || !user.tournaments_belong) {
+            if (!user) {
                 return [];
             }
-            return this.getTournamentsInfoList(user.tournaments_belong);
+
+            var user_trns = [];
+
+            if (user.tournaments_belong) {
+                for (var i = 0; i < user.tournaments_belong.length; i++) {
+                    if (user_trns.indexOf(user.tournaments_belong[i]) > -1) {
+                        continue;
+                    }
+                    user_trns.push(user.tournaments_belong[i]);
+                }
+            }
+
+            if (!user.rel_tourns_update_time) {
+                user.rel_tourns_update_time = '1970-01-01';
+            }
+
+            var elapse = new Date().getTime() - new Date(user.rel_tourns_update_time).getTime();
+            var _24_Hours = 86400000;
+            if (elapse >= _24_Hours) {
+                user.related_tournaments = await this._relatedTournaments(user);
+            }
+
+            if (user.related_tournaments) {
+                for (var i = 0; i < user.related_tournaments.length; i++) {
+                    if (user_trns.indexOf(user.related_tournaments[i]) > -1) {
+                        continue;
+                    }
+                    user_trns.push(user.related_tournaments[i]);
+                }
+            }
+
+            if (user.favourite_tournaments) {
+
+                for (var i = 0; i < user.favourite_tournaments.length; i++) {
+                    if (user_trns.indexOf(user.favourite_tournaments[i]) > -1) {
+                        continue;
+                    }
+                    user_trns.push(user.favourite_tournaments[i]);
+                }
+            }
+
+            if (user_trns.length === 0) {
+                return [];
+            }
+
+
+            return this.getTournamentsInfoList(user_trns);
 
         } catch (e) {
             console.log(e);//DO NOT DO THIS IN PRODUCTION

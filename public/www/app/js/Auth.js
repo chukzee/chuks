@@ -3,6 +3,8 @@
 
 Ns.Auth = {
 
+    isAuth: false,
+
     constructor: function () {
 
         Main.eventio.on('session_user_id', this.onSessionIDRequest);
@@ -18,10 +20,19 @@ Ns.Auth = {
             console.warn(e);
         }
 
-       // if (user_info && user_info.user_id) {//uncomment later!!!
-        if (false) {//ccmment out later!!!
+        if (false) {//ccmment out this 'if' block later later!!!    
             return;//leave
         }
+        
+        /*UNCOMMENT THIS 'IF' BLOCK LATER
+         
+         if (user_info && user_info.user_id) {
+            Ns.Auth.isAuth = true;
+            return;//leave
+        }
+        
+         */
+        
         Main.page.show({
             url: Ns.GameHome.GAME_LOGIN_HTML,
             effect: "fade",
@@ -31,7 +42,8 @@ Ns.Auth = {
         });
 
         function onLoginFormShow() {
-
+            
+                        
             $('#game-login-btn-login').on('click', function () {
                 
                 var errEl = document.getElementById('game-login-error');
@@ -52,6 +64,7 @@ Ns.Auth = {
                 Main.rcall.live(obj, function () {
                     Main.ro.user.login(user_id, password)
                             .get(function (user_info) {
+                                Ns.Auth.isAuth = true;
                                 Ns.view.UserProfile.appUser = user_info;
                                 window.localStorage.setItem(Ns.Const.AUTH_USER_KEY, JSON.stringify(user_info));
                                 Main.page.home();

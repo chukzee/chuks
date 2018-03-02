@@ -122,7 +122,6 @@ Ns.ui.UI = {
         Ns.ui.GamePanel.setupOnHome();
 
 
-
         $('#home-contacts-icon').on('click', function (evt) {
             Ns.GameHome.showContacts();
         });
@@ -196,7 +195,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.tournamentMatchList(tourn);
+            Ns.game.Match.tournamentMatchList(tourn.name);
 
         });
 
@@ -212,7 +211,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.tournamentMatchList(tourn);
+            Ns.game.Match.tournamentMatchList(tourn.name);
 
         });
 

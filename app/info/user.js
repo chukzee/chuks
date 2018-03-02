@@ -152,7 +152,10 @@ class User extends WebApplication {
                 player_ranking: 0, //set the player ranking
                 contacts:[],
                 groups_belong: [],
-                tournaments_belong: []
+                tournaments_belong: [],
+                related_tournaments: [],
+                favourite_tournaments: [],
+                rel_tourn_update_time: new Date('1970-01-01 00:00:00')// last time the related_tournaments field was updated
             };
 
 

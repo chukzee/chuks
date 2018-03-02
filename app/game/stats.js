@@ -74,7 +74,7 @@ class Stats extends   WebApplication {
                         losses: 0
                     }
                 }
-            }
+            };
 
             if (!wdl) {
                 return obj;

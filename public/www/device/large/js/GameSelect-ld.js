@@ -10,6 +10,7 @@ Main.on("pagecreate", function (arg) {
     //at this point it is the index page which is what we want.
 
     Ns.Auth.login();
+    
 
     $('#game-select-chess').on('click', function () {
 
