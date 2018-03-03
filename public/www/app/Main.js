@@ -1946,7 +1946,13 @@ var Main = {};
                 var v;
                 var param = param_arr[i];
                 if (param.indexOf('.') > -1) {//array styled param
-
+                    for (var n  in data) {
+                        if(!Main.util.isArray(data[n])){
+                            continue;
+                        }
+                        //is array property
+                        
+                    }
                 } else {
                     v = data[param];
                 }
