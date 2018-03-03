@@ -1782,6 +1782,7 @@ var Main = {};
 
 
     function Listview() {
+        var regexMatchParams = {};
         var listTpl = {};
         var listTplWaitCount = {};
         var ListTplGetting = {};
@@ -1882,48 +1883,87 @@ var Main = {};
 
         function tplParam(html, obj, data) {
 
-            for (var name in data) {
-                var value = data[name];
-                if (Main.util.isArray(value)) {
-                    var nm = name;
-                    for (var i = 0; i < value.length; i++) {
-                        for (var n in value[i]) {
-                            var v = value[i][n];
-                            name = nm + '.' + i + '.' + n;
-                            if (data[name]) {
-                                console.warn("WARNING!!! ambigious object property '" + name + "'  which could cause unexpected result and must be avoided!");
-                            }
-                            var tpl_name = '{' + name + '}';
-                            var h;
-                            if (obj.onRender) {
-                                var rd_val = obj.onRender(name, data);
-                                if (typeof rd_val !== 'undefined') {
-                                    v = rd_val;
-                                }
-                            }
+            /*
+             for (var name in data) {
+             var value = data[name];
+             if (Main.util.isArray(value)) {
+             var nm = name;
+             for (var i = 0; i < value.length; i++) {
+             for (var n in value[i]) {
+             var v = value[i][n];
+             name = nm + '.' + i + '.' + n;
+             if (data[name]) {
+             console.warn("WARNING!!! ambigious object property '" + name + "'  which could cause unexpected result and must be avoided!");
+             }
+             var tpl_name = '{' + name + '}';
+             var h;
+             if (obj.onRender) {
+             var rd_val = obj.onRender(name, data);
+             if (typeof rd_val !== 'undefined') {
+             v = rd_val;
+             }
+             }
+             
+             do {
+             h = html;
+             html = html.replace(tpl_name, v);
+             } while (h !== html)
+             }
+             }
+             } else {
+             var tpl_name = '{' + name + '}';
+             var h;
+             var v = value;
+             if (obj.onRender) {
+             var rd_val = obj.onRender(name, data);
+             if (typeof rd_val !== 'undefined') {
+             v = rd_val;
+             }
+             }
+             do {
+             h = html;
+             html = html.replace(tpl_name, v);
+             } while (h !== html)
+             }
+             }
+             */
 
-                            do {
-                                h = html;
-                                html = html.replace(tpl_name, v);
-                            } while (h !== html)
-                        }
-                    }
-                } else {
-                    var tpl_name = '{' + name + '}';
-                    var h;
-                    var v = value;
-                    if (obj.onRender) {
-                        var rd_val = obj.onRender(name, data);
-                        if (typeof rd_val !== 'undefined') {
-                            v = rd_val;
-                        }
-                    }
-                    do {
-                        h = html;
-                        html = html.replace(tpl_name, v);
-                    } while (h !== html)
+//NEW START
+
+            var param_arr = regexMatchParams[obj.tplUrl];
+
+            if (!param_arr) {
+                var regex = /{[a-zA-Z_][a-zA-Z0-9._-]*}/g;
+                param_arr = html.match(regex);
+                for (var i = 0; i < param_arr.length; i++) {
+                    //remove the opening and closing braces - { and }
+                    param_arr[i] = param_arr[i].substring(1, param_arr[i].length - 1);
                 }
+                regexMatchParams[obj.tplUrl] = param_arr;
             }
+
+            for (var i = 0; i < param_arr.length; i++) {
+                var v;
+                var param = param_arr[i];
+                if (param.indexOf('.') > -1) {//array styled param
+
+                } else {
+                    v = data[param];
+                }
+
+                if (obj.onRender) {
+                    var rd_val = obj.onRender(param, data);
+                    if (typeof rd_val !== 'undefined') {
+                        v = rd_val;
+                    }
+                }
+
+                html = html.replace('{' + param + '}', v);
+            }
+
+
+
+//NEW END
 
             var content = $('<div '
                     + (obj.itemClass
@@ -3404,12 +3444,12 @@ var Main = {};
             }
 
             /*
-            objThis.setButtonText = function (index, text) {
-                if (el_btns[index]) {
-                    el_btns[index].value = text;
-                }
-
-            };*/
+             objThis.setButtonText = function (index, text) {
+             if (el_btns[index]) {
+             el_btns[index].value = text;
+             }
+             
+             };*/
 
             var container;
             if (Main.util.isString(obj.container)) {

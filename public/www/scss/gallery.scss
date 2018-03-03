@@ -29,6 +29,7 @@ and open the template in the editor.
         margin: 2px;
         float: left;
         box-shadow: 0 1.5px 1.5px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
         @include border-radius (5px);
     }
 }

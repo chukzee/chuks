@@ -84,10 +84,11 @@ Ns.view.Group = {
              </li>
              </ul>*/
 
+            /* 
             var admins_html = '';
             var app_user_id = Ns.view.UserProfile.appUser.user_id;
             for (var i = 0; i < group.admins.length; i++) {
-                var set_exit_group = group.members[i].user_id === app_user_id;
+                var set_exit_group = group.admins[i].user_id === app_user_id;
                 admins_html += Ns.view.Group.memberHtml(group.name, group.admins[i], set_exit_group);
             }
             document.getElementById("group-details-admins").innerHTML = admins_html;
@@ -99,7 +100,59 @@ Ns.view.Group = {
                 members_html += Ns.view.Group.memberHtml(group.name, group.members[i], set_exit_group);
             }
             document.getElementById("group-details-members").innerHTML = members_html;
+            */
+           
+            var admins_container = '#group-details-admins';
 
+            Main.listview.create({
+                container: admins_container,
+                scrollContainer: admins_container,
+                tplUrl: 'group-admins-tpl.html',
+                wrapItem: false,
+                //itemClass: "game9ja-live-games-list",
+                onSelect: function (evt, match_data) {
+
+
+                },
+                onRender: function (tpl_var, data) {
+
+
+                },
+                onReady: function () {
+
+                    for (var i = 0; i < group.admins.length; i++) {
+                        this.appendItem(group.admins[i]);
+                    }
+
+                }
+            });
+         
+                       
+            var members_container = '#group-details-members';
+
+            Main.listview.create({
+                container: members_container,
+                scrollContainer: members_container,
+                tplUrl: 'group-members-tpl.html',
+                wrapItem: false,
+                //itemClass: "game9ja-live-games-list",
+                onSelect: function (evt, match_data) {
+
+
+                },
+                onRender: function (tpl_var, data) {
+
+
+                },
+                onReady: function () {
+
+                    for (var i = 0; i < group.members.length; i++) {
+                        this.appendItem(group.members[i]);
+                    }
+
+                }
+            });
+            
         }
 
 
@@ -227,7 +280,7 @@ Ns.view.Group = {
                     });
         });
     },
-
+/*
     memberHtml: function (group_name, memObj, set_exit_group) {
         var action_value = 'Lets play';
         var action_clazz = '';
@@ -258,7 +311,7 @@ Ns.view.Group = {
                 + '     </li>'
                 + ' </ul>';
     },
-
+*/
     onClickMember: function (evt, group_name, user_id) {
 
         Ns.view.Group.getInfo(group_name, function (group) {
