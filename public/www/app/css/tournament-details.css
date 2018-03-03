@@ -79,21 +79,21 @@ and open the template in the editor.
       text-overflow: ellipsis;
       white-space: nowrap; }
     .game9ja-tournament-details > :nth-child(1) > :nth-child(4) {
-      /*back botton*/
+      /*back button*/
       color: white;
       position: absolute;
       top: 10px;
       left: 10px;
       cursor: pointer; }
     .game9ja-tournament-details > :nth-child(1) > :nth-child(5) {
-      /*edit botton*/
+      /*edit button*/
       color: black;
       position: absolute;
       bottom: 10px;
       right: 10px;
       cursor: pointer; }
     .game9ja-tournament-details > :nth-child(1) > :nth-child(6) {
-      /*Tournament type*/
+      /*menu button*/
       color: white;
       cursor: pointer; }
     .game9ja-tournament-details > :nth-child(1) > :nth-child(7) {
@@ -213,7 +213,12 @@ and open the template in the editor.
         bottom: 0;
         right: 5px;
         font-size: 12px;
-        color: green;
         font-style: bold; }
+        .game9ja-tournament-details > :nth-child(4) > :nth-child(4) > :nth-child(2) > :nth-child(1) {
+          cursor: pointer; }
+        .game9ja-tournament-details > :nth-child(4) > :nth-child(4) > :nth-child(2) > :nth-child(2) {
+          color: green; }
+        .game9ja-tournament-details > :nth-child(4) > :nth-child(4) > :nth-child(2) > :nth-child(3) {
+          cursor: pointer; }
 
 /*# sourceMappingURL=tournament-details.css.map */

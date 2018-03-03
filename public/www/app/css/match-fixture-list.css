@@ -75,17 +75,18 @@ and open the template in the editor.
   text-align: center;
   font-size: 11px; }
 
-/*stlye the game score*/
 .game9ja-match-fixture-list > :nth-child(3) > :nth-child(1) {
   margin-right: 10px; }
 
-/*4th content is expected to show the VS in a div container*/
+/*4th content is expected to show the VS , score or status in a div container*/
 .game9ja-match-fixture-list > :nth-child(4) {
   position: absolute;
   top: 40%;
   width: 100%;
   text-align: center;
   font-size: 18px; }
+  .game9ja-match-fixture-list > :nth-child(4) > :nth-child(2) {
+    font-size: 12px; }
 
 /*5th content is expected to show white player profile photo*/
 .game9ja-match-fixture-list > :nth-child(5) {

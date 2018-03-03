@@ -60,21 +60,21 @@ $torunament_img_height : 180px;
             white-space: nowrap;
             //background-color: red;
         }
-        >:nth-child(4){/*back botton*/
+        >:nth-child(4){/*back button*/
             color: white; 
             position: absolute;
             top: $base_padding * 2;
             left: $base_padding * 2;
             cursor: pointer;
         }
-        >:nth-child(5){/*edit botton*/
+        >:nth-child(5){/*edit button*/
             color: black; 
             position: absolute;
             bottom: $base_padding * 2;
             right: $base_padding * 2;
             cursor: pointer;
         }     
-        >:nth-child(6){/*Tournament type*/
+        >:nth-child(6){/*menu button*/
             color: white;
             cursor: pointer;
         }        
@@ -223,13 +223,24 @@ $torunament_img_height : 180px;
                             font-size: 20px; 
             }
 
-            > :nth-child(2){//Season period
+            > :nth-child(2){
                             position : absolute;
                             bottom : 0;
                             right : $base_padding;
                             font-size: 12px;
-                            color: green;
+
                             font-style: bold;
+
+                            > :nth-child(1){//Season stage previous button
+                                cursor: pointer;
+                            }  
+
+                            > :nth-child(2){//Season stage
+                                color: green;
+                            }  
+                            > :nth-child(3){//Season stage next button
+                                cursor: pointer;
+                            }  
             }
         }
 

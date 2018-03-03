@@ -29,6 +29,10 @@ input[type=checkbox] {
 .game9ja-error {
   color: #dd2222; }
 
+.game9ja-disabled {
+  color: #eee;
+  cursor: pointer; }
+
 .game9ja-unseen {
   display: inline-block;
   width: 6px;

@@ -911,10 +911,16 @@ class Tournament extends WebApplication {
 
         outer: for (var i = 0; i < rounds.length; i++) {
             var fixtures = rounds[i].fixtures;
+            var unfinish_match;
             for (var j = 0; j < fixtures.length; j++) {
                 round_index = i;
                 match_fixt_index = j;
                 var current_fixt = fixtures[match_fixt_index];
+                
+                if(!current_fixt.end_time){
+                    unfinish_match = current_fixt;
+                }
+                
                 if (j > 0) {
                     last_fixt = fixtures[j - 1];
                     if (!last_fixt.start_time) {
@@ -961,13 +967,14 @@ class Tournament extends WebApplication {
                 }
 
             }
+            
+            if(unfinish_match){//NOT YET TESTED - COME BACK ABEG O!!!
+                return this.error(`All matches in round ${rounds[i].sn} must be concluded before setting kickoff time for those in round ${rounds[i].sn + 1}.`);
+            }
         }
 
-
-        if (current_round > 1 && last_round_match && !last_round_match.end_time) {
-            return this.error(`All matches in round ${current_round - 1} must be concluded before setting kickoff time for those in round ${current_round}.`);
-        }
-
+        
+       
         if (round_skip > 0) {
             return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
         }
