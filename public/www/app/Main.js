@@ -1943,18 +1943,15 @@ var Main = {};
             }
 
             for (var i = 0; i < param_arr.length; i++) {
-                var v;
+                var v  = data[param];;
                 var param = param_arr[i];
-                if (param.indexOf('.') > -1) {//array styled param
-                    for (var n  in data) {
-                        if(!Main.util.isArray(data[n])){
-                            continue;
-                        }
-                        //is array property
-                        
+                var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
+                for (var k = 0; k < obj_path.length; i++) {
+                    var par = obj_path[k];
+                    v = v[par];
+                    if(typeof v === 'undefined'){
+                        break;
                     }
-                } else {
-                    v = data[param];
                 }
 
                 if (obj.onRender) {

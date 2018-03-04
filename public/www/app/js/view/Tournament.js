@@ -321,7 +321,7 @@ Ns.view.Tournament = {
                         }
                     }
 
-                    if (tpl_var === 'sets.0.points') {
+                    if (tpl_var === 'score') {
                         //come back to check for correctness 
                         var start_time = new Date(data['start_time']).getTime();
 
