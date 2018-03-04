@@ -117,7 +117,7 @@ Ns.view.Group = {
                 },
                 onRender: function (tpl_var, data) {
 
-                    return renderMember(tpl_var, data);
+                    return onRenderMember(tpl_var, data);
 
                 },
                 onReady: function () {
@@ -145,7 +145,7 @@ Ns.view.Group = {
                 },
                 onRender: function (tpl_var, data) {
 
-                    return renderMember(tpl_var, data);
+                    return onRenderMember(tpl_var, data);
 
                 },
                 onReady: function () {
@@ -156,31 +156,31 @@ Ns.view.Group = {
 
                 }
             });
-            
-            function renderMember(tpl_var, data){
-                                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
-                    var set_exit_group = data.user_id === app_user_id;
 
-                    if (tpl_var === 'action_value') {
-                        if (set_exit_group) {
-                            return 'Exit Group';
-                        }else{
-                            return 'Lets play';
-                        }
-                    }
-
-
-                    if (tpl_var === 'action_clazz') {
-                        if (set_exit_group) {
-                            return 'class="game9ja-exit-group-btn"';
-                        }else{
-                            return '';
-                        }
-                    }
-            }
 
         }
 
+        function onRenderMember(tpl_var, data) {
+            var app_user_id = Ns.view.UserProfile.appUser.user_id;
+            var set_exit_group = data.user_id === app_user_id;
+
+            if (tpl_var === 'action_value') {
+                if (set_exit_group) {
+                    return 'Exit Group';
+                } else {
+                    return 'Lets play';
+                }
+            }
+
+
+            if (tpl_var === 'action_clazz') {
+                if (set_exit_group) {
+                    return 'class="game9ja-exit-group-btn"';
+                } else {
+                    return '';
+                }
+            }
+        }
 
         /*
          $('#group-details-back-btn').on('click', function () {
