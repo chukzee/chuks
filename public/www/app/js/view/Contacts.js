@@ -42,8 +42,9 @@ Ns.view.Contacts = {
                 tplUrl: 'contacts-list-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
-                onSelect: function (evt, match_data) {
-
+                onSelect: function (evt, info) {
+                    
+                    Ns.view.Contacts.onClickContact(evt, info.user_id );
 
                 },
                 onRender: function (tpl_var, data) {

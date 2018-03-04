@@ -85,23 +85,23 @@ Ns.view.Group = {
              </ul>*/
 
             /* 
-            var admins_html = '';
-            var app_user_id = Ns.view.UserProfile.appUser.user_id;
-            for (var i = 0; i < group.admins.length; i++) {
-                var set_exit_group = group.admins[i].user_id === app_user_id;
-                admins_html += Ns.view.Group.memberHtml(group.name, group.admins[i], set_exit_group);
-            }
-            document.getElementById("group-details-admins").innerHTML = admins_html;
+             var admins_html = '';
+             var app_user_id = Ns.view.UserProfile.appUser.user_id;
+             for (var i = 0; i < group.admins.length; i++) {
+             var set_exit_group = group.admins[i].user_id === app_user_id;
+             admins_html += Ns.view.Group.memberHtml(group.name, group.admins[i], set_exit_group);
+             }
+             document.getElementById("group-details-admins").innerHTML = admins_html;
+             
+             var members_html = '';
+             
+             for (var i = 0; i < group.members.length; i++) {
+             var set_exit_group = group.members[i].user_id === app_user_id;
+             members_html += Ns.view.Group.memberHtml(group.name, group.members[i], set_exit_group);
+             }
+             document.getElementById("group-details-members").innerHTML = members_html;
+             */
 
-            var members_html = '';
-
-            for (var i = 0; i < group.members.length; i++) {
-                var set_exit_group = group.members[i].user_id === app_user_id;
-                members_html += Ns.view.Group.memberHtml(group.name, group.members[i], set_exit_group);
-            }
-            document.getElementById("group-details-members").innerHTML = members_html;
-            */
-           
             var admins_container = '#group-details-admins';
 
             Main.listview.create({
@@ -110,12 +110,14 @@ Ns.view.Group = {
                 tplUrl: 'group-admins-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
-                onSelect: function (evt, match_data) {
+                onSelect: function (evt, group_admin) {
 
+                    Ns.view.Group.onClickMember(evt, group.name, group_admin.user_id);
 
                 },
                 onRender: function (tpl_var, data) {
 
+                    return renderMember(tpl_var, data);
 
                 },
                 onReady: function () {
@@ -126,8 +128,8 @@ Ns.view.Group = {
 
                 }
             });
-         
-                       
+
+
             var members_container = '#group-details-members';
 
             Main.listview.create({
@@ -136,12 +138,14 @@ Ns.view.Group = {
                 tplUrl: 'group-members-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
-                onSelect: function (evt, match_data) {
+                onSelect: function (evt, group_member) {
 
+                    Ns.view.Group.onClickMember(evt, group.name, group_member.user_id);
 
                 },
                 onRender: function (tpl_var, data) {
 
+                    return renderMember(tpl_var, data);
 
                 },
                 onReady: function () {
@@ -153,6 +157,28 @@ Ns.view.Group = {
                 }
             });
             
+            function renderMember(tpl_var, data){
+                                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                    var set_exit_group = data.user_id === app_user_id;
+
+                    if (tpl_var === 'action_value') {
+                        if (set_exit_group) {
+                            return 'Exit Group';
+                        }else{
+                            return 'Lets play';
+                        }
+                    }
+
+
+                    if (tpl_var === 'action_clazz') {
+                        if (set_exit_group) {
+                            return 'class="game9ja-exit-group-btn"';
+                        }else{
+                            return '';
+                        }
+                    }
+            }
+
         }
 
 
@@ -280,38 +306,38 @@ Ns.view.Group = {
                     });
         });
     },
-/*
-    memberHtml: function (group_name, memObj, set_exit_group) {
-        var action_value = 'Lets play';
-        var action_clazz = '';
-        if (set_exit_group) {
-            action_value = 'Exit Group';
-            action_clazz = 'class="game9ja-exit-group-btn"';
-        }
-        var onclick_action = 'onclick = \'Ns.view.Group.onClickMember(event, "' + group_name + '","' + memObj.user_id + '")\'';
-
-
-        //var id_prefix = 'game-group-' + Main.util.serilaNo() + '-';
-
-        return '<ul ' + onclick_action + ' class="game9ja-user-show-list">'
-
-                + '  <li><img name="member_photo"  src="' + memObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>'
-                + '   <li>'
-                + '       ' + memObj.full_name
-                + '   </li>'
-                + '    <li>'
-                + '        ' + memObj.user_id
-                + '    </li>'
-
-                + '    <li>'
-                + '        <input  name="action"  ' + action_clazz + ' type="button" value="' + action_value + '"/>'
-                + '    </li>'
-                + '    <li>'
-                + '         ' + memObj.date_joined
-                + '     </li>'
-                + ' </ul>';
-    },
-*/
+    /*
+     memberHtml: function (group_name, memObj, set_exit_group) {
+     var action_value = 'Lets play';
+     var action_clazz = '';
+     if (set_exit_group) {
+     action_value = 'Exit Group';
+     action_clazz = 'class="game9ja-exit-group-btn"';
+     }
+     var onclick_action = 'onclick = \'Ns.view.Group.onClickMember(event, "' + group_name + '","' + memObj.user_id + '")\'';
+     
+     
+     //var id_prefix = 'game-group-' + Main.util.serilaNo() + '-';
+     
+     return '<ul ' + onclick_action + ' class="game9ja-user-show-list">'
+     
+     + '  <li><img name="member_photo"  src="' + memObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>'
+     + '   <li>'
+     + '       ' + memObj.full_name
+     + '   </li>'
+     + '    <li>'
+     + '        ' + memObj.user_id
+     + '    </li>'
+     
+     + '    <li>'
+     + '        <input  name="action"  ' + action_clazz + ' type="button" value="' + action_value + '"/>'
+     + '    </li>'
+     + '    <li>'
+     + '         ' + memObj.date_joined
+     + '     </li>'
+     + ' </ul>';
+     },
+     */
     onClickMember: function (evt, group_name, user_id) {
 
         Ns.view.Group.getInfo(group_name, function (group) {
