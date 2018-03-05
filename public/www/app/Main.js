@@ -1792,6 +1792,7 @@ var Main = {};
         var MAX_OFF = 15;//max number of elements off view before consodering remove element from dom.
         var MAX_REMAINING_OFF = MAX_OFF - 5;//max number of elements to be left after removal for excess 
         var MIN_REMAINING_OFF = MAX_REMAINING_OFF - 5;//number of elements off view before putting back the removed elements
+        var lastSelectedListviewItem;
 
         function listThis(html, obj) {
 
@@ -1873,7 +1874,16 @@ var Main = {};
 
 
             };
+            
+            this.setSelectionColor = function (b) {
+                var clazz = '';//TODO
+                if (b) {
+                    $(lastSelectedListviewItem).addClass(clazz);
+                } else {
+                    $(lastSelectedListviewItem).removeClass(clazz);
+                }
 
+            };
         }
 
         function putItem(html, obj, data, actionFn) {
@@ -2281,6 +2291,7 @@ var Main = {};
             while (parent && parent !== document.body) {
                 var saved_data = parent[_game9ja_Dom_Hold_Data];
                 if (saved_data) {
+                    lastSelectedListviewItem = parent;
                     if (Main.util.isFunc(this.onSelect)) {
                         //call the onSelect callback
                         try {
