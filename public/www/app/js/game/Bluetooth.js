@@ -79,7 +79,7 @@ Ns.game.Bluetooth = {
         Main.listview.create({
             container: '#' + device_lst_container_id,
             scrollContainer: '#' + device_lst_container_id,
-            tplUrl: 'bluetooth-devices-tpl.html',
+            tplUrl: 'tpl/bluetooth-devices-tpl.html',
             wrapItem: false,
             onSelect: function (evt, data) {
 

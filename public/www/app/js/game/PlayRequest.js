@@ -78,10 +78,10 @@ Ns.game.PlayRequest = {
                 fade: true,
                 closeButton: false,
                 modal: true,
-                buttons: ['Cancel'], //
+                buttons: ['CANCEL'], //
                 action: function (btn, value) {
                     this.hide();
-                    if (value.indexOf('Cancel') === 0) {
+                    if (value.indexOf('CANCEL') === 0) {
 
                         if (play_request_data) {
                             Main.ro.play_request.abort(play_request_data.game_id)

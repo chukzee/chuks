@@ -1943,13 +1943,14 @@ var Main = {};
             }
 
             for (var i = 0; i < param_arr.length; i++) {
-                var v  = data[param];;
+                var v = data[param];
+                ;
                 var param = param_arr[i];
                 var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
                 for (var k = 0; k < obj_path.length; i++) {
                     var par = obj_path[k];
                     v = v[par];
-                    if(typeof v === 'undefined'){
+                    if (typeof v === 'undefined') {
                         break;
                     }
                 }
@@ -2298,13 +2299,19 @@ var Main = {};
 
         this.create = function (obj) {
             if (!obj.tplUrl) {
-                console.warn('missing list property - tplUrl');
+                console.warn('Missing list property - tplUrl');
                 return;
             } else if (!Main.util.isString(obj.container)) {
-                console.warn('missing list property or not a string - container');
+                console.warn('Missing list property or not a string - container');
                 return;
             } else if (!Main.util.isFunc(obj.onReady)) {
-                console.warn('missing list property or not a function - onReady');
+                console.warn('Missing list property or not a function - onReady');
+                return;
+            } else if (Main.util.isString(obj.container) && obj.container.charAt(0) !== '#') {
+                console.warn("Invalid id selector for container property - must have '#' prefix but found '" + obj.container + "'");
+                return;
+            } else if (Main.util.isString(obj.scrollContainer) && obj.scrollContainer.charAt(0) !== '#') {
+                console.warn("Invalid id selector for scrollContainer property - must have '#' prefix but found '" + obj.scrollContainer + "'");
                 return;
             }
 

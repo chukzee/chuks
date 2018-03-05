@@ -37,7 +37,14 @@ and open the template in the editor.
                 <div><span id="tournament-details-tournament-type">Round Robin</span> Tournament</div>
             </div>
             <div> <!--tournament officials-->
-                <div>Officials</div>
+                <div>
+                    <span>
+                        <span id="tournament-details-officials-count">2</span>
+                        officials
+                    </span> 
+
+                    <span id="tournament-details-officials-add">Add <i class="fa fa-plus"></i></span><!--visible only to tournament officials--> 
+                </div>
 
                 <div  id="tournament-details-officials" class="game9a-horizontal-list" >
                     <div style="background: blue; width: 80px; height: 80px;">
@@ -70,8 +77,13 @@ and open the template in the editor.
 
             <div><!--players-->
                 <div>
-                    <span>Registered players</span> 
-                    <button  id="tournament-details--registered-players-add">Add <!--visible only to tournament officials--> </button></div>
+                    <span>
+                        <span id="tournament-details-registered-players-count">10</span> 
+                        registered players
+                    </span> 
+
+                    <span id="tournament-details-registered-players-add">Add <i class="fa fa-plus"></i></span><!--visible only to tournament officials--> 
+                </div>
 
                 <div id="tournament-details-registered-players" class="game9a-horizontal-list">
                     <div style="background: blue; width: 80px; height: 80px;">
@@ -122,10 +134,12 @@ and open the template in the editor.
                         <span id="tournament-details-season-players-count">4</span> 
                         players
                     </span> 
-                    <button id="tournament-details-season-table-standings">
-                        Performance Standings
-                    </button>
-
+                    <div>
+                        <button id="tournament-details-season-table-standings">
+                            Performance
+                        </button>
+                        <span id="tournament-details-season-players-add">Add <i class="fa fa-plus"></i></span> <!--visible only to tournament officials--> 
+                    </div>
                 </div>
 
                 <div class="game9a-horizontal-list" id="tournament-details-season-players"><!--player list-->

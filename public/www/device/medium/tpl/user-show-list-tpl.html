@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/user-show-list.css" />
+    </head>
+    <body>
+
+        <ul class="game9ja-user-show-list">
+
+            <li><div><img  src="{profile_pic}" onerror="Main.helper.loadDefaultProfilePhoto(event)" alt=" "/></div></li>
+            <li>
+                {full_name}
+            </li>
+            <li>
+                {user_id}
+            </li>
+            
+            <li>
+                <input type="button" value="{action}"/>
+            </li>
+            <li><!-- show time ago - this is hidden in user play list but visible in notification-->
+                {time_ago}
+            </li>
+        </ul>
+
+    </body>
+</html>
+
+

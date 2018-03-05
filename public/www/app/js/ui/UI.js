@@ -270,12 +270,12 @@ Ns.ui.UI = {
                 } else {
                     var Back_to_My_Game = 'Back to My Game';
                     Main.confirm(function (option) {
-                        if (option === 'Back to My Game') {
+                        if (option === 'BACK TO MY GAME') {
                             Ns.GameHome.showGameView(m);
                         }
                     }, 'Sorry! You currently have a live game session!<br/> You cannot have more than one live game session running at the same time.'
                             , 'NOT ALLOWED'
-                            , ['Cancel', Back_to_My_Game], false);
+                            , ['CANCEL', Back_to_My_Game], false);
 
 
                 }

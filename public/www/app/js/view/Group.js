@@ -107,7 +107,7 @@ Ns.view.Group = {
             Main.listview.create({
                 container: admins_container,
                 scrollContainer: admins_container,
-                tplUrl: 'group-admins-tpl.html',
+                tplUrl: 'tpl/group-admins-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, group_admin) {
@@ -135,7 +135,7 @@ Ns.view.Group = {
             Main.listview.create({
                 container: members_container,
                 scrollContainer: members_container,
-                tplUrl: 'group-members-tpl.html',
+                tplUrl: 'tpl/group-members-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, group_member) {
@@ -161,6 +161,7 @@ Ns.view.Group = {
         }
 
         function onRenderMember(tpl_var, data) {
+            
             var app_user_id = Ns.view.UserProfile.appUser.user_id;
             var set_exit_group = data.user_id === app_user_id;
 

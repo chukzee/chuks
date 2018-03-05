@@ -115,6 +115,7 @@
             "Stats.js",
             "Util.js",
             "ui/UI.js",
+            "ui/Dialog.js",
             "game/Match.js",
             "game/PlayRequest.js",
             "view/Tournament.js",

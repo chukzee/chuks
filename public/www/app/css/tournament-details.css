@@ -109,14 +109,26 @@ and open the template in the editor.
     position: relative; }
     .game9ja-tournament-details > :nth-child(2) > :nth-child(1) {
       position: relative;
-      font-size: 20px;
+      font-size: 14px;
       color: #444;
       height: 30px;
+      vertical-align: middle;
       -webkit-box-sizing: box-sizing;
       box-sizing: box-sizing;
-      border-bottom: 0.0325em #eee solid;
-      display: table-cell;
-      vertical-align: bottom; }
+      border-bottom: 0.0325em #eee solid; }
+      .game9ja-tournament-details > :nth-child(2) > :nth-child(1) > :nth-child(1) {
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        font-size: 20px; }
+      .game9ja-tournament-details > :nth-child(2) > :nth-child(1) > :nth-child(2) {
+        position: absolute;
+        bottom: 2px;
+        right: 5px;
+        font-size: 14px;
+        background-color: transparent;
+        border-color: green;
+        outline: none; }
   .game9ja-tournament-details > :nth-child(3) {
     /*registered players*/
     border-radius: 0px !important;
@@ -132,12 +144,12 @@ and open the template in the editor.
       border-bottom: 0.0325em #eee solid; }
       .game9ja-tournament-details > :nth-child(3) > :nth-child(1) > :nth-child(1) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         left: 0;
         font-size: 20px; }
       .game9ja-tournament-details > :nth-child(3) > :nth-child(1) > :nth-child(2) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         right: 5px;
         font-size: 14px;
         background-color: transparent;
@@ -157,7 +169,7 @@ and open the template in the editor.
       border-bottom: 0.0325em #eee solid; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(1) > :nth-child(1) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         left: 0;
         font-size: 20px; }
         .game9ja-tournament-details > :nth-child(4) > :nth-child(1) > :nth-child(1) > :nth-child(1) {
@@ -167,7 +179,7 @@ and open the template in the editor.
           margin-left: 30px; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(1) > :nth-child(2) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         right: 5px;
         font-size: 14px;
         cursor: pointer; }
@@ -181,17 +193,27 @@ and open the template in the editor.
       box-sizing: box-sizing; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(2) > :nth-child(1) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         left: 0;
         font-size: 14px; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(2) > :nth-child(2) {
         position: absolute;
-        bottom: 0;
-        right: 5px;
-        font-size: 14px;
-        background-color: transparent;
-        border-color: green;
-        outline: none; }
+        bottom: 2px;
+        right: 5px; }
+        .game9ja-tournament-details > :nth-child(4) > :nth-child(2) > :nth-child(2) > :nth-child(1) {
+          position: relative;
+          background-color: transparent;
+          font-size: 14px;
+          color: green;
+          outline: none;
+          border: none; }
+        .game9ja-tournament-details > :nth-child(4) > :nth-child(2) > :nth-child(2) > :nth-child(2) {
+          position: relative;
+          font-size: 14px;
+          display: block;
+          float: right;
+          margin-left: 5px;
+          clear: both; }
     .game9ja-tournament-details > :nth-child(4) > :nth-child(3) {
       position: relative; }
     .game9ja-tournament-details > :nth-child(4) > :nth-child(4) {
@@ -205,12 +227,12 @@ and open the template in the editor.
       border-bottom: 0.0325em #eee solid; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(4) > :nth-child(1) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         left: 0;
         font-size: 20px; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(4) > :nth-child(2) {
         position: absolute;
-        bottom: 0;
+        bottom: 2px;
         right: 5px;
         font-size: 12px;
         font-style: bold; }

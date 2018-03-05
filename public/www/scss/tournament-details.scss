@@ -92,13 +92,29 @@ $torunament_img_height : 180px;
         position : relative;
         > :nth-child(1){
             position : relative;
-            font-size: 20px;  
+            font-size: 14px;  
             color : $font_color; 
-            height: 30px;            
+            height: 30px;
+            vertical-align: middle;
             @include box-sizing(box-sizing);
-            border-bottom: $list_divider_width $list_divider_color solid;            
-            display: table-cell;
-            vertical-align: bottom;
+            border-bottom: $list_divider_width $list_divider_color solid;
+
+            > :nth-child(1){//Officials
+                            position : absolute;
+                            bottom : 2px;
+                            left : 0;
+                            font-size: 20px; 
+            }
+
+            > :nth-child(2){//Add
+                            position : absolute;
+                            bottom : 2px;
+                            right : $base_padding;
+                            font-size: 14px;
+                            background-color: transparent;
+                            border-color: green;
+                            outline: none;
+            }
         }
 
     }
@@ -117,14 +133,14 @@ $torunament_img_height : 180px;
 
             > :nth-child(1){//Registered players
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             left : 0;
                             font-size: 20px; 
             }
 
             > :nth-child(2){//Add
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             right : $base_padding;
                             font-size: 14px;
                             background-color: transparent;
@@ -151,7 +167,7 @@ $torunament_img_height : 180px;
 
             > :nth-child(1){//Season
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             left : 0;
                             font-size: 20px;
 
@@ -169,7 +185,7 @@ $torunament_img_height : 180px;
 
             > :nth-child(2){// left and right arrow
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             right : $base_padding;
                             font-size: 14px;
                             cursor: pointer;
@@ -186,20 +202,36 @@ $torunament_img_height : 180px;
 
             > :nth-child(1){//[number] players
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             left : 0;
                             font-size: 14px; 
             }
 
-            > :nth-child(2){//Table standing
+            > :nth-child(2){//Performance standing
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             right : $base_padding;
-                            font-size: 14px;
-                            background-color: transparent;
-                            border-color: green;
-                            outline: none;
+                            
+                            > :nth-child(1){//Performance standing
+                                            position : relative;
+                                            background-color: transparent;
+                                            font-size: 14px;
+                                            color: green;
+                                            outline: none;
+                                            border: none;
+
+                            }
+                            > :nth-child(2){//Add season player
+                                            position : relative;
+                                            font-size: 14px;
+                                            display: block; 
+                                            float: right; 
+                                            margin-left: $base_padding; 
+                                            clear: both;
+                                            //background-color: red;
+                            }
             }
+
         }
 
 
@@ -218,29 +250,29 @@ $torunament_img_height : 180px;
 
             > :nth-child(1){//Match fixtures
                             position : absolute;
-                            bottom : 0;
+                            bottom : 2px;
                             left : 0;
                             font-size: 20px; 
             }
 
             > :nth-child(2){
-                            position : absolute;
-                            bottom : 0;
-                            right : $base_padding;
-                            font-size: 12px;
+                position : absolute;
+                bottom : 2px;
+                right : $base_padding;
+                font-size: 12px;
 
-                            font-style: bold;
+                font-style: bold;
 
-                            > :nth-child(1){//Season stage previous button
+                > :nth-child(1){//Season stage previous button
                                 cursor: pointer;
-                            }  
+                }  
 
-                            > :nth-child(2){//Season stage
+                > :nth-child(2){//Season stage
                                 color: green;
-                            }  
-                            > :nth-child(3){//Season stage next button
+                }  
+                > :nth-child(3){//Season stage next button
                                 cursor: pointer;
-                            }  
+                }  
             }
         }
 

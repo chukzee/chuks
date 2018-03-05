@@ -13,8 +13,7 @@ and open the template in the editor.
     <body>
 
         <ul class="game9ja-user-show-list">
-
-            <li><img name="user_photo"  src="{photo_url}" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>
+            <li><img name="member_photo"  src="{photo_url}" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>
             <li>
                 {full_name}
             </li>
@@ -23,10 +22,10 @@ and open the template in the editor.
             </li>
 
             <li>
-                <input  name="action"  type="button" value="{action_value}"/>
+                <input  name="action"  class="{action_clazz}" type="button" value="{action_value}"/>
             </li>
             <li>
-                <!--Nothing!-->
+                {date_joined}
             </li>
         </ul>
 

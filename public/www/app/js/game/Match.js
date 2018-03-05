@@ -55,7 +55,7 @@ Ns.game.Match = {
         Main.listview.create({
             container: container,
             scrollContainer: container,
-            tplUrl: 'live-game-tpl.html',
+            tplUrl: 'tpl/live-game-tpl.html',
             wrapItem: false,
             //itemClass: "game9ja-live-games-list",
             onSelect: function (evt, match_data) {
@@ -315,7 +315,14 @@ Ns.game.Match = {
             //display tournament header info
             document.getElementById('home-tournament-pic').src = tournament.photo_url;
             document.getElementById('home-tournament-name').innerHTML = tournament.name;
-            document.getElementById('home-tournament-duration').innerHTML = tournament.duration;
+            if(tournament.seasons.length > 0){
+                var season = tournament.seasons[tournament.seasons.length - 1];//current season
+                var season_str = 'Season '+season.sn+': '+ Ns.Util.formatTime(season.start_time);
+                document.getElementById('home-tournament-brief').innerHTML = season_str;
+            }else{
+                document.getElementById('home-tournament-brief').innerHTML = 'No season';
+            }
+            
 
             Ns.game.Match.refreshTournamentsMatchList(tournament);
         }

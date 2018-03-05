@@ -28,11 +28,11 @@ Ns.GameHome = {
             title: "Play Robot", //TODO - display a robot like photo alongside the title
             content: Ns.ui.UI.gameSettings(match.game_name),
             fade: true,
-            buttons: ['Cancel', 'Play'],
+            buttons: ['CANCEL', 'PLAY'],
             closeButton: false,
             modal: true,
             action: function (btn, value) {
-                if (value === 'Play') {
+                if (value === 'PLAY') {
                     
                     document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
@@ -108,10 +108,10 @@ Ns.GameHome = {
             fade: true,
             closeButton: false,
             modal: true,
-            buttons: ['Cancel'],
+            buttons: ['CANCEL'],
             action: function (btn, value) {
 
-                if (value === 'Cancel') {
+                if (value === 'CANCEL') {
                     this.hide();
                 }
 

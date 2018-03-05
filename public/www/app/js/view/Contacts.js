@@ -3,6 +3,33 @@
 
 Ns.view.Contacts = {
 
+    /**
+     * list of contacts info
+     * @type Array
+     */
+    contactList: [],
+    /**
+     * this constructor is called once automatically by the framework
+     * 
+     * @returns {undefined}
+     */
+    constructor: function () {
+
+        try {
+            var list = window.localStorage.getItem(Ns.Const.CONTACT_LIST_KEY);
+            list = JSON.parse(list);
+            if (Main.util.isArray(list)) {
+                Ns.view.Contacts.contactList = list;
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+
+        var obj = {
+            contact: 'info/Contact'
+        };
+        Main.rcall.live(obj);
+    },
     content: function () {
 
         var contacts = Ns.view.UserProfile.appUser.contacts;
@@ -19,6 +46,10 @@ Ns.view.Contacts = {
         contactsContent(tempInfos);
 
         Ns.view.UserProfile.getUsersInfo(contacts, function (infos) {
+            if(Main.util.isArray(infos)){
+                Ns.view.Contacts.contactList = infos;
+                Ns.view.Contacts.save();
+            }
             contactsContent(infos);
         });
 
@@ -34,22 +65,24 @@ Ns.view.Contacts = {
 
             document.getElementById("game-contacts-count").innerHTML = infos.length;
 
-            var admins_container = '#game-contacts-list';
+            var container = '#game-contacts-list';
 
             Main.listview.create({
-                container: admins_container,
-                scrollContainer: admins_container,
-                tplUrl: 'contacts-list-tpl.html',
+                container: container,
+                scrollContainer: container,
+                tplUrl: 'tpl/contacts-list-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, info) {
-                    
-                    Ns.view.Contacts.onClickContact(evt, info.user_id );
+
+                    Ns.view.Contacts.onClickContact(evt, info.user_id);
 
                 },
                 onRender: function (tpl_var, data) {
 
-
+                    if (tpl_var === 'action_value') {
+                        return 'Lets play';
+                    }
                 },
                 onReady: function () {
 
@@ -115,4 +148,10 @@ Ns.view.Contacts = {
         Ns.game.PlayRequest.openPlayDialog(contact);
     },
 
+    save: function () {
+        var list = Ns.view.Contacts.contactList;
+        if (Main.util.isArray(list)) {
+            window.localStorage.setItem(Ns.Const.CONTACT_LIST_KEY, JSON.stringify(list));
+        }
+    }
 };

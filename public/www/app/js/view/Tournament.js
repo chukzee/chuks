@@ -64,8 +64,11 @@ Ns.view.Tournament = {
              "tournament-details-edit"
              "tournament-details-menu"
              "tournament-details-tournament-type"
+             "tournament-details-officials-count"
+             "tournament-details-officials-add"
              "tournament-details-officials"
-             "tournament-details--registered-players-add"
+             "tournament-details-registered-players-count"
+             "tournament-details-registered-players-add"
              "tournament-details-registered-players"
              "tournament-details-season-number"
              "tournament-details-season-date"
@@ -73,6 +76,7 @@ Ns.view.Tournament = {
              "tournament-details-season-next"
              "tournament-details-season-players-count"
              "tournament-details-season-table-standings"
+             "tournament-details-season-players-add"
              "tournament-details-season-players"
              "tournament-details-stage-previous"
              "tournament-details-stage"
@@ -139,10 +143,36 @@ Ns.view.Tournament = {
 
             });
 
-            $('#tournament-details--registered-players-add').on('click', function () {
+            $('#tournament-details-officials-count').on('click', function () {
 
-                alert('TODO tournament-details--registered-players-add');
+                alert('TODO tournament-details-officials-count');
 
+            });
+
+            $('#tournament-details-officials-add').on('click', function () {
+                var opt = {
+                    title: 'Add Official',
+                    multiSelect: false
+                };
+                Ns.ui.Dialog.selectContactList(opt, function (choice) {
+
+                });
+
+            });
+
+            $('#tournament-details-registered-players-count').on('click', function () {
+
+                alert('TODO tournament-details-registered-players-count');
+
+            });
+
+            $('#tournament-details-registered-players-add').on('click', function () {
+                var opt = {
+                    title: 'Register Player'
+                };
+                Ns.ui.Dialog.selectContactList(opt, function (choice) {
+
+                });
             });
 
 
@@ -191,6 +221,17 @@ Ns.view.Tournament = {
 
             });
 
+
+
+            $('#tournament-details-season-players-add').on('click', function () {
+
+                var arr = [];
+
+                Ns.ui.Dialog.selectSimpleList({title: 'Add Season Player'}, arr, function (item) {
+
+                });
+
+            });
             $('#tournament-details-stage-previous').on('click', function () {
 
                 //enable the 'next' button
@@ -247,8 +288,8 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-season-players-count").innerHTML = season.slots.length;
 
             round_index = displayFixturesAtRound(season.rounds);
-            
-                        
+
+
             if (round_index === 0) {
                 //disable the 'previous' button
                 $('#tournament-details-stage-previous').addClass('game9ja-disabled');
@@ -297,7 +338,7 @@ Ns.view.Tournament = {
             Main.listview.create({
                 container: container,
                 scrollContainer: container,
-                tplUrl: 'match-fixture-tpl.html',
+                tplUrl: 'tpl/match-fixture-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, match_data) {
