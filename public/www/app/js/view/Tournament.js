@@ -100,6 +100,14 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
             document.getElementById("tournament-details-tournament-type").innerHTML = tournament.type.substring(0, 1).toUpperCase() + tournament.type.substring(1);
 
+            document.getElementById("tournament-details-officials-count").innerHTML = tournament.officials.length > 0
+                    ? tournament.officials.length + ' Officials'
+                    : tournament.officials.length + ' Official';
+
+            document.getElementById("tournament-details-registered-players-count").innerHTML = tournament.registered_players.length > 0
+                    ? tournament.registered_players.length + ' Registered players'
+                    : tournament.registered_players.length + ' Registered player';
+
             if (season_index === 0) {
                 //disable the 'previous' button
                 $('#tournament-details-season-previous').addClass('game9ja-disabled');
@@ -143,11 +151,6 @@ Ns.view.Tournament = {
 
             });
 
-            $('#tournament-details-officials-count').on('click', function () {
-
-                alert('TODO tournament-details-officials-count');
-
-            });
 
             $('#tournament-details-officials-add').on('click', function () {
                 var opt = {
@@ -160,11 +163,6 @@ Ns.view.Tournament = {
 
             });
 
-            $('#tournament-details-registered-players-count').on('click', function () {
-
-                alert('TODO tournament-details-registered-players-count');
-
-            });
 
             $('#tournament-details-registered-players-add').on('click', function () {
                 var opt = {
@@ -285,7 +283,10 @@ Ns.view.Tournament = {
 
             document.getElementById("tournament-details-season-number").innerHTML = season ? season.sn : '';
             document.getElementById("tournament-details-season-date").innerHTML = season.start_time;
-            document.getElementById("tournament-details-season-players-count").innerHTML = season.slots.length;
+
+            document.getElementById("tournament-details-season-players-count").innerHTML = season.slots.length > 0
+                    ? season.slots.length + ' Players'
+                    : season.slots.length + ' Player';
 
             round_index = displayFixturesAtRound(season.rounds);
 

@@ -2,9 +2,9 @@
 Ns.ui.Dialog = {
 
     selectContactList: function (options, callback) {
-        var selection = [];
+        var selected_items = [];
         var multi_select = options.multiSelect === true || options.singleSelect === false;
-        var container_id = 'bluetooth-dialog-continer';
+
         var btns = [];
         if (multi_select) {
             btns = ['CANCEL', 'OK'];
@@ -15,15 +15,15 @@ Ns.ui.Dialog = {
         Main.dialog.show({
             title: options.title ? options.title : '',
             //content: '<div id="' + container_id + '"></div>',
-            width: window.innerWidth * 0.7,
-            height: window.innerHeight * 0.5,
+            //width: window.innerWidth * 0.7,
+            //height: window.innerHeight * 0.5,
             fade: true,
             closeButton: false,
             modal: true,
             buttons: btns,
             action: function (btn, value) {
                 if (value === 'OK') {
-                    callback(selection);
+                    callback(selected_items);
                 }
                 this.hide();
 
@@ -35,7 +35,7 @@ Ns.ui.Dialog = {
                     dialog: this,
                     url: 'tpl/simple-list-b-tpl.html',
                     items: contacts,
-                    selection: selection,
+                    selected_items: selected_items,
                     multi_select: multi_select
                 });
             }
@@ -51,24 +51,37 @@ Ns.ui.Dialog = {
     },
 
     _addListview: function (obj) {
+        var initial_title = obj.dialog.getTitle();//initial title
+        
+        var indicatorHeader = function(selection_count){
+            var new_title = '<span>'+selection_count+'</span><span>|</span><span>'+initial_title+'</span>';
+            obj.dialog.setTitle(new_title);
+        };
+        
+        if (obj.multi_select) {//multi selection
+            indicatorHeader(obj.dialog, 0);
+        }
 
         Main.listview.create({
-            container: container,
-            scrollContainer: container,
+            container: obj.dialog.getBody(),
+            scrollContainer: obj.dialog.getBody(),
             tplUrl: obj.url,
             wrapItem: false,
             onSelect: function (evt, data) {
-                var index = obj.selection.indexOf(data);
+                var index = obj.selected_items.indexOf(data);
                 if (index === -1) {
-                    obj.selection.push(data);
+                    obj.selected_items.push(data);
                     this.setSelectionColor(true);
                 } else {
-                    obj.selection.splice(index, 1);//deselect
+                    obj.selected_items.splice(index, 1);//deselect
                     this.setSelectionColor(false);
                 }
                 if (!obj.multi_select) {//single selection
                     obj.dialog.hide();
+                    return;
                 }
+                
+                indicatorHeader(obj.selected_items.length);
 
             },
             onRender: function (tpl_var, data) {
@@ -82,6 +95,7 @@ Ns.ui.Dialog = {
                 }
             }
         });
+        
 
     }
 

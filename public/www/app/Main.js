@@ -1874,11 +1874,16 @@ var Main = {};
 
 
             };
-            
+
             this.setSelectionColor = function (b) {
-                var clazz = '';//TODO
+                var clazz = 'game9ja-listview-item-selected';
+                if (!lastSelectedListviewItem) {
+                    return;
+                }
                 if (b) {
-                    $(lastSelectedListviewItem).addClass(clazz);
+                    if (!$(lastSelectedListviewItem).hasClass(clazz)) {
+                        $(lastSelectedListviewItem).addClass(clazz);
+                    }
                 } else {
                     $(lastSelectedListviewItem).removeClass(clazz);
                 }
@@ -1953,24 +1958,24 @@ var Main = {};
             }
 
             for (var i = 0; i < param_arr.length; i++) {
-                var v = data[param];
-                ;
+                var v;
                 var param = param_arr[i];
-                var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
-                for (var k = 0; k < obj_path.length; i++) {
-                    var par = obj_path[k];
-                    v = v[par];
-                    if (typeof v === 'undefined') {
-                        break;
+                if (obj.onRender) {
+                    v = obj.onRender(param, data);
+                }
+
+                if (typeof v === 'undefined') {
+                    var v = data[param];
+                    var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
+                    for (var k = 0; k < obj_path.length; i++) {
+                        var par = obj_path[k];
+                        v = v[par];
+                        if (typeof v === 'undefined') {
+                            break;
+                        }
                     }
                 }
 
-                if (obj.onRender) {
-                    var rd_val = obj.onRender(param, data);
-                    if (typeof rd_val !== 'undefined') {
-                        v = rd_val;
-                    }
-                }
 
                 html = html.replace('{' + param + '}', v);
             }
@@ -2290,7 +2295,7 @@ var Main = {};
 
             while (parent && parent !== document.body) {
                 var saved_data = parent[_game9ja_Dom_Hold_Data];
-                if (saved_data) {
+                if (typeof saved_data !== 'undefined') {
                     lastSelectedListviewItem = parent;
                     if (Main.util.isFunc(this.onSelect)) {
                         //call the onSelect callback
@@ -3230,6 +3235,10 @@ var Main = {};
 
             var obj = param.obj,
                     dlg_cmp = param.dlg_cmp,
+                    setHeaderTitle = param.setHeaderTitle,
+                    setBodyContent = param.setBodyContent,
+                    getDialogContentEl = param.getDialogContentEl,
+                    getDialogBodyEl = param.getDialogBodyEl,
                     resizeListenBind = param.resizeListenBind,
                     touchCloseFn = param.touchCloseFn,
                     deviceBackHideFunc = param.deviceBackHideFunc,
@@ -3241,6 +3250,28 @@ var Main = {};
                 }
             };
 
+            this.setTitle = function (title) {
+                obj.tile = title;
+                setHeaderTitle(title);
+            };
+
+            this.getTitle = function () {
+                return obj.title;
+            };
+            
+            this.setContent = function(content){
+                obj.content = content;
+                setBodyContent(content);
+            };
+
+            this.getContentElement = function(){
+                return getDialogContentEl();
+            };
+
+            this.getBody = function () {
+                return getDialogBodyEl();
+            };
+            
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -3271,6 +3302,7 @@ var Main = {};
             }
 
         }
+
 
         /**
          * Creates and  shows a dialog.
@@ -3331,8 +3363,18 @@ var Main = {};
 
             var footer_el = document.createElement('div');
             footer_el.className = 'game9ja-dialog-footer';
-            var title_html = '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + obj.title + '</div>';
-            header_el.innerHTML = title_html;
+            //var title_html = '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + obj.title + '</div>';//old
+            //header_el.innerHTML = title_html;//old
+
+            var titleHtml = function (title) {//new
+                return '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + title + '</div>';
+            };
+
+            var setHeaderTitle = function (title) {//new 
+                header_el.innerHTML = titleHtml(title);
+            };
+
+            setHeaderTitle(obj.title);//new
 
             if (obj.iconCls) {
                 var icon_el = document.createElement('span');
@@ -3340,12 +3382,31 @@ var Main = {};
                 body_el.appendChild(icon_el);
             }
 
+
             var content_el = document.createElement('div');
-            content_el.innerHTML = obj.content;
+            //content_el.innerHTML = obj.content;//old
+            
+            var setBodyContent = function(content){//new
+                content_el.innerHTML = content;
+            };
+            
+            setBodyContent(obj.content);//new
+            
+            
             content_el.style.width = '100%';
+
+            
 
             body_el.appendChild(content_el);
 
+            var getDialogContentEl = function(){
+                return content_el;
+            };
+
+            var getDialogBodyEl = function(){
+                return body_el;
+            };
+            
             if (obj.width) {
                 var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
                 if (!isNaN(width)) {
@@ -3364,7 +3425,8 @@ var Main = {};
                 }
             }
 
-            header_el.innerHTML = title_html;
+            //header_el.innerHTML = title_html;//old
+            header_el.innerHTML = titleHtml(obj.title);//new
 
             var pad_factor = 0.8;
 
@@ -3417,6 +3479,10 @@ var Main = {};
             var obj_param = {
                 obj: obj,
                 dlg_cmp: dlg_cmp,
+                setHeaderTitle: setHeaderTitle,
+                getDialogContentEl: getDialogContentEl,
+                setBodyContent : setBodyContent,
+                getDialogBodyEl : getDialogBodyEl,
                 resizeListenBind: resizeListenBind,
                 touchCloseFunc: touchCloseFunc,
                 deviceBackHideFunc: deviceBackHideFunc,
