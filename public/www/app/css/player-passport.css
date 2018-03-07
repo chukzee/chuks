@@ -1,12 +1,39 @@
-game9ja-player-passport > :nth-child(1) {
+.game9ja-player-passport > :nth-child(1) {
   background: green;
   width: 100%; }
-game9ja-player-passport > :nth-child(2) {
+  .game9ja-player-passport > :nth-child(1) > :nth-child(1) {
+    background: green;
+    width: 45px;
+    height: 45px;
+    margin: 0 auto; }
+    .game9ja-player-passport > :nth-child(1) > :nth-child(1) > :nth-child(1) {
+      width: 100%;
+      height: 100%; }
+.game9ja-player-passport > :nth-child(2) {
   width: 100%;
   height: 35px;
   overflow: hidden; }
-game9ja-player-passport > :nth-child(3) {
-  background: green;
-  width: 100%; }
+  .game9ja-player-passport > :nth-child(2) > :nth-child(1) {
+    background: red;
+    padding: 2px;
+    box-sizing: border-box;
+    font-size: 14px;
+    text-height: font-size;
+    overflow: visible;
+    text-overflow: ellipsis;
+    white-space: initial;
+    text-align: center; }
+.game9ja-player-passport > :nth-child(3) {
+  width: 100%;
+  height: 20px;
+  background: brown;
+  padding: 2px;
+  box-sizing: border-box;
+  font-size: 12px;
+  text-height: font-size;
+  overflow: visible;
+  text-overflow: ellipsis;
+  white-space: initial;
+  text-align: left; }
 
 /*# sourceMappingURL=player-passport.css.map */

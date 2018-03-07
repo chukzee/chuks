@@ -9,22 +9,22 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../app/css/player-passport.css" />
     </head>
     <body>
+        
         <div class="game9ja-player-passport">
             <div>
                 <div>
-                    <img src="../resources/images/default_person.png" alt=""/>
+                    <img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{photo_url}" alt=""/>
                 </div>
             </div>
             <div>
                 <div>
-                    Chuks Alimele Alimele Alimele Alimele Alimele
+                    {full_name}
                 </div>
             </div>
             <div>
-                <i>Rating</i><span>****</span>
+                <i>Rating:</i><span>{rating}</span>
             </div>
         </div>
     </body>

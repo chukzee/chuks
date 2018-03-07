@@ -164,6 +164,33 @@ Ns.view.Tournament = {
                             .get(function (msg) {
                                 Main.alert(msg, 'Success', Main.const.INFO);
 
+                                Main.tpl.template({
+                                    tplUrl: 'tpl/official-passport-tpl.html',
+                                    data: tournament.registered_players[i],
+                                    onReplace: function (tpl_var, data) {
+
+                                    },
+                                    afterReplace: function (html, data) {
+
+                                        var dom_extra_field = 'tournament-official-dom-extra-field';
+                                        var id = 'tournament-details-officials';
+                                        var children = $('#' + id).children();
+                                        //check if the official has already been added then remove it if so
+                                        for (var n = 0; n < children.length; n++) {
+                                            if (children[n][dom_extra_field]) {
+                                                if (children[n][dom_extra_field].user_id === data.user_id) {
+                                                    children[n].remove();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        //now add the official
+                                        $('#' + id).append(html);
+                                        var children = $('#' + id).children();
+                                        var last_child = children[children.length - 1];
+                                        last_child[dom_extra_field] = data;
+                                    }
+                                });
 
                             })
                             .error(function (err) {
@@ -222,29 +249,31 @@ Ns.view.Tournament = {
                                 for (var i = 0; i < tournament.registered_players.length; i++) {
 
                                     Main.tpl.template({
-                                        tplUrl: '',
+                                        tplUrl: 'tpl/regisgtered-player-passport-tpl.html',
                                         data: tournament.registered_players[i],
                                         onReplace: function (tpl_var, data) {
-                                            
+                                            if (tpl_var === 'rating') {
+                                                //TODO
+                                            }
                                         },
                                         afterReplace: function (html, data) {
-                                            
+
                                             var dom_extra_field = 'tournament-registered-player-dom-extra-field';
-                                            
-                                            var children = $('#tournament-details-registered-players').children();
+                                            var id = 'tournament-details-registered-players';
+                                            var children = $('#' + id).children();
                                             //check if the registered player has already been added then remove it if so
-                                            for(var n=0; n<children.length; n++){
-                                                if(children[n][dom_extra_field]){
-                                                    if(children[n][dom_extra_field].user_id === data.user_id){
+                                            for (var n = 0; n < children.length; n++) {
+                                                if (children[n][dom_extra_field]) {
+                                                    if (children[n][dom_extra_field].user_id === data.user_id) {
                                                         children[n].remove();
                                                         break;
                                                     }
                                                 }
                                             }
                                             //now add the registered player
-                                            $('#tournament-details-registered-players').append(html);
-                                            var children = $('#tournament-details-registered-players').children();
-                                            var last_child = children[children.length -1];
+                                            $('#' + id).append(html);
+                                            var children = $('#' + id).children();
+                                            var last_child = children[children.length - 1];
                                             last_child[dom_extra_field] = data;
                                         }
                                     });
@@ -262,10 +291,19 @@ Ns.view.Tournament = {
                     title: 'Add Season Player',
                     multiSelect: false
                 };
-                var arr = [];
+                var arr = tournament.registered_players;
 
                 Ns.ui.Dialog.selectSimpleList(opt, arr, function (item) {
 
+                    Main.ro.tourn.seasonAddPlayer(user_id, tournament_name, season_number, player_id, slot_number)
+                            .get(function (data) {
+                                //alert(data);
+                                console.log(data);
+                            })
+                            .error(function (err) {
+                                //alert(err);
+                                console.log(err);
+                            });
                 });
 
             });
