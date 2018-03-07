@@ -1780,6 +1780,96 @@ var Main = {};
 
     }
 
+    function Tpl() {
+        var tplList = {};
+        var regexTplMatchParams = {};
+        var queue = [];
+        
+        function tplReplace(html, obj, data) {
+
+            var param_arr = regexTplMatchParams[obj.tplUrl];
+
+            if (!param_arr) {
+                var regex = /{[a-zA-Z_][a-zA-Z0-9._-]*}/g;
+                param_arr = html.match(regex);
+                for (var i = 0; i < param_arr.length; i++) {
+                    //remove the opening and closing braces - { and }
+                    param_arr[i] = param_arr[i].substring(1, param_arr[i].length - 1);
+                }
+                regexTplMatchParams[obj.tplUrl] = param_arr;
+            }
+
+            for (var i = 0; i < param_arr.length; i++) {
+                var v;
+                var param = param_arr[i];
+                if (obj.onReplace) {
+                    v = obj.onReplace(param, data);
+                }
+
+                if (typeof v === 'undefined') {
+                    var v = data[param];
+                    var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
+                    for (var k = 0; k < obj_path.length; i++) {
+                        var par = obj_path[k];
+                        v = v[par];
+                        if (typeof v === 'undefined') {
+                            break;
+                        }
+                    }
+                }
+
+                html = html.replace('{' + param + '}', v);
+            }
+
+            var content = $('<div></div>').html(html);
+
+            //remove title, script, link and meta tags if present
+            $(content).find('title , script, link , meta').each(function (index) {
+                this.remove();
+            });
+            
+            if(obj.afterReplace){
+                obj.afterReplace(content, data);
+            }
+            
+        }
+
+        
+        this.template = function (obj) {
+
+            queue.push(obj);
+            doGet(obj);
+
+            function next() {
+                queue.shift();
+                if (queue.length === 0) {
+                    return;
+                }
+                var qObj = queue[0];
+                if (qObj) {
+                    doGet(qObj);
+                }
+            }
+
+            function doGet(obj) {
+                var res = tplList[obj.tplUrl];
+                if(res){//already have it in memory
+                  tplReplace(res, obj, obj.data);
+                   next();
+                }
+                var url = pageRouteUrl + obj.tplUrl;
+                $.get(url, function (response) {
+                    tplList[obj.tplUrl] = response;
+                    tplReplace(response, obj, obj.data);
+                    next();
+                }).fail(function () {
+                    next();
+                    console.log("could not get resource:", url);
+                });
+            }
+            
+        };
+    }
 
     function Listview() {
         var regexMatchParams = {};
@@ -1990,8 +2080,8 @@ var Main = {};
                             ? (' class="' + obj.itemClass + '" ') : '')
                     + '></div>').html(html);
 
-            //remove title and script tags if present
-            $(content).find('title , script').each(function (index) {
+            //remove title, script, link and meta tags if present
+            $(content).find('title , script, link , meta').each(function (index) {
                 this.remove();
             });
             if (obj.wrapItem === false) {
@@ -2896,6 +2986,7 @@ var Main = {};
     Main.menu = new Menu();
     Main.dialog = new Dialog();
     Main.card = new Card();
+    Main.tpl = new Tpl();
     Main.task = new Task();
     Main.countdown = new Countdown();
 
@@ -3258,20 +3349,20 @@ var Main = {};
             this.getTitle = function () {
                 return obj.title;
             };
-            
-            this.setContent = function(content){
+
+            this.setContent = function (content) {
                 obj.content = content;
                 setBodyContent(content);
             };
 
-            this.getContentElement = function(){
+            this.getContentElement = function () {
                 return getDialogContentEl();
             };
 
             this.getBody = function () {
                 return getDialogBodyEl();
             };
-            
+
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -3385,28 +3476,28 @@ var Main = {};
 
             var content_el = document.createElement('div');
             //content_el.innerHTML = obj.content;//old
-            
-            var setBodyContent = function(content){//new
+
+            var setBodyContent = function (content) {//new
                 content_el.innerHTML = content;
             };
-            
+
             setBodyContent(obj.content);//new
-            
-            
+
+
             content_el.style.width = '100%';
 
-            
+
 
             body_el.appendChild(content_el);
 
-            var getDialogContentEl = function(){
+            var getDialogContentEl = function () {
                 return content_el;
             };
 
-            var getDialogBodyEl = function(){
+            var getDialogBodyEl = function () {
                 return body_el;
             };
-            
+
             if (obj.width) {
                 var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
                 if (!isNaN(width)) {
@@ -3481,8 +3572,8 @@ var Main = {};
                 dlg_cmp: dlg_cmp,
                 setHeaderTitle: setHeaderTitle,
                 getDialogContentEl: getDialogContentEl,
-                setBodyContent : setBodyContent,
-                getDialogBodyEl : getDialogBodyEl,
+                setBodyContent: setBodyContent,
+                getDialogBodyEl: getDialogBodyEl,
                 resizeListenBind: resizeListenBind,
                 touchCloseFunc: touchCloseFunc,
                 deviceBackHideFunc: deviceBackHideFunc,

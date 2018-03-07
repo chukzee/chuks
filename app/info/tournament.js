@@ -916,11 +916,11 @@ class Tournament extends WebApplication {
                 round_index = i;
                 match_fixt_index = j;
                 var current_fixt = fixtures[match_fixt_index];
-                
-                if(!current_fixt.end_time){
+
+                if (!current_fixt.end_time) {
                     unfinish_match = current_fixt;
                 }
-                
+
                 if (j > 0) {
                     last_fixt = fixtures[j - 1];
                     if (!last_fixt.start_time) {
@@ -967,14 +967,14 @@ class Tournament extends WebApplication {
                 }
 
             }
-            
-            if(unfinish_match){//NOT YET TESTED - COME BACK ABEG O!!!
+
+            if (unfinish_match) {//NOT YET TESTED - COME BACK ABEG O!!!
                 return this.error(`All matches in round ${rounds[i].sn} must be concluded before setting kickoff time for those in round ${rounds[i].sn + 1}.`);
             }
         }
 
-        
-       
+
+
         if (round_skip > 0) {
             return this.error(`You cannot skip fixtures! Please set kickoff time for match ${fixture_skip} on round ${round_skip}. Kickoff time must be set in order, one after the other.`);
         }
@@ -2374,6 +2374,26 @@ class Tournament extends WebApplication {
         return 'Player registered successfully.';
     }
 
+    async registerBulkPlayers(user_id, tournament_name, player_user_ids) {
+
+        var results = [];
+        for (var i = 0; i < player_user_ids.length; i++) {
+            var r = await this.registerPlayer(user_id, tournament_name, player_user_ids[i]);
+            var msgObj = {
+                success: true,
+                msg: player_user_ids[i] + ' -> Added successfully',
+                user_id : player_user_ids[i]
+            };
+            if (!r) {
+                msgObj.success = false;
+                msgObj.msg = player_user_ids[i] + ' -> '+ this.lastError;
+            }
+            results.push(msgObj);
+        }
+        
+        return results;
+    }
+
     async removeRegisteredPlayer(user_id, tournament_name, player_user_id) {
 
         //where one object is passed a paramenter then get the needed
@@ -2436,7 +2456,7 @@ class Tournament extends WebApplication {
 
         return 'Player deregistered successfully.';
     }
-    
+
     /**
      * Get tournaments related one way or the other to the user.
      * 
@@ -2454,22 +2474,22 @@ class Tournament extends WebApplication {
         var related_user_ids = user.contacts || [];
 
         var c_grp = this.sObj.db.collection(this.sObj.col.groups);
-        
-        
+
+
         var oredArr = [];
-        var groups_belong= user.groups_belong;
+        var groups_belong = user.groups_belong;
         for (var i = 0; i < groups_belong.length; i++) {
             oredArr.push({
                 name: groups_belong[i]
             });
         }
-        
+
         var res = await c_grp.findOne({$or: oredArr}, {_id: 0, members: 1});
-        
-        for(var i=0; i < res.length; i++){
+
+        for (var i = 0; i < res.length; i++) {
             var group_members = res[i].members;
-            for(var k=0; k<group_members.length; k++){//committed
-                if(group_members[k].committed === false){
+            for (var k = 0; k < group_members.length; k++) {//committed
+                if (group_members[k].committed === false) {
                     continue;//skip member not yet committed
                 }
                 if (related_user_ids.indexOf(group_members[k].user_id) > -1) {
@@ -2490,11 +2510,11 @@ class Tournament extends WebApplication {
         if (related_user_ids.length === 0) {
             return [];
         }
-        
-        var c_usr = this.sObj.db.collection(this.sObj.col.users);
-        
 
-        var result = await c_usr.findOne({$or:oredArr}, {_id: 0, tournaments_belong: 1});
+        var c_usr = this.sObj.db.collection(this.sObj.col.users);
+
+
+        var result = await c_usr.findOne({$or: oredArr}, {_id: 0, tournaments_belong: 1});
 
         c_usr.updateOne({user_id: user.user_id}, {$set: {rel_tourns_update_time: new Date()}})
                 .then(function (r) {
@@ -2612,12 +2632,12 @@ class Tournament extends WebApplication {
             }
 
 
-            var list =  this.getTournamentsInfoList(user_trns);
-           
-            if(list.length < this.sObj.MIN_TOURNAMENT_LIST){
+            var list = this.getTournamentsInfoList(user_trns);
+
+            if (list.length < this.sObj.MIN_TOURNAMENT_LIST) {
                 var size = this.sObj.MIN_TOURNAMENT_LIST - list.length;
                 var rand_list = await this.randomTournamentsInfoList(size);
-                for(var i=0; i<rand_list.length; i++){
+                for (var i = 0; i < rand_list.length; i++) {
                     list.push(rand_list[i]);
                 }
             }

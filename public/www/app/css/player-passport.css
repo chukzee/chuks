@@ -1,0 +1,12 @@
+game9ja-player-passport > :nth-child(1) {
+  background: green;
+  width: 100%; }
+game9ja-player-passport > :nth-child(2) {
+  width: 100%;
+  height: 35px;
+  overflow: hidden; }
+game9ja-player-passport > :nth-child(3) {
+  background: green;
+  width: 100%; }
+
+/*# sourceMappingURL=player-passport.css.map */

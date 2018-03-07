@@ -158,7 +158,18 @@ Ns.view.Tournament = {
                     multiSelect: false
                 };
                 Ns.ui.Dialog.selectContactList(opt, function (choice) {
+                    var new_official_user_id = choice.user_id;
+                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                    Main.ro.tourn.addOfficial(app_user_id, tournament_name, new_official_user_id)
+                            .get(function (msg) {
+                                Main.alert(msg, 'Success', Main.const.INFO);
 
+
+                            })
+                            .error(function (err) {
+                                Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                                console.log(err);
+                            });
                 });
 
             });
@@ -166,11 +177,104 @@ Ns.view.Tournament = {
 
             $('#tournament-details-registered-players-add').on('click', function () {
                 var opt = {
-                    title: 'Register Player'
+                    title: 'Register Players'
                 };
-                Ns.ui.Dialog.selectContactList(opt, function (choice) {
+                Ns.ui.Dialog.selectContactList(opt, function (contants) {
+                    if (!contants || contants.length === 0) {
+                        return;
+                    }
+                    var player_user_ids = [];
+                    for (var i = 0; i < contants.length; i++) {
+                        player_user_ids[i] = contants[i].user_id;
+                    }
+                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                    Main.ro.tourn.registerBulkPlayers(app_user_id, tournament_name, player_user_ids)
+                            .get(function (results) {
+                                var msg_str = '';
+                                for (var i = 0; i < results.length; i++) {
+                                    msg_str = results[i].msg + '<br/>';
+                                    if (results[i].success) {
+                                        //check if the new resgistered player already added to the registered players
+                                        var found = false;
+                                        for (var k = 0; k < tournament.registered_players.length; k++) {
+                                            if (tournament.registered_players[k].user_id === results[i].user_id) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found) {
+                                            //find the new registered player from the contacts array
+                                            //and add to the registered players array
+                                            for (var n = 0; n < contants.length; n++) {
+                                                if (contants[n].user_id === results[i].user_id) {
+                                                    //now add the new registered player
+                                                    tournament.registered_players.push(contants[n]);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Main.alert(msg_str, 'Message', Main.const.INFO);
+
+                                //next render on the horizontal list
+                                for (var i = 0; i < tournament.registered_players.length; i++) {
+
+                                    Main.tpl.template({
+                                        tplUrl: '',
+                                        data: tournament.registered_players[i],
+                                        onReplace: function (tpl_var, data) {
+                                            
+                                        },
+                                        afterReplace: function (html, data) {
+                                            
+                                            var dom_extra_field = 'tournament-registered-player-dom-extra-field';
+                                            
+                                            var children = $('#tournament-details-registered-players').children();
+                                            //check if the registered player has already been added then remove it if so
+                                            for(var n=0; n<children.length; n++){
+                                                if(children[n][dom_extra_field]){
+                                                    if(children[n][dom_extra_field].user_id === data.user_id){
+                                                        children[n].remove();
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            //now add the registered player
+                                            $('#tournament-details-registered-players').append(html);
+                                            var children = $('#tournament-details-registered-players').children();
+                                            var last_child = children[children.length -1];
+                                            last_child[dom_extra_field] = data;
+                                        }
+                                    });
+                                }
+
+                            })
+                            .error(function (err) {
+                                console.log(err);
+                            });
+                });
+            });
+
+            $('#tournament-details-season-players-add').on('click', function () {
+                var opt = {
+                    title: 'Add Season Player',
+                    multiSelect: false
+                };
+                var arr = [];
+
+                Ns.ui.Dialog.selectSimpleList(opt, arr, function (item) {
 
                 });
+
+            });
+
+
+            $('#tournament-details-season-table-standings').on('click', function () {
+
+                alert('TODO tournament-details-season-table-standings');
+
             });
 
 
@@ -213,23 +317,7 @@ Ns.view.Tournament = {
 
             });
 
-            $('#tournament-details-season-table-standings').on('click', function () {
 
-                alert('TODO tournament-details-season-table-standings');
-
-            });
-
-
-
-            $('#tournament-details-season-players-add').on('click', function () {
-
-                var arr = [];
-
-                Ns.ui.Dialog.selectSimpleList({title: 'Add Season Player'}, arr, function (item) {
-
-                });
-
-            });
             $('#tournament-details-stage-previous').on('click', function () {
 
                 //enable the 'next' button
