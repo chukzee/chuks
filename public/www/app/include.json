@@ -100,7 +100,8 @@
             "wait-player.css",
             "game-contacts.css",
             "play-notifications.css",
-            "table-standings.css"
+            "table-standings.css",
+            "slots-edit.css"
         ],
         
         "js": [

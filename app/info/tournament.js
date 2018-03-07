@@ -175,7 +175,18 @@ class Tournament extends WebApplication {
             season_number: season_number
         });
 
-        return 'New season created successfully';
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+
+        }
+
+        return {
+            tournament: tourn,
+            msg: 'New season created successfully'
+        };
     }
 
     _validateSeasonStartTime(last_season_end_time, new_season_start_time) {
@@ -581,11 +592,24 @@ class Tournament extends WebApplication {
         var r = await c.updateOne({name: tournament_name, 'seasons.sn': season_number}, {$set: editObj});
 
         if (r.result.nModified > 0) {
-            return 'Added player successfully.';
+
+            //return the newly modified tournament
+            var c = this.sObj.db.collection(this.sObj.col.tournaments);
+            var tourn = await c.findOne({name: tournament_name});
+            if (!tourn) {
+                return this.error(`Tournament does not exist - ${tournament_name}`);
+
+            }
+
+            return {
+                tournament: tourn,
+                msg: 'Added player successfully.'
+            };
+
         } else if (r.result.n > 0 && r.result.nModified === 0) {
-            return 'Nothing changed. Possibly, player already addded.';
+            return this.error('Nothing changed. Possibly, player already addded.');
         } else {
-            return 'Condition not met!';
+            return this.error('Condition not met!');
         }
 
     }
@@ -682,7 +706,20 @@ class Tournament extends WebApplication {
         var r = await c.updateOne({name: tournament_name, 'seasons.sn': season_number}, {$set: editObj});
 
         if (r.result.nModified > 0) {
-            return 'Removed player successfully.';
+
+            //return the newly modified tournament
+            var c = this.sObj.db.collection(this.sObj.col.tournaments);
+            var tourn = await c.findOne({name: tournament_name});
+            if (!tourn) {
+                return this.error(`Tournament does not exist - ${tournament_name}`);
+
+            }
+
+            return {
+                tournament: tourn,
+                msg: 'Removed player successfully.'
+            };
+
         } else if (r.result.n > 0 && r.result.nModified === 0) {
             return 'Nothing changed. Possibly, player not found.';
         } else {
@@ -1096,7 +1133,18 @@ class Tournament extends WebApplication {
 
         this.sObj.task.later(delay, 'game/Match/start', game_id);//will automatically start the match at kickoff time
 
-        return 'Kickoff time set successfully.';
+
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: 'Kickoff time set successfully.'
+        };
 
     }
 
@@ -1177,7 +1225,18 @@ class Tournament extends WebApplication {
             season_number: season_number
         });
 
-        return `Season ${season_number} starts ${start_time}`;
+
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: `Season ${season_number} starts ${start_time}`
+        };
 
     }
 
@@ -1251,10 +1310,17 @@ class Tournament extends WebApplication {
 
         if (r.result.nModified > 0) {
 
+            //also send the newly modified tournament
+            var c = this.sObj.db.collection(this.sObj.col.tournaments);
+            var tourn = await c.findOne({name: tournament_name});
+            if (!tourn) {
+                return this.error(`Tournament does not exist - ${tournament_name}`);
+            }
+
             //notify all relevant users - registered players and officials
             var data = {
                 official_id: user_id,
-                tournament_name: tourn.name,
+                tournament: tourn,
                 season_number: current_season.sn,
                 reason: reason //tournament comment room should also show this message
             };
@@ -1328,9 +1394,17 @@ class Tournament extends WebApplication {
         await c.updateOne({name: tournament_name}, {$set: {seasons: seasons}});
 
         //notify all relevant users - registered players and officials
+
+        //also send the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
         var data = {
             official_id: user_id,
-            tournament_name: tourn.name,
+            tournament: tourn,
             season_number: current_season.sn,
             reason: reason //tournament comment room should also show this message
         };
@@ -2058,7 +2132,18 @@ class Tournament extends WebApplication {
             return this.error('Could not update tournament number of game sets');
         }
 
-        return "Tournament number of game sets updated successfully";
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: "Tournament number of game sets updated successfully"
+        };
+
     }
 
     async setIcon(user_id, tournament_name, photo_url) {
@@ -2106,7 +2191,18 @@ class Tournament extends WebApplication {
             return this.error('Could not update tournament icon');
         }
 
-        return "Tournament icon updated successfully";
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: "Tournament icon updated successfully"
+        };
+
     }
 
     async setStatus(user_id, tournament_name, status_message, photo_url) {
@@ -2158,8 +2254,19 @@ class Tournament extends WebApplication {
 
             return this.error('Could not set tournament status');
         }
+        
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
 
-        return "Tournament status updated successfully";
+        return {
+            tournament: tourn,
+            msg: "Tournament status updated successfully"
+        };
+
     }
 
     async addOfficial(user_id, tournament_name, new_official_user_id) {
@@ -2232,7 +2339,18 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: new_official_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return this.error('official added successfully.');
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: "Official added successfully."
+        };
+
     }
 
     async removeOfficial(user_id, tournament_name, official_user_id) {
@@ -2293,7 +2411,18 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: official_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return 'Official removed successfully.';
+
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: "Official removed successfully."
+        };
 
     }
 
@@ -2371,7 +2500,18 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: player_user_id}, {$addToSet: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return 'Player registered successfully.';
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: "Player registered successfully."
+        };
+
     }
 
     async registerBulkPlayers(user_id, tournament_name, player_user_ids) {
@@ -2382,15 +2522,27 @@ class Tournament extends WebApplication {
             var msgObj = {
                 success: true,
                 msg: player_user_ids[i] + ' -> Added successfully',
-                user_id : player_user_ids[i]
+                user_id: player_user_ids[i]
             };
             if (!r) {
                 msgObj.success = false;
-                msgObj.msg = player_user_ids[i] + ' -> '+ this.lastError;
+                msgObj.msg = player_user_ids[i] + ' -> ' + this.lastError;
             }
             results.push(msgObj);
         }
-        
+
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: results
+        };
+
         return results;
     }
 
@@ -2454,7 +2606,18 @@ class Tournament extends WebApplication {
         var user_col = this.sObj.db.collection(this.sObj.col.users);
         user_col.updateOne({user_id: player_user_id}, {$pull: {tournaments_belong: tournament_name}}, {w: 'majority'});
 
-        return 'Player deregistered successfully.';
+        //return the newly modified tournament
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne({name: tournament_name});
+        if (!tourn) {
+            return this.error(`Tournament does not exist - ${tournament_name}`);
+        }
+
+        return {
+            tournament: tourn,
+            msg: "Player deregistered successfully."
+        };
+
     }
 
     /**

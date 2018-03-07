@@ -1,0 +1,42 @@
+
+.slots-edit{
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+.slots-edit tr{
+    height : 30px;
+
+    > :nth-child(1){
+        width: 30px;
+        padding-left: 5px;
+    }
+    > :nth-child(2){
+        width: 30px;
+        height: 30px; 
+        padding : 0;
+        margin: 0;
+        cursor: pointer;
+        > div{/*helper div to help center the tournament profile pic*/
+            width: 26px;
+            height: 26px;
+            margin: 0 auto;
+            > img{/* profile pic*/
+                width: 26px;
+                height: 26px; 
+                border-radius: 50%;
+            }
+        }
+
+    }
+    
+    > :nth-child(3){
+        padding-left: 5px;
+    }
+    
+    > :nth-child(4){
+        cursor: pointer;
+        width: 30px;
+    }
+}
