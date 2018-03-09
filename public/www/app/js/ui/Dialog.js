@@ -2,28 +2,43 @@
 Ns.ui.Dialog = {
 
     selectContactList: function (options, callback) {
+        var contacts = Ns.view.Contacts.contactList;
+       _selList('tpl/simple-list-b-tpl.html', contacts, options, callback);
+    },
+
+    selectList: function (options, items_arr, callback) {
+       _selList(options.url, items_arr, options, callback);
+    },
+
+    selectSimpleList: function (options, items_arr, callback) {
+         _selList('tpl/simple-list-a-tpl.html', items_arr, options, callback);
+    },
+
+    _selList: function (url, items_arr, options, callback) {
         var selected_items = [];
         var multi_select = options.multiSelect === true || options.singleSelect === false;
 
         var btns = [];
         if (multi_select) {
-            btns = ['CANCEL', 'OK'];
+            btns = options.bottons || ['CANCEL', 'OK'];
         }
-
-        var contacts = Ns.view.Contacts.contactList;
 
         Main.dialog.show({
             title: options.title ? options.title : '',
             //content: '<div id="' + container_id + '"></div>',
-            //width: window.innerWidth * 0.7,
-            //height: window.innerHeight * 0.5,
-            maxWidth: 400,
-            maxHeight: 600,
+            width: options.width,
+            height: options.height,
+            maxWidth: options.maxWidth || 400,
+            maxHeight: options.maxHeight || 600,
             fade: true,
             closeButton: false,
             modal: true,
             buttons: btns,
             action: function (btn, value) {
+                if(options.action){
+                    options.action.bind(this)(btn, value, selected_items);
+                    return;
+                }
                 if (value === 'OK') {
                     callback(selected_items);
                 }
@@ -35,21 +50,13 @@ Ns.ui.Dialog = {
 
                 Ns.ui.Dialog._addListview({
                     dialog: this,
-                    url: 'tpl/simple-list-b-tpl.html',
-                    items: contacts,
+                    url: url,
+                    items: items_arr,
                     selected_items: selected_items,
                     multi_select: multi_select
                 });
             }
         });
-    },
-
-    selectList: function (options, callback) {
-
-    },
-
-    selectSimpleList: function (options, arr, callback) {
-
     },
 
     _addListview: function (obj) {
