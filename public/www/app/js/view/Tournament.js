@@ -403,7 +403,7 @@ Ns.view.Tournament = {
                         for (var i = 0; i < tournament.officials.length; i++) {
 
                             Main.tpl.template({
-                                tplUrl: 'tpl/official-passport-tpl.html',
+                                tplUrl: 'tpl/player-passport-a-tpl.html',
                                 data: tournament.officials[i],
                                 onReplace: function (tpl_var, data) {
 
@@ -455,7 +455,7 @@ Ns.view.Tournament = {
             var app_user_id = Ns.view.UserProfile.appUser.user_id;
             Main.ro.tourn.registerBulkPlayers(app_user_id, tournament.name, player_user_ids)
                     .get(function (data) {
-                        
+
                         Ns.view.Tournament.update(data.tournament);
 
                         var results = data.msg;
@@ -470,7 +470,7 @@ Ns.view.Tournament = {
                         for (var i = 0; i < tournament.registered_players.length; i++) {
 
                             Main.tpl.template({
-                                tplUrl: 'tpl/regisgtered-player-passport-tpl.html',
+                                tplUrl: 'tpl/player-passport-b-tpl.html',
                                 data: tournament.registered_players[i],
                                 onReplace: function (tpl_var, data) {
                                     if (tpl_var === 'rating') {
@@ -621,7 +621,56 @@ Ns.view.Tournament = {
                                 me.full_name_td.innerHTML = me.player.full_name;
                             }
 
-                            //TODO update the horizontal list
+                            //update the season players horizontal list
+                            var season_index = tournament.seasons.length - 1;
+                            var current_season = tournament.seasons[season_index];
+                            
+                            for (var i = 0; i < current_season.slots.length; i++) {
+                                
+                                var player_id = current_season.slots[i].player_id;
+                                var season_player;
+                                //get the player info from the register_players array
+                                for(var k=0; k < tournament.registered_players.length; k++){
+                                    if(tournament.registered_players[k] === player_id){
+                                        season_player = tournament.registered_players[k];
+                                    }
+                                }
+                                
+                                if(!season_player){
+                                    continue;
+                                }
+                                
+                                Main.tpl.template({
+                                    tplUrl: 'tpl/player-passport-b-tpl.html',
+                                    data: season_player,
+                                    onReplace: function (tpl_var, data) {
+                                        if (tpl_var === 'rating') {
+                                            //TODO
+                                        }
+                                    },
+                                    afterReplace: function (html, data) {
+
+                                        var dom_extra_field = 'tournament-season-player-dom-extra-field';
+                                        var id = 'tournament-details-season-players';
+                                        var children = $('#' + id).children();
+                                        //check if the registered player has already been added then remove it if so
+                                        for (var n = 0; n < children.length; n++) {
+                                            if (children[n][dom_extra_field]) {
+                                                if (children[n][dom_extra_field].user_id === data.user_id) {
+                                                    children[n].remove();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        //now add the season player
+                                        $('#' + id).append(html);
+                                        var children = $('#' + id).children();
+                                        var last_child = children[children.length - 1];
+                                        last_child[dom_extra_field] = data;
+                                    }
+                                });
+
+                            }
 
                         })
                         .error(function (err) {
@@ -715,7 +764,7 @@ Ns.view.Tournament = {
         if (Main.util.isArray(list)) {
             for (var i = 0; i < list.length; i++) {
                 if (list[i].name === tournament.name) {
-                    list[i] = tournament;
+                    list[i] = tournament;//replace
                     break;
                 }
             }
