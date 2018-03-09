@@ -17,6 +17,8 @@ Ns.ui.Dialog = {
             //content: '<div id="' + container_id + '"></div>',
             //width: window.innerWidth * 0.7,
             //height: window.innerHeight * 0.5,
+            maxWidth: 400,
+            maxHeight: 600,
             fade: true,
             closeButton: false,
             modal: true,

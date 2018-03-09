@@ -153,248 +153,16 @@ Ns.view.Tournament = {
 
 
             $('#tournament-details-officials-add').on('click', function () {
-                var opt = {
-                    title: 'Add Official',
-                    multiSelect: false
-                };
-                Ns.ui.Dialog.selectContactList(opt, function (choice) {
-                    var new_official_user_id = choice.user_id;
-                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
-                    Main.ro.tourn.addOfficial(app_user_id, tournament_name, new_official_user_id)
-                            .get(function (data) {
-                                Ns.view.Tournament.update(data.tournament);
-
-                                Main.alert(data.msg, 'Success', Main.const.INFO);
-
-                                Main.tpl.template({
-                                    tplUrl: 'tpl/official-passport-tpl.html',
-                                    data: tournament.registered_players[i],
-                                    onReplace: function (tpl_var, data) {
-
-                                    },
-                                    afterReplace: function (html, data) {
-
-                                        var dom_extra_field = 'tournament-official-dom-extra-field';
-                                        var id = 'tournament-details-officials';
-                                        var children = $('#' + id).children();
-                                        //check if the official has already been added then remove it if so
-                                        for (var n = 0; n < children.length; n++) {
-                                            if (children[n][dom_extra_field]) {
-                                                if (children[n][dom_extra_field].user_id === data.user_id) {
-                                                    children[n].remove();
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        //now add the official
-                                        $('#' + id).append(html);
-                                        var children = $('#' + id).children();
-                                        var last_child = children[children.length - 1];
-                                        last_child[dom_extra_field] = data;
-                                    }
-                                });
-
-                            })
-                            .error(function (err) {
-                                Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
-                                console.log(err);
-                            });
-                });
-
+                Ns.view.Tournament._onClickOfficialsAdd(tournament);
             });
 
 
             $('#tournament-details-registered-players-add').on('click', function () {
-                var opt = {
-                    title: 'Register Players'
-                };
-                Ns.ui.Dialog.selectContactList(opt, function (contants) {
-                    if (!contants || contants.length === 0) {
-                        return;
-                    }
-                    var player_user_ids = [];
-                    for (var i = 0; i < contants.length; i++) {
-                        player_user_ids[i] = contants[i].user_id;
-                    }
-                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
-                    Main.ro.tourn.registerBulkPlayers(app_user_id, tournament_name, player_user_ids)
-                            .get(function (data) {
-                                Ns.view.Tournament.update(data.tournament);
-
-                                var results = data.msg;
-                                var msg_str = '';
-                                for (var i = 0; i < results.length; i++) {
-                                    msg_str = results[i].msg + '<br/>';
-                                }
-
-                                Main.alert(msg_str, 'Message', Main.const.INFO);
-
-                                //next render on the horizontal list
-                                for (var i = 0; i < tournament.registered_players.length; i++) {
-
-                                    Main.tpl.template({
-                                        tplUrl: 'tpl/regisgtered-player-passport-tpl.html',
-                                        data: tournament.registered_players[i],
-                                        onReplace: function (tpl_var, data) {
-                                            if (tpl_var === 'rating') {
-                                                //TODO
-                                            }
-                                        },
-                                        afterReplace: function (html, data) {
-
-                                            var dom_extra_field = 'tournament-registered-player-dom-extra-field';
-                                            var id = 'tournament-details-registered-players';
-                                            var children = $('#' + id).children();
-                                            //check if the registered player has already been added then remove it if so
-                                            for (var n = 0; n < children.length; n++) {
-                                                if (children[n][dom_extra_field]) {
-                                                    if (children[n][dom_extra_field].user_id === data.user_id) {
-                                                        children[n].remove();
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                            //now add the registered player
-                                            $('#' + id).append(html);
-                                            var children = $('#' + id).children();
-                                            var last_child = children[children.length - 1];
-                                            last_child[dom_extra_field] = data;
-                                        }
-                                    });
-
-                                }
-
-                            })
-                            .error(function (err) {
-                                console.log(err);
-                            });
-                });
+                Ns.view.Tournament._onClickRegisteredPlayersAdd(tournament);
             });
 
             $('#tournament-details-season-players-add').on('click', function () {
-
-                var findRegisteredPlayerById = function (id) {
-                    for (var i = 0; i < tournament.registered_players.length; i++) {
-                        if (tournament.registered_players[i].user_id === id) {
-                            return tournament.registered_players[i];
-                        }
-                    }
-                };
-
-                Main.dialog.show({
-                    title: 'Slots',
-                    //content: html,
-                    width: window.innerWidth * 0.8,
-                    height: window.innerHeight * 0.8,
-                    fade: true,
-                    closeButton: false,
-                    modal: true,
-                    buttons: ['OK'],
-                    action: function (btn, value) {
-
-                        this.hide();
-
-                    },
-                    onShow: function () {
-                        var dlg_body = this.getBody();
-                        var table = document.createElement('table');
-                        table.className = 'slots-edit';
-                        var season_index = tournament.seasons.length - 1;
-                        var current_season = tournament.seasons[season_index];
-                        var tr_rows = [];
-                        for (var i = 0; i < current_season.slots.length; i++) {
-
-                            var player = findRegisteredPlayerById(current_season.slots[i].player_id);
-
-                            tr_rows[i] = document.createElement('tr');
-
-                            //slot number
-                            var slot_num_td = document.createElement('td');
-
-                            //profile photo
-                            var img_td = document.createElement('td');
-                            var img_div = document.createElement('div');
-                            var photo_td_img = document.createElement('img');
-                            img_td.appendChild(img_div);
-                            img_div.appendChild(photo_td_img);
-
-                            //full name
-                            var full_name_td = document.createElement('td');
-
-                            //edit
-                            var edit_td = document.createElement('td'); //edit icon cell
-                            var edit_i = document.createElement('i'); //edit icon i tag
-                            edit_i.className = 'fa fa-edit';
-                            edit_td.appendChild(edit_i);
-
-
-                            var slot_number = current_season.slots[i].sn;
-                            edit_td.addEventListener('click', addSlotPlayer.bind(
-                                    {
-                                        slot_number: slot_number,
-                                        player: player,
-                                        photo_td_img: photo_td_img,
-                                        full_name_td: full_name_td
-                                    }));
-
-                            slot_num_td.innerHTML = slot_number;
-
-                            if (player) {
-                                photo_td_img.src = player.photo_url;
-                                full_name_td.innerHTML = player.full_name;
-                            }
-
-                            tr_rows[i].appendChild(slot_num_td);
-                            tr_rows[i].appendChild(img_td);
-                            tr_rows[i].appendChild(full_name_td);
-                            tr_rows[i].appendChild(edit_td);
-
-                            table.appendChild(tr_rows[i]);
-                        }
-
-                        dlg_body.appendChild(table);
-                    }
-                });
-
-
-                function addSlotPlayer() {
-                    var me = this;
-                    var slot_number = this.slot_number;
-                    var opt = {
-                        title: 'Select Season Player',
-                        multiSelect: false
-                    };
-                    var arr = tournament.registered_players;
-
-                    Ns.ui.Dialog.selectSimpleList(opt, arr, function (item) {
-
-                        var app_user_id = Ns.view.UserProfile.appUser.user_id;
-                        var season_index = tournament.seasons.length - 1;
-                        var current_season = tournament.seasons[season_index];
-                        var season_number = current_season.sn;
-                        var player_id = item.user_id;
-
-                        Main.ro.tourn.seasonAddPlayer(app_user_id, tournament_name, season_number, player_id, slot_number)
-                                .get(function (data) {
-
-                                    Ns.view.Tournament.update(data.tournament);
-                                    if (me.player) {
-                                        me.photo_td_img.src = me.player.photo_url;
-                                        me.full_name_td.innerHTML = me.player.full_name;
-                                    }
-
-                                    //TODO update the horizontal list
-
-                                })
-                                .error(function (err) {
-                                    //alert(err);
-                                    console.log(err);
-                                });
-                    });
-
-                }
-
-
+                Ns.view.Tournament._onClickSeasonPlayersAdd(tournament);
             });
 
 
@@ -616,6 +384,253 @@ Ns.view.Tournament = {
 
 
 
+
+    },
+
+    _onClickOfficialsAdd: function (tournament) {
+        var opt = {
+            title: 'Add Official',
+            multiSelect: false
+        };
+        Ns.ui.Dialog.selectContactList(opt, function (choice) {
+            var new_official_user_id = choice.user_id;
+            var app_user_id = Ns.view.UserProfile.appUser.user_id;
+            Main.ro.tourn.addOfficial(app_user_id, tournament.name, new_official_user_id)
+                    .get(function (data) {
+                        Ns.view.Tournament.update(data.tournament);
+
+                        Main.alert(data.msg, 'Success', Main.const.INFO);
+                        for (var i = 0; i < tournament.officials.length; i++) {
+
+                            Main.tpl.template({
+                                tplUrl: 'tpl/official-passport-tpl.html',
+                                data: tournament.officials[i],
+                                onReplace: function (tpl_var, data) {
+
+                                },
+                                afterReplace: function (html, data) {
+
+                                    var dom_extra_field = 'tournament-official-dom-extra-field';
+                                    var id = 'tournament-details-officials';
+                                    var children = $('#' + id).children();
+                                    //check if the official has already been added then remove it if so
+                                    for (var n = 0; n < children.length; n++) {
+                                        if (children[n][dom_extra_field]) {
+                                            if (children[n][dom_extra_field].user_id === data.user_id) {
+                                                children[n].remove();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    //now add the official
+                                    $('#' + id).append(html);
+                                    var children = $('#' + id).children();
+                                    var last_child = children[children.length - 1];
+                                    last_child[dom_extra_field] = data;
+                                }
+                            });
+
+                        }
+                    })
+                    .error(function (err) {
+                        Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                        console.log(err);
+                    });
+        });
+
+    },
+
+    _onClickRegisteredPlayersAdd: function (tournament) {
+        var opt = {
+            title: 'Register Players'
+        };
+        Ns.ui.Dialog.selectContactList(opt, function (contants) {
+            if (!contants || contants.length === 0) {
+                return;
+            }
+            var player_user_ids = [];
+            for (var i = 0; i < contants.length; i++) {
+                player_user_ids[i] = contants[i].user_id;
+            }
+            var app_user_id = Ns.view.UserProfile.appUser.user_id;
+            Main.ro.tourn.registerBulkPlayers(app_user_id, tournament.name, player_user_ids)
+                    .get(function (data) {
+                        
+                        Ns.view.Tournament.update(data.tournament);
+
+                        var results = data.msg;
+                        var msg_str = '';
+                        for (var i = 0; i < results.length; i++) {
+                            msg_str = results[i].msg + '<br/>';
+                        }
+
+                        Main.alert(msg_str, 'Message', Main.const.INFO);
+
+                        //next render on the horizontal list
+                        for (var i = 0; i < tournament.registered_players.length; i++) {
+
+                            Main.tpl.template({
+                                tplUrl: 'tpl/regisgtered-player-passport-tpl.html',
+                                data: tournament.registered_players[i],
+                                onReplace: function (tpl_var, data) {
+                                    if (tpl_var === 'rating') {
+                                        //TODO
+                                    }
+                                },
+                                afterReplace: function (html, data) {
+
+                                    var dom_extra_field = 'tournament-registered-player-dom-extra-field';
+                                    var id = 'tournament-details-registered-players';
+                                    var children = $('#' + id).children();
+                                    //check if the registered player has already been added then remove it if so
+                                    for (var n = 0; n < children.length; n++) {
+                                        if (children[n][dom_extra_field]) {
+                                            if (children[n][dom_extra_field].user_id === data.user_id) {
+                                                children[n].remove();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    //now add the registered player
+                                    $('#' + id).append(html);
+                                    var children = $('#' + id).children();
+                                    var last_child = children[children.length - 1];
+                                    last_child[dom_extra_field] = data;
+                                }
+                            });
+
+                        }
+
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                    });
+        });
+    },
+
+    _onClickSeasonPlayersAdd: function (tournament) {
+
+        var findRegisteredPlayerById = function (id) {
+            for (var i = 0; i < tournament.registered_players.length; i++) {
+                if (tournament.registered_players[i].user_id === id) {
+                    return tournament.registered_players[i];
+                }
+            }
+        };
+
+        Main.dialog.show({
+            title: 'Slots',
+            //content: html,
+            width: window.innerWidth * 0.8,
+            height: window.innerHeight * 0.8,
+            maxWidth: 400,
+            maxHeight: 600,
+            fade: true,
+            closeButton: false,
+            modal: true,
+            buttons: ['OK'],
+            action: function (btn, value) {
+
+                this.hide();
+
+            },
+            onShow: function () {
+                var dlg_body = this.getBody();
+                var table = document.createElement('table');
+                table.className = 'slots-edit';
+                var season_index = tournament.seasons.length - 1;
+                var current_season = tournament.seasons[season_index];
+                var tr_rows = [];
+                for (var i = 0; i < current_season.slots.length; i++) {
+
+                    var player = findRegisteredPlayerById(current_season.slots[i].player_id);
+
+                    tr_rows[i] = document.createElement('tr');
+
+                    //slot number
+                    var slot_num_td = document.createElement('td');
+
+                    //profile photo
+                    var img_td = document.createElement('td');
+                    var img_div = document.createElement('div');
+                    var photo_td_img = document.createElement('img');
+                    img_td.appendChild(img_div);
+                    img_div.appendChild(photo_td_img);
+
+                    //full name
+                    var full_name_td = document.createElement('td');
+
+                    //edit
+                    var edit_td = document.createElement('td'); //edit icon cell
+                    var edit_i = document.createElement('i'); //edit icon i tag
+                    edit_i.className = 'fa fa-edit';
+                    edit_td.appendChild(edit_i);
+
+
+                    var slot_number = current_season.slots[i].sn;
+                    edit_td.addEventListener('click', addSlotPlayer.bind(
+                            {
+                                slot_number: slot_number,
+                                player: player,
+                                photo_td_img: photo_td_img,
+                                full_name_td: full_name_td
+                            }));
+
+                    slot_num_td.innerHTML = slot_number;
+
+                    if (player) {
+                        photo_td_img.src = player.photo_url;
+                        full_name_td.innerHTML = player.full_name;
+                    }
+
+                    tr_rows[i].appendChild(slot_num_td);
+                    tr_rows[i].appendChild(img_td);
+                    tr_rows[i].appendChild(full_name_td);
+                    tr_rows[i].appendChild(edit_td);
+
+                    table.appendChild(tr_rows[i]);
+                }
+
+                dlg_body.appendChild(table);
+            }
+        });
+
+        function addSlotPlayer() {
+            var me = this;
+            var slot_number = this.slot_number;
+            var opt = {
+                title: 'Select Season Player',
+                multiSelect: false
+            };
+            var arr = tournament.registered_players;
+
+            Ns.ui.Dialog.selectSimpleList(opt, arr, function (item) {
+
+                var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                var season_index = tournament.seasons.length - 1;
+                var current_season = tournament.seasons[season_index];
+                var season_number = current_season.sn;
+                var player_id = item.user_id;
+
+                Main.ro.tourn.seasonAddPlayer(app_user_id, tournament.name, season_number, player_id, slot_number)
+                        .get(function (data) {
+
+                            Ns.view.Tournament.update(data.tournament);
+                            if (me.player) {
+                                me.photo_td_img.src = me.player.photo_url;
+                                me.full_name_td.innerHTML = me.player.full_name;
+                            }
+
+                            //TODO update the horizontal list
+
+                        })
+                        .error(function (err) {
+                            //alert(err);
+                            console.log(err);
+                        });
+            });
+
+        }
 
     },
 

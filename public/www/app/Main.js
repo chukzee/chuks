@@ -3404,7 +3404,9 @@ var Main = {};
          * obj = { <br>
          *       container[opt] : ....,//container to center the dialog on<br>
          *       width [opt] : ...., //width of the dialog in pixel - px <br>
+         *       maxWidth [opt] : ...., //max. width of the dialog in pixel - px <br>
          *       height [opt] : ...., //height of the dialog body (not the dialog in this case) in pixel - px <br>
+         *       maxHeight [opt] : ...., //max height of the dialog body (not the dialog in this case) in pixel - px <br>
          *       title [opt] : .....,//title of the dialog<br>
          *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
          *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
@@ -3521,9 +3523,27 @@ var Main = {};
 
             var pad_factor = 0.8;
 
-            base.style.maxWidth = (pad_factor * 100) + '%';
-            base.style.maxHeight = (pad_factor * 100) + '%';
+            //base.style.maxWidth = (pad_factor * 100) + '%'; //old
+            //base.style.maxHeight = (pad_factor * 100) + '%';//old
+            
+            if (obj.maxWidth) {//new
+                var max_width = new String(obj.maxWidth).replace('px', '') - 0;//implicitly convert to numeric
+                if (!isNaN(max_width)) {
+                    base.style.maxWidth = max_width + 'px';//max width of the dialog
+                } else {
+                    console.warn('dialog maxWidth invalid - ', obj.maxWidth);
+                }
+            }
 
+            if (obj.maxHeight) {//new
+                var max_height = new String(obj.maxHeight).replace('px', '') - 0; //implicitly convert to numeric
+                if (!isNaN(max_height)) {
+                    body_el.style.maxHeight = max_height + 'px';//the max height of the body - not the dialog in this case
+                } else {
+                    console.warn('dialog maxHeight invalid - ', obj.maxHeight);
+                }
+            }
+            
             base.appendChild(header_el);
             base.appendChild(body_el);
 
