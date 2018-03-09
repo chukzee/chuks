@@ -130,6 +130,11 @@ Ns.view.Tournament = {
             //"tournament-details-season-table-standings"
             //"tournament-details-match-fixtures"
 
+            if(!_isAppUserOfficial(tournament.officials)){
+                //TODO hide some control away from non offficial
+                
+            }
+
 
             $('#tournament-details-back-btn').on('click', function () {
 
@@ -382,9 +387,16 @@ Ns.view.Tournament = {
             return round_index;
         }
 
+    },
 
-
-
+    _isAppUserOfficial: function(officials){
+        for (var i = 0; i < officials.length; i++) {
+            if(officials[i].user_id === Ns.view.UserProfile.appUser.user_id){
+                return true;
+            }
+        }
+        
+        return false;
     },
 
     _onClickOfficialsAdd: function (tournament) {
