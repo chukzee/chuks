@@ -194,12 +194,12 @@ Ns.GameHome = {
     showCreateTournament: function () {
 
     },
-    showUserProfile: function () {
+    showUserProfile: function (user) {
         Main.card.to({
             container: '#home-main',
             url:'user-profile-ld.html',
             fade:true,
-            data : Ns.ui.UI.selectedGame,
+            data : user,
             onShow: Ns.view.UserProfile.content
         });
     },

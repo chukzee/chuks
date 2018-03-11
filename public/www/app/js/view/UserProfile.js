@@ -127,12 +127,18 @@ Ns.view.UserProfile = {
 
     },
 
-    content: function (user_id) {
+    content: function (u) {
 
-        //find the USER
-        Ns.view.UserProfile.getInfo(user_id, function (user) {
-            setContent(user);
-        });
+        if (Main.util.isString(u)) {
+            var user_id = u.user_id;
+
+            //find the USER
+            Ns.view.UserProfile.getInfo(user_id, function (user) {
+                setContent(user);
+            });
+        }else{
+           setContent(u); 
+        }
 
 
         function setContent(user) {

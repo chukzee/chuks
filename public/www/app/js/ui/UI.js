@@ -296,7 +296,7 @@ Ns.ui.UI = {
                 Ns.GameHome.showCreateTournament();
                 break;
             case 'Profile':
-                Ns.GameHome.showUserProfile();
+                Ns.GameHome.showUserProfile(Ns.view.UserProfile.appUser);
                 break;
             case 'Select game':
                 Main.page.home();//to the index page
@@ -313,14 +313,8 @@ Ns.ui.UI = {
         }
     },
 
-    expandPhoto: function (obj) {
-        if (obj.type === 'user') {
-
-        } else if (obj.type === 'group') {
-
-        } else if (obj.type === 'tournament') {
-
-        }
+    expandPhoto: function (photo_url) {
+        
     },
 
     inputMsgHtml: function () {

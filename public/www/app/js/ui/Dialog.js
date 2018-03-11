@@ -24,7 +24,7 @@ Ns.ui.Dialog = {
         }
 
         Main.dialog.show({
-            title: options.title ? options.title : '',
+            title: options.title,
             //content: '<div id="' + container_id + '"></div>',
             width: options.width,
             height: options.height,

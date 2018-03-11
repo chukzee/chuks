@@ -191,6 +191,19 @@ Ns.view.Group = {
          });
          */
     },
+    isLocalGroupMember: function(user_id){
+        
+        for (var i = 0; i < Ns.view.Group.groupList.length; i++) {
+            var members = Ns.view.Group.groupList[i].members;
+            for(var k=0; k<members.length; k++){
+                if(members[k].user_id === user_id){
+                    return true;
+                }
+            }
+        }
+       
+        return false;
+    },
     getInfo: function (group_name, callback, refresh) {
         var group;
         for (var i = 0; i < Ns.view.Group.groupList.length; i++) {

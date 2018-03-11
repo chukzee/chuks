@@ -130,9 +130,9 @@ Ns.view.Tournament = {
             //"tournament-details-season-table-standings"
             //"tournament-details-match-fixtures"
 
-            if(!_isAppUserOfficial(tournament.officials)){
+            if (!_isAppUserOfficial(tournament.officials)) {
                 //TODO hide some control away from non offficial
-                
+
             }
 
 
@@ -389,13 +389,13 @@ Ns.view.Tournament = {
 
     },
 
-    _isAppUserOfficial: function(officials){
+    _isAppUserOfficial: function (officials) {
         for (var i = 0; i < officials.length; i++) {
-            if(officials[i].user_id === Ns.view.UserProfile.appUser.user_id){
+            if (officials[i].user_id === Ns.view.UserProfile.appUser.user_id) {
                 return true;
             }
         }
-        
+
         return false;
     },
 
@@ -421,24 +421,9 @@ Ns.view.Tournament = {
 
                                 },
                                 afterReplace: function (html, data) {
-
-                                    var dom_extra_field = 'tournament-official-dom-extra-field';
+                                    var menuItems = Ns.view.Tournament._officialPassportMenuItems(data, tournament);
                                     var id = 'tournament-details-officials';
-                                    var children = $('#' + id).children();
-                                    //check if the official has already been added then remove it if so
-                                    for (var n = 0; n < children.length; n++) {
-                                        if (children[n][dom_extra_field]) {
-                                            if (children[n][dom_extra_field].user_id === data.user_id) {
-                                                children[n].remove();
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    //now add the official
-                                    $('#' + id).append(html);
-                                    var children = $('#' + id).children();
-                                    var last_child = children[children.length - 1];
-                                    last_child[dom_extra_field] = data;
+                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems);
                                 }
                             });
 
@@ -450,6 +435,78 @@ Ns.view.Tournament = {
                     });
         });
 
+    },
+
+    _addPassportHorizontalListItem: function (id, html, info, menuItems) {
+
+        var dom_extra_field = id + '-dom-extra-field';
+
+        var children = $('#' + id).children();
+        //check if the official has already been added then remove it if so
+        for (var n = 0; n < children.length; n++) {
+            if (children[n][dom_extra_field]) {
+                if (children[n][dom_extra_field].user_id === info.user_id) {
+                    children[n].remove();
+                    break;
+                }
+            }
+        }
+        //now add the official
+        $('#' + id).append(html);
+        var children = $('#' + id).children();
+        var last_child = children[children.length - 1];
+        last_child[dom_extra_field] = info;
+        $(last_child).on('click', {user: info, menuItems: menuItems}, Ns.view.Tournament._onClickPassport);
+    },
+
+    _onClickPassport: function (evt) {
+
+        var menu_items = evt.data.menuItems;
+        var user = evt.data.user;
+
+        var opt = {
+            headless: true, //headless dialog 
+            multiSelect: false
+        };
+
+        Ns.ui.Dialog.selectSimpleList(opt, menu_items, function (mnuItem) {
+
+            switch (mnuItem) {
+                case 'Lets Play':
+                    Ns.view.Tournament.onClickLetsPlay(user);
+                    break;
+                case 'View player profile':
+                    Ns.GameHome.showUserProfile(user);
+                    break;
+                case 'View player profile pic':
+                    Ns.ui.UI.expandPhoto(user.photo_url);
+                    break;
+                case 'View player ranking':
+
+                    alert('TODO view player ranking');
+
+                    break;
+                case 'Remove tournament official':
+
+
+                    break;
+                case 'Remove registered player':
+
+
+                    break;
+                case 'Remove season player':
+
+
+                    break;
+            }
+        });
+
+
+
+    },
+
+    onClickLetsPlay: function (user) {
+        Ns.game.PlayRequest.openPlayDialog(user);
     },
 
     _onClickRegisteredPlayersAdd: function (tournament) {
@@ -490,24 +547,9 @@ Ns.view.Tournament = {
                                     }
                                 },
                                 afterReplace: function (html, data) {
-
-                                    var dom_extra_field = 'tournament-registered-player-dom-extra-field';
+                                    var menuItems = Ns.view.Tournament._registeredPlayerPassportMenuItems(data, tournament);
                                     var id = 'tournament-details-registered-players';
-                                    var children = $('#' + id).children();
-                                    //check if the registered player has already been added then remove it if so
-                                    for (var n = 0; n < children.length; n++) {
-                                        if (children[n][dom_extra_field]) {
-                                            if (children[n][dom_extra_field].user_id === data.user_id) {
-                                                children[n].remove();
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    //now add the registered player
-                                    $('#' + id).append(html);
-                                    var children = $('#' + id).children();
-                                    var last_child = children[children.length - 1];
-                                    last_child[dom_extra_field] = data;
+                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems);
                                 }
                             });
 
@@ -628,6 +670,7 @@ Ns.view.Tournament = {
                         .get(function (data) {
 
                             Ns.view.Tournament.update(data.tournament);
+
                             if (me.player) {
                                 me.photo_td_img.src = me.player.photo_url;
                                 me.full_name_td.innerHTML = me.player.full_name;
@@ -636,22 +679,22 @@ Ns.view.Tournament = {
                             //update the season players horizontal list
                             var season_index = tournament.seasons.length - 1;
                             var current_season = tournament.seasons[season_index];
-                            
+
                             for (var i = 0; i < current_season.slots.length; i++) {
-                                
+
                                 var player_id = current_season.slots[i].player_id;
                                 var season_player;
                                 //get the player info from the register_players array
-                                for(var k=0; k < tournament.registered_players.length; k++){
-                                    if(tournament.registered_players[k] === player_id){
+                                for (var k = 0; k < tournament.registered_players.length; k++) {
+                                    if (tournament.registered_players[k] === player_id) {
                                         season_player = tournament.registered_players[k];
                                     }
                                 }
-                                
-                                if(!season_player){
+
+                                if (!season_player) {
                                     continue;
                                 }
-                                
+
                                 Main.tpl.template({
                                     tplUrl: 'tpl/player-passport-b-tpl.html',
                                     data: season_player,
@@ -661,24 +704,9 @@ Ns.view.Tournament = {
                                         }
                                     },
                                     afterReplace: function (html, data) {
-
-                                        var dom_extra_field = 'tournament-season-player-dom-extra-field';
+                                        var menuItems = Ns.view.Tournament._seasonPlayerPassportMenuItems(data, tournament);
                                         var id = 'tournament-details-season-players';
-                                        var children = $('#' + id).children();
-                                        //check if the registered player has already been added then remove it if so
-                                        for (var n = 0; n < children.length; n++) {
-                                            if (children[n][dom_extra_field]) {
-                                                if (children[n][dom_extra_field].user_id === data.user_id) {
-                                                    children[n].remove();
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        //now add the season player
-                                        $('#' + id).append(html);
-                                        var children = $('#' + id).children();
-                                        var last_child = children[children.length - 1];
-                                        last_child[dom_extra_field] = data;
+                                        Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems);
                                     }
                                 });
 
@@ -693,6 +721,92 @@ Ns.view.Tournament = {
 
         }
 
+    },
+
+    isLocalOfficial: function (user_id, tournament) {
+        var officials = tournament.officials;
+        for (var i = 0; i < officials.length; i++) {
+            if (officials[i].user_id === user_id) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    isLocalRegisteredPlayer: function (user_id, tournament) {
+        var registered_players = tournament.registered_players;
+        for (var i = 0; i < registered_players.length; i++) {
+            if (registered_players[i].user_id === user_id) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    isLocalSeasonPlayer: function (user_id, tournament) {
+        var current_season = tournament.seasons[tournament.seasons.length - 1];
+        if (!current_season) {
+            return false;
+        }
+        var slots = current_season.slots;
+        for (var i = 0; i < slots.length; i++) {
+            if (slots[i].player_id === user_id) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    _commonPassportMenuItems: function (info, tournament) {
+
+        var menu_items = [];
+
+        var is_contact = Ns.view.Contacts.isLocalContact(info.user_id);
+        //var is_group_member = Ns.view.Group.isLocalGroupMember(info.user_id);//@Deprecated here because it is inappropriate to play group member from tournament enviromnent
+
+        if (is_contact) {
+            menu_items.push('Lets Play');
+            menu_items.push('View player profile');
+        } else {
+            //not yet
+        }
+
+        menu_items.push('View player profile pic'); //expand profile pic
+        menu_items.push('View player ranking');
+        return  menu_items;
+    },
+
+    _officialPassportMenuItems: function (info, tournament) {
+        var menu_items = Ns.view.Tournament._commonPassportMenuItems(info, tournament);
+
+        if (Ns.view.Tournament._isAppUserOfficial()
+                && Ns.view.Tournament.isLocalOfficial(info.user_id, tournament)) {
+            menu_items.push('Remove tournament official');
+        }
+
+        return  menu_items;
+    },
+
+    _registeredPlayerPassportMenuItems: function (info, tournament) {
+        var menu_items = Ns.view.Tournament._commonPassportMenuItems(info, tournament);
+
+        if (Ns.view.Tournament._isAppUserOfficial()
+                && Ns.view.Tournament.isLocalRegisteredPlayer(info.user_id, tournament)) {
+            menu_items.push('Remove registered player');
+        }
+
+        return  menu_items;
+    },
+
+    _seasonPlayerPassportMenuItems: function (info, tournament) {
+        var menu_items = Ns.view.Tournament._commonPassportMenuItems(info, tournament);
+
+        if (Ns.view.Tournament._isAppUserOfficial()
+                && Ns.view.Tournament.isLocalSeasonPlayer(info.user_id, tournament)) {
+            menu_items.push('Remove season player');
+        }
+
+        return  menu_items;
     },
 
     merge: function (tournaments) {

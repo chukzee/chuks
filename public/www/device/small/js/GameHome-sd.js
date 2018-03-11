@@ -183,14 +183,14 @@ Ns.GameHome = {
     showCreateTournament: function (data) {
 
     },
-    showUserProfile: function (data) {
+    showUserProfile: function (user) {
 
         Main.page.show({
             url: 'user-profile-sd.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.UserProfile.content,
-            data: data
+            data: user
         });
     },
     showSettings: function (data) {

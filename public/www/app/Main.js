@@ -3544,7 +3544,12 @@ var Main = {};
                 }
             }
             
-            base.appendChild(header_el);
+            if(obj.headless === true || obj.hasHeader === false){//new
+                header_el.style.height = '0px';//important! to hide the header. we avoided using 'display:none' property to perhaps avoid null from being returned from getBoundingClientRect
+                //header_el.style.display = 'none';//commented out because we do not know if it will cause null to be return from getBoundingClientRect
+            }
+            
+            base.appendChild(header_el);            
             base.appendChild(body_el);
 
             var dlg_cmp;

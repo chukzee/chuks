@@ -46,7 +46,7 @@ Ns.view.Contacts = {
         contactsContent(tempInfos);
 
         Ns.view.UserProfile.getUsersInfo(contacts, function (infos) {
-            if(Main.util.isArray(infos)){
+            if (Main.util.isArray(infos)) {
                 Ns.view.Contacts.contactList = infos;
                 Ns.view.Contacts.save();
             }
@@ -121,6 +121,15 @@ Ns.view.Contacts = {
      + ' </ul>';
      },
      */
+    isLocalContact: function (user_id) {
+        var contacts = Ns.view.Contacts.contactList;
+        for (var i = 0; i < contacts.length; i++) {
+            if (contacts[i].user_id === user_id) {
+                return true;
+            }
+        }
+        return false;
+    },
     onClickContact: function (evt, user_id) {
 
         Ns.view.UserProfile.getInfo(user_id, function (contact) {
