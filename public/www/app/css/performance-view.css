@@ -7,7 +7,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-table-stadings > .game9ja-table-stadings-header {
+.game9ja-header, .game9ja-performance-view > .game9ja-performance-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -36,7 +36,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-table-stadings > .game9ja-table-stadings-header {
+.game9ja-header, .game9ja-performance-view > .game9ja-performance-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -136,16 +136,16 @@ and open the template in the editor.
   .game9ja-back-btn {
     visibility: hidden;
     /*hide back button*/ } }
-.game9ja-table-stadings {
+.game9ja-performance-view {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   max-width: 100%;
   height: 100%; }
-  .game9ja-table-stadings > .game9ja-table-stadings-header {
+  .game9ja-performance-view > .game9ja-performance-view-header {
     position: relative; }
-    .game9ja-table-stadings > .game9ja-table-stadings-header > :nth-child(1) {
+    .game9ja-performance-view > .game9ja-performance-view-header > :nth-child(1) {
       /*holding title*/
       margin: 0 auto;
       width: 200px;
@@ -155,89 +155,89 @@ and open the template in the editor.
       text-align: center;
       -webkit-box-sizing: border-box;
       box-sizing: border-box; }
-  .game9ja-table-stadings > .game9ja-table-stadings-season {
+  .game9ja-performance-view > .game9ja-performance-view-season {
     position: relative;
     font-size: 14px;
     color: #444;
     height: 30px;
     border-bottom: 0.0325em #eee solid; }
-    .game9ja-table-stadings > .game9ja-table-stadings-season > :nth-child(1) {
+    .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(1) {
       position: absolute;
       bottom: 0;
       left: 5px;
       font-size: 20px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-season > :nth-child(1) > :nth-child(1) {
+      .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(1) > :nth-child(1) {
         font-size: 24px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-season > :nth-child(1) > :nth-child(2) {
+      .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(1) > :nth-child(2) {
         font-size: 11px;
         margin-left: 30px; }
-    .game9ja-table-stadings > .game9ja-table-stadings-season > :nth-child(2) {
+    .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(2) {
       position: absolute;
       bottom: 0;
       right: 5px;
       font-size: 14px;
       cursor: pointer; }
-  .game9ja-table-stadings > .game9ja-table-stadings-display td, .game9ja-table-stadings th {
+  .game9ja-performance-view > .game9ja-performance-view-display td, .game9ja-performance-view th {
     border-bottom: 1px solid #ddd;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap; }
-  .game9ja-table-stadings > .game9ja-table-stadings-display {
+  .game9ja-performance-view > .game9ja-performance-view-display {
     position: relative;
     border-collapse: collapse;
     width: 100%; }
-    .game9ja-table-stadings > .game9ja-table-stadings-display > thead > tr {
+    .game9ja-performance-view > .game9ja-performance-view-display > thead > tr {
       height: 30px; }
-    .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr {
+    .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr {
       height: 40px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr:hover {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr:hover {
         background-color: #eee; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(1) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(1) {
         width: 20px;
         min-width: 20px;
         max-width: 30px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(2) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(2) {
         width: 40px;
         height: 40px;
         padding: 0;
         margin: 0;
         cursor: pointer; }
-        .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(2) > div {
+        .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(2) > div {
           /*helper div to help center the tournament profile pic*/
           width: 36px;
           height: 36px;
           margin: 0 auto; }
-          .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(2) > div > img {
+          .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(2) > div > img {
             /* profile pic*/
             width: 36px;
             height: 36px;
             border-radius: 50%; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(3) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(3) {
         min-width: 100px;
         max-width: 100px;
         text-align: left;
         padding-left: 5px;
         cursor: pointer; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(4) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(4) {
         width: 20px;
         min-width: 20px;
         max-width: 30px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(5) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(5) {
         width: 20px;
         min-width: 20px;
         max-width: 30px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(6) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(6) {
         width: 20px;
         min-width: 20px;
         max-width: 30px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(7) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(7) {
         width: 20px;
         min-width: 20px;
         max-width: 30px; }
-      .game9ja-table-stadings > .game9ja-table-stadings-display > tbody > tr > :nth-child(8) {
+      .game9ja-performance-view > .game9ja-performance-view-display > tbody > tr > :nth-child(8) {
         width: 20px;
         min-width: 20px;
         max-width: 30px; }
 
-/*# sourceMappingURL=table-standings.css.map */
+/*# sourceMappingURL=performance-view.css.map */

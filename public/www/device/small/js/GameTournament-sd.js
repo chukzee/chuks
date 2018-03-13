@@ -10,4 +10,14 @@ Ns.GameTournament = {
         
     },
    
+    showPerformacesView: function (data) {
+
+        Main.page.show({
+            url: 'performance-view-sd.html',
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.view.Performance.content,
+            data: data
+        });
+    },
 };

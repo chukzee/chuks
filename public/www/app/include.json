@@ -100,7 +100,7 @@
             "wait-player.css",
             "game-contacts.css",
             "play-notifications.css",
-            "table-standings.css",
+            "performance-view.css",
             "slots-edit.css"
         ],
         
@@ -123,7 +123,8 @@
             "view/PlayNotifications.js",
             "view/Group.js",
             "view/UserProfile.js",
-            "view/Contacts.js"
+            "view/Contacts.js",
+            "view/Performance.js"
         ] 
     },
 

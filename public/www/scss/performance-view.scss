@@ -4,7 +4,7 @@
 
 $font_color : #444;
 
-.game9ja-table-stadings{
+.game9ja-performance-view{
     position: absolute;
     top : 0;
     left: 0;
@@ -13,7 +13,7 @@ $font_color : #444;
     height: 100%;
 
 
-    > .game9ja-table-stadings-header{
+    > .game9ja-performance-view-header{
         @extend .game9ja-header;
         position: relative;
         > :nth-child(1){ /*holding title*/
@@ -29,7 +29,7 @@ $font_color : #444;
 
     }
 
-    > .game9ja-table-stadings-season{
+    > .game9ja-performance-view-season{
         position : relative;
         font-size: 14px;  
         color : $font_color; 
@@ -65,7 +65,7 @@ $font_color : #444;
         }
     }
 
-    > .game9ja-table-stadings-display td, th{
+    > .game9ja-performance-view-display td, th{
         border-bottom: 1px solid #ddd;
         text-align: center;
         overflow: hidden;
@@ -73,7 +73,7 @@ $font_color : #444;
         white-space: nowrap;
     }
 
-    > .game9ja-table-stadings-display{
+    > .game9ja-performance-view-display{
         position: relative;
         border-collapse: collapse;
         width: 100%;

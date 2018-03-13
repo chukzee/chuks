@@ -8,6 +8,8 @@ Ns.view.Tournament = {
 
     RANDOM_SIZE: 30,
 
+    DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
+
     tournamentList: [],
 
     /**
@@ -423,7 +425,7 @@ Ns.view.Tournament = {
                                 afterReplace: function (html, data) {
                                     var menuItems = Ns.view.Tournament._officialPassportMenuItems(data, tournament);
                                     var id = 'tournament-details-officials';
-                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems);
+                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
                                 }
                             });
 
@@ -437,32 +439,44 @@ Ns.view.Tournament = {
 
     },
 
-    _addPassportHorizontalListItem: function (id, html, info, menuItems) {
+    _addPassportHorizontalListItem: function (el_id, html, info, menuItems, tournament_name) {
 
-        var dom_extra_field = id + '-dom-extra-field';
+        var dom_extra_field = el_id + Ns.view.Tournament.DOM_EXTRA_FIELD_PREFIX;
 
-        var children = $('#' + id).children();
+        //check if the official has already been added then remove it if so 
+        Ns.view.Tournament._removePassportHorizontalListItem(el_id, info.user_id);
+
+        //now add the official
+        $('#' + el_id).append(html);
+        var children = $('#' + el_id).children();
+        var last_child = children[children.length - 1];
+        last_child[dom_extra_field] = info;
+        var dataObj = {user: info, menuItems: menuItems, tournament_name: tournament_name};
+        $(last_child).on('click', dataObj, Ns.view.Tournament._onClickPassport);
+    },
+
+    _removePassportHorizontalListItem: function (el_id, user_id) {
+
+        var dom_extra_field = el_id + Ns.view.Tournament.DOM_EXTRA_FIELD_PREFIX;
+
+        var children = $('#' + el_id).children();
         //check if the official has already been added then remove it if so
         for (var n = 0; n < children.length; n++) {
             if (children[n][dom_extra_field]) {
-                if (children[n][dom_extra_field].user_id === info.user_id) {
+                if (children[n][dom_extra_field].user_id === user_id) {
                     children[n].remove();
                     break;
                 }
             }
         }
-        //now add the official
-        $('#' + id).append(html);
-        var children = $('#' + id).children();
-        var last_child = children[children.length - 1];
-        last_child[dom_extra_field] = info;
-        $(last_child).on('click', {user: info, menuItems: menuItems}, Ns.view.Tournament._onClickPassport);
+
     },
 
     _onClickPassport: function (evt) {
 
         var menu_items = evt.data.menuItems;
         var user = evt.data.user;
+        var tournament_name = evt.data.tournament_name;
 
         var opt = {
             headless: true, //headless dialog 
@@ -487,21 +501,76 @@ Ns.view.Tournament = {
 
                     break;
                 case 'Remove tournament official':
-
-
+                    Ns.view.Tournament.removeOfficial(user.user_id, tournament_name);
                     break;
                 case 'Remove registered player':
-
-
+                    Ns.view.Tournament.removeRegisteredPlayer(user.user_id, tournament_name);
                     break;
                 case 'Remove season player':
-
-
+                    Ns.view.Tournament.removeSeasonPlayer(user.user_id, tournament_name);
                     break;
             }
         });
 
 
+
+    },
+
+    removeOfficial: function (official_id, tournament_name) {
+        var app_user_id = Ns.view.UserProfile.appUser.user_id;
+        Main.ro.tourn.removeOfficial(app_user_id, tournament_name, official_id)
+                .get(function (data) {
+                    var el_id = "tournament-details-officials";
+                    Ns.view.Tournament._removePassportHorizontalListItem(el_id, official_id);
+                })
+                .error(function (err) {
+                    Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                });
+
+    },
+
+    removeRegisteredPlayer: function (player_id, tournament_name) {
+        var app_user_id = Ns.view.UserProfile.appUser.user_id;
+        Main.ro.tourn.removeRegisteredPlayer(app_user_id, tournament_name, player_id)
+                .get(function (data) {
+                    var el_id = "tournament-details-registered-players";
+                    Ns.view.Tournament._removePassportHorizontalListItem(el_id, player_id);
+                })
+                .error(function (err) {
+                    Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                });
+    },
+
+    removeSeasonPlayer: function (player_id, tournament_name) {
+        var tourn;
+        for (var i = 0; i < Ns.view.Tournament.tournamentList.length; i++) {
+            if (Ns.view.Tournament.tournamentList[i].name === tournament_name) {
+                tourn = Ns.view.Tournament.tournamentList[i];
+                break;
+            }
+        }
+
+        if (!tourn) {
+            return;
+        }
+
+        var current_season = tourn.seasons[tourn.seasons.length - 1];
+        if (!current_season) {
+            return;
+        }
+
+        var season_number = current_season.sn;
+
+        var app_user_id = Ns.view.UserProfile.appUser.user_id;
+
+        Main.ro.tourn.seasonRemovePlayer(app_user_id, tournament_name, season_number, player_id)
+                .get(function (data) {
+                    var el_id = "tournament-details-season-players";
+                    Ns.view.Tournament._removePassportHorizontalListItem(el_id, player_id);
+                })
+                .error(function (err) {
+                    Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                });
 
     },
 
@@ -549,7 +618,7 @@ Ns.view.Tournament = {
                                 afterReplace: function (html, data) {
                                     var menuItems = Ns.view.Tournament._registeredPlayerPassportMenuItems(data, tournament);
                                     var id = 'tournament-details-registered-players';
-                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems);
+                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
                                 }
                             });
 
@@ -706,7 +775,7 @@ Ns.view.Tournament = {
                                     afterReplace: function (html, data) {
                                         var menuItems = Ns.view.Tournament._seasonPlayerPassportMenuItems(data, tournament);
                                         var id = 'tournament-details-season-players';
-                                        Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems);
+                                        Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
                                     }
                                 });
 
