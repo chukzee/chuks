@@ -405,9 +405,9 @@ class Tournament extends WebApplication {
      * 
      * @param {type} tournament_name
      * @param {type} season_number
-     * @returns {Tournament@call;error|nm$_tournament.Tournament.seasonTableStandingsRR.standings|nm$_tournament.exports.seasonTableStandingsRR.standings}
+     * @returns {Tournament@call;error|nm$_tournament.Tournament.seasonTableStandings.standings|nm$_tournament.exports.seasonTableStandingsRR.standings}
      */
-    async seasonTableStandingsRR(tournament_name, season_number) {
+    async seasonTableStandings(tournament_name, season_number) {
 
         if (arguments.length === 1) {
             tournament_name = arguments[0].tournament_name;
@@ -424,10 +424,6 @@ class Tournament extends WebApplication {
             return this.error(`Tournament does not exist - ${tournament_name}`);
         }
 
-
-        if (tourn.type !== this.sObj.ROUND_ROBIN) {
-            return this.error(`Invalid request! ${tournament_name} is not a ${this.sObj.ROUND_ROBIN} tournament.`);
-        }
 
         //get the particular season
         var season_index = season_number - 1;
@@ -482,7 +478,11 @@ class Tournament extends WebApplication {
         //sort the positions in desending order according to thier general performance
         standings = this._resultStandings(standings);
 
-        return standings;
+        return {
+            tournament_name : tournament_name,
+            season_number : season_number,
+            standings : standings
+        };
     }
 
     //tricky - note to also modify the corresponding rounds of the season.

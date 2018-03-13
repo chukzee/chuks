@@ -471,7 +471,7 @@ Main.on("pagecreate", function (arg) {
         var tournament_name = prompt('tournament_name', '');
         var season_number = prompt('season_number', '');
 
-        Main.ro.tourn.seasonTableStandingsRR(tournament_name, season_number)
+        Main.ro.tourn.seasonTableStandings(tournament_name, season_number)
                 .get(function (data) {
                     //alert(data);
                     console.log(data);
