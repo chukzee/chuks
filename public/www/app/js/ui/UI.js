@@ -127,24 +127,28 @@ Ns.ui.UI = {
         });
 
         $('#home-group-header').on('click', function (evt) {
+            var el = document.getElementById('home-group-header');
+            var group = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP];
             if (evt.target.id === 'home-group-name'
-                    || evt.target.id === 'home-group-status-message') {
-                var group = document.getElementById('home-group-name').innerHTML;
+                    || evt.target.id === 'home-group-status-message') {                
+                //var group_name = document.getElementById('home-group-name').innerHTML;
                 Ns.GameHome.showGroupDetails(group);
             } else if (evt.target.id === 'home-group-pic') {
-                var group = document.getElementById('home-group-name').innerHTML;
-                Ns.ui.UI.expandPhoto({type: 'group', id: group});
+                //var group_name = document.getElementById('home-group-name').innerHTML;
+                Ns.ui.UI.expandPhoto(group, 'group');
             }
         });
 
 
         $('#home-tournament-header').on('click', function (evt) {
+            var el = document.getElementById('home-tournament-header');
+            var tournament = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP];
             if (evt.target.id === 'home-tournament-name') {
-                var tourn = document.getElementById('home-tournament-name').innerHTML;
-                Ns.GameHome.showTournamentDetails(tourn);
+                //var tournnament_name = document.getElementById('home-tournament-name').innerHTML;
+                Ns.GameHome.showTournamentDetails(tournament);
             } else if (evt.target.id === 'home-tournament-pic') {
-                var tourn = document.getElementById('home-tournament-name').innerHTML;
-                Ns.ui.UI.expandPhoto({type: 'tournament', id: tourn});
+                //var tournnament_name = document.getElementById('home-tournament-name').innerHTML;
+                Ns.ui.UI.expandPhoto(tournament, 'tournament');
             }
         });
 
@@ -313,7 +317,7 @@ Ns.ui.UI = {
         }
     },
 
-    expandPhoto: function (photo_url) {
+    expandPhoto: function (obj, type) {
         
     },
 

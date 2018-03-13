@@ -142,11 +142,13 @@ Ns.view.Performance = {
             for(var i=0; i<standings.length; i++){
                 var full_name = '...';
                 var photo_url = '...';
+                var player;
                 for(var k=0; k<tournament.registered_players.length; k++){
-                    var player = tournament.registered_players[k];
+                    player = tournament.registered_players[k];
                     if(player.user_id === standings[i].user_id){
                         full_name = player.full_name;
                         photo_url = player.photo_url;
+                        break;
                     }
                 }
                 var tr = document.createElement('tr');
@@ -158,7 +160,7 @@ Ns.view.Performance = {
                 var photo_div = document.createElement('div');
                 var photo_img = document.createElement('img');
                 photo_img.src = photo_url;
-                photo_img.addEventListener('click', Ns.view.Performance.expandPhoto.bind({photo_url: photo_url}));
+                photo_img.addEventListener('click', Ns.view.Performance.expandPhoto.bind({user: player}));
 
                 var photo_td = document.createElement('td');
                 
@@ -198,8 +200,8 @@ Ns.view.Performance = {
     },
 
     expandPhoto: function(){
-        var photo_url = this.photo_url;
-        Ns.ui.UI.expandPhoto(photo_url);
+        var user = this.user;
+        Ns.ui.UI.expandPhoto(user);
     },
 
     save: function (obj) {

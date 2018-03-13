@@ -44,15 +44,21 @@ Ns.view.Tournament = {
 
     },
 
-    content: function (tournament_name) {
+    content: function (tournament) {
 
         var round_index;
         var players_map = {};
 
-        //find the tournament
-        Ns.view.Tournament.getInfo(tournament_name, function (tournament) {
+        if (Main.util.isString(tournament)) {
+            //find the tournament
+            var tournament_name = tournament;
+            Ns.view.Tournament.getInfo(tournament_name, function (tournament) {
+                setContent(tournament);
+            });
+        }else{
             setContent(tournament);
-        });
+        }
+
 
 
         function setContent(tournament) {
@@ -493,7 +499,7 @@ Ns.view.Tournament = {
                     Ns.GameHome.showUserProfile(user);
                     break;
                 case 'View player profile pic':
-                    Ns.ui.UI.expandPhoto(user.photo_url);
+                    Ns.ui.UI.expandPhoto(user);
                     break;
                 case 'View player ranking':
 

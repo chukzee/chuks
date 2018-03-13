@@ -31,12 +31,19 @@ Ns.view.Group = {
         Main.rcall.live(obj);
         Main.eventio.on('group_join_request', this.onGroupJionRequest);
     },
-    content: function (group_name) {
+    content: function (group) {
 
-        //find the group
-        Ns.view.Group.getInfo(group_name, function (group) {
+        if (Main.util.isString(group)) {
+            var group_name = group;
+            //find the group
+            Ns.view.Group.getInfo(group_name, function (group) {
+                setContent(group);
+            });
+        } else {
             setContent(group);
-        });
+        }
+        
+        
         function setContent(group) {
 
             /*
@@ -161,7 +168,7 @@ Ns.view.Group = {
         }
 
         function onRenderMember(tpl_var, data) {
-            
+
             var app_user_id = Ns.view.UserProfile.appUser.user_id;
             var set_exit_group = data.user_id === app_user_id;
 
@@ -191,17 +198,17 @@ Ns.view.Group = {
          });
          */
     },
-    isLocalGroupMember: function(user_id){
-        
+    isLocalGroupMember: function (user_id) {
+
         for (var i = 0; i < Ns.view.Group.groupList.length; i++) {
             var members = Ns.view.Group.groupList[i].members;
-            for(var k=0; k<members.length; k++){
-                if(members[k].user_id === user_id){
+            for (var k = 0; k < members.length; k++) {
+                if (members[k].user_id === user_id) {
                     return true;
                 }
             }
         }
-       
+
         return false;
     },
     getInfo: function (group_name, callback, refresh) {

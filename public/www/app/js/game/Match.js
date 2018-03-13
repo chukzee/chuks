@@ -10,7 +10,8 @@ Ns.game.Match = {
     _lstContactsMatch: null, //private - the contacts match listview
     _lstGroupsMatch: null, //private - the groups match listview
     _lstTournamentsMatch: null, //private - the tournaments match listview
-
+    _HOME_DOM_EXTRA_HOLD_TOURN : '_HOME_DOM_EXTRA_HOLD_TOURN',
+    _HOME_DOM_EXTRA_HOLD_GROUP: '_HOME_DOM_EXTRA_HOLD_GROUP',
     contactsMatchKey: function () {
         return Ns.view.UserProfile.appUser.id + ":" + "CONTACT_MATCH" + ":" + Ns.ui.UI.selectedGame + ":";
     },
@@ -213,6 +214,9 @@ Ns.game.Match = {
             } catch (e) {
                 console.warn(e);
             }
+            
+            
+            document.getElementById('home-group-header')[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
             document.getElementById('home-group-pic').src = group.photo_url;
             document.getElementById('home-group-name').innerHTML = group.name;
             document.getElementById('home-group-status-message').innerHTML = group.status_message;
@@ -313,6 +317,7 @@ Ns.game.Match = {
             }
 
             //display tournament header info
+            document.getElementById('home-group-header')[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
             document.getElementById('home-tournament-pic').src = tournament.photo_url;
             document.getElementById('home-tournament-name').innerHTML = tournament.name;
             if(tournament.seasons.length > 0){
