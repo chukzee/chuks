@@ -32,6 +32,16 @@ Ns.view.Performance = {
 
         var season_index = season_number - 1;
 
+        if (season_index === 0) {
+            //disable the 'previous' button
+            $('#performance-view-season-previous').addClass('game9ja-disabled');
+        }
+
+        if (season_index === tournament.seasons.length - 1) {
+            //disable the 'next' button
+            $('#performance-view-season-next').addClass('game9ja-disabled');
+        }
+
         var current_season = tournament.seasons[season_index];
 
         document.getElementById("performance-view-tournament-name").innerHTML = tournament.name;
@@ -123,7 +133,7 @@ Ns.view.Performance = {
 
         function showSeasonStandings(tournament, standings) {
 
-            
+
             /*
              <tr>
              <td>1</td>
@@ -136,72 +146,72 @@ Ns.view.Performance = {
              <td>10000000</td>
              </tr>
              */
-            
+
             var el = document.getElementById("performance-view-table-body");
-            
-            for(var i=0; i<standings.length; i++){
+
+            for (var i = 0; i < standings.length; i++) {
                 var full_name = '...';
                 var photo_url = '...';
                 var player;
-                for(var k=0; k<tournament.registered_players.length; k++){
+                for (var k = 0; k < tournament.registered_players.length; k++) {
                     player = tournament.registered_players[k];
-                    if(player.user_id === standings[i].user_id){
+                    if (player.user_id === standings[i].user_id) {
                         full_name = player.full_name;
                         photo_url = player.photo_url;
                         break;
                     }
                 }
                 var tr = document.createElement('tr');
-                
+
                 var sn_td = document.createElement('td');
-                sn_td.innerHTML = i +1;
+                sn_td.innerHTML = i + 1;
                 tr.appendChild(sn_td);
-                
+
                 var photo_div = document.createElement('div');
                 var photo_img = document.createElement('img');
                 photo_img.src = photo_url;
                 photo_img.addEventListener('click', Ns.view.Performance.expandPhoto.bind({user: player}));
 
                 var photo_td = document.createElement('td');
-                
+
                 photo_div.appendChild(photo_img);
                 photo_td.appendChild(photo_div);
                 tr.appendChild(photo_td);
-                
+
                 var full_name_td = document.createElement('td');
                 full_name_td.innerHTML = full_name;
                 tr.appendChild(full_name_td);
-                
+
                 var PL_td = document.createElement('td');
                 PL_td.innerHTML = standings[i].total_played;
                 tr.appendChild(PL_td);
-                
+
                 var W_td = document.createElement('td');
                 W_td.innerHTML = standings[i].total_wins;
                 tr.appendChild(W_td);
-                
+
                 var D_td = document.createElement('td');
                 D_td.innerHTML = standings[i].total_draws;
                 tr.appendChild(D_td);
-                
+
                 var L_td = document.createElement('td');
                 L_td.innerHTML = standings[i].total_losses;
                 tr.appendChild(L_td);
-                
+
                 var Pts_td = document.createElement('td');
                 Pts_td.innerHTML = standings[i].total_points;
                 tr.appendChild(Pts_td);
-                
+
                 el.appendChild(tr);
             }
-            
+
 
         }
     },
 
-    expandPhoto: function(){
+    expandPhoto: function () {
         var user = this.user;
-        Ns.ui.UI.expandPhoto(user);
+        Ns.ui.UI.expandPhoto(user, 'user');
     },
 
     save: function (obj) {

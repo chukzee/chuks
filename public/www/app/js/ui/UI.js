@@ -142,7 +142,7 @@ Ns.ui.UI = {
 
         $('#home-tournament-header').on('click', function (evt) {
             var el = document.getElementById('home-tournament-header');
-            var tournament = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP];
+            var tournament = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN];
             if (evt.target.id === 'home-tournament-name') {
                 //var tournnament_name = document.getElementById('home-tournament-name').innerHTML;
                 Ns.GameHome.showTournamentDetails(tournament);

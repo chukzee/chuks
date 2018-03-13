@@ -55,7 +55,7 @@ Ns.view.Tournament = {
             Ns.view.Tournament.getInfo(tournament_name, function (tournament) {
                 setContent(tournament);
             });
-        }else{
+        } else {
             setContent(tournament);
         }
 
@@ -180,9 +180,15 @@ Ns.view.Tournament = {
 
 
             $('#tournament-details-season-table-standings').on('click', function () {
-
-                alert('TODO tournament-details-season-table-standings');
-
+                var season = tournament.seasons[season_index];
+                if (!season) {
+                    return;
+                }
+                Ns.GameTournament.showPerformacesView(
+                        {
+                            tournament: tournament,
+                            season_number: season.sn
+                        });
             });
 
 
@@ -449,7 +455,7 @@ Ns.view.Tournament = {
 
         var dom_extra_field = el_id + Ns.view.Tournament.DOM_EXTRA_FIELD_PREFIX;
 
-        //check if the official has already been added then remove it if so 
+        //check if already been added then remove it if so 
         Ns.view.Tournament._removePassportHorizontalListItem(el_id, info.user_id);
 
         //now add the official
@@ -466,7 +472,7 @@ Ns.view.Tournament = {
         var dom_extra_field = el_id + Ns.view.Tournament.DOM_EXTRA_FIELD_PREFIX;
 
         var children = $('#' + el_id).children();
-        //check if the official has already been added then remove it if so
+        //check if already been added then remove it if so
         for (var n = 0; n < children.length; n++) {
             if (children[n][dom_extra_field]) {
                 if (children[n][dom_extra_field].user_id === user_id) {
