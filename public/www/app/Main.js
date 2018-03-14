@@ -1782,9 +1782,10 @@ var Main = {};
 
     function Tpl() {
         var tplList = {};
+        var waitTplLoading;
         var regexTplMatchParams = {};
         var queue = [];
-        
+
         function tplReplace(html, obj, data) {
 
             var param_arr = regexTplMatchParams[obj.tplUrl];
@@ -1811,10 +1812,10 @@ var Main = {};
                     var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
                     for (var k = 0; k < obj_path.length; i++) {
                         var par = obj_path[k];
-                        v = v[par];
-                        if (typeof v === 'undefined') {
+                        if (typeof v[par] === 'undefined') {
                             break;
                         }
+                        v = v[par];
                     }
                 }
 
@@ -1827,24 +1828,33 @@ var Main = {};
             $(content).find('title , script, link , meta').each(function (index) {
                 this.remove();
             });
-            
-            if(obj.afterReplace){
+
+            if (obj.afterReplace) {
                 obj.afterReplace(content, data);
             }
-            
+
         }
 
-        
+
         this.template = function (obj) {
 
             queue.push(obj);
+            if(waitTplLoading){
+                return;
+            }
+            waitTplLoading = true;
             doGet(obj);
+
+            console.log(obj.tplUrl, '---', obj.data.user_id);
 
             function next() {
                 queue.shift();
                 if (queue.length === 0) {
                     return;
                 }
+
+                console.log(obj.tplUrl, '---next---', obj.data.user_id);
+
                 var qObj = queue[0];
                 if (qObj) {
                     doGet(qObj);
@@ -1853,21 +1863,31 @@ var Main = {};
 
             function doGet(obj) {
                 var res = tplList[obj.tplUrl];
-                if(res){//already have it in memory
-                  tplReplace(res, obj, obj.data);
-                   next();
+                if (res) {//already have it in memory
+                    tplReplace(res, obj, obj.data);
+
+                    console.log(obj.tplUrl, '---before Sync next---', obj.data.user_id);
+
+                    next();
+                    return;
                 }
                 var url = pageRouteUrl + obj.tplUrl;
                 $.get(url, function (response) {
+                    waitTplLoading = false;
                     tplList[obj.tplUrl] = response;
                     tplReplace(response, obj, obj.data);
+                    
+                    console.log(obj.tplUrl, '---before Async next---', obj.data.user_id);
+                    
                     next();
+
                 }).fail(function () {
+                    waitTplLoading = false;
                     next();
                     console.log("could not get resource:", url);
                 });
             }
-            
+
         };
     }
 
@@ -2059,10 +2079,10 @@ var Main = {};
                     var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
                     for (var k = 0; k < obj_path.length; i++) {
                         var par = obj_path[k];
-                        v = v[par];
-                        if (typeof v === 'undefined') {
+                        if (typeof v[par] === 'undefined') {
                             break;
                         }
+                        v = v[par];
                     }
                 }
 
@@ -3525,7 +3545,7 @@ var Main = {};
 
             //base.style.maxWidth = (pad_factor * 100) + '%'; //old
             //base.style.maxHeight = (pad_factor * 100) + '%';//old
-            
+
             if (obj.maxWidth) {//new
                 var max_width = new String(obj.maxWidth).replace('px', '') - 0;//implicitly convert to numeric
                 if (!isNaN(max_width)) {
@@ -3543,13 +3563,13 @@ var Main = {};
                     console.warn('dialog maxHeight invalid - ', obj.maxHeight);
                 }
             }
-            
-            if(obj.headless === true || obj.hasHeader === false){//new
+
+            if (obj.headless === true || obj.hasHeader === false) {//new
                 header_el.style.height = '0px';//important! to hide the header. we avoided using 'display:none' property to perhaps avoid null from being returned from getBoundingClientRect
                 //header_el.style.display = 'none';//commented out because we do not know if it will cause null to be return from getBoundingClientRect
             }
-            
-            base.appendChild(header_el);            
+
+            base.appendChild(header_el);
             base.appendChild(body_el);
 
             var dlg_cmp;

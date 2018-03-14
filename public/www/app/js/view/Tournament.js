@@ -116,6 +116,14 @@ Ns.view.Tournament = {
                     ? tournament.registered_players.length + ' Registered players'
                     : tournament.registered_players.length + ' Registered player';
 
+            Ns.view.Tournament._renderOfficials(tournament);
+
+            Ns.view.Tournament._renderRegisteredPlayers(tournament);
+
+            if (current_season) {
+                Ns.view.Tournament._renderSeasonPlayers(tournament, current_season.sn);//uncomment later
+            }
+
             if (season_index === 0) {
                 //disable the 'previous' button
                 $('#tournament-details-season-previous').addClass('game9ja-disabled');
@@ -207,6 +215,8 @@ Ns.view.Tournament = {
                         //disable the 'previous' button
                         $('#tournament-details-season-previous').addClass('game9ja-disabled');
                     }
+
+                    Ns.view.Tournament._renderSeasonPlayers(tournament, tournament.seasons[season_index].sn);
                 }
 
             });
@@ -226,6 +236,8 @@ Ns.view.Tournament = {
                         //disable the 'next' button 
                         $('#tournament-details-season-next').addClass('game9ja-disabled');
                     }
+
+                    Ns.view.Tournament._renderSeasonPlayers(tournament, tournament.seasons[season_index].sn);
                 }
 
 
@@ -413,44 +425,6 @@ Ns.view.Tournament = {
         return false;
     },
 
-    _onClickOfficialsAdd: function (tournament) {
-        var opt = {
-            title: 'Add Official',
-            multiSelect: false
-        };
-        Ns.ui.Dialog.selectContactList(opt, function (choice) {
-            var new_official_user_id = choice.user_id;
-            var app_user_id = Ns.view.UserProfile.appUser.user_id;
-            Main.ro.tourn.addOfficial(app_user_id, tournament.name, new_official_user_id)
-                    .get(function (data) {
-                        Ns.view.Tournament.update(data.tournament);
-
-                        Main.alert(data.msg, 'Success', Main.const.INFO);
-                        for (var i = 0; i < tournament.officials.length; i++) {
-
-                            Main.tpl.template({
-                                tplUrl: 'tpl/player-passport-a-tpl.html',
-                                data: tournament.officials[i],
-                                onReplace: function (tpl_var, data) {
-
-                                },
-                                afterReplace: function (html, data) {
-                                    var menuItems = Ns.view.Tournament._officialPassportMenuItems(data, tournament);
-                                    var id = 'tournament-details-officials';
-                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
-                                }
-                            });
-
-                        }
-                    })
-                    .error(function (err) {
-                        Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
-                        console.log(err);
-                    });
-        });
-
-    },
-
     _addPassportHorizontalListItem: function (el_id, html, info, menuItems, tournament_name) {
 
         var dom_extra_field = el_id + Ns.view.Tournament.DOM_EXTRA_FIELD_PREFIX;
@@ -590,6 +564,30 @@ Ns.view.Tournament = {
         Ns.game.PlayRequest.openPlayDialog(user);
     },
 
+    _onClickOfficialsAdd: function (tournament) {
+        var opt = {
+            title: 'Add Official',
+            multiSelect: false
+        };
+        Ns.ui.Dialog.selectContactList(opt, function (choice) {
+            var new_official_user_id = choice.user_id;
+            var app_user_id = Ns.view.UserProfile.appUser.user_id;
+            Main.ro.tourn.addOfficial(app_user_id, tournament.name, new_official_user_id)
+                    .get(function (data) {
+                        Ns.view.Tournament.update(data.tournament);
+
+                        Main.alert(data.msg, 'Success', Main.const.INFO);
+                        Ns.view.Tournament._renderOfficials(tournament);
+
+                    })
+                    .error(function (err) {
+                        Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                        console.log(err);
+                    });
+        });
+
+    },
+
     _onClickRegisteredPlayersAdd: function (tournament) {
         var opt = {
             title: 'Register Players'
@@ -617,24 +615,7 @@ Ns.view.Tournament = {
                         Main.alert(msg_str, 'Message', Main.const.INFO);
 
                         //next render on the horizontal list
-                        for (var i = 0; i < tournament.registered_players.length; i++) {
-
-                            Main.tpl.template({
-                                tplUrl: 'tpl/player-passport-b-tpl.html',
-                                data: tournament.registered_players[i],
-                                onReplace: function (tpl_var, data) {
-                                    if (tpl_var === 'rating') {
-                                        //TODO
-                                    }
-                                },
-                                afterReplace: function (html, data) {
-                                    var menuItems = Ns.view.Tournament._registeredPlayerPassportMenuItems(data, tournament);
-                                    var id = 'tournament-details-registered-players';
-                                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
-                                }
-                            });
-
-                        }
+                        Ns.view.Tournament._renderRegisteredPlayers(tournament);
 
                     })
                     .error(function (err) {
@@ -758,46 +739,98 @@ Ns.view.Tournament = {
                             }
 
                             //update the season players horizontal list
-                            var season_index = tournament.seasons.length - 1;
-                            var current_season = tournament.seasons[season_index];
-
-                            for (var i = 0; i < current_season.slots.length; i++) {
-
-                                var player_id = current_season.slots[i].player_id;
-                                var season_player;
-                                //get the player info from the register_players array
-                                for (var k = 0; k < tournament.registered_players.length; k++) {
-                                    if (tournament.registered_players[k] === player_id) {
-                                        season_player = tournament.registered_players[k];
-                                    }
-                                }
-
-                                if (!season_player) {
-                                    continue;
-                                }
-
-                                Main.tpl.template({
-                                    tplUrl: 'tpl/player-passport-b-tpl.html',
-                                    data: season_player,
-                                    onReplace: function (tpl_var, data) {
-                                        if (tpl_var === 'rating') {
-                                            //TODO
-                                        }
-                                    },
-                                    afterReplace: function (html, data) {
-                                        var menuItems = Ns.view.Tournament._seasonPlayerPassportMenuItems(data, tournament);
-                                        var id = 'tournament-details-season-players';
-                                        Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
-                                    }
-                                });
-
-                            }
+                            Ns.view.Tournament._renderSeasonPlayers(tournament, season_number);
 
                         })
                         .error(function (err) {
                             //alert(err);
                             console.log(err);
                         });
+            });
+
+        }
+
+    },
+
+    _renderOfficials: function (tournament) {
+        
+        for (var i = 0; i < tournament.officials.length; i++) {
+
+            Main.tpl.template({
+                tplUrl: 'tpl/player-passport-a-tpl.html',
+                data: tournament.officials[i],
+                onReplace: function (tpl_var, data) {
+
+                },
+                afterReplace: function (html, data) {
+                    var menuItems = Ns.view.Tournament._officialPassportMenuItems(data, tournament);
+                    var id = 'tournament-details-officials';
+                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
+                }
+            });
+
+        }
+
+    },
+
+    _renderRegisteredPlayers: function (tournament) {
+        for (var i = 0; i < tournament.registered_players.length; i++) {
+
+            Main.tpl.template({
+                tplUrl: 'tpl/player-passport-b-tpl.html',
+                data: tournament.registered_players[i],
+                onReplace: function (tpl_var, data) {
+                    if (tpl_var === 'rating') {
+                        //TODO
+                    }
+                },
+                afterReplace: function (html, data) {
+                    var menuItems = Ns.view.Tournament._registeredPlayerPassportMenuItems(data, tournament);
+                    var id = 'tournament-details-registered-players';
+                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
+                }
+            });
+
+        }
+
+    },
+
+    _renderSeasonPlayers: function (tournament, season_number) {
+
+        var season_index = season_number - 1;
+        var current_season = tournament.seasons[season_index];
+        if (!current_season) {
+            return;
+        }
+        for (var i = 0; i < current_season.slots.length; i++) {
+
+            var player_id = current_season.slots[i].player_id;
+            var season_player;
+            //get the player info from the register_players array
+            for (var k = 0; k < tournament.registered_players.length; k++) {
+                if (tournament.registered_players[k].user_id === player_id) {
+                    season_player = tournament.registered_players[k];
+                    break;
+                }
+            }
+
+            if (!season_player) {
+                continue;
+            }
+
+            Main.tpl.template({
+                tplUrl: 'tpl/player-passport-b-tpl.html',
+                data: season_player,
+                onReplace: function (tpl_var, data) {
+                    if (tpl_var === 'rating') {
+                        //TODO
+                    }
+                },
+                afterReplace: function (html, data) {
+                    var menuItems = Ns.view.Tournament._seasonPlayerPassportMenuItems(data, tournament);
+                    var id = 'tournament-details-season-players';
+                    Ns.view.Tournament._addPassportHorizontalListItem(id, html, data, menuItems, tournament.name);
+                }
             });
 
         }
