@@ -138,7 +138,7 @@ Ns.view.Tournament = {
             //"tournament-details-season-table-standings"
             //"tournament-details-match-fixtures"
 
-            if (!_isAppUserOfficial(tournament.officials)) {
+            if (!Ns.view.Tournament._isAppUserOfficial(tournament.officials)) {
                 //TODO hide some control away from non offficial
 
             }
@@ -860,7 +860,7 @@ Ns.view.Tournament = {
     _officialPassportMenuItems: function (info, tournament) {
         var menu_items = Ns.view.Tournament._commonPassportMenuItems(info, tournament);
 
-        if (Ns.view.Tournament._isAppUserOfficial()
+        if (Ns.view.Tournament._isAppUserOfficial(tournament.officials)
                 && Ns.view.Tournament.isLocalOfficial(info.user_id, tournament)) {
             menu_items.push('Remove tournament official');
         }
@@ -871,7 +871,7 @@ Ns.view.Tournament = {
     _registeredPlayerPassportMenuItems: function (info, tournament) {
         var menu_items = Ns.view.Tournament._commonPassportMenuItems(info, tournament);
 
-        if (Ns.view.Tournament._isAppUserOfficial()
+        if (Ns.view.Tournament._isAppUserOfficial(tournament.officials)
                 && Ns.view.Tournament.isLocalRegisteredPlayer(info.user_id, tournament)) {
             menu_items.push('Remove registered player');
         }
@@ -882,7 +882,7 @@ Ns.view.Tournament = {
     _seasonPlayerPassportMenuItems: function (info, tournament) {
         var menu_items = Ns.view.Tournament._commonPassportMenuItems(info, tournament);
 
-        if (Ns.view.Tournament._isAppUserOfficial()
+        if (Ns.view.Tournament._isAppUserOfficial(tournament.officials)
                 && Ns.view.Tournament.isLocalSeasonPlayer(info.user_id, tournament)) {
             menu_items.push('Remove season player');
         }

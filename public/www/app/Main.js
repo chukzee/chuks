@@ -1806,7 +1806,7 @@ var Main = {};
                     v = obj.onReplace(param, data);
                 }
 
-                if (typeof v === 'undefined') {
+                if (typeof v === 'undefined' && typeof data[param] !== 'undefined') {
                     var v = data[param];
                     var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
                     for (var k = 0; k < obj_path.length; i++) {
@@ -2054,7 +2054,7 @@ var Main = {};
                     v = obj.onRender(param, data);
                 }
 
-                if (typeof v === 'undefined') {
+                if (typeof v === 'undefined' && typeof data[param] !== 'undefined') {
                     var v = data[param];
                     var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
                     for (var k = 0; k < obj_path.length; i++) {

@@ -3,15 +3,15 @@ Ns.ui.Dialog = {
 
     selectContactList: function (options, callback) {
         var contacts = Ns.view.Contacts.contactList;
-       _selList('tpl/simple-list-b-tpl.html', contacts, options, callback);
+      Ns.ui.Dialog._selList('tpl/simple-list-b-tpl.html', contacts, options, callback);
     },
 
     selectList: function (options, items_arr, callback) {
-       _selList(options.url, items_arr, options, callback);
+       Ns.ui.Dialog._selList(options.url, items_arr, options, callback);
     },
 
     selectSimpleList: function (options, items_arr, callback) {
-         _selList('tpl/simple-list-a-tpl.html', items_arr, options, callback);
+         Ns.ui.Dialog._selList('tpl/simple-list-a-tpl.html', items_arr, options, callback);
     },
 
     _selList: function (url, items_arr, options, callback) {

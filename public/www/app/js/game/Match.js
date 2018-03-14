@@ -317,7 +317,7 @@ Ns.game.Match = {
             }
 
             //display tournament header info
-            document.getElementById('home-group-header')[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
+            document.getElementById('home-tournament-header')[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
             document.getElementById('home-tournament-pic').src = tournament.photo_url;
             document.getElementById('home-tournament-name').innerHTML = tournament.name;
             if(tournament.seasons.length > 0){
