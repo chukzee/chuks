@@ -150,7 +150,8 @@ Ns.view.Performance = {
              */
 
             var el = document.getElementById("performance-view-table-body");
-
+            el.innerHTML = '';//clear
+            
             for (var i = 0; i < standings.length; i++) {
                 var full_name = '...';
                 var photo_url = '...';
