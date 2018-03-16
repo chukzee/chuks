@@ -166,9 +166,10 @@ Main.on("pagecreate", function (arg) {
     //REMIND: To avoid memory leak use 'one' method instead of 'on' method 
     //for page navigation so as to avoid piling up the click event listeners
     //which lead to memory leak
+    
     Main.device.isTesting = true; //TESTING!!!
     Main.device.isMobileDeviceReady = true; //TESTING!!!
-    document.body.addEventListener('keypress', Main.test.simulateBackButtonListener)
+    document.body.addEventListener('keypress', Main.test.simulateBackButtonListener);
 
     callCard();
     callCarda();

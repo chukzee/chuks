@@ -14,7 +14,7 @@ Ns.GameTournament = {
     showPerformacesView: function (data) {
 
         Main.card.to({
-            container: '#tournament-details',
+            container: '#home-main',
             url: 'performance-view-ld.html',
             fade: true,
             data: data,

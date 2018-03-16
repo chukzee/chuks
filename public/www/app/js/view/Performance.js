@@ -6,6 +6,8 @@ Ns.view.Performance = {
 
     constructor: function () {
         try {
+            var list = window.localStorage.clear();//COMMENT OUT LATER
+            
             var list = window.localStorage.getItem(Ns.Const.PERFORMANCE_STANDINGS_LIST_KEY);
             list = JSON.parse(list);
             if (Main.util.isArray(list)) {
@@ -120,7 +122,7 @@ Ns.view.Performance = {
                         Ns.view.Performance.save(data);
                         var trn_season = tournament.seasons[season_index];
                         if (trn_season
-                                && trn_season.sn === data.season_nuber
+                                && trn_season.sn === data.season_number
                                 && tournament.name === data.tournament_name) {//making sure the result from the asynchronous process in synchronized with the actual season expected to show after the 'next' or 'previous' button is clicked
                             showSeasonStandings(tournament, data.standings);
                         }

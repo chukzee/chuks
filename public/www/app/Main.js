@@ -308,6 +308,11 @@ var Main = {};
                 console.log('REMIND: is testing!!! to be removed');
                 return true;
             }
+            
+            if(typeof device === 'undefined'){//new
+                console.log('Not a mobile device');
+                return false;
+            }
 
             var platf = device.platform;
             if (ev.is === true) {
@@ -1848,6 +1853,7 @@ var Main = {};
             console.log(obj.tplUrl, '---', obj.data.user_id);
 
             function next() {
+                waitTplLoading = false;
                 queue.shift();
                 if (queue.length === 0) {
                     return;
@@ -1872,8 +1878,7 @@ var Main = {};
                     return;
                 }
                 var url = pageRouteUrl + obj.tplUrl;
-                $.get(url, function (response) {
-                    waitTplLoading = false;
+                $.get(url, function (response) {                    
                     tplList[obj.tplUrl] = response;
                     tplReplace(response, obj, obj.data);
                     
@@ -1882,7 +1887,6 @@ var Main = {};
                     next();
 
                 }).fail(function () {
-                    waitTplLoading = false;
                     next();
                     console.log("could not get resource:", url);
                 });
