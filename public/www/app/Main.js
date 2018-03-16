@@ -308,8 +308,8 @@ var Main = {};
                 console.log('REMIND: is testing!!! to be removed');
                 return true;
             }
-            
-            if(typeof device === 'undefined'){//new
+
+            if (typeof device === 'undefined') {//new
                 console.log('Not a mobile device');
                 return false;
             }
@@ -1844,7 +1844,7 @@ var Main = {};
         this.template = function (obj) {
 
             queue.push(obj);
-            if(waitTplLoading){
+            if (waitTplLoading) {
                 return;
             }
             waitTplLoading = true;
@@ -1878,12 +1878,12 @@ var Main = {};
                     return;
                 }
                 var url = pageRouteUrl + obj.tplUrl;
-                $.get(url, function (response) {                    
+                $.get(url, function (response) {
                     tplList[obj.tplUrl] = response;
                     tplReplace(response, obj, obj.data);
-                    
+
                     console.log(obj.tplUrl, '---before Async next---', obj.data.user_id);
-                    
+
                     next();
 
                 }).fail(function () {
@@ -3507,7 +3507,7 @@ var Main = {};
                 content_el.innerHTML = content;
             };
 
-            setBodyContent(obj.content);//new
+            setBodyContent(obj.content ? obj.content : '');//new - aviod show undefined or null
 
 
             content_el.style.width = '100%';
