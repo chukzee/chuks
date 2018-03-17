@@ -1,46 +1,51 @@
 
+/* global Ns */
+
 Ns.ui.Dialog = {
 
-    selectContactList: function (options, callback) {
+    selectContactList: function (obj) {
         var contacts = Ns.view.Contacts.contactList;
-      Ns.ui.Dialog._selList('tpl/simple-list-b-tpl.html', contacts, options, callback);
+        obj.url = 'tpl/simple-list-b-tpl.html';
+        obj.items = contacts;
+      Ns.ui.Dialog._selList(obj);
     },
 
-    selectList: function (options, items_arr, callback) {
-       Ns.ui.Dialog._selList(options.url, items_arr, options, callback);
+    selectList: function (obj) {
+       Ns.ui.Dialog._selList(obj);
     },
 
-    selectSimpleList: function (options, items_arr, callback) {
-         Ns.ui.Dialog._selList('tpl/simple-list-a-tpl.html', items_arr, options, callback);
+    selectSimpleList: function (obj) {
+        obj.url = 'tpl/simple-list-a-tpl.html';
+         Ns.ui.Dialog._selList(obj);
     },
 
-    _selList: function (url, items_arr, options, callback) {
+    _selList: function (obj) {
         var selected_items = [];
-        var multi_select = options.multiSelect === true || options.singleSelect === false;
+        var multi_select = obj.multiSelect === true || obj.singleSelect === false;
 
         var btns = [];
         if (multi_select) {
-            btns = options.bottons || ['CANCEL', 'OK'];
+            btns = obj.bottons || ['CANCEL', 'OK'];
         }
 
         Main.dialog.show({
-            title: options.title,
+            title: obj.title,
             //content: '<div id="' + container_id + '"></div>',
-            width: options.width,
-            height: options.height,
-            maxWidth: options.maxWidth || 400,
-            maxHeight: options.maxHeight || 600,
+            width: obj.width,
+            height: obj.height,
+            maxWidth: obj.maxWidth || 400,
+            maxHeight: obj.maxHeight || 600,
             fade: true,
             closeButton: false,
             modal: true,
             buttons: btns,
             action: function (btn, value) {
-                if(options.action){
-                    options.action.bind(this)(btn, value, selected_items);
+                if(obj.action){
+                    obj.action.bind(this)(btn, value, selected_items);
                     return;
                 }
                 if (value === 'OK') {
-                    callback(selected_items);
+                    obj.onSelect(selected_items);
                 }
                 this.hide();
 
@@ -50,10 +55,12 @@ Ns.ui.Dialog = {
 
                 Ns.ui.Dialog._addListview({
                     dialog: this,
-                    url: url,
-                    items: items_arr,
+                    url: obj.url,
+                    items: obj.items,
                     selected_items: selected_items,
-                    multi_select: multi_select
+                    multi_select: multi_select,
+                    onRender: obj.onRender,
+                    onSelect: obj.onSelect//for single selection
                 });
             }
         });
@@ -70,13 +77,18 @@ Ns.ui.Dialog = {
         if (obj.multi_select) {//multi selection
             indicatorHeader(obj.dialog, 0);
         }
-
+        var container = obj.dialog.getBody();
+        var container_id = 'listview-dialog-'+new Date().getTime();
+        
+        container.id = container_id;
         Main.listview.create({
-            container: obj.dialog.getBody(),
-            scrollContainer: obj.dialog.getBody(),
+            container: '#'+container_id,
+            scrollContainer: '#'+container_id,
             tplUrl: obj.url,
             wrapItem: false,
             onSelect: function (evt, data) {
+                console.dir(this);
+                
                 var index = obj.selected_items.indexOf(data);
                 if (index === -1) {
                     obj.selected_items.push(data);
@@ -86,6 +98,7 @@ Ns.ui.Dialog = {
                     this.setSelectionColor(false);
                 }
                 if (!obj.multi_select) {//single selection
+                    obj.onSelect(data);
                     obj.dialog.hide();
                     return;
                 }

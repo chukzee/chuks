@@ -464,39 +464,46 @@ Ns.view.Tournament = {
         var user = evt.data.user;
         var tournament_name = evt.data.tournament_name;
 
-        var opt = {
-            headless: true, //headless dialog 
-            multiSelect: false
-        };
+        /*var opt = {
+         headless: true, //headless dialog 
+         multiSelect: false
+         };*/
 
-        Ns.ui.Dialog.selectSimpleList(opt, menu_items, function (mnuItem) {
+        Ns.ui.Dialog.selectSimpleList({
+            headless: true,
+            multiSelect: false,
+            items: menu_items,
+            onRender: function (tpl_var, data) {
 
-            switch (mnuItem) {
-                case 'Lets Play':
-                    Ns.view.Tournament.onClickLetsPlay(user);
-                    break;
-                case 'View player profile':
-                    Ns.GameHome.showUserProfile(user);
-                    break;
-                case 'View player profile pic':
-                    Ns.ui.UI.expandPhoto(user);
-                    break;
-                case 'View player ranking':
+            },
+            onSelect: function (mnuItem) {
 
-                    alert('TODO view player ranking');
+                switch (mnuItem) {
+                    case 'Lets Play':
+                        Ns.view.Tournament.onClickLetsPlay(user);
+                        break;
+                    case 'View player profile':
+                        Ns.GameHome.showUserProfile(user);
+                        break;
+                    case 'View player profile pic':
+                        Ns.ui.UI.expandPhoto(user);
+                        break;
+                    case 'View player ranking':
 
-                    break;
-                case 'Remove tournament official':
-                    Ns.view.Tournament.removeOfficial(user.user_id, tournament_name);
-                    break;
-                case 'Remove registered player':
-                    Ns.view.Tournament.removeRegisteredPlayer(user.user_id, tournament_name);
-                    break;
-                case 'Remove season player':
-                    Ns.view.Tournament.removeSeasonPlayer(user.user_id, tournament_name);
-                    break;
-            }
-        });
+                        alert('TODO view player ranking');
+
+                        break;
+                    case 'Remove tournament official':
+                        Ns.view.Tournament.removeOfficial(user.user_id, tournament_name);
+                        break;
+                    case 'Remove registered player':
+                        Ns.view.Tournament.removeRegisteredPlayer(user.user_id, tournament_name);
+                        break;
+                    case 'Remove season player':
+                        Ns.view.Tournament.removeSeasonPlayer(user.user_id, tournament_name);
+                        break;
+                }
+            }});
 
 
 
@@ -565,26 +572,30 @@ Ns.view.Tournament = {
     },
 
     _onClickOfficialsAdd: function (tournament) {
-        var opt = {
+        /*var opt = {
             title: 'Add Official',
             multiSelect: false
-        };
-        Ns.ui.Dialog.selectContactList(opt, function (choice) {
-            var new_official_user_id = choice.user_id;
-            var app_user_id = Ns.view.UserProfile.appUser.user_id;
-            Main.ro.tourn.addOfficial(app_user_id, tournament.name, new_official_user_id)
-                    .get(function (data) {
-                        Ns.view.Tournament.update(data.tournament);
+        };*/
+        
+        Ns.ui.Dialog.selectContactList({
+            title: 'Add Official',
+            multiSelect: false,
+            onSelect: function (choice) {
+                var new_official_user_id = choice.user_id;
+                var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                Main.ro.tourn.addOfficial(app_user_id, tournament.name, new_official_user_id)
+                        .get(function (data) {
+                            Ns.view.Tournament.update(data.tournament);
 
-                        Main.alert(data.msg, 'Success', Main.const.INFO);
-                        Ns.view.Tournament._renderOfficials(tournament);
+                            Main.alert(data.msg, 'Success', Main.const.INFO);
+                            Ns.view.Tournament._renderOfficials(tournament);
 
-                    })
-                    .error(function (err) {
-                        Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
-                        console.log(err);
-                    });
-        });
+                        })
+                        .error(function (err) {
+                            Main.alert(err, 'Failed', Main.const.INFO); // come back to use Main.const.ERROR
+                            console.log(err);
+                        });
+            }});
 
     },
 
@@ -687,7 +698,6 @@ Ns.view.Tournament = {
                     edit_td.addEventListener('click', addSlotPlayer.bind(
                             {
                                 slot_number: slot_number,
-                                player: player,
                                 photo_td_img: photo_td_img,
                                 full_name_td: full_name_td
                             }));
@@ -714,38 +724,49 @@ Ns.view.Tournament = {
         function addSlotPlayer() {
             var me = this;
             var slot_number = this.slot_number;
-            var opt = {
+            /*var opt = {
+             title: 'Select Season Player',
+             multiSelect: false
+             };*/
+
+            //var arr = tournament.registered_players;
+
+            Ns.ui.Dialog.selectSimpleList({
                 title: 'Select Season Player',
-                multiSelect: false
-            };
-            var arr = tournament.registered_players;
+                multiSelect: false,
+                items: tournament.registered_players,
+                onRender: function (tpl_var, data) {
+                    if(tpl_var === 'data'){
+                        return data.full_name;
+                    }
+                },
+                onSelect: function (mnuItem) {
 
-            Ns.ui.Dialog.selectSimpleList(opt, arr, function (item) {
+                    var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                    var season_index = tournament.seasons.length - 1;
+                    var current_season = tournament.seasons[season_index];
+                    var season_number = current_season.sn;
+                    var player_id = mnuItem.user_id;
 
-                var app_user_id = Ns.view.UserProfile.appUser.user_id;
-                var season_index = tournament.seasons.length - 1;
-                var current_season = tournament.seasons[season_index];
-                var season_number = current_season.sn;
-                var player_id = item.user_id;
+                    Main.ro.tourn.seasonAddPlayer(app_user_id, tournament.name, season_number, player_id, slot_number)
+                            .get(function (data) {
 
-                Main.ro.tourn.seasonAddPlayer(app_user_id, tournament.name, season_number, player_id, slot_number)
-                        .get(function (data) {
+                                Ns.view.Tournament.update(data.tournament);
+                                var player = findRegisteredPlayerById(player_id);
+                                if (player) {
+                                    me.photo_td_img.src = player.photo_url;
+                                    me.full_name_td.innerHTML = player.full_name;
+                                }
 
-                            Ns.view.Tournament.update(data.tournament);
+                                //update the season players horizontal list
+                                Ns.view.Tournament._renderSeasonPlayers(tournament, season_number);
 
-                            if (me.player) {
-                                me.photo_td_img.src = me.player.photo_url;
-                                me.full_name_td.innerHTML = me.player.full_name;
-                            }
-
-                            //update the season players horizontal list
-                            Ns.view.Tournament._renderSeasonPlayers(tournament, season_number);
-
-                        })
-                        .error(function (err) {
-                            //alert(err);
-                            console.log(err);
-                        });
+                            })
+                            .error(function (err) {
+                                //alert(err);
+                                console.log(err);
+                            });
+                }
             });
 
         }
@@ -753,7 +774,7 @@ Ns.view.Tournament = {
     },
 
     _renderOfficials: function (tournament) {
-        
+
         for (var i = 0; i < tournament.officials.length; i++) {
 
             Main.tpl.template({

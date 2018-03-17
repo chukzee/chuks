@@ -2150,13 +2150,13 @@ var Main = {};
 
             $(obj.container).html('');//clear previous content
 
+            var lstThis = new listThis(html, obj);
+            
             $(obj.container).off("click");
-            $(obj.container).on("click", onSelectItem.bind({container: obj.container, onSelect: obj.onSelect}));
+            $(obj.container).on("click", onSelectItem.bind({container: obj.container, onSelect: obj.onSelect, list: lstThis}));
 
             var cont_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
-            var parent = document.getElementById(cont_id);
-
-            var lstThis = new listThis(html, obj);
+            var parent = document.getElementById(cont_id);            
 
             var onScroll = onScrollList.bind({obj: obj, itemHtml: html, container_id: cont_id, container: parent, scrollContainer: obj.scrollContainer});
 
@@ -2414,7 +2414,7 @@ var Main = {};
                     if (Main.util.isFunc(this.onSelect)) {
                         //call the onSelect callback
                         try {
-                            this.onSelect.bind({data: saved_data})(evt, saved_data);
+                            this.onSelect.bind(this.list)(evt, saved_data);
                         } catch (e) {
                             console.warn(e);
                         }
