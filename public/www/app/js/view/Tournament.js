@@ -574,10 +574,10 @@ Ns.view.Tournament = {
 
     _onClickOfficialsAdd: function (tournament) {
         /*var opt = {
-            title: 'Add Official',
-            multiSelect: false
-        };*/
-        
+         title: 'Add Official',
+         multiSelect: false
+         };*/
+
         Ns.ui.Dialog.selectContactList({
             title: 'Add Official',
             multiSelect: false,
@@ -601,38 +601,40 @@ Ns.view.Tournament = {
     },
 
     _onClickRegisteredPlayersAdd: function (tournament) {
-        var opt = {
-            title: 'Register Players'
-        };
-        Ns.ui.Dialog.selectContactList(opt, function (contants) {
-            if (!contants || contants.length === 0) {
-                return;
+        
+        Ns.ui.Dialog.selectContactList({
+            title: 'Register Players',
+            multiSelect: true,
+            onSelect: function (contants) {
+                if (!contants || contants.length === 0) {
+                    return;
+                }
+                var player_user_ids = [];
+                for (var i = 0; i < contants.length; i++) {
+                    player_user_ids[i] = contants[i].user_id;
+                }
+                var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                Main.ro.tourn.registerBulkPlayers(app_user_id, tournament.name, player_user_ids)
+                        .get(function (data) {
+
+                            Ns.view.Tournament.update(data.tournament);
+
+                            var results = data.msg;
+                            var msg_str = '';
+                            for (var i = 0; i < results.length; i++) {
+                                msg_str = results[i].msg + '<br/>';
+                            }
+
+                            Main.alert(msg_str, 'Message', Main.const.INFO);
+
+                            //next render on the horizontal list
+                            Ns.view.Tournament._renderRegisteredPlayers(tournament);
+
+                        })
+                        .error(function (err) {
+                            console.log(err);
+                        });
             }
-            var player_user_ids = [];
-            for (var i = 0; i < contants.length; i++) {
-                player_user_ids[i] = contants[i].user_id;
-            }
-            var app_user_id = Ns.view.UserProfile.appUser.user_id;
-            Main.ro.tourn.registerBulkPlayers(app_user_id, tournament.name, player_user_ids)
-                    .get(function (data) {
-
-                        Ns.view.Tournament.update(data.tournament);
-
-                        var results = data.msg;
-                        var msg_str = '';
-                        for (var i = 0; i < results.length; i++) {
-                            msg_str = results[i].msg + '<br/>';
-                        }
-
-                        Main.alert(msg_str, 'Message', Main.const.INFO);
-
-                        //next render on the horizontal list
-                        Ns.view.Tournament._renderRegisteredPlayers(tournament);
-
-                    })
-                    .error(function (err) {
-                        console.log(err);
-                    });
         });
     },
 
@@ -739,10 +741,10 @@ Ns.view.Tournament = {
                 items: tournament.registered_players,
                 width: window.innerWidth * 0.8,
                 onRender: function (tpl_var, data) {
-                    if(tpl_var === 'data_a'){
+                    if (tpl_var === 'data_a') {
                         return data.photo_url;
                     }
-                    if(tpl_var === 'data_b'){
+                    if (tpl_var === 'data_b') {
                         return data.full_name;
                     }
                 },

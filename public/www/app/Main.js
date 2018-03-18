@@ -3341,7 +3341,7 @@ var Main = {};
             fade: fade !== false, // default is fade
             closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
             touchOutClose: true, //close the dialog if the user touch outside it   
-            action: function (el, value) {//not close button   
+            action: function (el, value) {
                 this.hide();                
             }
         });

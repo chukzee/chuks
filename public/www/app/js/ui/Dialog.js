@@ -4,9 +4,13 @@
 Ns.ui.Dialog = {
 
     selectContactList: function (obj) {
+        
         var contacts = Ns.view.Contacts.contactList;
-        obj.url = 'tpl/simple-list-b-tpl.html';
         obj.items = contacts;
+        obj.url = 'tpl/simple-list-b-tpl.html';
+        if(!obj.width){
+            obj.width = window.innerWidth * 0.8;
+        }
         Ns.ui.Dialog._selList(obj);
     },
 
@@ -70,12 +74,12 @@ Ns.ui.Dialog = {
         var initial_title = obj.dialog.getTitle();//initial title
 
         var indicatorHeader = function (selection_count) {
-            var new_title = '<span>' + selection_count + '</span><span>|</span><span>' + initial_title + '</span>';
+            var new_title = '<span>' + selection_count + '</span><span style="margin-right:5px;margin-left:5px;">|</span><span>' + initial_title + '</span>';
             obj.dialog.setTitle(new_title);
         };
 
         if (obj.multi_select) {//multi selection
-            indicatorHeader(obj.dialog, 0);
+            indicatorHeader(0);
         }
         var container = obj.dialog.getContentElement();
         var container_id = 'listview-dialog-' + new Date().getTime();
