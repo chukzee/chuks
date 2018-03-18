@@ -101,7 +101,8 @@
             "game-contacts.css",
             "play-notifications.css",
             "performance-view.css",
-            "slots-edit.css"
+            "slots-edit.css",
+            "player-passport.css"
         ],
         
         "js": [

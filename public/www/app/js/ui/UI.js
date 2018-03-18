@@ -159,7 +159,7 @@ Ns.ui.UI = {
                     el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
                 }
             }
-            
+
             if (evt.target.id === 'home-tournament-name') {
                 //var tournnament_name = document.getElementById('home-tournament-name').innerHTML;
                 Ns.GameHome.showTournamentDetails(tournament);
@@ -184,17 +184,19 @@ Ns.ui.UI = {
 
         $('#home-group-previous').on('click', function () {
 
-            //enable the 'next' button
-            if ($('#home-group-next').hasClass('game9ja-disabled')) {
-                $('#home-group-next').removeClass('game9ja-disabled');
-            }
-
             var group;
             if (group_index > 0) {
                 group_index--;
                 if (group_index === 0) {
                     //disable the 'previous' button
                     $('#home-group-previous').addClass('game9ja-disabled');
+                }
+
+                if (group_index < Ns.view.UserProfile.appUser.groups_belong.length - 1) {
+                    //enable the 'next' button
+                    if ($('#home-group-next').hasClass('game9ja-disabled')) {
+                        $('#home-group-next').removeClass('game9ja-disabled');
+                    }
                 }
             }
 
@@ -210,10 +212,6 @@ Ns.ui.UI = {
         });
 
         $('#home-group-next').on('click', function () {
-            //enable the 'previous' button
-            if ($('#home-group-previous').hasClass('game9ja-disabled')) {
-                $('#home-group-previous').removeClass('game9ja-disabled');
-            }
 
             var group;
             if (group_index < Ns.view.UserProfile.appUser.groups_belong.length - 1) {
@@ -224,6 +222,12 @@ Ns.ui.UI = {
                     $('#home-group-next').addClass('game9ja-disabled');
                 }
 
+                if (group_index > 0) {
+                    //enable the 'previous' button
+                    if ($('#home-group-previous').hasClass('game9ja-disabled')) {
+                        $('#home-group-previous').removeClass('game9ja-disabled');
+                    }
+                }
             }
 
             group = Ns.view.UserProfile.appUser.groups_belong[group_index];

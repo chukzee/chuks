@@ -11,20 +11,18 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        
-        <div class="game9ja-player-passport">
-            <div>
+        <div style="width: 80px; height: 80px;">
+            <div class="game9ja-player-passport">
                 <div>
-                    <img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{photo_url}" alt=""/>
+                    <div>
+                        <img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{photo_url}" alt=""/>
+                    </div>
                 </div>
-            </div>
-            <div>
                 <div>
-                    {full_name}
+                    <div>
+                        {full_name}
+                    </div>
                 </div>
-            </div>
-            <div>
-                <i>Rating:</i><span>{rating}</span>
             </div>
         </div>
     </body>

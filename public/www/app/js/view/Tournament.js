@@ -202,11 +202,6 @@ Ns.view.Tournament = {
 
             $('#tournament-details-season-previous').on('click', function () {
 
-                //enable the 'next' button
-                if ($('#tournament-details-season-next').hasClass('game9ja-disabled')) {
-                    $('#tournament-details-season-next').removeClass('game9ja-disabled');
-                }
-
                 if (season_index > 0) {
                     season_index--;
                     displaySeason(tournament.seasons[season_index]);
@@ -216,17 +211,18 @@ Ns.view.Tournament = {
                         $('#tournament-details-season-previous').addClass('game9ja-disabled');
                     }
 
+                    if (season_index < tournament.seasons.length - 1) {
+                        //enable the 'next' button
+                        if ($('#tournament-details-season-next').hasClass('game9ja-disabled')) {
+                            $('#tournament-details-season-next').removeClass('game9ja-disabled');
+                        }
+                    }
                     Ns.view.Tournament._renderSeasonPlayers(tournament, tournament.seasons[season_index].sn);
                 }
 
             });
 
             $('#tournament-details-season-next').on('click', function () {
-
-                //enable the 'previous' button
-                if ($('#tournament-details-season-previous').hasClass('game9ja-disabled')) {
-                    $('#tournament-details-season-previous').removeClass('game9ja-disabled');
-                }
 
                 if (season_index < tournament.seasons.length - 1) {
                     season_index++;
@@ -236,7 +232,12 @@ Ns.view.Tournament = {
                         //disable the 'next' button 
                         $('#tournament-details-season-next').addClass('game9ja-disabled');
                     }
-
+                    if (season_index > 0) {
+                        //enable the 'previous' button
+                        if ($('#tournament-details-season-previous').hasClass('game9ja-disabled')) {
+                            $('#tournament-details-season-previous').removeClass('game9ja-disabled');
+                        }
+                    }
                     Ns.view.Tournament._renderSeasonPlayers(tournament, tournament.seasons[season_index].sn);
                 }
 
@@ -246,11 +247,6 @@ Ns.view.Tournament = {
 
             $('#tournament-details-stage-previous').on('click', function () {
 
-                //enable the 'next' button
-                if ($('#tournament-details-stage-next').hasClass('game9ja-disabled')) {
-                    $('#tournament-details-stage-next').removeClass('game9ja-disabled');
-                }
-
                 if (round_index > 0) {
                     round_index--;
                     displayFixturesAtRound(tournament.seasons[season_index].rounds, round_index);
@@ -259,15 +255,17 @@ Ns.view.Tournament = {
                         //disable the 'previous' button       
                         $('#tournament-details-stage-previous').addClass('game9ja-disabled');
                     }
+
+                    if (round_index < tournament.seasons[season_index].rounds.length - 1) {
+                        //enable the 'next' button
+                        if ($('#tournament-details-stage-next').hasClass('game9ja-disabled')) {
+                            $('#tournament-details-stage-next').removeClass('game9ja-disabled');
+                        }
+                    }
                 }
             });
 
             $('#tournament-details-stage-next').on('click', function () {
-
-                //enable the 'previous' button
-                if ($('#tournament-details-stage-previous').hasClass('game9ja-disabled')) {
-                    $('#tournament-details-stage-previous').removeClass('game9ja-disabled');
-                }
 
                 if (round_index < tournament.seasons[season_index].rounds.length - 1) {
                     round_index++;
@@ -276,6 +274,13 @@ Ns.view.Tournament = {
                     if (round_index === tournament.seasons[season_index].rounds.length - 1) {
                         //disable the 'next' button  
                         $('#tournament-details-stage-next').addClass('game9ja-disabled');
+                    }
+
+                    if (round_index > 0) {
+                        //enable the 'previous' button
+                        if ($('#tournament-details-stage-previous').hasClass('game9ja-disabled')) {
+                            $('#tournament-details-stage-previous').removeClass('game9ja-disabled');
+                        }
                     }
                 }
             });
@@ -604,7 +609,7 @@ Ns.view.Tournament = {
     },
 
     _onClickRegisteredPlayersAdd: function (tournament) {
-        
+
         Ns.ui.Dialog.selectContactList({
             title: 'Register Players',
             multiSelect: true,
