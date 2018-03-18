@@ -129,6 +129,14 @@ Ns.ui.UI = {
         $('#home-group-header').on('click', function (evt) {
             var el = document.getElementById('home-group-header');
             var group = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP];
+            //first update change if any, since it was observed that the group object is copied and not refrenced so changes are not reflected
+            var list = Ns.view.Group.groupList;
+            for (var i = 0; i < list.length; i++) {
+                if (group.name === list[i].name) {
+                    group = list[i];
+                    el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
+                }
+            }
             if (evt.target.id === 'home-group-name'
                     || evt.target.id === 'home-group-status-message') {
                 //var group_name = document.getElementById('home-group-name').innerHTML;
@@ -143,6 +151,15 @@ Ns.ui.UI = {
         $('#home-tournament-header').on('click', function (evt) {
             var el = document.getElementById('home-tournament-header');
             var tournament = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN];
+            //first update change if any, since it was observed that the tournament object is copied and not refrenced so changes are not reflected
+            var list = Ns.view.Tournament.tournamentList;
+            for (var i = 0; i < list.length; i++) {
+                if (tournament.name === list[i].name) {
+                    tournament = list[i];
+                    el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
+                }
+            }
+            
             if (evt.target.id === 'home-tournament-name') {
                 //var tournnament_name = document.getElementById('home-tournament-name').innerHTML;
                 Ns.GameHome.showTournamentDetails(tournament);

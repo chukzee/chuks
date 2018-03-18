@@ -514,6 +514,7 @@ Ns.view.Tournament = {
         var app_user_id = Ns.view.UserProfile.appUser.user_id;
         Main.ro.tourn.removeOfficial(app_user_id, tournament_name, official_id)
                 .get(function (data) {
+                    Ns.view.Tournament.update(data.tournament);
                     var el_id = "tournament-details-officials";
                     Ns.view.Tournament._removePassportHorizontalListItem(el_id, official_id);
                 })
@@ -527,6 +528,7 @@ Ns.view.Tournament = {
         var app_user_id = Ns.view.UserProfile.appUser.user_id;
         Main.ro.tourn.removeRegisteredPlayer(app_user_id, tournament_name, player_id)
                 .get(function (data) {
+                    Ns.view.Tournament.update(data.tournament);
                     var el_id = "tournament-details-registered-players";
                     Ns.view.Tournament._removePassportHorizontalListItem(el_id, player_id);
                 })
@@ -559,6 +561,7 @@ Ns.view.Tournament = {
 
         Main.ro.tourn.seasonRemovePlayer(app_user_id, tournament_name, season_number, player_id)
                 .get(function (data) {
+                    Ns.view.Tournament.update(data.tournament);
                     var el_id = "tournament-details-season-players";
                     Ns.view.Tournament._removePassportHorizontalListItem(el_id, player_id);
                 })
