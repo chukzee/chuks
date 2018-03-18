@@ -649,7 +649,6 @@ Ns.view.Tournament = {
             title: 'Slots',
             //content: html,
             width: window.innerWidth * 0.8,
-            height: window.innerHeight * 0.8,
             maxWidth: 400,
             maxHeight: 600,
             fade: true,
@@ -718,6 +717,7 @@ Ns.view.Tournament = {
                 }
 
                 dlg_body.appendChild(table);
+                this.layout();
             }
         });
 
@@ -731,12 +731,17 @@ Ns.view.Tournament = {
 
             //var arr = tournament.registered_players;
 
-            Ns.ui.Dialog.selectSimpleList({
+            Ns.ui.Dialog.selectList({
                 title: 'Select Season Player',
+                url: 'tpl/simple-list-b-tpl.html',
                 multiSelect: false,
                 items: tournament.registered_players,
+                width: window.innerWidth * 0.8,
                 onRender: function (tpl_var, data) {
-                    if(tpl_var === 'data'){
+                    if(tpl_var === 'data_a'){
+                        return data.photo_url;
+                    }
+                    if(tpl_var === 'data_b'){
                         return data.full_name;
                     }
                 },
@@ -764,7 +769,7 @@ Ns.view.Tournament = {
                             })
                             .error(function (err) {
                                 //alert(err);
-                                console.log(err);
+                                console.log(err);//TODO show toast 
                             });
                 }
             });

@@ -5,6 +5,7 @@
 $hgap : 5px;
 $label_width : 70%;
 $profile_img_size : $list_item_height - 2 * $hgap;
+$profile_img_size_b : 40px;
 
 .game9ja-simple-list-a{
     position: relative;
@@ -22,7 +23,23 @@ $profile_img_size : $list_item_height - 2 * $hgap;
     }
 }
 
-.game9ja-simple-list-b , .game9ja-simple-list-c{
+.game9ja-simple-list-b{
+    position: relative;
+    width: 100%;
+    height: 50px; 
+    border-bottom-width: $list_divider_width;
+    border-bottom-color: $list_divider_color;
+    border-bottom-style: solid;  
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+
+    &:hover{
+        background-color: #eee;
+    }
+}
+
+.game9ja-simple-list-c{
     position: relative;
     width: 100%;
     height: $list_item_height; 
@@ -57,8 +74,8 @@ $profile_img_size : $list_item_height - 2 * $hgap;
 .game9ja-simple-list-b{
 
     > :nth-child(1) > div{/*profile pic container to help centering and setting border radius*/
-        width: $profile_img_size;
-        height: $profile_img_size;
+        width: $profile_img_size_b;
+        height: $profile_img_size_b;
         position: absolute;
         top: $hgap;
         left: $hgap;
@@ -79,7 +96,7 @@ $profile_img_size : $list_item_height - 2 * $hgap;
     > :nth-child(2){/*full name*/
         position: absolute;
         top: 20px;
-        left:  $profile_img_size + 2 * $hgap;
+        left:  $profile_img_size_b + 2 * $hgap;
         font-size: 14px;
         width: $label_width;
         text-align: left;

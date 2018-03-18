@@ -2151,12 +2151,12 @@ var Main = {};
             $(obj.container).html('');//clear previous content
 
             var lstThis = new listThis(html, obj);
-            
+
             $(obj.container).off("click");
             $(obj.container).on("click", onSelectItem.bind({container: obj.container, onSelect: obj.onSelect, list: lstThis}));
 
             var cont_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
-            var parent = document.getElementById(cont_id);            
+            var parent = document.getElementById(cont_id);
 
             var onScroll = onScrollList.bind({obj: obj, itemHtml: html, container_id: cont_id, container: parent, scrollContainer: obj.scrollContainer});
 
@@ -3354,6 +3354,7 @@ var Main = {};
                     setBodyContent = param.setBodyContent,
                     getDialogContentEl = param.getDialogContentEl,
                     getDialogBodyEl = param.getDialogBodyEl,
+                    clearSavedlayouts = param.clearSavedlayouts,
                     resizeListenBind = param.resizeListenBind,
                     touchCloseFn = param.touchCloseFn,
                     deviceBackHideFunc = param.deviceBackHideFunc,
@@ -3377,6 +3378,12 @@ var Main = {};
             this.setContent = function (content) {
                 obj.content = content;
                 setBodyContent(content);
+                
+            };
+            
+            this.layout = function(){
+                clearSavedlayouts();
+                resizeListenBind();
             };
 
             this.getContentElement = function () {
@@ -3484,6 +3491,7 @@ var Main = {};
             //header_el.innerHTML = title_html;//old
 
             var titleHtml = function (title) {//new
+                title = title ? title : '';
                 return '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + title + '</div>';
             };
 
@@ -3499,20 +3507,17 @@ var Main = {};
                 body_el.appendChild(icon_el);
             }
 
-
             var content_el = document.createElement('div');
             //content_el.innerHTML = obj.content;//old
 
             var setBodyContent = function (content) {//new
+                content = content ? content : '';
                 content_el.innerHTML = content;
             };
 
-            setBodyContent(obj.content ? obj.content : '');//new - aviod show undefined or null
-
+            setBodyContent(obj.content);//new - aviod show undefined or null
 
             content_el.style.width = '100%';
-
-
 
             body_el.appendChild(content_el);
 
@@ -3614,6 +3619,10 @@ var Main = {};
                 LYT_MAX: 20 //max. layout objects to save 
             };
 
+            function clearSavedlayouts(){
+                lytObj.layouts = {};
+            }
+
             var resizeListenBind = resizeListen.bind(lytObj);
 
             var obj_param = {
@@ -3624,6 +3633,7 @@ var Main = {};
                 setBodyContent: setBodyContent,
                 getDialogBodyEl: getDialogBodyEl,
                 resizeListenBind: resizeListenBind,
+                clearSavedlayouts: clearSavedlayouts,
                 touchCloseFunc: touchCloseFunc,
                 deviceBackHideFunc: deviceBackHideFunc,
                 btns: []

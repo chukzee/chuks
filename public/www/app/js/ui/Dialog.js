@@ -7,16 +7,16 @@ Ns.ui.Dialog = {
         var contacts = Ns.view.Contacts.contactList;
         obj.url = 'tpl/simple-list-b-tpl.html';
         obj.items = contacts;
-      Ns.ui.Dialog._selList(obj);
+        Ns.ui.Dialog._selList(obj);
     },
 
     selectList: function (obj) {
-       Ns.ui.Dialog._selList(obj);
+        Ns.ui.Dialog._selList(obj);
     },
 
     selectSimpleList: function (obj) {
         obj.url = 'tpl/simple-list-a-tpl.html';
-         Ns.ui.Dialog._selList(obj);
+        Ns.ui.Dialog._selList(obj);
     },
 
     _selList: function (obj) {
@@ -29,7 +29,7 @@ Ns.ui.Dialog = {
         }
 
         Main.dialog.show({
-            title: obj.title,
+            title: obj.title ? obj.title : '',
             //content: '<div id="' + container_id + '"></div>',
             width: obj.width,
             height: obj.height,
@@ -40,7 +40,7 @@ Ns.ui.Dialog = {
             modal: true,
             buttons: btns,
             action: function (btn, value) {
-                if(obj.action){
+                if (obj.action) {
                     obj.action.bind(this)(btn, value, selected_items);
                     return;
                 }
@@ -68,27 +68,27 @@ Ns.ui.Dialog = {
 
     _addListview: function (obj) {
         var initial_title = obj.dialog.getTitle();//initial title
-        
-        var indicatorHeader = function(selection_count){
-            var new_title = '<span>'+selection_count+'</span><span>|</span><span>'+initial_title+'</span>';
+
+        var indicatorHeader = function (selection_count) {
+            var new_title = '<span>' + selection_count + '</span><span>|</span><span>' + initial_title + '</span>';
             obj.dialog.setTitle(new_title);
         };
-        
+
         if (obj.multi_select) {//multi selection
             indicatorHeader(obj.dialog, 0);
         }
-        var container = obj.dialog.getBody();
-        var container_id = 'listview-dialog-'+new Date().getTime();
-        
+        var container = obj.dialog.getContentElement();
+        var container_id = 'listview-dialog-' + new Date().getTime();
+
         container.id = container_id;
         Main.listview.create({
-            container: '#'+container_id,
-            scrollContainer: '#'+container_id,
+            container: '#' + container_id,
+            scrollContainer: '#' + container_id,
             tplUrl: obj.url,
             wrapItem: false,
             onSelect: function (evt, data) {
                 console.dir(this);
-                
+
                 var index = obj.selected_items.indexOf(data);
                 if (index === -1) {
                     obj.selected_items.push(data);
@@ -102,7 +102,7 @@ Ns.ui.Dialog = {
                     obj.dialog.hide();
                     return;
                 }
-                
+
                 indicatorHeader(obj.selected_items.length);
 
             },
@@ -115,9 +115,14 @@ Ns.ui.Dialog = {
                 for (var i = 0; i < obj.items.length; i++) {
                     this.appendItem(obj.items[i]);
                 }
+                /*for (var i = 6; i < obj.items.length; i++) {//testing
+                    
+                    this.appendItem(obj.items[i]);
+                }*/
+                obj.dialog.layout();
             }
         });
-        
+
 
     }
 

@@ -40,7 +40,20 @@ and open the template in the editor.
   .game9ja-simple-list-a:hover {
     background-color: #eee; }
 
-.game9ja-simple-list-b, .game9ja-simple-list-c {
+.game9ja-simple-list-b {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  border-bottom-width: 0.0325em;
+  border-bottom-color: #eee;
+  border-bottom-style: solid;
+  margin: 0;
+  padding: 0;
+  list-style-type: none; }
+  .game9ja-simple-list-b:hover {
+    background-color: #eee; }
+
+.game9ja-simple-list-c {
   position: relative;
   width: 100%;
   height: 70px;
@@ -50,7 +63,7 @@ and open the template in the editor.
   margin: 0;
   padding: 0;
   list-style-type: none; }
-  .game9ja-simple-list-b:hover, .game9ja-simple-list-c:hover {
+  .game9ja-simple-list-c:hover {
     background-color: #eee; }
 
 .game9ja-simple-list-a > :nth-child(1) {
@@ -65,8 +78,8 @@ and open the template in the editor.
 
 .game9ja-simple-list-b > :nth-child(1) > div {
   /*profile pic container to help centering and setting border radius*/
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   position: absolute;
   top: 5px;
   left: 5px;
@@ -87,7 +100,7 @@ and open the template in the editor.
   /*full name*/
   position: absolute;
   top: 20px;
-  left: 70px;
+  left: 50px;
   font-size: 14px;
   width: 70%;
   text-align: left;
