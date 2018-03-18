@@ -3343,7 +3343,7 @@ var Main = {};
             touchOutClose: true, //close the dialog if the user touch outside it   
             action: function (el, value) {//not close button   
                 this.hide();                
-            },
+            }
         });
     };
 
