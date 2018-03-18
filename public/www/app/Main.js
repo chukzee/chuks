@@ -3340,7 +3340,10 @@ var Main = {};
             buttons: [!buttonText ? 'OK' : buttonText],
             fade: fade !== false, // default is fade
             closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
-            touchOutClose: true //close the dialog if the user touch outside it                        
+            touchOutClose: true, //close the dialog if the user touch outside it   
+            action: function (el, value) {//not close button   
+                this.hide();                
+            },
         });
     };
 
