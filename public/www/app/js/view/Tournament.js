@@ -473,8 +473,9 @@ Ns.view.Tournament = {
             headless: true,
             multiSelect: false,
             items: menu_items,
+            width: window.innerWidth * 0.8,
             onRender: function (tpl_var, data) {
-
+                return data; //we know it is just string
             },
             onSelect: function (mnuItem) {
 
