@@ -151,42 +151,49 @@ Ns.view.Tournament = {
 
             }
 
-
+            $('#tournament-details-back-btn').off('click');
             $('#tournament-details-back-btn').on('click', function () {
 
                 alert('TODO tournament-details-back-btn');
 
             });
 
-
+             
+            $('#tournament-details-edit').off('click');
             $('#tournament-details-edit').on('click', function () {
 
                 alert('TODO tournament-details-edit');
 
             });
 
-
+             
+            $('#tournament-details-menu').off('click');
             $('#tournament-details-menu').on('click', function () {
 
                 alert('TODO tournament-details-menu');
 
             });
 
-
+             
+            $('#tournament-details-officials-add').off('click');
             $('#tournament-details-officials-add').on('click', function () {
                 Ns.view.Tournament._onClickOfficialsAdd(tournament);
             });
 
-
+             
+            $('#tournament-details-registered-players-add').off('click');
             $('#tournament-details-registered-players-add').on('click', function () {
                 Ns.view.Tournament._onClickRegisteredPlayersAdd(tournament);
             });
 
+             
+            $('#tournament-details-season-players-add').off('click');
             $('#tournament-details-season-players-add').on('click', function () {
                 Ns.view.Tournament._onClickSeasonPlayersAdd(tournament);
             });
 
 
+            $('#tournament-details-season-table-standings').off('click');
             $('#tournament-details-season-table-standings').on('click', function () {
                 var season = tournament.seasons[season_index];
                 if (!season) {
@@ -199,7 +206,8 @@ Ns.view.Tournament = {
                         });
             });
 
-
+             
+            $('#tournament-details-season-previous').off('click');
             $('#tournament-details-season-previous').on('click', function () {
 
                 if (season_index > 0) {
@@ -222,6 +230,8 @@ Ns.view.Tournament = {
 
             });
 
+            
+            $('#tournament-details-season-next').off('click');
             $('#tournament-details-season-next').on('click', function () {
 
                 if (season_index < tournament.seasons.length - 1) {
@@ -245,6 +255,7 @@ Ns.view.Tournament = {
             });
 
 
+            $('#tournament-details-stage-previous').off('click');
             $('#tournament-details-stage-previous').on('click', function () {
 
                 if (round_index > 0) {
@@ -265,6 +276,7 @@ Ns.view.Tournament = {
                 }
             });
 
+            $('#tournament-details-stage-next').off('click');
             $('#tournament-details-stage-next').on('click', function () {
 
                 if (round_index < tournament.seasons[season_index].rounds.length - 1) {

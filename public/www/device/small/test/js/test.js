@@ -19,7 +19,7 @@ Main.on("pagecreate", function (arg) {
     
     
     $('#test-dialog').on('click', function () {
-       
+       //Main.alert("This is title This is title This is title This is title", "This is title", Main.const.INFO);
         Main.dialog.show({
            title:"This is title",
            iconCls:"fa fa-exclamation-circle",

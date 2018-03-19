@@ -122,10 +122,12 @@ Ns.ui.UI = {
         Ns.ui.GamePanel.setupOnHome();
 
 
+        $('#home-contacts-icon').off('click');
         $('#home-contacts-icon').on('click', function (evt) {
             Ns.GameHome.showContacts();
         });
 
+        $('#home-group-header').off('click');
         $('#home-group-header').on('click', function (evt) {
             var el = document.getElementById('home-group-header');
             var group = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP];
@@ -147,7 +149,7 @@ Ns.ui.UI = {
             }
         });
 
-
+        $('#home-tournament-header').off('click');
         $('#home-tournament-header').on('click', function (evt) {
             var el = document.getElementById('home-tournament-header');
             var tournament = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN];
@@ -182,6 +184,7 @@ Ns.ui.UI = {
             $('#home-group-previous').addClass('game9ja-disabled');
         }
 
+        $('#home-group-previous').off('click');
         $('#home-group-previous').on('click', function () {
 
             var group;
@@ -211,6 +214,7 @@ Ns.ui.UI = {
 
         });
 
+        $('#home-group-next').off('click');
         $('#home-group-next').on('click', function () {
 
             var group;
@@ -240,6 +244,7 @@ Ns.ui.UI = {
 
         });
 
+        $('#home-tournament-previous').off('click');
         $('#home-tournament-previous').on('click', function () {
             var tourn;
             if (tourn_index > 0) {
@@ -256,6 +261,7 @@ Ns.ui.UI = {
 
         });
 
+        $('#home-tournament-next').off('click');
         $('#home-tournament-next').on('click', function () {
             var tourn;
             if (tourn_index < Ns.view.Tournament.tournamentList.length - 1) {

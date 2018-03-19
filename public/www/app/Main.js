@@ -2012,53 +2012,6 @@ var Main = {};
 
         function tplParam(html, obj, data) {
 
-            /*
-             for (var name in data) {
-             var value = data[name];
-             if (Main.util.isArray(value)) {
-             var nm = name;
-             for (var i = 0; i < value.length; i++) {
-             for (var n in value[i]) {
-             var v = value[i][n];
-             name = nm + '.' + i + '.' + n;
-             if (data[name]) {
-             console.warn("WARNING!!! ambigious object property '" + name + "'  which could cause unexpected result and must be avoided!");
-             }
-             var tpl_name = '{' + name + '}';
-             var h;
-             if (obj.onRender) {
-             var rd_val = obj.onRender(name, data);
-             if (typeof rd_val !== 'undefined') {
-             v = rd_val;
-             }
-             }
-             
-             do {
-             h = html;
-             html = html.replace(tpl_name, v);
-             } while (h !== html)
-             }
-             }
-             } else {
-             var tpl_name = '{' + name + '}';
-             var h;
-             var v = value;
-             if (obj.onRender) {
-             var rd_val = obj.onRender(name, data);
-             if (typeof rd_val !== 'undefined') {
-             v = rd_val;
-             }
-             }
-             do {
-             h = html;
-             html = html.replace(tpl_name, v);
-             } while (h !== html)
-             }
-             }
-             */
-
-//NEW START
-
             var param_arr = regexMatchParams[obj.tplUrl];
 
             if (!param_arr) {
@@ -2094,9 +2047,6 @@ var Main = {};
                 html = html.replace('{' + param + '}', v);
             }
 
-
-
-//NEW END
 
             var content = $('<div '
                     + (obj.itemClass
@@ -3342,7 +3292,7 @@ var Main = {};
             closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
             touchOutClose: true, //close the dialog if the user touch outside it   
             action: function (el, value) {
-                this.hide();                
+                this.hide();
             }
         });
     };
@@ -3381,10 +3331,10 @@ var Main = {};
             this.setContent = function (content) {
                 obj.content = content;
                 setBodyContent(content);
-                
+
             };
-            
-            this.layout = function(){
+
+            this.layout = function () {
                 clearSavedlayouts();
                 resizeListenBind();
             };
@@ -3622,7 +3572,7 @@ var Main = {};
                 LYT_MAX: 20 //max. layout objects to save 
             };
 
-            function clearSavedlayouts(){
+            function clearSavedlayouts() {
                 lytObj.layouts = {};
             }
 
@@ -3702,6 +3652,12 @@ var Main = {};
             }
             var cb = container.getBoundingClientRect();
             var bound = base.getBoundingClientRect();
+
+            if (bound.width > cb.width) {//adjust this abnormality!
+                base.style.width = (cb.width * pad_factor) + 'px';
+                cb = container.getBoundingClientRect();
+                bound = base.getBoundingClientRect();
+            }
 
             var compXY = computeXY(cb, bound);
 
@@ -3938,6 +3894,7 @@ var Main = {};
 
 
             function computeXY(cb, bound) {
+
                 var x, y;
                 if (bound.top >= 0
                         && bound.top <= window.innerHeight
