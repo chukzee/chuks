@@ -3,7 +3,7 @@
 
 var WebApplication = require('../web-application');
 var User = require('../info/user');
-var PlayerRank = require('../info/player-ranks');
+var Rankings = require('../info/rankings');
 var Tournament = require('../info/tournament');
 
 
@@ -1103,7 +1103,7 @@ class Match extends WebApplication {
         this.broadcast(this.evt.game_finish, match, users_ids, true); //broadcast to all (players and spectators)
 
         //update the players ranking
-        var rank = new PlayerRank(this.sObj, this.util, this.evt);
+        var rank = new Rankings(this.sObj, this.util, this.evt);
         rank.updateRanking(match.players, winner_user_id);
 
         //Handle end of tournament match

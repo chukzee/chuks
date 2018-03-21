@@ -2,7 +2,7 @@
 
 var WebApplication = require('../web-application');
 
-class PlayerRank extends WebApplication {
+class Rankings extends WebApplication {
 
     constructor(sObj, util, evt) {
         super(sObj, util, evt);
@@ -39,18 +39,6 @@ class PlayerRank extends WebApplication {
 
     }
 
-    async getWeeklyRankList() {
-
-    }
-
-    async getMonthlyRankList() {
-
-
-    }
-
-    async getYearlyRankList() {
-
-    }
 }
 
-module.exports = PlayerRank;
+module.exports = Rankings;

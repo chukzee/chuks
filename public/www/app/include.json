@@ -102,7 +102,9 @@
             "play-notifications.css",
             "performance-view.css",
             "slots-edit.css",
-            "player-passport.css"
+            "player-passport.css",
+            "rating.css",
+            "rankings.css"
         ],
         
         "js": [
@@ -125,7 +127,8 @@
             "view/Group.js",
             "view/UserProfile.js",
             "view/Contacts.js",
-            "view/Performance.js"
+            "view/Performance.js",
+            "view/Rankings.js"
         ] 
     },
 
