@@ -1,0 +1,54 @@
+
+@import "base-var.scss";
+@import "header-items.scss";
+
+$font_color : #444;
+
+    .game9ja-rankings-display td, th{
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 200px;
+    }
+
+
+    .game9ja-rankings-display{
+        position: relative;
+        border-collapse: collapse;
+        width: 100%;
+        //table-layout: fixed;
+
+        > thead{
+            > tr{
+                display: block;
+                height: 30px;
+                > :nth-child(1){
+                    width: 100%;
+                }
+                > :nth-child(2){
+                    width: 20px;
+                }
+                > :nth-child(3){
+                    width: 20px;
+                }
+            }
+
+        }
+        > tbody{
+            display: block;
+            overflow: auto;
+            height: 200px;
+            width: 100%;
+            //background-color: brown;
+            
+            > tr{
+                height: 40px;
+                //width: 100%;
+
+            }
+
+        }
+    }
+

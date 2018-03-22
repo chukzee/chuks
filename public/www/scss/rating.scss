@@ -14,7 +14,7 @@ h1 {
 }*/
 
 /*---------- star rating ----------*/
-%flex-display {
+/*%flex-display {
     display: flex;
 }
 .star-rating {
@@ -38,4 +38,28 @@ h1 {
     position: absolute;
     //text-shadow: 2px 2px 5px #d29b09;
     top: 0;
+}
+*/
+
+.game9ja-rating{
+
+    > :nth-child(1){/*rating number*/
+        margin-right: 5px;
+    }
+    > :nth-child(2){/*rating back stars*/
+        position: relative;
+        left: 0;
+        top: 0;
+        font-size: 12px;
+        color: #bb5252;
+
+        > span{/*rating front stars*/
+            position: absolute; 
+            left: 0; 
+            top: 0;
+            color: #FFBC0B;
+            overflow: hidden; 
+            white-space: nowrap; 
+        }
+    }
 }

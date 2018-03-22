@@ -11,20 +11,49 @@ h1 {
     text-transform: uppercase;
 }*/
 /*---------- star rating ----------*/
-.star-rating, .back-stars, .front-stars {
-  display: flex; }
-
+/*%flex-display {
+    display: flex;
+}
 .star-rating {
-  font-size: 1em; }
-
+    @extend %flex-display;
+    //align-items: center;
+    //background-color: green;
+    font-size: 1em;
+    //justify-content: center;
+    //margin-top: 50px;
+}
 .back-stars {
-  color: #bb5252;
-  position: relative; }
-
+    @extend %flex-display;
+    color: #bb5252;
+    position: relative;
+    //text-shadow: 4px 4px 10px #843a3a;
+}
 .front-stars {
-  color: #FFBC0B;
-  overflow: hidden;
-  position: absolute;
-  top: 0; }
+    @extend %flex-display;
+    color: #FFBC0B;
+    overflow: hidden;
+    position: absolute;
+    //text-shadow: 2px 2px 5px #d29b09;
+    top: 0;
+}
+*/
+.game9ja-rating > :nth-child(1) {
+  /*rating number*/
+  margin-right: 5px; }
+.game9ja-rating > :nth-child(2) {
+  /*rating back stars*/
+  position: relative;
+  left: 0;
+  top: 0;
+  font-size: 12px;
+  color: #bb5252; }
+  .game9ja-rating > :nth-child(2) > span {
+    /*rating front stars*/
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #FFBC0B;
+    overflow: hidden;
+    white-space: nowrap; }
 
 /*# sourceMappingURL=rating.css.map */

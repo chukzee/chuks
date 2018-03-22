@@ -1,0 +1,53 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: #222;
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #222;
+  color: #eee; }
+
+.game9ja-table > .game9ja-table-header, .game9ja-table > .game9ja-table-body > .game9ja-table-body-row {
+  width: 100%;
+  height: 30px; }
+  .game9ja-table > .game9ja-table-header > div, .game9ja-table > .game9ja-table-body > .game9ja-table-body-row > div {
+    display: inline-block;
+    height: 100%;
+    padding: 2px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box; }
+
+.game9ja-table {
+  background-color: brown; }
+  .game9ja-table > .game9ja-table-header {
+    background-color: blue; }
+  .game9ja-table > .game9ja-table-body {
+    width: 100%;
+    overflow: auto;
+    background-color: yellow; }
+
+/*# sourceMappingURL=table.css.map */
