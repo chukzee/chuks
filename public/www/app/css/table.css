@@ -44,8 +44,14 @@ and open the template in the editor.
 .game9ja-table {
   background-color: brown; }
   .game9ja-table > .game9ja-table-header {
+    position: absolute;
+    top: 0;
+    height: 30px;
     background-color: blue; }
   .game9ja-table > .game9ja-table-body {
+    position: absolute;
+    top: 30px;
+    bottom: 0;
     width: 100%;
     overflow: auto;
     background-color: yellow; }

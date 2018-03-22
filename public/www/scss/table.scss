@@ -2,11 +2,11 @@
 
 @import "base-var.scss";
 
-
+$row_height : 30px;
 
 %row{
     width: 100%; 
-    height: 30px; 
+    height: $row_height; 
     > div{
         display: inline-block;   
         height: 100%;
@@ -25,10 +25,16 @@
 
     > .game9ja-table-header{
         @extend %row;
+        position : absolute;
+        top: 0;
+        height: $row_height;
         background-color: blue;
     }
 
     > .game9ja-table-body{
+        position : absolute;
+        top: $row_height;
+        bottom: 0;
         width: 100%;
         overflow: auto;
         
