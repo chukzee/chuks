@@ -3,46 +3,58 @@
 @import "base-var.scss";
 
 $row_height : 30px;
+$row_bottom_border: 1px solid #ddd;
 
 %row{
-    width: 100%; 
+    display: table-row;
+    clear: both;
+    //width: 100%; 
     height: $row_height; 
+    //vertical-align: text-bottom;
     > div{
-        display: inline-block;   
-        height: 100%;
-        padding: 2px;
+        width: 50px;
+        display: table-cell;  
         text-align: left;
+        vertical-align: bottom;
+        border-bottom: $row_bottom_border;
+        height: $row_height; 
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        @include box-sizing(border-box);    
+        @include box-sizing(border-box);   
+        
     }   
 }
 
 .game9ja-table{
 
-    background-color: brown;
+    //background-color: brown;
 
     > .game9ja-table-header{
         @extend %row;
         position : absolute;
         top: 0;
+        left : $base_padding;
+        right : $base_padding;
         height: $row_height;
-        background-color: blue;
+        //background-color: blue;
+        border-bottom: $row_bottom_border;
     }
 
     > .game9ja-table-body{
         position : absolute;
         top: $row_height;
-        bottom: 0;
-        width: 100%;
+        bottom: $base_padding;        
+        left : $base_padding;
+        right : $base_padding;
+        //width: 100%;
         overflow: auto;
-        
-        background-color: yellow;
+
+        //background-color: yellow;
     }
 
     > .game9ja-table-body > .game9ja-table-body-row{            
-        @extend %row;          
+        @extend %row;           
     }    
 
 }

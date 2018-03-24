@@ -28,32 +28,35 @@ and open the template in the editor.
   color: #eee; }
 
 .game9ja-table > .game9ja-table-header, .game9ja-table > .game9ja-table-body > .game9ja-table-body-row {
-  width: 100%;
+  display: table-row;
+  clear: both;
   height: 30px; }
   .game9ja-table > .game9ja-table-header > div, .game9ja-table > .game9ja-table-body > .game9ja-table-body-row > div {
-    display: inline-block;
-    height: 100%;
-    padding: 2px;
+    width: 50px;
+    display: table-cell;
     text-align: left;
+    vertical-align: bottom;
+    border-bottom: 1px solid #ddd;
+    height: 30px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     -webkit-box-sizing: border-box;
     box-sizing: border-box; }
 
-.game9ja-table {
-  background-color: brown; }
-  .game9ja-table > .game9ja-table-header {
-    position: absolute;
-    top: 0;
-    height: 30px;
-    background-color: blue; }
-  .game9ja-table > .game9ja-table-body {
-    position: absolute;
-    top: 30px;
-    bottom: 0;
-    width: 100%;
-    overflow: auto;
-    background-color: yellow; }
+.game9ja-table > .game9ja-table-header {
+  position: absolute;
+  top: 0;
+  left: 5px;
+  right: 5px;
+  height: 30px;
+  border-bottom: 1px solid #ddd; }
+.game9ja-table > .game9ja-table-body {
+  position: absolute;
+  top: 30px;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  overflow: auto; }
 
 /*# sourceMappingURL=table.css.map */

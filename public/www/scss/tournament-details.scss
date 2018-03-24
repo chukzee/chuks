@@ -47,7 +47,22 @@ $torunament_img_height : 180px;
             box-sizing: border-box;
             //background-color: blue;
         }
-        >:nth-child(3){/*tournament creator and date created*/
+        >:nth-child(3){/*tournament rating*/
+            //color: red; 
+            position: absolute;
+            top: $torunament_img_height + $base_padding * 2;
+            right: $base_padding * 2;
+            cursor: pointer;
+            >:nth-child(1){/*rating fiqure*/
+                font-size: 14px;
+                margin-right: $base_padding;
+            }
+            >:nth-child(2){/*rating star*/
+                color: #FFBC0B;
+                font-size: 12px;
+            }
+        }
+        >:nth-child(4){/*tournament creator and date created*/
             font-weight: 300;  
             font-size: 12px;
             color: #777;
@@ -60,25 +75,25 @@ $torunament_img_height : 180px;
             white-space: nowrap;
             //background-color: red;
         }
-        >:nth-child(4){/*back button*/
+        >:nth-child(5){/*back button*/
             color: white; 
             position: absolute;
             top: $base_padding * 2;
             left: $base_padding * 2;
             cursor: pointer;
         }
-        >:nth-child(5){/*edit button*/
+        >:nth-child(6){/*edit button*/
             color: black; 
             position: absolute;
             bottom: $base_padding * 2;
             right: $base_padding * 2;
             cursor: pointer;
         }     
-        >:nth-child(6){/*menu button*/
+        >:nth-child(7){/*menu button*/
             color: white;
             cursor: pointer;
         }        
-        >:nth-child(7){/*Tournament type*/
+        >:nth-child(8){/*Tournament type*/
             font-weight: 700;  
             color : $font_color;
             padding-left : $base_padding;

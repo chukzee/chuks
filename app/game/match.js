@@ -484,9 +484,11 @@ class Match extends WebApplication {
         var match = {
             group_name: mtcObj.group_name ? mtcObj.group_name : '',
             tournament_name: mtcObj.tournament_name ? mtcObj.tournament_name : '',
+            competition_rating: mtcObj.competition_rating, //for tournaments only
             game_id: mtcObj.game_id,
             game_name: mtcObj.game_name,
             status: 'live',
+            win_factor: 1, // this will multiply to the 3 pionts of the winner when computing player ranking
             rules: mtcObj.rules ? mtcObj.rules : default_rules,
             scores: [0, 0],
             start_time: new Date(),
@@ -898,12 +900,12 @@ class Match extends WebApplication {
             for (var i = 0; i < match.players.length; i++) {
 
                 if (!winner_user_id) {//is draw
-                    game_set.points[i] += 1; //all players get 1 point for draw - note we are using 3-1-0 scoring system
+                    game_set.points[i] += this.sObj.DRAW_POINT; //all players get 1 point for draw - note we are using 3-1-0 scoring system
                     continue;
                 }
 
                 if (match.players[i].user_id === winner_user_id) {
-                    game_set.points[i] += 3; //the winner get 3 point for win - note we are using 3-1-0 scoring system
+                    game_set.points[i] += this.sObj.WIN_POINT; //the winner get 3 point for win - note we are using 3-1-0 scoring system
                     match.scores[i] += 1;
                     break;
                 }
@@ -1034,16 +1036,17 @@ class Match extends WebApplication {
 
         this.broadcast(this.evt.game_finish, match, users_ids, true); //broadcast to all (players and spectators)
 
-        //update the players ranking
-        var rank = new Rankings(this.sObj, this.util, this.evt);
-        rank.updateRanking(match.players, winner_user_id);
-
         //Handle end of tournament match
         if (match.tournament_name) {
             var t = new Tournament(this.sObj, this.util, this.evt);
             t._onTournamentMatchEnd(match);
 
         }
+
+        //finally update the players ranking
+        var rank = new Rankings(this.sObj, this.util, this.evt);
+        rank.updateRanking(match, winner_user_id);
+
     }
 
     /**

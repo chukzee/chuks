@@ -221,7 +221,35 @@ class ServerObject {
     get MIN_TOURNAMENT_LIST(){//min number of tournaments to return otherwise random search will be made to complete the minimum numbers
         return 50;
     }
+    
+    get WIN_POINT(){
+        return 3;
+    }
+    
+    get DRAW_POINT(){
+        return 1;
+    }
+    
+    get MAX_RATING(){
+        return 5; //5 start e.g *****
+    }
+    
+    get DEFAULT_RATING(){
+        return 2.5; //half of MAX_RATING
+    }
+    
+    get MT_SCORE_TOURNAMENT(){//Match importance score for tournament match - used for ranking players
+        return 4;
+    }
+    
+    get MT_SCORE_GROUP(){//Match importance score for group match - used for ranking players
+        return 2.5;
+    }
 
+    get MT_SCORE_CONTACT(){//Match importance score for contact match - used for ranking players
+        return 2.5;
+    }
+    
     get task() {
         return this._task;
     }

@@ -4,6 +4,8 @@
 
 Ns.view.Tournament = {
 
+    DEFAULT_RATING: 2.5,
+
     SEARCH_SIZE: 10,
 
     RANDOM_SIZE: 30,
@@ -66,6 +68,7 @@ Ns.view.Tournament = {
             /*
              "tournament-details-photo-url"
              "tournament-details-tournament-name"
+             "tournament-details-tournament-rating"
              "tournament-details-created-by"
              "tournament-details-date-created"
              "tournament-details-back-btn"
@@ -104,6 +107,7 @@ Ns.view.Tournament = {
 
             document.getElementById("tournament-details-photo-url").src = tournament.photo_url;
             document.getElementById("tournament-details-tournament-name").innerHTML = tournament.name;
+            document.getElementById("tournament-details-tournament-rating").innerHTML = tournament.rating ? tournament.rating : Ns.view.Tournament.DEFAULT_RATING;
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by.full_name;
             document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
             document.getElementById("tournament-details-tournament-type").innerHTML = tournament.type.substring(0, 1).toUpperCase() + tournament.type.substring(1);
@@ -158,7 +162,7 @@ Ns.view.Tournament = {
 
             });
 
-             
+
             $('#tournament-details-edit').off('click');
             $('#tournament-details-edit').on('click', function () {
 
@@ -166,7 +170,7 @@ Ns.view.Tournament = {
 
             });
 
-             
+
             $('#tournament-details-menu').off('click');
             $('#tournament-details-menu').on('click', function () {
 
@@ -174,19 +178,19 @@ Ns.view.Tournament = {
 
             });
 
-             
+
             $('#tournament-details-officials-add').off('click');
             $('#tournament-details-officials-add').on('click', function () {
                 Ns.view.Tournament._onClickOfficialsAdd(tournament);
             });
 
-             
+
             $('#tournament-details-registered-players-add').off('click');
             $('#tournament-details-registered-players-add').on('click', function () {
                 Ns.view.Tournament._onClickRegisteredPlayersAdd(tournament);
             });
 
-             
+
             $('#tournament-details-season-players-add').off('click');
             $('#tournament-details-season-players-add').on('click', function () {
                 Ns.view.Tournament._onClickSeasonPlayersAdd(tournament);
@@ -206,7 +210,7 @@ Ns.view.Tournament = {
                         });
             });
 
-             
+
             $('#tournament-details-season-previous').off('click');
             $('#tournament-details-season-previous').on('click', function () {
 
@@ -230,7 +234,7 @@ Ns.view.Tournament = {
 
             });
 
-            
+
             $('#tournament-details-season-next').off('click');
             $('#tournament-details-season-next').on('click', function () {
 

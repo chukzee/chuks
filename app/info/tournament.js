@@ -479,9 +479,9 @@ class Tournament extends WebApplication {
         standings = this._resultStandings(standings);
 
         return {
-            tournament_name : tournament_name,
-            season_number : season_number,
-            standings : standings
+            tournament_name: tournament_name,
+            season_number: season_number,
+            standings: standings
         };
     }
 
@@ -1086,6 +1086,7 @@ class Tournament extends WebApplication {
         var matchObj = {
             start_time: begin_time.getTime(), //important
             tournament_name: tourn.name,
+            competition_rating: tourn.rating,
             game_id: game_id,
             game_name: tourn.game,
             sets_count: tourn.sets_count,
@@ -1697,12 +1698,12 @@ class Tournament extends WebApplication {
                         var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.player_1.score`;
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
                         editObj[prop1] = fixtures[j].player_1.score + 1;
-                        editObj[prop2] = fixtures[j].sets[set_index].points[0] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
+                        editObj[prop2] = fixtures[j].sets[set_index].points[0] + this.sObj.WIN_POINT;//the winner get 3 point for win - note we are using 3-1-0 scoring system
 
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
                         var incEdit = {};
-                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = 3;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = this.sObj.WIN_POINT;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_wins`] = 1;
 
@@ -1716,12 +1717,12 @@ class Tournament extends WebApplication {
                         var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.player_2.score`;
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${1}`;
                         editObj[prop1] = fixtures[j].player_2.score + 1;
-                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + 3;//the winner get 3 point for win - note we are using 3-1-0 scoring system
+                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + this.sObj.WIN_POINT;//the winner get 3 point for win - note we are using 3-1-0 scoring system
 
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
                         var incEdit = {};
-                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = 3;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = this.sObj.WIN_POINT;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_wins`] = 1;
 
@@ -1733,17 +1734,17 @@ class Tournament extends WebApplication {
 
                         var prop1 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${0}`;
                         var prop2 = `seasons.${season_index}.rounds.${i}.fixtures.${j}.sets.${set_index}.points.${1}`;
-                        editObj[prop1] = fixtures[j].sets[set_index].points[0] + 1;//all players get 1 point for draw - note we are using 3-1-0 scoring system
-                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + 1;//all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        editObj[prop1] = fixtures[j].sets[set_index].points[0] + this.sObj.DRAW_POINT;//all players get 1 point for draw - note we are using 3-1-0 scoring system
+                        editObj[prop2] = fixtures[j].sets[set_index].points[1] + this.sObj.DRAW_POINT;//all players get 1 point for draw - note we are using 3-1-0 scoring system
 
                         var p1_slot_index = fixtures[j].player_1.slot - 1;
                         var p2_slot_index = fixtures[j].player_2.slot - 1;
                         var incEdit = {};
-                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_points`] = this.sObj.DRAW_POINT;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p1_slot_index}.total_draws`] = 1;
 
-                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = 1;
+                        incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_points`] = this.sObj.DRAW_POINT;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_played`] = 1;
                         incEdit[`seasons.${season_index}.slots.${p2_slot_index}.total_draws`] = 1;
                     }
@@ -1773,7 +1774,7 @@ class Tournament extends WebApplication {
      * @param {type} match
      * @returns {undefined}
      */
-    _checkSeasonEnd(c, tourn, match) {
+    async _checkSeasonEnd(c, tourn, match) {
 
         var me = this;
         //check if the final match of the season was played
@@ -1796,17 +1797,22 @@ class Tournament extends WebApplication {
 
         var winner = this._determineWinner(tourn, match);
 
+        var rating = await this._computeTournamentRating(tourn);
+
         var prop1 = `seasons.${last_season_index}.rounds.${last_round_index}.fixtures.${last_fixt_index}.end_time`;
         var prop2 = `seasons.${last_season_index}.status`;
         var prop3 = `seasons.${last_season_index}.end_time`;
         var prop4 = `seasons.${last_season_index}.winner`;
+        var prop5 = `rating`;
 
         var editObj = {};
         editObj[prop1] = match.end_time;
         editObj[prop2] = 'end';
         editObj[prop3] = match.end_time;
         editObj[prop4] = winner;
+        editObj[prop5] = rating;
 
+        
 
         //update the tournament
         c.updateOne({name: match.tournament_name}, {$set: editObj})
@@ -1824,6 +1830,17 @@ class Tournament extends WebApplication {
                 });
 
 
+    }
+    
+    async _computeTournamentRating(tourn){
+        
+        var seasons = tourn.seasons;
+        if(!seasons || !seasons.length){
+            return this.sObj.DEFAULT_RATING;
+        }
+        
+        //COME BACK
+        
     }
 
     _betterPlayer(season, player_1_id, player_2_id) {
@@ -1909,11 +1926,13 @@ class Tournament extends WebApplication {
                 var better_player = this._betterPlayer(season, match.players[0].user_id, match.players[1].user_id);
                 if (better_player) {
                     console.log('better_player', better_player);
+                    match.win_factor = 0.75; // this will multiply to the 3 pionts of the winner when computing player ranking
                     return better_player;
                 } else {
                     //randomly pick a player
                     var index = Math.floor(Math.random() * 2);
                     index = index > 1 ? 1 : index;//just to be sure the random number is not greater than 1
+                    match.win_factor = 0.6; // this will multiply to the 3 pionts of the winner when computing player ranking
                     return match.players[index].user_id;
                 }
             }
@@ -2254,7 +2273,7 @@ class Tournament extends WebApplication {
 
             return this.error('Could not set tournament status');
         }
-        
+
         //return the newly modified tournament
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
