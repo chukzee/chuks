@@ -1,6 +1,7 @@
 "use strict";
 
 var WebApplication = require('../web-application');
+var User = require('../info/user');
 
 class Rankings extends WebApplication {
 
@@ -23,35 +24,66 @@ class Rankings extends WebApplication {
         return rating_score;
     }
 
+    _avgRating(old_avg_player_rating, player_match_rating, old_match_count) {
+        return ((old_avg_player_rating * old_match_count)
+                + player_match_rating) / (old_match_count + 1);
+    }
+
     async updateRanking(match, winner_id) {
 
+        var is_draw = winner_id ? false : true;
 
-        var c = this.sObj.db.collection(this.sObj.col.player_rankings);
+        var c = this.sObj.db.collection(this.sObj.col.users); //yes the ranking will be on the users collection
+        
+        
         var max_rating_score = this._ratingScore(
                 this.sObj.MT_SCORE_TOURNAMENT,
                 this.sObj.MAX_RATING,
                 this.sObj.MAX_RATING,
                 this.sObj.WIN_POINT);
-
-        var players_ratings = []; // TODO - get the previous players ratings
-
+                
+        var players_ids = [];        
         for (var i = 0; i < match.players.length; i++) {
-            //var rating = await this._computeRanking(players[i].user_id, winner_id, win_factor);
-            var match_type_score;
-            var competition_rating;
-            var opponent_rating;
-            var match_result;
-            var count;
-            var sum_ratings = 0;
+            players_ids[i] = match.players[i].user_id;
+        }        
+        
+        var user = new User(this.sObj, this.util, this.evt);
+
+        var required_fields = ['user_id',  'rating_scores', 'rating', 'match_count'];
+        var players_ratings = await user.getInfoList(players_ids, required_fields);        
+        
+        for (var i = 0; i < match.players.length; i++) {
+            var match_type_score = 0;
+            var competition_rating = 0;
+            var opponent_rating = 0;
+            var match_result = 0;
+            var rated_opponent_count = 0;
+            var ratings_sum = 0;
+            var old_avg_player_rating = 0;
+            var old_match_count = 0;
+            var unrated_opponent_count = 0;
+
             for (var k = 0; k < players_ratings.length; k++) {
                 //average opponent rating
                 if (players_ratings[k].user_id === match.players[i].user_id) {
-                    continue;//skip same player
+                    old_avg_player_rating = players_ratings[k].rating;
+                    old_match_count = players_ratings[k].rating_scores.length;
+                    continue;
                 }
-                count++;
-                sum_ratings += players_ratings[k].rating;
-                opponent_rating = sum_ratings / count;
+                //at this point it is the opponent
+                rated_opponent_count++;
+                ratings_sum += players_ratings[k].rating;
             }
+            
+            if(rated_opponent_count === match.players.length - 1){//all the opponents are rated
+                opponent_rating = ratings_sum / rated_opponent_count;
+            }else{//not all the opponents are rated so add default rating
+                var oppn_count = match.players.length - 1; //opponent count
+                unrated_opponent_count = oppn_count - rated_opponent_count;
+                default_ratings_sum = unrated_opponent_count * this.sObj.DEFAULT_RATING;
+                opponent_rating = default_ratings_sum / rated_opponent_count;
+            }
+
 
             if (match.tournament_name) {
                 match_type_score = this.sObj.MT_SCORE_TOURNAMENT;
@@ -70,16 +102,47 @@ class Rankings extends WebApplication {
                 match_result = match.win_factor * this.sObj.WIN_POINT;
             }
 
-            var rating_score = this._ratingScore(
+            var rating_score = this._ratingScore(//will be zero for loss since match_result is zero
                     match_type_score,
                     competition_rating,
                     opponent_rating,
                     match_result);
 
-            var percent_score = rating_score / max_rating_score;
+            var percent_score = rating_score / max_rating_score; //will be zero for loss 
 
-            //TODO
+            var player_match_rating;
+            var player_average_rating;
+            if (match.players[i].user_id === winner_id || is_draw) {//win or draw
+                player_match_rating = old_avg_player_rating + percent_score;
+                player_average_rating = this._avgRating(old_avg_player_rating,
+                        player_match_rating,
+                        old_match_count);
+                //make sure it is not greater than the maximum rating     
+                if (player_average_rating > this.sObj.MAX_RATING) {
+                    player_average_rating = this.sObj.MAX_RATING;
+                }
+            } else {//loss
+                player_match_rating = old_avg_player_rating - percent_score; // percent_score is zero anyway so the minus may not be neccessary but here just for readability (clarity) sake 
+                player_average_rating = this._avgRating(old_avg_player_rating,
+                        player_match_rating,
+                        old_match_count);
+                //make sure it is not less than the minimum rating 
+                if (player_average_rating < this.sObj.MIN_RATING) {
+                    player_average_rating = this.sObj.MIN_RATING;
+                }
+            }
 
+            //update the the collection
+            var pushObj = {rating_scores: rating_score};
+            var setObj = {rating: player_average_rating, match_count: old_match_count+ 1};
+
+            c.updateOne({user_id: match.players[i].user_id}, {$set: setObj, $push: pushObj})
+                    .then(function (result) {
+                        //DO NOTHING
+                    })
+                    .catch(function (err) {
+                        console.log(err); //DO NOT DO THIS IN PRODUCTION. INSTEAD LOG TO ANOTHER PROCCESS
+                    });
         }
 
 

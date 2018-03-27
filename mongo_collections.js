@@ -14,8 +14,7 @@ var collections = ['users',
     'chats',
     'wdl',//stores the numbers of wins , draws and losses between two players tournament, group and contact matches
     'video_calls',
-    'voice_calls',
-    'player_rankings'
+    'voice_calls'
 ];
 
 

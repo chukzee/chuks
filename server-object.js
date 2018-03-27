@@ -231,7 +231,11 @@ class ServerObject {
     }
     
     get MAX_RATING(){
-        return 5; //5 start e.g *****
+        return 5; //5 starS e.g *****
+    }
+    
+    get MIN_RATING(){
+        return 1; //1 star e.g *
     }
     
     get DEFAULT_RATING(){

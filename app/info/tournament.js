@@ -769,7 +769,7 @@ class Tournament extends WebApplication {
         var user = new User(this.sObj, this.util, this.evt);
 
         //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
-        var required_fields = ['contacts', 'groups_belong', 'user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
@@ -1059,7 +1059,7 @@ class Tournament extends WebApplication {
             }
         }
 
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var players = await user.getInfoList(players_ids, required_fields);
 
@@ -1812,7 +1812,7 @@ class Tournament extends WebApplication {
         editObj[prop4] = winner;
         editObj[prop5] = rating;
 
-        
+
 
         //update the tournament
         c.updateOne({name: match.tournament_name}, {$set: editObj})
@@ -1827,20 +1827,69 @@ class Tournament extends WebApplication {
 
                     me._broadcastInHouse(tourn, me.evt.season_end, data);
 
+                })
+                .catch(function (err) {
+                    console.log(err); //DO NOT DO THIS IN PRODUCTION. INSTEAD LOG TO ANOTHER PROCCESS
                 });
 
 
     }
-    
-    async _computeTournamentRating(tourn){
-        
+
+    /**
+     * The rating of tournament is based on the average rating of the players 
+     * in the current season provided the current season has started with all
+     * slots filled otherwise the last season with all slots filled will be used.
+     * Note: cancel seasons will not be used
+     *  
+     * @param {type} tourn
+     * @returns {nm$_tournament.Tournament.sObj.DEFAULT_RATING}
+     */
+    async _computeTournamentRating(tourn) {
+
         var seasons = tourn.seasons;
-        if(!seasons || !seasons.length){
+        if (!seasons || !seasons.length) {
             return this.sObj.DEFAULT_RATING;
         }
         
-        //COME BACK
+        //find seasons with all slots filled and not cancelled
+        var valid_season;
+        var players_ids = [];
+        for(var i=0; i<seasons.length; i++){
+            var filled = true;
+            players_ids = [];
+            for(var k=0; k<seasons[i].slots.length; k++){
+                if(!seasons[i].slots[k].player_id){
+                    filled = false;
+                    break;
+                }
+                players_ids.push(seasons[i].slots[k].player_id);
+            }
+            
+            if(filled &&  seasons[i].status !== 'cancel'){
+                valid_season = seasons[i];
+            }
+            
+        }
         
+        if (!valid_season) {
+            return this.sObj.DEFAULT_RATING;
+        }
+        
+        //at this piont we have a valid season
+        
+        var user = new User(this.sObj, this.util, this.evt);
+
+        var required_fields = ['rating'];
+        var players_ratings = await user.getInfoList(players_ids, required_fields);   
+        
+        var avg = this.sObj.DEFAULT_RATING;//default just in case players_ratings is empty
+        var sum;
+        for(var i=0; i < players_ratings.length; i++){
+            sum += players_ratings[i].rating;
+            avg = sum/players_ratings.length;
+        }
+        
+        return avg;
     }
 
     _betterPlayer(season, player_1_id, player_2_id) {
@@ -2044,7 +2093,8 @@ class Tournament extends WebApplication {
                 return this.error('Tournament name already exist!');
             }
 
-            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+            //rating is not included because it changes
+            var required_fields = ['user_id',  'first_name', 'last_name', 'email', 'photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
             var officialInfo = await user.getInfo(user_id, required_fields);
 
@@ -2335,7 +2385,7 @@ class Tournament extends WebApplication {
 
         //at this point the user is authorized
 
-
+        //rating is not included because it changes
         var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var officialInfo = await user.getInfo(new_official_user_id, required_fields);
@@ -2496,7 +2546,7 @@ class Tournament extends WebApplication {
             return this.error('Cannot add more players! Maximum exceeded - ' + this.sObj.MAX_TOURNAMENT_PLAYERS);
         }
 
-
+        //rating is not included because is changes
         var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var playerInfo = await user.getInfo(player_user_id, required_fields);
