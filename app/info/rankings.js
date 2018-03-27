@@ -48,7 +48,9 @@ class Rankings extends WebApplication {
         }        
         
         var user = new User(this.sObj, this.util, this.evt);
-
+        //NOTE IN THE FUTURE rating_scores AND match_count FIELDS MAY BE USED
+        //TO CHANGE THE COMPUTATION OF PLAYER RATING. IT IS FOR THIS REASON 
+        //THEY ARE INCLUDED HERE
         var required_fields = ['user_id',  'rating_scores', 'rating', 'match_count'];
         var players_ratings = await user.getInfoList(players_ids, required_fields);        
         
@@ -133,10 +135,16 @@ class Rankings extends WebApplication {
             }
 
             //update the the collection
+            
+            //NOTE IN THE FUTURE rating_scores AND match_count FIELDS MAY BE USED
+            //TO CHANGE THE COMPUTATION OF PLAYER RATING. IT IS FOR THIS REASON 
+            //THEY ARE INCLUDED HERE
+            
             var pushObj = {rating_scores: rating_score};
-            var setObj = {rating: player_average_rating, match_count: old_match_count+ 1};
+            var intObj = {match_count: 1};//increment by 1
+            var setObj = {rating: player_average_rating};
 
-            c.updateOne({user_id: match.players[i].user_id}, {$set: setObj, $push: pushObj})
+            c.updateOne({user_id: match.players[i].user_id}, {$set: setObj, $push: pushObj, $inc: intObj})
                     .then(function (result) {
                         //DO NOTHING
                     })
