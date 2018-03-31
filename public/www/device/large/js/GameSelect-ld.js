@@ -7,6 +7,8 @@ Main.on("pagecreate", function (arg) {
         return;
     }
     
+    Main.device.styleDesktopScrollbar(arg.isIndexPage);
+    
     //at this point it is the index page which is what we want.
 
     Ns.Auth.login();

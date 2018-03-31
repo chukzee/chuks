@@ -3,6 +3,125 @@
 @import "header-items.scss";
 
 $font_color : #444;
+$performance_pagination_height : 30px;
+$header_row_height: 30px;
+$body_row_height: 40px;
+$two_px : 2px;
+
+$number_width_sd: 30px;
+
+
+@mixin game9ja-performance-view-row($_row_height , $font_weight){
+    position: relative;
+    border-bottom: #eee solid 1px;
+    font-weight: $font_weight;
+    > :nth-child(1){/*serial number*/
+        position: absolute;
+        left: $base_padding;
+        width: $body_row_height;
+        bottom: $base_padding;
+        background-color: orange;            
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    > :nth-child(2){/*helper div to help center the profile pic*/
+        position: absolute;
+        left: $base_padding + $body_row_height;
+        width: $body_row_height;
+        height: $_row_height;
+        background-color: yellow;
+
+        > img{/* profile pic*/
+            position: absolute;
+            top: $two_px;
+            left: $two_px;
+            width: $_row_height - 2* $two_px;
+            height: $_row_height - 2* $two_px;
+            border-radius: 50%;
+        }
+
+    }
+
+    > :nth-child(3){/*Full name*/
+        position: absolute;
+        left: $base_padding + $body_row_height + $body_row_height;
+        right: 5 * $number_width_sd + $base_padding;
+        bottom: $base_padding;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: #bbb;
+    }
+
+
+    > :nth-child(4){/*Played*/
+        position: absolute;
+        right:  4 * $number_width_sd + $base_padding;
+        bottom: $base_padding;
+        width : $number_width_sd;
+        text-align: center;            
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: #bbf;
+    }
+
+    > :nth-child(5){/*Win*/
+        position: absolute;
+        right:  3 * $number_width_sd + $base_padding;
+        bottom: $base_padding;
+        width : $number_width_sd;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: #bba;
+    }
+
+    > :nth-child(6){/*Draw*/
+        position: absolute;
+        right:  2 * $number_width_sd + $base_padding;
+        bottom: $base_padding;
+        width : $number_width_sd;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: #bbc;
+    }
+
+    > :nth-child(7){/*Loss*/
+        position: absolute;
+        right:  $number_width_sd + $base_padding;
+        bottom: $base_padding;
+        width : $number_width_sd;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: #bbc;
+    }
+
+    > :nth-child(8){/*Pooints*/
+        position: absolute;
+        right:  $base_padding;
+        bottom: $base_padding;
+        width : $number_width_sd;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: #bbc;
+    }
+
+}
 
 .game9ja-performance-view{
     position: absolute;
@@ -65,92 +184,52 @@ $font_color : #444;
         }
     }
 
-    > .game9ja-performance-view-display td, th{
-        border-bottom: 1px solid #ddd;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+   > .game9ja-performance-view-display{
 
-    > .game9ja-performance-view-display{
-        position: relative;
-        border-collapse: collapse;
+        position : absolute;
+        top : $header_height + $performance_pagination_height;
+        left :0; 
+        right :0;
+        bottom : 0;
+        margin: 0;
+
         width: 100%;
 
-        > thead{
-            > tr{
-                height: 30px;
 
-            }
-
-        }
-        > tbody{
-            > tr{
-                height: 40px;
-                &:hover{
-                    background-color: #eee;
-                }
-                > :nth-child(1){//serial number
-                    width: 20px;
-                    min-width: 20px;
-                    max-width: 30px;
-
-                }
-
-                > :nth-child(2){//profile photo
-                    width: 40px;
-                    height: 40px; 
-                    padding : 0;
-                    margin: 0;
-                    cursor: pointer;
-                    > div{/*helper div to help center the tournament profile pic*/
-                        width: 36px;
-                        height: 36px;
-                        margin: 0 auto;
-                        > img{/* profile pic*/
-                            width: 36px;
-                            height: 36px; 
-                            border-radius: 50%;
+        > :nth-child(1){//header container
+                        position : absolute;
+                        top : 0;
+                        left: 0;
+                        height: $header_row_height;
+                        width: 100%;
+                        padding-left : $base_padding;
+                        padding-right : $base_padding;
+                        @include box-sizing(border-box);
+                        background-color: green;
+                        > .game9ja-performance-view-header-row{
+                            height: 100%;
+                            @include  game9ja-performance-view-row($header_row_height, bold);
+                            background-color: brown;
                         }
-                    }
-
-                }
-                > :nth-child(3){//fullname
-                    min-width: 60px;
-                    max-width: 100px;
-                    text-align: left;
-                    padding-left: $base_padding;
-                    cursor: pointer;
-                }
-                > :nth-child(4){
-                    width: 20px;
-                    min-width: 20px;
-                    max-width: 30px;
-                }
-                > :nth-child(5){
-                    width: 20px;
-                    min-width: 20px;
-                    max-width: 30px;
-                }
-                > :nth-child(6){
-                    width: 20px;
-                    min-width: 20px;
-                    max-width: 30px;
-                }
-                > :nth-child(7){
-                    width: 20px;
-                    min-width: 20px;
-                    max-width: 30px;
-                }
-                > :nth-child(8){
-                    width: 20px;
-                    min-width: 20px;
-                    max-width: 30px;
-                }
-
-            }
-
         }
+        > :nth-child(2){//body container
+                        position : absolute;
+                        top : $header_row_height;
+                        left: 0;         
+                        bottom:0;
+                        width: 100%;
+                        padding-left : $base_padding;
+                        padding-right : $base_padding;
+                        @include box-sizing(border-box);
+                        //background-color: blue;
+                        overflow: auto;
+                        > .game9ja-performance-view-body-row{
+                            height: $body_row_height;
+                            @include game9ja-performance-view-row($body_row_height, normal);
+                            //background-color: bisque;
+                        }
+        }
+
     }
+
 }

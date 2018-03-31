@@ -2,15 +2,16 @@
 
 
 Main.on("pagecreate", function (arg) {
-   
+
     if (!arg.isIndexPage) {
         return;
     }
     
+    Main.device.styleDesktopScrollbar(arg.isIndexPage);
+
     //at this point it is the index page which is what we want.
 
     Ns.Auth.login();
-
     $('#game-select-chess').on('click', function () {
 
         Main.page.show({
@@ -20,9 +21,7 @@ Main.on("pagecreate", function (arg) {
             onBeforeShow: Ns.GameHome.Content,
             data: 'chess'
         });
-
     });
-
     $('#game-select-draft').on('click', function () {
         Main.page.show({
             url: "game-home-md.html",
@@ -32,7 +31,6 @@ Main.on("pagecreate", function (arg) {
             data: 'draft'
         });
     });
-
     $('#game-select-ludo').on('click', function () {
         Main.page.show({
             url: "game-home-md.html",
@@ -42,7 +40,6 @@ Main.on("pagecreate", function (arg) {
             data: 'ludo'
         });
     });
-
     $('#game-select-solitaire').on('click', function () {
         Main.page.show({
             url: "game-home-md.html",
@@ -52,7 +49,6 @@ Main.on("pagecreate", function (arg) {
             data: 'solitaire'
         });
     });
-
     $('#game-select-whot').on('click', function () {
         Main.page.show({
             url: "game-home-md.html",
@@ -62,5 +58,4 @@ Main.on("pagecreate", function (arg) {
             data: 'whot'
         });
     });
-
 });

@@ -140,16 +140,16 @@ Ns.view.Performance = {
 
 
             /*
-             <tr>
-             <td>1</td>
-             <td><div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div></td>
-             <td>Chuks Alimele Alimele Alimele Alimele</td>
-             <td>33</td>
-             <td>22</td>
-             <td>44</td>
-             <td>55</td>
-             <td>10000000</td>
-             </tr>
+             <div class="game9ja-performance-view-body-row">
+             <div>1</div>
+             <div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div>
+             <div>Chuks Alimele Alimele Alimele Alimele</div>
+             <div>33</div>
+             <div>22</div>
+             <div>44</div>
+             <div>55</div>
+             <div>10000000</div>
+             </div>
              */
 
             var el = document.getElementById("performance-view-table-body");
@@ -167,48 +167,47 @@ Ns.view.Performance = {
                         break;
                     }
                 }
-                var tr = document.createElement('tr');
+                var rowDiv = document.createElement('div');
+                rowDiv.className = "game9ja-performance-view-body-row";
+                
+                var sn_div = document.createElement('div');
+                sn_div.innerHTML = i + 1;
+                rowDiv.appendChild(sn_div);
 
-                var sn_td = document.createElement('td');
-                sn_td.innerHTML = i + 1;
-                tr.appendChild(sn_td);
-
-                var photo_div = document.createElement('div');
                 var photo_img = document.createElement('img');
                 photo_img.src = photo_url;
                 photo_img.addEventListener('click', Ns.view.Performance.expandPhoto.bind({user: player}));
 
-                var photo_td = document.createElement('td');
+                var photo_div = document.createElement('div');
 
                 photo_div.appendChild(photo_img);
-                photo_td.appendChild(photo_div);
-                tr.appendChild(photo_td);
+                rowDiv.appendChild(photo_div);
 
-                var full_name_td = document.createElement('td');
-                full_name_td.innerHTML = full_name;
-                tr.appendChild(full_name_td);
+                var full_name_div = document.createElement('div');
+                full_name_div.innerHTML = full_name;
+                rowDiv.appendChild(full_name_div);
 
-                var PL_td = document.createElement('td');
-                PL_td.innerHTML = standings[i].total_played;
-                tr.appendChild(PL_td);
+                var PL_div = document.createElement('div');
+                PL_div.innerHTML = standings[i].total_played;
+                rowDiv.appendChild(PL_div);
 
-                var W_td = document.createElement('td');
-                W_td.innerHTML = standings[i].total_wins;
-                tr.appendChild(W_td);
+                var W_div = document.createElement('div');
+                W_div.innerHTML = standings[i].total_wins;
+                rowDiv.appendChild(W_div);
 
-                var D_td = document.createElement('td');
-                D_td.innerHTML = standings[i].total_draws;
-                tr.appendChild(D_td);
+                var D_div = document.createElement('div');
+                D_div.innerHTML = standings[i].total_draws;
+                rowDiv.appendChild(D_div);
 
-                var L_td = document.createElement('td');
-                L_td.innerHTML = standings[i].total_losses;
-                tr.appendChild(L_td);
+                var L_div = document.createElement('div');
+                L_div.innerHTML = standings[i].total_losses;
+                rowDiv.appendChild(L_div);
 
-                var Pts_td = document.createElement('td');
-                Pts_td.innerHTML = standings[i].total_points;
-                tr.appendChild(Pts_td);
+                var Pts_div = document.createElement('div');
+                Pts_div.innerHTML = standings[i].total_points;
+                rowDiv.appendChild(Pts_div);
 
-                el.appendChild(tr);
+                el.appendChild(rowDiv);
             }
 
 

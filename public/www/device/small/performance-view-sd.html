@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>GameBaba</title>
+        <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">    
         <link rel="stylesheet" href="../app/css/header-items.css" />
@@ -14,86 +14,137 @@ and open the template in the editor.
         <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
     </head>
     <body>
-        <div id="performance-view" class="game9ja-performance-view">
+        <div class="game9ja-performance-view">
             <div class="game9ja-performance-view-header">
                 <div>
-                    <span  id="performance-view-tournament-name"><!--Tournament Name--></span>
+                    <span id="performance-view-tournament-name"><!--Tournament Name--></span>
                 </div>
                 
-                <i id="performance-view-back-btn" class="fa fa-arrow-left game9ja-header-item-left"></i>
+                <i id="performance-view-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
                 <!--<i class="fa fa-search game9ja-header-item-right-a"></i>
                 <i class="fa fa-ellipsis-v game9ja-header-item-right"></i>-->
             </div>
             <div class="game9ja-performance-view-season">
                 <span>
                     Season 
-                    <span id="performance-view-season-number"><!--1--></span>
-                    <span  id="performance-view-season-date"><!--23/01/2017--></span>
+                    <span id="tournament-details-season-number"><!--1--></span>
+                    <span id="tournament-details-season-date"><!--23/01/2017--></span>
 
                 </span>
                 <span>
-                    <i class="fa fa-arrow-left"  id="performance-view-season-previous"></i>
+                    <i class="fa fa-arrow-left"  id="tournament-details-season-previous"></i>
                     &nbsp;&nbsp;
-                    <i class="fa fa-arrow-right" id="performance-view-season-next"></i> 
+                    <i class="fa fa-arrow-right" id="tournament-details-season-next"></i> 
                 </span>
             </div>
             
-            <table  class="game9ja-performance-view-display">
-                <thead>
-                    <tr>
-                        <th colspan = "3">Players</th>
-                        <th>P</th>
-                        <th>W</th>
-                        <th>D</th>
-                        <th>L</th>
-                        <th>Pts</th>
-                    </tr>
-                </thead>
-                <tbody id="performance-view-table-body">
-                    <!--
-                    <tr>
-                        <td>1</td>
-                        <td><div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div></td>
-                        <td>Chuks Alimele Alimele Alimele Alimele</td>
-                        <td>33</td>
-                        <td>22</td>
-                        <td>44</td>
-                        <td>55</td>
-                        <td>10000000</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div></td>
-                        <td>Ogoan Okoro</td>
-                        <td>33</td>
-                        <td>22</td>
-                        <td>44</td>
-                        <td>55</td>
-                        <td>10000000</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div></td>
-                        <td>Silver Mike</td>
-                        <td>33</td>
-                        <td>22</td>
-                        <td>44</td>
-                        <td>55</td>
-                        <td>10000000</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div></td>
-                        <td>James Ovie</td>
-                        <td>33</td>
-                        <td>22</td>
-                        <td>44</td>
-                        <td>55</td>
-                        <td>10000000</td>
-                    </tr>
-                    -->
-                </tbody>
-            </table>
+            <div  class="game9ja-performance-view-display">
+                                
+                <div>
+                    <div  class="game9ja-performance-view-header-row">
+                        <div></div>
+                        <div></div>
+                        <div>Players</div>
+                        <div>P</div>
+                        <div>W</div>
+                        <div>D</div>
+                        <div>L</div>
+                        <div>Pts</div>
+                    </div>                    
+                </div>
+                <div id="performance-view-table-body">
+                <!--    
+                    <div  class="game9ja-performance-view-body-row">
+
+                        <div>1</div>
+                        <div><img  onerror="Main.helper.loadDefaultTournamentPhoto(event)" src="../app/images/black_player.jpg" alt=""/></div>
+                        <div>Chuks Alimele Alimele Alimele Alimele</div>
+                        <div>33</div>
+                        <div>22</div>
+                        <div>44</div>
+                        <div>55</div>
+                        <div>10000000</div>
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+
+                    <div  class="game9ja-performance-view-body-row">
+
+                    </div>
+                -->
+                </div>
+                
+            </div>
 
         </div>
 

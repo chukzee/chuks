@@ -22,6 +22,7 @@ var Main = {};
     var listeners = {};
     var deviceBackMeOnly = {};
     var socket;
+    var _isDestopScrollbarStyled = false;
     Main.ro = {};// object for storing global access for rcall variables for making remote method calls
 
     Main.helper = new function () {
@@ -491,6 +492,45 @@ var Main = {};
         },
         getLandscapeHeight: function () {
             return Main.device.getPortriatWidth();
+        },
+        styleDesktopScrollbar: function (isIndexPage) {
+            if(!isIndexPage){
+                return;
+            }
+            var desktop_scrollbar = "::-webkit-scrollbar {"/*width*/
+                    + " width: 8px; }"
+
+                    + "::-webkit-scrollbar-button {"
+                    + "  height: 0px;" //or 8px if the button should show
+                    //+ " background-color: #41963A;"//button background color
+                    //+ " color: white; "+
+                    +"}";
+
+                    /*track*/
+                    + "::-webkit-scrollbar-track {"
+                    + "  box-shadow: inset 0, 0, 3px grey;"
+                    + "  border-radius: 4px; }"
+
+                    /*handle*/
+                    + "::-webkit-scrollbar-thumb {"
+                    + " background-color: #41963A;"
+                    + " border-radius: 4px; }"
+
+                    /*handle on hover*/
+                    + "::-webkit-scrollbar-thumb:hover {"
+                    + "background-color: #64BB31; }";
+
+            if (!Main.device.isMobileDeviceReady) {//most likely a desktop device
+                var style = document.createElement('style');
+                style.innerHTML = desktop_scrollbar;
+
+                if (!_isDestopScrollbarStyled) {
+                    var head = document.getElementsByTagName('head')[0];
+                    head.appendChild(style);
+                    _isDestopScrollbarStyled = true;
+                }
+
+            }
         }
     };
 
