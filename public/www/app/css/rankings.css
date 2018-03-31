@@ -162,19 +162,19 @@ and open the template in the editor.
     margin: 0;
     left: 0;
     font-size: 14px;
-    color: #444;
     height: 30px;
     width: 100%;
-    background-color: red;
-    border-bottom: 0.0325em #eee solid; }
+    background-color: #222;
+    color: #eee;
+    border-bottom: 0.0325em #777 solid; }
     .game9ja-rankings > .game9ja-rankings-pagination > :nth-child(1) {
       position: absolute;
-      bottom: 0;
+      bottom: 5px;
       left: 5px;
       font-size: 20px; }
     .game9ja-rankings > .game9ja-rankings-pagination > :nth-child(2) {
       position: absolute;
-      bottom: 0;
+      bottom: 5px;
       right: 5px;
       font-size: 14px;
       cursor: pointer; }
@@ -183,7 +183,7 @@ and open the template in the editor.
     top: 80px;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 5px;
     margin: 0;
     width: 100%; }
     .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) {
@@ -196,30 +196,28 @@ and open the template in the editor.
       padding-right: 5px;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
-      background-color: green; }
+      background-color: #222;
+      color: #eee; }
       .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row {
         height: 100%;
         position: relative;
         border-bottom: #eee solid 1px;
-        font-weight: bold;
-        background-color: brown; }
+        font-weight: bold; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(1) {
           /*serial number*/
           position: absolute;
           left: 5px;
-          width: 40px;
+          width: 30px;
           bottom: 5px;
-          background-color: orange;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(2) {
           /*helper div to help center the profile pic*/
           position: absolute;
-          left: 45px;
+          left: 35px;
           width: 40px;
-          height: 30px;
-          background-color: yellow; }
+          height: 30px; }
           .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(2) > img {
             /* profile pic*/
             position: absolute;
@@ -231,13 +229,12 @@ and open the template in the editor.
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(3) {
           /*Full name*/
           position: absolute;
-          left: 85px;
+          left: 75px;
           right: 145px;
           bottom: 5px;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbb; }
+          white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(4) {
           /*Rating*/
           position: absolute;
@@ -247,8 +244,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbf; }
+          white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(5) {
           /*Played*/
           position: absolute;
@@ -258,8 +254,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bba; }
+          white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(6) {
           /*Points*/
           position: absolute;
@@ -269,8 +264,87 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
+        @media only screen and (min-width: 480px) {
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 205px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(4) {
+            /*Rating*/
+            position: absolute;
+            right: 125px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(5) {
+            /*Played*/
+            position: absolute;
+            right: 65px;
+            bottom: 5px;
+            width: 60px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(6) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 60px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
+        @media only screen and (min-width: 768px) {
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 245px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(4) {
+            /*Rating*/
+            position: absolute;
+            right: 165px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(5) {
+            /*Played*/
+            position: absolute;
+            right: 85px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(1) > .game9ja-rankings-header-row > :nth-child(6) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
     .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) {
       position: absolute;
       top: 30px;
@@ -284,6 +358,7 @@ and open the template in the editor.
       overflow: auto; }
       .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row {
         height: 40px;
+        cursor: pointer;
         position: relative;
         border-bottom: #eee solid 1px;
         font-weight: normal; }
@@ -291,19 +366,17 @@ and open the template in the editor.
           /*serial number*/
           position: absolute;
           left: 5px;
-          width: 40px;
+          width: 30px;
           bottom: 5px;
-          background-color: orange;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(2) {
           /*helper div to help center the profile pic*/
           position: absolute;
-          left: 45px;
+          left: 35px;
           width: 40px;
-          height: 40px;
-          background-color: yellow; }
+          height: 40px; }
           .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(2) > img {
             /* profile pic*/
             position: absolute;
@@ -315,13 +388,12 @@ and open the template in the editor.
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(3) {
           /*Full name*/
           position: absolute;
-          left: 85px;
+          left: 75px;
           right: 145px;
           bottom: 5px;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbb; }
+          white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(4) {
           /*Rating*/
           position: absolute;
@@ -331,8 +403,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbf; }
+          white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(5) {
           /*Played*/
           position: absolute;
@@ -342,8 +413,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bba; }
+          white-space: nowrap; }
         .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(6) {
           /*Points*/
           position: absolute;
@@ -353,7 +423,88 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
+        @media only screen and (min-width: 480px) {
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 205px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(4) {
+            /*Rating*/
+            position: absolute;
+            right: 125px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(5) {
+            /*Played*/
+            position: absolute;
+            right: 65px;
+            bottom: 5px;
+            width: 60px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(6) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 60px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
+        @media only screen and (min-width: 768px) {
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 245px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(4) {
+            /*Rating*/
+            position: absolute;
+            right: 165px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(5) {
+            /*Played*/
+            position: absolute;
+            right: 85px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row > :nth-child(6) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
+      .game9ja-rankings > .game9ja-rankings-display > :nth-child(2) > .game9ja-rankings-body-row:hover {
+        background-color: #eee; }
 
 /*# sourceMappingURL=rankings.css.map */

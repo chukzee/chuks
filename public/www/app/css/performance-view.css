@@ -160,10 +160,12 @@ and open the template in the editor.
     font-size: 14px;
     color: #444;
     height: 30px;
-    border-bottom: 0.0325em #eee solid; }
+    background-color: #222;
+    color: #eee;
+    border-bottom: 0.0325em #777 solid; }
     .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(1) {
       position: absolute;
-      bottom: 0;
+      bottom: 5px;
       left: 5px;
       font-size: 20px; }
       .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(1) > :nth-child(1) {
@@ -173,7 +175,7 @@ and open the template in the editor.
         margin-left: 30px; }
     .game9ja-performance-view > .game9ja-performance-view-season > :nth-child(2) {
       position: absolute;
-      bottom: 0;
+      bottom: 5px;
       right: 5px;
       font-size: 14px;
       cursor: pointer; }
@@ -182,7 +184,7 @@ and open the template in the editor.
     top: 80px;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 5px;
     margin: 0;
     width: 100%; }
     .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) {
@@ -195,30 +197,28 @@ and open the template in the editor.
       padding-right: 5px;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
-      background-color: green; }
+      background-color: #222;
+      color: #eee; }
       .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row {
         height: 100%;
         position: relative;
         border-bottom: #eee solid 1px;
-        font-weight: bold;
-        background-color: brown; }
+        font-weight: bold; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(1) {
           /*serial number*/
           position: absolute;
           left: 5px;
-          width: 40px;
+          width: 30px;
           bottom: 5px;
-          background-color: orange;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(2) {
           /*helper div to help center the profile pic*/
           position: absolute;
-          left: 45px;
+          left: 35px;
           width: 40px;
-          height: 30px;
-          background-color: yellow; }
+          height: 30px; }
           .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(2) > img {
             /* profile pic*/
             position: absolute;
@@ -230,13 +230,12 @@ and open the template in the editor.
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(3) {
           /*Full name*/
           position: absolute;
-          left: 85px;
+          left: 75px;
           right: 155px;
           bottom: 5px;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbb; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(4) {
           /*Played*/
           position: absolute;
@@ -246,8 +245,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbf; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(5) {
           /*Win*/
           position: absolute;
@@ -257,8 +255,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bba; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(6) {
           /*Draw*/
           position: absolute;
@@ -268,8 +265,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(7) {
           /*Loss*/
           position: absolute;
@@ -279,10 +275,9 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(8) {
-          /*Pooints*/
+          /*Points*/
           position: absolute;
           right: 5px;
           bottom: 5px;
@@ -290,8 +285,127 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
+        @media only screen and (min-width: 480px) {
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 255px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(4) {
+            /*Played*/
+            position: absolute;
+            right: 205px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(5) {
+            /*Win*/
+            position: absolute;
+            right: 155px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(6) {
+            /*Draw*/
+            position: absolute;
+            right: 105px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(7) {
+            /*Loss*/
+            position: absolute;
+            right: 55px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(8) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
+        @media only screen and (min-width: 768px) {
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 405px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(4) {
+            /*Played*/
+            position: absolute;
+            right: 325px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(5) {
+            /*Win*/
+            position: absolute;
+            right: 245px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(6) {
+            /*Draw*/
+            position: absolute;
+            right: 165px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(7) {
+            /*Loss*/
+            position: absolute;
+            right: 85px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(1) > .game9ja-performance-view-header-row > :nth-child(8) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
     .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) {
       position: absolute;
       top: 30px;
@@ -305,6 +419,7 @@ and open the template in the editor.
       overflow: auto; }
       .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row {
         height: 40px;
+        cursor: pointer;
         position: relative;
         border-bottom: #eee solid 1px;
         font-weight: normal; }
@@ -312,19 +427,17 @@ and open the template in the editor.
           /*serial number*/
           position: absolute;
           left: 5px;
-          width: 40px;
+          width: 30px;
           bottom: 5px;
-          background-color: orange;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(2) {
           /*helper div to help center the profile pic*/
           position: absolute;
-          left: 45px;
+          left: 35px;
           width: 40px;
-          height: 40px;
-          background-color: yellow; }
+          height: 40px; }
           .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(2) > img {
             /* profile pic*/
             position: absolute;
@@ -336,13 +449,12 @@ and open the template in the editor.
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(3) {
           /*Full name*/
           position: absolute;
-          left: 85px;
+          left: 75px;
           right: 155px;
           bottom: 5px;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbb; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(4) {
           /*Played*/
           position: absolute;
@@ -352,8 +464,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbf; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(5) {
           /*Win*/
           position: absolute;
@@ -363,8 +474,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bba; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(6) {
           /*Draw*/
           position: absolute;
@@ -374,8 +484,7 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(7) {
           /*Loss*/
           position: absolute;
@@ -385,10 +494,9 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
         .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(8) {
-          /*Pooints*/
+          /*Points*/
           position: absolute;
           right: 5px;
           bottom: 5px;
@@ -396,7 +504,128 @@ and open the template in the editor.
           text-align: center;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
-          background-color: #bbc; }
+          white-space: nowrap; }
+        @media only screen and (min-width: 480px) {
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 255px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(4) {
+            /*Played*/
+            position: absolute;
+            right: 205px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(5) {
+            /*Win*/
+            position: absolute;
+            right: 155px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(6) {
+            /*Draw*/
+            position: absolute;
+            right: 105px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(7) {
+            /*Loss*/
+            position: absolute;
+            right: 55px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(8) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 50px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
+        @media only screen and (min-width: 768px) {
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(3) {
+            /*Full name*/
+            position: absolute;
+            left: 75px;
+            right: 405px;
+            bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(4) {
+            /*Played*/
+            position: absolute;
+            right: 325px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(5) {
+            /*Win*/
+            position: absolute;
+            right: 245px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(6) {
+            /*Draw*/
+            position: absolute;
+            right: 165px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(7) {
+            /*Loss*/
+            position: absolute;
+            right: 85px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; }
+          .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row > :nth-child(8) {
+            /*Points*/
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; } }
+      .game9ja-performance-view > .game9ja-performance-view-display > :nth-child(2) > .game9ja-performance-view-body-row:hover {
+        background-color: #eee; }
 
 /*# sourceMappingURL=performance-view.css.map */

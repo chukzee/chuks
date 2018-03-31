@@ -19,7 +19,7 @@ $profile_img_size_b : 40px;
     list-style-type: none;
 
     &:hover{
-        background-color: #eee;
+        background-color: $list_item_hover_color;
     }
 }
 
@@ -35,7 +35,7 @@ $profile_img_size_b : 40px;
     list-style-type: none;
 
     &:hover{
-        background-color: #eee;
+        background-color: $list_item_hover_color;
     }
 }
 
@@ -51,7 +51,7 @@ $profile_img_size_b : 40px;
     list-style-type: none;
 
     &:hover{
-        background-color: #eee;
+        background-color: $list_item_hover_color;
     }
 }
 

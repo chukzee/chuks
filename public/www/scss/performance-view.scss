@@ -6,31 +6,35 @@ $font_color : #444;
 $performance_pagination_height : 30px;
 $header_row_height: 30px;
 $body_row_height: 40px;
+$photo_width: $body_row_height;
+$sn_width: 30px;
 $two_px : 2px;
 
-$number_width_sd: 30px;
+$number_width_s1: 30px;
+$number_width_s2: 50px;
+$number_width_s3: 80px;
 
 
 @mixin game9ja-performance-view-row($_row_height , $font_weight){
     position: relative;
-    border-bottom: #eee solid 1px;
+    border-bottom: $list_divider_color solid 1px;
     font-weight: $font_weight;
     > :nth-child(1){/*serial number*/
         position: absolute;
         left: $base_padding;
-        width: $body_row_height;
+        width: $sn_width;
         bottom: $base_padding;
-        background-color: orange;            
+        //background-color: orange;            
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
     > :nth-child(2){/*helper div to help center the profile pic*/
         position: absolute;
-        left: $base_padding + $body_row_height;
-        width: $body_row_height;
+        left: $base_padding + $sn_width;
+        width: $photo_width;
         height: $_row_height;
-        background-color: yellow;
+        //background-color: yellow;
 
         > img{/* profile pic*/
             position: absolute;
@@ -43,85 +47,101 @@ $number_width_sd: 30px;
 
     }
 
-    > :nth-child(3){/*Full name*/
-        position: absolute;
-        left: $base_padding + $body_row_height + $body_row_height;
-        right: 5 * $number_width_sd + $base_padding;
-        bottom: $base_padding;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        background-color: #bbb;
+    @include other_columns($number_width_s1);
+    
+    @media only screen and (min-width : 480px){
+        @include other_columns($number_width_s2);
     }
-
-
-    > :nth-child(4){/*Played*/
-        position: absolute;
-        right:  4 * $number_width_sd + $base_padding;
-        bottom: $base_padding;
-        width : $number_width_sd;
-        text-align: center;            
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        background-color: #bbf;
+    
+    
+    @media only screen and (min-width : 768px){
+        @include other_columns($number_width_s3);
     }
-
-    > :nth-child(5){/*Win*/
-        position: absolute;
-        right:  3 * $number_width_sd + $base_padding;
-        bottom: $base_padding;
-        width : $number_width_sd;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        background-color: #bba;
-    }
-
-    > :nth-child(6){/*Draw*/
-        position: absolute;
-        right:  2 * $number_width_sd + $base_padding;
-        bottom: $base_padding;
-        width : $number_width_sd;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        background-color: #bbc;
-    }
-
-    > :nth-child(7){/*Loss*/
-        position: absolute;
-        right:  $number_width_sd + $base_padding;
-        bottom: $base_padding;
-        width : $number_width_sd;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        background-color: #bbc;
-    }
-
-    > :nth-child(8){/*Pooints*/
-        position: absolute;
-        right:  $base_padding;
-        bottom: $base_padding;
-        width : $number_width_sd;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        background-color: #bbc;
-    }
-
+    
+    
 }
+
+@mixin other_columns($number_width){
+        
+        > :nth-child(3){/*Full name*/
+            position: absolute;
+            left: $base_padding + $sn_width + $photo_width;
+            right: 5 * $number_width + $base_padding;
+            bottom: $base_padding;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: #bbb;
+        }
+
+
+        > :nth-child(4){/*Played*/
+            position: absolute;
+            right:  4 * $number_width + $base_padding;
+            bottom: $base_padding;
+            width : $number_width;
+            text-align: center;            
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: #bbf;
+        }
+
+        > :nth-child(5){/*Win*/
+            position: absolute;
+            right:  3 * $number_width + $base_padding;
+            bottom: $base_padding;
+            width : $number_width;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: #bba;
+        }
+
+        > :nth-child(6){/*Draw*/
+            position: absolute;
+            right:  2 * $number_width + $base_padding;
+            bottom: $base_padding;
+            width : $number_width;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: #bbc;
+        }
+
+        > :nth-child(7){/*Loss*/
+            position: absolute;
+            right:  $number_width + $base_padding;
+            bottom: $base_padding;
+            width : $number_width;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: #bbc;
+        }
+
+        > :nth-child(8){/*Points*/
+            position: absolute;
+            right:  $base_padding;
+            bottom: $base_padding;
+            width : $number_width;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            //background-color: #bbc;
+        }
+
+    }
 
 .game9ja-performance-view{
     position: absolute;
@@ -155,11 +175,14 @@ $number_width_sd: 30px;
         height: 30px;
         //vertical-align: middle;
 
-        border-bottom: $list_divider_width $list_divider_color solid;
+        background-color: $base_background;
+        color: $base_text_color;
+        
+        border-bottom: $list_divider_width #777 solid;
 
         > :nth-child(1){//Season
                         position : absolute;
-                        bottom : 0;
+                        bottom : $base_padding;
                         left : $base_padding;
                         font-size: 20px;
 
@@ -177,20 +200,20 @@ $number_width_sd: 30px;
 
         > :nth-child(2){// left and right arrow
                         position : absolute;
-                        bottom : 0;
+                        bottom : $base_padding;
                         right : $base_padding;
                         font-size: 14px;
                         cursor: pointer;
         }
     }
 
-   > .game9ja-performance-view-display{
+    > .game9ja-performance-view-display{
 
         position : absolute;
         top : $header_height + $performance_pagination_height;
         left :0; 
         right :0;
-        bottom : 0;
+        bottom : $base_padding;
         margin: 0;
 
         width: 100%;
@@ -205,11 +228,15 @@ $number_width_sd: 30px;
                         padding-left : $base_padding;
                         padding-right : $base_padding;
                         @include box-sizing(border-box);
-                        background-color: green;
+                        
+                        background-color: $base_background;
+                        color: $base_text_color;
+
+                        //background-color: green;
                         > .game9ja-performance-view-header-row{
                             height: 100%;
                             @include  game9ja-performance-view-row($header_row_height, bold);
-                            background-color: brown;
+                            //background-color: brown;
                         }
         }
         > :nth-child(2){//body container
@@ -225,8 +252,12 @@ $number_width_sd: 30px;
                         overflow: auto;
                         > .game9ja-performance-view-body-row{
                             height: $body_row_height;
+                            cursor: pointer;
                             @include game9ja-performance-view-row($body_row_height, normal);
                             //background-color: bisque;
+                        }
+                        > .game9ja-performance-view-body-row:hover{
+                            background-color: $list_item_hover_color;
                         }
         }
 

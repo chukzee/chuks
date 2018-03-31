@@ -3,7 +3,7 @@
 @import "header-items.scss";
 
 $font_color : #444;
-$ranking_pagination_height : 30px;
+$tournaments_pagination_height : 30px;
 $header_row_height: 30px;
 $body_row_height: 40px;
 $photo_width: $body_row_height;
@@ -11,19 +11,19 @@ $sn_width: 30px;
 $two_px : 2px;
 
 $rating_width_s1: 60px;
-$played_width_s1: 40px;
-$pionts_width_s1: 40px;
+$favorite_width_s1: 40px;
+$live_width_s1: 40px;
 
 $rating_width_s2: 80px;
-$played_width_s2: 60px;
-$pionts_width_s2: 60px;
+$favorite_width_s2: 60px;
+$live_width_s2: 40px;
 
 $rating_width_s3: 80px;
-$played_width_s3: 80px;
-$pionts_width_s3: 80px;
+$favorite_width_s3: 80px;
+$live_width_s3: 40px;
 
 
-@mixin game9ja-rankings-row($_row_height , $font_weight){
+@mixin game9ja-tournaments-view-row($_row_height , $font_weight){
     position: relative;
     border-bottom: $list_divider_color solid 1px;
     font-weight: $font_weight;
@@ -31,20 +31,17 @@ $pionts_width_s3: 80px;
         position: absolute;
         left: $base_padding;
         width: $sn_width;
-        bottom: $base_padding;                  
+        bottom: $base_padding;
+        //background-color: orange;            
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        
-        //background-color: orange;  
-        
     }
     > :nth-child(2){/*helper div to help center the profile pic*/
         position: absolute;
         left: $base_padding + $sn_width;
         width: $photo_width;
         height: $_row_height;
-        
         //background-color: yellow;
 
         > img{/* profile pic*/
@@ -58,38 +55,53 @@ $pionts_width_s3: 80px;
 
     }
 
-    
-    @include other_columns($rating_width_s1, $played_width_s1, $pionts_width_s1);
-    
+
+    @include other_columns($rating_width_s1, $live_width_s1, $favorite_width_s1);
+
     @media only screen and (min-width : 480px){
-        @include other_columns($rating_width_s2, $played_width_s2, $pionts_width_s2);
+        @include other_columns($rating_width_s2, $live_width_s2, $favorite_width_s2);
     }
-    
-    
+
+
     @media only screen and (min-width : 768px){
-        @include other_columns($rating_width_s3, $played_width_s3, $pionts_width_s3);
+        @include other_columns($rating_width_s3, $live_width_s3, $favorite_width_s3);
     }
-    
+
 }
 
-@mixin other_columns($rating_width, $played_width, $pionts_width){
-        
+@mixin other_columns($rating_width, $live_width, $favorite_width){
+
     > :nth-child(3){/*Full name*/
         position: absolute;
         left: $base_padding + $sn_width + $photo_width;
-        right: $rating_width + $played_width + $pionts_width + $base_padding;
+        right: $rating_width + $live_width + $favorite_width + $base_padding;
         bottom: $base_padding;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
         //background-color: #bbb;
+
+        > :nth-child(1){
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        > :nth-child(2){
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 10px;
+            width: 100%;
+            color: #888;
+            font-style: italic;
+        }
+
     }
 
 
     > :nth-child(4){/*Rating*/
         position: absolute;
-        right:  $played_width + $pionts_width + $base_padding;
+        right:  $live_width + $favorite_width + $base_padding;
         bottom: $base_padding;
         width : $rating_width;
         text-align: center;            
@@ -100,11 +112,11 @@ $pionts_width_s3: 80px;
         //background-color: #bbf;
     }
 
-    > :nth-child(5){/*Played*/
+    > :nth-child(5){/*Favorite*/
         position: absolute;
-        right:  $pionts_width + $base_padding;
+        right:  $live_width + $base_padding;
         bottom: $base_padding;
-        width : $played_width;
+        width : $favorite_width;
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -113,11 +125,11 @@ $pionts_width_s3: 80px;
         //background-color: #bba;
     }
 
-    > :nth-child(6){/*Points*/
+    > :nth-child(6){/*Live*/
         position: absolute;
         right:  $base_padding;
         bottom: $base_padding;
-        width : $pionts_width;
+        width : $live_width;
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -128,7 +140,7 @@ $pionts_width_s3: 80px;
 
 }
 
-.game9ja-rankings{
+.game9ja-tournaments-view{
     position: absolute;
     top : 0;
     left: 0;
@@ -137,7 +149,7 @@ $pionts_width_s3: 80px;
     height: 100%;
     overflow: hidden; 
 
-    > .game9ja-rankings-header{
+    > .game9ja-tournaments-view-header{
         @extend .game9ja-header;
         position: relative;
 
@@ -154,19 +166,19 @@ $pionts_width_s3: 80px;
 
     }
 
-    > .game9ja-rankings-pagination{
+    > .game9ja-tournaments-view-pagination{
         position : absolute;
         top : $header_height;
         margin: 0;
         left :0;
         font-size: 14px;  
-        //color : $font_color; 
-        height: $ranking_pagination_height;
+        color : $font_color; 
+        height: $tournaments_pagination_height;
         width: 100%;
-        
+        //background-color: red;
+        //vertical-align: middle;
         background-color: $base_background;
         color: $base_text_color;
-        //vertical-align: middle;
 
         border-bottom: $list_divider_width #777 solid;
 
@@ -189,10 +201,10 @@ $pionts_width_s3: 80px;
     }
 
 
-    > .game9ja-rankings-display{
+    > .game9ja-tournaments-view-display{
 
         position : absolute;
-        top : $header_height + $ranking_pagination_height;
+        top : $header_height + $tournaments_pagination_height;
         left :0; 
         right :0;
         bottom : $base_padding;
@@ -210,14 +222,14 @@ $pionts_width_s3: 80px;
                         padding-left : $base_padding;
                         padding-right : $base_padding;
                         @include box-sizing(border-box);
-                        
+
                         background-color: $base_background;
                         color: $base_text_color;
-                        
-                        > .game9ja-rankings-header-row{
+
+                        //background-color: green;
+                        > .game9ja-tournaments-view-header-row{
                             height: 100%;
-                            @include  game9ja-rankings-row($header_row_height, bold);
-                            
+                            @include  game9ja-tournaments-view-row($header_row_height, bold);
                             //background-color: brown;
                         }
         }
@@ -232,14 +244,14 @@ $pionts_width_s3: 80px;
                         @include box-sizing(border-box);
                         //background-color: blue;
                         overflow: auto;
-                        > .game9ja-rankings-body-row{
+                        > .game9ja-tournaments-view-body-row{
                             height: $body_row_height;
                             cursor: pointer;
-                            @include game9ja-rankings-row($body_row_height, normal);
+                            @include game9ja-tournaments-view-row($body_row_height, normal);
                             //background-color: bisque;
                         }
-                        
-                        > .game9ja-rankings-body-row:hover{
+
+                        > .game9ja-tournaments-view-body-row:hover{
                             background-color: $list_item_hover_color;
                         }
         }
