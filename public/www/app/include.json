@@ -104,7 +104,11 @@
             "slots-edit.css",
             "player-passport.css",
             "rating.css",
-            "rankings.css"
+            "rankings.css",
+            "tournaments-view.css",
+            "search-input",
+            "search-header",
+            "search-view"
         ],
         
         "js": [

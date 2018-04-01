@@ -27,6 +27,7 @@ $pionts_width_s3: 80px;
     position: relative;
     border-bottom: $list_divider_color solid 1px;
     font-weight: $font_weight;
+    
     > :nth-child(1){/*serial number*/
         position: absolute;
         left: $base_padding;

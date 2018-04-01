@@ -1,0 +1,48 @@
+
+@import "base-var.scss";
+
+$search_icon_width: 20px;
+$close_icon_width: $search_icon_width;
+$search_input_width: 160px;
+$search_input_height: 25px;
+
+
+
+
+.game9ja-search-input{
+    position: relative;    
+    width: $search_input_width + $search_icon_width + $close_icon_width;     
+    height:  $search_input_height;  
+    border-bottom: 1px $base_text_color solid;
+    //background-color: blue;
+    > :nth-child(1){
+        position: absolute;
+        left: 0;
+        bottom: $base_padding;
+        width: $search_icon_width;     
+        //height:  100%;
+    }
+    > :nth-child(2){
+        position: absolute;
+        left:$search_icon_width;
+        bottom: 0;
+        width: $search_input_width;
+        //height:  100%;
+        font-size: 18px;
+        outline: none;
+        box-sizing: border-box;
+        border: none;
+        background: inherit;
+        color: inherit;
+        
+        //background-color: red;//for debugging
+
+    }
+    > :nth-child(3){
+        position: absolute;
+        right: 0;
+        bottom: $base_padding;
+        width: $close_icon_width;     
+        //height:  100%;
+    }
+}

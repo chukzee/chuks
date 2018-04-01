@@ -1,0 +1,47 @@
+
+@import "base-var.scss";
+@import "header-items.scss";
+@import "search-header.scss";
+
+$pagination_height: 30px;
+
+.game9ja-search-view{
+    @extend .game9ja-search;
+}
+
+.game9ja-search-view-header{
+    @extend .game9ja-search-header;
+}
+
+.game9ja-search-view-header-input{
+    @extend .game9ja-search-header-input;
+}
+
+.game9ja-search-view-pagination{
+    position: absolute;
+    top: $header_height;
+    left:0;
+    width: 100%;
+    height: $pagination_height;
+    text-align: center;
+    background-color: $base_background;
+    padding-top: $base_padding;
+    @include box-sizing(border-box);
+    border-bottom: $list_divider_width #777 solid;
+    color: $base_text_color;
+    
+    > span{
+      font-size: 18px;
+      //background-color: green;
+    }
+}
+
+.game9ja-search-view-body{
+    position: absolute;
+    top: $header_height + $pagination_height;
+    left:0;    
+    bottom: 0;
+    width: 100%;
+    
+    //background-color: red;
+}
