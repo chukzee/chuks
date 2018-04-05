@@ -196,7 +196,7 @@ Ns.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url: 'tournament-details-md.html',
+            url: 'tournament-details.html',
             fade: true,
             data: tournament,
             onShow: Ns.view.Tournament.content
@@ -206,7 +206,7 @@ Ns.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url: 'group-details-md.html',
+            url: 'group-details.html',
             fade: true,
             data: group,
             onShow: Ns.view.Group.content
@@ -216,7 +216,7 @@ Ns.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url: 'play-notifications-md.html',
+            url: 'play-notifications.html',
             fade: true,
             data: Ns.ui.UI.selectedGame,
             onShow: Ns.view.PlayNotifications.content
@@ -229,7 +229,7 @@ Ns.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url: 'game-contacts-md.html',
+            url: 'game-contacts.html',
             fade: true,
             data: Ns.ui.UI.selectedGame,
             onShow: Ns.view.Contacts.content
@@ -245,7 +245,7 @@ Ns.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url: 'user-profile-md.html',
+            url: 'user-profile.html',
             fade: true,
             data: user,
             onShow: Ns.view.UserProfile.content

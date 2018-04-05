@@ -13,7 +13,7 @@ Ns.GameTournament = {
     showPerformacesView: function (data) {
 
         Main.page.show({
-            url: 'performance-view-sd.html',
+            url: 'performance-view.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.Performance.content,

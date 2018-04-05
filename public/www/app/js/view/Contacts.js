@@ -70,7 +70,7 @@ Ns.view.Contacts = {
             Main.listview.create({
                 container: container,
                 scrollContainer: container,
-                tplUrl: 'tpl/contacts-list-tpl.html',
+                tplUrl: 'contacts-list-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, info) {

@@ -1,17 +1,16 @@
 
-
 var Main = {};
-
-
-
 
 (function () {
 
     var isPageInit = false;
     var transitionInProgress = false;
-    var pageRouteUrl;
-    var isMainInit;
+    var devicePageRouteUrl;
+    var devicePageTplRouteUrl;
     var deviceUrl = "device/";
+    var appTplRouteUrl = 'app/view/tpl/';
+    var appPageRouteUrl = 'app/view/';
+    var isMainInit;
     var appNamespace = "MyApp"; // default namespace
     var _nsObjs = {};
     var _nsFiles = [];
@@ -494,7 +493,7 @@ var Main = {};
             return Main.device.getPortriatWidth();
         },
         styleDesktopScrollbar: function (isIndexPage) {
-            if(!isIndexPage){
+            if (!isIndexPage) {
                 return;
             }
             var desktop_scrollbar = "::-webkit-scrollbar {"/*width*/
@@ -504,10 +503,10 @@ var Main = {};
                     + "  height: 0px;" //or 8px if the button should show
                     //+ " background-color: #41963A;"//button background color
                     //+ " color: white; "+
-                    +"}";
+                    + "}";
 
-                    /*track*/
-                    + "::-webkit-scrollbar-track {"
+            /*track*/
+            +"::-webkit-scrollbar-track {"
                     + "  box-shadow: inset 0, 0, 3px grey;"
                     + "  border-radius: 4px; }"
 
@@ -1652,8 +1651,8 @@ var Main = {};
                     return;
                 }
             }
-
-            $.get(pageRouteUrl + url, function (response) {
+            var inUrl = intentUrl(url);
+            $.get(inUrl, function (response) {
 
                 var found = false;
                 for (var i = 0; i < pages.length; i++) {
@@ -1690,7 +1689,7 @@ var Main = {};
 
                 showPg(url, transition, forward, null, pgShowObj, hasBackAction);
             }).fail(function () {
-                console.log("could not get resource:", url);
+                console.log("could not get resource:", inUrl);
             });
         }
 
@@ -1917,7 +1916,7 @@ var Main = {};
                     next();
                     return;
                 }
-                var url = pageRouteUrl + obj.tplUrl;
+                var url = intentUrl(obj.tplUrl);
                 $.get(url, function (response) {
                     tplList[obj.tplUrl] = response;
                     tplReplace(response, obj, obj.data);
@@ -2453,7 +2452,7 @@ var Main = {};
             if (html) {
                 handle(html, obj);
             } else {
-                var url = pageRouteUrl + obj.tplUrl;
+                var url = intentUrl(obj.tplUrl);
                 if (ListTplGetting[obj.tplUrl] === obj.tplUrl) {
                     if (!listTplWaitCount[obj.tplUrl]) {
                         listTplWaitCount[obj.tplUrl] = [];
@@ -3222,6 +3221,42 @@ var Main = {};
                 el.detachEvent('on' + type, callback, capture);
             }
         };
+    }
+
+    /**
+     * This is use to detect the expected ulr based on the
+     * suffix of the file name. expected suffixes are:<br>
+     * -sd => means it is file from small device 'view' folder<br>
+     * -md => means it is file from medium device 'view' folder<br>
+     * -ld => means it is file from large device 'view' folder<br>
+     * -tpl-sd => means it is file from small device 'view/tpl' folder<br>
+     * -tpl-md => means it is file from medium device 'view/tpl' folder<br>
+     * -tpl-ld => means it is file from large device 'view/tpl' folder<br>
+     * -tpl => means it is file from  'app/view/tpl' folder<br>
+     * 
+     * otherwise it is file from 'app/view' folder
+     * 
+     * @param {type} url
+     * @returns {undefined}
+     */
+    function intentUrl(url) {
+        var to = url.indexOf('.');//the '.html' part
+        var suffix1 = url.substring(to - 3, to);//ie -sd, -md, -ld
+        var suffix2 = url.substring(to - 4, to);//ie -tpl
+        var suffix3 = url.substring(to - 6, to);//ie -tpl-sd, -tpl-md, -tpl-ld 
+        var path;
+        
+        if(suffix3 === '-tpl-sd' || suffix3==='-tpl-md' || suffix3==='-tpl-ld'){
+            path = devicePageTplRouteUrl+url;
+        }else if(suffix2 === '-tpl'){
+            path = appTplRouteUrl+url;
+        }else if(suffix1 === '-sd' || suffix1==='-md' || suffix1==='-ld'){
+            path = devicePageRouteUrl+url;  
+        }else{
+            path = appPageRouteUrl+url;
+        }
+        
+        return path;
     }
 
     Main.const = {
@@ -4989,10 +5024,12 @@ var Main = {};
         function loadDeviceMain(device_size_cat) {
             //register the home page first
 
-            Main.device.constructor();//initialize device
+            Main.device.constructor();//initialize device            
 
-            pageRouteUrl = deviceUrl + device_size_cat + '/';
-            var routeFile = pageRouteUrl + "index.html";
+            devicePageTplRouteUrl = deviceUrl + device_size_cat + '/view/tpl/';
+            devicePageRouteUrl = deviceUrl + device_size_cat + '/view/';
+
+            var routeFile = devicePageRouteUrl + "index.html";
 
             $.get(routeFile,
                     function (response) {

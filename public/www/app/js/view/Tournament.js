@@ -374,7 +374,7 @@ Ns.view.Tournament = {
             Main.listview.create({
                 container: container,
                 scrollContainer: container,
-                tplUrl: 'tpl/match-fixture-tpl.html',
+                tplUrl: 'match-fixture-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, match_data) {
@@ -760,7 +760,7 @@ Ns.view.Tournament = {
 
             Ns.ui.Dialog.selectList({
                 title: 'Select Season Player',
-                url: 'tpl/simple-list-b-tpl.html',
+                url: 'simple-list-b-tpl.html',
                 multiSelect: false,
                 items: tournament.registered_players,
                 width: window.innerWidth * 0.8,
@@ -810,7 +810,7 @@ Ns.view.Tournament = {
         for (var i = 0; i < tournament.officials.length; i++) {
 
             Main.tpl.template({
-                tplUrl: 'tpl/player-passport-a-tpl.html',
+                tplUrl: 'player-passport-a-tpl.html',
                 data: tournament.officials[i],
                 onReplace: function (tpl_var, data) {
 
@@ -830,7 +830,7 @@ Ns.view.Tournament = {
         for (var i = 0; i < tournament.registered_players.length; i++) {
 
             Main.tpl.template({
-                tplUrl: 'tpl/player-passport-b-tpl.html',
+                tplUrl: 'player-passport-b-tpl.html',
                 data: tournament.registered_players[i],
                 onReplace: function (tpl_var, data) {
                     if (tpl_var === 'rating') {
@@ -872,7 +872,7 @@ Ns.view.Tournament = {
             }
 
             Main.tpl.template({
-                tplUrl: 'tpl/player-passport-b-tpl.html',
+                tplUrl: 'player-passport-b-tpl.html',
                 data: season_player,
                 onReplace: function (tpl_var, data) {
                     if (tpl_var === 'rating') {

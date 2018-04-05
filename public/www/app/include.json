@@ -106,9 +106,9 @@
             "rating.css",
             "rankings.css",
             "tournaments-view.css",
-            "search-input",
-            "search-header",
-            "search-view"
+            "search-input.css",
+            "search-header.css",
+            "search-view.css"
         ],
         
         "js": [

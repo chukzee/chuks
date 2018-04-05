@@ -5,11 +5,11 @@
 
 Ns.GameHome = {
 
-    GAME_LOGIN_HTML: 'game-login-sd.html',
-    GAME_VIEW_HTML: 'game-view-sd.html',
-    GAME_VIEW_B_HTML: 'game-view-b-sd.html',
-    GAME_WATCH_HTML: 'game-watch-sd.html',
-    GAME_WAIT_HTML: 'wait-player-sd.html',
+    GAME_LOGIN_HTML: 'game-login.html',
+    GAME_VIEW_HTML: 'game-view.html',
+    GAME_VIEW_B_HTML: 'game-view-b.html',
+    GAME_WATCH_HTML: 'game-watch.html',
+    GAME_WAIT_HTML: 'wait-player.html',
 
     Content: function (selected_game) {
         Ns.ui.UI.init(selected_game);
@@ -137,7 +137,7 @@ Ns.GameHome = {
     showTournamentDetails: function (tournament) {
 
         Main.page.show({
-            url: 'tournament-details-sd.html',
+            url: 'tournament-details.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.Tournament.content,
@@ -147,7 +147,7 @@ Ns.GameHome = {
     showGroupDetails: function (group) {
 
         Main.page.show({
-            url: 'group-details-sd.html',
+            url: 'group-details.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.Group.content,
@@ -157,7 +157,7 @@ Ns.GameHome = {
     showPlayNotifications: function (data) {
 
         Main.page.show({
-            url: 'play-notifications-sd.html',
+            url: 'play-notifications.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.PlayNotifications.content,
@@ -170,7 +170,7 @@ Ns.GameHome = {
     showContacts: function (data) {
 
         Main.page.show({
-            url: 'game-contacts-sd.html',
+            url: 'game-contacts.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.Contacts.content,
@@ -186,7 +186,7 @@ Ns.GameHome = {
     showUserProfile: function (user) {
 
         Main.page.show({
-            url: 'user-profile-sd.html',
+            url: 'user-profile.html',
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.view.UserProfile.content,

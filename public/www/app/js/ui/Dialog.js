@@ -7,7 +7,7 @@ Ns.ui.Dialog = {
         
         var contacts = Ns.view.Contacts.contactList;
         obj.items = contacts;
-        obj.url = 'tpl/simple-list-b-tpl.html';
+        obj.url = 'simple-list-b-tpl.html';
         if(!obj.width){
             obj.width = window.innerWidth * 0.8;
         }
@@ -19,7 +19,7 @@ Ns.ui.Dialog = {
     },
 
     selectSimpleList: function (obj) {
-        obj.url = 'tpl/simple-list-a-tpl.html';
+        obj.url = 'simple-list-a-tpl.html';
         Ns.ui.Dialog._selList(obj);
     },
 

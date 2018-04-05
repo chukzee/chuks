@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>GameBaba</title>
+    </head>
+
+    <body>
+        <div class="game9ja-main">
+
+            <div>
+                <div>GameBaba</div>
+                <div>Live <span id="home-game-name"></span></div>
+                <i class="fa fa-user-plus game9ja-header-item-right-a" id="home-contacts-icon"></i><!--contacts icon-->
+                <i class="fa fa-ellipsis-v game9ja-header-item-right" id="home-menu"></i> <!--ellipisis menu icon-->                              
+            </div>
+            <div  id="home-tab-container" class="game9ja-tab">
+                <div class="game9ja-tab-header">
+                    <button id="home-contacts-matches" class=" game9ja-tab-active" >
+                        Contact 
+                        <span id="home-contacts-matches-unseen"></span><!--class="game9ja-unseen"-->
+                    </button>
+                    <button  id="home-groups-matches">
+                        Group
+                        <span id="home-groups-matches-unseen"></span><!--class="game9ja-unseen"-->
+                    </button>
+                    <button  id="home-tournaments-matches">
+                        Tournament
+                        <span id="home-tournaments-matches-unseen"></span><!--class="game9ja-unseen"-->
+                    </button>
+                </div>
+
+                <div class="game9ja-tab-body">
+                    <div id="home-contacts-live-games" class="game9ja-tab-padding">
+                        <!--display the live matches list on the user contacts-->
+                    </div>
+
+                    <div class="game9a-groups-live">
+                        <div class="game9a-groups-live-header" id="home-group-header">
+                            <img id="home-group-pic"  onerror="Main.helper.loadDefaultGroupPhoto(event)" alt=""/><!--group profile pic-->
+                            <div id="home-group-name"></div><!--group name-->
+                            <div id="home-group-status-message"></div><!--group profile status-->
+                            <i  id="home-group-previous" class="fa fa-arrow-left"></i><!--previous group-->
+                            <span id="home-group-page-number"></span><!--page number-->
+                            <i  id="home-group-next" class="fa fa-arrow-right"></i><!--next group-->
+                            <i  id="home-group-dropdown-menu" class="fa fa-chevron-down"></i><!--dropdown menu arrow to show all groups for quick access-->
+                        </div>
+                        <div  id="home-group-live-games" class="game9a-groups-live-body game9ja-tab-padding">
+                            <!--display the live matches list of the user group-->
+                        </div>
+                    </div>
+
+
+                    <div class="game9a-tournaments-live">
+                        <div class="game9a-tournaments-live-header" id="home-tournament-header">
+                            <img id="home-tournament-pic"  onerror="Main.helper.loadDefaultTournamentPhoto(event)" alt=""/><!--tournament logo-->
+                            <div id="home-tournament-name"> </div><!--tournament name-->
+                            <div  id="home-tournament-brief"></div><!--at the top center or top right show the duration-->
+                            <i  id="home-tournament-previous" class="fa fa-arrow-left"></i><!--previous tournament-->
+                            <span  id="home-tournament-page-number"></span><!--page number-->
+                            <i  id="home-tournament-next" class="fa fa-arrow-right"></i><!--next tournament-->
+                            <i   id="home-tournament-dropdown-menu" class="fa fa-chevron-down"></i><!--dropdown menu arrow to show show queried tournaments for quick access-->
+                        </div>
+                        <div   id="home-tournaments-live-games"  class="game9a-tournaments-live-body game9ja-tab-padding">
+                            <!--display the live matches list of tournaments-->
+                        </div>
+                    </div>
+
+                </div>                    
+            </div>
+        </div>
+    </body>
+
+</html>

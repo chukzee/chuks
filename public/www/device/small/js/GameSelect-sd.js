@@ -13,7 +13,7 @@ Main.on("pagecreate", function (arg) {
     $('#game-select-chess').on('click', function () {
 
         Main.page.show({
-            url: "game-home-sd.html",
+            url: "game-home.html",
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
@@ -24,7 +24,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#game-select-draft').on('click', function () {
         Main.page.show({
-            url: "game-home-sd.html",
+            url: "game-home.html",
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
@@ -34,7 +34,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#game-select-ludo').on('click', function () {
         Main.page.show({
-            url: "game-home-sd.html",
+            url: "game-home.html",
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
@@ -54,7 +54,7 @@ Main.on("pagecreate", function (arg) {
 
     $('#game-select-whot').on('click', function () {
         Main.page.show({
-            url: "game-home-sd.html",
+            url: "game-home.html",
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,

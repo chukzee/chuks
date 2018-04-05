@@ -31,41 +31,5 @@
         "startTime": 1519903910000,
         "repeat": false,
         "count_run": 0
-    },
-    {
-        "delay": 1045828785,
-        "classMethod": "game/Match/start",
-        "machineId": "yyyyyyyy",
-        "param": [
-            "10_ID_vSmRN8XLc4LxrhN_sgRHOK3f7dtZ9t1nFhirsVE45s74RQIdz8Vn-0ucihKfF3gr"
-        ],
-        "taskId": "75_ID_-MGXHQ4PwFpl2iM1SpgJrFHuj3oVsHV_DARnljzIz2YAZbcCeBse1-0nzFVA9kVr",
-        "startTime": 1519903920001,
-        "repeat": false,
-        "count_run": 0
-    },
-{
-    "delay": 300000,
-    "classMethod": "game/PlayRequest/_expire",
-    "param": [
-        "1_ID_IctnUR00mGHfgyY9fJtDDPxFInD2qEzK47A6zVY62BHTxfZswOYtrpwbOTcSrQpW"
-    ],
-    "taskId": "2_ID_IctnUR00mGHfgyY9fJtDDPxFInD2qEzK47A6zVY62BHTxfZswOYtrpwbOTcSrQpW",
-    "machineId": "WNCA6T25R5MG",
-    "startTime": 1521230177773,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 300000,
-    "classMethod": "game/PlayRequest/_expire",
-    "param": [
-        "4_ID_IctnUR00mGHfgyY9fJtDDPxFInD2qEzK47A6zVY62BHTxfZswOYtrpwbOTcSrQpW"
-    ],
-    "taskId": "5_ID_IctnUR00mGHfgyY9fJtDDPxFInD2qEzK47A6zVY62BHTxfZswOYtrpwbOTcSrQpW",
-    "machineId": "WNCA6T25R5MG",
-    "startTime": 1521230226399,
-    "repeat": false,
-    "count_run": 0
-}
+    }
 ]

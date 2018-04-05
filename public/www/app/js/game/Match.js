@@ -56,7 +56,7 @@ Ns.game.Match = {
         Main.listview.create({
             container: container,
             scrollContainer: container,
-            tplUrl: 'tpl/live-game-tpl.html',
+            tplUrl: 'live-game-tpl.html',
             wrapItem: false,
             //itemClass: "game9ja-live-games-list",
             onSelect: function (evt, match_data) {

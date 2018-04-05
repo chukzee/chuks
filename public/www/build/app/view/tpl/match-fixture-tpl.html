@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Game9ja</title>
+
+    </head>
+
+    <body>
+        <ul class="game9ja-match-fixture-list">
+            <li>
+                {player_1}
+            </li>
+
+            <li>
+                {player_2}
+            </li>
+
+            <li>
+                {start_time}
+            </li>
+            <li>
+                <div>{score}</div>
+                <div>{end_time}</div>
+            </li>
+
+            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{players.0.photo_url}" alt=""/></li>
+            <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{players.1.photo_url}" alt=""/></li>
+
+        </ul>
+
+    </body>
+
+
+</html>

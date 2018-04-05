@@ -114,7 +114,7 @@ Ns.view.Group = {
             Main.listview.create({
                 container: admins_container,
                 scrollContainer: admins_container,
-                tplUrl: 'tpl/group-admins-tpl.html',
+                tplUrl: 'group-admins-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, group_admin) {
@@ -142,7 +142,7 @@ Ns.view.Group = {
             Main.listview.create({
                 container: members_container,
                 scrollContainer: members_container,
-                tplUrl: 'tpl/group-members-tpl.html',
+                tplUrl: 'group-members-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, group_member) {
