@@ -2,33 +2,33 @@
 
 {
     "app_name": "GameBaba",
-    
+
     "namespace": "Ns",
-    
+
     /**
-    The build tool is responsible for automatically creating this property.   
-    */
-    "build":{
+     The build tool is responsible for automatically creating this property.   
+     */
+    "build": {
         /*
-       "prod": false // the build tool will set this to true - this signifies the build should be used
-       
-       this css and js files goes below
-        
-       "merge_js":{
-            //js files merged in the build for creating namespace related object
-        },
-        */
+         "prod": false // the build tool will set this to true - this signifies the build should be used
+         
+         this css and js files goes below
+         
+         "merge_js":{
+         //js files merged in the build for creating namespace related object
+         },
+         */
     },
-    
+
     /**
      * css and js files required for all devices but loaded absolutely as specified. These files are loaded first
      */
-    "absolute":{
-        
-        "css":[
+    "absolute": {
+
+        "css": [
         ],
-        
-        "js":[
+
+        "js": [
             "device/small/test/js/test.js",
             "device/small/test/simulate/js/simulate-user.js",
             "device/small/test/simulate/js/simulate-group.js",
@@ -40,33 +40,31 @@
             "device/small/test/simulate/js/simulate-spectator.js",
             "device/small/test/simulate/js/simulate-stat.js",
             "device/small/test/simulate/js/simulate-tournament.js",
-            "cordova.js" ,
+            "cordova.js",
             "lib/draftgame.js",
             "lib/socket.io.js",
             "lib/jquery-1.10.2.min.js",
             //"lib/bootstrap.min.js",// // disabled - does not integrate well with game9ja css design 
             "lib/tween/TweenMax.min.js"
-            //"/socket.io/socket.io.js" //deprecated
-        ],
-        
+                    //"/socket.io/socket.io.js" //deprecated
+],
+
         /**
          *These are js files that will not abort the application if not found.
          *A typical case is failure to load cordova.js in the browser where it is
          *typically not required
          *
          */
-        "load_exceptions":[
+        "load_exceptions": [
             "cordova.js"//if not found no worries - possibly attempted to load in the browser 
-        ]
-        
-        
+]
     },
-    
+
     /**
      * css and js files required for all devices. These files are loaded second
      */
     "app": {
-        
+
         "css": [
             //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
@@ -110,20 +108,21 @@
             "search-header.css",
             "search-view.css"
         ],
-        
+
         "js": [
             "Auth.js",
             "Const.js",
-            "game/Bluetooth.js",
-            "msg/Chat.js",
-            "msg/Comment.js",
-            "ui/GamePanel.js",
-            "msg/VideoCall.js",
-            "msg/VoiceCall.js",
             "Stats.js",
             "Util.js",
+            "Spectators.js",
+            "msg/Chat.js",
+            "msg/Comment.js",
+            "msg/VideoCall.js",
+            "msg/VoiceCall.js",
             "ui/UI.js",
             "ui/Dialog.js",
+            "ui/GamePanel.js",
+            "game/Bluetooth.js",
             "game/Match.js",
             "game/PlayRequest.js",
             "view/Tournament.js",
@@ -132,7 +131,9 @@
             "view/UserProfile.js",
             "view/Contacts.js",
             "view/Performance.js",
-            "view/Rankings.js"
+            "view/Rankings.js",
+            "view/TournamentsView.js",
+            "view/SearchView.js"
         ] 
     },
 

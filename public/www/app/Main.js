@@ -22,6 +22,7 @@ var Main = {};
     var deviceBackMeOnly = {};
     var socket;
     var _isDestopScrollbarStyled = false;
+    var deskStyle;
     Main.ro = {};// object for storing global access for rcall variables for making remote method calls
 
     Main.helper = new function () {
@@ -340,6 +341,9 @@ var Main = {};
 
             alert('onDeviceReady ');
             alert(this.isMobileDeviceReady);
+            
+
+            this.removeDeskTopScrollbarStyle();//just in case the device ready event delays too much
 
             navigator.app.overrideButton("menubutton", true); //this will force the menubutton to fire (work) - though not documented. I do not know why!
 
@@ -492,6 +496,12 @@ var Main = {};
         getLandscapeHeight: function () {
             return Main.device.getPortriatWidth();
         },
+        removeDeskTopScrollbarStyle:function(){
+            if(deskStyle){
+                deskStyle.innerHTML = '';
+            }
+            
+        },
         styleDesktopScrollbar: function (isIndexPage) {
             if (!isIndexPage) {
                 return;
@@ -520,12 +530,12 @@ var Main = {};
                     + "background-color: #64BB31; }";
 
             if (!Main.device.isMobileDeviceReady) {//most likely a desktop device
-                var style = document.createElement('style');
-                style.innerHTML = desktop_scrollbar;
+                deskStyle = document.createElement('style');
+                deskStyle.innerHTML = desktop_scrollbar;
 
                 if (!_isDestopScrollbarStyled) {
                     var head = document.getElementsByTagName('head')[0];
-                    head.appendChild(style);
+                    head.appendChild(deskStyle);
                     _isDestopScrollbarStyled = true;
                 }
 
@@ -4047,7 +4057,7 @@ var Main = {};
 
         function resizeListenMnu(evt) {
 
-            alert('resizeListenMnu');
+            //alert('resizeListenMnu');
 
             if (!menuCmp) {
                 return;
@@ -4061,7 +4071,7 @@ var Main = {};
             }
 
 
-            alert('top = ' + styleObj.top + '   left = ' + styleObj.left + '   main_height = ' + styleObj.main_height);
+            //alert('top = ' + styleObj.top + '   left = ' + styleObj.left + '   main_height = ' + styleObj.main_height);
 
             var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
             if (elb.length > 0) {
@@ -4073,7 +4083,7 @@ var Main = {};
                     elb[0].style.maxHeight = styleObj.body_max_height + 'px';
                 }
 
-                alert('body_height ' + styleObj.body_height);
+                //alert('body_height ' + styleObj.body_height);
 
             }
 
@@ -4356,8 +4366,8 @@ var Main = {};
 
                 var styleObj = mnuStyle.call(this);
 
-                alert('styleObj.main_style ' + styleObj.main_style);
-                alert('styleObj.body_style ' + styleObj.body_style);
+                //alert('styleObj.main_style ' + styleObj.main_style);
+                //alert('styleObj.body_style ' + styleObj.body_style);
 
                 menuCmp = $('<div class="game9ja-menu" style = "' + styleObj.main_style + '" ></div>');
 
@@ -4430,9 +4440,6 @@ var Main = {};
                 throw new Error("Invalid tab button selector for onShow - expected '" + id_prefix + n + "' instead of '" + n + "'");
             }
         }
-
-
-
 
         var btns = $(obj.container).find('.game9ja-tab-header').children();
         var tab_body = $(obj.container).find('.game9ja-tab-body')[0];
@@ -4725,11 +4732,11 @@ var Main = {};
             Main.ajax.get(pkg,
                     function (res) {
 
-                        //block comments directly is deprecated code that breaks when minified my minifying tool
+                        //block comments directly below is deprecated code. breaks when minified by minifying tool
                         //because the json variable evaluated in the eval function is not minified thus breaking 
                         //the code afte it.
                         /* eval('var json = ' + res);//remove comments if present since they are not valid in json
-                         var json = json;//old - is breaks when minified 
+                         var json = json;//old - it breaks when minified 
                          */
 
                         var variable = "game9ja_eval_call_" + new Date().getTime();//unique variable name
@@ -5111,11 +5118,11 @@ var Main = {};
                     window.innerWidth
                     : window.innerHeight;
 
-            alert('inner width ' + window.innerWidth);
-            alert('inner height ' + window.innerHeight);
+            //alert('inner width ' + window.innerWidth);
+            //alert('inner height ' + window.innerHeight);
 
-            alert('outer width ' + window.outerWidth);
-            alert('outer height ' + window.outerHeight);
+            //alert('outer width ' + window.outerWidth);
+            //alert('outer height ' + window.outerHeight);
 
             //size = size / window.devicePixelRatio;
 
