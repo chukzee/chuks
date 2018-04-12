@@ -10,18 +10,32 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../app/css/board.css" />
+        <script src="../lib/chess.min.js"></script>
     </head>
     <body>
         <button onclick="showChess2D()" >Show 2D Chess board</button>
         <div id="board_container-outer" style="position: relative; width: 400px; height: 400px; margin:0 auto; background-color: yellow;">
             <div id="board_container" style="width: 300px; height: 300px; position: absolute; top: 50px; left: 50px;"></div>
-
         </div>
 
         <script>
+            var device_category = "medium";
             var Main = {
                 device: {
-                    isMobileDeviceReady: true
+                    isMobileDeviceReady: true,
+
+                    isSmall: function () {
+                        return device_category === "small";
+                    },
+
+                    isMedium: function () {
+                        return device_category === "medium";
+                    },
+
+                    isLarge: function () {
+                        return device_category === "large";
+                    },
+
                 }
             };
 
@@ -45,6 +59,8 @@ and open the template in the editor.
 
             Ns.game.two.Chess2D = {
 
+                chess: null,
+                isBoardFlip: false, //whether black to white direction. default is white to black (false)
                 squareList: {},
                 hoverSquare: null,
                 pickedSquare: null,
@@ -71,46 +87,56 @@ and open the template in the editor.
                  * properties:<br>
                  * <br>
                  * obj = {<br>
-                 *        container: 'the_container', //compulsory 
+                 *        container: 'the_container', //compulsory <br>
                  *        gamePosition: 'the_game_posiont', //optional<br>
+                 *        flip:'true or false',//whether black to white direction. default is white to black (false) <br>
                  *        pieceTheme: 'the_piece_theme', //optional<br>
                  *        boardTheme: 'the_board_theme'  //optional<br>
                  * }<br>
                  *
                  * The chessboard squares are indexed as illustrated below:
                  * 
-                 * +----+----+----+----+----+----+----+----+
-                 * | 63 | 62 | 61 | 60 | 59 | 58 | 57 | 56 |
-                 * +----+----+----+----+----+----+----+----+
-                 * | 55 | 54 | 53 | 52 | 51 | 50 | 49 | 48 |
-                 * +----+----+----+----+----+----+----+----+
-                 * | 47 | 46 | 45 | 44 | 43 | 42 | 41 | 40 |
-                 * +----+----+----+----+----+----+----+----+
-                 * | 39 | 38 | 37 | 36 | 35 | 34 | 33 | 32 |
-                 * +----+----+----+----+----+----+----+----+
-                 * | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 |
-                 * +----+----+----+----+----+----+----+----+
-                 * | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16 |
-                 * +----+----+----+----+----+----+----+----+
-                 * | 15 | 14 | 13 | 12 | 11 | 10 |  9 |  8 |
-                 * +----+----+----+----+----+----+----+----+
-                 * |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
-                 * +----+----+----+----+----+----+----+----+
-                 * 
+                 *   +----+----+----+----+----+----+----+----+
+                 * 8 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 7 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 6 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 5 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 4 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 3 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 2 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 |
+                 *   +----+----+----+----+----+----+----+----+
+                 * 1 |  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |
+                 *   +----+----+----+----+----+----+----+----+
+                 *      a    b    c    d    e    f    g    h
+                 *      
                  * @param {type} obj
                  * @returns {undefined}
                  */
                 load: function (obj) {
+                    if (obj.gamePosition) {
+                        this.chess = new Chess(obj.gamePosition);
+                    } else {
+                        this.chess = new Chess();//starting position
+                    }
+
+                    this.isBoardFlip = obj.flip;
                     var el = document.getElementById(obj.container);
                     Ns.game.two.Chess2D.boardContainer = el;
                     el.innerHTML = '';//clear any previous
-                    var chessboad = this.board();
+                    var chessboad = this.board(el);
                     el.appendChild(chessboad);
+
 
 
                 },
 
-                board: function () {
+                board: function (container) {
                     var table = document.createElement('table');
                     table.className = 'game9ja-chess-board';
 
@@ -135,21 +161,128 @@ and open the template in the editor.
                         table.appendChild(tr);
                     }
 
-                    //this.squareList; 
+
                     var rw = table.children;
                     var sq = -1;
                     for (var i = rw.length - 1; i > -1; i--) {
                         var sqs = rw[i].children;
-                        for (var k = sqs.length - 1; k > -1; k--) {
+                        for (var k = 0; k < sqs.length; k++) {
                             sq++;
                             this.squareList[sq] = sqs[k];
-
                         }
+                    }
+
+                    var box = container.getBoundingClientRect();
+
+                    var sq_w = box.width / this.boardRowCount;
+                    var sq_h = box.height / this.boardRowCount;
+
+                    var pw = sq_w * 0.7; // piece width
+                    var ph = sq_h * 0.7; //piece height
+
+                    //range pieces
+                    for (var i = 0; i < 64; i++) {
+                        var nsq = this.toSquareNotation(i);
+                        var pce = this.chess.get(nsq);
+                        if(!pce){
+                            continue;
+                        }
+                        var sq = i;
+                        if (this.isBoardFlip) {
+                            sq = this.flipSquare(i);
+                        }
+
+                        //create piece element
+                        var pe = document.createElement('img');
+
+                        //pe.style.backgroundColor = 'blue';//testing
+                        //pe.innerHTML = sq;//testing
+
+                        pe.style.width = pw + 'px';
+                        pe.style.height = ph + 'px';
+                        var center = this.squareCenter(sq);
+                        var py = center.y - ph / 2;
+                        var px = center.x - pw / 2;
+                        pe.style.position = 'absolute'; 
+                        pe.style.top = py + 'px';
+                        pe.style.left = px + 'px';
+                        
+                        container.appendChild(pe);
+
+                        console.log(pce);
                     }
 
                     return table;
                 },
+                toNumericSq: function (notation) {
+                    notation = notation + "";
+                    var a = notation.charAt(0);
+                    var b = notation.charAt(1);
+                    var b = (b - 1) * this.boardRowCount - 1;
 
+                    switch (a) {
+                        case 'a':
+                            a = 1;
+                            break;
+                        case 'b':
+                            a = 2;
+                            break;
+                        case 'c':
+                            a = 3;
+                            break;
+                        case 'd':
+                            a = 4;
+                            break;
+                        case 'e':
+                            a = 5;
+                            break;
+                        case 'f':
+                            a = 6;
+                            break;
+                        case 'g':
+                            a = 7;
+                            break;
+                        case 'h':
+                            a = 8;
+                            break;
+                    }
+
+                    return b + a;
+                },
+                toSquareNotation: function (sq) {
+
+                    var row = Math.floor(sq / this.boardRowCount);
+                    var col = sq % this.boardRowCount;
+                    row += 1;
+                    switch (col) {
+                        case 0:
+                            col = 'a';
+                            break;
+                        case 1:
+                            col = 'b';
+                            break;
+                        case 2:
+                            col = 'c';
+                            break;
+                        case 3:
+                            col = 'd';
+                            break;
+                        case 4:
+                            col = 'e';
+                            break;
+                        case 5:
+                            col = 'f';
+                            break;
+                        case 6:
+                            col = 'g';
+                            break;
+                        case 7:
+                            col = 'h';
+                            break;
+                    }
+
+                    return col + row;
+                },
                 getPieceOnSquare: function (sq) {
 
                 },
@@ -159,10 +292,68 @@ and open the template in the editor.
                 },
 
                 movePiece: function (from_sq, to_sq) {
+                    if (this.isBoardFlip) {
+                        from_sq = this.flipSquare(from_sq);
+                        to_sq = this.flipSquare(to_sq);
+                    }
 
+                    var el = this.getPieceOnSquare(from_sq);
+                    if (!el) {
+                        console.warn('piece not found on sqare ', from_sq);
+                        return;
+                    }
+
+                    var duration = 1000; //in milliseconds
+                    var center = this.squareCenter(to_sq);
+                    var prop = {
+                        top: center.y,
+                        left: center.x
+                    };
+                    var me = this;
+                    Main.anim.to(el, duration, prop, function () {
+                        //making sure the piece is on the right spot just in
+                        //case the orientation changes or the board is resized
+                        center = me.squareCenter(to_sq);
+                        el.style.top = center.y + 'px';
+                        el.style.left = center.x + 'px';
+                    });
                 },
-                getCol: function () {
+                /**
+                 * The method is required if the board is flipped
+                 *  black-to-white direction.ie black is down and white up
+                 *  @argument {Integer} sq 
+                 */
+                flipSquare: function (sq) {
+                    var row = Math.floor(sq / this.boardRowCount);
+                    var col = sq % this.boardRowCount;
 
+                    var flip_row = this.boardRowCount - row - 1;
+                    var flip_col = this.boardRowCount - col - 1;
+
+                    var flip_sq = flip_row * this.boardRowCount + flip_col;
+
+                    return flip_sq;
+                },
+                squareCenter: function (sq) {
+                    //NOTE: this code here may not be applicable to both
+                    //chess and draft - chess is being consider here.
+                    //it depends on the squares arrangement
+                    var box = this.boardContainer.getBoundingClientRect();
+                    var center_x, center_y;
+
+                    var sq_w = box.width / this.boardRowCount;
+                    var sq_h = box.height / this.boardRowCount;
+
+                    var row = Math.floor(sq / this.boardRowCount);
+                    var col = this.boardRowCount - sq % this.boardRowCount - 1;
+
+                    center_x = (this.boardRowCount - col) * sq_w - sq_w / 2;
+                    center_y = (this.boardRowCount - row) * sq_h - sq_h / 2;
+
+                    return {
+                        x: center_x,
+                        y: center_y
+                    };
                 },
                 onClickBoard: function (evt, is_tap) {
                     if (is_tap) {
@@ -246,20 +437,35 @@ and open the template in the editor.
                     var x = posx - box.left;
                     var y = posy - box.top;
 
-
-
                     //row and col
 
                     var sq_w = box.width / Ns.game.two.Chess2D.boardRowCount;
                     var sq_h = box.height / Ns.game.two.Chess2D.boardRowCount;
 
-                    //Now make the y offset allow easy pick of piece especailly on small device
-                    if (y < box.height - sq_h / 2) {//above middle of first row
-                        y -= sq_h; // offset y by square height
+                    if (Main.device.isMobileDeviceReady
+                            && !Main.device.isLarge()) {//for only smart phones and tablets of medium size
+                        //Now make the y offset allow easy pick of piece especailly on small device
+                        if (y < box.height - sq_h / 2) {//above middle of first row
+                            y -= sq_h; // offset y by square height
+                        }
                     }
 
                     var row = Math.floor((box.height - y) / sq_h);
-                    var col = Math.floor((box.width - x) / sq_w);
+                    var col = Ns.game.two.Chess2D.boardRowCount - Math.floor((box.width - x) / sq_w) - 1;
+
+                    if (row < 0) {
+                        row = 0;
+                    }
+                    if (col < 0) {
+                        col = 0;
+                    }
+
+                    if (row > Ns.game.two.Chess2D.boardRowCount - 1) {
+                        row = Ns.game.two.Chess2D.boardRowCount - 1;
+                    }
+                    if (col > Ns.game.two.Chess2D.boardRowCount - 1) {
+                        col = Ns.game.two.Chess2D.boardRowCount - 1;
+                    }
 
                     var sq = row * Ns.game.two.Chess2D.boardRowCount + col;
 
