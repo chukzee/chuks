@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body onload="testSwipe()">
+
+        <div id="test_swipe" style="display: block; width: 300px; height: 300px; background: #cccccc; overflow: auto;">
+            <div style="width: 100%; height: 30px;">Some thing 1</div>
+            <div style="width: 100%; height: 30px;">Some thing 2</div>
+            <div style="width: 100%; height: 30px;">Some thing 3</div>
+            <div style="width: 100%; height: 30px;">Some thing 4</div>
+            <div style="width: 100%; height: 30px;">Some thing 5</div>
+            <div style="width: 100%; height: 30px;">Some thing 6</div>
+            <div style="width: 100%; height: 30px;">Some thing 7</div>
+            <div style="width: 100%; height: 30px;">Some thing 8</div>
+            <div style="width: 100%; height: 30px;">Some thing 9</div>
+            <div style="width: 100%; height: 30px;">Some thing 10</div>
+            <div style="width: 100%; height: 30px;">Some thing 11</div>
+            <div style="width: 100%; height: 30px;">Some thing 12</div>
+            <div style="width: 100%; height: 30px;">Some thing 13</div>
+            <div style="width: 100%; height: 30px;">Some thing 14</div>
+            <div style="width: 100%; height: 30px;">Some thing 15</div>
+            <div style="width: 100%; height: 30px;">Some thing 16</div>
+            <div style="width: 100%; height: 30px;">Some thing 17</div>
+            <div style="width: 100%; height: 30px;">Some thing 18</div>
+            <div style="width: 100%; height: 30px;">Some thing 19</div>
+            <div style="width: 100%; height: 30px;">Some thing 20</div>
+
+        </div>
+
+        <script>
+            var Main = {};
+
+            Main.util = {
+
+                isFunc: function (fn) {
+                    return typeof fn === "function";
+                }
+            };
+
+            function testSwipe() {
+                Main.swipe({
+                    el: document.getElementById('test_swipe'),
+                    left: function () {
+                        console.log('swipe left');
+                    },
+                    right: function () {
+                        console.log('swipe right');
+                    }
+                });
+            }
+
+            Main.swipe = function (obj) {
+
+                if (!obj.el.addEventListener || !obj.el.removeEventListener) {
+                    return;
+                }
+
+                obj.el.removeEventListener('touchstart', startTouch, false);
+                obj.el.removeEventListener('touchmove', moveTouch, false);
+                obj.el.removeEventListener('touchend', endTouch, false);
+                obj.el.removeEventListener('touchcancel', cancelTouch, false);
+
+
+                obj.el.addEventListener('touchstart', startTouch, false);
+                obj.el.addEventListener('touchmove', moveTouch, false);
+                obj.el.addEventListener('touchend', endTouch, false);
+                obj.el.addEventListener('touchcancel', cancelTouch, false);
+
+                var SW_TIME = 500;
+                var SW_MAX_X = 100;
+                var SW_MAX_Y = 100;
+                var SW_MAX_SLANT = SW_MAX_X / 2;
+
+                var start_time;
+                var end_time;
+                var start_x;
+                var end_x;
+                var start_y;
+                var end_y;
+                var isTouching;
+
+                function startTouch(evt) {
+                    evt.preventDefault();
+                    if (evt.touches.length === 1) {
+                        start_x = evt.touches[0].pageX;
+                        start_y = evt.touches[0].pageY;
+                        start_time = new Date().getTime();
+                    }
+
+                    console.log('start_x=', start_x, 'start_y=', start_y);
+                }
+
+                function moveTouch(evt) {
+
+
+                    if (evt.touches.length === 1) {
+                        end_x = evt.touches[0].pageX;
+                        end_y = evt.touches[0].pageY;
+                        isTouching = true;
+                    }
+                    var d_x = Math.abs(start_x - end_x);
+                    var d_y = Math.abs(start_y - end_y);
+
+                    var is_horizontal_trajectory = d_x > d_y;
+                    var is_vertical_trajectory = d_y > d_x;
+                    
+                    console.log('end_x=', end_x, 'end_y=', end_y);
+
+                    if (obj.left || obj.right) {
+                        if (is_horizontal_trajectory) {
+                            //evt.preventDefault();
+                            console.log('is_horizontal_trajectory');
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+
+                    if (obj.up || obj.down) {
+                        if (is_vertical_trajectory) {
+                            //evt.preventDefault();
+                            console.log('is_vertical_trajectory');
+                           return true;
+                        }else{
+                            return false;
+                        }
+                    }
+
+                }
+
+                function cancelTouch(evt) {
+                    obj.el.removeEventListener('touchmove', moveTouch, false);
+                    isTouching = false;
+
+                }
+
+                function endTouch(evt) {
+
+                    if (!isTouching) {
+                        return;
+                    }
+                    isTouching = false;
+                    end_time = new Date().getTime();
+                    var elapse = end_time - start_time;
+                    var change_x = start_x - end_x;
+                    var change_y = start_y - end_y;
+
+                    if (elapse > SW_TIME) {
+                        return;
+                    }
+
+                    if (Math.abs(change_x) > SW_MAX_X && Math.abs(change_y) < SW_MAX_SLANT) {
+                        if (change_x > 0) {
+                            if (Main.util.isFunc(obj.left)) {
+                                obj.left();
+                            }
+
+                            //console.log('left ');
+                        } else {
+                            if (Main.util.isFunc(obj.right)) {
+                                obj.right();
+                            }
+
+                            //console.log('right ');
+                        }
+                    } else if (Math.abs(change_y) > SW_MAX_Y && Math.abs(change_x) < SW_MAX_SLANT) {
+                        if (change_y > 0) {
+
+                            if (Main.util.isFunc(obj.up)) {
+                                obj.up();
+                            }
+
+                            //console.log('up ');
+                        } else {
+                            if (Main.util.isFunc(obj.down)) {
+                                obj.down();
+                            }
+
+                            //console.log('down ');
+                        }
+                    }
+                }
+
+            };
+
+        </script>
+    </body>
+
+</html>

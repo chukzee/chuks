@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/board.css" />
+    </head>
+    <body>
+        <button onclick="showChess2D()" >Show 2D Chess board</button>
+        <div id="board_container-outer" style="position: relative; width: 400px; height: 400px; margin:0 auto; background-color: yellow;">
+            <div id="board_container" style="width: 300px; height: 300px; position: absolute; top: 50px; left: 50px;"></div>
+
+        </div>
+
+        <script>
+            var Main = {
+                device: {
+                    isMobileDeviceReady: true
+                }
+            };
+
+            var Ns = {
+                game: {
+                    two: {}
+                }
+            };
+
+
+            function showChess2D(parameters) {
+
+                Ns.game.two.Chess2D.load({
+                    container: 'board_container'
+                })
+
+            }
+
+
+            /* global Main, Ns */
+
+            Ns.game.two.Chess2D = {
+
+                squareList: {},
+                hoverSquare: null,
+                pickedSquare: null,
+                boardRowCount: 8, //for chess it is fixed
+                boardContainer: null,
+                boardX: -1,
+                boardY: -1,
+                boardRow: -1,
+                boardCol: -1,
+                boardSq: -1,
+                startTouchBoardX: -1,
+                startTouchBoardY: -1,
+                startTouchBoardRow: -1,
+                startTouchBoardCol: -1,
+                startTouchBoardSq: -1,
+                isTouchingBoard: false,
+                /**
+                 * Loads and sets up the game on the specified contaner using
+                 * the provided game position. If the game position is not provided
+                 * then the starting position is setup. The provided theme is used
+                 * if provided otherwise the default is used.<br>
+                 * 
+                 * The argument is expected to be an object with the following 
+                 * properties:<br>
+                 * <br>
+                 * obj = {<br>
+                 *        container: 'the_container', //compulsory 
+                 *        gamePosition: 'the_game_posiont', //optional<br>
+                 *        pieceTheme: 'the_piece_theme', //optional<br>
+                 *        boardTheme: 'the_board_theme'  //optional<br>
+                 * }<br>
+                 *
+                 * The chessboard squares are indexed as illustrated below:
+                 * 
+                 * +----+----+----+----+----+----+----+----+
+                 * | 63 | 62 | 61 | 60 | 59 | 58 | 57 | 56 |
+                 * +----+----+----+----+----+----+----+----+
+                 * | 55 | 54 | 53 | 52 | 51 | 50 | 49 | 48 |
+                 * +----+----+----+----+----+----+----+----+
+                 * | 47 | 46 | 45 | 44 | 43 | 42 | 41 | 40 |
+                 * +----+----+----+----+----+----+----+----+
+                 * | 39 | 38 | 37 | 36 | 35 | 34 | 33 | 32 |
+                 * +----+----+----+----+----+----+----+----+
+                 * | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 |
+                 * +----+----+----+----+----+----+----+----+
+                 * | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16 |
+                 * +----+----+----+----+----+----+----+----+
+                 * | 15 | 14 | 13 | 12 | 11 | 10 |  9 |  8 |
+                 * +----+----+----+----+----+----+----+----+
+                 * |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+                 * +----+----+----+----+----+----+----+----+
+                 * 
+                 * @param {type} obj
+                 * @returns {undefined}
+                 */
+                load: function (obj) {
+                    var el = document.getElementById(obj.container);
+                    Ns.game.two.Chess2D.boardContainer = el;
+                    el.innerHTML = '';//clear any previous
+                    var chessboad = this.board();
+                    el.appendChild(chessboad);
+
+
+                },
+
+                board: function () {
+                    var table = document.createElement('table');
+                    table.className = 'game9ja-chess-board';
+
+                    if (Main.device.isMobileDeviceReady) {
+                        table.addEventListener('touchstart', this.onTouchStartBoard);
+                        table.addEventListener('touchmove', this.onHoverBoard);
+                        table.addEventListener('touchend', this.onHoverBoardEnd);
+                        table.addEventListener('touchcancel', this.onHoverBoardEnd);
+                    } else {
+                        table.addEventListener('click', this.onClickBoard);
+                        table.addEventListener('mousemove', this.onHoverBoard);
+                        table.addEventListener('mouseout', this.onHoverBoardEnd);
+                    }
+
+                    for (var i = 0; i < this.boardRowCount; i++) {
+                        var tr = document.createElement('tr');
+                        for (var k = 0; k < this.boardRowCount; k++) {
+                            var td = document.createElement('td');
+                            td.dataset.square = '';
+                            tr.appendChild(td);
+                        }
+                        table.appendChild(tr);
+                    }
+
+                    //this.squareList; 
+                    var rw = table.children;
+                    var sq = -1;
+                    for (var i = rw.length - 1; i > -1; i--) {
+                        var sqs = rw[i].children;
+                        for (var k = sqs.length - 1; k > -1; k--) {
+                            sq++;
+                            this.squareList[sq] = sqs[k];
+
+                        }
+                    }
+
+                    return table;
+                },
+
+                getPieceOnSquare: function (sq) {
+
+                },
+
+                setPieceOnSquare: function (pieces, sq) {
+
+                },
+
+                movePiece: function (from_sq, to_sq) {
+
+                },
+                getCol: function () {
+
+                },
+                onClickBoard: function (evt, is_tap) {
+                    if (is_tap) {
+                        Ns.game.two.Chess2D.boardX = Ns.game.two.Chess2D.startTouchBoardX;
+                        Ns.game.two.Chess2D.boardY = Ns.game.two.Chess2D.startTouchBoardY;
+                        Ns.game.two.Chess2D.boardRow = Ns.game.two.Chess2D.startTouchBoardRow;
+                        Ns.game.two.Chess2D.boardCol = Ns.game.two.Chess2D.startTouchBoardCol;
+                        Ns.game.two.Chess2D.boardSq = Ns.game.two.Chess2D.startTouchBoardSq;
+                    } else {
+                        Ns.game.two.Chess2D.boardXY(this, evt, is_tap);
+                    }
+
+                },
+                onTouchStartBoard: function (evt) {
+
+                    if (evt.touches) {
+                        if (evt.touches.length === 1) {
+                            evt.preventDefault();//important!
+                            Ns.game.two.Chess2D.boardXY(this, evt, true);
+                        }
+                    }
+                },
+                onHoverBoard: function (evt) {
+
+                    if (evt.touches) {
+                        if (evt.touches.length === 1) {
+                            evt.preventDefault();
+                            Ns.game.two.Chess2D.boardXY(this, evt);
+                            Ns.game.two.Chess2D.isTouchingBoard = true;
+                        }
+                    } else {
+                        //mouse move
+                        Ns.game.two.Chess2D.boardXY(this, evt);
+                    }
+
+                    if (Ns.game.two.Chess2D.hoverSquare) {
+                        Ns.game.two.Chess2D.hoverSquare.style = '';
+                    }
+
+                    var sq = Ns.game.two.Chess2D.boardSq;
+
+                    Ns.game.two.Chess2D.hoverSquare = Ns.game.two.Chess2D.squareList[sq];
+                    if (Ns.game.two.Chess2D.hoverSquare) {
+                        Ns.game.two.Chess2D.hoverSquare.style = 'background: red;';
+                    }
+
+                },
+
+                onHoverBoardEnd: function (evt) {
+                    if (!Ns.game.two.Chess2D.isTouchingBoard) {// tap detected
+                        Ns.game.two.Chess2D.onClickBoard(null, true);
+                        return;
+                    }
+                    Ns.game.two.Chess2D.boardX = -1;
+                    Ns.game.two.Chess2D.boardY = -1;
+                    Ns.game.two.Chess2D.isTouchingBoard = false;
+
+                },
+                boardXY: function (container, e, is_start_touch) {
+
+                    var posx = 0;
+                    var posy = 0;
+
+                    if (!e)
+                        var e = window.event;
+                    if (e.touches && e.touches.length) {
+                        posx = e.touches[0].pageX;
+                        posy = e.touches[0].pageY;
+                    } else if (e.pageX || e.pageY) {
+                        posx = e.pageX;
+                        posy = e.pageY;
+                    } else if (e.clientX || e.clientY) {
+                        posx = e.clientX + document.body.scrollLeft
+                                + document.documentElement.scrollLeft;
+                        posy = e.clientY + document.body.scrollTop
+                                + document.documentElement.scrollTop;
+                    }
+                    // posx and posy contain the mouse position relative to the document
+
+                    var box = container.getBoundingClientRect();
+                    var x = posx - box.left;
+                    var y = posy - box.top;
+
+
+
+                    //row and col
+
+                    var sq_w = box.width / Ns.game.two.Chess2D.boardRowCount;
+                    var sq_h = box.height / Ns.game.two.Chess2D.boardRowCount;
+
+                    //Now make the y offset allow easy pick of piece especailly on small device
+                    if (y < box.height - sq_h / 2) {//above middle of first row
+                        y -= sq_h; // offset y by square height
+                    }
+
+                    var row = Math.floor((box.height - y) / sq_h);
+                    var col = Math.floor((box.width - x) / sq_w);
+
+                    var sq = row * Ns.game.two.Chess2D.boardRowCount + col;
+
+                    if (is_start_touch) {
+                        Ns.game.two.Chess2D.startTouchBoardX = x;
+                        Ns.game.two.Chess2D.startTouchBoardY = y;
+                        Ns.game.two.Chess2D.startTouchBoardRow = row;
+                        Ns.game.two.Chess2D.startTouchBoardCol = col;
+                        Ns.game.two.Chess2D.startTouchBoardSq = sq;
+                    } else {
+                        Ns.game.two.Chess2D.boardX = x;
+                        Ns.game.two.Chess2D.boardY = y;
+                        Ns.game.two.Chess2D.boardRow = row;
+                        Ns.game.two.Chess2D.boardCol = col;
+                        Ns.game.two.Chess2D.boardSq = sq;
+                    }
+
+                    //console.log(posx, posy);
+                    //console.log(x, y);
+                    console.log('x=', x, 'y=', y, 'row=', row, 'col=', col, 'sq=', sq);
+
+                }
+            };
+        </script>
+    </body>
+</html>
