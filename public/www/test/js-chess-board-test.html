@@ -167,7 +167,7 @@ and open the template in the editor.
                         } else {
                             container.addEventListener('click', this.onClickBoard);
                             container.addEventListener('mousemove', this.onHoverBoard);
-                            container.addEventListener('mouseout', this.onHoverBoardEnd);
+                            container.addEventListener('mouseleave', this.onHoverBoardEnd);//mouseout behaviour is not appropriate because is fires for every children
                         }
                     }
 
@@ -425,11 +425,12 @@ and open the template in the editor.
                         //mouse move
                         me.boardXY(this, evt);
                     }
-
+                    //small problem still dey - come back later
                     var sq = me.boardSq;
-                    console.log(me.squareList[sq], me.pickedSquare);
                     if (me.squareList[sq] === me.pickedSquare) {
-                        console.log('leave sq ', sq);
+                        if (me.hoverSquare !== me.pickedSquare) {
+                            me.highlightSquare(me.hoverSquare, '');//remove the highlight
+                        }
                         return;
                     }
 
@@ -437,10 +438,8 @@ and open the template in the editor.
                         me.highlightSquare(me.hoverSquare, '');//remove the highlight
                     }
                     me.hoverSquare = me.squareList[sq];
-
                     me.highlightSquare(me.hoverSquare, 'background: red');
 
-                    console.log('hover sq ', sq);
                 },
 
                 onHoverBoardEnd: function (evt) {
@@ -452,6 +451,10 @@ and open the template in the editor.
                     me.boardX = -1;
                     me.boardY = -1;
                     me.isTouchingBoard = false;
+                    if (me.hoverSquare !== me.pickedSquare) {
+                        me.highlightSquare(me.hoverSquare, '');//remove the highlight
+                    }
+                    console.log('onHoverBoardEnd', evt, evt.target);
 
                 },
                 boardXY: function (container, e, is_start_touch) {
@@ -495,18 +498,21 @@ and open the template in the editor.
                     var row = Math.floor((box.height - y) / sq_h);
                     var col = me.boardRowCount - Math.floor((box.width - x) / sq_w) - 1;
 
-                    if (row < 0) {
-                        row = 0;
-                    }
-                    if (col < 0) {
-                        col = 0;
-                    }
-
-                    if (row > me.boardRowCount - 1) {
-                        row = me.boardRowCount - 1;
-                    }
-                    if (col > me.boardRowCount - 1) {
-                        col = me.boardRowCount - 1;
+                    if (row < 0
+                            || col < 0
+                            || row > me.boardRowCount - 1
+                            || col > me.boardRowCount - 1) {//OFF BOARD
+                        
+                        me.boardX = -1;
+                        me.boardY = -1;
+                        me.boardRow = -1;
+                        me.boardCol = -1;
+                        me.boardSq = -1;
+                        //Clear highlighted squares
+                        me.highlightSquare(me.hoverSquare, '');//remove the highlight
+                        me.hoverSquare = null;
+                        console.log('leave');
+                        return;
                     }
 
                     var sq = row * me.boardRowCount + col;
