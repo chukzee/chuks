@@ -8,7 +8,7 @@ Ns.view.PlayNotifications = {
 
     content: function (focus) {
 
-        var list = Ns.game.PlayRequest.playRequestList;
+        var list = Ns.PlayRequest.playRequestList;
         if (list.length === 0) {
             try {
                 list = window.localStorage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY);
@@ -18,7 +18,7 @@ Ns.view.PlayNotifications = {
             }
         }
 
-        Ns.game.PlayRequest.playRequestList = list;
+        Ns.PlayRequest.playRequestList = list;
 
         var active_tab_index = 0;
 
@@ -55,7 +55,7 @@ Ns.view.PlayNotifications = {
 
         //COME BACK ABEG O!!!
 
-        //var list = Ns.game.PlayRequest.playRequestList ; // TODO- AND tournament fixtures - come back
+        //var list = Ns.PlayRequest.playRequestList ; // TODO- AND tournament fixtures - come back
 /*
         var up_coming;
         for (var i = 0; i < list.length; i++) {

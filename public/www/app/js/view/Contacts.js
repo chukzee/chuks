@@ -154,7 +154,7 @@ Ns.view.Contacts = {
     },
 
     onClickLetsPlay: function (contact) {
-        Ns.game.PlayRequest.openPlayDialog(contact);
+        Ns.PlayRequest.openPlayDialog(contact);
     },
 
     save: function () {

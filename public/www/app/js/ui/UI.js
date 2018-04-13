@@ -115,9 +115,9 @@ Ns.ui.UI = {
             }
         });
 
-        Ns.game.Match.contactsMatchList();
-        Ns.game.Match.groupMatchList();
-        Ns.game.Match.tournamentMatchList();
+        Ns.Match.contactsMatchList();
+        Ns.Match.groupMatchList();
+        Ns.Match.tournamentMatchList();
 
         Ns.ui.GamePanel.setupOnHome();
 
@@ -130,13 +130,13 @@ Ns.ui.UI = {
         $('#home-group-header').off('click');
         $('#home-group-header').on('click', function (evt) {
             var el = document.getElementById('home-group-header');
-            var group = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP];
+            var group = el[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP];
             //first update change if any, since it was observed that the group object is copied and not refrenced so changes are not reflected
             var list = Ns.view.Group.groupList;
             for (var i = 0; i < list.length; i++) {
                 if (group.name === list[i].name) {
                     group = list[i];
-                    el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
+                    el[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
                 }
             }
             if (evt.target.id === 'home-group-name'
@@ -152,13 +152,13 @@ Ns.ui.UI = {
         $('#home-tournament-header').off('click');
         $('#home-tournament-header').on('click', function (evt) {
             var el = document.getElementById('home-tournament-header');
-            var tournament = el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN];
+            var tournament = el[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN];
             //first update change if any, since it was observed that the tournament object is copied and not refrenced so changes are not reflected
             var list = Ns.view.Tournament.tournamentList;
             for (var i = 0; i < list.length; i++) {
                 if (tournament.name === list[i].name) {
                     tournament = list[i];
-                    el[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
+                    el[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
                 }
             }
 
@@ -210,7 +210,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.groupMatchList(group);
+            Ns.Match.groupMatchList(group);
 
         });
 
@@ -240,7 +240,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.groupMatchList(group, group_index);
+            Ns.Match.groupMatchList(group, group_index);
 
         });
 
@@ -257,7 +257,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.tournamentMatchList(tourn.name);
+            Ns.Match.tournamentMatchList(tourn.name);
 
         });
 
@@ -274,7 +274,7 @@ Ns.ui.UI = {
                 return;
             }
 
-            Ns.game.Match.tournamentMatchList(tourn.name);
+            Ns.Match.tournamentMatchList(tourn.name);
 
         });
 
@@ -301,7 +301,7 @@ Ns.ui.UI = {
 
         switch (item) {
             case 'My game':
-                var m = Ns.game.Match.currentUserMatch;
+                var m = Ns.Match.currentUserMatch;
                 if (m && (m.game_status.toLowercase() !== 'end' && m.game_status.toLowercase() !== 'finish')) {
                     Ns.GameHome.showGameView(m);
                 } else {
@@ -323,7 +323,7 @@ Ns.ui.UI = {
                 Ns.GameHome.showPlayNotifications();
                 break;
             case 'Play robot':
-                var m = Ns.game.Match.currentRobotMatch;
+                var m = Ns.Match.currentRobotMatch;
 
                 Ns.GameHome.showGameViewB({robot: true, game_name: Ns.ui.UI.selectedGame});//TESTING - TO BE REMOVE
                 return;//TESTING - TO BE REMOVE

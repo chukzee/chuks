@@ -593,7 +593,7 @@ Ns.view.Tournament = {
     },
 
     onClickLetsPlay: function (user) {
-        Ns.game.PlayRequest.openPlayDialog(user);
+        Ns.PlayRequest.openPlayDialog(user);
     },
 
     _onClickOfficialsAdd: function (tournament) {

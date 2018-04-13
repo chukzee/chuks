@@ -1,7 +1,7 @@
 
 /* global Main, Ns */
 
-Ns.game.PlayRequest = {
+Ns.PlayRequest = {
 
     playRequestList: [], //dynamic
 
@@ -22,15 +22,15 @@ Ns.game.PlayRequest = {
 
     openPlayDialog: function (opponent, group_name) {
 
-        if (Ns.game.PlayRequest._isLetsPlayClick) {
+        if (Ns.PlayRequest._isLetsPlayClick) {
             return;
         }
 
-        Ns.game.PlayRequest._isLetsPlayClick = true;
+        Ns.PlayRequest._isLetsPlayClick = true;
 
         Ns.ui.UI.getView(Ns.GameHome.GAME_WAIT_HTML, function (err, html) {
 
-            Ns.game.PlayRequest._isLetsPlayClick = false;
+            Ns.PlayRequest._isLetsPlayClick = false;
 
             if (err) {//like nodejs. important!
                 return;
@@ -142,7 +142,7 @@ Ns.game.PlayRequest = {
 
                                     Main.countdown.start(waitCountdownFn, data.expire_after_secs, 'mm:ss');
 
-                                    Ns.game.PlayRequest._startGameFunc = function (_match) {
+                                    Ns.PlayRequest._startGameFunc = function (_match) {
                                         match = _match;
                                         if (match.game_id !== play_request_data.game_id) {
                                             return;
@@ -158,7 +158,7 @@ Ns.game.PlayRequest = {
                                         }, 5);
                                     };
 
-                                    Ns.game.PlayRequest._opponentRejectPlayFunc = function () {
+                                    Ns.PlayRequest._opponentRejectPlayFunc = function () {
                                         /*Depreacated*/
                                         //because the player does not have to click any reject button.
                                         //All player needs to do as a way to reject the request is to ignore clicking
@@ -185,8 +185,8 @@ Ns.game.PlayRequest = {
     },
 
     onGameStart: function (obj) {
-        if (Main.util.isFunc(Ns.game.PlayRequest._startGameFunc)) {
-            Ns.game.PlayRequest._startGameFunc(obj.data.match);
+        if (Main.util.isFunc(Ns.PlayRequest._startGameFunc)) {
+            Ns.PlayRequest._startGameFunc(obj.data.match);
         }
     },
 
@@ -205,19 +205,19 @@ Ns.game.PlayRequest = {
 
         //each new play request will come first - ie add to the top
 
-        Ns.game.PlayRequest.playRequestList = [];//first initialize
-        Ns.game.PlayRequest.playRequestList.push(play_request);//add to top
+        Ns.PlayRequest.playRequestList = [];//first initialize
+        Ns.PlayRequest.playRequestList.push(play_request);//add to top
 
         if (Main.util.isArray(list)) {
             var max = Ns.Const.MAX_PLAY_REQUEST_LIST_SIZE;
             var len = list.length - 1 >= max ? max : list.length - 1;
             for (var i = 0; i < len; i++) {
-                Ns.game.PlayRequest.playRequestList.push(list[i]);//add the rest
+                Ns.PlayRequest.playRequestList.push(list[i]);//add the rest
             }
         }
         //save the play request
         try {
-            window.localStorage.setItem(Ns.Const.PLAY_REQUEST_LIST_KEY, JSON.stringify(Ns.game.PlayRequest.playRequestList));
+            window.localStorage.setItem(Ns.Const.PLAY_REQUEST_LIST_KEY, JSON.stringify(Ns.PlayRequest.playRequestList));
         } catch (e) {
             //COME BACK FOR CASE WHERE THE STORAGE IS FULL
         }

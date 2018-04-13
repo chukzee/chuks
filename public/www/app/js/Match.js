@@ -3,7 +3,7 @@
 /* global Main, Ns */
 
 
-Ns.game.Match = {
+Ns.Match = {
     hasMatchData: false,
     currentUserMatch: null, //set dynamically
     currentRobotMatch : null, //set dynamically
@@ -88,13 +88,13 @@ Ns.game.Match = {
 
                 switch (container) {
                     case '#home-contacts-live-games':
-                        Ns.game.Match._lstContactsMatch = this;
+                        Ns.Match._lstContactsMatch = this;
                         break;
                     case '#home-group-live-games':
-                        Ns.game.Match._lstGroupsMatch = this;
+                        Ns.Match._lstGroupsMatch = this;
                         break;
                     case '#home-tournaments-live-games':
-                        Ns.game.Match._lstTournamentsMatch = this;
+                        Ns.Match._lstTournamentsMatch = this;
                         break;
                     default:
                         console.warn('WARNGING! unknow coontainer id for listview - ' + container);
@@ -105,8 +105,8 @@ Ns.game.Match = {
                     this.prependItem(matches[n]);
                 }
 
-                if (!Ns.game.Match.hasMatchData && matches.length) {
-                    Ns.game.Match.hasMatchData = true;
+                if (!Ns.Match.hasMatchData && matches.length) {
+                    Ns.Match.hasMatchData = true;
                     var last_match = matches[matches.length - 1]; // last in the array will be shown first since we prepend data in the list
                     Main.event.fire('game_panel_setup', last_match);
                     alert('onReady');
@@ -121,19 +121,19 @@ Ns.game.Match = {
 
     contactsMatchList: function () {
 
-        var stored_matches = window.localStorage.getItem(Ns.game.Match.contactsMatchKey());
+        var stored_matches = window.localStorage.getItem(Ns.Match.contactsMatchKey());
 
         try {
             if (stored_matches) {
                 stored_matches = JSON.parse(stored_matches);
                 //show the contacts live match list
-                Ns.game.Match.liveMatchList('#home-contacts-live-games', stored_matches);
+                Ns.Match.liveMatchList('#home-contacts-live-games', stored_matches);
             }
         } catch (e) {
             console.warn(e);
         }
 
-        Ns.game.Match.refreshMyContactsMatchList();
+        Ns.Match.refreshMyContactsMatchList();
 
     },
 
@@ -164,8 +164,8 @@ Ns.game.Match = {
 
                         if (matches.length) {
 
-                            Ns.game.Match.liveMatchList('#home-contacts-live-games', matches);
-                            var key = Ns.game.Match.contactsMatchKey();
+                            Ns.Match.liveMatchList('#home-contacts-live-games', matches);
+                            var key = Ns.Match.contactsMatchKey();
                             window.localStorage.setItem(key, JSON.stringify(matches));
 
                         } else {
@@ -203,20 +203,20 @@ Ns.game.Match = {
             if (!group) {
                 return;
             }
-            var stored_matches = window.localStorage.getItem(Ns.game.Match.groupMatchKey(group.name));
+            var stored_matches = window.localStorage.getItem(Ns.Match.groupMatchKey(group.name));
 
             try {
                 if (stored_matches) {
                     stored_matches = JSON.parse(stored_matches);
                     //show the group live match list
-                    Ns.game.Match.liveMatchList('#home-group-live-games', stored_matches);
+                    Ns.Match.liveMatchList('#home-group-live-games', stored_matches);
                 }
             } catch (e) {
                 console.warn(e);
             }
             
             
-            document.getElementById('home-group-header')[Ns.game.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
+            document.getElementById('home-group-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
             document.getElementById('home-group-pic').src = group.photo_url;
             document.getElementById('home-group-name').innerHTML = group.name;
             document.getElementById('home-group-status-message').innerHTML = group.status_message;
@@ -227,7 +227,7 @@ Ns.game.Match = {
                 document.getElementById('home-group-page-number').innerHTML = '---';
             }
 
-            Ns.game.Match.refreshMyGroupsMatchList(group.name);
+            Ns.Match.refreshMyGroupsMatchList(group.name);
         }
     },
 
@@ -257,8 +257,8 @@ Ns.game.Match = {
                         });
 
                         if (matches.length) {
-                            Ns.game.Match.liveMatchList('#home-group-live-games', matches);
-                            var key = Ns.game.Match.groupMatchKey(matches[0].group_name);
+                            Ns.Match.liveMatchList('#home-group-live-games', matches);
+                            var key = Ns.Match.groupMatchKey(matches[0].group_name);
                             window.localStorage.setItem(key, JSON.stringify(matches));
                         } else {
                             //TODO - display no match found or something similar
@@ -304,20 +304,20 @@ Ns.game.Match = {
             if (!tournament) {
                 return;
             }
-            var stored_matches = window.localStorage.getItem(Ns.game.Match.tournamentMatchKey(tournament.name));
+            var stored_matches = window.localStorage.getItem(Ns.Match.tournamentMatchKey(tournament.name));
 
             try {
                 if (stored_matches) {
                     stored_matches = JSON.parse(stored_matches);
                     //show the tournaments live match list
-                    Ns.game.Match.liveMatchList('#home-tournaments-live-games', stored_matches);
+                    Ns.Match.liveMatchList('#home-tournaments-live-games', stored_matches);
                 }
             } catch (e) {
                 console.warn(e);
             }
 
             //display tournament header info
-            document.getElementById('home-tournament-header')[Ns.game.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
+            document.getElementById('home-tournament-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
             document.getElementById('home-tournament-pic').src = tournament.photo_url;
             document.getElementById('home-tournament-name').innerHTML = tournament.name;
             if(tournament.seasons.length > 0){
@@ -329,7 +329,7 @@ Ns.game.Match = {
             }
             
 
-            Ns.game.Match.refreshTournamentsMatchList(tournament);
+            Ns.Match.refreshTournamentsMatchList(tournament);
         }
 
     },
@@ -362,8 +362,8 @@ Ns.game.Match = {
                         });
 
                         if (matches.length) {
-                            Ns.game.Match.liveMatchList('#home-tournaments-live-games', matches);
-                            var key = Ns.game.Match.tournamentMatchKey(matches[0].tournament_name);
+                            Ns.Match.liveMatchList('#home-tournaments-live-games', matches);
+                            var key = Ns.Match.tournamentMatchKey(matches[0].tournament_name);
                             window.localStorage.setItem(key, JSON.stringify(matches));
                         } else {
                             //TODO - display no match found or something similar
@@ -400,11 +400,11 @@ Ns.game.Match = {
             return;
         }
         if (match.group_name) {
-            Ns.game.Match._lstGroupsMatch.prependItem(match);
+            Ns.Match._lstGroupsMatch.prependItem(match);
         } else if (match.tournament_name) {
-            Ns.game.Match._lstTournamentsMatch.prependItem(match);
+            Ns.Match._lstTournamentsMatch.prependItem(match);
         } else {//contact match
-            Ns.game.Match._lstContactsMatch.prependItem(match);
+            Ns.Match._lstContactsMatch.prependItem(match);
         }
 
 
@@ -421,7 +421,7 @@ Ns.game.Match = {
         console.log(obj);
         
         var match = obj.data.match;
-        Ns.game.Match.prependMatchListview(match);
+        Ns.Match.prependMatchListview(match);
 
     },
     
@@ -429,7 +429,7 @@ Ns.game.Match = {
         console.log(obj);
         
         var match = obj.data.match;
-        Ns.game.Match.prependMatchListview(match);
+        Ns.Match.prependMatchListview(match);
 
     },
     
@@ -437,7 +437,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.prependMatchListview(match);
+        Ns.Match.prependMatchListview(match);
 
     },
 
@@ -445,7 +445,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.prependMatchListview(match);
+        Ns.Match.prependMatchListview(match);
 
     },
 
@@ -453,7 +453,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.updateMatchListview(match);
+        Ns.Match.updateMatchListview(match);
 
     },
 
@@ -461,7 +461,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.updateMatchListview(match);
+        Ns.Match.updateMatchListview(match);
 
     },
 
@@ -469,7 +469,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.updateMatchListview(match);
+        Ns.Match.updateMatchListview(match);
 
     },
 
@@ -477,7 +477,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.updateMatchListview(match);
+        Ns.Match.updateMatchListview(match);
 
     },
 
@@ -495,7 +495,7 @@ Ns.game.Match = {
         console.log(obj);
 
         var match = obj.data.match;
-        Ns.game.Match.updateMatchListview(match);
+        Ns.Match.updateMatchListview(match);
 
 
     }

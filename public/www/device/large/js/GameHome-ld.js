@@ -15,7 +15,7 @@ Ns.GameHome = {
 
     showGameView: function (match) {
 
-        Ns.game.Match.currentUserMatch = match;
+        Ns.Match.currentUserMatch = match;
         
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         Ns.GameView.Content(match);
@@ -119,7 +119,7 @@ Ns.GameHome = {
             onShow: function () {
                 //access ui component here
                 var me = this;
-                Ns.game.Bluetooth.start({
+                Ns.Bluetooth.start({
                     data: Ns.ui.UI.selectedGame,
                     container: container_id,
                     onReady: function (data) {

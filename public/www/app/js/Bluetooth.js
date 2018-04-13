@@ -1,7 +1,7 @@
 
 /* global Main */
 
-Ns.game.Bluetooth = {
+Ns.Bluetooth = {
 
     start: function (obj) {
 
@@ -138,7 +138,7 @@ Ns.game.Bluetooth = {
             }, 5000);
         }
 
-        console.log('Not fully implemented - Ns.game.Bluetooth.start');
+        console.log('Not fully implemented - Ns.Bluetooth.start');
 
         return true;
     }

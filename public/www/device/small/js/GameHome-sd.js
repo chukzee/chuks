@@ -16,7 +16,7 @@ Ns.GameHome = {
     },
     showGameView: function (match) {
         
-        Ns.game.Match.currentUserMatch = match;
+        Ns.Match.currentUserMatch = match;
         
         Main.page.show({
             url: Ns.GameHome.GAME_VIEW_HTML,
@@ -117,7 +117,7 @@ Ns.GameHome = {
             onShow: function () {
                 //access ui component here
                 var me = this;
-                Ns.game.Bluetooth.start({
+                Ns.Bluetooth.start({
                     data: data,
                     container: container_id,
                     onReady: function (argu) {

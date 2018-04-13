@@ -472,7 +472,7 @@ Ns.ui.GamePanel = {
 
 
             var gamePanel = document.getElementById("home-game-panel");
-            if (Ns.game.Match.hasMatchData) {
+            if (Ns.Match.hasMatchData) {
                 var user = Ns.view.UserProfile.appUser;
                 if (first_match_data.white_id === user.id
                         || first_match_data.black_id === user.id) {

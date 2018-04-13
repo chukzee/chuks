@@ -18,10 +18,10 @@ and open the template in the editor.
   border: 1px #777 solid; }
 
 .game9ja-chess-board tr:nth-child(odd) td:nth-child(even), .game9ja-draft-board tr:nth-child(odd) td:nth-child(even) {
-  background: #000; }
+  background: #444; }
 
 .game9ja-chess-board tr:nth-child(even) td:nth-child(odd), .game9ja-draft-board tr:nth-child(even) td:nth-child(odd) {
-  background: #000; }
+  background: #444; }
 
 /*Deprecated - will cause conflict in mobile device especially small screen device
   where the touch by the hand must not be on the square to be highlighted since we

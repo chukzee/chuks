@@ -22,7 +22,7 @@ and open the template in the editor.
             var device_category = "medium";
             var Main = {
                 device: {
-                    isMobileDeviceReady: true,
+                    isMobileDeviceReady: false,
 
                     isSmall: function () {
                         return device_category === "small";
@@ -47,10 +47,29 @@ and open the template in the editor.
 
 
             function showChess2D(parameters) {
+                var obj = {
+                    //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
+                    white: true, //whether the user is white or black. For watched games this field in absent
+                    container: 'board_container',
+                    pieceTheme: 'alpha'
+                };
 
-                Ns.game.two.Chess2D.load({
-                    container: 'board_container'
-                })
+                if (obj.white === true) {//strictly true
+                    obj.flip = false;
+                } else if (obj.white === false) {//strictly false
+                    obj.flip = true;
+                }
+
+                var chess;
+
+                if (obj.gamePosition) {
+                    chess = new Chess(obj.gamePosition);
+                } else {
+                    chess = new Chess();//starting position
+                }
+                Ns.game.two.Chess2D.load(chess, obj, function (game) {
+
+                });
 
             }
 
@@ -60,6 +79,7 @@ and open the template in the editor.
             Ns.game.two.Chess2D = {
 
                 chess: null,
+                userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
                 isBoardFlip: false, //whether black to white direction. default is white to black (false)
                 squareList: {},
                 hoverSquare: null,
@@ -89,7 +109,8 @@ and open the template in the editor.
                  * obj = {<br>
                  *        container: 'the_container', //compulsory <br>
                  *        gamePosition: 'the_game_posiont', //optional<br>
-                 *        flip:'true or false',//whether black to white direction. default is white to black (false) <br>
+                 *        white: true, //whether the user is white or black. For watched games this field in absent<br>
+                 *        flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above<br>
                  *        pieceTheme: 'the_piece_theme', //optional<br>
                  *        boardTheme: 'the_board_theme'  //optional<br>
                  * }<br>
@@ -118,37 +139,36 @@ and open the template in the editor.
                  * @param {type} obj
                  * @returns {undefined}
                  */
-                load: function (obj) {
-                    if (obj.gamePosition) {
-                        this.chess = new Chess(obj.gamePosition);
-                    } else {
-                        this.chess = new Chess();//starting position
-                    }
-
+                load: function (chess, obj, callback) {
+                    this.chess = chess;
+                    this.userSide = obj.white === true ? 'w' : (obj.white === false ? 'b' : null); //strictly true or false
                     this.isBoardFlip = obj.flip;
+
                     var el = document.getElementById(obj.container);
                     Ns.game.two.Chess2D.boardContainer = el;
                     el.innerHTML = '';//clear any previous
-                    var chessboad = this.board(el);
+                    var chessboad = this.board(el, obj.pieceTheme, obj.bordTheme);
                     el.appendChild(chessboad);
 
-
+                    callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
                 },
 
-                board: function (container) {
+                board: function (container, piece_theme, board_theme) {
                     var table = document.createElement('table');
                     table.className = 'game9ja-chess-board';
 
-                    if (Main.device.isMobileDeviceReady) {
-                        table.addEventListener('touchstart', this.onTouchStartBoard);
-                        table.addEventListener('touchmove', this.onHoverBoard);
-                        table.addEventListener('touchend', this.onHoverBoardEnd);
-                        table.addEventListener('touchcancel', this.onHoverBoardEnd);
-                    } else {
-                        table.addEventListener('click', this.onClickBoard);
-                        table.addEventListener('mousemove', this.onHoverBoard);
-                        table.addEventListener('mouseout', this.onHoverBoardEnd);
+                    if (this.userSide) {//enable board listener only if the user is playing game
+                        if (Main.device.isMobileDeviceReady) {
+                            container.addEventListener('touchstart', this.onTouchStartBoard);
+                            container.addEventListener('touchmove', this.onHoverBoard);
+                            container.addEventListener('touchend', this.onHoverBoardEnd);
+                            container.addEventListener('touchcancel', this.onHoverBoardEnd);
+                        } else {
+                            container.addEventListener('click', this.onClickBoard);
+                            container.addEventListener('mousemove', this.onHoverBoard);
+                            container.addEventListener('mouseout', this.onHoverBoardEnd);
+                        }
                     }
 
                     for (var i = 0; i < this.boardRowCount; i++) {
@@ -177,14 +197,14 @@ and open the template in the editor.
                     var sq_w = box.width / this.boardRowCount;
                     var sq_h = box.height / this.boardRowCount;
 
-                    var pw = sq_w * 0.7; // piece width
-                    var ph = sq_h * 0.7; //piece height
+                    var pw = sq_w * 0.8; // piece width
+                    var ph = sq_h * 0.8; //piece height
 
                     //range pieces
                     for (var i = 0; i < 64; i++) {
                         var nsq = this.toSquareNotation(i);
                         var pce = this.chess.get(nsq);
-                        if(!pce){
+                        if (!pce) {
                             continue;
                         }
                         var sq = i;
@@ -195,18 +215,16 @@ and open the template in the editor.
                         //create piece element
                         var pe = document.createElement('img');
 
-                        //pe.style.backgroundColor = 'blue';//testing
-                        //pe.innerHTML = sq;//testing
-
+                        pe.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
                         pe.style.width = pw + 'px';
                         pe.style.height = ph + 'px';
                         var center = this.squareCenter(sq);
                         var py = center.y - ph / 2;
                         var px = center.x - pw / 2;
-                        pe.style.position = 'absolute'; 
+                        pe.style.position = 'absolute';
                         pe.style.top = py + 'px';
                         pe.style.left = px + 'px';
-                        
+
                         container.appendChild(pe);
 
                         console.log(pce);
@@ -355,65 +373,89 @@ and open the template in the editor.
                         y: center_y
                     };
                 },
+                highlightSquare: function (sqEl, style) {
+                    if (sqEl) {
+                        sqEl.style = style;
+                    }
+                },
                 onClickBoard: function (evt, is_tap) {
+                    var me = Ns.game.two.Chess2D;
                     if (is_tap) {
-                        Ns.game.two.Chess2D.boardX = Ns.game.two.Chess2D.startTouchBoardX;
-                        Ns.game.two.Chess2D.boardY = Ns.game.two.Chess2D.startTouchBoardY;
-                        Ns.game.two.Chess2D.boardRow = Ns.game.two.Chess2D.startTouchBoardRow;
-                        Ns.game.two.Chess2D.boardCol = Ns.game.two.Chess2D.startTouchBoardCol;
-                        Ns.game.two.Chess2D.boardSq = Ns.game.two.Chess2D.startTouchBoardSq;
+                        me.boardX = me.startTouchBoardX;
+                        me.boardY = me.startTouchBoardY;
+                        me.boardRow = me.startTouchBoardRow;
+                        me.boardCol = me.startTouchBoardCol;
+                        me.boardSq = me.startTouchBoardSq;
                     } else {
-                        Ns.game.two.Chess2D.boardXY(this, evt, is_tap);
+                        me.boardXY(this, evt, is_tap);
                     }
 
+                    if (me.pickedSquare) {
+                        me.highlightSquare(me.pickedSquare, '');//remove the highlight
+                        me.pickedSquare = null;
+                        return;
+                    }
+
+                    var sq = me.boardSq;
+                    var sqn = me.toSquareNotation(sq);
+                    var pce = me.chess.get(sqn);
+                    if (pce && pce.color === me.userSide) {
+                        me.pickedSquare = me.squareList[sq];
+                        me.highlightSquare(me.pickedSquare, 'background: yellow');
+                    }
                 },
                 onTouchStartBoard: function (evt) {
-
+                    var me = Ns.game.two.Chess2D;
                     if (evt.touches) {
                         if (evt.touches.length === 1) {
                             evt.preventDefault();//important!
-                            Ns.game.two.Chess2D.boardXY(this, evt, true);
+                            me.boardXY(this, evt, true);
                         }
                     }
                 },
                 onHoverBoard: function (evt) {
-
+                    var me = Ns.game.two.Chess2D;
                     if (evt.touches) {
                         if (evt.touches.length === 1) {
                             evt.preventDefault();
-                            Ns.game.two.Chess2D.boardXY(this, evt);
-                            Ns.game.two.Chess2D.isTouchingBoard = true;
+                            me.boardXY(this, evt);
+                            me.isTouchingBoard = true;
                         }
                     } else {
                         //mouse move
-                        Ns.game.two.Chess2D.boardXY(this, evt);
+                        me.boardXY(this, evt);
                     }
 
-                    if (Ns.game.two.Chess2D.hoverSquare) {
-                        Ns.game.two.Chess2D.hoverSquare.style = '';
+                    var sq = me.boardSq;
+                    console.log(me.squareList[sq], me.pickedSquare);
+                    if (me.squareList[sq] === me.pickedSquare) {
+                        console.log('leave sq ', sq);
+                        return;
                     }
 
-                    var sq = Ns.game.two.Chess2D.boardSq;
-
-                    Ns.game.two.Chess2D.hoverSquare = Ns.game.two.Chess2D.squareList[sq];
-                    if (Ns.game.two.Chess2D.hoverSquare) {
-                        Ns.game.two.Chess2D.hoverSquare.style = 'background: red;';
+                    if (me.hoverSquare !== me.pickedSquare) {
+                        me.highlightSquare(me.hoverSquare, '');//remove the highlight
                     }
+                    me.hoverSquare = me.squareList[sq];
 
+                    me.highlightSquare(me.hoverSquare, 'background: red');
+
+                    console.log('hover sq ', sq);
                 },
 
                 onHoverBoardEnd: function (evt) {
-                    if (!Ns.game.two.Chess2D.isTouchingBoard) {// tap detected
-                        Ns.game.two.Chess2D.onClickBoard(null, true);
+                    var me = Ns.game.two.Chess2D;
+                    if (evt.touches && !me.isTouchingBoard) {// tap detected
+                        me.onClickBoard(null, true);
                         return;
                     }
-                    Ns.game.two.Chess2D.boardX = -1;
-                    Ns.game.two.Chess2D.boardY = -1;
-                    Ns.game.two.Chess2D.isTouchingBoard = false;
+                    me.boardX = -1;
+                    me.boardY = -1;
+                    me.isTouchingBoard = false;
 
                 },
                 boardXY: function (container, e, is_start_touch) {
-
+                    var me = Ns.game.two.Chess2D;
                     var posx = 0;
                     var posy = 0;
 
@@ -439,8 +481,8 @@ and open the template in the editor.
 
                     //row and col
 
-                    var sq_w = box.width / Ns.game.two.Chess2D.boardRowCount;
-                    var sq_h = box.height / Ns.game.two.Chess2D.boardRowCount;
+                    var sq_w = box.width / me.boardRowCount;
+                    var sq_h = box.height / me.boardRowCount;
 
                     if (Main.device.isMobileDeviceReady
                             && !Main.device.isLarge()) {//for only smart phones and tablets of medium size
@@ -451,7 +493,7 @@ and open the template in the editor.
                     }
 
                     var row = Math.floor((box.height - y) / sq_h);
-                    var col = Ns.game.two.Chess2D.boardRowCount - Math.floor((box.width - x) / sq_w) - 1;
+                    var col = me.boardRowCount - Math.floor((box.width - x) / sq_w) - 1;
 
                     if (row < 0) {
                         row = 0;
@@ -460,32 +502,32 @@ and open the template in the editor.
                         col = 0;
                     }
 
-                    if (row > Ns.game.two.Chess2D.boardRowCount - 1) {
-                        row = Ns.game.two.Chess2D.boardRowCount - 1;
+                    if (row > me.boardRowCount - 1) {
+                        row = me.boardRowCount - 1;
                     }
-                    if (col > Ns.game.two.Chess2D.boardRowCount - 1) {
-                        col = Ns.game.two.Chess2D.boardRowCount - 1;
+                    if (col > me.boardRowCount - 1) {
+                        col = me.boardRowCount - 1;
                     }
 
-                    var sq = row * Ns.game.two.Chess2D.boardRowCount + col;
+                    var sq = row * me.boardRowCount + col;
 
                     if (is_start_touch) {
-                        Ns.game.two.Chess2D.startTouchBoardX = x;
-                        Ns.game.two.Chess2D.startTouchBoardY = y;
-                        Ns.game.two.Chess2D.startTouchBoardRow = row;
-                        Ns.game.two.Chess2D.startTouchBoardCol = col;
-                        Ns.game.two.Chess2D.startTouchBoardSq = sq;
+                        me.startTouchBoardX = x;
+                        me.startTouchBoardY = y;
+                        me.startTouchBoardRow = row;
+                        me.startTouchBoardCol = col;
+                        me.startTouchBoardSq = sq;
                     } else {
-                        Ns.game.two.Chess2D.boardX = x;
-                        Ns.game.two.Chess2D.boardY = y;
-                        Ns.game.two.Chess2D.boardRow = row;
-                        Ns.game.two.Chess2D.boardCol = col;
-                        Ns.game.two.Chess2D.boardSq = sq;
+                        me.boardX = x;
+                        me.boardY = y;
+                        me.boardRow = row;
+                        me.boardCol = col;
+                        me.boardSq = sq;
                     }
 
                     //console.log(posx, posy);
                     //console.log(x, y);
-                    console.log('x=', x, 'y=', y, 'row=', row, 'col=', col, 'sq=', sq);
+                    //console.log('x=', x, 'y=', y, 'row=', row, 'col=', col, 'sq=', sq);
 
                 }
             };
