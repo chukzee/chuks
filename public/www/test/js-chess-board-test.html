@@ -13,7 +13,7 @@ and open the template in the editor.
         <script src="../lib/chess.min.js"></script>
     </head>
     <body>
-        <button onclick="showChess2D()" >Show 2D Chess board</button>
+        <button onclick="showChess()" >Show 2D Chess board</button>
         <div id="board_container-outer" style="position: relative; width: 400px; height: 400px; margin:0 auto; background-color: yellow;">
             <div id="board_container" style="width: 300px; height: 300px; position: absolute; top: 50px; left: 50px;"></div>
         </div>
@@ -41,35 +41,22 @@ and open the template in the editor.
 
             var Ns = {
                 game: {
-                    two: {}
+                    two: {},
+                    three: {}
                 }
             };
 
 
-            function showChess2D(parameters) {
+            function showChess(parameters) {
                 var obj = {
                     //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
                     white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
-                    pieceTheme: 'alpha'
+                    pieceTheme: 'alpha',
+                    is3D:false,
                 };
 
-                if (obj.white === true) {//strictly true
-                    obj.flip = false;
-                } else if (obj.white === false) {//strictly false
-                    obj.flip = true;
-                }
-
-                var chess;
-
-                if (obj.gamePosition) {
-                    chess = new Chess(obj.gamePosition);
-                } else {
-                    chess = new Chess();//starting position
-                }
-                Ns.game.two.Chess2D.load(chess, obj, function (game) {
-
-                });
+                Ns.game.Chess.load(obj);
 
             }
 
@@ -78,5 +65,7 @@ and open the template in the editor.
 
         </script>
         <script src="../app/js/game/two/Chess2D.js"></script>
+        <script src="../app/js/game/three/Chess3D.js"></script>
+        <script src="../app/js/game/Chess.js"></script>
     </body>
 </html>
