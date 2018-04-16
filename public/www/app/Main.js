@@ -341,7 +341,7 @@ var Main = {};
 
             alert('onDeviceReady ');
             alert(this.isMobileDeviceReady);
-            
+
 
             this.removeDeskTopScrollbarStyle();//just in case the device ready event delays too much
 
@@ -496,11 +496,11 @@ var Main = {};
         getLandscapeHeight: function () {
             return Main.device.getPortriatWidth();
         },
-        removeDeskTopScrollbarStyle:function(){
-            if(deskStyle){
+        removeDeskTopScrollbarStyle: function () {
+            if (deskStyle) {
                 deskStyle.innerHTML = '';
             }
-            
+
         },
         styleDesktopScrollbar: function (isIndexPage) {
             if (!isIndexPage) {
@@ -3255,17 +3255,17 @@ var Main = {};
         var suffix2 = url.substring(to - 4, to);//ie -tpl
         var suffix3 = url.substring(to - 6, to);//ie -tpl-sd, -tpl-md, -tpl-ld 
         var path;
-        
-        if(suffix3 === '-tpl-sd' || suffix3==='-tpl-md' || suffix3==='-tpl-ld'){
-            path = devicePageTplRouteUrl+url;
-        }else if(suffix2 === '-tpl'){
-            path = appTplRouteUrl+url;
-        }else if(suffix1 === '-sd' || suffix1==='-md' || suffix1==='-ld'){
-            path = devicePageRouteUrl+url;  
-        }else{
-            path = appPageRouteUrl+url;
+
+        if (suffix3 === '-tpl-sd' || suffix3 === '-tpl-md' || suffix3 === '-tpl-ld') {
+            path = devicePageTplRouteUrl + url;
+        } else if (suffix2 === '-tpl') {
+            path = appTplRouteUrl + url;
+        } else if (suffix1 === '-sd' || suffix1 === '-md' || suffix1 === '-ld') {
+            path = devicePageRouteUrl + url;
+        } else {
+            path = appPageRouteUrl + url;
         }
-        
+
         return path;
     }
 
@@ -5042,32 +5042,57 @@ var Main = {};
                     function (response) {
                         var pg_recv = $("<div></div>").html(response);
                         var children = $('body').children();
-                        for (var i = children.length - 1; i > -1; i--) {
-                            $(children[i]).remove();
+                        for (var name = children.length - 1; name > -1; name--) {
+                            $(children[name]).remove();
                         }
                         var childrenRev = $(pg_recv).children();
-                        for (var i = 0; i < childrenRev.length; i++) {
-                            if (childrenRev[i].nodeName === 'TITLE') {
+                        for (var name = 0; name < childrenRev.length; name++) {
+                            if (childrenRev[name].nodeName === 'TITLE') {
                                 continue;
                             }
-                            $('body').append(childrenRev[i]);
+                            $('body').append(childrenRev[name]);
                         }
                         Main.page.init();
 
                         //initialize namespace related objects by calling their constructors
 
-
+                        var cls_list = {};
 
                         for (var n in _nsFiles) {
                             var clazzObj = classObject(_nsFiles[n]);
+
                             if (!clazzObj) {
                                 continue;
                             }
+                            var file_name = _nsFiles[n];// + 1 means including the dot after the global name space
+                            var regex = /\//g; //regex to match all back slash
+                            cls_name = appNamespace + '.' + file_name.replace(regex, '.');
+                            
+                            cls_list[cls_name] = clazzObj;
+                        }
+
+                        //consider class that extends other class
+
+                        for (var name in cls_list) {
+
+                            clsObj = cls_list[name];
+                            superClsObj = cls_list[clsObj.extend];
+
+                            if (clsObj.extend
+                                    && !superClsObj) {
+                                throw Error('Unknown class to extend by ' + name + ' - ' + clsObj.extend + ' is unknown');
+                            }
+                            doExtend(clsObj, superClsObj, name);
+
+                            if(name==='Ns.game.two.Chess2D'){//TESTING!!!
+                                console.dir(clsObj);
+                            }
+
                             var construct = 'constructor';
-                            if (clazzObj.hasOwnProperty(construct)) {
-                                var construtorFn = clazzObj[construct];
+                            if (clsObj.hasOwnProperty(construct)) {
+                                var construtorFn = clsObj[construct];
                                 if (Main.util.isFunc(construtorFn)) {
-                                    construtorFn.call(clazzObj);
+                                    construtorFn.call(clsObj);
                                 }
                             }
                         }
@@ -5085,6 +5110,39 @@ var Main = {};
                             }
                             return appNs;
                         }
+
+                        function doExtend(obj, e, first) {
+                            if (!e) {
+                                return;
+                            }
+
+                            for (var n in e) {
+                                if (!(n in obj)) {
+                                    obj[n] = e[n];
+                                }
+                            }
+
+                            if (!e.extend || //no more extend
+                                    e.extend === first//cyclic extend
+                                    ) {
+                                return;
+                            }
+
+                            var eObj = cls_list[e.extend];// super class object
+
+                            if (!eObj) {
+                                throw new Error('Unknown class to extend - ' + e.extend);
+                            }
+
+                            try {
+                                doExtend(obj, eObj, first);
+                            } catch (e) {
+                                console.error('This error is most likely caused by a class extending itself - ', eObj.extend, e);
+                                //do not rethrow the error in this recursive method
+                            }
+                        }
+
+
 
 
                     }

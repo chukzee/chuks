@@ -10,7 +10,7 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../app/css/board.css" />
-        <script src="../lib/chess.min.js"></script>
+        <script src="../lib/draftgame.js"></script>
     </head>
     <body>
         <button onclick="showChess()" >Show 2D Chess board</button>
@@ -66,16 +66,16 @@ and open the template in the editor.
         </script>
         <script src="../app/js/game/AbstractBoard2D.js"></script>
         <script src="../app/js/game/AbstractBoard3D.js"></script>
-        <script src="../app/js/game/two/Chess2D.js"></script>
-        <script src="../app/js/game/three/Chess3D.js"></script>
-        <script src="../app/js/game/Chess.js"></script>
+        <script src="../app/js/game/two/Draft2D.js"></script>
+        <script src="../app/js/game/three/Draft3D.js"></script>
+        <script src="../app/js/game/Draft.js"></script>
         
         
         <script>
             var ext = Ns.game.AbstractBoard2D;
             for(var n in ext){
-                if(!(n in Ns.game.two.Chess2D)){
-                    Ns.game.two.Chess2D[n] = ext[n];
+                if(!(n in Ns.game.two.Draft2D)){
+                    Ns.game.two.Draft2D[n] = ext[n];
                 }
                
             }
