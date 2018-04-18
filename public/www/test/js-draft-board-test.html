@@ -13,7 +13,7 @@ and open the template in the editor.
         <script src="../lib/draftgame.js"></script>
     </head>
     <body>
-        <button onclick="showChess()" >Show 2D Chess board</button>
+        <button onclick="showDraughts()" >Show 2D Draughts board</button>
         <div id="board_container-outer" style="position: relative; width: 400px; height: 400px; margin:0 auto; background-color: yellow;">
             <div id="board_container" style="width: 300px; height: 300px; position: absolute; top: 50px; left: 50px;"></div>
         </div>
@@ -47,8 +47,9 @@ and open the template in the editor.
             };
 
 
-            function showChess(parameters) {
+            function showDraughts(parameters) {
                 var obj = {
+                    variant: 'international-draughts',
                     //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
                     white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
@@ -56,7 +57,7 @@ and open the template in the editor.
                     is3D:false,
                 };
 
-                Ns.game.Chess.load(obj);
+                Ns.game.Draughts.load(obj);
 
             }
 
@@ -66,16 +67,16 @@ and open the template in the editor.
         </script>
         <script src="../app/js/game/AbstractBoard2D.js"></script>
         <script src="../app/js/game/AbstractBoard3D.js"></script>
-        <script src="../app/js/game/two/Draft2D.js"></script>
-        <script src="../app/js/game/three/Draft3D.js"></script>
-        <script src="../app/js/game/Draft.js"></script>
+        <script src="../app/js/game/two/Draughts2D.js"></script>
+        <script src="../app/js/game/three/Draughts3D.js"></script>
+        <script src="../app/js/game/Draughts.js"></script>
         
         
         <script>
             var ext = Ns.game.AbstractBoard2D;
             for(var n in ext){
-                if(!(n in Ns.game.two.Draft2D)){
-                    Ns.game.two.Draft2D[n] = ext[n];
+                if(!(n in Ns.game.two.Draughts2D)){
+                    Ns.game.two.Draughts2D[n] = ext[n];
                 }
                
             }

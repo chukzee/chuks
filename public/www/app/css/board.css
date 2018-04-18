@@ -49,21 +49,21 @@ and open the template in the editor.
 .game9ja-draft-board-inverse tr:nth-child(even) td:nth-child(even) {
   background: #000; }
 
-/*Deprecated - will cause conflict in mobile device especially small screen device
-  where the touch by the hand must not be on the square to be highlighted since we
-  will be using a hand-pointer image to aid in selection where by the touch will
-  actually be some offset away from the selected square.
+piece, .white-piece-o, .black-piece-o {
+  border-radius: 50%;
+  position: absolute;
+  border: 2px solid #aaa;
+  cursor: pointer;
+  box-sizing: border-box;
+  /*-webkit-transition: 0.3s ease-in-out;
+  -moz-transition: 0.3s ease-in-out;
+  -o-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;*/ }
 
-  Solution - Instead use javascript to set opacity on the square you want highlighted by 
-  tracking the table td element. 
+.white-piece-o {
+  background: #CC0000; }
 
-.game9ja-draft-board-inverse tr:nth-child(odd) td:nth-child(odd):hover{
-    opacity : $highlight_opacity;
-}
-
-.game9ja-draft-board-inverse tr:nth-child(even) td:nth-child(even):hover{
-    opacity : $highlight_opacity;
-}
-*/
+.black-piece-o {
+  background: #00001F; }
 
 /*# sourceMappingURL=board.css.map */

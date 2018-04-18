@@ -1,6 +1,8 @@
 
 
-var draft = require('./draftgame')();
+var draft = require('./draftgame-1')();
+
+
 
 draft.printBoard();
 
@@ -52,7 +54,7 @@ console.dir(caps);
 
 console.dir("---------------------");
 
-var filter_caps = draft.filterPaths(22, [4,26,8]);
+var filter_caps = draft.filterPaths(22, [44,66,88]);
 
 console.dir(filter_caps);
 
@@ -70,9 +72,8 @@ draft.moveTo(22,cap, function(obj){
     console.log(JSON.stringify(obj).length);
 });
 
-
-
-var robot = new draft.Robot(draft.DefaultBoardPostion, 15);
+var depth = 5;
+var robot = new draft.Robot(draft.DefaultBoardPostion, depth);
 
 var startTime = new Date().getTime();
 
@@ -85,5 +86,21 @@ draft.printBoard();
 console.log('elapse ', (new Date().getTime() - startTime)/1000, 'secs');
 
 
+//var res = draft.move('i5-j6');
+var res = draft.move('16-21');
+
+console.log('move result', res);
+if(!res){
+    console.log('last error', draft.lastError);
+}
+
+draft.printBoard();
+
 //draft.test();
+//draft.test1();
+//draft.test2();
+//draft.test3();
+
+
+
 

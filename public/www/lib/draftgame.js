@@ -3,8 +3,8 @@ var draft = {};
 
 var Draft9ja = draftFn.bind(draft); //bind the 'this' of draftFn to draft - this technique is twice faster than not using the bind method - I have tested it!!!
 
-function draftFn (size) {
-    this.MAX_VALUE = 1000000;    
+function draftFn(size) {
+    this.MAX_VALUE = 1000000;
     this.turn = true; //white
     this.board = [];
     this.pieces = [];
@@ -17,6 +17,10 @@ function draftFn (size) {
     this.whiteKingCount = 0;
     this.blackKingCount = 0;
     this.DEPTH = 5;
+    this.lastError = null;
+    this.SAN = {}; // Mapping for the Standard Algebraic Notation (SAN) to the internal square number (or square index).
+    this.NN = {};// Mappping for the  Numeric Notation (NN) to the internal square number (or square index).
+    this.SqNumber = {};// Mapping for the internal square number (or square index) to the Standard Algebraic Notation (SAN) and Numeric Notation (NN).
     var eval_count = 0;
     var prune_count = 0;
     var node_count = 0;
@@ -53,32 +57,40 @@ function draftFn (size) {
     };
     /*
      * Set the current board position of the game.
-     * This method takes an object as parameter with 
-     * the following compulsory properties:
+     * This method takes a string or an object as parameter<br>
      * 
-     * turn -  player's turn. ie white or black
-     * size - The size of the game
-     * pieces - The pieces on the board or the entire pieces of the game.
-     *          NOTE: if only the pieces on the board are provided, the rest 
-     *          will be automaticcally set with their square location set to
-     *          OFF_BOARD and other default properties.
+     * If the parameter is string then it is assumed to be the game
+     * position represent in Forsyth-Edwards Notation FEN<br> 
+     * 
+     * If the parameter is an object the following compulsory properties
+     * must be provided:<br>
+     * 
+     * turn -  player's turn. ie white or black<br>
+     * size - The size of the game<br>
+     * pieces - The pieces on the board or the entire pieces of the game.<br>
+     *          NOTE: if only the pieces on the board are provided, the rest <br>
+     *          will be automaticcally set with their square location set to<br>
+     *          OFF_BOARD and other default properties.<br>
      * 
      * @param {type} boardPositonObj
      * @return {undefined}
      */
-    this.boardPosition = function (boardPositonObj) {
+    this.boardPosition = function (board_positon) {
+        if (typeof board_positon === 'string') {
+            board_positon = parseFEN.call(this, board_positon);
+        }
 
-        if (boardPositonObj.turn !== true && boardPositonObj.turn !== false) {
+        if (board_positon.turn !== true && board_positon.turn !== false) {
             throw new Error("board position must have the turn set to true or false");
         }
-        var brd_size = boardPositonObj.size - 0;//implicitly convert to numeric
+        var brd_size = board_positon.size - 0;//implicitly convert to numeric
         if (isNaN(brd_size)) {
             throw new Error("board size must be a number");
         }
 
-        this.turn = boardPositonObj.turn;
+        this.turn = board_positon.turn;
         initBoard.call(this, brd_size);
-        var gm_pieces = boardPositonObj.pieces;
+        var gm_pieces = board_positon.pieces;
 
         //validate pieces : e.g check for duplicate piece id ; check piece properties
         for (var i = 0; i < gm_pieces.length; i++) {
@@ -110,7 +122,7 @@ function draftFn (size) {
             }
         }
 
-        if (boardPositonObj.pieces.length < BoardPieceCount[this.SIZE]) {
+        if (board_positon.pieces.length < BoardPieceCount[this.SIZE]) {
             //first count white and black captured
             var w = 0;
             var b = 0;
@@ -190,6 +202,200 @@ function draftFn (size) {
         boardPiecesCount.call(this);
     };
 
+    function parseFEN(fen) {
+        var position = {
+            turn: null,
+            size: this.SIZE,
+            pieces: null
+        };
+
+        if (fen.charAt(0) !== '[' || fen.charAt(fen.length - 1) !== ']') {
+            throw Error('Invalid FEN  - openning or closing square brackets missing!');
+        }
+
+        fen = fen.substring(1, fen.length - 1);
+
+        fen = fen.split(' ');
+
+        if (fen[0] !== 'FEN') {
+            throw Error('Invalid FEN  - missing FEN header!');
+        }
+
+        if (fen.length > 2) {
+            throw Error('Invalid FEN  - space is not allowed in FEN body and only a single space can separate the header and body!');
+        }
+
+        fen = fen[1];
+
+        if (!fen) {
+            throw Error('Invalid FEN  - missing FEN body');
+        }
+
+        if (fen.charAt(0) !== '"' || fen.charAt(fen.length - 1) !== '"') {
+            throw Error('Invalid FEN body  - openning or closing double quote missing!');
+        }
+
+        fen = fen.split(':');
+        if (fen[0] === 'W' || fen[0] === 'w') {
+            position.turn = true;//white
+        } else if (fen[0] === 'B' || fen[0] === 'B') {
+            position.turn = false;//black
+        } else {
+            throw Error('Invalid FEN body - invalid turn token, expecte W or B!');
+        }
+
+        var w_pos, b_pos;
+        if (fen[1].charAt(0) === 'W' || fen[1].charAt(0) === 'w') {
+            w_pos = fen[1];
+        } else if (fen[1].charAt(0) === 'B' || fen[1].charAt(0) === 'b') {
+            b_pos = fen[1];
+        } else if (fen[2].charAt(0) === 'W' || fen[2].charAt(0) === 'w') {
+            w_pos = fen[2];
+        } else if (fen[2].charAt(0) === 'B' || fen[2].charAt(0) === 'b') {
+            b_pos = fen[2];
+        }
+
+        if (!w_pos) {
+            throw Error('Invalid FEN body - white game position missing!');
+        }
+
+        if (!b_pos) {
+            throw Error('Invalid FEN body - black game position missing!');
+        }
+
+        w_pos = w_pos.substring(1);
+        b_pos = b_pos.substring(1);
+
+        if (w_pos.indexOf(',') > -1) {
+            w_pos = w_pos.split(',');
+        } else {
+            w_pos = w_pos.split('-');
+            w_pos[0] = w_pos[0] - 0;//implicitly convert to numeric
+            w_pos[1] = w_pos[1] - 0;//implicitly convert to numeric
+            var w_p = [];
+            if (w_pos.length > 2) {
+                throw Error('Invalid FEN body - invalid  white game position!');
+            }
+            if (isNaN(w_pos[0]) || isNaN(w_pos[1])) {
+                throw Error('Invalid FEN body - invalid token in white game position!');
+            }
+            for (var i = w_pos[0]; i < w_pos[1] + 1; i++) {
+                w_p.push(i);
+            }
+            w_pos = w_p;
+        }
+
+        if (b_pos.indexOf(',') > -1) {
+            b_pos = b_pos.split(',');
+        } else {
+            b_pos = b_pos.split('-');
+            b_pos[0] = b_pos[0] - 0;//implicitly convert to numeric
+            b_pos[1] = b_pos[1] - 0;//implicitly convert to numeric
+            var b_p = [];
+            if (b_pos.length > 2) {
+                throw Error('Invalid FEN body - invalid  black game position!');
+            }
+            if (isNaN(b_pos[0]) || isNaN(b_pos[1])) {
+                throw Error('Invalid FEN body - invalid token in black game position!');
+            }
+            for (var i = b_pos[0]; i < b_pos[1] + 1; i++) {
+                b_p.push(i);
+            }
+            b_pos = b_p;
+        }
+
+        position.pieces = [];
+
+        for (var i = 0; i < w_pos.length; i++) {
+            var sq = w_pos[i];
+            var crowned = false;
+            if (sq.charAt(0) === 'K' || sq.charAt(0) === 'k') {
+                sq = sq.substring(1);
+                crowned = true;
+            }
+
+            if (isNaN(sq)) {//possibly Standard Algebraic Notation
+                sq = this.SAN[sq];
+            } else {//posibly Numeric Notation
+                sq = this.NN[sq];
+            }
+
+            if (!sq && sq !== 0) {
+                throw Error('Invalid FEN body - invalid token in white game position!');
+            }
+
+            if (sq >= this.SQ_COUNT) {
+                throw Error('Invalid FEN body - white piece location out of range!');
+            }
+
+            var pce = new Piece(sq, true, crowned);
+            position.pieces.push(pce);
+        }
+
+
+        for (var i = 0; i < b_pos.length; i++) {
+            var sq = b_pos[i];
+            var crowned = false;
+            if (sq.charAt(0) === 'K' || sq.charAt(0) === 'k') {
+                sq = sq.substring(1);
+                crowned = true;
+            }
+
+            if (isNaN(sq)) {//possibly Standard Algebraic Notation
+                sq = this.SAN[sq];
+            } else {//posibly Numeric Notation
+                sq = this.NN[sq];
+            }
+
+            if (!sq && sq !== 0) {
+                throw Error('Invalid FEN body - invalid token in black game position!');
+            }
+
+            if (sq >= this.SQ_COUNT) {
+                throw Error('Invalid FEN body - black piece location out of range!');
+            }
+
+            var pce = new Piece(sq, false, crowned);
+            position.pieces.push(pce);
+        }
+
+        return position;
+    }
+
+    function initNotations() {
+
+        for (var i = 1; i < this.SIZE + 1; i++) {
+            for (var col_index = 0; col_index < this.SIZE; col_index++) {
+                var prop = toRowChar.call(this, col_index) + i;
+                this.SAN[prop] = toSquareInternal.call(this, prop);
+            }
+        }
+
+        for (var i = 1; i < this.SQ_COUNT / 2 + 1; i++) {
+            this.NN[i] = toSquareInternal.call(this, i);
+        }
+
+
+        for (var i = 0; i < this.SQ_COUNT; i++) {
+            this.SqNumber[i] = {};
+            for (var n in this.SAN) {
+                if (this.SAN[n] === i) {
+                    this.SqNumber[i].SAN = n;
+                    break;
+                }
+            }
+
+            for (var n in this.NN) {
+                if (this.NN[n] === i) {
+                    this.SqNumber[i].NN = n;
+                    break;
+                }
+            }
+        }
+
+    }
+    ;
+
     function boardPiecesCount() {
 
         this.whiteCount = 0;
@@ -219,7 +425,11 @@ function draftFn (size) {
         //console.log('whiteKingCount ', whiteKingCount);
         //console.log('blackKingCount ', blackKingCount);
     }
-
+    this.getPiece = function(sq_notation){
+        var sq = this.SAN[sq_notation];
+        return this.board[sq].piece;
+    };
+    
     this.setPiece = function (sq, white, crowned) {
 
         var r = (this.SIZE - 2) / 2;
@@ -363,6 +573,7 @@ function draftFn (size) {
 
         this.DefaultBoardPostion.pieces = this.pieces;
 
+        initNotations.call(this);
     }
 
 
@@ -694,6 +905,18 @@ function draftFn (size) {
         }
     }
 
+    /**
+     *Since it is possible for a piece to square in more than one direction
+     *from a give square, this method is used to match all possible capture direction
+     *and return the capture path from the given square.<br>
+     *It uses the provide array of 'tos' squares.
+     *If the 'tos' squares match any of the capture paths (direction) from the given
+     *square, that path is returned.
+     *
+     * @param {type} from square of the piece to move
+     * @param {type} tos matching capture squares. ie all the squares the moving
+     * piece jump to.
+     * @returns {Array|unresolved|nm$_draftgame-1.norm_caps|Array,undefined|draftFn.searchCaputrePaths.caps|nm$_draftgame-1.draftFn.filterPaths.caps|undefined|draftFn.filterPaths.caps}     */
     this.filterPaths = function (from, tos) {
 
         var caps = this.searchCaputrePaths(from);
@@ -779,7 +1002,8 @@ function draftFn (size) {
     }
 
 
-    function doMove(from, path, fn) {
+    function doMove(from, path, result) {
+
         var pce = this.board[from].piece;
         var to = path;
         if (path.constructor === Array) {
@@ -827,23 +1051,35 @@ function draftFn (size) {
             pce.crowned = true;//crown the piece
         }
 
-        if (fn) {
+        if (result) {
             //REMIND - Send move in compressed form since boardPosition data
             //length could be upto 2K which is too large for just a move.
-            //hint: use base64 or custom compression techique like 
+            //hint: use custom compression techique like 
             //using one or two letters to represent a word 
-            fn({
-                error: null, //yes, the user must check for error
-                from: from,
-                to: to,
-                target: pce,
-                path: path,
-                boardPosition: {
-                    turn: !pce.white,
-                    size: this.SIZE,
-                    pieces: this.pieces
+            var from_san = this.SqNumber[from].SAN;
+            var to_san = this.SqNumber[from].SAN;
+            var move_notation = from_san;
+            if (path.constructor === Array) {
+                for (var i = 0; i < path.length; i++) {
+                    move_notation += 'x' + this.SqNumber[path[i].dest_sq].SAN;
                 }
-            });
+            } else {
+                move_notation += '-' + to_san;
+            }
+
+            var move_result = {
+                error: null, //yes, the user must check for error
+                from: from_san,
+                to: to_san,
+                move: move_notation,
+                boardPositon: toFEN.call(this)
+            };
+
+            if (result === true) {
+                return move_result;
+            } else if (typeof result === 'function') {
+                result(move_result);
+            }
 
         }
 
@@ -860,15 +1096,18 @@ function draftFn (size) {
 
         //at this point the move is invalid
         if (to === this.OFF_BOARD) {
-            fn({error: "Not a square."});
+            this.lastError = "Not a square.";
         } else if (this.board[to].piece) {
-            fn({error: "Square is not empty."});
+            this.lastError = "Square is not empty.";
         } else if (!this.board[to].dark) {
-            fn({error: "Cannot play on a light square."});
+            this.lastError = "Cannot play on a light square.";
         } else {
-            fn({error: "Invalid move."});
+            this.lastError = "Invalid move.";
         }
 
+        if (typeof fn === 'function') {
+            fn({error: this.lastError});
+        }
 
         return false;
     }
@@ -891,25 +1130,30 @@ function draftFn (size) {
 
         //at this point the move is invalid
         if (to === this.OFF_BOARD) {
-            fn({error: "Not a square."});
+            this.lastError = "Not a square.";
         } else if (this.board[to].piece) {
-            fn({error: "Square is not empty."});
+            this.lastError = "Square is not empty.";
         } else if (!this.board[to].dark) {
-            fn({error: "Cannot play on a light square."});
+            this.lastError = "Cannot play on a light square.";
         } else {
-            fn({error: "Invalid move."});
+            this.lastError = "Invalid move.";
         }
 
-
+        if (typeof fn === 'function') {
+            fn({error: this.lastError});
+        }
 
         return false;
     }
 
     function validateCapture(from, to, fn) {
-        var caps = draft.searchCaputrePaths(from);
+        var caps = this.searchCaputrePaths(from);
         if (caps.length === 0
                 || (caps.length === 1 && caps[0].length === 0)) {
-            fn({error: "No capture opportunity."});
+            this.lastError = "No capture opportunity.";
+            if (typeof fn === 'function') {
+                fn({error: this.lastError});
+            }
             return false;
         }
         for (var i = 0; i < caps.length; i++) {
@@ -931,8 +1175,10 @@ function draftFn (size) {
             }
         }
 
-        fn({error: "No matching capture path found."});
-
+        this.lastError = "No matching capture path found.";
+        if (typeof fn === 'function') {
+            fn({error: this.lastError});
+        }
         return false;
     }
 
@@ -950,19 +1196,25 @@ function draftFn (size) {
     };
 
     function validateMove(from, to, fn) {
-
+        this.lastError = null;
         if (!this.board[from].piece) {
-            fn({error: "No piece on square."});
+            this.lastError = "No piece on square.";
+            if (typeof fn === 'function') {
+                fn({error: this.lastError});
+            }
             return false;
         }
 
         if (this.needCapture(from) && to.constructor !== Array) {
-            fn({error: "Expected a capture move."});
+            this.lastError = "Expected a capture move.";
+            if (typeof fn === 'function') {
+                fn({error: this.lastError});
+            }
             return false;
         }
 
         if (to.constructor === Array) {
-            return validateCapture(from, to, fn);
+            return validateCapture.call(this, from, to, fn);
         } else {
             if (this.board[from].piece.crowned) {
                 return validateKingMove.call(this, from, to, fn);
@@ -1048,7 +1300,7 @@ function draftFn (size) {
                 //set the move index to where capture started so as to skip previous plain moves
                 this.startMoveIndex = moves.length;
                 this.isCapMove = true;
-                
+
                 var caps = this.searchCaputrePaths(from_sq);
                 for (var i = 0; i < caps.length; i++) {
                     moves.push({from: from_sq, path: caps[i]});
@@ -1061,7 +1313,7 @@ function draftFn (size) {
                 //set the move index to where capture started so as to skip previous plain moves
                 this.startMoveIndex = moves.length;
                 this.isCapMove = true;
-                
+
                 var caps = this.searchCaputrePaths(from_sq);
                 for (var i = 0; i < caps.length; i++) {
                     moves.push({from: from_sq, path: caps[i]});
@@ -1073,13 +1325,251 @@ function draftFn (size) {
 
     };
 
-    this.moveTo = function (from, path, fn) {
-        if (fn) {
-            if (!validateMove.call(this, from, path, fn)) {
+    /**
+     * Get the current board positon using the Forsyth Edwards Notation (FEN).
+     * 
+     * @param {Objet} board_position 
+     * @returns {undefined}  
+     */
+    function toFEN(board_position) {
+
+        var _turn, pces;
+        if (board_position) {
+            _turn = board_position.turn;
+            pces = board_position.pieces;
+        } else {
+            _turn = this.turn;
+            pces = this.pieces;
+        }
+        
+        var wp = 'W';
+        var bp = 'B';
+        for (var i = 0; i < pces.length; i++) {
+            var p = pces[i];
+            if(p.sqLoc === this.OFF_BOARD){
+                continue;
+            }
+            var sq = this.SqNumber[p.sqLoc].SAN;// convert Standard Numeric Notation 
+            sq = p.crowned ? ('K' + sq) : sq;
+            if (p.white) {
+                wp += i < pces.length - 1 ? sq + ',' : sq;
+            } else {
+                bp += i < pces.length - 1 ? sq + ',' : sq;
+            }
+        }
+
+        return '[FEN "' + _turn + ':' + wp + ':' + bp + '"]';
+
+    }
+
+
+
+    function toSquareInternal(notation) {
+
+        if (isNaN(notation)) {//Standard Algebraic Notaion
+            //e.g a1 , b2 , c1 e.t.c
+            notation = notation + "";
+            var a = notation.charAt(0);
+            var b = notation.substring(1);
+
+            //console.log('a', a, 'b', b);
+
+            b = (b - 1) * this.SIZE - 1;
+
+            switch (a) {
+                case 'a':
+                    a = 1;
+                    break;
+                case 'b':
+                    a = 2;
+                    break;
+                case 'c':
+                    a = 3;
+                    break;
+                case 'd':
+                    a = 4;
+                    break;
+                case 'e':
+                    a = 5;
+                    break;
+                case 'f':
+                    a = 6;
+                    break;
+                case 'g':
+                    a = 7;
+                    break;
+                case 'h':
+                    a = 8;
+                    break;
+                case 'i':
+                    a = 9;
+                    break;
+                case 'j':
+                    a = 10;
+                    break;
+                case 'k':
+                    a = 11;
+                    break;
+                case 'l':
+                    a = 12;
+                    break;
+            }
+
+            //console.log('a', a, 'b', b, this.SIZE);
+
+            notation = b + a;
+        } else {
+
+            notation = notation - 0;//implicitly convert to numeric
+
+            //console.log('this.SQ_COUNT', this.SQ_COUNT);
+            //console.log('notation', notation);
+            //console.log('notation * 2', notation * 2);
+
+            var start = this.SQ_COUNT - notation * 2;
+
+            //console.log('start', start);
+            //console.log('start % this.SIZE', start % this.SIZE);
+
+            start = start - start % this.SIZE;
+
+            //console.log('start', start);
+
+            var end = start + this.SIZE;
+
+            var count = (this.SQ_COUNT - end) / 2;
+
+            //console.log('start', start, 'end', end, 'count', count);
+
+
+            for (var i = start; i < end; i++) {
+
+                //console.log('i', i, 'start', start, 'end', end, 'count', count);
+                //console.log(this.board[i].piece);
+
+                if (this.board[i].dark) {
+                    count++;
+                    if (count === notation) {
+                        notation = this.board[i].sq;
+                        break;
+                    }
+
+                }
+            }
+        }
+
+        //console.log('notation', notation);
+
+        var internal_sq_number = notation;
+        return internal_sq_number;
+    }
+    function toRowChar(num) {
+
+        switch (num) {
+            case 0:
+                num = 'a';
+                break;
+            case 1:
+                num = 'b';
+                break;
+            case 2:
+                num = 'c';
+                break;
+            case 3:
+                num = 'd';
+                break;
+            case 4:
+                num = 'e';
+                break;
+            case 5:
+                num = 'f';
+                break;
+            case 6:
+                num = 'g';
+                break;
+            case 7:
+                num = 'h';
+                break;
+            case 8:
+                num = 'i';
+                break;
+            case 9:
+                num = 'j';
+                break;
+            case 10:
+                num = 'k';
+                break;
+            case 11:
+                num = 'l';
+                break;
+        }
+        return num;
+    }
+
+    /**
+     * Make move internally on the board using the provided move notation.<br>
+     * 
+     * examples of valid move notations are:<br>
+     * 46-41  => normal move<br>
+     * 46x33  => capture move<br>
+     * a1-b2  => normal move<br>
+     * a1xc2  => capture move<br>
+     * @param {type} move_notation - the move notation
+     * @returns {undefined}   
+     */
+    this.move = function (move_notation) {
+        var s = move_notation.split(/-/g);
+        var is_capture;
+        if (s.length === 1) {//may be a capture sequence
+            s = move_notation.split(/x/g);
+            if (s.length > 1) {
+                is_capture = true;
+            } else {
+                throw Error('Invalid move notation! must have ' - ' or \'x\' separator - e.g 46-41 or 46x41 or a1-b2 or a1xb2');
+            }
+        }
+        var from;
+        var path = [];
+        for (var i = 0; i < s.length; i++) {
+            //s[i] = toSquareInternal.call(this, s[i]);
+            if (isNaN(s[i])) {//Standard Algebraic Notaion
+                s[i] = this.SAN[s[i]];
+            } else {//Numeric Notation
+                s[i] = this.NN[s[i]];
+            }
+            if (i === 0) {
+                from = s[i];
+            } else if (i > 0) {
+                path.push(s[i]);
+            }
+        }
+        if (is_capture) {
+            path = this.filterPaths(from, path);
+        } else {
+            path = path[0];
+        }
+
+        console.log('from', from, 'path', path);
+
+        return this.moveTo(from, path, true);
+    };
+
+    /**
+     * Make move internally on the board.
+     * 
+     * @param {type} from
+     * @param {type} path
+     * @param {type} result if value is true it return a move result. if the value
+     * is a function the move result is passed are argument.
+     * @returns {undefined}   
+     */
+    this.moveTo = function (from, path, result) {
+        if (result) {
+            if (!validateMove.call(this, from, path, result)) {
                 return;
             }
         }
-        doMove.call(this, from, path, fn);
+        return doMove.call(this, from, path, result);
     };
 
     this.undoMove = function (from, path, was_crowned) {
@@ -1245,7 +1735,7 @@ function draftFn (size) {
         }
 
 
-        //Attack And Defence evaluation is experimental - it make the engine slower and we
+        //Attack And Defence evaluation is experimental - it makes the engine slower and we
         //are not certain if it produces a better searched move since just relying on
         //the piece count on board could make a search depth of 13 which appears to
         //be even stronger. If strength is not improved from this experimation we will
@@ -1267,17 +1757,17 @@ function draftFn (size) {
         var moves = [];
         this.isCapMove = false;//initialize
         this.startMoveIndex = 0;//initialize
-        
+
         for (var p_index = 0; p_index < this.pieces.length; p_index++) {
 
             if (this.pieces[p_index].white !== this.turn
                     || this.pieces[p_index].sqLoc === this.OFF_BOARD) {
                 continue;
             }
-            
+
             this.possibleMoves(this.pieces[p_index].sqLoc, moves);
-            
-            if(this.isCapMove){
+
+            if (this.isCapMove) {
                 //stop further move search since there is a capture and the
                 //rule says player must capture a piece if the opportinity is available
                 break;
@@ -1314,13 +1804,13 @@ function draftFn (size) {
         var value = is_maximizer ? -this.MAX_VALUE : this.MAX_VALUE;//come back  
         var next_turn = !this.turn;
         var node_turn = this.turn;
-        
-        
-        
+
+
+
         var moves = generateMoves.call(this);
         var from, to;
         var start = this.startMoveIndex;
-        for (var i = moves.length -1; i > start -1; i--) {
+        for (var i = moves.length - 1; i > start - 1; i--) {
 
             if (!moves[i].path) {
                 from = (moves[i] >> this.FROM_SQUARE_SHIFT)
@@ -1332,20 +1822,20 @@ function draftFn (size) {
                 to = moves[i].path;
             }
             var pce = this.board[from].piece;
-            
+
             if (pce === null) {//testing!!!
                 console.log(pce);//testing!!!
             }
-            
+
             var was_crowned = pce.crowned; //needed to get the correct status when undoing move
             this.moveTo(from, to);
 
             //console.log('-------moved----------');
             //this.printBoard();
             /*if(node_count>1000000){//TESTING PURPOES! TO BE REMOVED
-                console.log('-------node_count ---------- ', node_count);
-                this.printBoard();
-            }*/
+             console.log('-------node_count ---------- ', node_count);
+             this.printBoard();
+             }*/
 
             var pre_value = value;
 
@@ -1450,10 +1940,10 @@ function draftFn (size) {
         }
 
         draft.boardPosition(boardPositonObj);
-        
+
         this.play = function (fn) {
 
-            var best = bestMove.call(draft,draft.DEPTH);
+            var best = bestMove.call(draft, draft.DEPTH);
             draft.moveTo(best.from, best.path, fn);
         };
     };
@@ -1521,8 +2011,48 @@ function draftFn (size) {
 
     };
 
+    this.test1 = function () {
+        console.log('----------------TEST toInternalSquare with Numeric Notation------------------');
+        for (var i = 1; i < this.SQ_COUNT / 2 + 1; i++) {
+            console.log(toSquareInternal.call(this, i));
+        }
+
+
+    };
+
+
+    this.test2 = function () {
+        console.log('----------------TEST toInternalSquare with Standard Algebraic Notation------------------');
+        for (var i = 1; i < this.SIZE + 1; i++) {
+
+            console.log("a" + i, "=>", toSquareInternal.call(this, "a" + i));
+            console.log("b" + i, "=>", toSquareInternal.call(this, "b" + i));
+            console.log("c" + i, "=>", toSquareInternal.call(this, "c" + i));
+            console.log("d" + i, "=>", toSquareInternal.call(this, "d" + i));
+            console.log("e" + i, "=>", toSquareInternal.call(this, "e" + i));
+            console.log("f" + i, "=>", toSquareInternal.call(this, "f" + i));
+            console.log("g" + i, "=>", toSquareInternal.call(this, "g" + i));
+            console.log("h" + i, "=>", toSquareInternal.call(this, "h" + i));
+            console.log("i" + i, "=>", toSquareInternal.call(this, "i" + i));
+            console.log("j" + i, "=>", toSquareInternal.call(this, "j" + i));
+        }
+
+    };
+
+
+    this.test3 = function () {
+        console.log('----------------TEST Notation initialization------------------');
+
+        console.log("this.NN", this.NN);
+        console.log("this.SAN", this.SAN);
+        console.log("this.SqNumber", this.SqNumber);
+
+
+
+    };
     return this;
-};
+}
+;
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = Draft9ja;

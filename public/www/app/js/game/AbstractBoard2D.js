@@ -4,7 +4,7 @@
 
 Ns.game.AbstractBoard2D = {
 
-    internalGame: null,// the game engine. e.g chessj.s and my draftgame.js
+    internalGame: null, // the game engine. e.g chessj.s and my draftgame.js
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
     isBoardFlip: false, //whether black to white direction. default is white to black (false)
     squareList: {},
@@ -63,10 +63,17 @@ Ns.game.AbstractBoard2D = {
      *   +----+----+----+----+----+----+----+----+
      *      a    b    c    d    e    f    g    h
      *      
+     * @param {type} internal_game
      * @param {type} obj
+     * @param {type} callback
      * @returns {undefined}
      */
     load: function (internal_game, obj, callback) {
+        if(obj.variant){
+            var vrnt = this.getVariant(obj.variant);
+            var s = vrnt.size.split('x'); //e.g 8x8, 10x10, 12x12
+            this.boardRowCount = s[0] - 0;//implicitly convet to numeric
+        }
         this.internalGame = internal_game;
         this.userSide = obj.white === true ? 'w' : (obj.white === false ? 'b' : null); //strictly true or false
         this.isBoardFlip = obj.flip;
@@ -82,29 +89,76 @@ Ns.game.AbstractBoard2D = {
 
     },
 
-    board: function (container, board_cls ,piece_theme, board_theme) {
+    arrangeBoard: function (container, piece_theme) {
+        var box = container.getBoundingClientRect();
+
+        var sq_w = box.width / this.boardRowCount;
+        var sq_h = box.height / this.boardRowCount;
+        var ration = this.pieceSquarRation();
+        if (!ration) {
+            ration = 0.8;
+        }
+        var pw = sq_w * ration; // piece width
+        var ph = sq_h * ration; //piece height
+
+        //range pieces
+        var SQ_COUNT = this.boardRowCount * this.boardRowCount;
+        for (var i = 0; i < SQ_COUNT; i++) {
+            var sqn = this.toSquareNotation(i);
+            var pce = this.getInternalPiece(sqn);
+            if (!pce) {
+                continue;
+            }
+            var sq = i;
+            if (this.isBoardFlip) {
+                sq = this.flipSquare(i);
+            }
+
+            //create piece element
+
+            var pe = this.createPieceElement(pce, piece_theme);
+            pe.dataset.type = "piece";
+            pe.style.width = pw + 'px';
+            pe.style.height = ph + 'px';
+            var center = this.squareCenter(sq);
+            var py = center.y - ph / 2;
+            var px = center.x - pw / 2;
+            pe.style.cursor = 'pointer';
+            pe.style.position = 'absolute';
+            pe.style.top = py + 'px';
+            pe.style.left = px + 'px';
+
+
+            container.appendChild(pe);
+
+            console.log(pce);
+        }
+
+    },
+
+    board: function (container, board_cls, piece_theme, board_theme) {
         var table = document.createElement('table');
         table.className = board_cls;
-        
+
         var me = this;
-        
-        var clickBoard = function(evt){
+
+        var clickBoard = function (evt) {
             me.onClickBoard(evt, this);
         };
-        
-        var touchStartBoard = function(evt){
+
+        var touchStartBoard = function (evt) {
             me.onTouchStartBoard(evt, this);
         };
-        
-        var hoverBoard = function(evt){
+
+        var hoverBoard = function (evt) {
             me.onHoverBoard(evt, this);
         };
-        
-        var hoverBoardEnd = function(evt){
+
+        var hoverBoardEnd = function (evt) {
             me.onHoverBoardEnd(evt, this);
         };
-        
-        
+
+
         if (this.userSide) {//enable board listener only if the user is playing game
             if (Main.device.isMobileDeviceReady) {
                 container.addEventListener('touchstart', touchStartBoard);
@@ -117,8 +171,8 @@ Ns.game.AbstractBoard2D = {
                 container.addEventListener('mouseleave', hoverBoardEnd);//mouseout behaviour is not appropriate because is fires for every children
             }
         }
-        
-        
+
+
 
         for (var i = 0; i < this.boardRowCount; i++) {
             var tr = document.createElement('tr');
@@ -146,9 +200,10 @@ Ns.game.AbstractBoard2D = {
         return table;
     },
     toNumericSq: function (notation) {
+
         notation = notation + "";
         var a = notation.charAt(0);
-        var b = notation.charAt(1);
+        var b = notation.substring(1);
         var b = (b - 1) * this.boardRowCount - 1;
 
         switch (a) {
@@ -176,7 +231,20 @@ Ns.game.AbstractBoard2D = {
             case 'h':
                 a = 8;
                 break;
+            case 'i':
+                a = 9;
+                break;
+            case 'j':
+                a = 10;
+                break;
+            case 'k':
+                a = 11;
+                break;
+            case 'l':
+                a = 12;
+                break;
         }
+
 
         return b + a;
     },
@@ -209,6 +277,18 @@ Ns.game.AbstractBoard2D = {
                 break;
             case 7:
                 col = 'h';
+                break;
+            case 8:
+                col = 'i';
+                break;
+            case 9:
+                col = 'j';
+                break;
+            case 10:
+                col = 'k';
+                break;
+            case 11:
+                col = 'l';
                 break;
         }
 
@@ -289,8 +369,8 @@ Ns.game.AbstractBoard2D = {
             sqEl.style = style;
         }
     },
-    
-    onClickBoard: function (evt, container ,is_tap) {
+
+    onClickBoard: function (evt, container, is_tap) {
         if (is_tap) {
             this.boardX = this.startTouchBoardX;
             this.boardY = this.startTouchBoardY;
@@ -301,6 +381,13 @@ Ns.game.AbstractBoard2D = {
             this.boardXY(container, evt, is_tap);
         }
 
+        if (!Main.device.isMobileDeviceReady) {//desktop
+
+            if (evt.target.dataset.type !== 'piece') {//must click the piece not the container
+                return;
+            }
+        }
+
         if (this.pickedSquare) {
             this.highlightSquare(this.pickedSquare, '');//remove the highlight
             this.pickedSquare = null;
@@ -308,12 +395,16 @@ Ns.game.AbstractBoard2D = {
         }
 
         var sq = this.boardSq;
-        var sqn = this.toSquareNotation(sq);        
+        var sqn = this.toSquareNotation(sq);
+
         var pce = this.getInternalPiece(sqn);
-        if (pce && pce.color === this.userSide) {
+        var side1 = this.isWhite(pce);
+        var side2 = this.userSide === 'w';
+        if (pce && side1 === side2) {
             this.pickedSquare = this.squareList[sq];
             this.highlightSquare(this.pickedSquare, 'background: yellow');
         }
+
     },
     onTouchStartBoard: function (evt, container) {
         if (evt.touches) {
