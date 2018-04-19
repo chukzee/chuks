@@ -1952,7 +1952,8 @@ var Main = {};
         var _game9ja_Dom_Hold_Data = '_game9ja_Dom_Hold_Data_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var upOut = {};
         var downOut = {};
-        var MAX_OFF = 15;//max number of elements off view before consodering remove element from dom.
+        //MAX_OFF of 15 has some problem on my itel device - come back to resolve this bug later!
+        var MAX_OFF = 100;//max number of elements off view before consodering remove element from dom.
         var MAX_REMAINING_OFF = MAX_OFF - 5;//max number of elements to be left after removal for excess 
         var MIN_REMAINING_OFF = MAX_REMAINING_OFF - 5;//number of elements off view before putting back the removed elements
         var lastSelectedListviewItem;

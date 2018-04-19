@@ -1592,7 +1592,9 @@ function draftFn(size) {
     this.moveTo = function (from, path, result) {
         if (result) {
             if (!validateMove.call(this, from, path, result)) {
-                return;
+                if(result === true){
+                    return {error: this.lastError};
+                }
             }
         }
         return doMove.call(this, from, path, result);

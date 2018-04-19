@@ -70,10 +70,10 @@ Ns.game.two.Draughts2D = {
 
             if (all_match && match_len === this.capturePath.length) {
                 var result = this.internalGame.move(cap_move);
-                resObj.done = !result.lastError;
+                resObj.done = !result.error;
                 resObj.hasMore = false;
                 resObj.capture = result.capture;
-                resObj.error = result.lastError;
+                resObj.error = result.error;
             } else if (all_match && match_len < this.capturePath.length) {
                 resObj.done = false;
                 resObj.hasMore = true;
@@ -86,9 +86,9 @@ Ns.game.two.Draughts2D = {
 
         } else {
             var result = this.internalGame.move(from + '-' + to);
-            resObj.done = !result.lastError;
+            resObj.done = !result.error;
             resObj.hasMore = false;
-            resObj.error = result.lastError;
+            resObj.error = result.error;
         }
 
         if (resObj.done) {

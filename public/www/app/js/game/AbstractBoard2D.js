@@ -7,6 +7,7 @@ Ns.game.AbstractBoard2D = {
     internalGame: null, // the game engine. e.g chessj.s and my draftgame.js
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
     isBoardFlip: false, //whether black to white direction. default is white to black (false)
+    ANIM_DURATION: 500,
     squareList: {},
     squarePieces: [],
     hoverSquare: null,
@@ -328,7 +329,7 @@ Ns.game.AbstractBoard2D = {
         return col + row;
     },
 
-    movePiece: function (from, to, duration, callback) {
+    movePiece: function (from, to, callback) {
         var target;
         if (typeof from === 'object'
                 && typeof from !== 'number'
@@ -358,7 +359,6 @@ Ns.game.AbstractBoard2D = {
 
         this.squarePieces[to] = target;// new location
 
-        var _duration = duration || 1000; //in milliseconds
         var center = this.squareCenter(to);
         var py = center.y - this.pieceHeight / 2;
         var px = center.x - this.pieceWidth / 2;
@@ -370,7 +370,7 @@ Ns.game.AbstractBoard2D = {
 
         target.style.zIndex = 1000; // so as to fly over
 
-        Main.anim.to(target, _duration, prop, function () {
+        Main.anim.to(target, this.ANIM_DURATION, prop, function () {
             //making sure the piece is on the right spot just in
             //case the orientation changes or the board is resized
             center = me.squareCenter(to);
@@ -452,7 +452,7 @@ Ns.game.AbstractBoard2D = {
                 //do nothing for now atleast
             });
         }
-        
+
 
     },
 
@@ -493,15 +493,15 @@ Ns.game.AbstractBoard2D = {
 
                     if (moveResult.done && !moveResult.error) {
 
-                        this.movePiece(this.pickedPiece, this.boardSq, 1000, this.afterPieceMove);
+                        this.movePiece(this.pickedPiece, this.boardSq, this.afterPieceMove);
                     } else if (moveResult.hasMore && !moveResult.error) {
                         //move piece to square
                         this._captures = moveResult.capture; // array of capture square
-                        this.movePiece(this.pickedPiece, this.boardSq, 1000, this.afterPieceMove);
+                        this.movePiece(this.pickedPiece, this.boardSq, this.afterPieceMove);
                     } else {//error
                         //TODO display the error message
                         console.log('TODO display the error message');
-                        console.log('move error:', moveResult.moveError);
+                        console.log('move error:', moveResult.error);
 
                         //animate the piece by to the original position
                         this.movePiece(this.pickedPiece, pk_sq);
@@ -513,6 +513,10 @@ Ns.game.AbstractBoard2D = {
                         this.pickedSquare = null;
                         this.pickedPiece = null;
                     }
+                } else {
+                    this.movePiece(this.pickedPiece, pk_sq);
+                    this.pickedSquare = null;
+                    this.pickedPiece = null;
                 }
             }
 
@@ -559,7 +563,7 @@ Ns.game.AbstractBoard2D = {
             this.boardXY(container, evt);
         }
 
-        
+
         if (this.pickedPiece && Ns.Config.DragPiece) {
             //drag piece
             py = this.boardY - this.pieceHeight / 2;
@@ -643,14 +647,14 @@ Ns.game.AbstractBoard2D = {
         if (y < 0) {
             y = 0;
         }
-        
+
         if (x > box.width) {
             x = box.width;
         }
         if (y > box.height) {
             y = box.height;
         }
-        
+
 
         if (row < 0
                 || col < 0
