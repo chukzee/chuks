@@ -23,5 +23,20 @@ console.log(sen.UniqueNumber);
 console.log(sen.UniqueNumber);
 console.log(sen.UniqueNumber);
 
-console.log(Date.getDate());
+console.log('-----------');
+
+var a ={
+    a:'a'
+};
+var b ={
+    b:'b'
+};
+
+var arr = [];
+arr.push(a);
+arr.push(b);
+a = null;
+console.log(arr);
+console.log(a);
+
 

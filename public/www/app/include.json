@@ -113,6 +113,7 @@
         "js": [
             "Auth.js",
             "Const.js",
+            "Config.js",
             "Stats.js",
             "Util.js",
             "Spectators.js",

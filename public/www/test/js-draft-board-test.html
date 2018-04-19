@@ -11,6 +11,8 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../app/css/board.css" />
         <script src="../lib/draftgame.js"></script>
+        <script src="../lib/jquery-1.10.2.min.js"></script>
+        <script src="../lib/tween/TweenMax.min.js"></script>
     </head>
     <body>
         <button onclick="showDraughts()" >Show 2D Draughts board</button>
@@ -19,8 +21,28 @@ and open the template in the editor.
         </div>
 
         <script>
+            function Animate() {
+                this.to = function (element, duration, propObj, callback) {
+                    if (!element) {
+                        return;
+                    }
+                    var el = typeof element ==='string' ? document.getElementById(element) : element;
+                    var tween = propObj;
+                    tween.onComplete = callback;
+                    if (window.TweenMax) {
+                        TweenMax.to(el, duration / 1000, tween);
+                    } else if (window.TweenLite) {
+                        TweenLite.to(el, duration / 1000, tween);
+                    } else if (window.$) {
+                        $(el).animate(propObj, duration, callback);
+                    } else {
+
+                    }
+                };
+            }
             var device_category = "medium";
             var Main = {
+                anim : new Animate(),
                 device: {
                     isMobileDeviceReady: false,
 
@@ -43,7 +65,11 @@ and open the template in the editor.
                 game: {
                     two: {},
                     three: {}
+                },
+                Config:{
+                    DragPiece: true
                 }
+                
             };
 
 
@@ -54,7 +80,7 @@ and open the template in the editor.
                     white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
                     pieceTheme: 'alpha',
-                    is3D:false,
+                    is3D: false,
                 };
 
                 Ns.game.Draughts.load(obj);
@@ -70,18 +96,18 @@ and open the template in the editor.
         <script src="../app/js/game/two/Draughts2D.js"></script>
         <script src="../app/js/game/three/Draughts3D.js"></script>
         <script src="../app/js/game/Draughts.js"></script>
-        
-        
+
+
         <script>
             var ext = Ns.game.AbstractBoard2D;
-            for(var n in ext){
-                if(!(n in Ns.game.two.Draughts2D)){
+            for (var n in ext) {
+                if (!(n in Ns.game.two.Draughts2D)) {
                     Ns.game.two.Draughts2D[n] = ext[n];
                 }
-               
+
             }
-            
-            
+
+
         </script>
     </body>
 </html>

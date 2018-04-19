@@ -48,9 +48,13 @@ draft.setPiece(17, false, false);
 
 //draft.printBoard();
 
-var caps = draft.searchCaputrePaths(22);
+var caps = draft.searchCapturePaths(22);
 
 console.dir(caps);
+
+var caps_san = draft.capturableSAN(22);
+
+console.dir(caps_san);
 
 console.dir("---------------------");
 

@@ -688,7 +688,32 @@ function draftFn(size) {
         return tranverseSq(sq, leftDown, fn, done, argu);
     }
 
-
+    /**
+     * This is a helper method to convert the internal square number returned
+     * from the capture search path to Standard Algebraic Notation and must
+     * not be called by the draughts engine for performance
+     * 
+     * @param {type} sq - square must be in Standard Algebraic Notation
+     * @returns {undefined}
+     */
+    this.capturableSAN = function (sq) {
+        sq = this.SAN[sq];//to the internal board square
+        var paths = this.searchCapturePaths(sq);
+        
+        var san = [];
+        for(var i=0; i<paths.length; i++){
+            var p = paths[i];
+            var sp = [];
+            for (var k = 0; k < p.length; k++) {
+                sp[k] = {};
+                sp[k].cap_sq = this.SqNumber[p[k].capture].SAN;// comvert the square to SAN
+                sp[k].to_sq = this.SqNumber[p[k].dest_sq].SAN;// comvert the square to SAN
+            }
+            san.push(sp);
+        }
+        
+        return san;
+    };
 
     /**
      * Searches capturable pieces from a given square.
@@ -699,7 +724,7 @@ function draftFn(size) {
      * @param {type} sq
      * @return {Array, undefined}
      */
-    this.searchCaputrePaths = function (sq) {
+    this.searchCapturePaths = function (sq) {
         var pce = this.board[sq].piece;
         if (!pce) {//no piece on square
             return null;
@@ -916,10 +941,10 @@ function draftFn(size) {
      * @param {type} from square of the piece to move
      * @param {type} tos matching capture squares. ie all the squares the moving
      * piece jump to.
-     * @returns {Array|unresolved|nm$_draftgame-1.norm_caps|Array,undefined|draftFn.searchCaputrePaths.caps|nm$_draftgame-1.draftFn.filterPaths.caps|undefined|draftFn.filterPaths.caps}     */
+     * @returns {Array|unresolved|nm$_draftgame-1.norm_caps|Array,undefined|draftFn.searchCapturePaths.caps|nm$_draftgame-1.draftFn.filterPaths.caps|undefined|draftFn.filterPaths.caps}     */
     this.filterPaths = function (from, tos) {
 
-        var caps = this.searchCaputrePaths(from);
+        var caps = this.searchCapturePaths(from);
         if (caps.length === 0
                 || (caps.length === 1 && caps[0].length === 0)) {
             return [];
@@ -1052,16 +1077,16 @@ function draftFn(size) {
         }
 
         if (result) {
-            //REMIND - Send move in compressed form since boardPosition data
-            //length could be upto 2K which is too large for just a move.
-            //hint: use custom compression techique like 
-            //using one or two letters to represent a word 
+            
             var from_san = this.SqNumber[from].SAN;
-            var to_san = this.SqNumber[from].SAN;
+            var to_san = this.SqNumber[to].SAN;
             var move_notation = from_san;
+            var capture = null;
             if (path.constructor === Array) {
+                capture = [];
                 for (var i = 0; i < path.length; i++) {
                     move_notation += 'x' + this.SqNumber[path[i].dest_sq].SAN;
+                    capture[i] = this.SqNumber[path[i].capture].SAN;
                 }
             } else {
                 move_notation += '-' + to_san;
@@ -1072,6 +1097,7 @@ function draftFn(size) {
                 from: from_san,
                 to: to_san,
                 move: move_notation,
+                capture: capture,
                 boardPositon: toFEN.call(this)
             };
 
@@ -1147,7 +1173,7 @@ function draftFn(size) {
     }
 
     function validateCapture(from, to, fn) {
-        var caps = this.searchCaputrePaths(from);
+        var caps = this.searchCapturePaths(from);
         if (caps.length === 0
                 || (caps.length === 1 && caps[0].length === 0)) {
             this.lastError = "No capture opportunity.";
@@ -1301,7 +1327,7 @@ function draftFn(size) {
                 this.startMoveIndex = moves.length;
                 this.isCapMove = true;
 
-                var caps = this.searchCaputrePaths(from_sq);
+                var caps = this.searchCapturePaths(from_sq);
                 for (var i = 0; i < caps.length; i++) {
                     moves.push({from: from_sq, path: caps[i]});
                 }
@@ -1314,7 +1340,7 @@ function draftFn(size) {
                 this.startMoveIndex = moves.length;
                 this.isCapMove = true;
 
-                var caps = this.searchCaputrePaths(from_sq);
+                var caps = this.searchCapturePaths(from_sq);
                 for (var i = 0; i < caps.length; i++) {
                     moves.push({from: from_sq, path: caps[i]});
                 }

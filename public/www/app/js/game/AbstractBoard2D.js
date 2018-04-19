@@ -8,10 +8,15 @@ Ns.game.AbstractBoard2D = {
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
     isBoardFlip: false, //whether black to white direction. default is white to black (false)
     squareList: {},
+    squarePieces: [],
     hoverSquare: null,
     pickedSquare: null,
+    pickedPiece: null,
     boardRowCount: 8, //default is 8
     boardContainer: null,
+    _captures: [],
+    pieceWidth: null,
+    pieceHeight: null,
     boardX: -1,
     boardY: -1,
     boardRow: -1,
@@ -69,7 +74,7 @@ Ns.game.AbstractBoard2D = {
      * @returns {undefined}
      */
     load: function (internal_game, obj, callback) {
-        if(obj.variant){
+        if (obj.variant) {
             var vrnt = this.getVariant(obj.variant);
             var s = vrnt.size.split('x'); //e.g 8x8, 10x10, 12x12
             this.boardRowCount = s[0] - 0;//implicitly convet to numeric
@@ -88,18 +93,43 @@ Ns.game.AbstractBoard2D = {
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
     },
+    createPieceElement: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    pieceSquarRatio: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    isWhite: function (pce) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    getInternalPiece: function (sqn) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    getBoardClass: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    makeMove: function (from, to) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
 
     arrangeBoard: function (container, piece_theme) {
         var box = container.getBoundingClientRect();
 
         var sq_w = box.width / this.boardRowCount;
         var sq_h = box.height / this.boardRowCount;
-        var ration = this.pieceSquarRation();
-        if (!ration) {
-            ration = 0.8;
+        var ratio = this.pieceSquarRatio();
+        if (!ratio) {
+            ratio = 0.8;
         }
-        var pw = sq_w * ration; // piece width
-        var ph = sq_h * ration; //piece height
+        var pw = sq_w * ratio; // piece width
+        var ph = sq_h * ratio; //piece height
+        this.pieceWidth = pw;
+        this.pieceHeight = ph;
 
         //range pieces
         var SQ_COUNT = this.boardRowCount * this.boardRowCount;
@@ -117,6 +147,7 @@ Ns.game.AbstractBoard2D = {
             //create piece element
 
             var pe = this.createPieceElement(pce, piece_theme);
+
             pe.dataset.type = "piece";
             pe.style.width = pw + 'px';
             pe.style.height = ph + 'px';
@@ -128,6 +159,7 @@ Ns.game.AbstractBoard2D = {
             pe.style.top = py + 'px';
             pe.style.left = px + 'px';
 
+            this.squarePieces[sq] = pe;
 
             container.appendChild(pe);
 
@@ -192,6 +224,7 @@ Ns.game.AbstractBoard2D = {
             for (var k = 0; k < sqs.length; k++) {
                 sq++;
                 this.squareList[sq] = sqs[k];
+                this.squareList[sq].dataset.square = sq;//for identifying the squares
             }
         }
 
@@ -294,39 +327,58 @@ Ns.game.AbstractBoard2D = {
 
         return col + row;
     },
-    getPieceOnSquare: function (sq) {
 
-    },
-
-    setPieceOnSquare: function (pieces, sq) {
-
-    },
-
-    movePiece: function (from_sq, to_sq) {
+    movePiece: function (from, to, duration, callback) {
+        var target;
+        if (typeof from === 'object'
+                && typeof from !== 'number'
+                && typeof from !== 'string') {
+            target = from; //element
+        }
         if (this.isBoardFlip) {
-            from_sq = this.flipSquare(from_sq);
-            to_sq = this.flipSquare(to_sq);
+            if (!target) {
+                from = this.flipSquare(from);
+            }
+            to = this.flipSquare(to);
+        }
+        if (!target) {
+            target = this.getPieceOnSquare(from);
+            if (!target) {
+                console.warn('piece not found on sqare ', from);
+                return;
+            }
         }
 
-        var el = this.getPieceOnSquare(from_sq);
-        if (!el) {
-            console.warn('piece not found on sqare ', from_sq);
-            return;
+        for (var i = 0; i < this.squarePieces.length; i++) {
+            if (target === this.squarePieces[i]) {
+                this.squarePieces[i] = null; //remove from old location
+                break;
+            }
         }
 
-        var duration = 1000; //in milliseconds
-        var center = this.squareCenter(to_sq);
+        this.squarePieces[to] = target;// new location
+
+        var _duration = duration || 1000; //in milliseconds
+        var center = this.squareCenter(to);
+        var py = center.y - this.pieceHeight / 2;
+        var px = center.x - this.pieceWidth / 2;
         var prop = {
-            top: center.y,
-            left: center.x
+            top: py,
+            left: px
         };
         var me = this;
-        Main.anim.to(el, duration, prop, function () {
+
+        target.style.zIndex = 1000; // so as to fly over
+
+        Main.anim.to(target, _duration, prop, function () {
             //making sure the piece is on the right spot just in
             //case the orientation changes or the board is resized
-            center = me.squareCenter(to_sq);
-            el.style.top = center.y + 'px';
-            el.style.left = center.x + 'px';
+            center = me.squareCenter(to);
+            py = center.y - this.pieceHeight / 2;
+            px = center.x - this.pieceWidth / 2;
+            target.style.top = py + 'px';
+            target.style.left = px + 'px';
+            target.style.zIndex = null;
         });
     },
     /**
@@ -364,10 +416,44 @@ Ns.game.AbstractBoard2D = {
             y: center_y
         };
     },
+
     highlightSquare: function (sqEl, style) {
         if (sqEl) {
             sqEl.style = style;
         }
+    },
+
+    getPieceOnSquare: function (sq) {
+        //var center = this.squareCenter(sq);        
+        return this.squarePieces[sq];
+    },
+
+    pickPieceOnSquare: function (sq) {
+        if (this.pickedPiece) {
+            return;
+        }
+
+        this.pickedPiece = this.getPieceOnSquare(sq);
+
+        this.pickedPiece.style.zIndex = 1000;
+    },
+
+    afterPieceMove: function () {
+        //remove captured piece from the board
+        for (var i = 0; this._captures && i < this._captures.length; i++) {
+            var cap_sq = this._captures[i];
+            var pce = this.squarePieces[cap_sq];
+
+            this.squarePieces[cap_sq] = null;// clear the square
+            var box = pce.getBoundingClientRect();
+            var dist = box.width ? box.width : '200';
+            dist = '-' + dist + 'px';
+            Main.anim.to(pce, 1000, {right: dist, top: dist}, function () {
+                //do nothing for now atleast
+            });
+        }
+        
+
     },
 
     onClickBoard: function (evt, container, is_tap) {
@@ -381,17 +467,63 @@ Ns.game.AbstractBoard2D = {
             this.boardXY(container, evt, is_tap);
         }
 
+
+        if (this.pickedSquare) {
+            this.highlightSquare(this.pickedSquare, '');//remove the highlight
+
+            if (this.pickedPiece) {
+                var pk_sq = this.pickedSquare.dataset.square;
+                var from = this.toSquareNotation(pk_sq);
+                var to = this.toSquareNotation(this.boardSq);
+                if (from !== to) {
+                    var moveResult = this.makeMove(from, to);
+
+                    //validate the move result returned by the subclass.
+                    //the result must contain neccessary fields
+                    if (!('done' in moveResult)) {
+                        throw Error('Move result returned by subcalss must contain the field, "done"');
+                    } else if (!('hasMore' in moveResult)) {
+                        throw Error('Move result returned by subcalss must contain the field, "hasMore"');
+                    } else if (!('error' in moveResult)) {
+                        throw Error('Move result returned by subcalss must contain the field, "error"');
+                    } else if (!('capture' in moveResult)) {
+                        throw Error('Move result returned by subcalss must contain the field, "capture"');
+                    }
+
+
+                    if (moveResult.done && !moveResult.error) {
+
+                        this.movePiece(this.pickedPiece, this.boardSq, 1000, this.afterPieceMove);
+                    } else if (moveResult.hasMore && !moveResult.error) {
+                        //move piece to square
+                        this._captures = moveResult.capture; // array of capture square
+                        this.movePiece(this.pickedPiece, this.boardSq, 1000, this.afterPieceMove);
+                    } else {//error
+                        //TODO display the error message
+                        console.log('TODO display the error message');
+                        console.log('move error:', moveResult.moveError);
+
+                        //animate the piece by to the original position
+                        this.movePiece(this.pickedPiece, pk_sq);
+                    }
+
+                    //nullify the picked square if move is moved or a move error occur
+                    if (moveResult.done || moveResult.error) {
+                        this._captures = [];
+                        this.pickedSquare = null;
+                        this.pickedPiece = null;
+                    }
+                }
+            }
+
+            return;
+        }
+
         if (!Main.device.isMobileDeviceReady) {//desktop
 
             if (evt.target.dataset.type !== 'piece') {//must click the piece not the container
                 return;
             }
-        }
-
-        if (this.pickedSquare) {
-            this.highlightSquare(this.pickedSquare, '');//remove the highlight
-            this.pickedSquare = null;
-            return;
         }
 
         var sq = this.boardSq;
@@ -403,6 +535,7 @@ Ns.game.AbstractBoard2D = {
         if (pce && side1 === side2) {
             this.pickedSquare = this.squareList[sq];
             this.highlightSquare(this.pickedSquare, 'background: yellow');
+            this.pickPieceOnSquare(sq);
         }
 
     },
@@ -425,7 +558,16 @@ Ns.game.AbstractBoard2D = {
             //mouse move
             this.boardXY(container, evt);
         }
-        //small problem still dey - come back later
+
+        
+        if (this.pickedPiece && Ns.Config.DragPiece) {
+            //drag piece
+            py = this.boardY - this.pieceHeight / 2;
+            px = this.boardX - this.pieceWidth / 2;
+            this.pickedPiece.style.top = py + 'px';
+            this.pickedPiece.style.left = px + 'px';
+        }
+
         var sq = this.boardSq;
         if (this.squareList[sq] === this.pickedSquare) {
             if (this.hoverSquare !== this.pickedSquare) {
@@ -494,13 +636,29 @@ Ns.game.AbstractBoard2D = {
         var row = Math.floor((box.height - y) / sq_h);
         var col = this.boardRowCount - Math.floor((box.width - x) / sq_w) - 1;
 
+
+        if (x < 0) {
+            x = 0;
+        }
+        if (y < 0) {
+            y = 0;
+        }
+        
+        if (x > box.width) {
+            x = box.width;
+        }
+        if (y > box.height) {
+            y = box.height;
+        }
+        
+
         if (row < 0
                 || col < 0
                 || row > this.boardRowCount - 1
                 || col > this.boardRowCount - 1) {//OFF BOARD
 
-            this.boardX = -1;
-            this.boardY = -1;
+            this.boardX = x;
+            this.boardY = y;
             this.boardRow = -1;
             this.boardCol = -1;
             this.boardSq = -1;
