@@ -50,11 +50,25 @@ Ns.game.two.Chess2D = {
     },
     
     makeMove: function (from, to) {
+        
+        var resObj = {
+            done: false,
+            hasMore: false,
+            capture: null,
+            error: null
+        };
+        
+        if(from === to){
+            resObj.done = true; //just drop the piece
+            return resObj;
+        }
+        
         var obj = {
             from: from,
             to: to//,
                     //promotion : TODO - see chessjs doc LATER for how to use this field 
         };
+        
         var result = this.internalGame.move(obj);
         var cap;
         if(result && result.captured){
@@ -67,14 +81,9 @@ Ns.game.two.Chess2D = {
         
         console.log(result);
 
-        var resObj = {
-            done: result ? true: false,
-            hasMore: false,
-            capture: cap, //en passant or standard capture
-            error: !result ? 'Invalid move' : null
-        };
-
-
+        resObj.done = result ? true: false;
+        resObj.capture = cap;
+        resObj.error = !result ? 'Invalid move' : null;
 
         return resObj;
     },

@@ -350,7 +350,7 @@ Ns.game.AbstractBoard2D = {
         }
 
         //capture piece
-        if (capture) {                        
+        if (capture) {
             this.capturePiece(capture);
         }
 
@@ -489,43 +489,45 @@ Ns.game.AbstractBoard2D = {
                 var pk_sq = this.pickedSquare.dataset.square;
                 var from = this.toSquareNotation(pk_sq);
                 var to = this.toSquareNotation(this.boardSq);
-                if (from !== to) {
-                    var moveResult = this.makeMove(from, to);
+                
+                // NOTE it is valid for 'from square' to be equal to 'to square'
+                //especially in the game of draughts in a roundabout trip capture
+                //move where the jumping piece eventaully return to its original 
+                //square. So it is upto the subsclass to check for where 'from square'
+                //ie equal to 'to square' where necessary  an code accordingly
+                
+                var moveResult = this.makeMove(from, to);
 
-                    //validate the move result returned by the subclass.
-                    //the result must contain neccessary fields
-                    if (!('done' in moveResult)) {
-                        throw Error('Move result returned by subcalss must contain the field, "done"');
-                    } else if (!('hasMore' in moveResult)) {
-                        throw Error('Move result returned by subcalss must contain the field, "hasMore"');
-                    } else if (!('error' in moveResult)) {
-                        throw Error('Move result returned by subcalss must contain the field, "error"');
-                    } else if (!('capture' in moveResult)) {
-                        throw Error('Move result returned by subcalss must contain the field, "capture"');
-                    }
+                //validate the move result returned by the subclass.
+                //the result must contain neccessary fields
+                if (!('done' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "done"');
+                } else if (!('hasMore' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "hasMore"');
+                } else if (!('error' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "error"');
+                } else if (!('capture' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "capture"');
+                }
 
 
-                    if (moveResult.error) {
-                        //TODO display the error message
-                        console.log('TODO display the error message');
-                        console.log('move error:', moveResult.error);
+                if (moveResult.error) {
+                    //TODO display the error message
+                    console.log('TODO display the error message');
+                    console.log('move error:', moveResult.error);
 
-                        //animate the piece by to the original position
-                        this.movePiece(this.pickedPiece, pk_sq);
-                    } else {//error
-                        this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture);
-                    }
-
-                    //nullify the picked square if move is moved or a move error occur
-                    if (moveResult.done || moveResult.error) {
-                        this.pickedSquare = null;
-                        this.pickedPiece = null;
-                    }
-                } else {
+                    //animate the piece by to the original position
                     this.movePiece(this.pickedPiece, pk_sq);
+                } else {//error
+                    this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture);
+                }
+
+                //nullify the picked square if move is moved or a move error occur
+                if (moveResult.done || moveResult.error) {
                     this.pickedSquare = null;
                     this.pickedPiece = null;
                 }
+
             }
 
             return;

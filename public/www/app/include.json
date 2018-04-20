@@ -41,6 +41,7 @@
             "device/small/test/simulate/js/simulate-stat.js",
             "device/small/test/simulate/js/simulate-tournament.js",
             "cordova.js",
+            "lib/three.min.js",
             "lib/chess.min.js",
             "lib/draftgame.js",
             "lib/socket.io.js",

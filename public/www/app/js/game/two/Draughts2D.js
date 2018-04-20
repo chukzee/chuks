@@ -65,7 +65,7 @@ Ns.game.two.Draughts2D = {
                         }
                         cap_move += 'x' + this.capturePath[k];
                     }
-                    if(all_match){
+                    if (all_match) {
                         break;
                     }
                 }
@@ -87,11 +87,13 @@ Ns.game.two.Draughts2D = {
                 resObj.error = 'Invalid capture path!';
             }
 
-        } else {
-            var result = this.internalGame.move(from + '-' + to);
-            resObj.done = !result.error;
-            resObj.hasMore = false;
-            resObj.error = result.error;
+        } else if (to !== from) {
+                var result = this.internalGame.move(from + '-' + to);
+                resObj.done = !result.error;
+                resObj.hasMore = false;
+                resObj.error = result.error;
+        }else{//where to === from
+            resObj.done = true;//just drop the piece
         }
 
         if (resObj.done || resObj.error) {
