@@ -15,7 +15,6 @@ Ns.game.AbstractBoard2D = {
     pickedPiece: null,
     boardRowCount: 8, //default is 8
     boardContainer: null,
-    _captures: [],
     pieceWidth: null,
     pieceHeight: null,
     boardX: -1,
@@ -329,7 +328,7 @@ Ns.game.AbstractBoard2D = {
         return col + row;
     },
 
-    movePiece: function (from, to, callback) {
+    movePiece: function (from, to, capture) {
         var target;
         if (typeof from === 'object'
                 && typeof from !== 'number'
@@ -348,6 +347,11 @@ Ns.game.AbstractBoard2D = {
                 console.warn('piece not found on sqare ', from);
                 return;
             }
+        }
+
+        //capture piece
+        if (capture) {                        
+            this.capturePiece(capture);
         }
 
         for (var i = 0; i < this.squarePieces.length; i++) {
@@ -380,6 +384,7 @@ Ns.game.AbstractBoard2D = {
             target.style.left = px + 'px';
             target.style.zIndex = null;
         });
+
     },
     /**
      * The method is required if the board is flipped
@@ -438,10 +443,19 @@ Ns.game.AbstractBoard2D = {
         this.pickedPiece.style.zIndex = 1000;
     },
 
-    afterPieceMove: function () {
+    capturePiece: function (capture) {
+
+        if (capture.constructor === Array) {//an array
+            for (var i = 0; i < capture.length; i++) {
+                capture[i] = this.toNumericSq(capture[i]);
+            }
+        } else {//not an array
+            capture = [this.toNumericSq(capture)]; //mare array
+        }
+
         //remove captured piece from the board
-        for (var i = 0; this._captures && i < this._captures.length; i++) {
-            var cap_sq = this._captures[i];
+        for (var i = 0; capture && i < capture.length; i++) {
+            var cap_sq = capture[i];
             var pce = this.squarePieces[cap_sq];
 
             this.squarePieces[cap_sq] = null;// clear the square
@@ -491,25 +505,19 @@ Ns.game.AbstractBoard2D = {
                     }
 
 
-                    if (moveResult.done && !moveResult.error) {
-
-                        this.movePiece(this.pickedPiece, this.boardSq, this.afterPieceMove);
-                    } else if (moveResult.hasMore && !moveResult.error) {
-                        //move piece to square
-                        this._captures = moveResult.capture; // array of capture square
-                        this.movePiece(this.pickedPiece, this.boardSq, this.afterPieceMove);
-                    } else {//error
+                    if (moveResult.error) {
                         //TODO display the error message
                         console.log('TODO display the error message');
                         console.log('move error:', moveResult.error);
 
                         //animate the piece by to the original position
                         this.movePiece(this.pickedPiece, pk_sq);
+                    } else {//error
+                        this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture);
                     }
 
                     //nullify the picked square if move is moved or a move error occur
                     if (moveResult.done || moveResult.error) {
-                        this._captures = [];
                         this.pickedSquare = null;
                         this.pickedPiece = null;
                     }
@@ -536,7 +544,9 @@ Ns.game.AbstractBoard2D = {
         var pce = this.getInternalPiece(sqn);
         var side1 = this.isWhite(pce);
         var side2 = this.userSide === 'w';
-        if (pce && side1 === side2) {
+        if (pce
+                /*&& side1 === side2*/ //UNCOMMENT LATER
+                ) {
             this.pickedSquare = this.squareList[sq];
             this.highlightSquare(this.pickedSquare, 'background: yellow');
             this.pickPieceOnSquare(sq);

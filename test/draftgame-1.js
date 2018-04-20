@@ -725,6 +725,7 @@ function draftFn(size) {
      * @return {Array, undefined}
      */
     this.searchCapturePaths = function (sq) {
+        var origin = sq;
         var pce = this.board[sq].piece;
         if (!pce) {//no piece on square
             return null;
@@ -738,7 +739,7 @@ function draftFn(size) {
         var caps = [];
 
         //do the capture
-        findCaptives(pce.crowned, sq, 0, pce.white, null, caps, false);
+        findCaptives(pce.crowned, origin, origin, 0, pce.white, null, caps, false);
 
         return pce.crowned ? normalizeKingCaps(caps) : caps;
     };
@@ -781,7 +782,7 @@ function draftFn(size) {
         return norm_caps;
     }
 
-    function findCaptives(crowned, from_sq, old_direction, white, last_node, caps, cyclic) {
+    function findCaptives(crowned, origin, from_sq, old_direction, white, last_node, caps, cyclic) {
 
         //first check if it is going roundabout.
         if (cyclic) {
@@ -800,7 +801,7 @@ function draftFn(size) {
          * 
          */
         for (var direction = 1; direction < 5; direction++) {
-            c = nextCaptive(crowned, from_sq, old_direction, direction, !white);
+            c = nextCaptive(crowned, origin, from_sq, old_direction, direction, !white);
             if (c) {
 
                 var node = {};
@@ -811,7 +812,7 @@ function draftFn(size) {
                 cyclic = node.visited[c.capture] === 1; //detect if capture square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
                 node.visited[c.capture] = 1;
 
-                findCaptives(crowned, c.dest_sq, direction, white, node, caps, cyclic);
+                findCaptives(crowned, origin, c.dest_sq, direction, white, node, caps, cyclic);
 
                 c = cyclic ? null : c;
                 if (!cyclic) {
@@ -834,7 +835,7 @@ function draftFn(size) {
         return caps;
     }
 
-    function nextCaptive(crowned, from_sq, old_direction, direction, opponent) {
+    function nextCaptive(crowned, origin, from_sq, old_direction, direction, opponent) {
 
         if (old_direction === REVERSE_DIRECTION[direction]) {
             //avoid immediate reverse direction
@@ -846,9 +847,9 @@ function draftFn(size) {
                 {
                     if (!crowned) {
                         var next = draft.board[from_sq].SquareRightUp;
-                        return manCaptive(next, next.SquareRightUp, opponent);
+                        return manCaptive(origin, next, next.SquareRightUp, opponent);
                     } else {
-                        return kingCaptive(from_sq, 'SquareRightUp', opponent);
+                        return kingCaptive(origin, from_sq, 'SquareRightUp', opponent);
                     }
                 }
                 break;
@@ -857,9 +858,9 @@ function draftFn(size) {
 
                     if (!crowned) {
                         var next = draft.board[from_sq].SquareLeftUp;
-                        return manCaptive(next, next.SquareLeftUp, opponent);
+                        return manCaptive(origin, next, next.SquareLeftUp, opponent);
                     } else {
-                        return kingCaptive(from_sq, 'SquareLeftUp', opponent);
+                        return kingCaptive(origin, from_sq, 'SquareLeftUp', opponent);
                     }
 
                 }
@@ -868,9 +869,9 @@ function draftFn(size) {
                 {
                     if (!crowned) {
                         var next = draft.board[from_sq].SquareRightDown;
-                        return manCaptive(next, next.SquareRightDown, opponent);
+                        return manCaptive(origin, next, next.SquareRightDown, opponent);
                     } else {
-                        return kingCaptive(from_sq, 'SquareRightDown', opponent);
+                        return kingCaptive(origin, from_sq, 'SquareRightDown', opponent);
                     }
 
                 }
@@ -880,9 +881,9 @@ function draftFn(size) {
 
                     if (!crowned) {
                         var next = draft.board[from_sq].SquareLeftDown;
-                        return manCaptive(next, next.SquareLeftDown, opponent);
+                        return manCaptive(origin, next, next.SquareLeftDown, opponent);
                     } else {
-                        return kingCaptive(from_sq, 'SquareLeftDown', opponent);
+                        return kingCaptive(origin, from_sq, 'SquareLeftDown', opponent);
                     }
                 }
                 break;
@@ -892,18 +893,21 @@ function draftFn(size) {
 
     }
 
-    function manCaptive(next, after_next, opponent) {
-
-        if (next.piece
+    function manCaptive(origin, next, after_next, opponent) {
+        
+        
+         if (next.piece
                 && next.piece.white === opponent
                 && after_next.sq !== draft.OFF_BOARD
-                && !after_next.piece) {
+                && (!after_next.piece || after_next.sq === origin)) {
             return {cid: next.piece.id, capture: next.piece.sqLoc, dest_sq: after_next.sq};
         }
+        
     }
 
-    function kingCaptive(from_sq, lookupDirection, opponent) {
+    function kingCaptive(origin, from_sq, lookupDirection, opponent) {
 
+        
         var from = from_sq.constructor === Array ? from_sq[0] : from_sq;
 
         var next = draft.board[from][lookupDirection];
@@ -912,7 +916,7 @@ function draftFn(size) {
             if (next.piece) {
                 if (next.piece.white === opponent
                         && next[lookupDirection].sq !== draft.OFF_BOARD
-                        && !next[lookupDirection].piece) {
+                        && (!next[lookupDirection].piece || next[lookupDirection].sq === origin)) {
                     var sqs = [];
                     var pce = next.piece;
                     next = next[lookupDirection];
@@ -928,10 +932,11 @@ function draftFn(size) {
 
             next = next[lookupDirection];
         }
+                      
     }
 
     /**
-     *Since it is possible for a piece to square in more than one direction
+     *Since it is possible for a piece to move to a square in more than one direction
      *from a give square, this method is used to match all possible capture direction
      *and return the capture path from the given square.<br>
      *It uses the provide array of 'tos' squares.
@@ -1571,6 +1576,15 @@ function draftFn(size) {
         }
         if (is_capture) {
             path = this.filterPaths(from, path);
+            if(path.length > 1){
+                this.lastError = 'Ambiguous capture path';
+                return {error: this.lastError};
+            }else if(path.length === 0){
+                this.lastError = 'No capture path found';
+                return {error: this.lastError};
+            } 
+            
+            path = path[0];
         } else {
             path = path[0];
         }

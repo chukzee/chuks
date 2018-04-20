@@ -52,9 +52,9 @@ var caps = draft.searchCapturePaths(22);
 
 console.dir(caps);
 
-var caps_san = draft.capturableSAN(22);
+//var caps_san = draft.capturableSAN(22);
 
-console.dir(caps_san);
+//console.dir(caps_san);
 
 console.dir("---------------------");
 

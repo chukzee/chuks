@@ -38,7 +38,7 @@ Ns.game.two.Draughts2D = {
             capture: null, //capture squares
             error: null
         };
-        //we know caps is two dimensional are
+        //we know caps is two dimensional array
         if (caps.length > 0 && caps[0].length > 0) {//capture
             if (!this.capturePath) {
                 this.capturePath = [];
@@ -65,6 +65,9 @@ Ns.game.two.Draughts2D = {
                         }
                         cap_move += 'x' + this.capturePath[k];
                     }
+                    if(all_match){
+                        break;
+                    }
                 }
             }
 
@@ -74,7 +77,7 @@ Ns.game.two.Draughts2D = {
                 resObj.hasMore = false;
                 resObj.capture = result.capture;
                 resObj.error = result.error;
-            } else if (all_match && match_len < this.capturePath.length) {
+            } else if (all_match && this.capturePath.length < match_len) {
                 resObj.done = false;
                 resObj.hasMore = true;
                 resObj.error = null;
@@ -91,7 +94,7 @@ Ns.game.two.Draughts2D = {
             resObj.error = result.error;
         }
 
-        if (resObj.done) {
+        if (resObj.done || resObj.error) {
             this.capturePath = [];
         }
 
