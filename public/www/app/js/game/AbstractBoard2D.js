@@ -7,11 +7,15 @@ Ns.game.AbstractBoard2D = {
     internalGame: null, // the game engine. e.g chessj.s and my draftgame.js
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
     isBoardFlip: false, //whether black to white direction. default is white to black (false)
-    ANIM_DURATION: 500,
+    ANIM_MAX_DURATION: 500,
+    HOVER_SQUARE_STYLE: 'background: red', //TODO - use beautiful bacground, possibly beautiful imgage
+    PICKED_SQUARE_STYLE: 'background: yellow', //TODO - use beautiful bacground, possibly beautiful imgage
+    CAPTURED_SQUARE_STYLE: 'background: blue', //TODO - use beautiful bacground, possibly beautiful imgage
     squareList: {},
     squarePieces: [],
     hoverSquare: null,
     pickedSquare: null,
+    captureSquareList: [],
     pickedPiece: null,
     boardRowCount: 8, //default is 8
     boardContainer: null,
@@ -373,8 +377,9 @@ Ns.game.AbstractBoard2D = {
         var me = this;
 
         target.style.zIndex = 1000; // so as to fly over
-
-        Main.anim.to(target, this.ANIM_DURATION, prop, function () {
+        var dist = Math.sqrt(px * px + py * py);
+        var board_width = this.boardContainer.getBoundingClientRect().width;
+        Main.anim.to(target, this.ANIM_MAX_DURATION * dist / board_width, prop, function () {
             //making sure the piece is on the right spot just in
             //case the orientation changes or the board is resized
             center = me.squareCenter(to);
@@ -483,19 +488,21 @@ Ns.game.AbstractBoard2D = {
 
 
         if (this.pickedSquare) {
-            this.highlightSquare(this.pickedSquare, '');//remove the highlight
+            if (this.captureSquareList.indexOf(this.pickedSquare) === -1) {
+                this.highlightSquare(this.pickedSquare, '');//remove the highlight
+            }
 
             if (this.pickedPiece) {
                 var pk_sq = this.pickedSquare.dataset.square;
                 var from = this.toSquareNotation(pk_sq);
                 var to = this.toSquareNotation(this.boardSq);
-                
+
                 // NOTE it is valid for 'from square' to be equal to 'to square'
                 //especially in the game of draughts in a roundabout trip capture
                 //move where the jumping piece eventaully return to its original 
                 //square. So it is upto the subsclass to check for where 'from square'
                 //ie equal to 'to square' where necessary  an code accordingly
-                
+
                 var moveResult = this.makeMove(from, to);
 
                 //validate the move result returned by the subclass.
@@ -510,6 +517,14 @@ Ns.game.AbstractBoard2D = {
                     throw Error('Move result returned by subcalss must contain the field, "capture"');
                 }
 
+                if (moveResult.mark_capture) {
+                    var cap_sq = this.toNumericSq(moveResult.mark_capture);
+                    if (this.squareList[cap_sq]) {
+                        this.highlightSquare(this.squareList[cap_sq], this.CAPTURED_SQUARE_STYLE);
+                        this.captureSquareList.push(this.squareList[cap_sq]);
+                    }
+
+                }
 
                 if (moveResult.error) {
                     //TODO display the error message
@@ -526,6 +541,15 @@ Ns.game.AbstractBoard2D = {
                 if (moveResult.done || moveResult.error) {
                     this.pickedSquare = null;
                     this.pickedPiece = null;
+                    var capSqLst = this.captureSquareList;
+                    this.captureSquareList = [];
+                    window.setTimeout(function (me, el_list) {
+                        for (var i = 0; i < el_list.length; i++) {
+                            me.highlightSquare(el_list[i], '');//remove the highlight
+                        }
+                    }, 1000, this, capSqLst);
+
+
                 }
 
             }
@@ -550,7 +574,7 @@ Ns.game.AbstractBoard2D = {
                 /*&& side1 === side2*/ //UNCOMMENT LATER
                 ) {
             this.pickedSquare = this.squareList[sq];
-            this.highlightSquare(this.pickedSquare, 'background: yellow');
+            this.highlightSquare(this.pickedSquare, this.PICKED_SQUARE_STYLE);
             this.pickPieceOnSquare(sq);
         }
 
@@ -575,6 +599,9 @@ Ns.game.AbstractBoard2D = {
             this.boardXY(container, evt);
         }
 
+        if (this.pickedPiece && !this.pickedPiece.style.zIndex) {
+            this.pickedPiece.style.zIndex = 1000;
+        }
 
         if (this.pickedPiece && Ns.Config.DragPiece) {
             //drag piece
@@ -587,16 +614,22 @@ Ns.game.AbstractBoard2D = {
         var sq = this.boardSq;
         if (this.squareList[sq] === this.pickedSquare) {
             if (this.hoverSquare !== this.pickedSquare) {
-                this.highlightSquare(this.hoverSquare, '');//remove the highlight
+                if (this.captureSquareList.indexOf(this.hoverSquare) === -1) {
+                    this.highlightSquare(this.hoverSquare, '');//remove the highlight
+                }
             }
             return;
         }
 
         if (this.hoverSquare !== this.pickedSquare) {
-            this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            if (this.captureSquareList.indexOf(this.hoverSquare) === -1) {
+                this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            }
         }
         this.hoverSquare = this.squareList[sq];
-        this.highlightSquare(this.hoverSquare, 'background: red');
+        if (this.captureSquareList.indexOf(this.hoverSquare) === -1) {
+            this.highlightSquare(this.hoverSquare, this.HOVER_SQUARE_STYLE);
+        }
 
     },
 
@@ -609,7 +642,9 @@ Ns.game.AbstractBoard2D = {
         this.boardY = -1;
         this.isTouchingBoard = false;
         if (this.hoverSquare !== this.pickedSquare) {
-            this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            if (this.captureSquareList.indexOf(this.hoverSquare) === -1) {
+                this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            }
         }
     },
     boardXY: function (container, e, is_start_touch) {
@@ -679,7 +714,9 @@ Ns.game.AbstractBoard2D = {
             this.boardCol = -1;
             this.boardSq = -1;
             //Clear highlighted squares
-            this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            if (this.captureSquareList.indexOf(this.hoverSquare) === -1) {
+                this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            }
             this.hoverSquare = null;
             console.log('leave');
             return;

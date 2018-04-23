@@ -52,17 +52,20 @@ Ns.game.two.Draughts2D = {
             var all_match;
             var match_len;
             var cap_move;
+            var cap_sq = -1;
             for (var i = 0; i < caps.length; i++) {
                 var p = caps[i];
                 if (this.capturePath.length <= p.length) {
                     all_match = true;
                     match_len = p.length;
                     cap_move = from;
+                    cap_sq = -1;
                     for (var k = 0; k < this.capturePath.length; k++) {
                         if (this.capturePath[k] !== p[k].to_sq) {
                             all_match = false;
                             break;
                         }
+                        cap_sq =  p[k].cap_sq;
                         cap_move += 'x' + this.capturePath[k];
                     }
                     if (all_match) {
@@ -75,11 +78,13 @@ Ns.game.two.Draughts2D = {
                 var result = this.internalGame.move(cap_move);
                 resObj.done = !result.error;
                 resObj.hasMore = false;
+                resObj.mark_capture = cap_sq;  // for the purpose of highlighting captured square
                 resObj.capture = result.capture;
                 resObj.error = result.error;
             } else if (all_match && this.capturePath.length < match_len) {
                 resObj.done = false;
                 resObj.hasMore = true;
+                resObj.mark_capture = cap_sq; // for the purpose of highlighting captured square
                 resObj.error = null;
             } else {//some did not match so error
                 resObj.done = false;
