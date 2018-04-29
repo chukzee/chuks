@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>My first three.js app</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/board.css" />
+        <script src="../lib/three.js"></script>
+        <script src="../lib/threejs-loaders/OBJLoader.js"></script>
+        <script src="../lib/threejs-loaders/MTLLoader.js"></script>
+        <script src="../lib/threejs-loaders/TDSLoader.js"></script>
+        <script src="../lib/jquery-1.10.2.min.js"></script>
+        <script src="../lib/tween/TweenMax.min.js"></script>
+        <style>
+            body{
+                /* set margin to 0 and overflow to hidden,
+                to use the complete page */
+                margin: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Div which will hold the Output -->
+        <div id="WebGL-output">
+        </div>
+        <!-- Javascript code that runs our Three.js examples -->
+        <script type="text/javascript">
+            // once everything is loaded, we run our Three.js stuff.
+
+            $(document).ready(function () {
+
+                var scene = new THREE.Scene();
+                var camera = new THREE.PerspectiveCamera(45
+                        , window.innerWidth / window.innerHeight
+                        , 0.1, 1000);
+                var renderer = new THREE.WebGLRenderer();
+
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                var axes = new THREE.AxesHelper(20);
+                scene.add(axes);
+
+                var light = new THREE.AmbientLight(0x555555); // soft white light
+                scene.add(light);
+
+                var spotLight = new THREE.SpotLight(0xffffff);
+                spotLight.position.set(50, 100, 50);
+
+                spotLight.castShadow = true;
+
+                spotLight.shadowMapWidth = 1024;
+                spotLight.shadowMapHeight = 1024;
+
+                spotLight.shadowCameraNear = 500;
+                spotLight.shadowCameraFar = 4000;
+                spotLight.shadowCameraFov = 30;
+
+                scene.add(spotLight);
+
+                camera.position.x = 0;
+                camera.position.y = 15;
+                camera.position.z = 25;
+                camera.lookAt(scene.position);
+                $("#WebGL-output").append(renderer.domElement);
+
+
+
+                var obj_loader = new THREE.OBJLoader();
+
+                obj_loader.load('../resources/games/chess/3D/pieces/obj/bishop_normal.obj', function (geometry) {
+                    console.log(geometry);
+                    // geometry is a group of children.
+                    // If a child has one additional child it's probably a mesh
+                    geometry.children.forEach(function (child) {
+                        console.log(child);
+                        if (child instanceof THREE.Mesh) {
+                            child.material = new THREE.MeshPhongMaterial({color: 0x555555});
+                            child.material.side = THREE.DoubleSide;
+                        }
+                        console.log(child);
+                    });
+                    geometry.castShadow = true;
+                    //geometry.add(ambientLight);
+
+                    //derLight.target = geometry;
+                    //scene.add(derLight);
+                    //scene.add(ambientLight);
+
+                    //geometry.scale.set(0.3, 0.3, 0.3);
+                    geometry.scale.set(3, 3, 3);
+                    scene.add(geometry);
+
+                    renderer.render(scene, camera);
+                });
+
+            });
+
+
+        </script>
+
+
+
+
+    </body>
+</html>

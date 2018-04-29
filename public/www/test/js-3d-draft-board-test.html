@@ -10,6 +10,10 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../app/css/board.css" />
+        <script src="../lib/three.js"></script>
+        <script src="../lib/threejs-loaders/OBJLoader.js"></script>
+        <script src="../lib/threejs-loaders/MTLLoader.js"></script>
+        <script src="../lib/threejs-loaders/TDSLoader.js"></script>
         <script src="../lib/draftgame.js"></script>
         <script src="../lib/jquery-1.10.2.min.js"></script>
         <script src="../lib/tween/TweenMax.min.js"></script>
@@ -79,6 +83,7 @@ and open the template in the editor.
                     //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
                     white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
+                    boardTheme:'wooddark',
                     pieceTheme: 'alpha',
                     is3D: true,
                 };
@@ -91,9 +96,7 @@ and open the template in the editor.
             /* global Main, Ns */
 
         </script>
-        <script src="../app/js/game/AbstractBoard2D.js"></script>
         <script src="../app/js/game/AbstractBoard3D.js"></script>
-        <script src="../app/js/game/two/Draughts2D.js"></script>
         <script src="../app/js/game/three/Draughts3D.js"></script>
         <script src="../app/js/game/Draughts.js"></script>
 

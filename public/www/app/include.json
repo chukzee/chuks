@@ -47,7 +47,10 @@
             "lib/socket.io.js",
             "lib/jquery-1.10.2.min.js",
             //"lib/bootstrap.min.js",// // @Deprecated - does not integrate well with game9ja css design 
-            "lib/tween/TweenMax.min.js"
+            "lib/tween/TweenMax.min.js",
+            "lib/threejs-loaders/OBJLoader.js",
+            "lib/threejs-loaders/MTLLoader.js",
+            "lib/threejs-loaders/TDSLoader.js"
                     //"/socket.io/socket.io.js" //@Deprecated - socket.io default url route is not neccesary and can cause confusion 
 ],
 

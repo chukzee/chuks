@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>My first three.js app</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/board.css" />
+        <script src="../lib/three.js"></script>
+        <script src="../lib/jquery-1.10.2.min.js"></script>
+        <script src="../lib/tween/TweenMax.min.js"></script>
+        <style>
+            body{
+                /* set margin to 0 and overflow to hidden,
+                to use the complete page */
+                margin: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Div which will hold the Output -->
+        <div id="WebGL-output">
+        </div>
+        <!-- Javascript code that runs our Three.js examples -->
+        <script type="text/javascript">
+            // once everything is loaded, we run our Three.js stuff.
+
+                $(document).ready(function () {
+
+                    var scene = new THREE.Scene();
+                    var camera = new THREE.PerspectiveCamera(45
+                            , window.innerWidth / window.innerHeight
+                            , 0.1, 1000);
+                    var renderer = new THREE.WebGLRenderer();
+
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    var axes = new THREE.AxesHelper(20);
+                    scene.add(axes);
+
+
+                    camera.position.x = 0;
+                    camera.position.y = -5;
+                    camera.position.z = 25;
+                    camera.lookAt(scene.position);
+                    $("#WebGL-output").append(renderer.domElement);
+
+
+                    var loader = new THREE.TextureLoader();
+                    
+                    loader.load('../resources/games/chess/board/chess_board_texture_2.png', function (texture) {
+
+                        var planeGeometry = new THREE.PlaneGeometry(20, 20, 10, 10);
+                        planeGeometry.computeFaceNormals();
+                        planeGeometry.mergeVertices();
+                        planeGeometry.computeVertexNormals();
+                        var planeMaterial = new THREE.MeshBasicMaterial({map: texture});
+
+                        var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                        //plane.rotation.x = -0.5 * Math.PI;
+
+                        plane.position.x = 0;
+                        plane.position.y = 0;
+                        plane.position.z = -1;
+                        scene.add(plane);
+
+
+                        renderer.render(scene, camera);
+                        console.log(plane.geometry.faces.length);
+                    });
+                });
+
+            
+        </script>
+
+
+
+
+    </body>
+</html>

@@ -78,24 +78,86 @@ Ns.game.AbstractBoard2D = {
      * @returns {undefined}
      */
     load: function (internal_game, obj, callback) {
+        this.squareList = {};
+        this.squarePieces = [];
+        this.hoverSquare = null;
+        this.pickedSquare = null;
+        this.captureSquareList = [];
+        this.pickedPiece = null;
+        this.boardContainer = null;
+        this.pieceWidth = null;
+        this.pieceHeight = null;
+        this.boardX = -1;
+        this.boardY = -1;
+        this.boardRow = -1;
+        this.boardCol = -1;
+        this.boardSq = -1;
+        this.startTouchBoardX = -1;
+        this.startTouchBoardY = -1;
+        this.startTouchBoardRow = -1;
+        this.startTouchBoardCol = -1;
+        this.startTouchBoardSq = -1;
+        this.isTouchingBoard = false;
+
         if (obj.variant) {
             var vrnt = this.getVariant(obj.variant);
-            var s = vrnt.size.split('x'); //e.g 8x8, 10x10, 12x12
+            var board_size = vrnt.size;
+            var s = board_size.split('x'); //e.g 8x8, 10x10, 12x12
             this.boardRowCount = s[0] - 0;//implicitly convet to numeric
         }
+
         this.internalGame = internal_game;
         this.userSide = obj.white === true ? 'w' : (obj.white === false ? 'b' : null); //strictly true or false
         this.isBoardFlip = obj.flip;
 
         var el = document.getElementById(obj.container);
-        this.boardContainer = el;
+
+        this.boardContainer = this.properlySizedBoardContainer(el, this.boardRowCount, obj.boardTheme, obj.inverseBoard);
         el.innerHTML = '';//clear any previous
+        el.appendChild(this.boardContainer);
+        
         var board_cls = this.getBoardClass(obj.inverseBoard);
-        var gameboard = this.board(el, board_cls, obj.pieceTheme, obj.bordTheme);
-        el.appendChild(gameboard);
+        
+        var gameboard = this.board(el, obj.pieceTheme, obj.boardTheme);
+        
+        this.boardContainer.appendChild(gameboard);
 
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
+    },
+    /**
+     * Creates a properly sized board container. This container is created
+     * so that we can give it a proper size to avoid a situation where the
+     * board theme image is not repeated evenly. If the width of the container
+     * is not a multiple of the board number of rows then there is a possibity of 
+     * the theme image not evenly repeated (a Bazaar look). 
+     * Thus we will give a size which is the highest multiple of the
+     * board number of rows closest to the size of the provided element
+     * 
+     * 
+     * @param {type} el -  the provided element upon which we will create the board container
+     * @param {Integer} row_count 
+     * @param {Integer} board_theme 
+     * @param {Integer} inverse_board 
+     * @returns {undefined}
+     */
+    properlySizedBoardContainer: function (el, row_count, board_theme, inverse_board) {
+        
+        var proper_container = document.createElement('div');
+        
+        proper_container.style.backgroundImage = 'url(../resources/games/chess/board/theme/'+board_theme+'/60'+(inverse_board? '-inverse':'')+'.png)';
+        proper_container.style.backgroundRepeat = 'repeat';
+        proper_container.style.backgroundSize = 100/ (this.boardRowCount/2) + '%';
+        console.log(proper_container.style.backgroundSize);
+        var box = el.getBoundingClientRect();
+
+        var row_width = Math.floor(box.width / row_count); // to ensure the board theme image is properly repeated
+        
+        var cont_size = row_width * row_count;
+        proper_container.style.width = cont_size + 'px';
+        proper_container.style.height = cont_size + 'px';
+        
+        return proper_container;
     },
     createPieceElement: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
@@ -172,9 +234,13 @@ Ns.game.AbstractBoard2D = {
 
     },
 
-    board: function (container, board_cls, piece_theme, board_theme) {
+    board: function (container, piece_theme, board_theme) {
         var table = document.createElement('table');
-        table.className = board_cls;
+        //table.className = board_cls;/*Deprecated*/
+
+        table.style.width = '100%';
+        table.style.height = '100%';
+        table.style.borderCollapse = 'collapse';
 
         var me = this;
 
@@ -196,24 +262,31 @@ Ns.game.AbstractBoard2D = {
 
 
         if (this.userSide) {//enable board listener only if the user is playing game
-            if (Main.device.isMobileDeviceReady) {
-                container.addEventListener('touchstart', touchStartBoard);
-                container.addEventListener('touchmove', hoverBoard);
-                container.addEventListener('touchend', hoverBoardEnd);
-                container.addEventListener('touchcancel', hoverBoardEnd);
-            } else {
-                container.addEventListener('click', clickBoard);
-                container.addEventListener('mousemove', hoverBoard);
-                container.addEventListener('mouseleave', hoverBoardEnd);//mouseout behaviour is not appropriate because is fires for every children
+
+            var is_event_set = '_is_Board_Event_Set';
+
+            if (!container[is_event_set]) {
+                if (Main.device.isMobileDeviceReady) {
+                    container.addEventListener('touchstart', touchStartBoard);
+                    container.addEventListener('touchmove', hoverBoard);
+                    container.addEventListener('touchend', hoverBoardEnd);
+                    container.addEventListener('touchcancel', hoverBoardEnd);
+                } else {
+                    container.addEventListener('click', clickBoard);
+                    container.addEventListener('mousemove', hoverBoard);
+                    container.addEventListener('mouseleave', hoverBoardEnd);//mouseout behaviour is not appropriate because is fires for every children
+                }
+                container[is_event_set] = true;
             }
         }
 
 
-
         for (var i = 0; i < this.boardRowCount; i++) {
             var tr = document.createElement('tr');
+            tr.style.border = 'none';
             for (var k = 0; k < this.boardRowCount; k++) {
                 var td = document.createElement('td');
+                td.style.border = 'none';
                 td.dataset.square = '';
                 tr.appendChild(td);
             }
