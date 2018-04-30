@@ -99,11 +99,11 @@ Ns.game.AbstractBoard3D = {
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
     },
-    
+
     getModelBottom: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
-    
+
     createPiece: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
@@ -141,7 +141,7 @@ Ns.game.AbstractBoard3D = {
 
             var center = me.squareCenter(this.sq);
 
-            console.log('center', center,'model',model, 'sq', this.sq);
+            console.log('center', center, 'model', model, 'sq', this.sq);
 
             model.position.x = center.x;
             model.position.y = center.y;
@@ -232,9 +232,7 @@ Ns.game.AbstractBoard3D = {
         var box = container.getBoundingClientRect();
 
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(45
-                , box.width / box.height
-                , 0.1, 1000);
+
         var renderer = new THREE.WebGLRenderer();
 
         renderer.setSize(box.width, box.height);
@@ -249,18 +247,16 @@ Ns.game.AbstractBoard3D = {
 
         spotLight.castShadow = true;
 
-        spotLight.shadowMapWidth = 1024;
-        spotLight.shadowMapHeight = 1024;
+        //spotLight.shadowMapWidth = 1024;
+        //spotLight.shadowMapHeight = 1024;
 
-        spotLight.shadowCameraNear = 500;
-        spotLight.shadowCameraFar = 4000;
-        spotLight.shadowCameraFov = 30;
+        //spotLight.shadowCameraNear = 500;
+        //spotLight.shadowCameraFar = 4000;
+        //spotLight.shadowCameraFov = 30;
 
         scene.add(spotLight);
 
-        camera.position.x = 0;
-        camera.position.y = -20;//the higher the closer to the eye - so -8 is closer than -10
-        camera.position.z = 20;
+        var camera = this.createCamera('perspective', box);
         camera.lookAt(scene.position);
 
         container.innerHTML = null; ////clear 
@@ -270,28 +266,51 @@ Ns.game.AbstractBoard3D = {
 
         var loader = new THREE.TextureLoader();
         var me = this;
-        loader.load('../resources/games/chess/board/themes/' + board_theme + '/60.png', function (texture) {
-            texture.repeat.set(4, 4);
-            texture.wrapS = THREE.RepeatWrapping;
-            texture.wrapT = THREE.RepeatWrapping;
-
-            var boardGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE, me.BOARD_PLANE_SIZE);
+        loader.load('../resources/images/wood_base_2.jpg', function (base_texture) {
+            base_texture.repeat.set(4, 4);
+            base_texture.wrapS = THREE.RepeatWrapping;
+            base_texture.wrapT = THREE.RepeatWrapping;
+            var fac = 1.3;
+            var baseGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE * fac, me.BOARD_PLANE_SIZE * fac);
 
             var boardMaterial = new THREE.MeshBasicMaterial({
-                map: texture,
+                map: base_texture,
             });
 
-            var board_plane = new THREE.Mesh(boardGeometry, boardMaterial);
-            
-            board_plane.receiveShadow = true;
-            
-            board_plane.position.x = 0;
-            board_plane.position.y = 0;
-            board_plane.position.z = 0;
-            scene.add(board_plane);
+            var base_plane = new THREE.Mesh(baseGeometry, boardMaterial);
 
-            me.arrangePiecesOnBoard(renderer, scene, camera, piece_theme);
+            base_plane.material.side = THREE.DoubleSide;
 
+            base_plane.position.x = 0;
+            base_plane.position.y = 0;
+            base_plane.position.z = -0.1;
+            scene.add(base_plane);
+
+            loader.load('../resources/games/chess/board/themes/' + board_theme + '/60.png', function (texture) {
+                texture.repeat.set(4, 4);
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+
+                var boardGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE, me.BOARD_PLANE_SIZE);
+
+                var boardMaterial = new THREE.MeshBasicMaterial({
+                    map: texture,
+                });
+
+                var board_plane = new THREE.Mesh(boardGeometry, boardMaterial);
+
+                board_plane.material.side = THREE.DoubleSide;
+
+                board_plane.receiveShadow = true;
+
+                board_plane.position.x = 0;
+                board_plane.position.y = 0;
+                board_plane.position.z = 0;
+                scene.add(board_plane);
+
+                me.arrangePiecesOnBoard(renderer, scene, camera, piece_theme);
+
+            });
         });
 
         //-------------------
@@ -312,6 +331,29 @@ Ns.game.AbstractBoard3D = {
 
 
 
+    },
+    createCamera: function (type, box) {
+        if (type === 'perspective') {
+            var camera = new THREE.PerspectiveCamera(45
+                    , box.width / box.height
+                    , 0.1, 1000);
+            camera.position.x = 0;
+            camera.position.y = -22;//the higher the closer to the eye - so -8 is closer than -10
+            camera.position.z = 25;
+            
+            //camera.position.x = 10;//testing!!!
+            //camera.position.y = -22;//testing!!!
+            //camera.position.z = 0;//testing!!!
+        } else {
+            var camera = new THREE.OrthographicCamera(box.width / -36, box.width / 36
+                    , box.height / -36, box.height / 36
+                    , -200, 200);
+            camera.position.x = 1;
+            camera.position.y = 15;
+            camera.position.z = 3;
+
+        }
+        return camera;
     },
     toNumericSq: function (notation) {
 

@@ -8,11 +8,11 @@ Ns.game.three.Chess3D = {
     model_loader: new THREE.TDSLoader(),
     pieceModels: {},
 
-    loadPieceModel: function (name, piece_theme, scale, callback) {
+    loadPieceModel: function (name, is_white, piece_theme, callback) {
         var path = '../resources/games/chess/3D/pieces/themes/' + piece_theme + '/3ds/' + name + '.3ds';
         if (this.pieceModels[path]) {
-            var cloned = this.pieceModels[path].clone();
-            callback(cloned);
+            var pce_model = this.chessPiece(is_white, path);
+            callback(pce_model);
             return;
         }
 
@@ -20,8 +20,12 @@ Ns.game.three.Chess3D = {
         var me = this;
         this.model_loader.load(path, function (model) {
 
+            var prop = me.getAbituaryProperties(name, piece_theme);
+
             model.userData.name = name; //e.g pawn, king e.t.c
-            model.scale.set(scale, scale, scale);
+            model.userData.bottom = prop.bottom;
+
+            model.scale.set(prop.scale, prop.scale, prop.scale);
 
             //console.log(geometry);
             // geometry is a group of children.
@@ -29,31 +33,46 @@ Ns.game.three.Chess3D = {
             model.children.forEach(function (child) {
                 //console.log(child);
                 if (child instanceof THREE.Mesh) {
-                    child.material = new THREE.MeshPhongMaterial({color: 0xAAAAAA});
+                    child.material = new THREE.MeshPhongMaterial({color: 0x222222});
                     child.material.side = THREE.DoubleSide;
                     child.material = child.material.clone();
-                    
+
                     //no get the lowest point of the model
-                    var vertices = child.geometry.vertices;
-                    var z = Number.MAX_VALUE;
-                    for(var i=0; i<vertices.length; i++){
-                        if(z > vertices[i].z){
-                            z = vertices[i].z;
-                        }
-                    }
-                    model.userData.bottom = z;
-                    
+                    /*var vertices = child.geometry.vertices;
+                     var z = Number.MAX_VALUE;
+                     for (var i = 0; i < vertices.length; i++) {
+                     if (z > vertices[i].z) {
+                     z = vertices[i].z;
+                     }
+                     }
+                     model.userData.bottom = z;
+                     */
+
                 }
                 //console.log(child);
             });
             model.castShadow = true;
 
             me.pieceModels[path] = model;
-            var cloned_model = model.clone();
-            callback(cloned_model);
+            var pce_model = me.chessPiece(is_white, path);
+            callback(pce_model);
 
         });
 
+    },
+    chessPiece: function (is_white, path) {
+
+        var cloned_model = this.pieceModels[path].clone();
+        if (is_white) {
+            cloned_model.children.forEach(function (child) {
+                //console.log(child);
+                if (child instanceof THREE.Mesh) {
+                    child.material =  new THREE.MeshPhongMaterial({color: 0xcccccc}); // lighter color
+                }
+            });
+            
+        }
+        return cloned_model;
     },
     createPiece: function (pce, piece_theme, callback) {
 
@@ -93,21 +112,52 @@ Ns.game.three.Chess3D = {
         }
 
 
-        
-        var scale = this.getScaleFactor(piece_theme);
-        this.loadPieceModel(name,piece_theme, scale, callback);
+
+
+        this.loadPieceModel(name, this.isWhite(pce), piece_theme, callback);
 
     },
-    getModelBottom: function(model){
-      return model.userData.bottom;  
+    getModelBottom: function (model) {
+        return model.userData.bottom;
     },
-    getScaleFactor: function (piece_theme) {
+    getAbituaryProperties: function (name, piece_theme) {
+        var prop = {
+            scale: 1,
+            bottom: 0
+        };
         switch (piece_theme) {
             case 'normal':
-                return 1.2;
+                {
+                    prop.scale = 1.2;
+                    switch (name) {
+                        case 'king':
+                            prop.bottom = 0;
+                            break;
+                        case 'queen':
+                            prop.bottom = 0;
+                            break;
+                        case 'knight':
+                            prop.bottom = 1.8;
+                            break;
+                        case 'bishop':
+                            prop.bottom = 2.3;
+                            break;
+                        case 'rook':
+                            prop.bottom = 0;
+                            break;
+                        case 'pawn':
+                            prop.bottom = 1.15;
+                            break;
+                    }
+                }
+                break;
+                //next 
+
             default:
-                return 1;
+                return prop;
         }
+
+        return prop;
     },
     pieceSquarRatio: function () {
         return 0.8;
