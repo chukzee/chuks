@@ -20,8 +20,8 @@ and open the template in the editor.
     </head>
     <body>
         <button onclick="showChess()" >Show 3D Chess board</button>
-        <div id="board_container-outer" style="position: relative; width: 400px; height: 400px; margin:0 auto; background-color: yellow;">
-            <div id="board_container" style="width: 300px; height: 300px; position: absolute; top: 50px; left: 50px;"></div>
+        <div id="board_container-outer" style="position: relative; width: 650px; height: 450px; margin:0 auto; background-color: yellow;">
+            <div id="board_container" style="width: 650px; height: 450px; position: absolute; top: 0px; left: 0px;"></div>
         </div>
 
         <script>
@@ -82,8 +82,8 @@ and open the template in the editor.
                     white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
                     boardTheme:'wooddark',
-                    pieceTheme: 'alpha',
-                    is3D:true,
+                    pieceTheme: 'normal',
+                    is3D:true
                 };
 
                 Ns.game.Chess.load(obj);

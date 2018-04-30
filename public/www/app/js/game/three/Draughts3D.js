@@ -9,7 +9,7 @@ Ns.game.three.Draughts3D = {
 
     extend: 'Ns.game.AbstractBoard3D',
     capturePath: [],
-    createPieceElement: function (pce, piece_theme) {
+    createPiece: function (pce, piece_theme) {
         var pe = document.createElement('div');
         pe.className = pce.white ? 'white-piece-o' : 'black-piece-o';
         pe.dataset.crowned = pce.crowned;

@@ -7,6 +7,7 @@ Ns.game.AbstractBoard3D = {
     internalGame: null, // the game engine. e.g chessj.s and my draftgame.js
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
     isBoardFlip: false, //whether black to white direction. default is white to black (false)
+    BOARD_PLANE_SIZE: 20,
     ANIM_MAX_DURATION: 500,
     HOVER_SQUARE_STYLE: 'background: red', //TODO - use beautiful bacground, possibly beautiful imgage
     PICKED_SQUARE_STYLE: 'background: yellow', //TODO - use beautiful bacground, possibly beautiful imgage
@@ -98,7 +99,12 @@ Ns.game.AbstractBoard3D = {
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
     },
-    createPieceElement: function () {
+    
+    getModelBottom: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+    
+    createPiece: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
@@ -122,22 +128,36 @@ Ns.game.AbstractBoard3D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
-    arrangeBoard: function (container, piece_theme) {
-        /* var box = container.getBoundingClientRect();
-         
-         var sq_w = box.width / this.boardRowCount;
-         var sq_h = box.height / this.boardRowCount;
-         */
+    arrangePiecesOnBoard: function (renderer, scene, camera, piece_theme) {
+
         var ratio = this.pieceSquarRatio();
         if (!ratio) {
             ratio = 0.8;
         }
-        /*var pw = sq_w * ratio; // piece width
-        var ph = sq_h * ratio; //piece height
-        this.pieceWidth = pw;
-        this.pieceHeight = ph;*/
 
-        //range pieces
+        var me = this;
+        var count = 0;
+        var positionPiece = function (model) {
+
+            var center = me.squareCenter(this.sq);
+
+            console.log('center', center,'model',model, 'sq', this.sq);
+
+            model.position.x = center.x;
+            model.position.y = center.y;
+            model.position.z = Math.abs(me.getModelBottom(model));
+
+            scene.add(model);
+
+            count++;
+            if (count === this.total) {
+                renderer.render(scene, camera);
+                console.log('all pieces loaded - ' + count);
+            }
+
+        };
+
+        var pObjArr = [];
         var SQ_COUNT = this.boardRowCount * this.boardRowCount;
         for (var i = 0; i < SQ_COUNT; i++) {
             var sqn = this.toSquareNotation(i);
@@ -150,32 +170,24 @@ Ns.game.AbstractBoard3D = {
                 sq = this.flipSquare(i);
             }
 
-            //create piece element
+            pObjArr.push({
+                pce: pce,
+                sq: sq
+            });
+        }
 
-            var pe = this.createPieceElement(pce, piece_theme);
+        for (var i = 0; i < pObjArr.length; i++) {
+            var pObj = pObjArr[i];
+            //create piece
+            var bindObj = {
+                sq: pObj.sq,
+                total: pObjArr.length
+            };
+            this.createPiece(pObj.pce, piece_theme, positionPiece.bind(bindObj));
+        }
 
-            /*
-             pe.dataset.type = "piece";
-             pe.style.width = pw + 'px';
-             pe.style.height = ph + 'px';
-             */
-            var center = this.squareCenter(sq);
-
-            /*
-             var py = center.y - ph / 2;
-             var px = center.x - pw / 2;
-             
-             pe.style.cursor = 'pointer';
-             pe.style.position = 'absolute';
-             pe.style.top = py + 'px';
-             pe.style.left = px + 'px';
-             
-             this.squarePieces[sq] = pe;
-             
-             container.appendChild(pe);
-             
-             console.log(pce);
-             */
+        if (pObjArr.length === 0) {//if no piece on board
+            renderer.render(scene, camera);
         }
 
     },
@@ -229,9 +241,26 @@ Ns.game.AbstractBoard3D = {
         //var axes = new THREE.AxesHelper(20);
         //scene.add(axes);
 
+        var light = new THREE.AmbientLight(0x555555); // soft white light
+        scene.add(light);
+
+        var spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(50, 100, 50);
+
+        spotLight.castShadow = true;
+
+        spotLight.shadowMapWidth = 1024;
+        spotLight.shadowMapHeight = 1024;
+
+        spotLight.shadowCameraNear = 500;
+        spotLight.shadowCameraFar = 4000;
+        spotLight.shadowCameraFov = 30;
+
+        scene.add(spotLight);
+
         camera.position.x = 0;
-        camera.position.y = -5;
-        camera.position.z = 25;
+        camera.position.y = -20;//the higher the closer to the eye - so -8 is closer than -10
+        camera.position.z = 20;
         camera.lookAt(scene.position);
 
         container.innerHTML = null; ////clear 
@@ -241,47 +270,47 @@ Ns.game.AbstractBoard3D = {
 
         var loader = new THREE.TextureLoader();
         var me = this;
-        loader.load('../resources/games/chess/board/theme/' + board_theme + '/60.png', function (texture) {
+        loader.load('../resources/games/chess/board/themes/' + board_theme + '/60.png', function (texture) {
             texture.repeat.set(4, 4);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
-            
-            var boardGeometry = new THREE.PlaneGeometry(20, 20, me.boardRowCount, me.boardRowCount);
-            
+
+            var boardGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE, me.BOARD_PLANE_SIZE);
+
             var boardMaterial = new THREE.MeshBasicMaterial({
                 map: texture,
             });
 
             var board_plane = new THREE.Mesh(boardGeometry, boardMaterial);
-                        
+            
+            board_plane.receiveShadow = true;
+            
             board_plane.position.x = 0;
             board_plane.position.y = 0;
-            board_plane.position.z = -1;
+            board_plane.position.z = 0;
             scene.add(board_plane);
 
-            renderer.render(scene, camera);
-            
-            
-            console.log(board_plane.geometry.faces);
-            console.log(board_plane.geometry.faces.length);
-            
+            me.arrangePiecesOnBoard(renderer, scene, camera, piece_theme);
+
         });
 
         //-------------------
 
 
         /*var rw = table.children;
-        var sq = -1;
-        for (var i = rw.length - 1; i > -1; i--) {
-            var sqs = rw[i].children;
-            for (var k = 0; k < sqs.length; k++) {
-                sq++;
-                this.squareList[sq] = sqs[k];
-                this.squareList[sq].dataset.square = sq;//for identifying the squares
-            }
-        }*/
+         var sq = -1;
+         for (var i = rw.length - 1; i > -1; i--) {
+         var sqs = rw[i].children;
+         for (var k = 0; k < sqs.length; k++) {
+         sq++;
+         this.squareList[sq] = sqs[k];
+         this.squareList[sq].dataset.square = sq;//for identifying the squares
+         }
+         }*/
 
-        this.arrangeBoard(container, piece_theme);
+
+
+
 
     },
     toNumericSq: function (notation) {
@@ -461,6 +490,22 @@ Ns.game.AbstractBoard3D = {
 
     squareCenter: function (sq) {
 
+        var center_x, center_y;
+
+        var sq_size = this.BOARD_PLANE_SIZE / this.boardRowCount;
+
+        var row = Math.floor(sq / this.boardRowCount);
+        var col = this.boardRowCount - sq % this.boardRowCount - 1;
+
+        center_x = (this.boardRowCount - col) * sq_size - sq_size / 2;
+        center_y = (this.boardRowCount - row) * sq_size - sq_size / 2;
+        if (sq === 56) {
+            console.log('center_y', center_y, 'row', row, );
+        }
+        return {
+            x: center_x - this.BOARD_PLANE_SIZE / 2,
+            y: center_y - this.BOARD_PLANE_SIZE / 2
+        };
     },
 
     highlightSquare: function (sqEl, style) {
