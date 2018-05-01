@@ -112,19 +112,38 @@ Ns.game.AbstractBoard2D = {
 
         var el = document.getElementById(obj.container);
 
-        this.boardContainer = this.properlySizedBoardContainer(el, this.boardRowCount, obj.boardTheme, obj.inverseBoard);
+        var me = this;
+        var extra_dom_prop = '_resizeBoardContainerHandler_game9ja'; // must be a constant - do not use datetime
+        var old_handler = el[extra_dom_prop];
+        if (old_handler) {//remove old handler
+            el.addEventListener('resize', old_handler);
+            el.addEventListener('orientationchange', old_handler);
+        }
+
+        var resizeBoardContainer = function (evt) {
+            me.boardContainer = me.properlySizedBoardContainer(el, me.boardRowCount, obj.boardTheme, obj.inverseBoard);
+        };
+        
+        el.addEventListener('resize', resizeBoardContainer);
+        el.addEventListener('orientationchange', resizeBoardContainer);
+        
+        el[extra_dom_prop] = resizeBoardContainer; //register the handler for later removal
+        
+        resizeBoardContainer();
+
         el.innerHTML = '';//clear any previous
         el.appendChild(this.boardContainer);
-        
-        var board_cls = this.getBoardClass(obj.inverseBoard);
-        
+
+        //var board_cls = this.getBoardClass(obj.inverseBoard);//@Deprecated
+
         var gameboard = this.board(el, obj.pieceTheme, obj.boardTheme);
-        
+
         this.boardContainer.appendChild(gameboard);
 
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
     },
+
     /**
      * Creates a properly sized board container. This container is created
      * so that we can give it a proper size to avoid a situation where the
@@ -142,21 +161,21 @@ Ns.game.AbstractBoard2D = {
      * @returns {undefined}
      */
     properlySizedBoardContainer: function (el, row_count, board_theme, inverse_board) {
-        
+
         var proper_container = document.createElement('div');
-        
-        proper_container.style.backgroundImage = 'url(../resources/games/chess/board/themes/'+board_theme+'/60'+(inverse_board? '-inverse':'')+'.png)';
+
+        proper_container.style.backgroundImage = 'url(../resources/games/chess/board/themes/' + board_theme + '/60' + (inverse_board ? '-inverse' : '') + '.png)';
         proper_container.style.backgroundRepeat = 'repeat';
-        proper_container.style.backgroundSize = 100/ (this.boardRowCount/2) + '%';
+        proper_container.style.backgroundSize = 100 / (this.boardRowCount / 2) + '%';
         console.log(proper_container.style.backgroundSize);
         var box = el.getBoundingClientRect();
 
         var row_width = Math.floor(box.width / row_count); // to ensure the board theme image is properly repeated
-        
+
         var cont_size = row_width * row_count;
         proper_container.style.width = cont_size + 'px';
         proper_container.style.height = cont_size + 'px';
-        
+
         return proper_container;
     },
     createPieceElement: function () {

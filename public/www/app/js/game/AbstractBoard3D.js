@@ -12,6 +12,11 @@ Ns.game.AbstractBoard3D = {
     HOVER_SQUARE_STYLE: 'background: red', //TODO - use beautiful bacground, possibly beautiful imgage
     PICKED_SQUARE_STYLE: 'background: yellow', //TODO - use beautiful bacground, possibly beautiful imgage
     CAPTURED_SQUARE_STYLE: 'background: blue', //TODO - use beautiful bacground, possibly beautiful imgage
+    floorPlane: null,
+    basePlane: null,
+    boardPlane: null,
+    camera: null,
+    raycaster: new THREE.Raycaster(),
     squareList: {},
     squarePieces: [],
     hoverSquare: null,
@@ -100,6 +105,28 @@ Ns.game.AbstractBoard3D = {
 
     },
 
+    /**
+     * Determines and returns an array of captured white pieces using the 
+     * provided white pieces on the board
+     *
+     * @param {type} wht_pieces - provided white pieces on the board
+     * @returns {undefined}    
+     */
+    determineWhiteCaptives: function (wht_pieces) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    /**
+     * Determines and returns an array of captured black pieces using the 
+     * provided black pieces on the board
+     *
+     * @param {type} blk_pieces - provided black pieces on the board
+     * @returns {undefined}    
+     */
+    determineBlackCaptives: function (blk_pieces) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
     getModelBottom: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
@@ -128,6 +155,18 @@ Ns.game.AbstractBoard3D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
+    takeOffBoard: function (model, animate) {
+        var to_x = 0; //TODO
+        var to_x = 0; //TODO
+        var to_z = this.floorPlane.position.z + this.getModelBottom(model);  //sit on the floor
+        if (animate) {
+            //TODO
+        } else {
+            model.position.set(to_x, to_y, to_z);
+        }
+
+    },
+
     arrangePiecesOnBoard: function (renderer, scene, camera, piece_theme) {
 
         var ratio = this.pieceSquarRatio();
@@ -137,34 +176,52 @@ Ns.game.AbstractBoard3D = {
 
         var me = this;
         var count = 0;
+        var OFF_BOARD = -1;
         var positionPiece = function (model) {
 
-            var center = me.squareCenter(this.sq);
+            if (sq !== OFF_BOARD) {
+                var center = me.squareCenter(this.sq);
 
-            console.log('center', center, 'model', model, 'sq', this.sq);
+                //console.log('center', center, 'model', model, 'sq', this.sq);
 
-            model.position.x = center.x;
-            model.position.y = center.y;
-            model.position.z = Math.abs(me.getModelBottom(model));
+                model.position.x = center.x;
+                model.position.y = center.y;
+                model.position.z = me.getModelBottom(model);
+            } else {
+                me.takeOffBoard(model, false);
+            }
 
             scene.add(model);
 
             count++;
             if (count === this.total) {
+
                 renderer.render(scene, camera);
+
                 console.log('all pieces loaded - ' + count);
             }
 
         };
 
         var pObjArr = [];
+        var w_arr = [];
+        var b_arr = [];
+
         var SQ_COUNT = this.boardRowCount * this.boardRowCount;
         for (var i = 0; i < SQ_COUNT; i++) {
             var sqn = this.toSquareNotation(i);
             var pce = this.getInternalPiece(sqn);
+
             if (!pce) {
                 continue;
             }
+
+            if (this.isWhite(pce)) {
+                w_arr.push(pce);
+            } else {
+                b_arr.push(pce);
+            }
+
             var sq = i;
             if (this.isBoardFlip) {
                 sq = this.flipSquare(i);
@@ -176,6 +233,24 @@ Ns.game.AbstractBoard3D = {
             });
         }
 
+        var w_caps = this.determineWhiteCaptives(w_arr);
+        var b_caps = this.determineBlackCaptives(b_arr);
+
+        for (var i = 0; i < w_caps.length; i++) {
+            var pce = w_caps[i];
+            pObjArr.push({
+                pce: pce,
+                sq: OFF_BOARD
+            });
+        }
+
+        for (var i = 0; i < b_caps.length; i++) {
+            var pce = b_caps[i];
+            pObjArr.push({
+                pce: pce,
+                sq: OFF_BOARD
+            });
+        }
         for (var i = 0; i < pObjArr.length; i++) {
             var pObj = pObjArr[i];
             //create piece
@@ -186,9 +261,9 @@ Ns.game.AbstractBoard3D = {
             this.createPiece(pObj.pce, piece_theme, positionPiece.bind(bindObj));
         }
 
-        if (pObjArr.length === 0) {//if no piece on board
-            renderer.render(scene, camera);
-        }
+        /*if (pObjArr.length === 0) {//if no piece on board
+         renderer.render(scene, camera);
+         }*/
 
     },
 
@@ -236,6 +311,7 @@ Ns.game.AbstractBoard3D = {
         var renderer = new THREE.WebGLRenderer();
 
         renderer.setSize(box.width, box.height);
+        renderer.shadowMap.enabled = true;
         //var axes = new THREE.AxesHelper(20);
         //scene.add(axes);
 
@@ -243,21 +319,20 @@ Ns.game.AbstractBoard3D = {
         scene.add(light);
 
         var spotLight = new THREE.SpotLight(0xffffff);
-        spotLight.position.set(50, 100, 50);
+        spotLight.position.set(0, 0, 30);
 
         spotLight.castShadow = true;
 
-        //spotLight.shadowMapWidth = 1024;
-        //spotLight.shadowMapHeight = 1024;
-
-        //spotLight.shadowCameraNear = 500;
-        //spotLight.shadowCameraFar = 4000;
-        //spotLight.shadowCameraFov = 30;
+        spotLight.shadow.mapSize.width = 10;
+        spotLight.shadow.mapSize.height = 10;
+        spotLight.shadow.camera.near = 50;
+        spotLight.shadow.camera.far = 400;
+        spotLight.shadow.camera.fov = 30;
 
         scene.add(spotLight);
 
-        var camera = this.createCamera('perspective', box);
-        camera.lookAt(scene.position);
+        this.camera = this.createCamera('perspective', box);
+        this.camera.lookAt(scene.position);
 
         container.innerHTML = null; ////clear 
         //$(container).append(renderer.domElement);
@@ -266,49 +341,77 @@ Ns.game.AbstractBoard3D = {
 
         var loader = new THREE.TextureLoader();
         var me = this;
-        loader.load('../resources/images/wood_base_2.jpg', function (base_texture) {
-            base_texture.repeat.set(4, 4);
-            base_texture.wrapS = THREE.RepeatWrapping;
-            base_texture.wrapT = THREE.RepeatWrapping;
-            var fac = 1.3;
-            var baseGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE * fac, me.BOARD_PLANE_SIZE * fac);
+        var base_height = this.BOARD_PLANE_SIZE / (this.boardRowCount * 2);
 
-            var boardMaterial = new THREE.MeshBasicMaterial({
-                map: base_texture,
+        //base_height = 0.001;//To flatten the board base uncomment this line
+
+        loader.load('../resources/images/wood_base_2.jpg', function (floor_texture) {
+            floor_texture.repeat.set(14, 14);
+            floor_texture.wrapS = THREE.RepeatWrapping;
+            floor_texture.wrapT = THREE.RepeatWrapping;
+            var fac = 5.5;
+            var floorGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE * fac, me.BOARD_PLANE_SIZE * fac);
+
+            var floorMaterial = new THREE.MeshPhongMaterial({
+                map: floor_texture,
             });
 
-            var base_plane = new THREE.Mesh(baseGeometry, boardMaterial);
+            me.floorPlane = new THREE.Mesh(floorGeometry, floorMaterial);
 
-            base_plane.material.side = THREE.DoubleSide;
+            me.floorPlane.material.side = THREE.DoubleSide;
 
-            base_plane.position.x = 0;
-            base_plane.position.y = 0;
-            base_plane.position.z = -0.1;
-            scene.add(base_plane);
+            me.floorPlane.position.x = 0;
+            me.floorPlane.position.y = 0;
+            me.floorPlane.position.z = -0.1 - base_height;
+            scene.add(me.floorPlane);
 
-            loader.load('../resources/games/chess/board/themes/' + board_theme + '/60.png', function (texture) {
-                texture.repeat.set(4, 4);
-                texture.wrapS = THREE.RepeatWrapping;
-                texture.wrapT = THREE.RepeatWrapping;
 
-                var boardGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE, me.BOARD_PLANE_SIZE);
+            loader.load('../resources/images/wood_base_2.jpg', function (base_texture) {
+                base_texture.repeat.set(10, 10);
+                base_texture.wrapS = THREE.RepeatWrapping;
+                base_texture.wrapT = THREE.RepeatWrapping;
+                var fac = 1.1;
+                var baseGeometry = new THREE.CubeGeometry(me.BOARD_PLANE_SIZE * fac, me.BOARD_PLANE_SIZE * fac, base_height);
 
-                var boardMaterial = new THREE.MeshBasicMaterial({
-                    map: texture,
+                var baseMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x777777,
+                    map: base_texture,
                 });
 
-                var board_plane = new THREE.Mesh(boardGeometry, boardMaterial);
+                me.basePlane = new THREE.Mesh(baseGeometry, baseMaterial);
 
-                board_plane.material.side = THREE.DoubleSide;
+                me.basePlane.material.side = THREE.DoubleSide;
 
-                board_plane.receiveShadow = true;
+                me.basePlane.position.x = 0;
+                me.basePlane.position.y = 0;
+                me.basePlane.position.z = -0.05 - base_height / 2;
+                scene.add(me.basePlane);
 
-                board_plane.position.x = 0;
-                board_plane.position.y = 0;
-                board_plane.position.z = 0;
-                scene.add(board_plane);
+                loader.load('../resources/games/chess/board/themes/' + board_theme + '/60.png', function (texture) {
+                    texture.repeat.set(4, 4);
+                    texture.wrapS = THREE.RepeatWrapping;
+                    texture.wrapT = THREE.RepeatWrapping;
 
-                me.arrangePiecesOnBoard(renderer, scene, camera, piece_theme);
+                    var boardGeometry = new THREE.PlaneGeometry(me.BOARD_PLANE_SIZE, me.BOARD_PLANE_SIZE);
+
+                    var boardMaterial = new THREE.MeshLambertMaterial({
+                        map: texture,
+                    });
+
+                    me.boardPlane = new THREE.Mesh(boardGeometry, boardMaterial);
+
+                    me.boardPlane.material.side = THREE.DoubleSide;
+
+                    me.boardPlane.receiveShadow = true;
+
+                    me.boardPlane.position.x = 0;
+                    me.boardPlane.position.y = 0;
+                    me.boardPlane.position.z = 0;
+                    scene.add(me.boardPlane);
+
+                    me.arrangePiecesOnBoard(renderer, scene, me.camera, piece_theme);
+
+                });
 
             });
         });
@@ -340,7 +443,7 @@ Ns.game.AbstractBoard3D = {
             camera.position.x = 0;
             camera.position.y = -22;//the higher the closer to the eye - so -8 is closer than -10
             camera.position.z = 25;
-            
+
             //camera.position.x = 10;//testing!!!
             //camera.position.y = -22;//testing!!!
             //camera.position.z = 0;//testing!!!
@@ -540,10 +643,10 @@ Ns.game.AbstractBoard3D = {
         var col = this.boardRowCount - sq % this.boardRowCount - 1;
 
         center_x = (this.boardRowCount - col) * sq_size - sq_size / 2;
-        center_y = (this.boardRowCount - row) * sq_size - sq_size / 2;
-        if (sq === 56) {
-            console.log('center_y', center_y, 'row', row, );
-        }
+        center_y = (row + 1) * sq_size - sq_size / 2;
+
+        //console.log('center_y', center_y, 'row', row, );
+
         return {
             x: center_x - this.BOARD_PLANE_SIZE / 2,
             y: center_y - this.BOARD_PLANE_SIZE / 2
@@ -568,6 +671,15 @@ Ns.game.AbstractBoard3D = {
     },
 
     onClickBoard: function (evt, container, is_tap) {
+        if (is_tap) {
+            this.boardX = this.startTouchBoardX;
+            this.boardY = this.startTouchBoardY;
+            this.boardRow = this.startTouchBoardRow;
+            this.boardCol = this.startTouchBoardCol;
+            this.boardSq = this.startTouchBoardSq;
+        } else {
+            this.boardXY(container, evt, is_tap);
+        }
 
 
 
@@ -581,4 +693,142 @@ Ns.game.AbstractBoard3D = {
 
     onHoverBoardEnd: function (evt) {
     },
+
+    boardXY: function (container, e, is_start_touch) {
+        var posx = 0;
+        var posy = 0;
+
+        if (!e)
+            var e = window.event;
+        if (e.touches && e.touches.length) {
+            posx = e.touches[0].pageX;
+            posy = e.touches[0].pageY;
+        } else if (e.pageX || e.pageY) {
+            posx = e.pageX;
+            posy = e.pageY;
+        } else if (e.clientX || e.clientY) {
+            posx = e.clientX + document.body.scrollLeft
+                    + document.documentElement.scrollLeft;
+            posy = e.clientY + document.body.scrollTop
+                    + document.documentElement.scrollTop;
+        }
+        // posx and posy contain the mouse position relative to the document
+
+        var scene_rect = container.getBoundingClientRect();
+        /*var vector = new THREE.Vector3(
+         (event.clientX / scene_rect.width) * 2 - 1,
+         -(event.clientY / scene_rect.height) * 2 + 1,
+         0.5);
+         
+         this.projector.unprojectVector(vector, camera);
+         //var raycaster = new THREE.Raycaster(this.camera.position,
+         //      vector.sub(this.camera.position).normalize());
+         */
+
+        var vector2d = new THREE.Vector2();
+        vector2d.x = (e.clientX / scene_rect.width) * 2 - 1;
+        vector2d.y = -(e.clientY / scene_rect.height) * 2 + 1;
+        
+        //vector2d.x = posx; //testing!!!
+        //vector2d.y = posy; //testing!!!
+
+        var x = vector2d.x;
+        var y = vector2d.y;
+
+        //console.log('x', x, 'y', y);
+
+        /*this.raycaster.setFromCamera(vector2d, this.camera);
+        var intersects = this.raycaster.intersectObjects([this.boardPlane]);
+
+        for (var i = 0; i < intersects.length; i++) {
+            console.log('intersects[' + i + ']', intersects[i]);
+        }*/
+        
+        ////
+        
+        var vector = new THREE.Vector3(( e.clientX / window.innerWidth  ) * 2 - 1, -( e.clientY / window.innerHeight ) * 2 + 1, 0.5);
+            vector = vector.unproject(this.camera);
+            var raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+            var intersects = raycaster.intersectObjects([this.boardPlane]);
+            if (intersects.length > 0) {
+                console.log(intersects[0]);
+                //intersects[0].object.material.transparent = true;
+                //intersects[0].object.material.opacity = 0.1;
+            }
+            
+        ////
+
+        //row and col
+
+        var sq_w = this.BOARD_PLANE_SIZE / this.boardRowCount;
+        var sq_h = this.BOARD_PLANE_SIZE / this.boardRowCount;
+
+        if (Main.device.isMobileDeviceReady
+                && !Main.device.isLarge()) {//for only smart phones and tablets of medium size
+            //Now make the y offset allow easy pick of piece especailly on small device
+            if (y < this.BOARD_PLANE_SIZE - sq_h / 2) {//above middle of first row
+                y -= sq_h; // offset y by square height
+            }
+        }
+
+        var row = Math.floor((this.BOARD_PLANE_SIZE - y) / sq_h);
+        var col = this.boardRowCount - Math.floor((this.BOARD_PLANE_SIZE - x) / sq_w) - 1;
+
+
+        if (x < -this.BOARD_PLANE_SIZE / 2) {
+            x = -this.BOARD_PLANE_SIZE / 2;
+        }
+        if (y < -this.BOARD_PLANE_SIZE / 2) {
+            y = -this.BOARD_PLANE_SIZE / 2;
+        }
+
+        if (x > this.BOARD_PLANE_SIZE / 2) {
+            x = this.BOARD_PLANE_SIZE / 2;
+        }
+        if (y > this.BOARD_PLANE_SIZE / 2) {
+            y = this.BOARD_PLANE_SIZE / 2;
+        }
+
+
+        if (row < 0
+                || col < 0
+                || row > this.boardRowCount - 1
+                || col > this.boardRowCount - 1) {//OFF BOARD
+
+            this.boardX = x;
+            this.boardY = y;
+            this.boardRow = -1;
+            this.boardCol = -1;
+            this.boardSq = -1;
+            //Clear highlighted squares
+            if (this.captureSquareList.indexOf(this.hoverSquare) === -1) {
+                this.highlightSquare(this.hoverSquare, '');//remove the highlight
+            }
+            this.hoverSquare = null;
+            console.log('leave');
+            return;
+        }
+
+        var sq = row * this.boardRowCount + col;
+
+        if (is_start_touch) {
+            this.startTouchBoardX = x;
+            this.startTouchBoardY = y;
+            this.startTouchBoardRow = row;
+            this.startTouchBoardCol = col;
+            this.startTouchBoardSq = sq;
+        } else {
+            this.boardX = x;
+            this.boardY = y;
+            this.boardRow = row;
+            this.boardCol = col;
+            this.boardSq = sq;
+        }
+
+        //console.log(posx, posy);
+        //console.log(x, y);
+        console.log('x=', x, 'y=', y, 'row=', row, 'col=', col, 'sq=', sq);
+
+    }
+
 };

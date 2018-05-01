@@ -10,12 +10,33 @@ Ns.game.three.Chess3D = {
 
     loadPieceModel: function (name, is_white, piece_theme, callback) {
         var path = '../resources/games/chess/3D/pieces/themes/' + piece_theme + '/3ds/' + name + '.3ds';
-        if (this.pieceModels[path]) {
+
+        if (!this.pieceModels[path]) {
+            this.pieceModels[path] = {};
+        }
+
+        if (this.pieceModels[path].model) {
             var pce_model = this.chessPiece(is_white, path);
             callback(pce_model);
             return;
         }
 
+        if (!this.pieceModels[path].listeners) {
+            this.pieceModels[path].listeners = [];
+        }
+        var obj = {
+            is_white: is_white,
+            fn: callback
+        };
+
+        this.pieceModels[path].listeners.push(obj);
+
+        if (this.pieceModels[path].listeners.length > 1) {
+
+            console.log('waiting piece ', name, 'total', this.pieceModels[path].listeners.length);
+
+            return;
+        }
 
         var me = this;
         this.model_loader.load(path, function (model) {
@@ -24,6 +45,7 @@ Ns.game.three.Chess3D = {
 
             model.userData.name = name; //e.g pawn, king e.t.c
             model.userData.bottom = prop.bottom;
+            model.userData.rotation = prop.rotation;
 
             model.scale.set(prop.scale, prop.scale, prop.scale);
 
@@ -33,45 +55,50 @@ Ns.game.three.Chess3D = {
             model.children.forEach(function (child) {
                 //console.log(child);
                 if (child instanceof THREE.Mesh) {
-                    child.material = new THREE.MeshPhongMaterial({color: 0x222222});
+                    child.material = new THREE.MeshPhongMaterial({color: 0x444444});
                     child.material.side = THREE.DoubleSide;
                     child.material = child.material.clone();
-
-                    //no get the lowest point of the model
-                    /*var vertices = child.geometry.vertices;
-                     var z = Number.MAX_VALUE;
-                     for (var i = 0; i < vertices.length; i++) {
-                     if (z > vertices[i].z) {
-                     z = vertices[i].z;
-                     }
-                     }
-                     model.userData.bottom = z;
-                     */
-
                 }
                 //console.log(child);
             });
             model.castShadow = true;
 
-            me.pieceModels[path] = model;
-            var pce_model = me.chessPiece(is_white, path);
-            callback(pce_model);
+            me.pieceModels[path].model = model;
 
+            //callback(pce_model);
+            var listeners = me.pieceModels[path].listeners;
+            for (var i = 0; i < listeners.length; i++) {
+                var lstnr = listeners[i];
+                var is_white_pce = lstnr.is_white;
+                var fn = lstnr.fn;
+                var pce_model = me.chessPiece(is_white_pce, path);
+                fn(pce_model);
+            }
+
+            //clear the listeners
+            delete me.pieceModels[path].listeners;
         });
 
     },
     chessPiece: function (is_white, path) {
 
-        var cloned_model = this.pieceModels[path].clone();
+        var cloned_model = this.pieceModels[path].model.clone();
         if (is_white) {
             cloned_model.children.forEach(function (child) {
                 //console.log(child);
                 if (child instanceof THREE.Mesh) {
-                    child.material =  new THREE.MeshPhongMaterial({color: 0xcccccc}); // lighter color
+                    child.material = new THREE.MeshPhongMaterial({color: 0x996515}); // lighter color
                 }
             });
-            
+
         }
+
+        if (cloned_model.userData.rotation) {
+            cloned_model.rotation.z = is_white ?
+                    -cloned_model.userData.rotation
+                    : cloned_model.userData.rotation;
+        }
+
         return cloned_model;
     },
     createPiece: function (pce, piece_theme, callback) {
@@ -112,8 +139,6 @@ Ns.game.three.Chess3D = {
         }
 
 
-
-
         this.loadPieceModel(name, this.isWhite(pce), piece_theme, callback);
 
     },
@@ -123,7 +148,8 @@ Ns.game.three.Chess3D = {
     getAbituaryProperties: function (name, piece_theme) {
         var prop = {
             scale: 1,
-            bottom: 0
+            bottom: 0,
+            rotation: 0 // usually for knight
         };
         switch (piece_theme) {
             case 'normal':
@@ -134,10 +160,11 @@ Ns.game.three.Chess3D = {
                             prop.bottom = 0;
                             break;
                         case 'queen':
-                            prop.bottom = 0;
+                            prop.bottom = 0.1;
                             break;
                         case 'knight':
                             prop.bottom = 1.8;
+                            prop.rotation = Math.PI / 2; // usually knight
                             break;
                         case 'bishop':
                             prop.bottom = 2.3;
@@ -208,6 +235,34 @@ Ns.game.three.Chess3D = {
 
     getInternalPiece: function (sqn) {
         return this.internalGame.get(sqn);
+    },
+
+    /**
+     * Determines and returns an array of captured white pieces using the 
+     * provided white pieces on the board
+     *
+     * @param {type} wht_pieces - provided white pieces on the board
+     * @returns {undefined}    
+      */
+    determineWhiteCaptives: function (wht_pieces) {
+        
+        var arr = [];
+        
+        return arr;
+    },
+    
+    /**
+     * Determines and returns an array of captured black pieces using the 
+     * provided black pieces on the board
+     *
+     * @param {type} blk_pieces - provided black pieces on the board
+     * @returns {undefined}    
+      */
+    determineBlackCaptives: function (blk_pieces) {
+
+        var arr = [];
+        
+        return arr;
     },
 
     getBoardClass: function () {
