@@ -695,6 +695,7 @@ Ns.game.AbstractBoard3D = {
     },
 
     boardXY: function (container, e, is_start_touch) {
+
         var posx = 0;
         var posy = 0;
 
@@ -715,48 +716,21 @@ Ns.game.AbstractBoard3D = {
         // posx and posy contain the mouse position relative to the document
 
         var scene_rect = container.getBoundingClientRect();
-        /*var vector = new THREE.Vector3(
-         (event.clientX / scene_rect.width) * 2 - 1,
-         -(event.clientY / scene_rect.height) * 2 + 1,
-         0.5);
-         
-         this.projector.unprojectVector(vector, camera);
-         //var raycaster = new THREE.Raycaster(this.camera.position,
-         //      vector.sub(this.camera.position).normalize());
-         */
+
+        var x_in_canvas = posx - scene_rect.left;
+        var y_in_canvas = posy - scene_rect.top;
 
         var vector2d = new THREE.Vector2();
-        vector2d.x = (e.clientX / scene_rect.width) * 2 - 1;
-        vector2d.y = -(e.clientY / scene_rect.height) * 2 + 1;
-        
-        //vector2d.x = posx; //testing!!!
-        //vector2d.y = posy; //testing!!!
+        vector2d.x = (x_in_canvas / scene_rect.width) * 2 - 1;
+        vector2d.y = -(y_in_canvas / scene_rect.height) * 2 + 1;
 
-        var x = vector2d.x;
-        var y = vector2d.y;
-
-        //console.log('x', x, 'y', y);
-
-        /*this.raycaster.setFromCamera(vector2d, this.camera);
+        this.raycaster.setFromCamera(vector2d, this.camera);
         var intersects = this.raycaster.intersectObjects([this.boardPlane]);
-
-        for (var i = 0; i < intersects.length; i++) {
-            console.log('intersects[' + i + ']', intersects[i]);
-        }*/
-        
-        ////
-        
-        var vector = new THREE.Vector3(( e.clientX / window.innerWidth  ) * 2 - 1, -( e.clientY / window.innerHeight ) * 2 + 1, 0.5);
-            vector = vector.unproject(this.camera);
-            var raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-            var intersects = raycaster.intersectObjects([this.boardPlane]);
-            if (intersects.length > 0) {
-                console.log(intersects[0]);
-                //intersects[0].object.material.transparent = true;
-                //intersects[0].object.material.opacity = 0.1;
-            }
-            
-        ////
+        var x, y;
+        if (intersects.length > 0) {
+            x = intersects[0].point.x;
+            y = intersects[0].point.y;
+        }
 
         //row and col
 
@@ -771,9 +745,10 @@ Ns.game.AbstractBoard3D = {
             }
         }
 
-        var row = Math.floor((this.BOARD_PLANE_SIZE - y) / sq_h);
-        var col = this.boardRowCount - Math.floor((this.BOARD_PLANE_SIZE - x) / sq_w) - 1;
+        var row = this.boardRowCount - Math.floor((this.BOARD_PLANE_SIZE / 2 - y) / sq_h) - 1;
+        var col = this.boardRowCount - Math.floor((this.BOARD_PLANE_SIZE / 2 - x) / sq_w) - 1;
 
+        console.log('x=', x, 'y=', y, 'row=', row, 'col=', col, 'sq=', sq);
 
         if (x < -this.BOARD_PLANE_SIZE / 2) {
             x = -this.BOARD_PLANE_SIZE / 2;
