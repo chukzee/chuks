@@ -32,9 +32,6 @@ Ns.game.three.Chess3D = {
         this.pieceModels[path].listeners.push(obj);
 
         if (this.pieceModels[path].listeners.length > 1) {
-
-            console.log('waiting piece ', name, 'total', this.pieceModels[path].listeners.length);
-
             return;
         }
 
@@ -43,7 +40,6 @@ Ns.game.three.Chess3D = {
 
             var prop = me.getAbituaryProperties(name, piece_theme);
 
-            model.userData.name = name; //e.g pawn, king e.t.c
             model.userData.bottom = prop.bottom;
             model.userData.rotation = prop.rotation;
 
@@ -61,7 +57,7 @@ Ns.game.three.Chess3D = {
                 }
                 //console.log(child);
             });
-            model.castShadow = true;
+            //model.castShadow = true;
 
             me.pieceModels[path].model = model;
 
@@ -83,6 +79,7 @@ Ns.game.three.Chess3D = {
     chessPiece: function (is_white, path) {
 
         var cloned_model = this.pieceModels[path].model.clone();
+        cloned_model.userData.is_white = is_white;
         if (is_white) {
             cloned_model.children.forEach(function (child) {
                 //console.log(child);
@@ -90,7 +87,6 @@ Ns.game.three.Chess3D = {
                     child.material = new THREE.MeshPhongMaterial({color: 0x996515}); // lighter color
                 }
             });
-
         }
 
         if (cloned_model.userData.rotation) {
@@ -101,43 +97,39 @@ Ns.game.three.Chess3D = {
 
         return cloned_model;
     },
-    createPiece: function (pce, piece_theme, callback) {
+    
+    getPieceName: function(pce){
 
-        var name;
         switch (pce.type) {
             case'k':
             {
-                name = 'king';
-                break;
-
+                return 'king';
             }
             case'q':
             {
-                name = 'queen';
-                break;
+                return 'queen';
             }
             case'r':
             {
-                name = 'rook';
-                break;
+                return 'rook';
             }
             case'n':
             {
-                name = 'knight';
-                break;
+                return 'knight';
             }
             case'b':
             {
-                name = 'bishop';
-                break;
+                return 'bishop';
             }
             case'p':
             {
-                name = 'pawn';
-                break;
+                return 'pawn';
             }
         }
+    },
+    createPiece: function (pce, piece_theme, callback) {
 
+        var name = this.getPieceName(pce);
 
         this.loadPieceModel(name, this.isWhite(pce), piece_theme, callback);
 
@@ -194,6 +186,10 @@ Ns.game.three.Chess3D = {
         return pce.color === 'w';
     },
 
+    isWhitePieceModel: function (model) {
+        return model.userData.is_white;
+    },
+
     makeMove: function (from, to) {
 
         var resObj = {
@@ -241,28 +237,94 @@ Ns.game.three.Chess3D = {
      * Determines and returns an array of captured white pieces using the 
      * provided white pieces on the board
      *
-     * @param {type} wht_pieces - provided white pieces on the board
+     * @param {color} wht_pieces - provided white pieces on the board
      * @returns {undefined}    
-      */
+     */
     determineWhiteCaptives: function (wht_pieces) {
-        
-        var arr = [];
-        
-        return arr;
+        return this._determineCaptives(wht_pieces, 'w');
     },
-    
+
     /**
      * Determines and returns an array of captured black pieces using the 
      * provided black pieces on the board
      *
-     * @param {type} blk_pieces - provided black pieces on the board
+     * @param {color} blk_pieces - provided black pieces on the board
      * @returns {undefined}    
-      */
+     */
     determineBlackCaptives: function (blk_pieces) {
-
-        var arr = [];
+        return this._determineCaptives(blk_pieces, 'b');
+    },
+    _determineCaptives: function (pieces, color) {
+        var pce_arr = [];
         
-        return arr;
+        var queen_count = 0,
+                king_count = 0,//not necessary anyway before king is never captured
+                rook_count = 0,
+                bishop_count = 0,
+                knight_count = 0,
+                pawn_count = 0,
+                promotion_count = 0;
+        
+        for (var i = 0; i < pieces.length; i++) {
+            if(pieces[i].color !== color){
+                continue;
+            }
+            
+            if(pieces[i].type === 'k'){//not necessary anyway before king is never captured
+                king_count++;
+            }
+            if(pieces[i].type === 'q'){
+                queen_count++;
+            }
+            if(pieces[i].type === 'r'){
+                rook_count++;
+            }
+            if(pieces[i].type === 'b'){
+                bishop_count++;
+            }
+            if(pieces[i].type === 'n'){
+                knight_count++;
+            }
+            if(pieces[i].type === 'p'){
+                pawn_count++;
+            }
+        }
+        
+        if(queen_count < 1){
+            this.pushPieces(pce_arr, {color: color, type: 'q'},  1 - queen_count);
+        }else if(queen_count > 1){//promotion detected
+            promotion_count += queen_count -1;
+        }
+
+        if(rook_count < 2){
+            this.pushPieces(pce_arr, {color: color, type: 'r'},  2 - rook_count);
+        }else if(rook_count > 2){//promotion detected
+            promotion_count += rook_count - 2;
+        }
+
+        if(bishop_count < 2){
+            this.pushPieces(pce_arr, {color: color, type: 'b'},  2 - bishop_count);
+        }else if(bishop_count > 2){//promotion detected
+             promotion_count += bishop_count - 2;
+        }
+        
+        if(knight_count < 2){
+            this.pushPieces(pce_arr, {color: color, type: 'n'},  2 - knight_count);
+        }else if(knight_count > 2){//promotion detected
+             promotion_count += knight_count - 2;
+        }
+        
+        if(pawn_count < 8 - promotion_count){
+            this.pushPieces(pce_arr, {color: color, type: 'p'},  8 - promotion_count - pawn_count);
+        }
+        
+        return pce_arr;
+    },
+
+    pushPieces: function (pce_arr, pce, count) {
+        for(var i=0; i< count; i++){
+            pce_arr.push(pce);
+        }
     },
 
     getBoardClass: function () {

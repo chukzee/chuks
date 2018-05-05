@@ -1,42 +1,28 @@
-var initial_unique;
-var unique_count = 0;
 
-class Sen{
-    
-    constructor(){
-       initial_unique = "this is unique number"; //TODO - JUST ASSUMING;
 
+var a = {
+    a:null,
+    fn:function(){
+        this.a = {n: 'a5'};
     }
-    
-        get UniqueNumber() {        
-        return initial_unique +"_"+ ++unique_count;
-    }
-
-}
-
-var sen = new Sen();
-
-console.log(sen.UniqueNumber);
-console.log(sen.UniqueNumber);
-console.log(sen.UniqueNumber);
-console.log(sen.UniqueNumber);
-console.log(sen.UniqueNumber);
-console.log(sen.UniqueNumber);
-
-console.log('-----------');
-
-var a ={
-    a:'a'
-};
-var b ={
-    b:'b'
 };
 
-var arr = [];
-arr.push(a);
-arr.push(b);
-a = null;
-console.log(arr);
-console.log(a);
+var b={};
+
+var c = {};
 
 
+
+b.a = a.a;
+b.fn = a.fn;
+
+c.a = a.a;
+c.fn = a.fn;
+
+a.fn();
+c.a = {n: 1};
+
+
+console.log(a.a);
+console.log(b.a);
+console.log(c.a);

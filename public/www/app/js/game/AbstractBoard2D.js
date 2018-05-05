@@ -11,27 +11,7 @@ Ns.game.AbstractBoard2D = {
     HOVER_SQUARE_STYLE: 'background: red', //TODO - use beautiful bacground, possibly beautiful imgage
     PICKED_SQUARE_STYLE: 'background: yellow', //TODO - use beautiful bacground, possibly beautiful imgage
     CAPTURED_SQUARE_STYLE: 'background: blue', //TODO - use beautiful bacground, possibly beautiful imgage
-    squareList: {},
-    squarePieces: [],
-    hoverSquare: null,
-    pickedSquare: null,
-    captureSquareList: [],
-    pickedPiece: null,
-    boardRowCount: 8, //default is 8
-    boardContainer: null,
-    pieceWidth: null,
-    pieceHeight: null,
-    boardX: -1,
-    boardY: -1,
-    boardRow: -1,
-    boardCol: -1,
-    boardSq: -1,
-    startTouchBoardX: -1,
-    startTouchBoardY: -1,
-    startTouchBoardRow: -1,
-    startTouchBoardCol: -1,
-    startTouchBoardSq: -1,
-    isTouchingBoard: false,
+
     /**
      * Loads and sets up the game on the specified contaner using
      * the provided game position. If the game position is not provided
@@ -84,6 +64,7 @@ Ns.game.AbstractBoard2D = {
         this.pickedSquare = null;
         this.captureSquareList = [];
         this.pickedPiece = null;
+        this.boardRowCount = 8; //default is 8
         this.boardContainer = null;
         this.pieceWidth = null;
         this.pieceHeight = null;

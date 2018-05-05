@@ -18,19 +18,21 @@ and open the template in the editor.
         <script src="../lib/jquery-1.10.2.min.js"></script>
         <script src="../lib/tween/TweenMax.min.js"></script>
     </head>
-    <body>
-        <button onclick="showChess()" >Show 3D Chess board</button>
+    <body style="margin: 0; padding: 0;">
+        <div id="board_container" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;"></div>
+        <button onclick="showChess()" style="position: absolute; left: 10px; top: 10px; margin: 0; padding: 0;">Show 3D Chess board</button>
+        <!---
         <div id="board_container-outer" style="position: relative; width: 650px; height: 450px; margin:0 auto; background-color: yellow;">
             <div id="board_container" style="width: 650px; height: 450px; position: absolute; top: 0px; left: 0px;"></div>
         </div>
-
+        -->
         <script>
             function Animate() {
                 this.to = function (element, duration, propObj, callback) {
                     if (!element) {
                         return;
                     }
-                    var el = typeof element ==='string' ? document.getElementById(element) : element;
+                    var el = typeof element === 'string' ? document.getElementById(element) : element;
                     var tween = propObj;
                     tween.onComplete = callback;
                     if (window.TweenMax) {
@@ -46,7 +48,7 @@ and open the template in the editor.
             }
             var device_category = "medium";
             var Main = {
-                anim : new Animate(),
+                anim: new Animate(),
                 device: {
                     isMobileDeviceReady: false,
 
@@ -70,20 +72,25 @@ and open the template in the editor.
                     two: {},
                     three: {}
                 },
-                Config:{
+                Config: {
                     DragPiece: true
                 }
             };
 
+            function nextBoardPostion() {
+                //TODO - GET FROM A SERIES OF BOARD POSITIONS
+            }
+            ;
 
             function showChess(parameters) {
                 var obj = {
+                    boardPosition: nextBoardPostion(),
                     //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
                     white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
-                    boardTheme:'wooddark',
+                    boardTheme: 'wooddark',
                     pieceTheme: 'normal',
-                    is3D:true
+                    is3D: true
                 };
 
                 Ns.game.Chess.load(obj);
@@ -97,18 +104,18 @@ and open the template in the editor.
         <script src="../app/js/game/AbstractBoard3D.js"></script>
         <script src="../app/js/game/three/Chess3D.js"></script>
         <script src="../app/js/game/Chess.js"></script>
-        
-        
+
+
         <script>
             var ext = Ns.game.AbstractBoard3D;
-            for(var n in ext){
-                if(!(n in Ns.game.three.Chess3D)){
+            for (var n in ext) {
+                if (!(n in Ns.game.three.Chess3D)) {
                     Ns.game.three.Chess3D[n] = ext[n];
                 }
-               
+
             }
-            
-            
+
+
         </script>
     </body>
 </html>
