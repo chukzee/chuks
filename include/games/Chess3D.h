@@ -26,8 +26,8 @@ class Chess3D : public Game3D{
         const std::string DEFAULT_BOARD_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         IMeshSceneNode* chessPieceModels = 0;
         std::string abbrToName(char c);
-        Piece* _offBoardPieces(std::string board_position, bool white);
-        void pushPieces(std::list<Piece*> pce_list, bool white, std::string name, int count);
+        std::list<Piece*> _offBoardPieces(std::string board_position, bool white);
+        std::list<Piece*> pushPieces(std::list<Piece*> pce_list, bool white, std::string name, int count);
 
         public:
 
@@ -41,9 +41,9 @@ class Chess3D : public Game3D{
 
         Square* createBoardContent(std::string board_position);
         //white pieces captured
-        Piece* offBoardWhitePieces(std::string board_position);
+        std::list<Piece*> offBoardWhitePieces(std::string board_position);
         //black pieces captured
-        Piece* offBoardBlackPieces(std::string board_position);
+        std::list<Piece*> offBoardBlackPieces(std::string board_position);
 
         BoardConfig configBoard(std::string variant);
 

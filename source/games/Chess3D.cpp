@@ -1,5 +1,6 @@
 
 #include <list>
+#include <iostream>
 #include <ctype.h>
 #include <string>
 #include <irrlicht.h>
@@ -90,16 +91,16 @@ Square* Chess3D::createBoardContent(std::string board_position){
 }
 
 //white pieces captured
-Piece* Chess3D::offBoardWhitePieces(std::string board_position){
+std::list<Piece*> Chess3D::offBoardWhitePieces(std::string board_position){
     return this->_offBoardPieces(board_position, true);
 };
 
 //black pieces captured
-Piece* Chess3D::offBoardBlackPieces(std::string board_position){
+std::list<Piece*> Chess3D::offBoardBlackPieces(std::string board_position){
     return this->_offBoardPieces(board_position, false);
 };
 
-Piece* Chess3D::_offBoardPieces(std::string board_position, bool white){
+std::list<Piece*> Chess3D::_offBoardPieces(std::string board_position, bool white){
 
         std::list<Piece*> pce_list;
 
@@ -180,17 +181,19 @@ Piece* Chess3D::_offBoardPieces(std::string board_position, bool white){
         if (pawn_count < 8 - promotion_count) {
             this->pushPieces(pce_list, white, this->abbrToName('p'), 8 - promotion_count - pawn_count);
         }
-        Piece pce_arr [pce_list.size()];
-        int index = -1;
-        for(std::list<Piece*>::iterator it = pce_list.begin(); it != pce_list.end(); ++it){
-            index ++;
-            pce_arr[index] = **it;
+
+        //TESTING BEGIN
+        //REMOVE THE IF BLOCK BELOW LATER ABEG 0! TEST THE ONE ABOVE BY CHANGE 8 TO 32
+        if (pawn_count < 32 - promotion_count) {
+            pce_list = this->pushPieces(pce_list, white, this->abbrToName('p'), 32 - promotion_count - pawn_count);
         }
-        return pce_arr;
+        //TESTING END
+
+        return pce_list;
 
 };
 
-void Chess3D::pushPieces(std::list<Piece*> pce_list, bool white, std::string name, int count) {
+std::list<Piece*> Chess3D::pushPieces(std::list<Piece*> pce_list, bool white, std::string name, int count) {
         for (int i = 0; i < count; i++) {
             Piece* pce = new Piece();
             pce->name = name;
@@ -199,6 +202,8 @@ void Chess3D::pushPieces(std::list<Piece*> pce_list, bool white, std::string nam
             this->createPieceModel(pce);
             pce_list.push_back(pce);
         }
+
+        return pce_list;
 }
 
 void Chess3D::createPieceModel(Piece* p){
@@ -224,6 +229,21 @@ void Chess3D::createPieceModel(Piece* p){
             p->model->getMaterial(0).SpecularColor.set(0, 0, 0, 255);
             p->model->getMaterial(0).Shininess = 20.0f;
          }
+
+         if(p->name == "king"){
+            p->bottom = 0;
+         }else if(p->name == "queen"){
+            p->bottom = 0.1;
+         }else if(p->name == "knight"){
+            p->bottom = 1.8;
+         }else if(p->name == "bishop"){
+            p->bottom = 2.3;
+         }else if(p->name == "rook"){
+            p->bottom = 0;
+         }else if(p->name == "pawn"){
+            p->bottom = 1.15;
+         }
+
 	}
 
 };

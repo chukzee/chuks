@@ -33,9 +33,9 @@ class Draughts3D: public Game3D{
 
         Square* createBoardContent(std::string board_position);
         //white pieces captured
-        Piece* offBoardWhitePieces(std::string board_position);
+        std::list<Piece*> offBoardWhitePieces(std::string board_position);
         //black pieces captured
-        Piece* offBoardBlackPieces(std::string board_position);
+        std::list<Piece*> offBoardBlackPieces(std::string board_position);
 
         BoardConfig configBoard(std::string variant);
 

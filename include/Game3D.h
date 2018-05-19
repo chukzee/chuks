@@ -6,6 +6,7 @@
 class XZ;
 
 // included dependencies
+#include <list>
 #include <string>
 #include <irrlicht.h>
 #include <Piece.h>
@@ -102,9 +103,9 @@ class Game3D{
 
         virtual Square* createBoardContent(std::string board_position) = 0;
         //white pieces captured
-        virtual Piece* offBoardWhitePieces(std::string board_position) = 0;
+        virtual std::list<Piece*> offBoardWhitePieces(std::string board_position) = 0;
         //black pieces captured
-        virtual Piece* offBoardBlackPieces(std::string board_position) = 0;
+        virtual std::list<Piece*> offBoardBlackPieces(std::string board_position) = 0;
         //board configuration
         virtual BoardConfig configBoard(std::string variant) = 0;
 

@@ -46,15 +46,15 @@ Square* Draughts3D::createBoardContent(std::string board_position){
 }
 
 //white pieces captured
-Piece* Draughts3D::offBoardWhitePieces(std::string board_position){
-
-    return 0;
+std::list<Piece*> Draughts3D::offBoardWhitePieces(std::string board_position){
+    std::list<Piece*> pce_list;
+    return pce_list;
 };
 
 //black pieces captured
-Piece* Draughts3D::offBoardBlackPieces(std::string board_position){
-
-    return 0;
+std::list<Piece*> Draughts3D::offBoardBlackPieces(std::string board_position){
+    std::list<Piece*> pce_list;
+    return pce_list;
 };
 
 void Draughts3D::createPieceModel(Piece* p){

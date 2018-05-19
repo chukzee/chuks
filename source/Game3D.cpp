@@ -1,4 +1,5 @@
 
+#include <list>
 #include <iostream>
 #include <sstream>
 #include <irrlicht.h>
@@ -192,8 +193,8 @@ void Game3D::arrangePieces(std::string board_position){
 
     this->squareList = this->createBoardContent(board_position);
 
-    Piece* white_caps = this->offBoardWhitePieces(board_position);
-    Piece* black_caps = this->offBoardBlackPieces(board_position);
+    std::list<Piece*> white_caps = this->offBoardWhitePieces(board_position);
+    std::list<Piece*> black_caps = this->offBoardBlackPieces(board_position);
 
     for(int i=0; i < this->SQ_COUNT; i++){
         if(this->squareList[i].piece == 0){
@@ -203,16 +204,14 @@ void Game3D::arrangePieces(std::string board_position){
         this->positionPiece(this->squareList[i].piece);
     }
 
-    int len = sizeof(white_caps)/sizeof(*white_caps);
-    for(int i=0; i < len; i++){
-        this->positionPiece(&white_caps[i]);
+    for(std::list<Piece*>::iterator it = white_caps.begin(); it != white_caps.end(); ++it){
+            this->positionPiece(*it);
     }
 
-
-    len = sizeof(black_caps)/sizeof(*black_caps);
-    for(int i=0; i < len; i++){
-        this->positionPiece(&black_caps[i]);
+    for(std::list<Piece*>::iterator it = black_caps.begin(); it != black_caps.end(); ++it){
+            this->positionPiece(*it);
     }
+
 
 };
 
@@ -319,9 +318,9 @@ int Game3D::toNumericSq(std::string notation){
 void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         XZ out = this->nextThrowOutXZ(pce);
         float to_x = out.x;
-        float to_y = out.z;
+        float to_z = out.z;
 
-        float to_z = this->floorPlaneY + this->getModelBottom(pce);  //sit on the floor
+        float to_y = this->floorPlaneY + this->getModelBottom(pce);  //sit on the floor
 
         pce->x = to_x;
         pce->y = to_y;
@@ -338,14 +337,16 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
     XZ Game3D::nextThrowOutXZ(Piece* pce) {
         XZ xz;
+        float f_board_size = this->BOARD_PLANE_SIZE; // convert to float to avoid type conversion issue
         float f_row_count = this->boardConfig.rowCount; //important! to avoid loss of precision below since it is int
+        float sq_size = f_board_size / f_row_count;
 
-        float sq_size = this->BOARD_PLANE_SIZE / f_row_count;
+        float spacing = 1.5;
 
         if (pce->white) {
 
             if (this->whiteThrowOutX == -1) {
-                this->whiteThrowOutX = -this->BOARD_PLANE_SIZE / 2 - sq_size;
+                this->whiteThrowOutX = -f_board_size / 2 - spacing * sq_size;
             }
 
             if (this->whiteThrowOutZ == -1) {
@@ -361,8 +362,8 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                 this->whiteThrowOutFwd = !this->whiteThrowOutFwd;
             }
 
-            if (this->whiteThrowOutZ >= this->BOARD_PLANE_SIZE / 2
-                    || this->whiteThrowOutZ <= -this->BOARD_PLANE_SIZE / 2) {
+            if (this->whiteThrowOutZ >= f_board_size / 2
+                    || this->whiteThrowOutZ <= -f_board_size / 2) {
                 this->whiteThrowOutFwd = true;
                 this->whiteThrowOutZ = 0;
                 this->whiteThrowOutX -= sq_size;
@@ -370,12 +371,11 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
             xz.x = this->whiteThrowOutX;
             xz.z = this->whiteThrowOutZ;
-            //return {x: this->whiteThrowOutX, y: this->whiteThrowOutZ};
 
         } else {
 
             if (this->blackThrowOutX == -1) {
-                this->blackThrowOutX = this->BOARD_PLANE_SIZE / 2 + sq_size;
+                this->blackThrowOutX = f_board_size / 2 + spacing * sq_size;
             }
 
             if (this->blackThrowOutZ == -1) {
@@ -391,8 +391,8 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                 this->blackThrowOutFwd = !this->blackThrowOutFwd;
             }
 
-            if (this->blackThrowOutZ >= this->BOARD_PLANE_SIZE / 2
-                    || this->blackThrowOutZ <= -this->BOARD_PLANE_SIZE / 2) {
+            if (this->blackThrowOutZ >= f_board_size / 2
+                    || this->blackThrowOutZ <= -f_board_size / 2) {
                 this->blackThrowOutFwd = true;
                 this->blackThrowOutZ = 0;
                 this->blackThrowOutX += sq_size;
@@ -401,7 +401,6 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
             xz.x = this->blackThrowOutX;
             xz.z = this->blackThrowOutZ;
-            //return {x: this->blackThrowOutX, z: this->blackThrowOutZ};
         }
 
         return xz;

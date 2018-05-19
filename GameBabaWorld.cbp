@@ -33,7 +33,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add directory="C:/irrlicht-1.8.1/include" />
-			<Add directory="C:/TestChuksCodeBlocks/GameBabaWorld/include" />
+			<Add directory="C:/CodeBlocksProjects/GameBabaWorld/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
