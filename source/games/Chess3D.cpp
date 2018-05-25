@@ -182,12 +182,14 @@ std::list<Piece*> Chess3D::_offBoardPieces(std::string board_position, bool whit
             this->pushPieces(pce_list, white, this->abbrToName('p'), 8 - promotion_count - pawn_count);
         }
 
+        /*
         //TESTING BEGIN
         //REMOVE THE IF BLOCK BELOW LATER ABEG 0! TEST THE ONE ABOVE BY CHANGE 8 TO 32
         if (pawn_count < 32 - promotion_count) {
             pce_list = this->pushPieces(pce_list, white, this->abbrToName('p'), 32 - promotion_count - pawn_count);
         }
         //TESTING END
+       */
 
         return pce_list;
 
@@ -218,18 +220,22 @@ void Chess3D::createPieceModel(Piece* p){
 
          p->model->setMaterialFlag(video::EMF_LIGHTING, true);
          p->model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+         p->model->setMaterialType(EMT_LIGHTMAP_M4);
          //p->model->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
          p->model->setDebugDataVisible(scene::EDS_OFF);
+         p->model->getMaterial(0).Shininess = 0.0f;
          if(p->white){
-            //p->model->getMaterial(0).AmbientColor.set(255, 255, 255, 255);
+            p->model->getMaterial(0).AmbientColor.set(255, 153,101,21);
+            p->model->getMaterial(0).EmissiveColor.set(255, 153,101,21);
+            //p->model->getMaterial(0).DiffuseColor.set(255, 153,101,21);
+            //p->model->getMaterial(0).SpecularColor.set(255, 153,101,21);
          }else{
-            p->model->getMaterial(0).AmbientColor.set(0, 0, 0, 255);
-            p->model->getMaterial(0).EmissiveColor.set(0, 0, 0, 255);
-            p->model->getMaterial(0).DiffuseColor.set(0, 0, 0, 255);
-            p->model->getMaterial(0).SpecularColor.set(0, 0, 0, 255);
-            p->model->getMaterial(0).Shininess = 20.0f;
+            p->model->getMaterial(0).AmbientColor.set(255, 10, 10, 10);
+            p->model->getMaterial(0).EmissiveColor.set(255, 10, 10, 10);
+            //p->model->getMaterial(0).DiffuseColor.set(255, 10, 10, 10);
+            //p->model->getMaterial(0).SpecularColor.set(255, 10, 10, 10);
          }
-
+//EMT_LIGHTMAP_M4
          if(p->name == "king"){
             p->bottom = 0;
          }else if(p->name == "queen"){
@@ -242,6 +248,25 @@ void Chess3D::createPieceModel(Piece* p){
             p->bottom = 0;
          }else if(p->name == "pawn"){
             p->bottom = 1.15;
+         }
+
+         //rotate the knight to face normal direction
+         if(p->name == "knight"){
+            if(p->white){
+               p->model->setRotation(vector3df(0, 90, 0));
+            }else{
+               p->model->setRotation(vector3df(0, -90, 0));
+            }
+         }
+
+         //scale the pawns a bit bigger
+
+         if(p->name == "pawn"){
+            float w_scl = 1.1f;
+            float h_scl = 1.2f;
+            p->model->setScale(vector3df(w_scl, h_scl, w_scl));
+            //modify the bottom position of the pawn
+            p->bottom *= h_scl;
          }
 
 	}

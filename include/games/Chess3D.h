@@ -34,7 +34,7 @@ class Chess3D : public Game3D{
          Chess3D(): Game3D(){
          };
 
-         Chess3D(IVideoDriver* _driver, ISceneManager* _smgr): Game3D(_driver, _smgr){
+         Chess3D(IrrlichtDevice* _device, IVideoDriver* _driver, ISceneManager* _smgr): Game3D(_device, _driver, _smgr){
          };
 
          ~Chess3D(){};

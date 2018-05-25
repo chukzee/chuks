@@ -15,6 +15,7 @@
         std::string variant;
         std::string boardPosition;
         bool  flip = false; //if false if the user is white otherwise true - if false it means the white is directly close to the player
+        bool isOffsetSelection = false;
         std::string boardTheme;
         std::string pieceTheme;
 

@@ -15,6 +15,7 @@ class XZ;
 #include <BoardConfig.h>
 
 
+
 using namespace irr;
 
 using namespace core;
@@ -24,9 +25,12 @@ using namespace io;
 using namespace gui;
 
 
-class Game3D{
+class Game3D : public IEventReceiver{
 
     private:
+        int isNotPickableFlag = 0;
+        int isPickableFlag = 1 << 0;
+        bool isOffsetSelection = false;
         BoardConfig boardConfig;
         bool isNewBoard = true;
         void board(GameDesc desc);
@@ -39,18 +43,25 @@ class Game3D{
         int flipSquare(int sq);
         void positionPiece(Piece* pce);
         XZ squareCenter(int sq);
-        void boardXZ();
+        void boardXZ(s32 screen_x, s32 screen_y, bool is_start_touch);
         void movePiece(int from, int to, int capture);
+
     public:
-        ISceneManager* smgr;
+        IrrlichtDevice* device;
         IVideoDriver* driver;
+        ISceneManager* smgr;
+        ISceneCollisionManager* colMgr;
         Game3D();
-        Game3D(IVideoDriver* _driver, ISceneManager* _smgr);
+        Game3D(IrrlichtDevice* _device, IVideoDriver* _driver, ISceneManager* _smgr);
         ~Game3D();
         const int OFF_BOARD = -1;
         int SQ_COUNT = -1;
         void init(GameDesc desc);
         void load(GameDesc desc);
+        void onClickBoard(s32 screen_x, s32 screen_y);
+        void onHoverBoard(s32 screen_x, s32 screen_y);
+        void onTouchStartBoard(s32 screen_x, s32 screen_y);//mobile platform
+        void onHoverBoardEnd(s32 screen_x, s32 screen_y);//mobile platform
 
     protected:
 
@@ -76,16 +87,18 @@ class Game3D{
         Square* pickedSquare = 0;
         Piece* pickedPiece = 0;
         float boardX = -1;
-        float boardY = -1;
+        float boardZ = -1;
         float boardRow = -1;
         float boardCol = -1;
         float boardSq = -1;
         float startTouchBoardX = -1;
-        float startTouchBoardY = -1;
+        float startTouchBoardZ = -1;
         float startTouchBoardRow = -1;
         float startTouchBoardCol = -1;
         float startTouchBoardSq = -1;
         bool isTouchingBoard = false;
+
+        bool OnEvent(const SEvent& event);
 
         void createBoardPlane();
 
@@ -93,7 +106,7 @@ class Game3D{
 
         void createFloor();
 
-        void addCamera();
+        void addCamera(float flip);
 
         void addLight();
 

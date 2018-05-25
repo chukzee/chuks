@@ -1075,7 +1075,7 @@
 
 1526676634 c:\testchukscodeblocks\gamebabaworld\include\xz.h
 
-1526768053 source:c:\codeblocksprojects\gamebabaworld\source\game3d.cpp
+1527210538 source:c:\codeblocksprojects\gamebabaworld\source\game3d.cpp
 	<list>
 	<iostream>
 	<sstream>
@@ -1084,7 +1084,7 @@
 	"GameDesc.h"
 	"XZ.h"
 
-1526762522 c:\codeblocksprojects\gamebabaworld\include\game3d.h
+1527204869 c:\codeblocksprojects\gamebabaworld\include\game3d.h
 	<list>
 	<string>
 	<irrlicht.h>
@@ -1093,38 +1093,41 @@
 	<GameDesc.h>
 	<BoardConfig.h>
 
-1526674331 c:\codeblocksprojects\gamebabaworld\include\piece.h
+1527174640 c:\codeblocksprojects\gamebabaworld\include\piece.h
 	<irrlicht.h>
 
 1526658782 c:\codeblocksprojects\gamebabaworld\include\square.h
 
-1526473953 c:\codeblocksprojects\gamebabaworld\include\gamedesc.h
+1527215613 c:\codeblocksprojects\gamebabaworld\include\gamedesc.h
 	<string>
 
 1526680336 c:\codeblocksprojects\gamebabaworld\include\boardconfig.h
 
 1526676634 c:\codeblocksprojects\gamebabaworld\include\xz.h
 
-1526571784 source:c:\codeblocksprojects\gamebabaworld\source\game3dfactory.cpp
+1527213678 source:c:\codeblocksprojects\gamebabaworld\source\game3dfactory.cpp
+	<iostream>
 	<string>
 	<Game3DFactory.h>
 	<GameDesc.h>
 	<games/Chess3D.h>
 	<games/Draughts3D.h>
+	<memory>
 
-1526653730 c:\codeblocksprojects\gamebabaworld\include\game3dfactory.h
+1527213641 c:\codeblocksprojects\gamebabaworld\include\game3dfactory.h
 	<irrlicht.h>
+	<memory>
 
-1526763362 c:\codeblocksprojects\gamebabaworld\include\games\chess3d.h
+1527197411 c:\codeblocksprojects\gamebabaworld\include\games\chess3d.h
 	<list>
 	<irrlicht.h>
 	<Game3D.h>
 
-1526762438 c:\codeblocksprojects\gamebabaworld\include\games\draughts3d.h
+1527197412 c:\codeblocksprojects\gamebabaworld\include\games\draughts3d.h
 	<irrlicht.h>
 	<Game3D.h>
 
-1526766108 source:c:\codeblocksprojects\gamebabaworld\source\games\chess3d.cpp
+1526907638 source:c:\codeblocksprojects\gamebabaworld\source\games\chess3d.cpp
 	<list>
 	<iostream>
 	<ctype.h>
@@ -1133,16 +1136,27 @@
 	<Piece.h>
 	<games/Chess3D.h>
 
-1526762612 source:c:\codeblocksprojects\gamebabaworld\source\games\draughts3d.cpp
+1526935810 source:c:\codeblocksprojects\gamebabaworld\source\games\draughts3d.cpp
 	<string>
 	<irrlicht.h>
 	<Piece.h>
 	<Game3D.h>
 	<games/Draughts3D.h>
 
-1526761542 source:c:\codeblocksprojects\gamebabaworld\source\main.cpp
+1527216060 source:c:\codeblocksprojects\gamebabaworld\source\main.cpp
 	<iostream>
+	<memory>
 	<irrlicht.h>
 	<Game3DFactory.h>
 	<GameDesc.h>
+
+1527197633 c:\codeblocksprojects\gamebabaworld\include\guieventreceiver.h
+	<irrlicht.h>
+
+1527190290 source:c:\codeblocksprojects\gamebabaworld\source\guieventreceiver.cpp
+	<iostream>
+	<GUIEventReceiver.h>
+	<Game3D.h>
+
+1527175592 c:\codeblocksprojects\gamebabaworld\include\gwrap.h
 

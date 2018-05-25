@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <memory>
 #include <irrlicht.h>
 #include <Game3DFactory.h>
 #include <GameDesc.h>
@@ -17,20 +17,26 @@ using namespace gui;
 
 class MainUI{
 
+private:
+    IrrlichtDevice* device;
+    IVideoDriver* driver;
+    ISceneManager* smgr;
+    IGUIEnvironment* guienv;
+    std::shared_ptr<Game3DFactory> factory;
+    GameDesc gameDesc;
+
     public:
 
-    void show(GameDesc gameDesc){
-
-        IrrlichtDevice *device =
-            createDevice(EDT_OPENGL, dimension2d<u32>(640, 480), 16,
-                false, false, false, 0);
+    void init(){
+    	this->device =
+		createDevice(EDT_OPENGL, core::dimension2d<u32>(640, 480), 16, false);
 
         /*
         Set the caption of the window to some nice text. Note that there is
         a 'L' in front of the string. The Irrlicht Engine uses wide character
         strings when displaying text.
         */
-        device->setWindowCaption(L"GameBaba World");
+        this->device->setWindowCaption(L"GameBaba World");
 
         /*
         Get a pointer to the video driver, the SceneManager and the
@@ -38,48 +44,53 @@ class MainUI{
         we do not always have to write device->getVideoDriver(),
         device->getSceneManager() and device->getGUIEnvironment().
         */
-        IVideoDriver* driver = device->getVideoDriver();
-        ISceneManager* smgr = device->getSceneManager();
-        IGUIEnvironment* guienv = device->getGUIEnvironment();
-
-        Game3DFactory* factory = new Game3DFactory(driver, smgr, guienv);
-        factory->create(gameDesc);
-        this->runDevice(device, driver, smgr, guienv);
-
-        //cout << factory << endl;//TESTING!
-
-        //delete  factory;
-
-        //cout << factory << endl;//TESTING!
+        this->driver = this->device->getVideoDriver();
+        this->smgr = this->device->getSceneManager();
+        this->guienv = this->device->getGUIEnvironment();
     };
 
-    void runDevice(IrrlichtDevice* device,
-                   IVideoDriver* driver,
-                   ISceneManager* smgr,
-                   IGUIEnvironment* guienv){
+    void run(){
 
-
+        int lastFPS = -1;
         /*
         Ok, now we have set up the scene, lets draw everything:
         We run the device in a while() loop, until the device does not
         want to run any more. This would be when the user closed the window
         or pressed ALT+F4 in windows.
         */
-        while(device->run())
+
+        while(this->device->run())
         {
-            /*
-            Anything can be drawn between a beginScene() and an endScene()
-            call. The beginScene clears the screen with a color and also the
-            depth buffer if wanted. Then we let the Scene Manager and the
-            GUI Environment draw their content. With the endScene() call
-            everything is presented on the screen.
-            */
-            driver->beginScene(true, true, SColor(0,200,200,200));
+            if (this->device->isWindowActive())
+            {
 
-            smgr->drawAll();
-            guienv->drawAll();
+                /*
+                Anything can be drawn between a beginScene() and an endScene()
+                call. The beginScene clears the screen with a color and also the
+                depth buffer if wanted. Then we let the Scene Manager and the
+                GUI Environment draw their content. With the endScene() call
+                everything is presented on the screen.
+                */
+                this->driver->beginScene(true, true, SColor(0,200,200,200));
 
-            driver->endScene();
+                this->smgr->drawAll();
+                this->guienv->drawAll();
+
+                this->driver->endScene();
+
+                int fps = this->driver->getFPS();
+
+                if (lastFPS != fps)
+                {
+                    core::stringw tmp(L"GameBaba World ");
+                    //tmp += driver->getName();
+                    tmp += L" - fps: ";
+                    tmp += fps;
+
+                    this->device->setWindowCaption(tmp.c_str());
+                    lastFPS = fps;
+                }
+            }
         }
 
         /*
@@ -92,8 +103,16 @@ class MainUI{
         http://irrlicht.sourceforge.net//docu/classirr_1_1IUnknown.html#a3
         for more information.
         */
-        device->drop();
+
     };
+
+    void quit(){
+
+        /* Cleanup */
+        this->device->setEventReceiver(0);
+        this->device->closeDevice();
+        this->device->drop();
+    }
 
     /*
      Called by external program
@@ -103,34 +122,46 @@ class MainUI{
          return "";
      };
 
-    /*
-     Called by external program
-    */
-    GameDesc readGameDesc(){
-        //TODO
+
+    GameDesc createGameDesc(std::string data){
         //ROUGH IMPLEMENTATION
-        GameDesc desc = GameDesc();
-        //rougly fill in the field
+        if(data == ""){
+            //default
+            this->gameDesc.game = "chess";
+            this->gameDesc.variant = "INTERNATIONAL_DRAUGHTS";//for draughts
+            this->gameDesc.boardPosition = "";
+            this->gameDesc.flip = false; //if false if the user is white otherwise true - if false it means the white is directly close to the player
+            this->gameDesc.isOffsetSelection = false;//for only smart phones and tablets of medium size .Now make the z offset allow easy pick of piece especially on small device
+            this->gameDesc.boardTheme = "";
+            this->gameDesc.pieceTheme = "";
+        }else{
 
-        desc.game = "chess";
-        desc.variant = "INTERNATIONAL_DRAUGHTS";//for draughts
-        desc.boardPosition = "";
-        desc.flip = false; //if false if the user is white otherwise true - if false it means the white is directly close to the player
-        desc.boardTheme = "";
-        desc.pieceTheme = "";
+            //TODO
 
-        return desc;
+        }
+
+
     };
+
+    /*
+     Called by external program. Can also be called locally
+    */
+    void show(std::string data){
+            this->createGameDesc(data);
+            this->factory = std::shared_ptr<Game3DFactory>(new Game3DFactory(this->device, this->driver, this->smgr, this->guienv));
+            this->factory->create(this->gameDesc);
+    };
+
 
 };
 
 int main(int argc, char** argv)
 {
-    MainUI* ui;
-    GameDesc desc= ui->readGameDesc();//come back to decide on whether
-    // this call should be asynchronous - if so the line below must only
-    //be called upon completion
-    ui->show(desc);
+    MainUI ui;
+    ui.init();
+    ui.show("");
+    ui.run();
+    ui.quit();
 
     return 0;
 }

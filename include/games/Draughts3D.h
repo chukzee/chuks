@@ -26,7 +26,7 @@ class Draughts3D: public Game3D{
          Draughts3D(): Game3D(){
          };
 
-         Draughts3D(IVideoDriver* _driver, ISceneManager* _smgr): Game3D(_driver, _smgr){
+         Draughts3D(IrrlichtDevice* _device, IVideoDriver* _driver, ISceneManager* _smgr): Game3D(_device, _driver, _smgr){
          };
 
          ~Draughts3D(){};

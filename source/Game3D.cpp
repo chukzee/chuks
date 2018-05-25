@@ -8,23 +8,65 @@
 #include "XZ.h"
 
 
-Game3D::Game3D(IVideoDriver* _driver, ISceneManager* _smgr){
-    this->smgr = _smgr;
+Game3D::Game3D(IrrlichtDevice* _device, IVideoDriver* _driver, ISceneManager* _smgr){
+    _smgr->clear();//clear the whole scene
+    this->device = _device;
     this->driver = _driver;
+    this->smgr = _smgr;
+    this->colMgr = _smgr->getSceneCollisionManager();
+
+    this->device->setEventReceiver(this);
+
 };
 
 Game3D::~Game3D(){
+    //delete this->guiEventReceiver;//NO! D0NT DELETE IT! IT IS BEING USED! THAT IS WHY I COMMENTED IT OUT FOR REMINDER
     delete [] this->squareList;
     std::cout << "~Game3D() called" << std::endl;
 };
 
-void Game3D::init(GameDesc desc){
+// This is the one method that we have to implement
+bool Game3D::OnEvent(const SEvent& event)
+	{
 
+		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT)
+		{
+			switch(event.MouseInput.Event)
+			{
+			case EMIE_LMOUSE_PRESSED_DOWN:
+				break;
+
+			case EMIE_LMOUSE_LEFT_UP:
+
+				break;
+
+			case EMIE_MOUSE_MOVED:
+				//MouseState.Position.X = event.MouseInput.X;
+				//MouseState.Position.Y = event.MouseInput.Y;
+				this->onHoverBoard(event.MouseInput.X, event.MouseInput.Y);
+				break;
+
+			default:
+				// We won't use the wheel
+				break;
+			}
+		}
+
+
+		return false;
+	};
+
+void Game3D::init(GameDesc desc){
+        this->isOffsetSelection = desc.isOffsetSelection;
         this->boardConfig = this->configBoard(desc.variant);
 
         this->SQ_COUNT = this->boardConfig.rowCount * this->boardConfig.rowCount;
         delete [] this->squareList;
         this->squareList = new Square[this->SQ_COUNT];
+
+        for(int i=0; i<this->SQ_COUNT; i++){
+            this->squareList[i].sq = i;
+        }
 
         this->pieceTheme = desc.pieceTheme;
         this->boardTheme = desc.boardTheme;
@@ -38,12 +80,12 @@ void Game3D::init(GameDesc desc){
         this->pickedSquare = 0;
         this->pickedPiece = 0;
         this->boardX = -1;
-        this->boardY = -1;
+        this->boardZ = -1;
         this->boardRow = -1;
         this->boardCol = -1;
         this->boardSq = -1;
         this->startTouchBoardX = -1;
-        this->startTouchBoardY = -1;
+        this->startTouchBoardZ = -1;
         this->startTouchBoardRow = -1;
         this->startTouchBoardCol = -1;
         this->startTouchBoardSq = -1;
@@ -80,10 +122,12 @@ void Game3D::createBoardPlane(){
                                         material,
                                         dimension2d<f32>(tex_repeat, tex_repeat));
     this->boardPlaneNode = this->smgr->addMeshSceneNode( mesh );
+    this->boardPlaneNode->setID(isPickableFlag);
 
     if (this->boardPlaneNode)
     {
-        this->boardPlaneNode->setMaterialFlag(EMF_LIGHTING, false);
+        this->boardPlaneNode->setMaterialFlag(EMF_LIGHTING, true);
+        this->boardPlaneNode->setMaterialType(EMT_LIGHTMAP_M4);
         this->boardPlaneNode->setMaterialTexture( 0, this->driver->getTexture("resources/games/chess/board/themes/wooddark/60.png") );
        //this->boardPlaneNode->getMaterial(0).AmbientColor = SColor(255, 128, 0, 255);
        //or this->boardPlaneNode->getMaterial(0).AmbientColor.set(255, 128, 0, 255);
@@ -105,12 +149,15 @@ void Game3D::createBoardBase(){
 
     if (this->boardBaseNode)
     {
-        this->boardBaseNode->setMaterialFlag(EMF_LIGHTING, false);
+        this->boardBaseNode->setID(isNotPickableFlag);
+        this->boardBaseNode->setMaterialFlag(EMF_LIGHTING, true);
         this->boardBaseNode->setMaterialFlag(EMF_TEXTURE_WRAP, false);
-        this->boardBaseNode->getMaterial(0).getTextureMatrix(0).setTextureScale(24.f,24.f);//repeat texture - technique!
+        this->boardBaseNode->setMaterialType(EMT_LIGHTMAP_M4);
+        float repeat = 4;
+        this->boardBaseNode->getMaterial(0).getTextureMatrix(0).setTextureScale(repeat,repeat);//repeat texture - technique!
         //resources/games/chess/board/themes/wooddark/60.png
         //resources/images/wood_base_2.jpg
-        this->boardBaseNode->setMaterialTexture( 0, this->driver->getTexture("resources/images/wood_base_2.jpg") );
+        this->boardBaseNode->setMaterialTexture( 0, this->driver->getTexture("resources/images/base/brown_wood_1.jpg") );
         this->boardBaseNode->setPosition (vector3df(0.f, base_pos, 0.f));
 
     }
@@ -119,33 +166,46 @@ void Game3D::createBoardBase(){
 void Game3D::createFloor(){
 
     //Floor
-     video::SMaterial* floor_material = 0;
+    video::SMaterial* floor_material = 0;
     float floor_tex_repeat = 14.f;
     u32 floor_size = this->BOARD_PLANE_SIZE * 5.5f;
     const IGeometryCreator* igc = this->smgr->getGeometryCreator();
+
     IMesh*  floor_mesh = igc->createPlaneMesh(dimension2d<f32>(1, 1),
                                         dimension2d<u32>(floor_size, floor_size),
                                         floor_material,
                                         dimension2d<f32>(floor_tex_repeat, floor_tex_repeat));
+
     this->floorNode = this->smgr->addMeshSceneNode( floor_mesh );
     this->floorPlaneY = -this->baseHeight;
     if (this->floorNode)
     {
-        //this->floorNode->setMaterialFlag(EMF_LIGHTING, false);
+        this->floorNode->setID(isPickableFlag);
+        this->floorNode->setMaterialFlag(EMF_LIGHTING, true);
         this->floorNode->setMaterialFlag(EMF_TEXTURE_WRAP, false);
-        this->floorNode->setMaterialTexture( 0, this->driver->getTexture("resources/images/wood_base_2.jpg") );
+        this->floorNode->setMaterialType(EMT_LIGHTMAP_M4);
+        this->floorNode->setMaterialTexture( 0, this->driver->getTexture("resources/images/floor/wood_base_2.jpg") );
         this->floorNode->setPosition (vector3df(0.f, this->floorPlaneY, 0.f));
+
     }
 
 }
 
-void Game3D::addCamera(){
+void Game3D::addCamera(float flip){
 
     //Camera
     s32 cam_id=-1;
+    float cam_x = 0;
+    float cam_y = 18;
+    float cam_z = -14;
+
+    if(flip){
+        cam_z *=-1;
+    }
+
 
     this->cameraNode = this->smgr->addCameraSceneNode (NULL,
-                              vector3df(0, 20, -12),
+                              vector3df(cam_x, cam_y, cam_z),
                               vector3df(0, 0, 0),
                               cam_id,
                               true);
@@ -158,11 +218,11 @@ void Game3D::addLight(){
 
     //Light
 
-    //this->smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
+    this->smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
     //this->smgr->setAmbientLight(video::SColorf(1.0f,1.0f,1.0f));
     f32 const lightRadius = 10.f;
     this->lightNode = this->smgr->addLightSceneNode(NULL,
-                                                    vector3df(0.f, 20.f, 0.f),//position
+                                                    vector3df(0.f, 40.f, 0.f),//position
                                                     SColorf(1.f, 1.f, 1.f),//white color
                                                     lightRadius);
 
@@ -175,7 +235,6 @@ void Game3D::addLight(){
 void Game3D::reOrderBoard(GameDesc desc){
     //first clear the board (remove all pieces) if the game name has change
 
-
 };
 
 void Game3D::board(GameDesc desc){
@@ -183,7 +242,7 @@ void Game3D::board(GameDesc desc){
         this->createBoardPlane();
         this->createBoardBase();
         this->createFloor();
-        this->addCamera();
+        this->addCamera(desc.flip);
         this->addLight();
         this->arrangePieces(desc.boardPosition);
 
@@ -455,8 +514,247 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
     void Game3D::movePiece(int from, int to, int capture){
 
+        Piece* mv_piece = this->squareList[from].piece;
+        Piece* cap_piece = this->squareList[to].piece;
+
+        //if no piece model is found on the 'to' square but a capture move is received
+        //then something is wrong
+        if(cap_piece == 0 //
+           && (capture >= 0 || capture < this->SQ_COUNT))
+        {
+           //TOD0 - Throw an error for something is wrong!
+        }
+
+        //if a piece model is found on the 'to' square but no capture move is received
+        //then something is also wrong
+        if(cap_piece != 0 //
+           && (capture < 0 || capture >= this->SQ_COUNT))
+        {
+           //TOD0 - Throw an error for something is wrong!
+        }
+
+        float speed = 1.0f;
+
+        const core::array<core::vector3df> move_points; //come back
+        s32 move_start_time = this->device->getTimer()->getTime();
+
+        scene::ISceneNodeAnimator* move_anim =
+			this->smgr->createFollowSplineAnimator	(move_start_time,
+                                        move_points,//const core::array< core::vector3df > &
+                                        speed,// speed,
+                                        0.5f, //tightness = 0.5f for catmull rom spline.
+                                        false,//loop
+                                        false//pingpong
+                                    );
+
+		if (move_anim)
+		{
+            mv_piece->sqLoc = to;
+            this->squareList[from].piece = 0; // nullify the piece
+            this->squareList[to].piece = mv_piece;
+			mv_piece->model->addAnimator(move_anim);
+			move_anim->drop();
+		}else{
+		    //Something went wrong!
+		}
+
+		//a capture
+		if(cap_piece != 0 && (capture >= 0 || capture < this->SQ_COUNT))
+        {
+
+            const core::array<core::vector3df> cap_points; //come back
+
+            s32 cap_start_time = move_start_time;
+
+            scene::ISceneNodeAnimator* cap_anim =
+			this->smgr->createFollowSplineAnimator	(cap_start_time,
+                                        cap_points,//const core::array< core::vector3df > &
+                                        speed,// speed,
+                                        0.5f, //tightness = 0.5f for catmull rom spline.
+                                        false,//loop
+                                        false//pingpong
+                                    );
+
+
+            if (cap_anim)
+            {
+                cap_piece->sqLoc = this->OFF_BOARD;
+                cap_piece->model->addAnimator(cap_anim);
+                cap_anim->drop();
+            }else{
+                //Something went wrong!
+            }
+
+        }
+
     };
 
-    void Game3D::boardXZ(){
+    void Game3D::onClickBoard(s32 screen_x, s32 screen_y){
+        position2d<s32> mouse(screen_x, screen_y);
+
+        core::line3d<f32> ray = this->colMgr->getRayFromScreenCoordinates(mouse, this->cameraNode);
+    core::vector3df intersection;
+    core::triangle3df hitTriangle;
+
+        scene::ISceneNode * selectedSceneNode =
+			this->colMgr->getSceneNodeAndCollisionPointFromRay(
+					ray,
+					intersection, // This will be the position of the collision
+					hitTriangle, // This will be the triangle hit in the collision
+					this->isPickableFlag, // This ensures that only nodes that we have
+							// set up to be pickable are considered
+					0); // Check the entire scene (this is actually the implicit default)
+
+
+    };
+
+    void Game3D::onHoverBoard(s32 screen_x, s32 screen_y){
+
+        this->boardXZ(screen_x, screen_y, false);
+
+    };
+
+    void Game3D::onTouchStartBoard(s32 screen_x, s32 screen_y){//mobile platform
+
+        this->boardXZ(screen_x, screen_y, true);
+
+    };
+
+    void Game3D::onHoverBoardEnd(s32 screen_x, s32 screen_y){//mobile platform
+
+    }
+
+    void Game3D::boardXZ(s32 screen_x, s32 screen_y, bool is_start_touch){
+
+        position2d<s32> mouse(screen_x, screen_y);
+        core::line3d<f32> ray = this->colMgr->getRayFromScreenCoordinates(mouse, this->cameraNode);
+
+		ray.start = this->cameraNode->getPosition();
+		ray.end = ray.start + (this->cameraNode->getTarget() - ray.start).normalize() * 1000.0f;
+        /*
+        float posx = 0;
+        float posz = 0;
+
+        if (!e)
+            float e = window.event;
+        if (e.touches && e.touches.length) {
+            posx = e.touches[0].pageX;
+            posz = e.touches[0].pageY;
+        } else if (e.pageX || e.pageY) {
+            posx = e.pageX;
+            posz = e.pageZ;
+        } else if (e.clientX || e.clientY) {
+            posx = e.clientX + document.body.scrollLeft
+                    + document.documentElement.scrollLeft;
+            posz = e.clientY + document.body.scrollTop
+                    + document.documentElement.scrollTop;
+        }
+        // posx and posy contain the mouse position relative to the document
+
+        float scene_rect = container.getBoundingClientRect();
+
+        float x_in_canvas = posx - scene_rect.left;
+        float z_in_canvas = posy - scene_rect.top;
+
+        float vector2d = new THREE.Vector2();
+        vector2d.x = (x_in_canvas / scene_rect.width) * 2 - 1;
+        vector2d.z = -(y_in_canvas / scene_rect.height) * 2 + 1;
+
+        this->raycaster.setFromCamera(vector2d, this->camera);
+        var intersects = this->raycaster.intersectObjects([this->boardPlane]);
+        */
+
+        core::vector3df intersection;
+        core::triangle3df hitTriangle;
+
+        scene::ISceneNode * selectedSceneNode =
+			this->colMgr->getSceneNodeAndCollisionPointFromRay(
+					ray,
+					intersection, // This will be the position of the collision
+					hitTriangle, // This will be the triangle hit in the collision
+					this->isPickableFlag, // This ensures that only nodes that we have
+							// set up to be pickable are considered
+					0, // Check the entire scene (this is actually the implicit default)
+					true);
+        float x = 0.0f;
+        float z = 0.0f;
+        float f_board_size = this->BOARD_PLANE_SIZE;
+
+        std::cout <<"X= " << intersection.X << std::endl;
+
+        /*if (intersects.length > 0) {
+            x = intersects[0].point.x;
+            z = intersects[0].point.z;
+        }*/
+
+        //row and col
+
+        float sq_w = f_board_size / this->boardConfig.rowCount;
+        float sq_h = f_board_size / this->boardConfig.rowCount;
+
+        if (this->isOffsetSelection) {//for only smart phones and tablets of medium size
+            //Now make the y offset allow easy pick of piece especailly on small device
+            if (z < f_board_size - sq_h / 2) {//above middle of first row
+                z -= sq_h; // offset y by square height
+            }
+        }
+
+        float row = this->boardConfig.rowCount - floor((f_board_size / 2 - z) / sq_h) - 1;
+        float col = this->boardConfig.rowCount - floor((f_board_size / 2 - x) / sq_w) - 1;
+
+        //console.log('x=', x, 'z=', z, 'row=', row, 'col=', col, 'sq=', sq);
+
+        if (x < -f_board_size / 2) {
+            x = -f_board_size / 2;
+        }
+        if (z < -f_board_size / 2) {
+            z = -f_board_size / 2;
+        }
+
+        if (x > f_board_size / 2) {
+            x = f_board_size / 2;
+        }
+        if (z > f_board_size / 2) {
+            z = f_board_size / 2;
+        }
+
+
+        if (row < 0
+                || col < 0
+                || row > this->boardConfig.rowCount - 1
+                || col > this->boardConfig.rowCount - 1) {//OFF BOARD
+
+            this->boardX = x;
+            this->boardZ = z;
+            this->boardRow = -1;
+            this->boardCol = -1;
+            this->boardSq = -1;
+            //Clear highlighted squares
+            /*if (this->captureSquareList.indexOf(this->hoverSquare) === -1) {
+                this->highlightSquare(this->hoverSquare, '');//remove the highlight
+            }*/
+            this->hoverSquare = 0;
+            //console.log('leave');
+            return;
+        }
+
+        float sq = row * this->boardConfig.rowCount + col;
+
+        if (is_start_touch) {
+            this->startTouchBoardX = x;
+            this->startTouchBoardZ = z;
+            this->startTouchBoardRow = row;
+            this->startTouchBoardCol = col;
+            this->startTouchBoardSq = sq;
+        } else {
+            this->boardX = x;
+            this->boardZ = z;
+            this->boardRow = row;
+            this->boardCol = col;
+            this->boardSq = sq;
+        }
+
+
+        //console.log('x=', x, 'z=', z, 'row=', row, 'col=', col, 'sq=', sq);
 
     };
