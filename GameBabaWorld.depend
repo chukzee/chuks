@@ -1075,7 +1075,7 @@
 
 1526676634 c:\testchukscodeblocks\gamebabaworld\include\xz.h
 
-1527719491 source:c:\codeblocksprojects\gamebabaworld\source\game3d.cpp
+1527737632 source:c:\codeblocksprojects\gamebabaworld\source\game3d.cpp
 	<list>
 	<algorithm>
 	<iostream>
@@ -1087,7 +1087,7 @@
 	"XZ.h"
 	<memory>
 
-1527731110 c:\codeblocksprojects\gamebabaworld\include\game3d.h
+1527737632 c:\codeblocksprojects\gamebabaworld\include\game3d.h
 	<list>
 	<string>
 	<irrlicht.h>
@@ -1097,6 +1097,7 @@
 	<BoardConfig.h>
 	<Task.h>
 	<MoveResult.h>
+	<memory>
 
 1527174640 c:\codeblocksprojects\gamebabaworld\include\piece.h
 	<irrlicht.h>
@@ -1148,7 +1149,7 @@
 	<Game3D.h>
 	<games/Draughts3D.h>
 
-1527729291 source:c:\codeblocksprojects\gamebabaworld\source\main.cpp
+1527736579 source:c:\codeblocksprojects\gamebabaworld\source\main.cpp
 	<iostream>
 	<memory>
 	<irrlicht.h>
@@ -1168,7 +1169,8 @@
 
 1527175592 c:\codeblocksprojects\gamebabaworld\include\gwrap.h
 
-1527731110 c:\codeblocksprojects\gamebabaworld\include\task.h
+1527737891 c:\codeblocksprojects\gamebabaworld\include\task.h
+	<functional>
 
 1527705060 c:\codeblocksprojects\gamebabaworld\include\moveresult.h
 

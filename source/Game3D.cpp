@@ -646,14 +646,23 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         //this.pickedPiece.style.zIndex = 1000;
     };
 
+    void Game3D::clearHighlights(std::list<int> sq_list){
+        for(std::list<int>::iterator it = sq_list.begin(); it != sq_list.end(); ++it){
+            this->highlightSquare(*it, "");//remove the highlight
+        }
+        sq_list.clear();
+
+    };
+
     void Game3D::clearHighlightsLater(std::list<int> sq_list, int millsec){
-        /*std::shared_ptr<Task> t(new Task());
-        t->callback = &this->clearHighlights;
-        t->param = sq_list;
-        t->interval = millsec;
-        t->time = this->device->getTimer()->getTime() + t->interval;
-        t->repeat = false;
-        this->tasks.push_back(t);*/
+        Task t;
+        t.interval = millsec;
+        t.time = this->device->getTimer()->getTime() + t.interval;
+        t.repeat = false;
+        t.exec  = [&](){
+            this->clearHighlights(sq_list);
+        };
+        this->tasks.push_back(t);
     };
 
     void Game3D::onClickBoard(s32 screen_x, s32 screen_y, bool is_tap){

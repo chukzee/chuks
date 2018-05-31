@@ -15,6 +15,7 @@ class XZ;
 #include <BoardConfig.h>
 #include <Task.h>
 #include <MoveResult.h>
+#include <memory>
 
 
 using namespace irr;
@@ -52,6 +53,7 @@ class Game3D : public IEventReceiver{
         void highlightSquare (int sq, std::string style);
         void pickPieceOnSquare (int sq);
         std::list<int> captureSquareList;
+        void clearHighlights(std::list<int> sq_list);
         void clearHighlightsLater(std::list<int> sq_list, int millsec);
 
     public:
@@ -65,7 +67,7 @@ class Game3D : public IEventReceiver{
         static const int OFF_BOARD = -1;
         const int OFF_SCENE = -1000000;
         int SQ_COUNT = -1;
-        std::list<Task*> tasks;
+        std::list<Task> tasks;
         void init(GameDesc desc);
         void load(GameDesc desc);
         void onClickBoard(s32 screen_x, s32 screen_y, bool is_touch);

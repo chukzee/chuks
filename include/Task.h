@@ -3,25 +3,15 @@
 
 class Game3D;
 
+#include <functional>
+
 class Task{
 
 public:
-
     bool repeat;
     int interval;// in millisecond
     int time;
-    void* param;
-    typedef void (Task::*callback)(void*);
-
-    void clearHighlights(void* ptr){
-  /*std::list<int> sq_list  = static_cast<std::list<int> >(ptr);
-        for(std::list<int>::iterator it = sq_list.begin(); it != sq_list.end(); ++it){
-            this->highlightSquare(*it, "");//remove the highlight
-        }
-        sq_list.clear();*/
-
-    };
-
+    std::function<void(void)> exec;
 };
 
 #endif // TASK_H_INCLUDED

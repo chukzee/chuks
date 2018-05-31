@@ -30,13 +30,12 @@ private:
     std::shared_ptr<Game3D> game3D = 0;
 
     //lambda function used as variable 'taskExec'. And capturing the 'this' variable too
-    std::function<bool(Task*)> taskExec = [this](Task*  t){
-        if(t->time >= this->device->getTimer()->getTime()){
-            Task::callback cback= &Task::clearHighlights;
-            (t->*cback)(t->param);
-            t->time += t->interval;
+    std::function<bool(Task)> taskExec = [this](Task  t){
+        if(t.time >= this->device->getTimer()->getTime()){
+            t.exec();
+            t.time += t.interval;
         }
-        return !t->repeat;
+        return !t.repeat;
     };
 
     public:
