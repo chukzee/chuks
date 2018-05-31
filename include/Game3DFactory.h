@@ -42,7 +42,7 @@ private:
 
     ~Game3DFactory();
 
-    void create(GameDesc desc);
+    std::shared_ptr<Game3D> create(GameDesc desc);
 };
 
 

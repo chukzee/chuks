@@ -2,7 +2,10 @@
 #include <memory>
 #include <irrlicht.h>
 #include <Game3DFactory.h>
+#include <Game3D.h>
 #include <GameDesc.h>
+#include <Task.h>
+#include <functional>
 
 
 using namespace std;
@@ -24,10 +27,22 @@ private:
     IGUIEnvironment* guienv;
     std::shared_ptr<Game3DFactory> factory;
     GameDesc gameDesc;
+    std::shared_ptr<Game3D> game3D = 0;
+
+    //lambda function used as variable 'taskExec'. And capturing the 'this' variable too
+    std::function<bool(Task*)> taskExec = [this](Task*  t){
+        if(t->time >= this->device->getTimer()->getTime()){
+            Task::callback cback= &Task::clearHighlights;
+            (t->*cback)(t->param);
+            t->time += t->interval;
+        }
+        return !t->repeat;
+    };
 
     public:
 
     void init(){
+
     	this->device =
 		createDevice(EDT_OPENGL, core::dimension2d<u32>(640, 480), 16, false);
 
@@ -49,6 +64,7 @@ private:
         this->guienv = this->device->getGUIEnvironment();
     };
 
+
     void run(){
 
         int lastFPS = -1;
@@ -63,6 +79,9 @@ private:
         {
             if (this->device->isWindowActive())
             {
+                if(this->game3D->tasks.size() > 0){
+                    this->game3D->tasks.remove_if(this->taskExec);
+                }
 
                 /*
                 Anything can be drawn between a beginScene() and an endScene()
@@ -114,15 +133,6 @@ private:
         this->device->drop();
     }
 
-    /*
-     Called by external program
-    */
-     char* readEx(){
-         //NOT YETY IMPLEMENTED
-         return "";
-     };
-
-
     GameDesc createGameDesc(std::string data){
         //ROUGH IMPLEMENTATION
         if(data == ""){
@@ -140,6 +150,7 @@ private:
 
         }
 
+        return this->gameDesc;
 
     };
 
@@ -149,7 +160,7 @@ private:
     void show(std::string data){
             this->createGameDesc(data);
             this->factory = std::shared_ptr<Game3DFactory>(new Game3DFactory(this->device, this->driver, this->smgr, this->guienv));
-            this->factory->create(this->gameDesc);
+            this->game3D = this->factory->create(this->gameDesc);
     };
 
 

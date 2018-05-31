@@ -11,7 +11,7 @@ Game3DFactory::~Game3DFactory(){
     std::cout << "~Game3DFactory() called" << std::endl;
 };
 
-void Game3DFactory::create(GameDesc desc){
+std::shared_ptr<Game3D> Game3DFactory::create(GameDesc desc){
 
     std::string chess = "chess";
     std::string draughts = "draughts";
@@ -26,5 +26,6 @@ void Game3DFactory::create(GameDesc desc){
         this->game3D->load(desc);
     }
 
+    return this->game3D;
 }
 

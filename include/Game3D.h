@@ -13,7 +13,8 @@ class XZ;
 #include <Square.h>
 #include <GameDesc.h>
 #include <BoardConfig.h>
-
+#include <Task.h>
+#include <MoveResult.h>
 
 
 using namespace irr;
@@ -28,6 +29,9 @@ using namespace gui;
 class Game3D : public IEventReceiver{
 
     private:
+        const std::string PICKED_SQUARE_STYLE = "PICKED_SQUARE_STYLE";
+        const std::string CAPTURED_SQUARE_STYLE = "CAPTURED_SQUARE_STYLE";
+        const std::string HOVER_SQUARE_STYLE = "HOVER_SQUARE_STYLE";
         int isNotPickableFlag = 0;
         int isPickableFlag = 1 << 0;
         bool isOffsetSelection = false;
@@ -43,8 +47,12 @@ class Game3D : public IEventReceiver{
         int flipSquare(int sq);
         void positionPiece(Piece* pce);
         XZ squareCenter(int sq);
-        void boardXZ(s32 screen_x, s32 screen_y, bool is_start_touch);
-        void movePiece(int from, int to, int capture);
+        void boardXZ(s32 screen_x, s32 screen_y, bool is_start_touch = false);
+        void movePiece(Piece* pce, int to, int capture = OFF_BOARD);
+        void highlightSquare (int sq, std::string style);
+        void pickPieceOnSquare (int sq);
+        std::list<int> captureSquareList;
+        void clearHighlightsLater(std::list<int> sq_list, int millsec);
 
     public:
         IrrlichtDevice* device;
@@ -54,14 +62,17 @@ class Game3D : public IEventReceiver{
         Game3D();
         Game3D(IrrlichtDevice* _device, IVideoDriver* _driver, ISceneManager* _smgr);
         ~Game3D();
-        const int OFF_BOARD = -1;
+        static const int OFF_BOARD = -1;
+        const int OFF_SCENE = -1000000;
         int SQ_COUNT = -1;
+        std::list<Task*> tasks;
         void init(GameDesc desc);
         void load(GameDesc desc);
-        void onClickBoard(s32 screen_x, s32 screen_y);
-        void onHoverBoard(s32 screen_x, s32 screen_y);
+        void onClickBoard(s32 screen_x, s32 screen_y, bool is_touch);
+        void onHoverBoard(s32 screen_x, s32 screen_y, bool is_touch);
         void onTouchStartBoard(s32 screen_x, s32 screen_y);//mobile platform
         void onHoverBoardEnd(s32 screen_x, s32 screen_y);//mobile platform
+        virtual MoveResult makeMove(std::string from, std::string to) = 0;
 
     protected:
 
@@ -76,26 +87,31 @@ class Game3D : public IEventReceiver{
         std::string pieceTheme;
         std::string boardTheme;
         float floorPlaneY = -1;
+
         bool blackThrowOutFwd = true;
         bool whiteThrowOutFwd = true;
-        float blackThrowOutX = -1;
-        float whiteThrowOutX = -1;
-        float blackThrowOutZ = -1;
-        float whiteThrowOutZ = -1;
+
+        float blackThrowOutX = OFF_SCENE;
+        float whiteThrowOutX = OFF_SCENE;
+        float blackThrowOutZ = OFF_SCENE;
+        float whiteThrowOutZ = OFF_SCENE;
+
         Square* squareList = new Square[0];
-        Square* hoverSquare = 0;
-        Square* pickedSquare = 0;
+
+        int hoverSquare = OFF_BOARD;
+        int pickedSquare = OFF_BOARD;
         Piece* pickedPiece = 0;
-        float boardX = -1;
-        float boardZ = -1;
-        float boardRow = -1;
-        float boardCol = -1;
-        float boardSq = -1;
-        float startTouchBoardX = -1;
-        float startTouchBoardZ = -1;
-        float startTouchBoardRow = -1;
-        float startTouchBoardCol = -1;
-        float startTouchBoardSq = -1;
+        float boardRow = OFF_BOARD;
+        float boardCol = OFF_BOARD;
+        float boardSq = OFF_BOARD;
+
+        float boardX = OFF_SCENE;
+        float boardZ = OFF_SCENE;
+        float startTouchBoardX = OFF_SCENE;
+        float startTouchBoardZ = OFF_SCENE;
+        float startTouchBoardRow = OFF_SCENE;
+        float startTouchBoardCol = OFF_SCENE;
+        float startTouchBoardSq = OFF_SCENE;
         bool isTouchingBoard = false;
 
         bool OnEvent(const SEvent& event);
@@ -130,7 +146,7 @@ class Game3D : public IEventReceiver{
 
         virtual void createPieceModel(Piece* p) = 0;
 
-        virtual bool isWhite() = 0;
+        virtual Piece* getInternalPiece(std::string sqn) = 0;
 
 
 };

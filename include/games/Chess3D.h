@@ -39,6 +39,8 @@ class Chess3D : public Game3D{
 
          ~Chess3D(){};
 
+        MoveResult makeMove(std::string from, std::string to);
+
         Square* createBoardContent(std::string board_position);
         //white pieces captured
         std::list<Piece*> offBoardWhitePieces(std::string board_position);
@@ -53,9 +55,9 @@ class Chess3D : public Game3D{
 
         float getModelBottom(Piece* pce);
 
-        bool isWhite();
-
         bool isWhitePieceModel();
+
+        Piece* getInternalPiece(std::string sqn);
 };
 
 

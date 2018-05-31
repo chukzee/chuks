@@ -61,10 +61,6 @@ void Draughts3D::createPieceModel(Piece* p){
 
 };
 
-bool Draughts3D::isWhite(){
-    return false;//NOT YET IMPLEMENTED
-};
-
 bool Draughts3D::isWhitePieceModel(){
     return false; // NOT YET IMPLEMENTED
 };
@@ -77,3 +73,19 @@ float Draughts3D::getModelBottom(Piece* pce){
     return pce->bottom;
 };
 
+Piece* Draughts3D::getInternalPiece(std::string sqn){
+    //TODO - Call external method from here
+    return 0;
+};
+
+
+/**
+Calls the external method - e.g node, android, iOS etc
+*/
+MoveResult Draughts3D::makeMove(std::string from, std::string to){
+
+    MoveResult meve_result;
+
+
+    return meve_result;
+};

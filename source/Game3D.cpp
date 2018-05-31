@@ -1,12 +1,14 @@
 
 #include <list>
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <irrlicht.h>
 #include "Game3D.h"
 #include "GameDesc.h"
+#include <MoveResult.h>
 #include "XZ.h"
-
+#include <memory>
 
 Game3D::Game3D(IrrlichtDevice* _device, IVideoDriver* _driver, ISceneManager* _smgr){
     _smgr->clear();//clear the whole scene
@@ -34,6 +36,7 @@ bool Game3D::OnEvent(const SEvent& event)
 			switch(event.MouseInput.Event)
 			{
 			case EMIE_LMOUSE_PRESSED_DOWN:
+			    this->onClickBoard(event.MouseInput.X, event.MouseInput.Y, false);//come back for true/false
 				break;
 
 			case EMIE_LMOUSE_LEFT_UP:
@@ -43,7 +46,7 @@ bool Game3D::OnEvent(const SEvent& event)
 			case EMIE_MOUSE_MOVED:
 				//MouseState.Position.X = event.MouseInput.X;
 				//MouseState.Position.Y = event.MouseInput.Y;
-				this->onHoverBoard(event.MouseInput.X, event.MouseInput.Y);
+				this->onHoverBoard(event.MouseInput.X, event.MouseInput.Y, false);//come back for true/false
 				break;
 
 			default:
@@ -68,27 +71,28 @@ void Game3D::init(GameDesc desc){
             this->squareList[i].sq = i;
         }
 
+        this->captureSquareList.clear();
         this->pieceTheme = desc.pieceTheme;
         this->boardTheme = desc.boardTheme;
         this->blackThrowOutFwd = true;
         this->whiteThrowOutFwd = true;
-        this->blackThrowOutX = -1;
-        this->whiteThrowOutX = -1;
-        this->blackThrowOutZ = -1;
-        this->whiteThrowOutZ = -1;
-        this->hoverSquare = 0;
-        this->pickedSquare = 0;
+        this->blackThrowOutX = this->OFF_SCENE;
+        this->whiteThrowOutX = this->OFF_SCENE;
+        this->blackThrowOutZ = this->OFF_SCENE;
+        this->whiteThrowOutZ = this->OFF_SCENE;
+        this->hoverSquare = this->OFF_BOARD;
+        this->pickedSquare = this->OFF_BOARD;
         this->pickedPiece = 0;
-        this->boardX = -1;
-        this->boardZ = -1;
-        this->boardRow = -1;
-        this->boardCol = -1;
-        this->boardSq = -1;
-        this->startTouchBoardX = -1;
-        this->startTouchBoardZ = -1;
-        this->startTouchBoardRow = -1;
-        this->startTouchBoardCol = -1;
-        this->startTouchBoardSq = -1;
+        this->boardX = this->OFF_SCENE;
+        this->boardZ = this->OFF_SCENE;
+        this->boardRow = this->OFF_BOARD;
+        this->boardCol = this->OFF_BOARD;
+        this->boardSq = this->OFF_BOARD;
+        this->startTouchBoardX = this->OFF_SCENE;
+        this->startTouchBoardZ = this->OFF_SCENE;
+        this->startTouchBoardRow = this->OFF_BOARD;
+        this->startTouchBoardCol = this->OFF_BOARD;
+        this->startTouchBoardSq = this->OFF_BOARD;
         this->isTouchingBoard = false;
 };
 
@@ -122,7 +126,7 @@ void Game3D::createBoardPlane(){
                                         material,
                                         dimension2d<f32>(tex_repeat, tex_repeat));
     this->boardPlaneNode = this->smgr->addMeshSceneNode( mesh );
-    this->boardPlaneNode->setID(isPickableFlag);
+    this->boardPlaneNode->setID(this->isPickableFlag);
 
     if (this->boardPlaneNode)
     {
@@ -131,6 +135,13 @@ void Game3D::createBoardPlane(){
         this->boardPlaneNode->setMaterialTexture( 0, this->driver->getTexture("resources/games/chess/board/themes/wooddark/60.png") );
        //this->boardPlaneNode->getMaterial(0).AmbientColor = SColor(255, 128, 0, 255);
        //or this->boardPlaneNode->getMaterial(0).AmbientColor.set(255, 128, 0, 255);
+
+        scene::ITriangleSelector* selector =
+                        this->smgr->createTriangleSelector(
+                                                           this->boardPlaneNode->getMesh(),
+                                                           this->boardPlaneNode);
+		this->boardPlaneNode->setTriangleSelector(selector);
+		selector->drop();
     }
 }
 void Game3D::createBoardBase(){
@@ -187,6 +198,12 @@ void Game3D::createFloor(){
         this->floorNode->setMaterialTexture( 0, this->driver->getTexture("resources/images/floor/wood_base_2.jpg") );
         this->floorNode->setPosition (vector3df(0.f, this->floorPlaneY, 0.f));
 
+       scene::ITriangleSelector* selector =
+                    this->smgr->createTriangleSelector(
+                                                       this->floorNode->getMesh(),
+                                                       this->floorNode);
+		this->floorNode->setTriangleSelector(selector);
+		selector->drop();
     }
 
 }
@@ -275,6 +292,9 @@ void Game3D::arrangePieces(std::string board_position){
 };
 
 int Game3D::toNumericSq(std::string notation){
+        if(notation == ""){
+            return this->OFF_BOARD;
+        }
         int a = notation.at(0);
         int b = notation.at(1);
         b = b - 48;//convert from ascii the actual number
@@ -324,7 +344,9 @@ int Game3D::toNumericSq(std::string notation){
     };
 
  std::string Game3D::toSquareNotation(int sq){
-
+        if(sq == this->OFF_BOARD){
+            return "";
+        }
         int row = std::floor(sq / this->boardConfig.rowCount);
         int col = sq % this->boardConfig.rowCount;
         std::string col_str = "";
@@ -508,13 +530,18 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
     };
 
     int Game3D::flipSquare(int sq){
-
+        //@Deprecated - we now use the camera to flip by negating the z position
         return -1;
     };
 
-    void Game3D::movePiece(int from, int to, int capture){
-
-        Piece* mv_piece = this->squareList[from].piece;
+    void Game3D::movePiece(Piece* mv_piece, int to, int capture){
+        int from = mv_piece->sqLoc;
+        if(from == this->OFF_BOARD){
+            std::cout << "ERROR: moving piece sq location cannot be OFF_BOARD" << std::endl;
+            //Something must be wrong!
+            return;
+        }
+        //Piece* mv_piece = this->squareList[from].piece;
         Piece* cap_piece = this->squareList[to].piece;
 
         //if no piece model is found on the 'to' square but a capture move is received
@@ -522,6 +549,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         if(cap_piece == 0 //
            && (capture >= 0 || capture < this->SQ_COUNT))
         {
+           std::cout << "ERROR: No piece model is found on the 'to' square '" << to <<"' but a capture move is received." << std::endl;
            //TOD0 - Throw an error for something is wrong!
         }
 
@@ -530,7 +558,8 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         if(cap_piece != 0 //
            && (capture < 0 || capture >= this->SQ_COUNT))
         {
-           //TOD0 - Throw an error for something is wrong!
+            std::cout << "ERROR: A piece model is found on the 'to' square '" << to <<"' but no capture move is received." << std::endl;
+          //TOD0 - Throw an error for something is wrong!
         }
 
         float speed = 1.0f;
@@ -556,6 +585,8 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 			move_anim->drop();
 		}else{
 		    //Something went wrong!
+		    std::cout << "ERROR: Could not create move animator" << std::endl;
+
 		}
 
 		//a capture
@@ -583,40 +614,196 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                 cap_anim->drop();
             }else{
                 //Something went wrong!
+                std::cout << "ERROR: Could not create capture animator" << std::endl;
             }
 
         }
 
     };
 
-    void Game3D::onClickBoard(s32 screen_x, s32 screen_y){
-        position2d<s32> mouse(screen_x, screen_y);
+    void Game3D::highlightSquare (int sq, std::string style){
 
-        core::line3d<f32> ray = this->colMgr->getRayFromScreenCoordinates(mouse, this->cameraNode);
-    core::vector3df intersection;
-    core::triangle3df hitTriangle;
+        if(style == this->PICKED_SQUARE_STYLE){
 
-        scene::ISceneNode * selectedSceneNode =
-			this->colMgr->getSceneNodeAndCollisionPointFromRay(
-					ray,
-					intersection, // This will be the position of the collision
-					hitTriangle, // This will be the triangle hit in the collision
-					this->isPickableFlag, // This ensures that only nodes that we have
-							// set up to be pickable are considered
-					0); // Check the entire scene (this is actually the implicit default)
+        }else if(style== this->CAPTURED_SQUARE_STYLE){
+
+        }else if(style== this->HOVER_SQUARE_STYLE){
+
+        }else if(style==""){
+            //remove highlight
+
+        }
+    };
+
+    void Game3D::pickPieceOnSquare(int sq){
+
+        if (this->pickedPiece != 0) {
+            return;
+        }
+
+        this->pickedPiece = this->squareList[sq].piece;
+
+        //this.pickedPiece.style.zIndex = 1000;
+    };
+
+    void Game3D::clearHighlightsLater(std::list<int> sq_list, int millsec){
+        /*std::shared_ptr<Task> t(new Task());
+        t->callback = &this->clearHighlights;
+        t->param = sq_list;
+        t->interval = millsec;
+        t->time = this->device->getTimer()->getTime() + t->interval;
+        t->repeat = false;
+        this->tasks.push_back(t);*/
+    };
+
+    void Game3D::onClickBoard(s32 screen_x, s32 screen_y, bool is_tap){
+
+        if (is_tap) {
+            this->boardX = this->startTouchBoardX;
+            this->boardZ = this->startTouchBoardZ;
+            this->boardRow = this->startTouchBoardRow;
+            this->boardCol = this->startTouchBoardCol;
+            this->boardSq = this->startTouchBoardSq;
+        } else {
+            this->boardXZ(screen_x, screen_y, is_tap);
+        }
+
+
+        if (this->pickedSquare != this->OFF_BOARD) {
+
+            std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                                                        this->captureSquareList.end(),
+                                                        this->pickedSquare);
+            if (iter == this->captureSquareList.end()) {//not found
+                this->highlightSquare(this->pickedSquare, "");//remove the highlight
+            }
+
+            if (this->pickedPiece != 0) {
+                int pk_sq = this->pickedSquare;
+                std::string from = this->toSquareNotation(pk_sq);
+                std::string to = this->toSquareNotation(this->boardSq);
+
+                // NOTE it is valid for 'from square' to be equal to 'to square'
+                //especially in the game of draughts in a roundabout trip capture
+                //move where the jumping piece eventaully return to its original
+                //square. So it is upto the subsclass to check for where 'from square'
+                //ie equal to 'to square' where necessary  an code accordingly
+
+                MoveResult moveResult = this->makeMove(from, to);
+
+                //validate the move result returned by the subclass.
+                //the result must contain neccessary fields
+                /*if (!('done' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "done"');
+                } else if (!('hasMore' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "hasMore"');
+                } else if (!('error' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "error"');
+                } else if (!('capture' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "capture"');
+                }*/
+                int cap_sq = this->toNumericSq(moveResult.mark_capture);
+                if (cap_sq != this->OFF_BOARD) {
+                        this->highlightSquare(cap_sq, this->CAPTURED_SQUARE_STYLE);
+                        this->captureSquareList.push_back(cap_sq);
+                }
+
+                if (moveResult.error != "") {
+                    //TODO display the error message
+                    std::cout<< "TODO display the error message"<< std::endl;
+                    std::cout<<"move error:', moveResult.error"<< std::endl;
+
+                    //animate the piece by to the original position
+                    this->movePiece(this->pickedPiece, pk_sq);
+                } else {//error
+                    int capture_sq = this->toNumericSq(moveResult.capture);
+                    this->movePiece(this->pickedPiece, this->boardSq, capture_sq);
+                }
+
+                //nullify the picked square if move is completed or a move error occur
+                if (moveResult.done || moveResult.error != "") {
+                    this->pickedSquare = this->OFF_BOARD;
+                    this->pickedPiece = 0;
+                    std::list<int> capSqLst = this->captureSquareList;
+                    this->captureSquareList.clear();
+                    this->clearHighlightsLater(capSqLst, 1000);
+                }
+
+            }
+
+            return;
+        }
+
+        /*if (!Main.device.isMobileDeviceReady) {//desktop
+
+            if (evt.target.dataset.type !== 'piece') {//must click the piece not the container
+                return;
+            }
+        }*/
+
+        int sq = this->boardSq;
+        std::string sqn = this->toSquareNotation(sq);
+
+        Piece* pce = this->getInternalPiece(sqn);
+        bool side1 = pce->white;
+        bool side2 = this->gameDesc.userSide == "w";
+        if (pce != 0
+                /*&& side1 === side2*/ //UNCOMMENT LATER
+                ) {
+            this->pickedSquare = sq;
+            this->highlightSquare(this->pickedSquare, this->PICKED_SQUARE_STYLE);
+            this->pickPieceOnSquare(sq);
+        }
 
 
     };
 
-    void Game3D::onHoverBoard(s32 screen_x, s32 screen_y){
+    void Game3D::onHoverBoard(s32 screen_x, s32 screen_y, bool is_touch){
 
-        this->boardXZ(screen_x, screen_y, false);
+
+        if (is_touch) {
+            this->boardXZ(screen_x, screen_y, true);
+            this->isTouchingBoard = true;
+        } else {
+            //mouse move
+            this->boardXZ(screen_x, screen_y);
+        }
+
+        if (this->boardSq == this->pickedSquare) {
+            if (this->hoverSquare != this->pickedSquare) {
+
+                std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                                                        this->captureSquareList.end(),
+                                                        this->hoverSquare);
+                if (iter == this->captureSquareList.end()) {//not found
+                    this->highlightSquare(this->hoverSquare, "");//remove the highlight
+                }
+            }
+            return;
+        }
+
+
+        if (this->hoverSquare != this->pickedSquare) {
+            std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                                                        this->captureSquareList.end(),
+                                                        this->hoverSquare);
+            if (iter == this->captureSquareList.end()) {//not found
+                this->highlightSquare(this->hoverSquare, "");//remove the highlight
+            }
+        }
+
+
+        this->hoverSquare = this->boardSq;
+        std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                                                        this->captureSquareList.end(),
+                                                        this->hoverSquare);
+        if (iter == this->captureSquareList.end()) {//not found
+            this->highlightSquare(this->hoverSquare, this->HOVER_SQUARE_STYLE);
+        }
 
     };
 
     void Game3D::onTouchStartBoard(s32 screen_x, s32 screen_y){//mobile platform
-
-        this->boardXZ(screen_x, screen_y, true);
 
     };
 
@@ -626,43 +813,8 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
     void Game3D::boardXZ(s32 screen_x, s32 screen_y, bool is_start_touch){
 
-        position2d<s32> mouse(screen_x, screen_y);
+        position2di mouse(screen_x, screen_y);
         core::line3d<f32> ray = this->colMgr->getRayFromScreenCoordinates(mouse, this->cameraNode);
-
-		ray.start = this->cameraNode->getPosition();
-		ray.end = ray.start + (this->cameraNode->getTarget() - ray.start).normalize() * 1000.0f;
-        /*
-        float posx = 0;
-        float posz = 0;
-
-        if (!e)
-            float e = window.event;
-        if (e.touches && e.touches.length) {
-            posx = e.touches[0].pageX;
-            posz = e.touches[0].pageY;
-        } else if (e.pageX || e.pageY) {
-            posx = e.pageX;
-            posz = e.pageZ;
-        } else if (e.clientX || e.clientY) {
-            posx = e.clientX + document.body.scrollLeft
-                    + document.documentElement.scrollLeft;
-            posz = e.clientY + document.body.scrollTop
-                    + document.documentElement.scrollTop;
-        }
-        // posx and posy contain the mouse position relative to the document
-
-        float scene_rect = container.getBoundingClientRect();
-
-        float x_in_canvas = posx - scene_rect.left;
-        float z_in_canvas = posy - scene_rect.top;
-
-        float vector2d = new THREE.Vector2();
-        vector2d.x = (x_in_canvas / scene_rect.width) * 2 - 1;
-        vector2d.z = -(y_in_canvas / scene_rect.height) * 2 + 1;
-
-        this->raycaster.setFromCamera(vector2d, this->camera);
-        var intersects = this->raycaster.intersectObjects([this->boardPlane]);
-        */
 
         core::vector3df intersection;
         core::triangle3df hitTriangle;
@@ -676,16 +828,10 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 							// set up to be pickable are considered
 					0, // Check the entire scene (this is actually the implicit default)
 					true);
-        float x = 0.0f;
-        float z = 0.0f;
+
+        float x = intersection.X;
+        float z = intersection.Z;
         float f_board_size = this->BOARD_PLANE_SIZE;
-
-        std::cout <<"X= " << intersection.X << std::endl;
-
-        /*if (intersects.length > 0) {
-            x = intersects[0].point.x;
-            z = intersects[0].point.z;
-        }*/
 
         //row and col
 
@@ -702,7 +848,6 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         float row = this->boardConfig.rowCount - floor((f_board_size / 2 - z) / sq_h) - 1;
         float col = this->boardConfig.rowCount - floor((f_board_size / 2 - x) / sq_w) - 1;
 
-        //console.log('x=', x, 'z=', z, 'row=', row, 'col=', col, 'sq=', sq);
 
         if (x < -f_board_size / 2) {
             x = -f_board_size / 2;
@@ -726,14 +871,17 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
             this->boardX = x;
             this->boardZ = z;
-            this->boardRow = -1;
-            this->boardCol = -1;
-            this->boardSq = -1;
+            this->boardRow = this->OFF_BOARD;
+            this->boardCol = this->OFF_BOARD;
+            this->boardSq = this->OFF_BOARD;
             //Clear highlighted squares
-            /*if (this->captureSquareList.indexOf(this->hoverSquare) === -1) {
-                this->highlightSquare(this->hoverSquare, '');//remove the highlight
-            }*/
-            this->hoverSquare = 0;
+            std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                                                        this->captureSquareList.end(),
+                                                        this->hoverSquare);
+            if (iter == this->captureSquareList.end()) {//not found
+                this->highlightSquare(this->hoverSquare, "");//remove the highlight
+            }
+            this->hoverSquare = this->OFF_BOARD;
             //console.log('leave');
             return;
         }
@@ -755,6 +903,6 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         }
 
 
-        //console.log('x=', x, 'z=', z, 'row=', row, 'col=', col, 'sq=', sq);
+        std::cout <<"X= " << intersection.X <<", Y= " << intersection.Y << ", Z= " << intersection.Z <<", col= " << col << ", row= " << row << ", sq= " << sq <<std::endl;
 
     };

@@ -48,8 +48,14 @@
 		<Unit filename="include/Game3D.h" />
 		<Unit filename="include/Game3DFactory.h" />
 		<Unit filename="include/GameDesc.h" />
+		<Unit filename="include/MoveResult.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="include/Piece.h" />
 		<Unit filename="include/Square.h" />
+		<Unit filename="include/Task.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="include/XZ.h" />
 		<Unit filename="include/games/Chess3D.h">
 			<Option target="Debug" />
