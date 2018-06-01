@@ -1,5 +1,5 @@
 
-#include <list>
+#include <vector>
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -30,24 +30,32 @@ Game3D::~Game3D(){
 // This is the one method that we have to implement
 bool Game3D::OnEvent(const SEvent& event)
 	{
+        this->OnEventDesktop(event);
+        this->OnEventAndroid(event);
+        //TODO - more platform goes below
 
-		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT)
+		return false;
+	};
+
+bool Game3D::OnEventDesktop(const SEvent& event)
+{
+
+        if (event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 		{
 			switch(event.MouseInput.Event)
 			{
 			case EMIE_LMOUSE_PRESSED_DOWN:
-			    this->onClickBoard(event.MouseInput.X, event.MouseInput.Y, false);//come back for true/false
+			    this->onClickBoard(event.MouseInput.X, event.MouseInput.Y, false);
 				break;
 
 			case EMIE_LMOUSE_LEFT_UP:
-
+                  //std::cout << "mouse release"<<std::endl;
 				break;
 
 			case EMIE_MOUSE_MOVED:
-				//MouseState.Position.X = event.MouseInput.X;
-				//MouseState.Position.Y = event.MouseInput.Y;
-				this->onHoverBoard(event.MouseInput.X, event.MouseInput.Y, false);//come back for true/false
+				this->onHoverBoard(event.MouseInput.X, event.MouseInput.Y, false);
 				break;
+
 
 			default:
 				// We won't use the wheel
@@ -56,8 +64,45 @@ bool Game3D::OnEvent(const SEvent& event)
 		}
 
 
-		return false;
-	};
+}
+
+bool Game3D::OnEventAndroid(const SEvent& event)
+{
+/*
+   		if (event.EventType == EET_MULTI_TOUCH_EVENT)
+		{
+			switch ( event.MultiTouchInput.Event)
+			{
+				case EMTIE_PRESSED_DOWN:
+				{
+					// We only work with the first for now, but could be up to NUMBER_OF_MULTI_TOUCHES touches.
+					position2d<s32> touchPoint(event.MultiTouchInput.X[0], event.MultiTouchInput.Y[0]);
+					this->onTouchStartBoard(touchPoint.X, touchPoint.Y);
+					break;
+				}
+				case EMTIE_LEFT_UP:
+				    {
+
+					// We only work with the first for now, but could be up to NUMBER_OF_MULTI_TOUCHES touches.
+					position2d<s32> touchPoint(event.MultiTouchInput.X[0], event.MultiTouchInput.Y[0]);
+					this->onHoverBoardEnd(touchPoint.X, touchPoint.Y);
+					break;
+				    }
+				case EMTIE_MOVED:
+				    {
+					// We only work with the first for now, but could be up to NUMBER_OF_MULTI_TOUCHES touches.
+					position2d<s32> touchPoint(event.MultiTouchInput.X[0], event.MultiTouchInput.Y[0]);
+					this->onHoverBoard(touchPoint.X, touchPoint.Y, true);
+					break;
+                    }
+				default:
+					break;
+			}
+		}
+
+*/
+
+}
 
 void Game3D::init(GameDesc desc){
         this->isOffsetSelection = desc.isOffsetSelection;
@@ -269,8 +314,8 @@ void Game3D::arrangePieces(std::string board_position){
 
     this->squareList = this->createBoardContent(board_position);
 
-    std::list<Piece*> white_caps = this->offBoardWhitePieces(board_position);
-    std::list<Piece*> black_caps = this->offBoardBlackPieces(board_position);
+    std::vector<Piece*> white_caps = this->offBoardWhitePieces(board_position);
+    std::vector<Piece*> black_caps = this->offBoardBlackPieces(board_position);
 
     for(int i=0; i < this->SQ_COUNT; i++){
         if(this->squareList[i].piece == 0){
@@ -280,11 +325,11 @@ void Game3D::arrangePieces(std::string board_position){
         this->positionPiece(this->squareList[i].piece);
     }
 
-    for(std::list<Piece*>::iterator it = white_caps.begin(); it != white_caps.end(); ++it){
+    for(std::vector<Piece*>::iterator it = white_caps.begin(); it != white_caps.end(); ++it){
             this->positionPiece(*it);
     }
 
-    for(std::list<Piece*>::iterator it = black_caps.begin(); it != black_caps.end(); ++it){
+    for(std::vector<Piece*>::iterator it = black_caps.begin(); it != black_caps.end(); ++it){
             this->positionPiece(*it);
     }
 
@@ -339,8 +384,9 @@ int Game3D::toNumericSq(std::string notation){
                 break;
         }
 
+        int sq = b + a;
 
-        return b + a;
+        return sq >=0 && sq < this->SQ_COUNT ? sq : this->OFF_BOARD;
     };
 
  std::string Game3D::toSquareNotation(int sq){
@@ -536,6 +582,12 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
     void Game3D::movePiece(Piece* mv_piece, int to, int capture){
         int from = mv_piece->sqLoc;
+
+        if(from == to){
+            std::cout << "INFO: moving piece on same square! 'from' equals 'to'" << std::endl;
+            return;
+        }
+
         if(from == this->OFF_BOARD){
             std::cout << "ERROR: moving piece sq location cannot be OFF_BOARD" << std::endl;
             //Something must be wrong!
@@ -546,8 +598,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         //if no piece model is found on the 'to' square but a capture move is received
         //then something is wrong
-        if(cap_piece == 0 //
-           && (capture >= 0 || capture < this->SQ_COUNT))
+        if(cap_piece == 0  && capture != this->OFF_BOARD)
         {
            std::cout << "ERROR: No piece model is found on the 'to' square '" << to <<"' but a capture move is received." << std::endl;
            //TOD0 - Throw an error for something is wrong!
@@ -555,16 +606,16 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         //if a piece model is found on the 'to' square but no capture move is received
         //then something is also wrong
-        if(cap_piece != 0 //
-           && (capture < 0 || capture >= this->SQ_COUNT))
+        if(cap_piece != 0 && capture == this->OFF_BOARD)
         {
             std::cout << "ERROR: A piece model is found on the 'to' square '" << to <<"' but no capture move is received." << std::endl;
           //TOD0 - Throw an error for something is wrong!
         }
 
-        float speed = 1.0f;
+        float speed = 3.0f;
 
-        const core::array<core::vector3df> move_points; //come back
+        const core::array<core::vector3df> move_points = this->catmullRomControlPoints(mv_piece, to);
+
         s32 move_start_time = this->device->getTimer()->getTime();
 
         scene::ISceneNodeAnimator* move_anim =
@@ -593,7 +644,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 		if(cap_piece != 0 && (capture >= 0 || capture < this->SQ_COUNT))
         {
 
-            const core::array<core::vector3df> cap_points; //come back
+            const core::array<core::vector3df> cap_points = this->catmullRomControlPoints(cap_piece, this->OFF_BOARD);
 
             s32 cap_start_time = move_start_time;
 
@@ -621,6 +672,55 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
     };
 
+    core::array<core::vector3df> Game3D::catmullRomControlPoints(Piece* pce, float to){
+        float fly_height = this->getFlyHeight(pce, to);
+
+        XZ begin = this->squareCenter(pce->sqLoc);
+        XZ end;
+        if(to != this->OFF_BOARD){
+            end = this->squareCenter(to);
+        }else{
+            end = this->nextThrowOutXZ(pce);
+        }
+        float dx = end.x - begin.x;
+        float dz = end.z - begin.z;
+        float distance = std::sqrt(std::pow(dx, 2) + std::pow(dz, 2));
+        float slope_angle = std::atan(dz/dx);//in radian
+
+        //start point
+        float x1 = begin.x;
+        float y1 = pce->bottom + fly_height / 2; // so as to create a smoother rising curve
+        float z1 = begin.z;
+
+        //2nd point
+        float dx2 = 0.3*distance * std::cos(slope_angle);//change in x at 2nd point
+        float dz2 = 0.3*distance * std::sin(slope_angle);//change in z at 2nd point
+        float x2 = x1 + dx2;
+        float y2 = pce->bottom + fly_height;
+        float z2 = z1 + dz2;
+
+        //3rd point
+        float dx3 = 0.7*distance * std::cos(slope_angle);//change in x at 3rd point
+        float dz3 = 0.7*distance * std::sin(slope_angle);//change in z at 3rd point
+        float x3 = x1 + dx3;
+        float y3 = pce->bottom + fly_height / 2; //divided so that it looks to be dropping at this point
+        float z3 = z1 + dz3;
+
+        //4th and end point
+        float x4 = end.x;
+        float y4 = pce->bottom;
+        float z4 = end.z;
+
+
+        core::array<core::vector3df> arr_vec;
+        arr_vec.push_back(core::vector3df(x1, y1, z1));
+        arr_vec.push_back(core::vector3df(x2, y2, z2));
+        arr_vec.push_back(core::vector3df(x3, y3, z3));
+        arr_vec.push_back(core::vector3df(x4, y4, z4));
+
+        return arr_vec;
+    }
+
     void Game3D::highlightSquare (int sq, std::string style){
 
         if(style == this->PICKED_SQUARE_STYLE){
@@ -643,23 +743,24 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         this->pickedPiece = this->squareList[sq].piece;
 
-        //this.pickedPiece.style.zIndex = 1000;
+        //this->pickedPiece.style.zIndex = 1000;
     };
 
-    void Game3D::clearHighlights(std::list<int> sq_list){
-        for(std::list<int>::iterator it = sq_list.begin(); it != sq_list.end(); ++it){
-            this->highlightSquare(*it, "");//remove the highlight
+    void Game3D::clearHighlights(std::vector<int> sq_list){
+        int len = sq_list.size();
+        for(int i=0; i<len; i++){
+            this->highlightSquare(sq_list[i], "");//remove the highlight
         }
         sq_list.clear();
 
     };
 
-    void Game3D::clearHighlightsLater(std::list<int> sq_list, int millsec){
+    void Game3D::clearHighlightsLater(std::vector<int> sq_list, int millsec){
         Task t;
         t.interval = millsec;
         t.time = this->device->getTimer()->getTime() + t.interval;
         t.repeat = false;
-        t.exec  = [&](){
+        t.exec  = [&](){//lambda function
             this->clearHighlights(sq_list);
         };
         this->tasks.push_back(t);
@@ -680,7 +781,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         if (this->pickedSquare != this->OFF_BOARD) {
 
-            std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->pickedSquare);
             if (iter == this->captureSquareList.end()) {//not found
@@ -722,7 +823,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                     std::cout<< "TODO display the error message"<< std::endl;
                     std::cout<<"move error:', moveResult.error"<< std::endl;
 
-                    //animate the piece by to the original position
+                    //animate the piece to the  position
                     this->movePiece(this->pickedPiece, pk_sq);
                 } else {//error
                     int capture_sq = this->toNumericSq(moveResult.capture);
@@ -733,7 +834,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                 if (moveResult.done || moveResult.error != "") {
                     this->pickedSquare = this->OFF_BOARD;
                     this->pickedPiece = 0;
-                    std::list<int> capSqLst = this->captureSquareList;
+                    std::vector<int> capSqLst = this->captureSquareList; //ok
                     this->captureSquareList.clear();
                     this->clearHighlightsLater(capSqLst, 1000);
                 }
@@ -753,7 +854,17 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         int sq = this->boardSq;
         std::string sqn = this->toSquareNotation(sq);
 
+        if(sqn ==""){
+           return;
+        }
+
         Piece* pce = this->getInternalPiece(sqn);
+
+        if(sqn !="" && pce == 0){
+            std::cout << "empty square at "<< sqn << std::endl;
+            return;
+        }
+
         bool side1 = pce->white;
         bool side2 = this->gameDesc.userSide == "w";
         if (pce != 0
@@ -781,7 +892,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         if (this->boardSq == this->pickedSquare) {
             if (this->hoverSquare != this->pickedSquare) {
 
-                std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
                 if (iter == this->captureSquareList.end()) {//not found
@@ -793,7 +904,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
 
         if (this->hoverSquare != this->pickedSquare) {
-            std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
             if (iter == this->captureSquareList.end()) {//not found
@@ -803,7 +914,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
 
         this->hoverSquare = this->boardSq;
-        std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+        std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
         if (iter == this->captureSquareList.end()) {//not found
@@ -813,11 +924,25 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
     };
 
     void Game3D::onTouchStartBoard(s32 screen_x, s32 screen_y){//mobile platform
-
+        this->boardXZ(screen_x, screen_y, true);
     };
 
     void Game3D::onHoverBoardEnd(s32 screen_x, s32 screen_y){//mobile platform
-
+        if (!this->isTouchingBoard) {// tap detected
+            this->onClickBoard(-1, -1, true);
+            return;
+        }
+        this->boardX = this->OFF_BOARD;
+        this->boardZ = this->OFF_BOARD;
+        this->isTouchingBoard = false;
+        if (this->hoverSquare != this->pickedSquare) {
+            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                                                            this->captureSquareList.end(),
+                                                            this->hoverSquare);
+            if (iter == this->captureSquareList.end()) {//not found
+                this->highlightSquare(this->hoverSquare, "");//remove the highlight
+            }
+        }
     }
 
     void Game3D::boardXZ(s32 screen_x, s32 screen_y, bool is_start_touch){
@@ -884,7 +1009,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
             this->boardCol = this->OFF_BOARD;
             this->boardSq = this->OFF_BOARD;
             //Clear highlighted squares
-            std::list<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
             if (iter == this->captureSquareList.end()) {//not found

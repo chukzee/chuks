@@ -6,7 +6,7 @@
 class XZ;
 
 // included dependencies
-#include <list>
+#include <vector>
 #include <string>
 #include <irrlicht.h>
 #include <Piece.h>
@@ -40,9 +40,6 @@ class Game3D : public IEventReceiver{
         bool isNewBoard = true;
         void board(GameDesc desc);
         void reOrderBoard(GameDesc desc);
-        int toNumericSq();
-        std::string toSquareNotation(int i);
-        int toNumericSq(std::string notation);
         void takeOffBoard(Piece* pce, bool is_animate);
         XZ nextThrowOutXZ(Piece* pce);
         int flipSquare(int sq);
@@ -52,9 +49,10 @@ class Game3D : public IEventReceiver{
         void movePiece(Piece* pce, int to, int capture = OFF_BOARD);
         void highlightSquare (int sq, std::string style);
         void pickPieceOnSquare (int sq);
-        std::list<int> captureSquareList;
-        void clearHighlights(std::list<int> sq_list);
-        void clearHighlightsLater(std::list<int> sq_list, int millsec);
+        std::vector<int> captureSquareList;
+        void clearHighlights(std::vector<int> sq_list);
+        void clearHighlightsLater(std::vector<int> sq_list, int millsec);
+        core::array<core::vector3df>catmullRomControlPoints(Piece* pce, float to);
 
     public:
         IrrlichtDevice* device;
@@ -67,7 +65,7 @@ class Game3D : public IEventReceiver{
         static const int OFF_BOARD = -1;
         const int OFF_SCENE = -1000000;
         int SQ_COUNT = -1;
-        std::list<Task> tasks;
+        std::vector<Task> tasks;
         void init(GameDesc desc);
         void load(GameDesc desc);
         void onClickBoard(s32 screen_x, s32 screen_y, bool is_touch);
@@ -118,6 +116,10 @@ class Game3D : public IEventReceiver{
 
         bool OnEvent(const SEvent& event);
 
+        bool OnEventDesktop(const SEvent& event);
+
+        bool OnEventAndroid(const SEvent& event);
+
         void createBoardPlane();
 
         void createBoardBase();
@@ -130,13 +132,17 @@ class Game3D : public IEventReceiver{
 
         void arrangePieces(std::string board_position);
 
+        std::string toSquareNotation(int i);
+
+        int toNumericSq(std::string notation);
+
         //purely virtual function
 
         virtual Square* createBoardContent(std::string board_position) = 0;
         //white pieces captured
-        virtual std::list<Piece*> offBoardWhitePieces(std::string board_position) = 0;
+        virtual std::vector<Piece*> offBoardWhitePieces(std::string board_position) = 0;
         //black pieces captured
-        virtual std::list<Piece*> offBoardBlackPieces(std::string board_position) = 0;
+        virtual std::vector<Piece*> offBoardBlackPieces(std::string board_position) = 0;
         //board configuration
         virtual BoardConfig configBoard(std::string variant) = 0;
 
@@ -150,6 +156,7 @@ class Game3D : public IEventReceiver{
 
         virtual Piece* getInternalPiece(std::string sqn) = 0;
 
+        virtual float getFlyHeight(Piece* pce, float to) = 0;
 
 };
 

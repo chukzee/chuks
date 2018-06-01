@@ -46,14 +46,14 @@ Square* Draughts3D::createBoardContent(std::string board_position){
 }
 
 //white pieces captured
-std::list<Piece*> Draughts3D::offBoardWhitePieces(std::string board_position){
-    std::list<Piece*> pce_list;
+std::vector<Piece*> Draughts3D::offBoardWhitePieces(std::string board_position){
+    std::vector<Piece*> pce_list;
     return pce_list;
 };
 
 //black pieces captured
-std::list<Piece*> Draughts3D::offBoardBlackPieces(std::string board_position){
-    std::list<Piece*> pce_list;
+std::vector<Piece*> Draughts3D::offBoardBlackPieces(std::string board_position){
+    std::vector<Piece*> pce_list;
     return pce_list;
 };
 
@@ -88,4 +88,14 @@ MoveResult Draughts3D::makeMove(std::string from, std::string to){
 
 
     return meve_result;
+};
+
+
+float Draughts3D::getFlyHeight(Piece* pce, float to){
+    if(to == this->OFF_BOARD){
+        return 2.5f;
+    }else{
+        return 0.7f;
+    }
+
 };

@@ -7,7 +7,7 @@
 class Piece;
 
 // included dependencies
-#include <list>
+#include <vector>
 #include <irrlicht.h>
 #include <Game3D.h>
 
@@ -26,8 +26,8 @@ class Chess3D : public Game3D{
         const std::string DEFAULT_BOARD_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         IMeshSceneNode* chessPieceModels = 0;
         std::string abbrToName(char c);
-        std::list<Piece*> _offBoardPieces(std::string board_position, bool white);
-        std::list<Piece*> pushPieces(std::list<Piece*> pce_list, bool white, std::string name, int count);
+        std::vector<Piece*> _offBoardPieces(std::string board_position, bool white);
+        std::vector<Piece*> pushPieces(std::vector<Piece*> pce_list, bool white, std::string name, int count);
 
         public:
 
@@ -43,9 +43,9 @@ class Chess3D : public Game3D{
 
         Square* createBoardContent(std::string board_position);
         //white pieces captured
-        std::list<Piece*> offBoardWhitePieces(std::string board_position);
+        std::vector<Piece*> offBoardWhitePieces(std::string board_position);
         //black pieces captured
-        std::list<Piece*> offBoardBlackPieces(std::string board_position);
+        std::vector<Piece*> offBoardBlackPieces(std::string board_position);
 
         BoardConfig configBoard(std::string variant);
 
@@ -58,6 +58,8 @@ class Chess3D : public Game3D{
         bool isWhitePieceModel();
 
         Piece* getInternalPiece(std::string sqn);
+
+        float getFlyHeight(Piece* pce, float to);
 };
 
 

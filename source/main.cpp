@@ -6,6 +6,7 @@
 #include <GameDesc.h>
 #include <Task.h>
 #include <functional>
+#include <algorithm>
 
 
 using namespace std;
@@ -78,9 +79,24 @@ private:
         {
             if (this->device->isWindowActive())
             {
-                if(this->game3D->tasks.size() > 0){
-                    this->game3D->tasks.remove_if(this->taskExec);
+                //handle registered tasks
+                for(int i=0; i<this->game3D->tasks.size(); i++){
+                    if(this->taskExec(this->game3D->tasks[i])){//remove task
+                        //remove the nth element
+                        this->game3D->tasks.erase(this->game3D->tasks.begin()+i);
+                        i--;
+                    }
                 }
+                /* OR - the above for loop is more efficient
+                if(this->game3D->tasks.size() > 0){
+                    vector<Task>::iterator new_end = std::remove_if(this->game3D->tasks.begin(),
+                                                  this->game3D->tasks.end(),
+                                                  this->taskExec);
+                   //must call the erase method
+                   this->game3D->tasks.erase(new_end, this->game3D->tasks.end());
+                }
+                */
+
 
                 /*
                 Anything can be drawn between a beginScene() and an endScene()

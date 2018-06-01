@@ -1,5 +1,5 @@
 
-#include <list>
+#include <vector>
 #include <iostream>
 #include <ctype.h>
 #include <string>
@@ -91,18 +91,18 @@ Square* Chess3D::createBoardContent(std::string board_position){
 }
 
 //white pieces captured
-std::list<Piece*> Chess3D::offBoardWhitePieces(std::string board_position){
+std::vector<Piece*> Chess3D::offBoardWhitePieces(std::string board_position){
     return this->_offBoardPieces(board_position, true);
 };
 
 //black pieces captured
-std::list<Piece*> Chess3D::offBoardBlackPieces(std::string board_position){
+std::vector<Piece*> Chess3D::offBoardBlackPieces(std::string board_position){
     return this->_offBoardPieces(board_position, false);
 };
 
-std::list<Piece*> Chess3D::_offBoardPieces(std::string board_position, bool white){
+std::vector<Piece*> Chess3D::_offBoardPieces(std::string board_position, bool white){
 
-        std::list<Piece*> pce_list;
+        std::vector<Piece*> pce_list;
 
         int queen_count = 0,
                 king_count = 0, //not necessary anyway before king is never captured
@@ -195,7 +195,7 @@ std::list<Piece*> Chess3D::_offBoardPieces(std::string board_position, bool whit
 
 };
 
-std::list<Piece*> Chess3D::pushPieces(std::list<Piece*> pce_list, bool white, std::string name, int count) {
+std::vector<Piece*> Chess3D::pushPieces(std::vector<Piece*> pce_list, bool white, std::string name, int count) {
         for (int i = 0; i < count; i++) {
             Piece* pce = new Piece();
             pce->name = name;
@@ -287,6 +287,15 @@ float Chess3D::getModelBottom(Piece* pce){
 
 Piece* Chess3D::getInternalPiece(std::string sqn){
     //TODO - Call external method from here
+
+    //TESING START
+
+    if(sqn!=""){//SIMULATION TEST!!!!
+        return this->squareList[this->toNumericSq(sqn)].piece;
+    }
+
+    //TESTING END
+
     return 0;
 };
 
@@ -295,8 +304,29 @@ Calls the external method - e.g node, android, iOS etc
 */
 MoveResult Chess3D::makeMove(std::string from, std::string to){
 
-    MoveResult meve_result;
+    MoveResult move_result;
 
+    //TESING START
 
-    return meve_result;
+    if(from!="" && to != ""){//SIMULATION TEST!!!!
+        move_result.done = true;
+        move_result.error = "";
+        move_result.hasMore = false;
+        move_result.capture = "";
+        move_result.mark_capture = "";
+    }
+
+    //TESTING END
+
+    return move_result;
+};
+
+float Chess3D::getFlyHeight(Piece* pce, float to){
+    float max = 2.5f;
+
+    if(pce->name != "knight" && to != this->OFF_BOARD){
+        return 0.7f;
+    }
+
+    return max;
 };
