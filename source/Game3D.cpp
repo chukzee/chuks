@@ -232,7 +232,7 @@ void Game3D::createFloor(){
     //Floor
     video::SMaterial* floor_material = 0;
     float floor_tex_repeat = 14.f;
-    u32 floor_size = this->BOARD_PLANE_SIZE * 5.5f;
+    u32 floor_size = this->BOARD_PLANE_SIZE * 6.0f;
     const IGeometryCreator* igc = this->smgr->getGeometryCreator();
 
     IMesh*  floor_mesh = igc->createPlaneMesh(dimension2d<f32>(1, 1),
@@ -450,22 +450,50 @@ int Game3D::toNumericSq(std::string notation){
     };
 
 
-void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
-        XZ out = this->nextThrowOutXZ(pce);
-        float to_x = out.x;
-        float to_z = out.z;
-
-        float to_y = this->floorPlaneY + this->getModelBottom(pce);  //sit on the floor
-
-        pce->x = to_x;
-        pce->y = to_y;
-        pce->z = to_z;
+void Game3D:: takeOffBoard(Piece* pce, bool is_animate, s32 move_start_time, float speed) {
 
         if (is_animate) {
-            //TODO
+
+            const core::array<core::vector3df> cap_points = this->catmullRomControlPoints(pce, this->OFF_BOARD);
+
+            s32 cap_start_time = move_start_time;
+
+            scene::ISceneNodeAnimator* cap_anim =
+			this->smgr->createFollowSplineAnimator	(cap_start_time,
+                                        cap_points,//const core::array< core::vector3df > &
+                                        speed,// speed,
+                                        0.5f, //tightness = 0.5f for catmull rom spline.
+                                        false,//loop
+                                        false//pingpong
+                                    );
+
+
+            if (cap_anim)
+            {
+                pce->sqLoc = this->OFF_BOARD;
+                pce->model->addAnimator(cap_anim);
+                //TODO - Correctly place the piece in exact position after animation is finished
+
+                cap_anim->drop();
+            }else{
+                //Something went wrong!
+                std::cout << "ERROR: Could not create capture animator" << std::endl;
+            }
+
         } else {
+
+            XZ out = this->nextThrowOutXZ(pce);
+            float to_x = out.x;
+            float to_z = out.z;
+
+            float to_y = this->floorPlaneY + this->getModelBottom(pce);  //sit on the floor
+
+            pce->x = to_x;
+            pce->y = to_y;
+            pce->z = to_z;
             //model.position.set(to_x, to_y, to_z);
             pce->model->setPosition (vector3df(pce->x, pce->y, pce->z));
+
         }
 
     };
@@ -625,7 +653,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         {
             std::cout << "ERROR: A piece model is found on the 'to' square '" << to <<"' but no capture move is received." << std::endl;
           //TOD0 - Throw an error for something is wrong!
-          return;
+          return; //important!
         }
 
         float speed = 3.0f;
@@ -663,38 +691,15 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 		//a capture
 		if(cap_piece != 0 && (capture >= 0 || capture < this->SQ_COUNT))
         {
-            const core::array<core::vector3df> cap_points = this->catmullRomControlPoints(cap_piece, this->OFF_BOARD);
-            s32 cap_start_time = move_start_time;
-
-            scene::ISceneNodeAnimator* cap_anim =
-			this->smgr->createFollowSplineAnimator	(cap_start_time,
-                                        cap_points,//const core::array< core::vector3df > &
-                                        speed,// speed,
-                                        0.5f, //tightness = 0.5f for catmull rom spline.
-                                        false,//loop
-                                        false//pingpong
-                                    );
-
-
-            if (cap_anim)
-            {
-                cap_piece->sqLoc = this->OFF_BOARD;
-                cap_piece->model->addAnimator(cap_anim);
-                //TODO - Correctly place the piece in exact position after animation is finished
-
-                cap_anim->drop();
-            }else{
-                //Something went wrong!
-                std::cout << "ERROR: Could not create capture animator" << std::endl;
-            }
-
+            this->takeOffBoard(cap_piece, true, move_start_time, speed);
         }
 
     };
 
     core::array<core::vector3df> Game3D::catmullRomControlPoints(Piece* pce, float to){
-        float fly_height = this->getFlyHeight(pce, to);
 
+        float fly_height = this->getFlyHeight(pce, to);
+        float pce_bottom = this->getModelBottom(pce);
         XZ begin = this->squareCenter(pce->sqLoc);
         XZ end;
         if(to != this->OFF_BOARD){
@@ -712,26 +717,26 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         //start point
         float x1 = begin.x;
-        float y1 = pce->bottom + fly_height / 2; // so as to create a smoother rising curve
+        float y1 = pce_bottom + fly_height / 2; // so as to create a smoother rising curve
         float z1 = begin.z;
 
         //2nd point
         float dx2 = 0.3*distance * std::cos(slope_angle);//change in x at 2nd point
         float dz2 = 0.3*distance * std::sin(slope_angle);//change in z at 2nd point
         float x2 = x1 + dx2;
-        float y2 = pce->bottom + fly_height;
+        float y2 = pce_bottom + fly_height;
         float z2 = z1 + dz2;
 
         //3rd point
         float dx3 = 0.7*distance * std::cos(slope_angle);//change in x at 3rd point
         float dz3 = 0.7*distance * std::sin(slope_angle);//change in z at 3rd point
         float x3 = x1 + dx3;
-        float y3 = pce->bottom + fly_height / 2; //divided so that it looks to be dropping at this point
+        float y3 = pce_bottom + fly_height / 2; //divided so that it looks to be dropping at this point
         float z3 = z1 + dz3;
 
         //4th and end point
         float x4 = end.x;
-        float y4 = pce->bottom;
+        float y4 = to != this->OFF_BOARD? pce_bottom : this->floorPlaneY + pce_bottom;
         float z4 = end.z;
 
 

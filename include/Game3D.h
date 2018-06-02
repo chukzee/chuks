@@ -41,7 +41,7 @@ class Game3D : public IEventReceiver{
         bool isNewBoard = true;
         void board(GameDesc desc);
         void reOrderBoard(GameDesc desc);
-        void takeOffBoard(Piece* pce, bool is_animate);
+        void takeOffBoard(Piece* pce, bool is_animate, s32 start_time = 0, float speed = 3.0f);
         XZ nextThrowOutXZ(Piece* pce);
         int flipSquare(int sq);
         void positionPiece(Piece* pce);
