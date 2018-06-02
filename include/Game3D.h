@@ -26,6 +26,7 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
+typedef std::vector<int> VectorInt;
 
 class Game3D : public IEventReceiver{
 
@@ -49,9 +50,9 @@ class Game3D : public IEventReceiver{
         void movePiece(Piece* pce, int to, int capture = OFF_BOARD);
         void highlightSquare (int sq, std::string style);
         void pickPieceOnSquare (int sq);
-        std::vector<int> captureSquareList;
-        void clearHighlights(std::vector<int> sq_list);
-        void clearHighlightsLater(std::vector<int> sq_list, int millsec);
+        VectorInt captureSquareList = VectorInt(0);
+        void clearHighlights(VectorInt sq_list);
+        void clearHighlightsLater(VectorInt sq_list, int millsec);
         core::array<core::vector3df>catmullRomControlPoints(Piece* pce, float to);
 
     public:
@@ -65,7 +66,7 @@ class Game3D : public IEventReceiver{
         static const int OFF_BOARD = -1;
         const int OFF_SCENE = -1000000;
         int SQ_COUNT = -1;
-        std::vector<Task> tasks;
+        std::vector<Task<VectorInt>> tasks;
         void init(GameDesc desc);
         void load(GameDesc desc);
         void onClickBoard(s32 screen_x, s32 screen_y, bool is_touch);
@@ -84,8 +85,8 @@ class Game3D : public IEventReceiver{
         ICameraSceneNode* cameraNode = 0;
         ILightSceneNode* lightNode = 0;
         float baseHeight =  2.5f;
-        std::string pieceTheme;
-        std::string boardTheme;
+        std::string pieceTheme = "";
+        std::string boardTheme = "";
         float floorPlaneY = -1;
 
         bool blackThrowOutFwd = true;

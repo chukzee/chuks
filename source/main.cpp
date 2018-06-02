@@ -8,7 +8,6 @@
 #include <functional>
 #include <algorithm>
 
-
 using namespace std;
 
 using namespace irr;
@@ -19,7 +18,8 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-class MainUI{
+
+class GameBaba{
 
 private:
     IrrlichtDevice* device;
@@ -31,9 +31,9 @@ private:
     std::shared_ptr<Game3D> game3D = 0;
 
     //lambda function used as variable 'taskExec'. And capturing the 'this' variable too
-    std::function<bool(Task)> taskExec = [this](Task  t){
+    std::function<bool(Task<VectorInt>)> taskExec = [this](Task<VectorInt>  t){
         if(t.time >= this->device->getTimer()->getTime()){
-            t.exec();
+            t.exec(t.param);
             t.time += t.interval;
         }
         return !t.repeat;
@@ -67,6 +67,8 @@ private:
 
     void run(){
 
+        this->device->setResizable(true);
+
         int lastFPS = -1;
         /*
         Ok, now we have set up the scene, lets draw everything:
@@ -79,24 +81,7 @@ private:
         {
             if (this->device->isWindowActive())
             {
-                //handle registered tasks
-                for(int i=0; i<this->game3D->tasks.size(); i++){
-                    if(this->taskExec(this->game3D->tasks[i])){//remove task
-                        //remove the nth element
-                        this->game3D->tasks.erase(this->game3D->tasks.begin()+i);
-                        i--;
-                    }
-                }
-                /* OR - the above for loop is more efficient
-                if(this->game3D->tasks.size() > 0){
-                    vector<Task>::iterator new_end = std::remove_if(this->game3D->tasks.begin(),
-                                                  this->game3D->tasks.end(),
-                                                  this->taskExec);
-                   //must call the erase method
-                   this->game3D->tasks.erase(new_end, this->game3D->tasks.end());
-                }
-                */
-
+                 this->handleTasks();
 
                 /*
                 Anything can be drawn between a beginScene() and an endScene()
@@ -140,6 +125,33 @@ private:
 
     };
 
+    void handleTasks(){
+
+        if(this->game3D != 0){//making sure the game3D object is already created before accessing it in this block
+            //handle registered tasks
+            for(unsigned int i=0; i<this->game3D->tasks.size(); i++){
+                if(this->taskExec(this->game3D->tasks[i])){//remove task
+                    //remove the nth element
+                    this->game3D->tasks.erase(this->game3D->tasks.begin()+i);
+                    i--;
+                }
+            }
+
+            /* OR - the above for loop is more efficient
+            if(this->game3D->tasks.size() > 0){
+                vector<Task<VectorInt>>::iterator new_end = std::remove_if(this->game3D->tasks.begin(),
+                                                this->game3D->tasks.end(),
+                                                this->taskExec);
+                //must call the erase method
+                this->game3D->tasks.erase(new_end, this->game3D->tasks.end());
+            }*/
+
+
+        }
+
+
+    };
+
     void quit(){
 
         /* Cleanup */
@@ -153,6 +165,7 @@ private:
         if(data == ""){
             //default
             this->gameDesc.game = "chess";
+            this->gameDesc.userSide = "w";
             this->gameDesc.variant = "INTERNATIONAL_DRAUGHTS";//for draughts
             this->gameDesc.boardPosition = "";
             this->gameDesc.flip = false; //if false if the user is white otherwise true - if false it means the white is directly close to the player
@@ -183,11 +196,11 @@ private:
 
 int main(int argc, char** argv)
 {
-    MainUI ui;
-    ui.init();
-    ui.show("");
-    ui.run();
-    ui.quit();
+    GameBaba g;
+    g.init();
+    g.show("");
+    g.run();
+    g.quit();
 
     return 0;
 }

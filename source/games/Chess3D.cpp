@@ -189,7 +189,7 @@ std::vector<Piece*> Chess3D::_offBoardPieces(std::string board_position, bool wh
             pce_list = this->pushPieces(pce_list, white, this->abbrToName('p'), 32 - promotion_count - pawn_count);
         }
         //TESTING END
-       */
+        */
 
         return pce_list;
 

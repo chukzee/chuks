@@ -36,11 +36,11 @@
 			<Add directory="C:/CodeBlocksProjects/GameBabaWorld/include" />
 		</Compiler>
 		<Linker>
-			<Add library="Irrlicht" />
+			<Add library="C:/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
 			<Add library="opengl32" />
 			<Add library="glu32" />
 			<Add library="gdi32" />
-			<Add directory="C:/irrlicht-1.8.1/lib/Win32-gcc" />
+			<Add directory="C:/irrlicht-1.8.1/bin/Win32-gcc" />
 		</Linker>
 		<Unit filename="include/BoardConfig.h">
 			<Option target="Debug" />

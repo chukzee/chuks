@@ -48,12 +48,14 @@ Square* Draughts3D::createBoardContent(std::string board_position){
 //white pieces captured
 std::vector<Piece*> Draughts3D::offBoardWhitePieces(std::string board_position){
     std::vector<Piece*> pce_list;
+    //TODO
     return pce_list;
 };
 
 //black pieces captured
 std::vector<Piece*> Draughts3D::offBoardBlackPieces(std::string board_position){
     std::vector<Piece*> pce_list;
+    //TODO
     return pce_list;
 };
 

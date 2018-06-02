@@ -63,6 +63,7 @@ bool Game3D::OnEventDesktop(const SEvent& event)
 			}
 		}
 
+    return false;
 
 }
 
@@ -101,7 +102,7 @@ bool Game3D::OnEventAndroid(const SEvent& event)
 		}
 
 */
-
+    return false;
 }
 
 void Game3D::init(GameDesc desc){
@@ -142,6 +143,13 @@ void Game3D::init(GameDesc desc){
 };
 
 void Game3D::load(GameDesc desc){
+    //normalize flip - white user must be 'false' and black 'true'.
+    // Only spectators can actually flip the view
+    if(desc.userSide == "w"){
+        desc.flip = false;
+    }else if(desc.userSide == "b"){
+        desc.flip = true;
+    }
 
     this->init(desc);
     if(this->isNewBoard){
@@ -325,12 +333,12 @@ void Game3D::arrangePieces(std::string board_position){
         this->positionPiece(this->squareList[i].piece);
     }
 
-    for(std::vector<Piece*>::iterator it = white_caps.begin(); it != white_caps.end(); ++it){
-            this->positionPiece(*it);
+    for(unsigned int i=0; i< white_caps.size(); i++){
+        this->positionPiece(white_caps[i]);
     }
 
-    for(std::vector<Piece*>::iterator it = black_caps.begin(); it != black_caps.end(); ++it){
-            this->positionPiece(*it);
+    for(unsigned int i=0; i< black_caps.size(); i++){
+        this->positionPiece(black_caps[i]);
     }
 
 
@@ -472,11 +480,11 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         if (pce->white) {
 
-            if (this->whiteThrowOutX == -1) {
+            if (this->whiteThrowOutX == this->OFF_SCENE) {
                 this->whiteThrowOutX = -f_board_size / 2 - spacing * sq_size;
             }
 
-            if (this->whiteThrowOutZ == -1) {
+            if (this->whiteThrowOutZ == this->OFF_SCENE) {
                 this->whiteThrowOutZ = 0;
             } else {
                 if (this->whiteThrowOutFwd) {
@@ -501,11 +509,11 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         } else {
 
-            if (this->blackThrowOutX == -1) {
+            if (this->blackThrowOutX == this->OFF_SCENE) {
                 this->blackThrowOutX = f_board_size / 2 + spacing * sq_size;
             }
 
-            if (this->blackThrowOutZ == -1) {
+            if (this->blackThrowOutZ == this->OFF_SCENE) {
                 this->blackThrowOutZ = 0;
             } else {
                 if (this->blackThrowOutFwd) {
@@ -583,6 +591,12 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
     void Game3D::movePiece(Piece* mv_piece, int to, int capture){
         int from = mv_piece->sqLoc;
 
+
+        if(to == this->OFF_BOARD){
+            std::cout << "ERROR: 'to' square cannot be OFF_BOARD : " << to<< std::endl;
+            return;
+        }
+
         if(from == to){
             std::cout << "INFO: moving piece on same square! 'from' equals 'to'" << std::endl;
             return;
@@ -602,6 +616,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         {
            std::cout << "ERROR: No piece model is found on the 'to' square '" << to <<"' but a capture move is received." << std::endl;
            //TOD0 - Throw an error for something is wrong!
+           return;
         }
 
         //if a piece model is found on the 'to' square but no capture move is received
@@ -610,6 +625,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         {
             std::cout << "ERROR: A piece model is found on the 'to' square '" << to <<"' but no capture move is received." << std::endl;
           //TOD0 - Throw an error for something is wrong!
+          return;
         }
 
         float speed = 3.0f;
@@ -627,25 +643,27 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                                         false//pingpong
                                     );
 
+
 		if (move_anim)
 		{
             mv_piece->sqLoc = to;
             this->squareList[from].piece = 0; // nullify the piece
             this->squareList[to].piece = mv_piece;
 			mv_piece->model->addAnimator(move_anim);
+
+			//TODO - Correctly place the piece in exact position after animation is finished
+
 			move_anim->drop();
+
 		}else{
 		    //Something went wrong!
 		    std::cout << "ERROR: Could not create move animator" << std::endl;
-
 		}
 
 		//a capture
 		if(cap_piece != 0 && (capture >= 0 || capture < this->SQ_COUNT))
         {
-
             const core::array<core::vector3df> cap_points = this->catmullRomControlPoints(cap_piece, this->OFF_BOARD);
-
             s32 cap_start_time = move_start_time;
 
             scene::ISceneNodeAnimator* cap_anim =
@@ -662,6 +680,8 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
             {
                 cap_piece->sqLoc = this->OFF_BOARD;
                 cap_piece->model->addAnimator(cap_anim);
+                //TODO - Correctly place the piece in exact position after animation is finished
+
                 cap_anim->drop();
             }else{
                 //Something went wrong!
@@ -685,6 +705,9 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         float dx = end.x - begin.x;
         float dz = end.z - begin.z;
         float distance = std::sqrt(std::pow(dx, 2) + std::pow(dz, 2));
+        if(dx < 0){
+            distance = -distance;//negate the distance
+        }
         float slope_angle = std::atan(dz/dx);//in radian
 
         //start point
@@ -746,7 +769,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         //this->pickedPiece.style.zIndex = 1000;
     };
 
-    void Game3D::clearHighlights(std::vector<int> sq_list){
+    void Game3D::clearHighlights(VectorInt sq_list){
         int len = sq_list.size();
         for(int i=0; i<len; i++){
             this->highlightSquare(sq_list[i], "");//remove the highlight
@@ -755,14 +778,24 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
     };
 
-    void Game3D::clearHighlightsLater(std::vector<int> sq_list, int millsec){
-        Task t;
+    void Game3D::clearHighlightsLater(VectorInt sq_list, int millsec){
+
+        Task<VectorInt> t;
         t.interval = millsec;
         t.time = this->device->getTimer()->getTime() + t.interval;
         t.repeat = false;
-        t.exec  = [&](){//lambda function
-            this->clearHighlights(sq_list);
+        t.param = sq_list; //pass as argument to the lambda instead
+
+        t.exec  = [&](VectorInt squares){//lambda function
+            //README: i observed that capturing vector in lamba function
+            //has pitfall - it causes std::bad_alloc error and crash the program
+            //so i resorted to passing the vector as argument to the lambda instead.
+
+            std::cout<<"sq_list.size() "<<squares.size()<<std::endl;
+
+            this->clearHighlights(squares);
         };
+
         this->tasks.push_back(t);
     };
 
@@ -781,7 +814,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
         if (this->pickedSquare != this->OFF_BOARD) {
 
-            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            VectorInt::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->pickedSquare);
             if (iter == this->captureSquareList.end()) {//not found
@@ -834,7 +867,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
                 if (moveResult.done || moveResult.error != "") {
                     this->pickedSquare = this->OFF_BOARD;
                     this->pickedPiece = 0;
-                    std::vector<int> capSqLst = this->captureSquareList; //ok
+                    VectorInt capSqLst = this->captureSquareList; //ok
                     this->captureSquareList.clear();
                     this->clearHighlightsLater(capSqLst, 1000);
                 }
@@ -892,7 +925,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         if (this->boardSq == this->pickedSquare) {
             if (this->hoverSquare != this->pickedSquare) {
 
-                std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+                VectorInt::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
                 if (iter == this->captureSquareList.end()) {//not found
@@ -904,7 +937,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
 
         if (this->hoverSquare != this->pickedSquare) {
-            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            VectorInt::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
             if (iter == this->captureSquareList.end()) {//not found
@@ -914,7 +947,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
 
 
         this->hoverSquare = this->boardSq;
-        std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+        VectorInt::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
         if (iter == this->captureSquareList.end()) {//not found
@@ -936,7 +969,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
         this->boardZ = this->OFF_BOARD;
         this->isTouchingBoard = false;
         if (this->hoverSquare != this->pickedSquare) {
-            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            VectorInt::iterator iter = std::find (this->captureSquareList.begin(),
                                                             this->captureSquareList.end(),
                                                             this->hoverSquare);
             if (iter == this->captureSquareList.end()) {//not found
@@ -1009,7 +1042,7 @@ void Game3D:: takeOffBoard(Piece* pce, bool is_animate) {
             this->boardCol = this->OFF_BOARD;
             this->boardSq = this->OFF_BOARD;
             //Clear highlighted squares
-            std::vector<int>::iterator iter = std::find (this->captureSquareList.begin(),
+            VectorInt::iterator iter = std::find (this->captureSquareList.begin(),
                                                         this->captureSquareList.end(),
                                                         this->hoverSquare);
             if (iter == this->captureSquareList.end()) {//not found
