@@ -610,7 +610,7 @@ Ns.game.AbstractBoard2D = {
                     this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture);
                 }
 
-                //nullify the picked square if move is moved or a move error occur
+                //nullify the picked square if move is completed or a move error occur
                 if (moveResult.done || moveResult.error) {
                     this.pickedSquare = null;
                     this.pickedPiece = null;

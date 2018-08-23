@@ -1380,7 +1380,7 @@ function draftFn(size) {
             if(p.sqLoc === this.OFF_BOARD){
                 continue;
             }
-            var sq = this.SqNumber[p.sqLoc].SAN;// convert Standard Numeric Notation 
+            var sq = this.SqNumber[p.sqLoc].SAN;// convert to Standard Algebraic Notation 
             sq = p.crowned ? ('K' + sq) : sq;
             if (p.white) {
                 wp += i < pces.length - 1 ? sq + ',' : sq;

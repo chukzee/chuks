@@ -97,8 +97,8 @@ Ns.game.three.Chess3D = {
 
         return cloned_model;
     },
-    
-    getPieceName: function(pce){
+
+    getPieceName: function (pce) {
 
         switch (pce.type) {
             case'k':
@@ -256,73 +256,73 @@ Ns.game.three.Chess3D = {
     },
     _determineCaptives: function (pieces, color) {
         var pce_arr = [];
-        
+
         var queen_count = 0,
-                king_count = 0,//not necessary anyway before king is never captured
+                king_count = 0, //not necessary anyway before king is never captured
                 rook_count = 0,
                 bishop_count = 0,
                 knight_count = 0,
                 pawn_count = 0,
                 promotion_count = 0;
-        
+
         for (var i = 0; i < pieces.length; i++) {
-            if(pieces[i].color !== color){
+            if (pieces[i].color !== color) {
                 continue;
             }
-            
-            if(pieces[i].type === 'k'){//not necessary anyway before king is never captured
+
+            if (pieces[i].type === 'k') {//not necessary anyway before king is never captured
                 king_count++;
             }
-            if(pieces[i].type === 'q'){
+            if (pieces[i].type === 'q') {
                 queen_count++;
             }
-            if(pieces[i].type === 'r'){
+            if (pieces[i].type === 'r') {
                 rook_count++;
             }
-            if(pieces[i].type === 'b'){
+            if (pieces[i].type === 'b') {
                 bishop_count++;
             }
-            if(pieces[i].type === 'n'){
+            if (pieces[i].type === 'n') {
                 knight_count++;
             }
-            if(pieces[i].type === 'p'){
+            if (pieces[i].type === 'p') {
                 pawn_count++;
             }
         }
-        
-        if(queen_count < 1){
-            this.pushPieces(pce_arr, {color: color, type: 'q'},  1 - queen_count);
-        }else if(queen_count > 1){//promotion detected
-            promotion_count += queen_count -1;
+
+        if (queen_count < 1) {
+            this.pushPieces(pce_arr, {color: color, type: 'q'}, 1 - queen_count);
+        } else if (queen_count > 1) {//promotion detected
+            promotion_count += queen_count - 1;
         }
 
-        if(rook_count < 2){
-            this.pushPieces(pce_arr, {color: color, type: 'r'},  2 - rook_count);
-        }else if(rook_count > 2){//promotion detected
+        if (rook_count < 2) {
+            this.pushPieces(pce_arr, {color: color, type: 'r'}, 2 - rook_count);
+        } else if (rook_count > 2) {//promotion detected
             promotion_count += rook_count - 2;
         }
 
-        if(bishop_count < 2){
-            this.pushPieces(pce_arr, {color: color, type: 'b'},  2 - bishop_count);
-        }else if(bishop_count > 2){//promotion detected
-             promotion_count += bishop_count - 2;
+        if (bishop_count < 2) {
+            this.pushPieces(pce_arr, {color: color, type: 'b'}, 2 - bishop_count);
+        } else if (bishop_count > 2) {//promotion detected
+            promotion_count += bishop_count - 2;
         }
-        
-        if(knight_count < 2){
-            this.pushPieces(pce_arr, {color: color, type: 'n'},  2 - knight_count);
-        }else if(knight_count > 2){//promotion detected
-             promotion_count += knight_count - 2;
+
+        if (knight_count < 2) {
+            this.pushPieces(pce_arr, {color: color, type: 'n'}, 2 - knight_count);
+        } else if (knight_count > 2) {//promotion detected
+            promotion_count += knight_count - 2;
         }
-        
-        if(pawn_count < 8 - promotion_count){
-            this.pushPieces(pce_arr, {color: color, type: 'p'},  8 - promotion_count - pawn_count);
+
+        if (pawn_count < 8 - promotion_count) {
+            this.pushPieces(pce_arr, {color: color, type: 'p'}, 8 - promotion_count - pawn_count);
         }
-        
+
         return pce_arr;
     },
 
     pushPieces: function (pce_arr, pce, count) {
-        for(var i=0; i< count; i++){
+        for (var i = 0; i < count; i++) {
             pce_arr.push(pce);
         }
     },
@@ -335,5 +335,29 @@ Ns.game.three.Chess3D = {
         var from_rank = from.charAt(1);
         var en_pass_cap_sq = to_col + from_rank;
         return en_pass_cap_sq;
+    },
+
+    animate: function () {
+        var me = Ns.game.three.Chess3D;
+        requestAnimationFrame(me.animate);
+
+        me.render();
+
+    },
+
+    render: function () {
+
+        var delta = this.clock.getDelta();
+
+        if (this.animationMixer) {
+
+            this.animationMixer.update(delta);
+
+        }
+
+        this.renderer.render(this.scene, this.camera);
+
+        this.stats.update();
+
     }
 };

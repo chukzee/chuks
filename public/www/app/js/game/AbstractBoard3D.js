@@ -22,7 +22,9 @@ Ns.game.AbstractBoard3D = {
     spotLight: null, //adjustable in user settings
     ambientLight: null,
     raycaster: new THREE.Raycaster(),
-
+    animationMixer: null,
+    clock: null,
+    stats: null,
     /**
      * Loads and sets up the game on the specified contaner using
      * the provided game position. If the game position is not provided
@@ -268,13 +270,14 @@ Ns.game.AbstractBoard3D = {
                 me.takeOffBoard(model, false);
             }
 
-            me.scene.add(model);
+            me.scene.add(model); //uncomment later
             me.gamePieceModels.push(model);
             count++;
             if (count === this.total) {
                 me.renderer.render(me.scene, me.camera);
 
                 console.log('all pieces loaded - ' + count);
+                //me.animate(); //TESING!!! ABEG O!!!!!!!!
             }
 
         };
@@ -545,6 +548,13 @@ Ns.game.AbstractBoard3D = {
         };
 
         container.appendChild(this.renderer.domElement);
+
+        this.stats = new Stats();//TESTING!!!
+        document.body.appendChild(this.stats.dom);//TESTING!!!
+        
+        //
+
+        this.clock = new THREE.Clock();
         var bound = container.getBoundingClientRect();
 
         this.renderer.setSize(bound.width, bound.height);
@@ -1047,12 +1057,12 @@ Ns.game.AbstractBoard3D = {
     testAnim: function (model) {
         var mesh;
         model.children.forEach(function (child) {
-                //console.log(child);
-                if (child instanceof THREE.Mesh) {
-                    mesh = child;
-                }
-            });
-            
+            //console.log(child);
+            if (child instanceof THREE.Mesh) {
+                mesh = child;
+            }
+        });
+
         var shakeScale = 1.2;
         var duration = 30;
         var times = [], values = [], tmp = new THREE.Vector3();
@@ -1072,34 +1082,24 @@ Ns.game.AbstractBoard3D = {
 
         var track = new THREE.VectorKeyframeTrack(trackName, [0, 3], [0, 0, 0, 0, 10, 50]);
 
-        var clip = new THREE.AnimationClip(null, -1, [track]);
-        var mixer = new THREE.AnimationMixer(mesh);
+        var clip = new THREE.AnimationClip('ChukClip', duration, [track]);
+        this.animationMixer = new THREE.AnimationMixer(mesh);
 
-        var action = mixer.clipAction(clip);
+        var action = this.animationMixer.clipAction(clip);
         action.setLoop(THREE.LoopOnce);
         action.startAt(0);                // delay in seconds
         action.clampWhenFinished = true;
         action.play();
-        
-        
+
+
         /*mesh.position.x = 0;
-        mesh.position.y = 0;
-        mesh.position.z = 1.6;
-        
-        this.renderer.render(this.scene, this.camera);*/
+         mesh.position.y = 0;
+         mesh.position.z = 1.6;
+         
+         this.renderer.render(this.scene, this.camera);*/
         //if(!this.runRender){
         //this.runRender = true;
         //this.render();
-        //}
-    },
-    render: function () {//to be implemented in subclass
-        //if (this.runRender) {
-        console.log('requestAnimationFrame');
-        var me = Ns.game.three.Chess3D;
-        me.renderer.render(me.scene, me.camera);
-        requestAnimationFrame(me.render);
-
-
         //}
     }
 
