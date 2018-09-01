@@ -503,8 +503,8 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            var url = 'device/' + Main.device.getCategory() + '/' + Ns.GameHome.GAME_VIEW_HTML;
-            Main.ajax.get(url,
+            
+            Main.ajax.get(Main.intentUrl(Ns.GameHome.GAME_VIEW_HTML),
                     function (res) {
                         Ns.ui.UI.gameViewHtml = res;
                         if (fn) {
@@ -527,8 +527,8 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            var url = 'device/' + Main.device.getCategory() + '/' + Ns.GameHome.GAME_VIEW_B_HTML;
-            Main.ajax.get(url,
+            
+            Main.ajax.get(Main.intentUrl(Ns.GameHome.GAME_VIEW_B_HTML),
                     function (res) {
                         Ns.ui.UI.gameViewBHtml = res;
                         if (fn) {
@@ -551,8 +551,8 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            var url = 'device/' + Main.device.getCategory() + '/' + Ns.GameHome.GAME_WATCH_HTML;
-            Main.ajax.get(url,
+            
+            Main.ajax.get(Main.intentUrl(Ns.GameHome.GAME_WATCH_HTML),
                     function (res) {
                         Ns.ui.UI.gameWatchHtml = res;
                         if (fn) {

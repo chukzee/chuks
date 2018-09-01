@@ -3013,7 +3013,11 @@ var Main = {};
     Main.tpl = new Tpl();
     Main.task = new Task();
     Main.countdown = new Countdown();
-
+    
+    Main.intentUrl = function(url){
+            return intentUrl(url);
+    };
+    
     function Countdown() {
         var fn_list = [];
         var interval_list = [];
@@ -3269,6 +3273,7 @@ var Main = {};
 
         return path;
     }
+
 
     Main.const = {
         Z_INDEX: 10000,

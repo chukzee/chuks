@@ -287,7 +287,8 @@ Ns.ui.UI = {
         if (Ns.ui._views_list[file]) {
             return callback(null, Ns.ui._views_list[file]);// node style
         }
-        Main.ajax.get('device/' + Main.device.getCategory() + '/' + file,
+        
+        Main.ajax.get(Main.intentUrl(file),
                 function (html) {
                     Ns.ui._views_list[file] = html;
                     callback(null, html);// node style
