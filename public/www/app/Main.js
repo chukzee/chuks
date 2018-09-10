@@ -891,6 +891,9 @@ var Main = {};
                                     var promiseFn = function () {
                                         this._getFn;
                                         this._errFn;
+                                        this._beforeFn;
+                                        this._afterFn;
+                                        var _busy_obj = null; //yes
                                         var me = this;
                                         this.get = function (fn) {
                                             this._getFn = fn;
@@ -899,6 +902,25 @@ var Main = {};
                                         this.error = function (fn) {
                                             this._errFn = fn;
                                             return me;
+                                        };
+                                        this.before = function (fn) {
+                                            this._beforeFn = fn;
+                                            return me;
+                                        };
+                                        this.after = function (fn) {
+                                            this._afterFn = fn;
+                                            return me;
+                                        };
+                                        this.busy = function (obj) {
+                                            var o = obj || {};
+                                            if (!o.el) {
+                                                o.el = document.body;
+                                            }
+                                            _busy_obj = o;
+                                            return me;
+                                        };
+                                        this._getBusyObj = function () {
+                                            return _busy_obj;
                                         };
                                         return this;
                                     };
@@ -920,23 +942,55 @@ var Main = {};
                                         var method = this.method;
                                         var promise = this.promiseFn();
                                         var argu = arguments;
+                                        //run asynchronously to ensure promise is created
+                                        window.setTimeout(doRemoteMethod, 0);
 
-                                        Main.rcall.exec({
+                                        function doRemoteMethod() {
+                                            try {
+                                                if (Main.util.isFunc(promise._beforeFn)) {
+                                                    promise._beforeFn();
+                                                }
+                                            } catch (e) {
+                                                console.log(e);
+                                            }
+
+                                            if (promise._getBusyObj()) {
+                                                //show busy
+                                                Main.busy.show(promise._getBusyObj());
+                                            }
+                                            
+                                            Main.rcall.exec({
                                             class: className,
                                             method: method,
                                             param: argu,
                                             callback: function (reponse) {
-                                                if (reponse.success) {
-                                                    if (Main.util.isFunc(promise._getFn)) {
-                                                        promise._getFn(reponse.data);
+                                                try {
+                                                    if (reponse.success) {
+                                                        if (Main.util.isFunc(promise._getFn)) {
+                                                            promise._getFn(reponse.data);
+                                                        }
+                                                    } else {
+                                                        if (Main.util.isFunc(promise._errFn)) {
+                                                            promise._errFn(reponse.data);
+                                                        }
                                                     }
-                                                } else {
-                                                    if (Main.util.isFunc(promise._errFn)) {
-                                                        promise._errFn(reponse.data);
-                                                    }
+                                                } catch (e) {
+                                                    console.log(e);
+                                                }
+
+                                                if (promise._getBusyObj()) {
+                                                    //hide busy
+                                                    Main.busy.hide();
+                                                }
+
+                                                if (Main.util.isFunc(promise._afterFn)) {
+                                                    promise._afterFn();
                                                 }
                                             }
                                         });
+                                        }
+
+                                        
 
                                         return promise;
                                     }
@@ -2542,6 +2596,7 @@ var Main = {};
          * <br>
          * obj = { <br>
          *                 el : ...., //container element <br>
+         *        background  : ....,//background 
          *  defaultText [opt] : ...., //whether to display default text - true or false<br>
          *         text [opt] : ...., //text used to replace the default text <br>
          *         html [opt] : ...., //alternative html  <br>
@@ -2565,8 +2620,11 @@ var Main = {};
             busyEl.style.left = '0';
             busyEl.style.width = '100%';
             busyEl.style.height = '100%';
-            busyEl.style.background = 'transparent';
             busyEl.style.zIndex = Main.const.Z_INDEX;//come back
+            busyEl.style.background = 'rgba(0,0,0,0.3)';
+            busyEl.style.color = obj.color ? obj.color  : '#000000';
+            
+            
 
         };
 
@@ -3013,11 +3071,11 @@ var Main = {};
     Main.tpl = new Tpl();
     Main.task = new Task();
     Main.countdown = new Countdown();
-    
-    Main.intentUrl = function(url){
-            return intentUrl(url);
+
+    Main.intentUrl = function (url) {
+        return intentUrl(url);
     };
-    
+
     function Countdown() {
         var fn_list = [];
         var interval_list = [];
@@ -5073,7 +5131,7 @@ var Main = {};
                             var file_name = _nsFiles[n];// + 1 means including the dot after the global name space
                             var regex = /\//g; //regex to match all back slash
                             cls_name = appNamespace + '.' + file_name.replace(regex, '.');
-                            
+
                             cls_list[cls_name] = clazzObj;
                         }
 
@@ -5090,7 +5148,7 @@ var Main = {};
                             }
                             doExtend(clsObj, superClsObj, name);
 
-                            if(name==='Ns.game.two.Chess2D'){//TESTING!!!
+                            if (name === 'Ns.game.two.Chess2D') {//TESTING!!!
                                 console.dir(clsObj);
                             }
 

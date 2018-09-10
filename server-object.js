@@ -14,14 +14,18 @@ var unique_count = 0;
 class ServerObject {
 
     constructor(db, redis, evt, config, appLoader) {
-
-        mgcol = mgcol.init(db);
-        this._col = mgcol.geCollections();
-
-        this._config = config;
         this._db = db;
+        
+        //console.log('this.KICKOFF_TIME_REMINDER', this.KICKOFF_TIME_REMINDER);
+        
+        this._config = config;
+        
         this._redis = redis;
         this._game = game;
+        
+        
+        mgcol = mgcol.init(this);
+        this._col = mgcol.geCollections();
         
         //for every startup a unique number is initialized
         initial_unique = crypto.randomBytes(48)//secure random number
@@ -148,6 +152,10 @@ class ServerObject {
 
     get GAME_MAX_WAIT_IN_SEC() {//in seconds
         return 300;// 5 minutes
+    }
+
+    get KICKOFF_TIME_REMINDER() {//in seconds
+        return 600;// 10 minutes
     }
 
     set isShuttingDown(b) {

@@ -66,7 +66,7 @@ class Spectator extends WebApplication {
 
             await sc.insertOne({
                 game_id: game_id,
-                game_start_time: game_start_time,
+                game_start_time: new Date(game_start_time),
                 user_id: user_id,
                 first_name: user.first_name,
                 last_name: user.last_name,

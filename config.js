@@ -48,6 +48,12 @@ module.exports = {
      * @type Number
      */
     MAX_SESSION_PER_SAME_USERNAME: 10,
+    
+    /**
+     * 
+     */
+    
+    
 };
 
 

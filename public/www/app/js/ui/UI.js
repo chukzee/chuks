@@ -320,7 +320,7 @@ Ns.ui.UI = {
 
                 }
                 break;
-            case 'Play notifications':
+            case 'Notifications':
                 Ns.GameHome.showPlayNotifications();
                 break;
             case 'Play robot':

@@ -18,87 +18,86 @@ and open the template in the editor.
     </head>
     <body>
 
-        <div class="game9ja-main">
 
-            <div class="game9ja-play-notifications-header">
-                <div>
-                    <span>Play Notifications</span>
-
-                </div>
-                <span><span id="game-play-notifications-count">5</span> player(s) waiting.</span>
-                <i id="game-play-notifications-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
-                <i id="game-play-notifications-search" class="fa fa-search game9ja-header-item-right-a"></i>
-                <i id="game-play-notifications-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
+        <div class="game9ja-play-notifications-header">
+            <div>
+                <span>Play Notifications</span>
             </div>
-            <div class="game9ja-tab">
-                <div class="game9ja-tab-header">
-                    <button id="game-home-my-contacts-matches" class="game9ja-tab-active" >
-                        Contact
-                        <span class="game9ja-unseen"></span>
-                    </button>
-                    <button  id="game-home-my-group-matches">
-                        Group
-                        <span class="game9ja-unseen"></span>
-                    </button>
-                    <button  id="game-home-tournaments-matches">
-                        Tournament
-                        <span class="game9ja-unseen"></span>
-                    </button>
-                </div>
-
-                <div class="game9ja-tab-body">
-                    <div id="contact-notification-games" style="display: block;">
-                        
-                        <ul class="game9ja-user-show-list">
-
-                            <li><img  src="../app/images/default_group.png" alt=" "/></li>
-                            <li>
-                                Chuks Alimele
-                            </li>
-                            <li>
-                                07083924582
-                            </li>
-
-                            <li>
-                                <input type="button" value="Start Game"/>
-                            </li>
-                            <li>
-                                Today, 10:34
-                            </li>
-                        </ul>
-                        
-                        <ul class="game9ja-user-show-list">
-
-                            <li><img  src="../app/images/default_group.png" alt=" "/></li>
-                            <li>
-                                Chuks Alimele
-                            </li>
-                            <li>
-                                07083924582
-                            </li>
-
-                            <li>
-                                <input type="button" value="Start Game"/>
-                            </li>
-                            <li>
-                                Today, 10:34
-                            </li>
-                        </ul>
+            <span>
+                <span id="game-play-notifications-upcoming">
+                    <span><span id="game-play-notifications-upcoming-count">1</span>
+                    <span id="game-play-notifications-upcoming-text">upcoming match.</span></span>
+                </span>
+                <span id="game-play-notifications-play-request">
+                    <span id="game-play-notifications-play-request-count">5</span>
+                    <span id="game-play-notifications-play-request-text">player(s) waiting.</span> 
+                </span>
+            </span>
+            
+            <i id="game-play-notifications-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
+            <i id="game-play-notifications-search" class="fa fa-search game9ja-header-item-right-a"></i>
+            <i id="game-play-notifications-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
+        </div>
 
 
-                    </div>
+        <div class="game9ja-play-notifications-body">
+            <ul class="game9ja-user-show-list">
 
-                    <div id="group-notification-games" style="background: blue;">
+                <li><img  src="../app/images/default_group.png" alt=" "/></li>
+                <li>
+                    Chuks Alimele
+                </li>
+                <li>
+                    07083924582
+                </li>
 
-                    </div>
+                <li>
+                    <input type="button" value="Start Game"/>
+                </li>
+                <li>
+                    
+                </li>
+            </ul>
 
-                    <div id="tournament-notification-games" style="background: green;">
+            <ul class="game9ja-user-show-list">
 
-                    </div>
-                </div>                    
-            </div>
+                <li><img  src="../app/images/default_group.png" alt=" "/></li>
+                <li>
+                    Chuks Alimele
+                </li>
+                <li>
+                    Great Chess Players
+                </li>
+
+                <li>
+                    <input type="button" value="Start Game"/>
+                </li>
+                <li>
+                    
+                </li>
+            </ul>
+
+
+            <ul class="game9ja-user-show-list">
+
+                <li><img  src="../app/images/default_group.png" alt=" "/></li>
+                <li>
+                    Chuks Alimele
+                </li>
+                <li>
+                    Asaba Chess tournamentss
+                </li>
+
+                <li>
+                    <input  class="game9ja-kickoff" type="button" value="Kickoffs 12:00PM"/>
+                </li>
+                <li>
+                    Upcoming tournament match
+                </li>
+            </ul>
 
         </div>
+
 
 
 

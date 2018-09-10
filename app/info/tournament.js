@@ -9,6 +9,71 @@ class Tournament extends WebApplication {
     constructor(sObj, util, evt) {
         super(sObj, util, evt);
     }
+    /**
+     * Get a list of up coming matces
+     * 
+     * @param {type} user_id
+     * @param {type} game_name
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {undefined}
+     */
+    async getUpcomingMatches(user_id, game_name, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            game_name = arguments[0].game_name;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.upcoming_matches);
+
+
+        var query = {
+            $and: [
+                {
+                    game_name: game_name,
+                    'players.user_id': user_id
+                }
+            ]
+        };
+
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: total,
+            upcoming_matches: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+
+        data.upcoming_matches = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
+
+        return data;
+    }
 
     _isTournamentOfficial(tourn, user_id) {
         if (Array.isArray(tourn.officials)) {
@@ -905,12 +970,12 @@ class Tournament extends WebApplication {
             return this.error(`Kickoff time, ${begin_time} must be at least at or after the current season start time which is ${season_start_time}`);
         }
 
-        var _10_mins = 10 * 60 * 1000;
+        var _reminder_mins = this.sObj.KICKOFF_TIME_REMINDER;
 
 
         if (true) {//TESTING! REMOVE THIS 'IF' BLOCK LATER ABEG O!!!
             console.log('TESTING! REMOVE LATER ABEG O!!!');
-            _10_mins = 10 * 1000; //TESTING! REMOVE LATER ABEG O!!!
+            _reminder_mins = 10 * 1000; //TESTING! REMOVE LATER ABEG O!!!
         }
 
         //find the match fixture with the give game id
@@ -988,7 +1053,7 @@ class Tournament extends WebApplication {
                         var time_remain = new Date(match_fixture.start_time).getTime() - nowTime;
                         if (time_remain <= 0) {
                             return this.error(`Cannot modify kickoff time of a match already started at ${match_fixture.start_time}.`);
-                        } else if (time_remain <= _10_mins) {
+                        } else if (time_remain <= _reminder_mins) {
                             var time_span = time_remain >= 60000 ? Math.round(time_remain / 60000) : Math.round(time_remain / 1000); //in minutes and seconds
                             var tm_str = time_remain >= 60000 ? (time_span > 1 ? 'minutes' : 'minute') : (time_span > 1 ? 'seconds' : 'second');
                             return this.error(`Cannot modify kickoff time of a match set to begin in about ${time_span} ${tm_str} time at ${match_fixture.start_time}.`);
@@ -1126,7 +1191,7 @@ class Tournament extends WebApplication {
         var k_time = new Date(kickoff_time).getTime();
         var now = new Date().getTime();
 
-        var delay = k_time - now - _10_mins;
+        var delay = k_time - now - _reminder_mins;
 
         this.sObj.task.later(delay, 'info/Tournament/_notifyUpcomingMatch', game_id);//will send match reminder to the players
 
@@ -1850,45 +1915,45 @@ class Tournament extends WebApplication {
         if (!seasons || !seasons.length) {
             return this.sObj.DEFAULT_RATING;
         }
-        
+
         //find seasons with all slots filled and not cancelled
         var valid_season;
         var players_ids = [];
-        for(var i=0; i<seasons.length; i++){
+        for (var i = 0; i < seasons.length; i++) {
             var filled = true;
             players_ids = [];
-            for(var k=0; k<seasons[i].slots.length; k++){
-                if(!seasons[i].slots[k].player_id){
+            for (var k = 0; k < seasons[i].slots.length; k++) {
+                if (!seasons[i].slots[k].player_id) {
                     filled = false;
                     break;
                 }
                 players_ids.push(seasons[i].slots[k].player_id);
             }
-            
-            if(filled &&  seasons[i].status !== 'cancel'){
+
+            if (filled && seasons[i].status !== 'cancel') {
                 valid_season = seasons[i];
             }
-            
+
         }
-        
+
         if (!valid_season) {
             return this.sObj.DEFAULT_RATING;
         }
-        
+
         //at this piont we have a valid season
-        
+
         var user = new User(this.sObj, this.util, this.evt);
 
         var required_fields = ['rating'];
-        var players_ratings = await user.getInfoList(players_ids, required_fields);   
-        
+        var players_ratings = await user.getInfoList(players_ids, required_fields);
+
         var avg = this.sObj.DEFAULT_RATING;//default just in case players_ratings is empty
         var sum;
-        for(var i=0; i < players_ratings.length; i++){
+        for (var i = 0; i < players_ratings.length; i++) {
             sum += players_ratings[i].rating;
-            avg = sum/players_ratings.length;
+            avg = sum / players_ratings.length;
         }
-        
+
         return avg;
     }
 
@@ -2007,13 +2072,25 @@ class Tournament extends WebApplication {
                         return; //match fixture no longer exist!
                     }
 
+                    match.reminder_time = new Date();
+                    
+                    //store the upcoming match
+                    var ccm = this.sObj.db.collection(this.sObj.col.upcoming_matches);
+                    ccm.insertOne(match)
+                            .then(function (result) {
+                                //DO NOTHING
+                            })
+                            .catch(function (err) {
+                                console.log(err); //DO NOT DO THIS IN PRODUCTION. INSTEAD LOG TO ANOTHER PROCCESS
+                            });                    
+
                     //notify the players of their upcoming match
                     var players_ids = [];
                     players_ids.push(match.players[0].user_id);
                     players_ids.push(match.players[1].user_id);
 
-                    var _10_mins = 10 * 60 * 1000;
-                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids, true, _10_mins);
+                    var _mins = me.sObj.KICKOFF_TIME_REMINDER * 1000;
+                    me.broadcast(me.evt.notify_upcoming_match, match, players_ids, true, _mins);
 
                 })
                 .catch(function (err) {
@@ -2094,7 +2171,7 @@ class Tournament extends WebApplication {
             }
 
             //rating is not included because it changes
-            var required_fields = ['user_id',  'first_name', 'last_name', 'email', 'photo_url'];
+            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
             var officialInfo = await user.getInfo(user_id, required_fields);
 

@@ -10,6 +10,72 @@ class PlayRequest extends WebApplication {
         super(sObj, util, evt);
     }
     /**
+     * Get a list of play requests
+     * 
+     * @param {type} user_id
+     * @param {type} game_name
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {undefined}
+     */
+    async get(user_id, game_name, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            game_name = arguments[0].game_name;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.play_requests);
+        
+        
+        var query = {
+                $and: [
+                    {
+                        game_name: game_name,
+                        'players.user_id': user_id
+                    }
+                ]
+            };
+
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: total,
+            play_requests: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+
+        data.play_requests = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
+
+        return data;
+    }
+    
+    /**
      * 
      * @param {type} initiator_id - id of user who made the request
      * @param {type} opponent_ids - id of the user or users requested. Can be
@@ -17,7 +83,7 @@ class PlayRequest extends WebApplication {
      * @param {type} game_name - the name of the game e.g chess, draft , ludo e.t.c
      * @param {type} rules - (optional) the rules to apply in the game. If not provided
      *  then the default game rules is used when the game starts
-     * @param {type} group_name - the name of the user's group he selected
+     * @param {type} group_name - the name of the user's group where he selected
      * a player to play with. The client should set this value to the group
      * name if the user picks a player in his group profile page to play with.
      * @param {type} sets_count - number of games to play to make a complete match

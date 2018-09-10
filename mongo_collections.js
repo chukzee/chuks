@@ -8,7 +8,8 @@ var collections = ['users',
     'matches', //store only live and paused matches
     'match_fixtures', //stores matches schedules to begin in specified time - usually in tournaments - but can be done by group member too
     'match_history', //store abandon , cancelled and finnished match
-    'play_requests', //stores play requests - this expires after certain period of time
+    'play_requests', //stores play requests - this expires after certain period of time. See 'play-request.js' where it is epired (deleted) 
+    'upcoming_matches',//stores upcomming tournament matches - expires when the match starts - so create an index to take care of that
     'spectators', //expires every certain period - say 24 hours - so create an index to take care of that
     'comments', //
     'chats',
@@ -21,7 +22,8 @@ var collections = ['users',
 module.exports = function () {
     var col = {};
 
-    var ensureIndexes = function (db) {
+    var ensureIndexes = function (sObj) {
+        var db = sObj.db;
         var uinqueObj = {unique: true};
         var callback = function (err, result) {
             if (err) {
@@ -156,6 +158,20 @@ module.exports = function () {
         }
         , callback);
         
+        //upcoming_matches
+        db.collection(col.upcoming_matches).ensureIndex({
+           reminder_time: 1 //this will be be used to expire the document
+        }
+        , {expireAfterSeconds: sObj.KICKOFF_TIME_REMINDER}, callback);
+
+
+        db.collection(col.upcoming_matches).ensureIndex({
+            game_name: 1,
+            'players.user_id': 1
+        }
+        , callback);
+        
+                
         //wdl - wins, draws, losses
         db.collection(col.wdl).ensureIndex({
             'first.player_id': 1,
@@ -165,13 +181,13 @@ module.exports = function () {
 
     };
 
-    this.init = function (db) {
+    this.init = function (sObj) {
         for (var i = 0; i < collections.length; i++) {
             var prop = collections[i];
             col[prop] = prop;
         }
 
-        ensureIndexes(db);
+        ensureIndexes(sObj);
         return this;
     };
 

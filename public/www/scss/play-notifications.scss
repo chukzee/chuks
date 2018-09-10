@@ -14,15 +14,40 @@ and open the template in the editor.
 
 .game9ja-play-notifications-header{
     @extend .game9ja-header;
-    > :nth-child(1){
-        > :nth-child(1){
-            font-size : 20px !important;
-        }
+
+    > :nth-child(1){ /*holding title*/
+        margin: 0 auto; // try centering it
+        width: 200px;     
+        height:  100%;
+        padding: 5px;
+        font-size: 18px;
+        text-align: center;
+        @include box-sizing(border-box);
+
     }
-    > :nth-child(2){
+
+    > :nth-child(2) {
+        position: absolute;
+        bottom: $base_padding;
+        left: $base_padding;
         color: #ccc !important;
-        font-size: 11px;
+        font-size: 12px;
         font-style: italic;
     }
+    
+}
+.game9ja-play-notifications-body{
+    position: absolute;
+    top :$header_height;
+    left:0;
+    width: 100%;
+
+}
+
+.game9ja-kickoff {
+    background: transparent !important;
+    font-size: 11px !important;
+    border: 1px #00ff00 solid !important;
+    color:  #aaa !important;
 }
 

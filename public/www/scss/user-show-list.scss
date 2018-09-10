@@ -58,17 +58,20 @@ $profile_img_size : $list_item_height - 2 * $hgap;
 
     > :nth-child(3){/*phone number*/
         @extend :nth-child(2);
+        width: $label_width * 1.25;
         top: 30px;
         font-size: 12px;
         color: #888;
+        //background: red;
     }
 
 
     > :nth-child(4) > input{/*Lets play button*/
         position: absolute;
-        top: $list_item_height/ 3;
+        top: $list_item_height/ 2.5;
         right:  $hgap;
         width: $label_width;
+        font-size: 12px;
         height: 30px;
         background: #00aa00;//fallback
         background: linear-gradient(#00bb00, #00aa00);
