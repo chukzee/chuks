@@ -15,6 +15,7 @@ and open the template in the editor.
         <link rel="stylesheet" href="../app/css/play-notifications.css" />
         <link rel="stylesheet" href="../app/css/user-show-list.css" />
         <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+        <script src="../lib/jquery-1.10.2.min.js" type="text/javascript"></script>
     </head>
     <body>
 
@@ -26,14 +27,14 @@ and open the template in the editor.
             <span>
                 <span id="game-play-notifications-upcoming">
                     <span><span id="game-play-notifications-upcoming-count">1</span>
-                    <span id="game-play-notifications-upcoming-text">upcoming match.</span></span>
+                        <span id="game-play-notifications-upcoming-text">upcoming match.</span></span>
                 </span>
                 <span id="game-play-notifications-play-request">
                     <span id="game-play-notifications-play-request-count">5</span>
                     <span id="game-play-notifications-play-request-text">player(s) waiting.</span> 
                 </span>
             </span>
-            
+
             <i id="game-play-notifications-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
             <i id="game-play-notifications-search" class="fa fa-search game9ja-header-item-right-a"></i>
             <i id="game-play-notifications-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
@@ -41,6 +42,7 @@ and open the template in the editor.
 
 
         <div class="game9ja-play-notifications-body">
+            <input type="button" value="MY BUTTON" id="test" onclick="clickDisable()"/>
             <ul class="game9ja-user-show-list">
 
                 <li><img  src="../app/images/default_group.png" alt=" "/></li>
@@ -55,7 +57,7 @@ and open the template in the editor.
                     <input type="button" value="Start Game"/>
                 </li>
                 <li>
-                    
+
                 </li>
             </ul>
 
@@ -73,7 +75,7 @@ and open the template in the editor.
                     <input type="button" value="Start Game"/>
                 </li>
                 <li>
-                    
+
                 </li>
             </ul>
 
@@ -99,6 +101,36 @@ and open the template in the editor.
         </div>
 
 
+        <script>
+            function clickDisable() {
+                show('This is the toast');
+            }
+            var Main ={
+                        const: {
+                            Z_INDEX: 10000
+                        }
+                    };
+            var show = function (text) {
+
+                var base = document.createElement('div');
+                base.style.zIndex = Main.const.Z_INDEX;
+                base.className = 'game9ja-toast';
+                base.innerHTML = text;
+                base.style.display = 'none';
+                document.body.appendChild(base);
+
+                $(base).stop()
+                        .fadeIn(400)
+                        .delay(3000)
+                        .fadeOut(400, function () {
+                            document.body.removeChild(base);
+                            alert('removed');
+                        });
+
+
+
+            };
+        </script>
 
 
     </body>

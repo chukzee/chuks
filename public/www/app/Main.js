@@ -958,39 +958,39 @@ var Main = {};
                                                 //show busy
                                                 Main.busy.show(promise._getBusyObj());
                                             }
-                                            
+
                                             Main.rcall.exec({
-                                            class: className,
-                                            method: method,
-                                            param: argu,
-                                            callback: function (reponse) {
-                                                try {
-                                                    if (reponse.success) {
-                                                        if (Main.util.isFunc(promise._getFn)) {
-                                                            promise._getFn(reponse.data);
+                                                class: className,
+                                                method: method,
+                                                param: argu,
+                                                callback: function (reponse) {
+                                                    try {
+                                                        if (reponse.success) {
+                                                            if (Main.util.isFunc(promise._getFn)) {
+                                                                promise._getFn(reponse.data);
+                                                            }
+                                                        } else {
+                                                            if (Main.util.isFunc(promise._errFn)) {
+                                                                promise._errFn(reponse.data);
+                                                            }
                                                         }
-                                                    } else {
-                                                        if (Main.util.isFunc(promise._errFn)) {
-                                                            promise._errFn(reponse.data);
-                                                        }
+                                                    } catch (e) {
+                                                        console.log(e);
                                                     }
-                                                } catch (e) {
-                                                    console.log(e);
-                                                }
 
-                                                if (promise._getBusyObj()) {
-                                                    //hide busy
-                                                    Main.busy.hide();
-                                                }
+                                                    if (promise._getBusyObj()) {
+                                                        //hide busy
+                                                        Main.busy.hide();
+                                                    }
 
-                                                if (Main.util.isFunc(promise._afterFn)) {
-                                                    promise._afterFn();
+                                                    if (Main.util.isFunc(promise._afterFn)) {
+                                                        promise._afterFn();
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
                                         }
 
-                                        
+
 
                                         return promise;
                                     }
@@ -2622,9 +2622,9 @@ var Main = {};
             busyEl.style.height = '100%';
             busyEl.style.zIndex = Main.const.Z_INDEX;//come back
             busyEl.style.background = 'rgba(0,0,0,0.3)';
-            busyEl.style.color = obj.color ? obj.color  : '#000000';
-            
-            
+            busyEl.style.color = obj.color ? obj.color : '#000000';
+
+
 
         };
 
@@ -3067,6 +3067,7 @@ var Main = {};
     Main.dom = new Dom();
     Main.menu = new Menu();
     Main.dialog = new Dialog();
+    Main.toast = new Toast();
     Main.card = new Card();
     Main.tpl = new Tpl();
     Main.task = new Task();
@@ -3446,6 +3447,27 @@ var Main = {};
         });
     };
 
+    function Toast() {
+
+        this.show = function (text) {
+
+                var toast_el = document.createElement('div');
+                toast_el.style.zIndex = Main.const.Z_INDEX;
+                toast_el.className = 'game9ja-toast';
+                toast_el.innerHTML = text;
+                toast_el.style.display = 'none';
+                document.body.appendChild(toast_el);
+
+                $(toast_el).stop()
+                        .fadeIn(400)
+                        .delay(3000)
+                        .fadeOut(400, function () {
+                            document.body.removeChild(toast_el);
+                        });
+
+        };
+    }
+
     function Dialog() {
 
         function diagThis(param) {
@@ -3456,6 +3478,8 @@ var Main = {};
                     setBodyContent = param.setBodyContent,
                     getDialogContentEl = param.getDialogContentEl,
                     getDialogBodyEl = param.getDialogBodyEl,
+                    getDialogFooterEL = param.getDialogFooterEL,
+                    dialogButtonsCreate = param.dialogButtonsCreate,
                     clearSavedlayouts = param.clearSavedlayouts,
                     resizeListenBind = param.resizeListenBind,
                     touchCloseFn = param.touchCloseFn,
@@ -3467,6 +3491,88 @@ var Main = {};
                     btns[index].value = text;
                 }
             };
+
+            /**
+             * create new sets of buttons. 
+             * 
+             * passing the buttons texts as parameters
+             * 
+             * @param {type} param
+             * @returns {undefined}
+             */
+            this.createButtons = function (param) {
+                var p = arguments;
+                if (arguments.length === 1 && Main.util.isArray(param) && param.length > 0) {
+                    p = param;
+                }
+                dialogButtonsCreate(p);
+
+            };
+
+            /**
+             * Disable buttons. 
+             * 
+             * passing the buttons index as parameters.
+             * If no parameter is passed then all buttons are diabled
+             * 
+             * @param {type} param
+             * @returns {undefined}
+             */
+            this.disableButtons = function (param) {
+                var p = arguments;
+                if (arguments.length === 1 && Main.util.isArray(param) && param.length > 0) {
+                    p = param;
+                }
+                enableBtns(p, false);
+            };
+
+            /**
+             * Enable buttons. 
+             * 
+             * passing the buttons index as parameters.
+             * If no parameter is passed then all buttons are enabled
+             * 
+             * @param {type} param
+             * @returns {undefined}
+             */
+            this.enableButtons = function (param) {
+                var p = arguments;
+                if (arguments.length === 1 && Main.util.isArray(param) && param.length > 0) {
+                    p = param;
+                }
+                enableBtns(p, true);
+            };
+
+            function enableBtns(param, enable) {
+
+                var footer = getDialogFooterEL();
+                var btns = [];
+                for (var i = 0; i < footer.children.length; i++) {
+                    if (footer.children[i].type === 'button') {
+                        btns.push(footer.children[i]);
+                    }
+                }
+                var p_btns = [];
+                if (param.length > 0) {
+                    for (var i = 0; i < param.length; i++) {
+                        if (typeof param[i] === 'number' && param[i] > -1 && param[i] < btns.length) {
+                            p_btns.push(btns[param[i]]);
+                        }
+                    }
+                } else {
+                    p_btns = btns;
+                }
+
+                for (var i = 0; i < p_btns.length; i++) {
+                    if (enable) {
+                        p_btns[i].removeAttribute('disabled');
+                    } else {
+                        p_btns[i].disabled = true;
+                    }
+
+                }
+
+            }
 
             this.setTitle = function (title) {
                 obj.tile = title;
@@ -3631,6 +3737,10 @@ var Main = {};
                 return body_el;
             };
 
+            var getDialogFooterEL = function () {
+                return footer_el;
+            };
+
             if (obj.width) {
                 var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
                 if (!isNaN(width)) {
@@ -3734,6 +3844,8 @@ var Main = {};
                 getDialogContentEl: getDialogContentEl,
                 setBodyContent: setBodyContent,
                 getDialogBodyEl: getDialogBodyEl,
+                getDialogFooterEL: getDialogFooterEL,
+                dialogButtonsCreate: dialogButtonsCreate,
                 resizeListenBind: resizeListenBind,
                 clearSavedlayouts: clearSavedlayouts,
                 touchCloseFunc: touchCloseFunc,
@@ -3742,7 +3854,6 @@ var Main = {};
             };
 
             var objThis = new diagThis(obj_param);
-
 
             function deviceBackHideFunc() {
                 return objThis.hide();
@@ -3760,25 +3871,16 @@ var Main = {};
                 Main.dom.addListener(close_el, 'click', objThis.hide, false);
             }
 
-            if (obj.buttons) {//if present
-
-                for (var i = obj.buttons.length - 1; i > -1; i--) {
-                    var btn = document.createElement('input');
-                    btn.type = 'button';
-                    btn.value = obj.buttons[i];
-                    footer_el.appendChild(btn);
-
-                    obj_param.btns.push(btn);
-                }
-
-                Main.dom.addListener(footer_el, 'click', function (evt) {
-                    if (evt.target.type === 'button') {
-                        if (Main.util.isFunc(obj.action)) {
-                            obj.action.call(objThis, evt.target, evt.target.value);
-                        }
+            var btnListenerFn = function (evt) {
+                if (evt.target.type === 'button') {
+                    if (Main.util.isFunc(obj.action)) {
+                        obj.action.call(objThis, evt.target, evt.target.value);
                     }
-                }.bind(objThis), false);
+                }
+            };
 
+            if (obj.buttons) {//if present                
+                dialogButtonsCreate(obj.buttons);
                 base.appendChild(footer_el);
             }
 
@@ -3854,6 +3956,23 @@ var Main = {};
             }
 
 
+            function dialogButtonsCreate(buttons) {
+
+                obj_param.btns = [];//new
+                footer_el.innerHTML = ''; //new
+
+                for (var i = buttons.length - 1; i > -1; i--) {
+                    var btn = document.createElement('input');
+                    btn.type = 'button';
+                    btn.value = buttons[i];
+                    footer_el.appendChild(btn);
+
+                    obj_param.btns.push(btn);
+                }
+
+                Main.dom.removeListener(footer_el, 'click', btnListenerFn, false);
+                Main.dom.addListener(footer_el, 'click', btnListenerFn, false);
+            }
 
             function touchCloseFunc(evt) {
                 var parent = evt.target;

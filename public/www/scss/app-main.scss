@@ -74,6 +74,11 @@ background: #ff0000;
 border-radius: 3px;
 }
 
+input[disabled=disabled], input[disabled=""]{
+    color: #eee; 
+    cursor: pointer;
+}
+
 .game9ja-error{
     color: #dd2222;
 }
@@ -96,4 +101,24 @@ border-radius: 3px;
 
 .game9ja-listview-item-selected{
     background-color: #eee;
+}
+
+.game9ja-toast{
+    width:250px;
+    height:20px;
+    height:auto;
+    position:absolute;
+    left:50%;
+    margin-left:-125px;
+    bottom:30px;
+    background-color: #383838;
+    color: #F0F0F0;
+    font-family: Calibri;
+    font-size: 17px;
+    padding:10px;
+    text-align:center;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }

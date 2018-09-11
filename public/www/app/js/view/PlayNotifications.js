@@ -1,6 +1,8 @@
 
 Ns.view.PlayNotifications = {
 
+    DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
+
     constructor: function () {
         var obj = {
             play_request: 'game/PlayRequest',
@@ -26,21 +28,103 @@ Ns.view.PlayNotifications = {
         Ns.PlayRequest.playRequestList = list;
 
 
-        function addListItem(data) {
-            if (!Main.util.isArray(data)) {
+        function addPlayRequestListItem(data_arr) {
+            if (!Main.util.isArray(data_arr)) {
                 console.warn('expected array!');
                 return;
             }
 
-            if (data.length === 0) {
+            if (data_arr.length === 0) {
                 return;
             }
 
+            for (var i = 0; i < data_arr.length; i++) {
+
+                Main.tpl.template({
+                    tplUrl: 'play-reques-tpl.html',
+                    data: data_arr[i],
+                    onReplace: function (tpl_var, data) {
+                        if (tpl_var === 'param') {
+                            if (data.group_name) {
+                                return data.group_name;
+                            } else {
+                                data.user_id; //phone number
+                            }
+                        }
+                    },
+                    afterReplace: addPlayRequestItem
+                });
+
+            }
 
 
-            //TODO - Add the contacts and group play request and the tournament upcoming match to the list
         }
 
+
+        function addUpcomingMatchListItem(data_arr) {
+            if (!Main.util.isArray(data_arr)) {
+                console.warn('expected array!');
+                return;
+            }
+
+            if (data_arr.length === 0) {
+                return;
+            }
+
+            for (var i = 0; i < data_arr.length; i++) {
+
+                Main.tpl.template({
+                    tplUrl: 'upcoming-tournament-match-tpl',
+                    data: data_arr[i],
+                    onReplace: function (tpl_var, data) {
+                        if (tpl_var === 'kickoff') {
+                            return data.start_time;
+                        }
+                    },
+                    afterReplace: addUpcomingMatchItem
+                });
+
+            }
+
+
+        }
+
+        function appendItem(html, data) {
+
+            var el_id = 'game9ja-play-notifications-body';
+            var dom_extra_field = el_id + Ns.view.PlayNotifications.DOM_EXTRA_FIELD_PREFIX;
+
+            //now add the item
+            $('#' + el_id).append(html);
+            var children = $('#' + el_id).children();
+            var last_child = children[children.length - 1];
+            last_child[dom_extra_field] = data;
+
+            return last_child;
+        }
+
+        function addPlayRequestItem(html, data) {
+
+            var el = appendItem(html, data);
+
+            var start_game_btn = el.querySelector('input[name=start_game_btn]');
+            var opponent_photo = el.querySelector('img[name=opponent_photo]');
+
+            $(start_game_btn).on('click', data, Ns.view.PlayNotifications._onClickStartGame);
+            $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
+        }
+
+
+        function addUpcomingMatchItem(html, data) {
+
+            var el = appendItem(html, data);
+
+            var kickoff_btn = el.querySelector('input[name=kickoff_btn]');
+            var opponent_photo = el.querySelector('img[name=opponent_photo]');
+
+            $(kickoff_btn).on('click', data, Ns.view.PlayNotifications._countdownToKickoff);
+            $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
+        }
 
         Main.rcall.live(function () {
             var user_id = Ns.view.UserProfile.appUser.user_id;
@@ -62,16 +146,16 @@ Ns.view.PlayNotifications = {
                     .get(function (data) {
                         Ns.PlayRequest.playRequestList = data;
                         displayReqCountInfo(data);
-                        addListItem(data);
+                        addPlayRequestListItem(data);
                     })
                     .error(function (err) {
                         //TODO - display error
                         console.log(err);
-                        
+
                         var d = Ns.PlayRequest.playRequestList;
                         displayReqCountInfo(d);
                         //just show any available ones
-                        addListItem(Ns.PlayRequest.playRequestList);
+                        addPlayRequestListItem(Ns.PlayRequest.playRequestList);
                     });
 
 
@@ -83,7 +167,7 @@ Ns.view.PlayNotifications = {
                         document.getElementById('game-play-notifications-upcoming-count').innerHTML = data.length;
                         document.getElementById('game-play-notifications-upcoming-text').innerHTML = text;
 
-                        addListItem(data);
+                        addUpcomingMatchListItem(data);
                     })
                     .error(function (err) {
                         //TODO - display error
@@ -94,79 +178,32 @@ Ns.view.PlayNotifications = {
         });
 
 
+    },
 
+    _onClickPlayerPhoto: function (data) {
+        alert('_onClickPlayerPhoto');
+    },
 
-
-
+    _countdownToKickoff: function (data) {
 
     },
 
-    onClickNotification: function (evt, game_id) {
+    _onClickStartGame: function (play_request) {
 
-        //COME BACK ABEG O!!!
-
-        //var list = Ns.PlayRequest.playRequestList ; // TODO- AND tournament fixtures - come back
-        /*
-         var up_coming;
-         for (var i = 0; i < list.length; i++) {
-         if (list[i].game_id === game_id) {
-         up_coming = list[i];
-         break;
-         }
-         }
-         
-         if (!up_coming) {
-         return;
-         }
-         
-         var player_opponents = Ns.view.PlayNotifications.getOpponents(up_coming);
-         var opponent = player_opponents[0];
-         
-         if (evt.target.name === 'user_photo') {
-         Ns.view.PlayNotifications.onClickPlayerPhoto(opponent);
-         }
-         
-         
-         if (evt.target.name === 'action') {
-         if (evt.target.value.toLowerCase() === 'game start') {
-         Ns.view.PlayNotifications.onClickGameStart(up_coming);
-         }
-         }
-         */
-    },
-
-    getOpponents: function (up_coming) {
-        var app_user_id = Ns.view.UserProfile.appUser.user_id;
-        var opponents = [];
-        for (var i = 0; i < up_coming.players.length; i++) {
-            if (up_coming.players[i].user_id !== app_user_id) {
-                opponents.push(up_coming.players[i]);
-            }
-        }
-        return opponents;
-    },
-
-    onClickPlayerPhoto: function (contact) {
-        alert('onClickPlayerPhoto');
-    },
-
-    onClickGameStart: function (play_request) {
         var game_id = play_request.game_id;
-        var fixture_type = null;
 
         Main.ro.match.start(game_id)
+                .busy({html: 'Starting Game...'})
                 .get(function (data) {
-                    alert(data);
+
+                    Ns.GameHome.showGameView(data);
+            
                     console.log(data);
-
-                    //go to game view
-
                 })
                 .error(function (err) {
-                    console(err);
-                    console.log(err);
+                    Main.toast.show(err);
 
-                    // the user may try again
+                    console.log(err);
 
                 });
     },

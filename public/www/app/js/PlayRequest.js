@@ -80,32 +80,42 @@ Ns.PlayRequest = {
                 buttons: ['CANCEL'], //
                 action: function (btn, value) {
                     var me = this;
-                    if (value.indexOf('CANCEL') === 0) {
+                    if (value === 'CANCEL' || value === 'TRY AGAIN') {
 
                         if (play_request_data) {
-                            Main.ro.play_request.abort(play_request_data.game_id)
-                                    .busy({text:'Cancelling play request...',  color:'#eeeeee'})
-                                    .before(function () {
-                                        console.log('before play_request.abort');
-                                    })
-                                    .after(function () {
-                                        console.log('after play_request.abort');
-                                    })
-                                    .get(function (resul) {
-                                        //do nothing
-                                        me.hide();
-                                    })
-                                    .error(function (err) {
-                                        me.hide();
-                                        console.log(err);
-                                    });
+                            abortRequest();
                         } else {
                             this.hide();
                         }
 
-                    } else if (value.indexOf(start_text) === 0) {
+                    }else if (value === 'CLOSE') {
+                        this.hide();
+                    } else if (value === start_text) {
                         this.hide();
                         goToGame(match);
+                    }
+
+                    function abortRequest() {
+                        
+                        feedback_msg.innerHTML = 'Cancelling play request...';
+                        
+                        Main.ro.play_request.abort(play_request_data.game_id)
+                                //.busy({text:'Cancelling play request...',  color:'#eeeeee'})
+                                .before(function () {
+                                    me.disableButtons();
+                                    console.log('before play_request.abort');
+                                })
+                                .after(function () {
+                                    console.log('after play_request.abort');
+                                })
+                                .get(function (resul) {
+                                    me.hide();
+                                })
+                                .error(function (err) {
+                                    feedback_msg.innerHTML = 'Could not cancel play request!';
+                                    me.createButtons('TRY AGAIN', 'CLOSE');
+                                    console.log(err);
+                                });
                     }
                 },
                 onShow: function () {

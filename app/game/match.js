@@ -426,7 +426,7 @@ class Match extends WebApplication {
         }
 
         if (!mtcObj) {
-            return 'Not available!';
+            return this.error('Not available!');
         }
 
         //modify accordingly and relocate the match obect to the 'matches' colllection
@@ -464,7 +464,7 @@ class Match extends WebApplication {
 
         var v = await this._validatePlayersBegin(user, players);
         if (v.lastError) {
-            return v.lastEror;
+            return this.error(v.lastEror);
         }
 
         var sets = [];
@@ -502,7 +502,7 @@ class Match extends WebApplication {
         var r = await c.insertOne(match, {w: 'majority'});
 
         if (!r.result.n) {
-            return 'Could not start game';
+            return this.error('Could not start game');
         }
 
         //broadcast the game start event to all the players concern
@@ -531,7 +531,7 @@ class Match extends WebApplication {
         try {
             var match = await c.findOne({game_id: game_id});
             if (!match) {
-                return 'No game to resume';
+                return this.error('No game to resume');
             }
         } catch (e) {
             console.log(e);
@@ -580,7 +580,7 @@ class Match extends WebApplication {
 
         var v = await this._validatePlayersBegin(user, players);
         if (v.lastError) {
-            return v.lastEror;
+            return this.error(v.lastEror);
         }
 
         try {
@@ -636,7 +636,7 @@ class Match extends WebApplication {
             var match = r.value;
 
             if (!match) {
-                return 'No game to pause';
+                return this.error('No game to pause');
             }
         } catch (e) {
             this.error('Could not pause game');
@@ -681,7 +681,7 @@ class Match extends WebApplication {
             var match = await c.findOne({game_id: game_id});
 
             if (!match) {
-                return 'No game to abandon';
+                return this.error('No game to abandon');
             }
 
             var available_count = 0;

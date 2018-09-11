@@ -67,12 +67,11 @@ $height : 30px;//must be 30px - please do not change! 30px is used in Main.js fo
         input[type=button]{
             float: right;
             margin: $base_padding;
-            background: transparent;
-            color: inherit;
+            background: transparent;            
             border-width: 0px;
             outline: none;
             cursor: pointer;
-            
+
         }
 
 
