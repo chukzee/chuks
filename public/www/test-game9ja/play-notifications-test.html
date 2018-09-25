@@ -42,7 +42,7 @@ and open the template in the editor.
 
 
         <div class="game9ja-play-notifications-body">
-            <input type="button" value="MY BUTTON" id="test" onclick="clickDisable()"/>
+            <input type="button" value="MY BUTTON" id="test" onclick="clickDisable()" name="test_name"/>
             <ul class="game9ja-user-show-list">
 
                 <li><img  src="../app/images/default_group.png" alt=" "/></li>
@@ -103,6 +103,7 @@ and open the template in the editor.
 
         <script>
             function clickDisable() {
+                //alert(document.body.querySelector('input[name=test_name]'));
                 show('This is the toast');
             }
             var Main ={
@@ -117,6 +118,7 @@ and open the template in the editor.
                 base.className = 'game9ja-toast';
                 base.innerHTML = text;
                 base.style.display = 'none';
+                
                 document.body.appendChild(base);
 
                 $(base).stop()
@@ -124,7 +126,6 @@ and open the template in the editor.
                         .delay(3000)
                         .fadeOut(400, function () {
                             document.body.removeChild(base);
-                            alert('removed');
                         });
 
 

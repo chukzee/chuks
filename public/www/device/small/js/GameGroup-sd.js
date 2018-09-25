@@ -1,6 +1,6 @@
 
 
-/* global Main */
+/* global Main, Ns */
 
 
 Ns.GameGroup = {

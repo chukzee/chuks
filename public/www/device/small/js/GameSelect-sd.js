@@ -1,4 +1,4 @@
-/* global Main */
+/* global Main, Ns */
 
 //REMIND : for small device the screen orientation will be locked to portrait but on medium and large no lock in neccesary
 

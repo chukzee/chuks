@@ -1815,7 +1815,7 @@ var Main = {};
                     if (children[i].nodeName === 'SCRIPT') {
                         continue;
                     }
-                    //get the out-going page whiche we shall remove from the
+                    //get the out-going page which we shall remove from the
                     //DOM when the page change is complete
                     if ($(children[i]).attr('data-app-content') === 'page') {
                         pgGoOut = children[i];
@@ -2620,7 +2620,7 @@ var Main = {};
             busyEl.style.left = '0';
             busyEl.style.width = '100%';
             busyEl.style.height = '100%';
-            busyEl.style.zIndex = Main.const.Z_INDEX;//come back
+            busyEl.style.zIndex = Main.const.Z_INDEX;
             busyEl.style.background = 'rgba(0,0,0,0.3)';
             busyEl.style.color = obj.color ? obj.color : '#000000';
 

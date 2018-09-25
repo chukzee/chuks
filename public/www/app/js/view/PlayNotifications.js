@@ -1,4 +1,6 @@
 
+/* global Main, Ns */
+
 Ns.view.PlayNotifications = {
 
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',

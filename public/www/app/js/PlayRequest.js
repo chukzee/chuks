@@ -108,8 +108,9 @@ Ns.PlayRequest = {
                                 .after(function () {
                                     console.log('after play_request.abort');
                                 })
-                                .get(function (resul) {
+                                .get(function (result) {
                                     me.hide();
+                                    Main.toast.show(result);
                                 })
                                 .error(function (err) {
                                     feedback_msg.innerHTML = 'Could not cancel play request!';
@@ -247,9 +248,9 @@ Ns.PlayRequest = {
     },
     /**
      * @Depreacated - because the player does not have to click any reject button.
-     * All player needs to do as a way to reject the request is to ignore clicking
+     * All that the player needs to do as a way to reject the request is to ignore clicking
      * the 'Start Game' button in the play notification. Then the play request just
-     * gracefully expires
+     * gracefully expires.
      * @param {type} obj 
      */
     onPlayRequestRejected: function (obj) {
