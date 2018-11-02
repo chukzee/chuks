@@ -147,6 +147,7 @@ Ns.view.UserProfile = {
              "user-profile-full-name"
              "user-profile-status-message"
              "user-profile-phone-no"
+             "user-profile-last-modified"
              "user-profile-back-btn"
              "user-profile-edit"
              "user-profile-other-phone-nos"            
@@ -170,13 +171,13 @@ Ns.view.UserProfile = {
             document.getElementById("user-profile-full-name").innerHTML = user.full_name;
             document.getElementById("user-profile-status-message").innerHTML = user.status_message;
             document.getElementById("user-profile-phone-no").innerHTML = user.user_id;
-            //document.getElementById("user-profile-other-phone-nos").innerHTML = user.phone_nos;
+            document.getElementById("user-profile-last-modified").innerHTML = Ns.Util.formatDate(user.date_last_modified);
             document.getElementById("user-profile-ranking-position").innerHTML = user.player_ranking;
-            document.getElementById("user-profile-ranking-date").innerHTML = user.rank_date;
+            document.getElementById("user-profile-ranking-date").innerHTML = Ns.Util.formatDate(user.rank_date);
             document.getElementById("user-profile-ranking-score").innerHTML = user.rank_score;
-            document.getElementById("user-profile-groups-belong-count").innerHTML = user.groups_belong.length;
+            document.getElementById("user-profile-groups-belong-count").innerHTML = user.groups_belong ? user.groups_belong.length : 0;
             //document.getElementById("user-profile-groups-in-common-count").innerHTML = groups_in_common_count;
-            document.getElementById("user-profile-tournaments-belong-count").innerHTML = user.tournaments_belong.length;
+            document.getElementById("user-profile-tournaments-belong-count").innerHTML = user.tournaments_belong ? user.tournaments_belong.length : 0;
 
             //document.getElementById("user-profile-groups-belong").innerHTML = user.blablablah;
             //document.getElementById("user-profile-groups-in-common").innerHTML = user.blablablah;

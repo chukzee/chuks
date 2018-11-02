@@ -177,7 +177,12 @@
             "GameWatch-sd.js",
             "GameGroup-sd.js",
             "GameTournament-sd.js",
-            "GameUserProfile-sd.js"
+            "GameContacts-sd.js",
+            "GameUserProfile-sd.js",
+            "GameRankings-sd.js",
+            "GamePerformance-sd.js",
+            "GameSearchView-sd.js",
+            "GamePlayNotifications-sd.js"
         ] 
     },
 
@@ -198,7 +203,12 @@
             "GameWatch-md.js",
             "GameGroup-md.js",
             "GameTournament-md.js",
-            "GameUserProfile-md.js"
+            "GameContacts-md.js",
+            "GameUserProfile-md.js",
+            "GameRankings-md.js",
+            "GamePerformance-md.js",
+            "GameSearchView-md.js",
+            "GamePlayNotifications-md.js"
         ]
     },
 
@@ -219,7 +229,12 @@
             "GameWatch-ld.js",
             "GameGroup-ld.js",
             "GameTournament-ld.js",
-            "GameUserProfile-ld.js"
+            "GameContacts-ld.js",
+            "GameUserProfile-ld.js",
+            "GameRankings-ld.js",
+            "GamePerformance-ld.js",
+            "GameSearchView-ld.js",
+            "GamePlayNotifications-ld.js"
         ]
     }
 }

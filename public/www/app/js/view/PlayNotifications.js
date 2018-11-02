@@ -4,7 +4,8 @@
 Ns.view.PlayNotifications = {
 
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
-
+    playRequestCount: 0,
+    upcomingMatchCount: 0,
     constructor: function () {
         var obj = {
             play_request: 'game/PlayRequest',
@@ -29,103 +30,20 @@ Ns.view.PlayNotifications = {
 
         Ns.PlayRequest.playRequestList = list;
 
+        function addNotificationListItem(notifications) {
 
-        function addPlayRequestListItem(data_arr) {
-            if (!Main.util.isArray(data_arr)) {
-                console.warn('expected array!');
+            if (notifications.length === 0) {
                 return;
             }
 
-            if (data_arr.length === 0) {
-                return;
+            //sort by notification time
+            notifications.sort(function (a, b) {
+                return a.notification_time - b.notification_time;
+            });
+
+            for (var i = 0; i < notifications.length; i++) {
+                Ns.view.PlayNotifications.addNotification(notifications[i]);
             }
-
-            for (var i = 0; i < data_arr.length; i++) {
-
-                Main.tpl.template({
-                    tplUrl: 'play-reques-tpl.html',
-                    data: data_arr[i],
-                    onReplace: function (tpl_var, data) {
-                        if (tpl_var === 'param') {
-                            if (data.group_name) {
-                                return data.group_name;
-                            } else {
-                                data.user_id; //phone number
-                            }
-                        }
-                    },
-                    afterReplace: addPlayRequestItem
-                });
-
-            }
-
-
-        }
-
-
-        function addUpcomingMatchListItem(data_arr) {
-            if (!Main.util.isArray(data_arr)) {
-                console.warn('expected array!');
-                return;
-            }
-
-            if (data_arr.length === 0) {
-                return;
-            }
-
-            for (var i = 0; i < data_arr.length; i++) {
-
-                Main.tpl.template({
-                    tplUrl: 'upcoming-tournament-match-tpl',
-                    data: data_arr[i],
-                    onReplace: function (tpl_var, data) {
-                        if (tpl_var === 'kickoff') {
-                            return data.start_time;
-                        }
-                    },
-                    afterReplace: addUpcomingMatchItem
-                });
-
-            }
-
-
-        }
-
-        function appendItem(html, data) {
-
-            var el_id = 'game9ja-play-notifications-body';
-            var dom_extra_field = el_id + Ns.view.PlayNotifications.DOM_EXTRA_FIELD_PREFIX;
-
-            //now add the item
-            $('#' + el_id).append(html);
-            var children = $('#' + el_id).children();
-            var last_child = children[children.length - 1];
-            last_child[dom_extra_field] = data;
-
-            return last_child;
-        }
-
-        function addPlayRequestItem(html, data) {
-
-            var el = appendItem(html, data);
-
-            var start_game_btn = el.querySelector('input[name=start_game_btn]');
-            var opponent_photo = el.querySelector('img[name=opponent_photo]');
-
-            $(start_game_btn).on('click', data, Ns.view.PlayNotifications._onClickStartGame);
-            $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
-        }
-
-
-        function addUpcomingMatchItem(html, data) {
-
-            var el = appendItem(html, data);
-
-            var kickoff_btn = el.querySelector('input[name=kickoff_btn]');
-            var opponent_photo = el.querySelector('img[name=opponent_photo]');
-
-            $(kickoff_btn).on('click', data, Ns.view.PlayNotifications._countdownToKickoff);
-            $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
         }
 
         Main.rcall.live(function () {
@@ -133,47 +51,48 @@ Ns.view.PlayNotifications = {
             var game_name = Ns.ui.UI.selectedGame;
             var skip = 0;
             var limit = Ns.Const.MAX_LIST_SIZE;
-
-            var displayReqCountInfo = function (d) {
-                if (!Main.util.isArray(d)) {
-                    return;
-                }
-                var text = d.length < 2 ? "player waiting." : "players waiting.";
-                document.getElementById('game-play-notifications-play-request-count').innerHTML = d.length;
-                document.getElementById('game-play-notifications-play-request-text').innerHTML = text;
-
-            };
+            var promise_count = 0;
+            var notifications = [];
 
             Main.ro.play_request.get(user_id, game_name, skip, limit)
-                    .get(function (data) {
-                        Ns.PlayRequest.playRequestList = data;
-                        displayReqCountInfo(data);
-                        addPlayRequestListItem(data);
-                    })
-                    .error(function (err) {
-                        //TODO - display error
-                        console.log(err);
+                    .after(function (data, err) {
+                        var play_requests = [];
+                        if (err) {
+                            //TODO - display error
+                            console.log(err);
+                            //just show any available ones
+                            play_requests = Ns.PlayRequest.playRequestList;
+                            if (!Main.util.isArray(play_requests)) {
+                                play_requests = [];
+                            }
+                        } else {
+                            play_requests = data.play_requests;
+                            Ns.PlayRequest.playRequestList = play_requests;
+                        }
 
-                        var d = Ns.PlayRequest.playRequestList;
-                        displayReqCountInfo(d);
-                        //just show any available ones
-                        addPlayRequestListItem(Ns.PlayRequest.playRequestList);
+                        Ns.view.PlayNotifications.displayReqCountInfo(play_requests.length);
+                        notifications = notifications.concat(play_requests);
+                        promise_count++;
+                        if (promise_count === 2) {
+                            addNotificationListItem(notifications);
+                        }
                     });
 
-
-
             Main.ro.tourn.getUpcomingMatches(user_id, game_name, skip, limit)
-                    .get(function (data) {
-
-                        var text = data.length < 2 ? "upcoming match." : "upcoming matches.";
-                        document.getElementById('game-play-notifications-upcoming-count').innerHTML = data.length;
-                        document.getElementById('game-play-notifications-upcoming-text').innerHTML = text;
-
-                        addUpcomingMatchListItem(data);
-                    })
-                    .error(function (err) {
-                        //TODO - display error
-                        console.log(err);
+                    .after(function (data, err) {
+                        var upcoming_matches = [];
+                        if (err) {
+                            //TODO - display error
+                            console.log(err);
+                        } else {
+                            upcoming_matches = data.upcoming_matches;
+                        }
+                        Ns.view.PlayNotifications.displayUpcomingMatchCountInfo(upcoming_matches.length);
+                        notifications = notifications.concat(upcoming_matches);
+                        promise_count++;
+                        if (promise_count === 2) {
+                            addNotificationListItem(notifications);
+                        }
                     });
 
 
@@ -182,16 +101,136 @@ Ns.view.PlayNotifications = {
 
     },
 
-    _onClickPlayerPhoto: function (data) {
+    addNotification: function (notification, use_uiupdater) {
+        
+        if(use_uiupdater){
+            Main.uiupdater.show({
+                container: 'game-play-notifications-body',
+                delay: 5,
+                data: notification,
+                //countdown: ....,
+                update: doAddNotification
+            });
+        }else{
+            doAddNotification(notification);
+        }
+        
+        function doAddNotification(notificat) {
+            if (notificat.tournament_name) {
+                
+                Main.tpl.template({
+                    tplUrl: 'upcoming-tournament-match-tpl.html',
+                    data: notificat,
+                    onReplace: function (tpl_var, data) {
+                        if (tpl_var === 'kickoff') {
+                            return data.start_time;
+                        }
+                    },
+                    afterReplace: Ns.view.PlayNotifications._addUpcomingMatchItem
+                });
+                
+            } else {//play request
+                
+                Main.tpl.template({
+                    tplUrl: 'play-request-tpl.html',
+                    data: notificat,
+                    onReplace: function (tpl_var, data) {
+                        var user_id = Ns.view.UserProfile.appUser.user_id;
+                        var opponent = data.players[0].user_id !== user_id ? data.players[0] : data.players[1];
+                        if (tpl_var === 'param') {
+                            if (data.group_name) {
+                                return data.group_name;
+                            } else {
+                                return opponent.user_id;
+                            }
+                        }
+                        if (tpl_var === 'full_name') {
+                            return opponent.full_name;
+                        }
+                        
+                    },
+                    afterReplace: Ns.view.PlayNotifications._addPlayRequestItem
+                });
+            }
+        }
+
+    },
+
+    _addItem: function (html, data) {
+
+        var el_id = 'game-play-notifications-body';
+        var dom_extra_field = el_id + Ns.view.PlayNotifications.DOM_EXTRA_FIELD_PREFIX;
+
+        //now add the item
+        var el = document.getElementById(el_id);
+        if(!el){
+            return;
+        }
+        $(el).prepend(html);
+        var children = el.children;
+        var first_child = children[0];//first child since we are prepending
+        first_child[dom_extra_field] = data;
+        return first_child;
+    },
+
+    _addPlayRequestItem: function (html, data) {
+
+        var el = Ns.view.PlayNotifications._addItem(html, data);
+
+        var start_game_btn = el.querySelector('input[name=start_game_btn]');
+        var opponent_photo = el.querySelector('img[name=opponent_photo]');
+
+        $(start_game_btn).on('click', data, Ns.view.PlayNotifications._onClickStartGame);
+        $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
+    },
+
+    _addUpcomingMatchItem: function (html, data) {
+
+        var el = Ns.view.PlayNotifications._addItem(html, data);
+
+        var kickoff_btn = el.querySelector('input[name=kickoff_btn]');
+        var opponent_photo = el.querySelector('img[name=opponent_photo]');
+
+        $(kickoff_btn).on('click', data, Ns.view.PlayNotifications._countdownToKickoff);
+        $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
+    },
+
+    displayReqCountInfo: function (count) {
+
+        var el = document.getElementById('game-play-notifications-body');
+        if(!el){
+            return;
+        }
+        Ns.view.PlayNotifications.playRequestCount = count;
+        var text = count < 2 ? "player waiting." : "players waiting.";
+        document.getElementById('game-play-notifications-play-request-count').innerHTML = count;
+        document.getElementById('game-play-notifications-play-request-text').innerHTML = text;
+    },
+
+    displayUpcomingMatchCountInfo: function (count) {
+        
+        var el = document.getElementById('game-play-notifications-body');
+        if(!el){
+            return;
+        }
+        Ns.view.PlayNotifications.upcomingMatchCount = count;
+        var text = count < 2 ? "upcoming match." : "upcoming matches.";
+        document.getElementById('game-play-notifications-upcoming-count').innerHTML = count;
+        document.getElementById('game-play-notifications-upcoming-text').innerHTML = text;
+    },
+    
+    _onClickPlayerPhoto: function (argu) {
+        var data = argu.data;
         alert('_onClickPlayerPhoto');
     },
 
-    _countdownToKickoff: function (data) {
+    _countdownToKickoff: function (argu) {
+        var data = argu.data;
 
     },
 
-    _onClickStartGame: function (play_request) {
-
+    _onClickStartGame: function (argu) {
+        var play_request = argu.data;
         var game_id = play_request.game_id;
 
         Main.ro.match.start(game_id)
@@ -199,7 +238,7 @@ Ns.view.PlayNotifications = {
                 .get(function (data) {
 
                     Ns.GameHome.showGameView(data);
-            
+
                     console.log(data);
                 })
                 .error(function (err) {

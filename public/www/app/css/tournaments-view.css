@@ -126,14 +126,6 @@ and open the template in the editor.
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-@media screen and (min-width: 600px) {
-  /*Good! Only screen size 768px and above will 
-  have no back button. their content will be displayed 
-  like desktop . 
-  */
-  .game9ja-back-btn {
-    visibility: hidden;
-    /*hide back button*/ } }
 .game9ja-tournaments-view {
   position: absolute;
   top: 0;

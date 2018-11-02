@@ -241,7 +241,7 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-view-footer-spectators').on('click', function () {
-            var title = 'Stats';
+            var title = 'Spectators';
             if (leftPanelTitleComp.innerHTML === title) {
                 ogv.hideLeftContent();
                 return;

@@ -1,0 +1,18 @@
+
+
+/* global Main, Ns */
+
+
+Ns.GamePerformance = {
+
+    Content: function (data) {
+        Ns.view.Performance.content(data);
+        $('#performance-view-back-btn').on('click', function () {
+            
+            Main.card.back('#home-main', function () {
+
+            });
+        });
+    },
+
+};

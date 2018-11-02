@@ -234,6 +234,7 @@ class PlayRequest extends WebApplication {
                 sets_count: sets_count,
                 opponents_online : opponents_online,
                 expire_after_secs: this.sObj.GAME_MAX_WAIT_IN_SEC,
+                notification_time : new Date(),
                 players: players
             };
 

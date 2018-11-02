@@ -40,7 +40,8 @@ Ns.ui.Dialog = {
             maxWidth: obj.maxWidth || 400,
             maxHeight: obj.maxHeight || 600,
             fade: true,
-            closeButton: false,
+            closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
+            touchOutClose: true, //close the dialog if the user touch outside it  
             modal: true,
             buttons: btns,
             action: function (btn, value) {

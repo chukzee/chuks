@@ -570,6 +570,14 @@ var Main = {};
             return s;
         },
 
+        toSentenceCase: function (str) {
+            if (str.length > 1) {
+                return str.substring(0, 1).toUpperCase() + str.substring(1); // to sentence case
+            } 
+            if (str.length === 1) {
+                return str.toUpperCase(); // to sentence case
+            }
+        },
         serilaNo: function () {
             var serial = 0;
             return function () {
@@ -963,15 +971,18 @@ var Main = {};
                                                 class: className,
                                                 method: method,
                                                 param: argu,
-                                                callback: function (reponse) {
+                                                callback: function (response) {
                                                     try {
-                                                        if (reponse.success) {
+                                                        var data, err;
+                                                        if (response.success) {
+                                                            data = response.data;
                                                             if (Main.util.isFunc(promise._getFn)) {
-                                                                promise._getFn(reponse.data);
+                                                                promise._getFn(data);
                                                             }
                                                         } else {
+                                                            err = response.data;
                                                             if (Main.util.isFunc(promise._errFn)) {
-                                                                promise._errFn(reponse.data);
+                                                                promise._errFn(err);
                                                             }
                                                         }
                                                     } catch (e) {
@@ -984,7 +995,7 @@ var Main = {};
                                                     }
 
                                                     if (Main.util.isFunc(promise._afterFn)) {
-                                                        promise._afterFn();
+                                                        promise._afterFn(data, err);
                                                     }
                                                 }
                                             });
@@ -1915,10 +1926,11 @@ var Main = {};
                     v = obj.onReplace(param, data);
                 }
 
-                if (typeof v === 'undefined' && typeof data[param] !== 'undefined') {
-                    var v = data[param];
-                    var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
-                    for (var k = 0; k < obj_path.length; i++) {
+                var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
+                var top_lev_par = obj_path[0];//top level parameter
+                if (typeof v === 'undefined' && typeof data[top_lev_par] !== 'undefined') {
+                    var v = data[top_lev_par];
+                    for (var k = 1; k < obj_path.length; k++) {
                         var par = obj_path[k];
                         if (typeof v[par] === 'undefined') {
                             break;
@@ -2135,10 +2147,11 @@ var Main = {};
                     v = obj.onRender(param, data);
                 }
 
-                if (typeof v === 'undefined' && typeof data[param] !== 'undefined') {
-                    var v = data[param];
-                    var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
-                    for (var k = 0; k < obj_path.length; i++) {
+                var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
+                var top_lev_par = obj_path[0];//top level parameter
+                if (typeof v === 'undefined' && typeof data[top_lev_par] !== 'undefined') {
+                    var v = data[top_lev_par];
+                    for (var k = 1; k < obj_path.length; k++) {
                         var par = obj_path[k];
                         if (typeof v[par] === 'undefined') {
                             break;
@@ -2828,7 +2841,7 @@ var Main = {};
                 viewHtmls[container_id] = {};
             }
 
-            var url = 'device/' + Main.device.getCategory() + '/' + file;
+            var url = intentUrl(file);
 
             var html = viewHtmls[container_id][url];
             if (html) {
@@ -3072,10 +3085,97 @@ var Main = {};
     Main.tpl = new Tpl();
     Main.task = new Task();
     Main.countdown = new Countdown();
+    Main.uiupdater = new UIUpdater();
 
     Main.intentUrl = function (url) {
         return intentUrl(url);
     };
+
+    function UIUpdater() {
+        /**
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *    container: ...., //container of the uiupdater<br>
+         *    update  : ..... //final function to call after the delay is elapsed<br>
+         *    delay [opt] : ....,//number of second to wait for the update function to be called<br>
+         *    countdown [opt] : ....., //the function to call after each second until the delay period is elapse and the update function called<br>
+         *    data [opt] : .....// the data to pass to the update function <br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      
+         * @param {type} obj
+         * @returns {undefined}
+         */
+        this.show = function (obj) {
+            var DEFAULT_DELAY = 3;
+            var delay = obj.delay > -1 ? obj.delay : DEFAULT_DELAY;
+
+            var cid;
+            var container = obj.container;
+            if (Main.util.isString(container)) {
+                cid = container.charAt(0) === '#' ? container.substring(1) : container;
+            } else {
+                cid = $(container).id();
+            }
+
+            container = document.getElementById(cid);
+            if (!container) {
+                console.warn('unknown  container id - ', cid);
+                return;
+            }
+
+            var el = document.createElement('div');
+            el.style.zIndex = Main.const.Z_INDEX;
+            el.className = 'game9ja-uiupdater-toast';
+            el.style.top = '-30px';
+
+            container.appendChild(el);
+            animDiplay(container, el, true);
+
+            Main.countdown.start(function (value, finish) {
+                if (Main.util.isFunc(obj.countdown)) {
+                    obj.countdown(el, value, finish);
+                } else {
+                    el.innerHTML = finish ? "Updating..." : "Updating in " + value + " sec...";
+                }
+
+                if (finish) {
+                    if (Main.util.isFunc(obj.update)) {
+
+                        //animate hide the display
+                        animDiplay(container, el, false);
+
+                        obj.update(obj.data);
+                    }
+                }
+            }, delay);
+
+
+        };
+
+        function animDiplay(container, el, show) {
+            var duration = 500;
+            var prop = {};
+            if (show) {
+
+                prop.top = '0';
+                Main.anim.to(el, duration, prop);
+
+            } else {//hide
+
+                prop.top = '-30px';
+                Main.anim.to(el, duration, prop, function () {
+                    container.removeChild(el);
+                });
+            }
+        }
+
+    }
 
     function Countdown() {
         var fn_list = [];
@@ -3451,19 +3551,19 @@ var Main = {};
 
         this.show = function (text) {
 
-                var toast_el = document.createElement('div');
-                toast_el.style.zIndex = Main.const.Z_INDEX;
-                toast_el.className = 'game9ja-toast';
-                toast_el.innerHTML = text;
-                toast_el.style.display = 'none';
-                document.body.appendChild(toast_el);
+            var toast_el = document.createElement('div');
+            toast_el.style.zIndex = Main.const.Z_INDEX;
+            toast_el.className = 'game9ja-toast';
+            toast_el.innerHTML = text;
+            toast_el.style.display = 'none';
+            document.body.appendChild(toast_el);
 
-                $(toast_el).stop()
-                        .fadeIn(400)
-                        .delay(3000)
-                        .fadeOut(400, function () {
-                            document.body.removeChild(toast_el);
-                        });
+            $(toast_el).stop()
+                    .fadeIn(400)
+                    .delay(3000)
+                    .fadeOut(400, function () {
+                        document.body.removeChild(toast_el);
+                    });
 
         };
     }
@@ -3958,7 +4058,7 @@ var Main = {};
 
             function dialogButtonsCreate(buttons) {
 
-                obj_param.btns = [];//new
+                obj_param.btns.splice(0, obj_param.btns.length);//clear - new
                 footer_el.innerHTML = ''; //new
 
                 for (var i = buttons.length - 1; i > -1; i--) {
@@ -5377,7 +5477,7 @@ var Main = {};
 
             if (size > 768) {//desktops and laptops
                 device_category = "large";
-            } else if (size <= 768 && size > 600) {//tablets
+            } else if (size <= 768 && size >= 640) {//tablets
                 device_category = "medium";
             } else {//smart phones
                 device_category = "small";

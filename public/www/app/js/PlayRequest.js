@@ -5,6 +5,8 @@ Ns.PlayRequest = {
 
     playRequestList: [], //dynamic
 
+    _gmobj : {},
+    
     constructor: function () {
 
 
@@ -51,10 +53,12 @@ Ns.PlayRequest = {
             var start_text = 'Start Game';
             var is_match_started = false;
             var match;
+            var player_not_responded = false;
             var waitCountdownFn = function (value, finish) {
                 if (countdown_play) {
                     countdown_play.innerHTML = value;
                     if (finish) {
+                        player_not_responded = true;
                         feedback_msg.innerHTML = 'Player did not respond!';
                     }
                 }
@@ -82,13 +86,13 @@ Ns.PlayRequest = {
                     var me = this;
                     if (value === 'CANCEL' || value === 'TRY AGAIN') {
 
-                        if (play_request_data) {
+                        if (play_request_data && !player_not_responded) {
                             abortRequest();
                         } else {
                             this.hide();
                         }
 
-                    }else if (value === 'CLOSE') {
+                    } else if (value === 'CLOSE') {
                         this.hide();
                     } else if (value === start_text) {
                         this.hide();
@@ -96,9 +100,9 @@ Ns.PlayRequest = {
                     }
 
                     function abortRequest() {
-                        
+
                         feedback_msg.innerHTML = 'Cancelling play request...';
-                        
+
                         Main.ro.play_request.abort(play_request_data.game_id)
                                 //.busy({text:'Cancelling play request...',  color:'#eeeeee'})
                                 .before(function () {
@@ -165,6 +169,7 @@ Ns.PlayRequest = {
 
                                     Main.countdown.start(waitCountdownFn, data.expire_after_secs, 'mm:ss');
 
+                                                                        
                                     Ns.PlayRequest._startGameFunc = function (_match) {
                                         match = _match;
                                         if (match.game_id !== play_request_data.game_id) {
@@ -173,7 +178,8 @@ Ns.PlayRequest = {
 
                                         feedback_msg.innerHTML = 'Player ready.';
                                         Main.countdown.start(function (value, finish) {
-                                            dialog.setButtonText(0, start_text + ' (' + value + ')');
+                                            var secs_remaining = value - 1;
+                                            dialog.setButtonText(0, start_text + ' (' + secs_remaining + ')');
                                             if (finish) {
                                                 dialog.hide();
                                                 goToGame(match);
@@ -209,7 +215,7 @@ Ns.PlayRequest = {
 
     onGameStart: function (obj) {
         if (Main.util.isFunc(Ns.PlayRequest._startGameFunc)) {
-            Ns.PlayRequest._startGameFunc(obj.data.match);
+            Ns.PlayRequest._startGameFunc(obj.data);
         }
     },
 
@@ -244,6 +250,10 @@ Ns.PlayRequest = {
         } catch (e) {
             //COME BACK FOR CASE WHERE THE STORAGE IS FULL
         }
+
+        Ns.view.PlayNotifications.displayReqCountInfo(Ns.PlayRequest.playRequestList.length);
+
+        Ns.view.PlayNotifications.addNotification(play_request, true);
 
     },
     /**

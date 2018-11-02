@@ -2073,6 +2073,7 @@ class Tournament extends WebApplication {
                     }
 
                     match.reminder_time = new Date();
+                    match.notification_time = match.reminder_time;//same
                     
                     //store the upcoming match
                     var ccm = this.sObj.db.collection(this.sObj.col.upcoming_matches);

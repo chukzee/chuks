@@ -109,7 +109,7 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-tournament-name").innerHTML = tournament.name;
             document.getElementById("tournament-details-tournament-rating").innerHTML = tournament.rating ? tournament.rating : Ns.view.Tournament.DEFAULT_RATING;
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by.full_name;
-            document.getElementById("tournament-details-date-created").innerHTML = tournament.date_created;
+            document.getElementById("tournament-details-date-created").innerHTML = Ns.Util.formatDate(tournament.date_created);
             document.getElementById("tournament-details-tournament-type").innerHTML = tournament.type.substring(0, 1).toUpperCase() + tournament.type.substring(1);
 
             document.getElementById("tournament-details-officials-count").innerHTML = tournament.officials.length > 0
@@ -154,13 +154,6 @@ Ns.view.Tournament = {
                 //TODO hide some control away from non offficial
 
             }
-
-            $('#tournament-details-back-btn').off('click');
-            $('#tournament-details-back-btn').on('click', function () {
-
-                alert('TODO tournament-details-back-btn');
-
-            });
 
 
             $('#tournament-details-edit').off('click');
@@ -491,7 +484,7 @@ Ns.view.Tournament = {
          };*/
 
         Ns.ui.Dialog.selectSimpleList({
-            headless: true,
+            title: user.full_name,
             multiSelect: false,
             items: menu_items,
             width: window.innerWidth * 0.8,

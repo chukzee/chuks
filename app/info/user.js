@@ -76,15 +76,17 @@ class User extends WebApplication {
             }
 
             var c = this.sObj.db.collection(this.sObj.col.users);
-
+            
             var user = await c.findOne({user_id: phone_no}, {_id: 0});
             if (!user) {
+                
                 return this.error('Invalid username or password');
             }
             var protected_pass = await this._protectedPassword(password, user.password.salt, user.password.iterations);
 
             if (user.password.hash.buffer.toString()//the saved hash is in binary type so we will access the buffer property of the binary object
                     !== protected_pass.hash.toString()) {
+                
                 return this.error('Invalid username or password');
             }
 

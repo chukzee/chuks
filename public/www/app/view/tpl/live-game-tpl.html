@@ -19,10 +19,10 @@ and open the template in the editor.
                 {players.1.full_name}<!--like in mongodb access the embedded array via the dot operator-->
             </li>
             <li>
-                {game_start_time}
+                {start_time}
             </li>
             <li>
-                <span>{game_score}</span><span>{game_status}</span>
+                <span>{scores.0}-{scores.1}</span><span>{status}</span>
             </li>
             
             <li><img onerror="Main.helper.loadDefaultProfilePhoto(event)" src="{players.0.photo_url}" alt=" "/></li>

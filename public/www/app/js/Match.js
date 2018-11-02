@@ -6,22 +6,22 @@
 Ns.Match = {
     hasMatchData: false,
     currentUserMatch: null, //set dynamically
-    currentRobotMatch : null, //set dynamically
+    currentRobotMatch: null, //set dynamically
     _lstContactsMatch: null, //private - the contacts match listview
     _lstGroupsMatch: null, //private - the groups match listview
     _lstTournamentsMatch: null, //private - the tournaments match listview
-    _HOME_DOM_EXTRA_HOLD_TOURN : '_HOME_DOM_EXTRA_HOLD_TOURN',
+    _HOME_DOM_EXTRA_HOLD_TOURN: '_HOME_DOM_EXTRA_HOLD_TOURN',
     _HOME_DOM_EXTRA_HOLD_GROUP: '_HOME_DOM_EXTRA_HOLD_GROUP',
     contactsMatchKey: function () {
         return Ns.view.UserProfile.appUser.id + ":" + "CONTACT_MATCH" + ":" + Ns.ui.UI.selectedGame + ":";
     },
     groupMatchKey: function (group_name) {
-        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH"  + ":" + Ns.ui.UI.selectedGame + ":"+ group_name;
+        return Ns.view.UserProfile.appUser.id + ":" + "GROUP_MATCH" + ":" + Ns.ui.UI.selectedGame + ":" + group_name;
     },
     tournamentMatchKey: function (tournament) {
-        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH"  + ":" + Ns.ui.UI.selectedGame + ":" + tournament;
+        return Ns.view.UserProfile.appUser.id + ":" + "TOURNAMENT_MATCH" + ":" + Ns.ui.UI.selectedGame + ":" + tournament;
     },
-    
+
     constructor: function () {
 
         var obj = {
@@ -50,9 +50,9 @@ Ns.Match = {
     liveMatchList: function (container, matches) {
 
         /*var now = new Date();
-        var now_00_hrs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        var _24_hrs = 60 * 60 * 24 * 1000;
-        */
+         var now_00_hrs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+         var _24_hrs = 60 * 60 * 24 * 1000;
+         */
         Main.listview.create({
             container: container,
             scrollContainer: container,
@@ -79,8 +79,10 @@ Ns.Match = {
             },
             onRender: function (tpl_var, data) {
 
-                if (tpl_var === 'game_start_time') {
+                if (tpl_var === 'start_time') {
                     return Ns.Util.formatTime(data[tpl_var]);
+                } else if (tpl_var === 'status') {
+                    return Main.util.toSentenceCase(data[tpl_var]);
                 }
 
             },
@@ -214,8 +216,8 @@ Ns.Match = {
             } catch (e) {
                 console.warn(e);
             }
-            
-            
+
+
             document.getElementById('home-group-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
             document.getElementById('home-group-pic').src = group.photo_url;
             document.getElementById('home-group-name').innerHTML = group.name;
@@ -320,14 +322,14 @@ Ns.Match = {
             document.getElementById('home-tournament-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
             document.getElementById('home-tournament-pic').src = tournament.photo_url;
             document.getElementById('home-tournament-name').innerHTML = tournament.name;
-            if(tournament.seasons.length > 0){
+            if (tournament.seasons.length > 0) {
                 var season = tournament.seasons[tournament.seasons.length - 1];//current season
-                var season_str = 'Season '+season.sn+': '+ Ns.Util.formatTime(season.start_time);
+                var season_str = 'Season ' + season.sn + ': ' + Ns.Util.formatTime(season.start_time);
                 document.getElementById('home-tournament-brief').innerHTML = season_str;
-            }else{
+            } else {
                 document.getElementById('home-tournament-brief').innerHTML = 'No season';
             }
-            
+
 
             Ns.Match.refreshTournamentsMatchList(tournament);
         }
@@ -409,30 +411,30 @@ Ns.Match = {
 
 
     },
-    
+
     onNotifyUpComingMatch: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
 
     },
-    
+
     onGameStart: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.Match.prependMatchListview(match);
 
     },
-    
+
     onGameStartNextSet: function (obj) {
         console.log(obj);
-        
+
         var match = obj.data.match;
         Ns.Match.prependMatchListview(match);
 
     },
-    
+
     onWatchGameStart: function (obj) {
         console.log(obj);
 

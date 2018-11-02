@@ -479,7 +479,9 @@ class Match extends WebApplication {
 
         }
 
-        sets[0].start_time = new Date(); //set the start time of the first set
+        if (sets.length > 0) {
+            sets[0].start_time = new Date(); //set the start time of the first set
+        }
 
         var match = {
             group_name: mtcObj.group_name ? mtcObj.group_name : '',

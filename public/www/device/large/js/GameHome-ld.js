@@ -149,7 +149,7 @@ Ns.GameHome = {
             url:'tournament-details.html',
             fade:true,
             data : tournament,
-            onShow: Ns.view.Tournament.content
+            onShow: Ns.GameTournament.Content
         });        
     },
     showGroupDetails: function (group) {
@@ -159,7 +159,7 @@ Ns.GameHome = {
             url:'group-details.html',
             fade:true,
             data : group,
-            onShow: Ns.view.Group.content
+            onShow: Ns.GameGroup.Content
         });
 
     },
@@ -170,7 +170,7 @@ Ns.GameHome = {
             url:'play-notifications.html',
             fade:true,            
             data : Ns.ui.UI.selectedGame,
-            onShow: Ns.view.PlayNotifications.content
+            onShow: Ns.GamePlayNotifications.Content
         });
 
     },
@@ -184,7 +184,7 @@ Ns.GameHome = {
             url:'game-contacts.html',
             fade:true,
             data : Ns.ui.UI.selectedGame,
-            onShow: Ns.view.Contacts.content
+            onShow: Ns.GameContacts.Content
         });
         
     },
@@ -200,7 +200,7 @@ Ns.GameHome = {
             url:'user-profile.html',
             fade:true,
             data : user,
-            onShow: Ns.view.UserProfile.content
+            onShow: Ns.GameUserProfile.Content
         });
     },
     showSettings: function () {

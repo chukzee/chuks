@@ -40,7 +40,9 @@ and open the template in the editor.
     position: absolute;
     top :$header_height;
     left:0;
+    bottom: 0;
     width: 100%;
+    overflow: auto;
 
 }
 

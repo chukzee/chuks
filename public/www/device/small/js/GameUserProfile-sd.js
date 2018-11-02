@@ -6,8 +6,11 @@
 Ns.GameUserProfile = {
 
 
-    Content: function (u) {
-        
+    Content: function (data) {
+        Ns.view.UserProfile.content(data);
+        $('#user-profile-back-btn').on('click', function () {
+            Main.page.back();
+        });        
     },
    
 };

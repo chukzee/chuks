@@ -63,11 +63,21 @@ $group_img_height : 180px;
             //background-color: red;
         }
         >:nth-child(4){/*back botton*/
+            opacity: 0.8; 
+            background: blue; 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 50%;
             color: white; 
             position: absolute;
             top: $base_padding * 2;
             left: $base_padding * 2;
             cursor: pointer;
+            >:nth-child(1){
+                position: absolute;
+                top: 8px; 
+                left: 8px;
+            }
         }
 
         >:nth-child(5){/*edit botton*/
@@ -76,6 +86,20 @@ $group_img_height : 180px;
             bottom: $base_padding * 2;
             right: $base_padding * 2;
             cursor: pointer;
+        }
+        >:nth-child(6){/*menu botton*/
+            opacity: 0.8; 
+            background: blue; 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 50%;
+            color: white; 
+            cursor: pointer;
+            >:nth-child(1){
+                position: absolute;
+                top: 9px;
+                left: 16px;
+            }
         }
     }
 

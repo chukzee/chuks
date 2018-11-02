@@ -42,8 +42,8 @@ Ns.view.Group = {
         } else {
             setContent(group);
         }
-        
-        
+
+
         function setContent(group) {
 
             /*
@@ -65,13 +65,23 @@ Ns.view.Group = {
             if (!group) {
                 return;
             }
+
+            var created_by_user;
+            for (var i = 0; i < group.admins.length; i++) {
+                if (group.admins[i].user_id === group.created_by) {
+                    created_by_user = group.admins[i];
+                    break;
+                }
+            }
+
             document.getElementById("group-details-group-name").innerHTML = group.name;
             document.getElementById("group-details-photo-url").src = group.photo_url;
             document.getElementById("group-details-status-message").innerHTML = group.status_message;
-            document.getElementById("group-details-created-by").innerHTML = group.created_by;
-            document.getElementById("group-details-date-created").innerHTML = group.date_created;
+            document.getElementById("group-details-created-by").innerHTML = created_by_user ? created_by_user.full_name : group.created_by;
+            document.getElementById("group-details-date-created").innerHTML = Ns.Util.formatDate(group.date_created);
             document.getElementById("group-details-members-count").innerHTML = group.total_members;
             document.getElementById("group-details-admins-count").innerHTML = group.total_admins;
+
 
             /*<ul class="game9ja-user-show-list">
              
@@ -172,18 +182,21 @@ Ns.view.Group = {
             var app_user_id = Ns.view.UserProfile.appUser.user_id;
             var set_exit_group = data.user_id === app_user_id;
 
+            if (tpl_var === 'date_joined') {
+                return Ns.Util.formatTime(data[tpl_var]);
+            }
             if (tpl_var === 'action_value') {
                 if (set_exit_group) {
                     return 'Exit Group';
                 } else {
-                    return 'Lets play';
+                    return 'Lets Play';
                 }
             }
 
 
             if (tpl_var === 'action_clazz') {
                 if (set_exit_group) {
-                    return 'class="game9ja-exit-group-btn"';
+                    return 'game9ja-exit-group-btn';
                 } else {
                     return '';
                 }

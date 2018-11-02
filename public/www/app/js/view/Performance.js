@@ -50,10 +50,6 @@ Ns.view.Performance = {
 
         displaySeason(tournament, current_season);
 
-        $("#performance-view-back-btn").off('click');
-        $("#performance-view-back-btn").on('click', function () {
-            alert('TODO performance-view-back-btn');
-        });
 
         $("#performance-view-season-previous").off('click');
         $("#performance-view-season-previous").on('click', function () {
