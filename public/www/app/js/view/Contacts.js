@@ -33,6 +33,9 @@ Ns.view.Contacts = {
     content: function () {
 
         var contacts = Ns.view.UserProfile.appUser.contacts;
+        if(!contacts){
+            contacts = [];
+        }
         var tempInfos = [];
         for (var i = 0; i < contacts.length; i++) {
             var obj = {

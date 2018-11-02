@@ -178,7 +178,7 @@ Ns.PlayRequest = {
 
                                         feedback_msg.innerHTML = 'Player ready.';
                                         Main.countdown.start(function (value, finish) {
-                                            var secs_remaining = value - 1;
+                                            var secs_remaining = value;
                                             dialog.setButtonText(0, start_text + ' (' + secs_remaining + ')');
                                             if (finish) {
                                                 dialog.hide();
