@@ -318,7 +318,14 @@ class User extends WebApplication {
                 user.full_name = user.email.substring(0, index);
             }
         }
-
+        
+        if(!user.groups_belong){
+            user.groups_belong = [];
+        }
+        
+        if(!user.tournaments_belong){
+            user.tournaments_belong = [];
+        }
     }
 
     async getInfo(user_id, required_fields) {

@@ -12,7 +12,7 @@ and open the template in the editor.
 
 
 
-.game9ja-play-notifications-header{
+.game9ja-notifications-header{
     @extend .game9ja-header;
 
     > :nth-child(1){ /*holding title*/
@@ -36,7 +36,7 @@ and open the template in the editor.
     }
     
 }
-.game9ja-play-notifications-body{
+.game9ja-notifications-body{
     position: absolute;
     top :$header_height;
     left:0;
@@ -50,6 +50,13 @@ and open the template in the editor.
     background: transparent !important;
     font-size: 11px !important;
     border: 1px #00ff00 solid !important;
+    color:  #aaa !important;
+}
+
+.game9ja-expired-btn {
+    background: transparent !important;
+    font-size: 11px !important;
+    //border: 1px #00ff00 solid !important;
     color:  #aaa !important;
 }
 

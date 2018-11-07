@@ -8,8 +8,6 @@ Ns.Util = {
     formatTime: function (time) {
         var date = new Date(time);
 
-        console.log('TODO - consider the user time zone');
-
         var day = date.getDate();
         var month = date.getMonth() + 1;//plus one because it is zero based month
         var year = date.getFullYear();
@@ -44,8 +42,6 @@ Ns.Util = {
 
     formatDate: function (time) {
         var date = new Date(time);
-
-        console.log('TODO - consider the user time zone');
 
         var day = date.getDate();
         var month = date.getMonth() + 1;//plus one because it is zero based month

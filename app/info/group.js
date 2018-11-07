@@ -114,25 +114,42 @@ class Group extends WebApplication {
 
         try {
 
-            var adminQuery = {
-                $and: [
-                    {
-                        name: group_name
-                    },
-                    {
-                        'members.user_id': from_user_id
-                    },
-                    {
-                        'members.is_admin': true
-                    },
-                    {
-                        'members.committed': true
-                    }
-                ]
-            };
+            /*var adminQuery = {
+             $and: [
+             {
+             name: group_name
+             },
+             {
+             'members.user_id': from_user_id
+             },
+             {
+             'members.is_admin': true
+             },
+             {
+             'members.committed': true
+             }
+             ]
+             };
+             
+             
+             //first check if the user is an admin
+             var admin = await c.findOne(adminQuery, {_id: 0});
+             */
 
-            //first check if the user is an admin
-            var admin = await c.findOne(adminQuery, {_id: 0});
+            var group = await c.findOne({name: group_name}, {_id: 0});
+            if (!group) {
+                return this.error(`Unknown group name - ${group_name}`);
+            }
+            var admin;
+            for (var i = 0; i < group.members.length; i++) {
+                var member = group.members[i];
+                if (member.user_id === from_user_id
+                        && member.is_admin
+                        && member.committed) {
+                    admin = member;
+                    break;
+                }
+            }
 
             if (!admin) {
                 return "Not authorize to send this request. Must be a group admin.";
@@ -152,7 +169,12 @@ class Group extends WebApplication {
 
             var data = {
                 group_name: group_name,
-                authorization_token: authorization_token
+                status_message: group.status_message,
+                photo_url: group.photo_url,
+                created_by: group.created_by,
+                sent_by: from_user_id,
+                authorization_token: authorization_token,
+                notification_time: new Date()
             };
 
             this.send(this.evt.group_join_request, data, to_user_id, true);
@@ -291,7 +313,7 @@ class Group extends WebApplication {
             photo_url: photo_url,
             created_by: user_id,
             date_created: member.date_joined ? member.date_joined : new Date(),
-            members:[]
+            members: []
         };
 
         try {

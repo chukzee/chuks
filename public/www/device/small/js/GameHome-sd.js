@@ -154,13 +154,13 @@ Ns.GameHome = {
             data: group
         });
     },
-    showPlayNotifications: function (data) {
+    showNotifications: function (data) {
 
         Main.page.show({
-            url: 'play-notifications.html',
+            url: 'notifications.html',
             effect: "slideleft",
             duration: 500,
-            onBeforeShow: Ns.GamePlayNotifications.Content,
+            onBeforeShow: Ns.GameNotifications.Content,
             data: data
         });
     },

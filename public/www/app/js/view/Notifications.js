@@ -1,7 +1,7 @@
 
 /* global Main, Ns */
 
-Ns.view.PlayNotifications = {
+Ns.view.Notifications = {
 
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
     playRequestCount: 0,
@@ -42,7 +42,7 @@ Ns.view.PlayNotifications = {
             });
 
             for (var i = 0; i < notifications.length; i++) {
-                Ns.view.PlayNotifications.addNotification(notifications[i]);
+                Ns.view.Notifications.addNotification(notifications[i]);
             }
         }
 
@@ -70,7 +70,7 @@ Ns.view.PlayNotifications = {
                             Ns.PlayRequest.playRequestList = play_requests;
                         }
 
-                        Ns.view.PlayNotifications.displayReqCountInfo(play_requests.length);
+                        Ns.view.Notifications.displayReqCountInfo(play_requests.length);
                         notifications = notifications.concat(play_requests);
                         promise_count++;
                         if (promise_count === 2) {
@@ -87,7 +87,7 @@ Ns.view.PlayNotifications = {
                         } else {
                             upcoming_matches = data.upcoming_matches;
                         }
-                        Ns.view.PlayNotifications.displayUpcomingMatchCountInfo(upcoming_matches.length);
+                        Ns.view.Notifications.displayUpcomingMatchCountInfo(upcoming_matches.length);
                         notifications = notifications.concat(upcoming_matches);
                         promise_count++;
                         if (promise_count === 2) {
@@ -102,22 +102,22 @@ Ns.view.PlayNotifications = {
     },
 
     addNotification: function (notification, use_uiupdater) {
-        
-        if(use_uiupdater){
+
+        if (use_uiupdater) {
             Main.uiupdater.show({
-                container: 'game-play-notifications-body',
+                container: 'game-notifications-body',
                 delay: 5,
                 data: notification,
                 //countdown: ....,
                 update: doAddNotification
             });
-        }else{
+        } else {
             doAddNotification(notification);
         }
-        
+
         function doAddNotification(notificat) {
             if (notificat.tournament_name) {
-                
+
                 Main.tpl.template({
                     tplUrl: 'upcoming-tournament-match-tpl.html',
                     data: notificat,
@@ -126,11 +126,11 @@ Ns.view.PlayNotifications = {
                             return data.start_time;
                         }
                     },
-                    afterReplace: Ns.view.PlayNotifications._addUpcomingMatchItem
+                    afterReplace: Ns.view.Notifications._addUpcomingMatchItem
                 });
-                
+
             } else {//play request
-                
+
                 Main.tpl.template({
                     tplUrl: 'play-request-tpl.html',
                     data: notificat,
@@ -147,23 +147,25 @@ Ns.view.PlayNotifications = {
                         if (tpl_var === 'full_name') {
                             return opponent.full_name;
                         }
-                        
+
                     },
-                    afterReplace: Ns.view.PlayNotifications._addPlayRequestItem
+                    afterReplace: Ns.view.Notifications._addPlayRequestItem
                 });
             }
         }
 
     },
-
+    _domExtraField: function (id) {
+        return id + Ns.view.Notifications.DOM_EXTRA_FIELD_PREFIX;
+    },
     _addItem: function (html, data) {
 
-        var el_id = 'game-play-notifications-body';
-        var dom_extra_field = el_id + Ns.view.PlayNotifications.DOM_EXTRA_FIELD_PREFIX;
+        var el_id = 'game-notifications-body';
+        var dom_extra_field = Ns.view.Notifications._domExtraField(el_id);
 
         //now add the item
         var el = document.getElementById(el_id);
-        if(!el){
+        if (!el) {
             return;
         }
         $(el).prepend(html);
@@ -175,50 +177,76 @@ Ns.view.PlayNotifications = {
 
     _addPlayRequestItem: function (html, data) {
 
-        var el = Ns.view.PlayNotifications._addItem(html, data);
+        var el = Ns.view.Notifications._addItem(html, data);
 
         var start_game_btn = el.querySelector('input[name=start_game_btn]');
         var opponent_photo = el.querySelector('img[name=opponent_photo]');
 
-        $(start_game_btn).on('click', data, Ns.view.PlayNotifications._onClickStartGame);
-        $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
+        $(start_game_btn).on('click', data, Ns.view.Notifications._onClickStartGame);
+        $(opponent_photo).on('click', data, Ns.view.Notifications._onClickPlayerPhoto);
     },
 
     _addUpcomingMatchItem: function (html, data) {
 
-        var el = Ns.view.PlayNotifications._addItem(html, data);
+        var el = Ns.view.Notifications._addItem(html, data);
 
         var kickoff_btn = el.querySelector('input[name=kickoff_btn]');
         var opponent_photo = el.querySelector('img[name=opponent_photo]');
 
-        $(kickoff_btn).on('click', data, Ns.view.PlayNotifications._countdownToKickoff);
-        $(opponent_photo).on('click', data, Ns.view.PlayNotifications._onClickPlayerPhoto);
+        $(kickoff_btn).on('click', data, Ns.view.Notifications._countdownToKickoff);
+        $(opponent_photo).on('click', data, Ns.view.Notifications._onClickPlayerPhoto);
     },
 
     displayReqCountInfo: function (count) {
 
-        var el = document.getElementById('game-play-notifications-body');
-        if(!el){
+        var el = document.getElementById('game-notifications-body');
+        if (!el) {
             return;
         }
-        Ns.view.PlayNotifications.playRequestCount = count;
+        Ns.view.Notifications.playRequestCount = count;
         var text = count < 2 ? "player waiting." : "players waiting.";
-        document.getElementById('game-play-notifications-play-request-count').innerHTML = count;
-        document.getElementById('game-play-notifications-play-request-text').innerHTML = text;
+        document.getElementById('game-notifications-play-request-count').innerHTML = count;
+        document.getElementById('game-notifications-play-request-text').innerHTML = text;
     },
 
     displayUpcomingMatchCountInfo: function (count) {
-        
-        var el = document.getElementById('game-play-notifications-body');
-        if(!el){
+
+        var el = document.getElementById('game-notifications-body');
+        if (!el) {
             return;
         }
-        Ns.view.PlayNotifications.upcomingMatchCount = count;
+        Ns.view.Notifications.upcomingMatchCount = count;
         var text = count < 2 ? "upcoming match." : "upcoming matches.";
-        document.getElementById('game-play-notifications-upcoming-count').innerHTML = count;
-        document.getElementById('game-play-notifications-upcoming-text').innerHTML = text;
+        document.getElementById('game-notifications-upcoming-count').innerHTML = count;
+        document.getElementById('game-notifications-upcoming-text').innerHTML = text;
     },
-    
+
+    expireStartButton: function (game_id) {
+        
+        var el_id = 'game-notifications-body';
+        var dom_extra_field = Ns.view.Notifications._domExtraField(el_id);
+
+        //now add the item
+        var el = document.getElementById(el_id);
+        if (!el) {
+            return;
+        }
+        var children = $(el).children();
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            var extra_field = child[dom_extra_field];
+            if (extra_field && extra_field.game_id === game_id) {
+                var start_btn = child.querySelector('input[name=start_game_btn]');
+                if (!$(start_btn).hasClass('game9ja-expired-btn')) {
+                    $(start_btn).addClass('game9ja-expired-btn');
+                }
+                $(start_btn).off('click');//remove click event
+                start_btn.value = Ns.Util.formatTime(extra_field.notification_time);
+            }
+        }
+
+    },
+
     _onClickPlayerPhoto: function (argu) {
         var data = argu.data;
         alert('_onClickPlayerPhoto');
@@ -235,6 +263,10 @@ Ns.view.PlayNotifications = {
 
         Main.ro.match.start(game_id)
                 .busy({html: 'Starting Game...'})
+                .after(function (data, err) {
+
+                    Ns.view.Notifications.expireStartButton(game_id);
+                })
                 .get(function (data) {
 
                     Ns.GameHome.showGameView(data);

@@ -306,22 +306,22 @@ Ns.ui.UI = {
                 if (m && (m.game_status.toLowercase() !== 'end' && m.game_status.toLowercase() !== 'finish')) {
                     Ns.GameHome.showGameView(m);
                 } else {
-                    var Play_Notifications = 'Play Notifications';
+                    var Notifications = 'Notifications';
                     var Invite_Players = 'Invite Players';
                     Main.confirm(function (option) {
-                        if (option === Play_Notifications) {
-                            Ns.GameHome.showPlayNotifications();
+                        if (option === Notifications) {
+                            Ns.GameHome.showNotifications();
                         } else if (option === Invite_Players) {
                             Ns.GameHome.showInvitePlayers();
                         }
                     }, 'You do not have any active game session!'
                             , 'NO ACTIVE GAME'
-                            , [Play_Notifications, Invite_Players]);
+                            , [Notifications, Invite_Players]);
 
                 }
                 break;
             case 'Notifications':
-                Ns.GameHome.showPlayNotifications();
+                Ns.GameHome.showNotifications();
                 break;
             case 'Play robot':
                 var m = Ns.Match.currentRobotMatch;

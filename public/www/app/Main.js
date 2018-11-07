@@ -4346,6 +4346,10 @@ var Main = {};
                 return;
             }
             var styleObj = mnuStyle.call(this);
+            if(!styleObj){
+                destroy();
+                return;
+            }
             //menuCmp[0].style = styleObj.main_style;
             menuCmp[0].style.top = styleObj.top + 'px';
             menuCmp[0].style.left = styleObj.left + 'px';
@@ -4532,6 +4536,13 @@ var Main = {};
                 menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
                 menuBtn = document.getElementById(menuBtn);
             }
+            
+            //check if the menu button is out of view as in the case of it overlayed with another card layer
+            if(!menuBtn.offsetParent 
+                    && menuBtn.offsetWidth === 0 
+                    && menuBtn.offsetHeight === 0){
+                return;//leave since the menu botton in no showing
+            }
 
             var bound = menuBtn.getBoundingClientRect();
             var y = bound.top;
@@ -4648,6 +4659,10 @@ var Main = {};
                 destroy();
 
                 var styleObj = mnuStyle.call(this);
+                
+                if(!styleObj){
+                    return;
+                }
 
                 //alert('styleObj.main_style ' + styleObj.main_style);
                 //alert('styleObj.body_style ' + styleObj.body_style);

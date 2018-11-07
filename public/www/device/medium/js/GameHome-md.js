@@ -212,14 +212,14 @@ Ns.GameHome = {
             onShow: Ns.GameGroup.Content
         });
     },
-    showPlayNotifications: function () {
+    showNotifications: function () {
 
         Main.card.to({
             container: '#home-main',
-            url: 'play-notifications.html',
+            url: 'notifications.html',
             fade: true,
             data: Ns.ui.UI.selectedGame,
-            onShow: Ns.GamePlayNotifications.Content
+            onShow: Ns.GameNotifications.Content
         });
     },
     showInvitePlayers: function () {

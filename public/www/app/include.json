@@ -102,7 +102,7 @@
             "user-profile.css",
             "wait-player.css",
             "game-contacts.css",
-            "play-notifications.css",
+            "notifications.css",
             "performance-view.css",
             "slots-edit.css",
             "player-passport.css",
@@ -132,7 +132,7 @@
             "ui/Dialog.js",
             "ui/GamePanel.js",
             "view/Tournament.js",
-            "view/PlayNotifications.js",
+            "view/Notifications.js",
             "view/Group.js",
             "view/UserProfile.js",
             "view/Contacts.js",
@@ -182,7 +182,7 @@
             "GameRankings-sd.js",
             "GamePerformance-sd.js",
             "GameSearchView-sd.js",
-            "GamePlayNotifications-sd.js"
+            "GameNotifications-sd.js"
         ] 
     },
 
@@ -208,7 +208,7 @@
             "GameRankings-md.js",
             "GamePerformance-md.js",
             "GameSearchView-md.js",
-            "GamePlayNotifications-md.js"
+            "GameNotifications-md.js"
         ]
     },
 
@@ -234,7 +234,7 @@
             "GameRankings-ld.js",
             "GamePerformance-ld.js",
             "GameSearchView-ld.js",
-            "GamePlayNotifications-ld.js"
+            "GameNotifications-ld.js"
         ]
     }
 }

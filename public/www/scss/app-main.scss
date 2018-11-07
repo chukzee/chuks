@@ -76,7 +76,7 @@ input[type=checkbox]{
 
 input[disabled=disabled], input[disabled=""]{
     color: #eee; 
-    cursor: pointer;
+    cursor: default;
 }
 
 .game9ja-hide{
@@ -104,7 +104,7 @@ input[disabled=disabled], input[disabled=""]{
 
 .game9ja-disabled{
     color: #eee;
-    cursor: pointer;
+    cursor: default;
 }
 
 .game9ja-unseen{
@@ -159,3 +159,26 @@ input[disabled=disabled], input[disabled=""]{
     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);   
 }
+
+   .game9ja-button{
+        font-size: 12px;
+        height: 30px;
+        background: #00aa00;//fallback
+        background: linear-gradient(#00bb00, #00aa00);
+        color: lighten(#00aa00, 65%);
+        border-style: none;
+        border-radius: 2px;
+        cursor: pointer;
+        outline: none;
+    }
+    
+    .game9ja-line-button{
+        font-size: 12px;
+        height: 30px;
+        background: transparent;
+        color: #00aa00;
+        border-style: solid;
+        border-radius: 2px;
+        cursor: pointer;
+        outline: none;
+    }

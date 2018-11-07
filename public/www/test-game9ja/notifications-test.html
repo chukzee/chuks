@@ -12,36 +12,37 @@ and open the template in the editor.
         <link rel="stylesheet" href="../app/css/app-main.css" />
         <link rel="stylesheet" href="../app/css/game-main.css" />
         <link rel="stylesheet" href="../app/css/header-items.css" />
-        <link rel="stylesheet" href="../app/css/play-notifications.css" />
+        <link rel="stylesheet" href="../app/css/notifications.css" />
         <link rel="stylesheet" href="../app/css/user-show-list.css" />
         <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+        <script src="../lib/jquery-1.10.2.min.js" type="text/javascript"></script>
     </head>
     <body>
 
 
-        <div class="game9ja-play-notifications-header">
+        <div class="game9ja-notifications-header">
             <div>
-                <span>Play Notifications</span>
+                <span>Notifications</span>
             </div>
             <span>
-                <span id="game-play-notifications-upcoming">
-                    <span><span id="game-play-notifications-upcoming-count"><!--1--></span>
-                    <span id="game-play-notifications-upcoming-text"><!--upcoming match.--></span></span>
+                <span id="game-notifications-upcoming">
+                    <span><span id="game-notifications-upcoming-count">1</span>
+                        <span id="game-notifications-upcoming-text">upcoming match.</span></span>
                 </span>
-                <span id="game-play-notifications-play-request">
-                    <span id="game-play-notifications-play-request-count"><!--5--></span>
-                    <span id="game-play-notifications-play-request-text"><!--player(s) waiting.--></span> 
+                <span id="game-notifications-play-request">
+                    <span id="game-notifications-play-request-count">5</span>
+                    <span id="game-notifications-play-request-text">player(s) waiting.</span> 
                 </span>
             </span>
-            
-            <i id="game-play-notifications-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
-            <i id="game-play-notifications-search" class="fa fa-search game9ja-header-item-right-a"></i>
-            <i id="game-play-notifications-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
+
+            <i id="game-notifications-back-btn" class="fa fa-arrow-left game9ja-header-item-left game9ja-back-btn"></i>
+            <i id="game-notifications-search" class="fa fa-search game9ja-header-item-right-a"></i>
+            <i id="game-notifications-menu" class="fa fa-ellipsis-v game9ja-header-item-right"></i>
         </div>
 
 
-        <div id="game-play-notifications-body"  class="game9ja-play-notifications-body">
-            <!--
+        <div class="game9ja-notifications-body">
+            <input type="button" value="MY BUTTON" id="test" onclick="clickDisable()" name="test_name"/>
             <ul class="game9ja-user-show-list">
 
                 <li><img  src="../app/images/default_group.png" alt=" "/></li>
@@ -56,7 +57,7 @@ and open the template in the editor.
                     <input type="button" value="Start Game"/>
                 </li>
                 <li>
-                    
+
                 </li>
             </ul>
 
@@ -74,7 +75,7 @@ and open the template in the editor.
                     <input type="button" value="Start Game"/>
                 </li>
                 <li>
-                    
+
                 </li>
             </ul>
 
@@ -96,10 +97,41 @@ and open the template in the editor.
                     Upcoming tournament match
                 </li>
             </ul>
-            -->
+
         </div>
 
 
+        <script>
+            function clickDisable() {
+                //alert(document.body.querySelector('input[name=test_name]'));
+                show('This is the toast');
+            }
+            var Main ={
+                        const: {
+                            Z_INDEX: 10000
+                        }
+                    };
+            var show = function (text) {
+
+                var base = document.createElement('div');
+                base.style.zIndex = Main.const.Z_INDEX;
+                base.className = 'game9ja-toast';
+                base.innerHTML = text;
+                base.style.display = 'none';
+                
+                document.body.appendChild(base);
+
+                $(base).stop()
+                        .fadeIn(400)
+                        .delay(3000)
+                        .fadeOut(400, function () {
+                            document.body.removeChild(base);
+                        });
+
+
+
+            };
+        </script>
 
 
     </body>

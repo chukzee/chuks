@@ -16,7 +16,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-play-notifications-header {
+.game9ja-header, .game9ja-notifications-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -44,7 +44,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-play-notifications-header {
+.game9ja-header, .game9ja-notifications-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -135,7 +135,7 @@ and open the template in the editor.
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-.game9ja-play-notifications-header > :nth-child(1) {
+.game9ja-notifications-header > :nth-child(1) {
   /*holding title*/
   margin: 0 auto;
   width: 200px;
@@ -145,7 +145,7 @@ and open the template in the editor.
   text-align: center;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
-.game9ja-play-notifications-header > :nth-child(2) {
+.game9ja-notifications-header > :nth-child(2) {
   position: absolute;
   bottom: 5px;
   left: 5px;
@@ -153,7 +153,7 @@ and open the template in the editor.
   font-size: 12px;
   font-style: italic; }
 
-.game9ja-play-notifications-body {
+.game9ja-notifications-body {
   position: absolute;
   top: 50px;
   left: 0;
@@ -167,4 +167,9 @@ and open the template in the editor.
   border: 1px #00ff00 solid !important;
   color: #aaa !important; }
 
-/*# sourceMappingURL=play-notifications.css.map */
+.game9ja-expired-btn {
+  background: transparent !important;
+  font-size: 11px !important;
+  color: #aaa !important; }
+
+/*# sourceMappingURL=notifications.css.map */

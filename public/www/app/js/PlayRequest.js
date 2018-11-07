@@ -94,7 +94,7 @@ Ns.PlayRequest = {
 
                     } else if (value === 'CLOSE') {
                         this.hide();
-                    } else if (value === start_text) {
+                    } else if (value.indexOf(start_text) === 0) {//starts with 
                         this.hide();
                         goToGame(match);
                     }
@@ -191,7 +191,7 @@ Ns.PlayRequest = {
                                         /*Depreacated*/
                                         //because the player does not have to click any reject button.
                                         //All player needs to do as a way to reject the request is to ignore clicking
-                                        //the 'Start Game' button in the play notification. Then the play request just
+                                        //the 'Start Game' button in the notification. Then the play request just
                                         // gracefully expires
                                     };
                                 }
@@ -251,15 +251,15 @@ Ns.PlayRequest = {
             //COME BACK FOR CASE WHERE THE STORAGE IS FULL
         }
 
-        Ns.view.PlayNotifications.displayReqCountInfo(Ns.PlayRequest.playRequestList.length);
+        Ns.view.Notifications.displayReqCountInfo(Ns.PlayRequest.playRequestList.length);
 
-        Ns.view.PlayNotifications.addNotification(play_request, true);
+        Ns.view.Notifications.addNotification(play_request, true);
 
     },
     /**
      * @Depreacated - because the player does not have to click any reject button.
      * All that the player needs to do as a way to reject the request is to ignore clicking
-     * the 'Start Game' button in the play notification. Then the play request just
+     * the 'Start Game' button in the notification. Then the play request just
      * gracefully expires.
      * @param {type} obj 
      */
@@ -270,6 +270,7 @@ Ns.PlayRequest = {
 
     onPlayRequestExpired: function (obj) {
         console.log(obj);
+        Ns.view.Notifications.expireStartButton(obj.data.game_id);
     }
 
     //more goes below

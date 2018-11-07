@@ -3,11 +3,11 @@
 /* global Main, Ns */
 
 
-Ns.GamePlayNotifications = {
+Ns.GameNotifications = {
 
     Content: function (data) {
-        Ns.view.PlayNotifications.content(data);
-        $('#game-play-notifications-back-btn').on('click', function () {
+        Ns.view.Notifications.content(data);
+        $('#game-notifications-back-btn').on('click', function () {
             
             Main.card.back('#home-main', function () {
 
