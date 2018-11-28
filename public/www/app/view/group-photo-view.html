@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="../app/css/group-photo-view.css" />
+
+        <script src="../lib/jquery-1.10.2.min.js"></script>
+    </head>
+    <body>
+        <div id="group-photo-view" class="game9ja-group-photo-view">
+            <!--OR <div class="game9ja-group-photo-view-with-limited-access" >  --> <!--limited access removes comment icon-->   
+
+
+            <div><!--image container-->
+                <div id="group-photo-view-image-container">
+                    <img  id="group-photo-view-image" alt=""/>
+                </div>
+            </div>
+
+
+            <div id="group-photo-view-header-transparent-layer"><!--header transparent layer--></div>
+            <div id="group-photo-view-header"><!--header-->
+
+                <i  id="group-photo-view-back-btn" class="fa fa-arrow-left"></i>
+
+                <span  id="group-photo-view-name"><!--Best Chess Group--></span>
+
+            </div>
+
+
+            <div id="group-photo-view-footer-transparent-layer"><!--footer transparent layer-->
+                <div style=""><!--footer-->
+                </div>
+            </div>
+
+            <div id="group-photo-view-footer"><!--footer-->
+                <div>
+                    <div id="group-photo-view-expand"><i class="fa fa-plus-circle"><!--expand the image to largest size--></i></div>
+                    <div id="group-photo-view-open-profile"><i class="fa fa-info-circle"><!--click to open the profile view--></i></div>
+                    <div id="group-photo-view-comment"><i class="fa fa-comments"><!--comment--></i><span class="number-badge"></span></div>
+                    <div id="group-photo-view-share"><i class="fa fa-share-alt"><!--share--></i></div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+
+            var timeout_id;
+            function doIt() {
+                if (!$("#group-photo-view-header-transparent-layer").hasClass("game9ja-fly-down-translucent")) {
+                    $("#group-photo-view-header-transparent-layer").addClass("game9ja-fly-down-translucent");
+                }
+                if (!$("#group-photo-view-header").hasClass("game9ja-fly-down")) {
+                    $("#group-photo-view-header").addClass("game9ja-fly-down");
+                }
+
+                if (!$("#group-photo-view-footer-transparent-layer").hasClass("game9ja-fly-up-translucent")) {
+                    $("#group-photo-view-footer-transparent-layer").addClass("game9ja-fly-up-translucent");
+                }
+
+                if (!$("#group-photo-view-footer").hasClass("game9ja-fly-up")) {
+                    $("#group-photo-view-footer").addClass("game9ja-fly-up");
+                }
+
+                clearTimeout(timeout_id);
+
+                timeout_id = setTimeout(function () {
+                    $("#group-photo-view-header-transparent-layer").removeClass("game9ja-fly-down-translucent");
+                    $("#group-photo-view-header").removeClass("game9ja-fly-down");
+
+                    $("#group-photo-view-footer-transparent-layer").removeClass("game9ja-fly-up-translucent");
+                    $("#group-photo-view-footer").removeClass("game9ja-fly-up");
+                }, 5000);
+
+            }
+
+        </script>
+
+    </body>
+</html>

@@ -170,7 +170,7 @@ class Comment extends   WebApplication {
      * @param {type} msg_replied_id - id of the comment message replied to
      * @returns {String}
      */
-    add(user_id, game_id, content, content_type, msg_replied_id) {
+    sendGameComment(user_id, game_id, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -194,7 +194,7 @@ class Comment extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the comment is audio type (voice)
             content_type: content_type,
-            status: 'sent', // e.g sent , delivered, seen
+            //status: 'sent', // e.g sent , delivered, seen
             like: 0,
             dislike: 0,
             time: now.getTime()

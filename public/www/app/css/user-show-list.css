@@ -76,6 +76,11 @@ and open the template in the editor.
     top: 30px;
     font-size: 12px;
     color: #888; }
+  .game9ja-user-show-list > :nth-child(4) > i {
+    position: absolute;
+    top: 28px;
+    right: 20px;
+    cursor: pointer; }
   .game9ja-user-show-list > :nth-child(4) > input {
     /*Lets play button*/
     position: absolute;

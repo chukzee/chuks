@@ -2073,6 +2073,7 @@ class Tournament extends WebApplication {
                     }
 
                     match.reminder_time = new Date();
+                    notification_type: 'upcoming_tournament_match',
                     match.notification_time = match.reminder_time;//same
                     
                     //store the upcoming match

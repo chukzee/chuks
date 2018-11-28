@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/comment.css" />
+        <link rel="stylesheet" href="../app/css/section-container.css" />
+        <link rel="stylesheet" href="../app/css/message-input.css" />
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+    </head>
+    <body>
+
+        <div class="game9ja-comment-item">
+            <img data-comment-item="photo_url" src="{photo_url}"  onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/>
+            <span data-comment-item="full-name">{full_name}</span>
+            <span data-comment-item="time-ago">{time_ago}</span>
+            <div data-comment-item="content">{content}</div>
+            <span data-comment-item="reply" class="fa fa-reply"></span>
+            <span data-comment-item="like" class="fa fa-thumbs-up"></span>
+            <span data-comment-item="dislike" class="fa fa-thumbs-down"></span>
+        </div>
+
+    </body>
+</html>
+
+

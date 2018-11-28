@@ -52,7 +52,7 @@ $profile_pic_size : $groups_header_height - 2*$base_padding;
         }
         > :nth-child(3){/*the group profile status*/
             position: absolute;
-            top: 23px;
+            bottom: 5px;
             left: $profile_pic_size + 2* $base_padding;
             width: 35%;
             font-size: 11px;

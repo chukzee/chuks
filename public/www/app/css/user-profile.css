@@ -102,31 +102,33 @@ and open the template in the editor.
       text-overflow: ellipsis;
       white-space: nowrap; }
     .game9ja-user-profile > :nth-child(1) > :nth-child(6) {
-      /*back botton*/
-      /*color: white; 
-      position: absolute;
-      top: $base_padding * 2;
-      left: $base_padding * 2;
-      cursor: pointer;*/
-      opacity: 0.8;
-      background: blue;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      color: white;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      cursor: pointer; }
-      .game9ja-user-profile > :nth-child(1) > :nth-child(6) > :nth-child(1) {
-        position: absolute;
-        top: 8px;
-        left: 8px; }
-    .game9ja-user-profile > :nth-child(1) > :nth-child(7) {
       /*edit botton*/
       color: black;
       position: absolute;
       bottom: 10px;
+      right: 10px;
+      cursor: pointer; }
+    .game9ja-user-profile > :nth-child(1) userheader, .game9ja-user-profile > :nth-child(1) > :nth-child(7), .game9ja-user-profile > :nth-child(1) > :nth-child(8) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 40px;
+      width: 100%;
+      color: white;
+      z-index: 1; }
+    .game9ja-user-profile > :nth-child(1) > :nth-child(7) {
+      background: black;
+      opacity: 0.3; }
+    .game9ja-user-profile > :nth-child(1) > :nth-child(8) > :nth-child(1) {
+      /*back button*/
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      cursor: pointer; }
+    .game9ja-user-profile > :nth-child(1) > :nth-child(8) > :nth-child(2) {
+      /*comment*/
+      position: absolute;
+      top: 10px;
       right: 10px;
       cursor: pointer; }
   .game9ja-user-profile > :nth-child(2) {

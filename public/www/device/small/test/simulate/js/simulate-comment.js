@@ -81,7 +81,7 @@ Main.on("pagecreate", function (arg) {
         var msg_content = prompt('msg_content', '');
         var msg_replied_id = prompt('msg_replied_id', '');
 
-        Main.ro.comment.add(user_id, game_id, msg_content, msg_replied_id)
+        Main.ro.comment.sendGameComment(user_id, game_id, msg_content, msg_replied_id)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

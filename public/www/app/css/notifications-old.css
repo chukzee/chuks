@@ -1,0 +1,175 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 1, 2017, 4:28:52 PM
+    Author     : Engr Chuks
+*/
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header, .game9ja-notifications-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: #222;
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #222;
+  color: #eee; }
+
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header, .game9ja-notifications-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: #222;
+  color: #eee; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #222;
+  color: #eee; }
+
+.game9ja-header-item-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-a {
+  position: absolute;
+  top: 10px;
+  right: 40px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-b {
+  position: absolute;
+  top: 10px;
+  right: 70px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-left {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-left-a {
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-left-b {
+  position: absolute;
+  top: 10px;
+  left: 80px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-notifications-header > :nth-child(1) {
+  /*holding title*/
+  margin: 0 auto;
+  width: 200px;
+  height: 100%;
+  padding: 5px;
+  font-size: 18px;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+.game9ja-notifications-header > :nth-child(2) {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  color: #ccc !important;
+  font-size: 12px;
+  font-style: italic; }
+
+.game9ja-notifications-body {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  overflow: auto; }
+
+.game9ja-kickoff {
+  background: transparent !important;
+  font-size: 11px !important;
+  border: 1px #00ff00 solid !important;
+  color: #aaa !important; }
+
+.game9ja-expired-btn {
+  background: transparent !important;
+  font-size: 11px !important;
+  color: #aaa !important; }
+
+/*# sourceMappingURL=notifications-old.css.map */

@@ -573,7 +573,7 @@ var Main = {};
         toSentenceCase: function (str) {
             if (str.length > 1) {
                 return str.substring(0, 1).toUpperCase() + str.substring(1); // to sentence case
-            } 
+            }
             if (str.length === 1) {
                 return str.toUpperCase(); // to sentence case
             }
@@ -2683,7 +2683,7 @@ var Main = {};
          * @returns {undefined}
          */
         this.show = function (obj) {
-
+            var me = this;
             if ((obj.el && obj.html) || (obj.el && obj.url) || (obj.url && obj.html)) {
                 throw new Error('Ambigious properties : must be only one of url , el , hmtl');
                 //return;
@@ -2717,10 +2717,12 @@ var Main = {};
             fullScreenElement = content;
 
             if (obj.url) {
-                Main.ajax.get(obj.url,
+                var url = intentUrl(obj.url);
+                Main.ajax.get(url,
                         function (res) {
                             $(content).append(res);
                             addClose(content, obj.closeButton);
+                            finishShow.call(me);
                         },
                         function (err) {
                             if (fullScreenElement) {
@@ -2732,23 +2734,32 @@ var Main = {};
             } else if (obj.el) {
                 $(content).append(obj.el);
                 addClose(content, obj.closeButton);
+                finishShow.call(me);
             } else if (obj.html) {
                 $(content).append(obj.html);
                 addClose(content, obj.closeButton);
+                finishShow.call(me);
             }
 
-            showFs = obj.onShow;
-            hideFs = obj.onHide;
+            function finishShow() {
+                showFs = obj.onShow;
+                hideFs = obj.onHide;
 
-            //now fade in or slide. depending on the transition
-            effectFs = obj.effect;
-            if (!effectFs) {
-                effectFs = "fadein";//default effect
+                //now fade in or slide. depending on the transition
+                effectFs = obj.effect;
+                if (!effectFs) {
+                    effectFs = "fadein";//default effect
+                }
+                var callShow = function () {
+                    showFs.call(this, fullScreenElement);
+                };
+                var fThis = {
+                    hide: this.hide
+                };
+                Main.anim.to(fullScreenElement, duration, effectProp(effectFs), Main.util.isFunc(showFs) ? callShow.bind(fThis) : null);
+
+                Main.device.addBackAction(this.hide);
             }
-
-            Main.anim.to(fullScreenElement, duration, effectProp(effectFs), Main.util.isFunc(showFs) ? showFs : null);
-
-            Main.device.addBackAction(this.hide);
         };
 
 
@@ -4346,7 +4357,7 @@ var Main = {};
                 return;
             }
             var styleObj = mnuStyle.call(this);
-            if(!styleObj){
+            if (!styleObj) {
                 destroy();
                 return;
             }
@@ -4536,11 +4547,11 @@ var Main = {};
                 menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
                 menuBtn = document.getElementById(menuBtn);
             }
-            
+
             //check if the menu button is out of view as in the case of it overlayed with another card layer
-            if(!menuBtn.offsetParent 
-                    && menuBtn.offsetWidth === 0 
-                    && menuBtn.offsetHeight === 0){
+            if (!menuBtn.offsetParent
+                    && menuBtn.offsetWidth === 0
+                    && menuBtn.offsetHeight === 0) {
                 return;//leave since the menu botton in no showing
             }
 
@@ -4659,8 +4670,8 @@ var Main = {};
                 destroy();
 
                 var styleObj = mnuStyle.call(this);
-                
-                if(!styleObj){
+
+                if (!styleObj) {
                     return;
                 }
 

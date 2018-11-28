@@ -501,7 +501,7 @@ Ns.view.Tournament = {
                         Ns.GameHome.showUserProfile(user);
                         break;
                     case 'View player profile pic':
-                        Ns.ui.UI.expandPhoto(user);
+                        Ns.ui.Photo.show(user);
                         break;
                     case 'View player ranking':
 

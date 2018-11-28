@@ -92,48 +92,48 @@ and open the template in the editor.
       text-overflow: ellipsis;
       white-space: nowrap; }
     .game9ja-tournament-details > :nth-child(1) > :nth-child(5) {
-      /*back button*/
-      opacity: 0.8;
-      background: blue;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      color: white;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      cursor: pointer; }
-      .game9ja-tournament-details > :nth-child(1) > :nth-child(5) > :nth-child(1) {
-        position: absolute;
-        top: 8px;
-        left: 8px; }
-    .game9ja-tournament-details > :nth-child(1) > :nth-child(6) {
       /*edit button*/
       color: black;
       position: absolute;
       bottom: 10px;
       right: 10px;
       cursor: pointer; }
-    .game9ja-tournament-details > :nth-child(1) > :nth-child(7) {
-      /*menu button*/
-      opacity: 0.8;
-      background: blue;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      color: white;
-      cursor: pointer; }
-      .game9ja-tournament-details > :nth-child(1) > :nth-child(7) > :nth-child(1) {
-        position: absolute;
-        top: 9px;
-        left: 16px; }
-    .game9ja-tournament-details > :nth-child(1) > :nth-child(8) {
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(6) {
       /*Tournament type*/
       font-weight: 700;
       color: #444;
       padding-left: 5px;
       padding-right: 5px;
       box-sizing: border-box; }
+    .game9ja-tournament-details > :nth-child(1) tournheader, .game9ja-tournament-details > :nth-child(1) > :nth-child(7), .game9ja-tournament-details > :nth-child(1) > :nth-child(8) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 40px;
+      width: 100%;
+      color: white;
+      z-index: 1; }
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(7) {
+      background: black;
+      opacity: 0.3; }
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(8) > :nth-child(1) {
+      /*back button*/
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      cursor: pointer; }
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(8) > :nth-child(2) {
+      /*general comment*/
+      position: absolute;
+      top: 10px;
+      right: 40px;
+      cursor: pointer; }
+    .game9ja-tournament-details > :nth-child(1) > :nth-child(8) > :nth-child(3) {
+      /*inhouse comment*/
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer; }
   .game9ja-tournament-details > :nth-child(2) {
     /*tournament officials*/
     border-radius: 0px !important;

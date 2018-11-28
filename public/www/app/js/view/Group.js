@@ -384,7 +384,7 @@ Ns.view.Group = {
             }
 
             if (evt.target.name === 'member_photo') {
-                Ns.view.Group.onClickMemberPhoto(group, member);
+                Ns.view.Group.onClickMemberPhoto(member);
             }
 
 
@@ -401,8 +401,8 @@ Ns.view.Group = {
 
     },
 
-    onClickMemberPhoto: function (group, member) {
-        alert('onClickMemberPhoto');
+    onClickMemberPhoto: function (member) {
+        Ns.ui.Photo.show(member);
     },
 
     onClickLetsPlay: function (group, member) {

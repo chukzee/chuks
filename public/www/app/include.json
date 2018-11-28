@@ -75,6 +75,7 @@
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
             "app-main.css",
             "form.css",
+            "tab.css",
             "login.css",
             "font-awesome.min.css",
             "menu.css",
@@ -111,7 +112,14 @@
             "tournaments-view.css",
             "search-input.css",
             "search-header.css",
-            "search-view.css"
+            "search-view.css",
+            "user-photo-view.css",
+            "group-photo-view.css",
+            "tournament-photo-view.css",
+            "user-chat-view.css",
+            "group-chat-view.css",
+            "tournament-general-chat-view.css",
+            "tournament-inhouse-chat-view.css"
         ],
 
         "js": [
@@ -130,6 +138,7 @@
             "msg/VoiceCall.js",
             "ui/UI.js",
             "ui/Dialog.js",
+            "ui/Photo.js",
             "ui/GamePanel.js",
             "view/Tournament.js",
             "view/Notifications.js",

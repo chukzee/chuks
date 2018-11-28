@@ -28,7 +28,7 @@ and open the template in the editor.
 
     > :nth-child(2) {
         position: absolute;
-        bottom: $base_padding;
+        bottom: 2px;
         left: $base_padding;
         color: #ccc !important;
         font-size: 12px;
@@ -37,12 +37,9 @@ and open the template in the editor.
     
 }
 .game9ja-notifications-body{
-    position: absolute;
-    top :$header_height;
-    left:0;
-    bottom: 0;
-    width: 100%;
-    overflow: auto;
+    position: absolute !important;
+    top :$header_height !important;
+    
 
 }
 

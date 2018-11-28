@@ -134,8 +134,8 @@ Ns.PlayRequest = {
                     var opponent_busy = document.getElementById('game-wait-player-opponent-busy');
 
                     feedback_msg.innerHTML = 'Contacting player...';
-
-                    document.getElementById('game-wait-player-own-photo-url').src = app_user.phot_url;
+ 
+                   document.getElementById('game-wait-player-own-photo-url').src = app_user.phot_url;
                     document.getElementById('game-wait-player-opponent-photo-url').src = opponent.phot_url;
                     document.getElementById('game-wait-player-own-name').innerHTML = app_user.full_name;
                     document.getElementById('game-wait-player-opponent-name').innerHTML = opponent.full_name;

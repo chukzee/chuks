@@ -16,7 +16,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-notifications-header {
+.game9ja-header, .game9ja-contacts-select > .game9ja-contacts-select-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -44,7 +44,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-notifications-header {
+.game9ja-header, .game9ja-contacts-select > .game9ja-contacts-select-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -135,41 +135,50 @@ and open the template in the editor.
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-.game9ja-notifications-header > :nth-child(1) {
-  /*holding title*/
-  margin: 0 auto;
-  width: 200px;
-  height: 100%;
-  padding: 5px;
-  font-size: 18px;
-  text-align: center;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-.game9ja-notifications-header > :nth-child(2) {
+.game9ja-contacts-select {
   position: absolute;
-  bottom: 5px;
-  left: 5px;
-  color: #ccc !important;
-  font-size: 12px;
-  font-style: italic; }
-
-.game9ja-notifications-body {
-  position: absolute;
-  top: 50px;
+  top: 0;
   left: 0;
-  bottom: 0;
   width: 100%;
-  overflow: auto; }
+  height: 100%; }
+  .game9ja-contacts-select > .game9ja-contacts-select-header > :nth-child(1) {
+    /*holding title*/
+    margin: 0 auto;
+    width: 200px;
+    height: 100%;
+    padding: 5px;
+    font-size: 18px;
+    text-align: center;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box; }
+  .game9ja-contacts-select > .game9ja-contacts-select-body {
+    /* holds center panel for game playiing area e.g game board*/
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    position: relative;
+    top: 50px;
+    bottom: 0; }
+    .game9ja-contacts-select > .game9ja-contacts-select-body > :nth-child(1) > :nth-child(1) > :nth-child(1) {
+      outline: none;
+      border: none;
+      padding: 5px;
+      color: #222; }
+    .game9ja-contacts-select > .game9ja-contacts-select-body > :nth-child(1) > :nth-child(2) > :nth-child(1) {
+      padding: 5px;
+      outline: none;
+      border: none;
+      background: #ddd;
+      color: #111; }
+    .game9ja-contacts-select > .game9ja-contacts-select-body > :nth-child(1) > :nth-child(3) {
+      position: absolute;
+      right: 10px;
+      padding: 5px;
+      color: #656;
+      outline: none;
+      background: transparent;
+      border: none; }
+    .game9ja-contacts-select > .game9ja-contacts-select-body > div {
+      padding: 5px; }
 
-.game9ja-kickoff {
-  background: transparent !important;
-  font-size: 11px !important;
-  border: 1px #00ff00 solid !important;
-  color: #aaa !important; }
-
-.game9ja-expired-btn {
-  background: transparent !important;
-  font-size: 11px !important;
-  color: #aaa !important; }
-
-/*# sourceMappingURL=notifications.css.map */
+/*# sourceMappingURL=users-select.css.map */

@@ -1,0 +1,62 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 1, 2017, 4:28:52 PM
+    Author     : Engr Chuks
+*/
+@import "base-var.scss";
+@import "header-items.scss";
+
+
+
+.game9ja-notifications-header{
+    @extend .game9ja-header;
+
+    > :nth-child(1){ /*holding title*/
+        margin: 0 auto; // try centering it
+        width: 200px;     
+        height:  100%;
+        padding: 5px;
+        font-size: 18px;
+        text-align: center;
+        @include box-sizing(border-box);
+
+    }
+
+    > :nth-child(2) {
+        position: absolute;
+        bottom: $base_padding;
+        left: $base_padding;
+        color: #ccc !important;
+        font-size: 12px;
+        font-style: italic;
+    }
+    
+}
+.game9ja-notifications-body{
+    position: absolute;
+    top :$header_height;
+    left:0;
+    bottom: 0;
+    width: 100%;
+    overflow: auto;
+
+}
+
+.game9ja-kickoff {
+    background: transparent !important;
+    font-size: 11px !important;
+    border: 1px #00ff00 solid !important;
+    color:  #aaa !important;
+}
+
+.game9ja-expired-btn {
+    background: transparent !important;
+    font-size: 11px !important;
+    //border: 1px #00ff00 solid !important;
+    color:  #aaa !important;
+}
+

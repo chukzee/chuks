@@ -122,9 +122,9 @@ Ns.ui.UI = {
         Ns.ui.GamePanel.setupOnHome();
 
 
-        $('#home-contacts-icon').off('click');
-        $('#home-contacts-icon').on('click', function (evt) {
-            Ns.GameHome.showContacts();
+        $('#home-notification-icon').off('click');
+        $('#home-notification-icon').on('click', function (evt) {
+            Ns.GameHome.showNotifications();
         });
 
         $('#home-group-header').off('click');
@@ -145,7 +145,7 @@ Ns.ui.UI = {
                 Ns.GameHome.showGroupDetails(group);
             } else if (evt.target.id === 'home-group-pic') {
                 //var group_name = document.getElementById('home-group-name').innerHTML;
-                Ns.ui.UI.expandPhoto(group, 'group');
+                Ns.ui.Photo.show(group, 'group');
             }
         });
 
@@ -167,7 +167,7 @@ Ns.ui.UI = {
                 Ns.GameHome.showTournamentDetails(tournament);
             } else if (evt.target.id === 'home-tournament-pic') {
                 //var tournnament_name = document.getElementById('home-tournament-name').innerHTML;
-                Ns.ui.UI.expandPhoto(tournament, 'tournament');
+                Ns.ui.Photo.show(tournament, 'tournament');
             }
         });
 
@@ -375,34 +375,6 @@ Ns.ui.UI = {
 
                 break;
         }
-    },
-
-    expandPhoto: function (obj, type) {
-
-    },
-
-    inputMsgHtml: function () {
-        return '<div class="game9ja-message-input">'
-                + '<div>'
-                + '<div><i class="fa fa-smile-o"></i> </div>'
-                + '<div>'
-                + '<textarea placeholder="Write a message..."></textarea>'
-                + '</div>'
-                + '</div>'
-                + '<i class="fa fa-send"></i> '
-                + '</div>';
-    },
-
-    gameSettings: function (game_name) {
-
-
-        return "Startup setting html goes here - e.g set difficulty, set timer control, <br/>select board and piece theme (theme will be show in <br/>the same dialog for user to pick) ";
-    },
-    voiceMessageHtml: function (data_url, data_size) {
-
-        console.log('TODO voiceMessageHtml ');
-
-        return 'TODO voiceMessageHtml ';
-    },
+    }
 };
 

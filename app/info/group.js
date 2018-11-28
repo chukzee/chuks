@@ -157,25 +157,21 @@ class Group extends WebApplication {
 
             var authorization_token = this.sObj.UniqueNumber;
 
-            var gjDoc = {
+            var data = {
+                group_name: group_name,
                 authorization_token: authorization_token,
                 admin_user_id: from_user_id,
                 requested_user_id: to_user_id,
-                group_name: group_name
-            };
-
-            var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
-            await req_col.insertOne(gjDoc); //await the asynchronous process
-
-            var data = {
-                group_name: group_name,
                 status_message: group.status_message,
                 photo_url: group.photo_url,
                 created_by: group.created_by,
-                sent_by: from_user_id,
-                authorization_token: authorization_token,
+                notification_type: 'group_join_request',
                 notification_time: new Date()
             };
+
+            var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
+            await req_col.insertOne(data); //await the asynchronous process
+
 
             this.send(this.evt.group_join_request, data, to_user_id, true);
 
@@ -215,6 +211,90 @@ class Group extends WebApplication {
 
 
         return this._addToGroup(request.requested_user_id, request.group_name, false);
+    }
+
+    /**
+     * Reject a group join request and adds the user to the group
+     * 
+     * @param {type} authorization_token - this is the autorization sent by the admin to rhe user -  the server must confirm this token before adding the user to the group
+     * @returns {undefined}
+     */
+    async rejectGroupJoinRequest(authorization_token) {
+
+        var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
+        try {
+            var r = await req_col.deleteOne({authorization_token: authorization_token}, {w: 'majority'});
+            if(r.result.n === 0){
+               return 'No group join request!'; 
+            }
+        } catch (e) {
+
+            console.log(e);
+
+            return this.error("Failed to decline group join request!");
+        }
+
+
+        return 'Succesfully declined request';
+    }
+
+    /**
+     * Get a list of group join requests
+     * 
+     * @param {type} user_id
+     * @param {type} skip
+     * @param {type} limit
+     * @returns {undefined}
+     */
+    async getGroupJoinRequests(user_id, skip, limit) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            skip = arguments[0].skip;
+            limit = arguments[0].limit;
+        }
+
+        if (skip !== undefined && limit !== undefined) {
+            skip = skip - 0;
+            limit = limit - 0;
+        } else {
+            skip = 0;
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        if (limit > this.sObj.MAX_ALLOW_QUERY_SIZE) {
+            limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.group_join_requests);
+
+
+        var query = {
+            requested_user_id: user_id
+        };
+
+        var total = await c.count(query);
+
+        var data = {
+            skip: skip,
+            limit: limit,
+            total: total,
+            group_join_requests: []
+        };
+
+        if (!total) {
+            return data;
+        }
+
+
+        data.group_join_requests = await c.find(query, {_id: 0})
+                .limit(limit)
+                .skip(skip)
+                .toArray();
+
+        return data;
     }
 
     _groupMemberObj(user_id, is_admin, commit) {
@@ -288,7 +368,7 @@ class Group extends WebApplication {
                     return group_col.updateOne({name: group_name}, {$set: {members: group_members}}, {w: 'majority'});
                 })
                 .then(function () {
-                    return "User added to group successfully.";
+                    return `Joins group - ${group_name}`;
                 });
 
     }

@@ -13,6 +13,7 @@ var collections = ['users',
     'spectators', //expires every certain period - say 24 hours - so create an index to take care of that
     'comments', //
     'chats',
+    'news',
     'wdl',//stores the numbers of wins , draws and losses between two players tournament, group and contact matches
     'video_calls',
     'voice_calls'

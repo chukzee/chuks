@@ -1,0 +1,73 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 1, 2017, 4:28:52 PM
+    Author     : Engr Chuks
+*/
+@import "base-var.scss";
+@import "header-items.scss";
+
+$profile_img_size : 30px;
+
+
+
+.game9ja-contact-chat-view{
+    position: absolute;
+    top : 0;
+    left: 0;
+    width : 100%;
+    height: 100%;
+
+    > .game9ja-contact-chat-view-header{
+        @extend .game9ja-header;
+        > :nth-child(1){ /*holding title*/
+            margin: 0 auto; // try centering it
+            width: 200px;     
+            height:  100%;
+            padding: 5px;
+            font-size: 18px;
+            text-align: center;
+            @include box-sizing(border-box);
+            //background: red;
+
+            > :nth-child(1){/*user profile pic*/
+                width: $profile_img_size;
+                height: $profile_img_size;
+                border-radius: 50%;
+                margin-left: -130px;
+            }
+
+
+            > :nth-child(2){/*user full name*/
+                margin-top: -30px;
+                margin-left: 50px;
+                width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;  
+                text-align: left;
+                //background: brown;                
+            }
+
+        }
+
+    }
+
+    > .game9ja-contact-chat-view-body{/* holds center panel for game playiing area e.g game board*/
+
+        //background: red;
+        width: 100%;
+        overflow: hidden;
+        display: block;
+        position: absolute;
+        top: $header_height;
+        bottom: 0;
+
+
+
+    }
+
+}

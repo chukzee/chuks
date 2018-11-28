@@ -66,6 +66,13 @@ $profile_img_size : $list_item_height - 2 * $hgap;
     }
 
 
+    > :nth-child(4) > i{
+        position: absolute;
+        top: $list_item_height/ 2.5;
+        right:  $hgap * 4;
+        cursor: pointer;
+    }
+    
     > :nth-child(4) > input{/*Lets play button*/
         position: absolute;
         top: $list_item_height/ 2.5;

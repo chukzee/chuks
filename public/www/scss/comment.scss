@@ -50,14 +50,13 @@ $b_color : #777;
         top: 0;
         left: 0;
         border-radius: 50%;
-        cursor: pointer;
-        
+        cursor: pointer;        
     }
     
     > :nth-child(2){/*user full name*/
         width: 100px;
         position: absolute;
-        top: $profile_img_size/3 + 4px ;
+        top: 5px ;
         left: $profile_img_size + 15px;
         color: #444;
         font-size: 14px;
@@ -66,8 +65,8 @@ $b_color : #777;
     > :nth-child(3){/*time ago*/
         width: 80px;
         position: absolute;
-        top: $profile_img_size/3;        
-        right: 5px;
+        top: 5px;        
+        right: 0;
         font-size: 11px;
     }
     

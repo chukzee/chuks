@@ -1,0 +1,230 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 08-Nov-2018, 23:59:31
+    Author     : HP-PC
+*/
+.game9ja-tournament-photo-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; }
+  .game9ja-tournament-photo-view > :nth-child(1) {
+    /*image container*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; }
+    .game9ja-tournament-photo-view > :nth-child(1) > :nth-child(1) {
+      /*image div centerer*/
+      width: 100%;
+      height: 100%;
+      margin: 0 auto; }
+      .game9ja-tournament-photo-view > :nth-child(1) > :nth-child(1) > img {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0; }
+  .game9ja-tournament-photo-view header, .game9ja-tournament-photo-view > :nth-child(2), .game9ja-tournament-photo-view > :nth-child(3), .game9ja-tournament-photo-view .game9ja-tournament-photo-view-with-limited-access > :nth-child(2), .game9ja-tournament-photo-view .game9ja-tournament-photo-view-with-limited-access > :nth-child(3) {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    opacity: 0;
+    transition-property: opacity, top;
+    transition-duration: 0.3s, 0.3s; }
+  .game9ja-tournament-photo-view > .game9ja-fly-down, .game9ja-tournament-photo-view > .game9ja-fly-down-translucent {
+    top: 0;
+    opacity: 1; }
+  .game9ja-tournament-photo-view > .game9ja-fly-down-translucent {
+    opacity: 0.3; }
+  .game9ja-tournament-photo-view > :nth-child(2) {
+    /*header transparent layer*/
+    background: black;
+    opacity: 0.3; }
+  .game9ja-tournament-photo-view > :nth-child(3) {
+    /*header*/
+    color: white; }
+    .game9ja-tournament-photo-view > :nth-child(3) > :nth-child(1) {
+      /*back button*/
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      cursor: pointer; }
+    .game9ja-tournament-photo-view > :nth-child(3) > :nth-child(2) {
+      /*tournament name*/
+      position: absolute;
+      top: 10px;
+      left: 40px; }
+  .game9ja-tournament-photo-view footer, .game9ja-tournament-photo-view > :nth-child(4), .game9ja-tournament-photo-view > :nth-child(5), .game9ja-tournament-photo-view .game9ja-tournament-photo-view-with-limited-access > :nth-child(4), .game9ja-tournament-photo-view .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    opacity: 0;
+    transition-property: opacity, bottom;
+    transition-duration: 0.3s, 0.3s; }
+  .game9ja-tournament-photo-view > .game9ja-fly-up, .game9ja-tournament-photo-view > .game9ja-fly-up-translucent {
+    bottom: 10px;
+    opacity: 1; }
+  .game9ja-tournament-photo-view > .game9ja-fly-up-translucent {
+    opacity: 0.3; }
+  .game9ja-tournament-photo-view > :nth-child(4) {
+    /*footer transparent layer*/
+    opacity: 0.3; }
+    .game9ja-tournament-photo-view > :nth-child(4) > :nth-child(1) {
+      margin: 0 auto;
+      width: 250px;
+      height: 100%;
+      background: black;
+      border-radius: 20px; }
+  .game9ja-tournament-photo-view > :nth-child(5) {
+    /*Footer*/ }
+    .game9ja-tournament-photo-view > :nth-child(5) > :nth-child(1) {
+      margin: 0 auto;
+      width: 250px;
+      height: 100%;
+      border-radius: 20px;
+      color: white;
+      overflow: hidden; }
+      .game9ja-tournament-photo-view > :nth-child(5) > :nth-child(1) > :nth-child(4) {
+        /*hide or show the inhouse  commnet icon*/
+        display: block; }
+      .game9ja-tournament-photo-view > :nth-child(5) > :nth-child(1) > div {
+        /*all the footer menu*/
+        height: 100%;
+        width: 20%;
+        float: left;
+        cursor: pointer; }
+        .game9ja-tournament-photo-view > :nth-child(5) > :nth-child(1) > div > i {
+          position: relative;
+          top: 10px;
+          left: 20px; }
+      .game9ja-tournament-photo-view > :nth-child(5) > :nth-child(1) > div:hover {
+        /*footer menu hover*/ }
+        .game9ja-tournament-photo-view > :nth-child(5) > :nth-child(1) > div:hover > i {
+          font-size: 18px;
+          color: #eee; }
+
+.game9ja-tournament-photo-view-with-limited-access {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; }
+  .game9ja-tournament-photo-view-with-limited-access > :nth-child(1) {
+    /*image container*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; }
+    .game9ja-tournament-photo-view-with-limited-access > :nth-child(1) > :nth-child(1) {
+      /*image div centerer*/
+      width: 100%;
+      height: 100%;
+      margin: 0 auto; }
+      .game9ja-tournament-photo-view-with-limited-access > :nth-child(1) > :nth-child(1) > img {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0; }
+  .game9ja-tournament-photo-view-with-limited-access header, .game9ja-tournament-photo-view-with-limited-access .game9ja-tournament-photo-view > :nth-child(2), .game9ja-tournament-photo-view-with-limited-access .game9ja-tournament-photo-view > :nth-child(3), .game9ja-tournament-photo-view-with-limited-access > :nth-child(2), .game9ja-tournament-photo-view-with-limited-access > :nth-child(3) {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    opacity: 0;
+    transition-property: opacity, top;
+    transition-duration: 0.3s, 0.3s; }
+  .game9ja-tournament-photo-view-with-limited-access > .game9ja-fly-down, .game9ja-tournament-photo-view-with-limited-access > .game9ja-fly-down-translucent {
+    top: 0;
+    opacity: 1; }
+  .game9ja-tournament-photo-view-with-limited-access > .game9ja-fly-down-translucent {
+    opacity: 0.3; }
+  .game9ja-tournament-photo-view-with-limited-access > :nth-child(2) {
+    /*header transparent layer*/
+    background: black;
+    opacity: 0.3; }
+  .game9ja-tournament-photo-view-with-limited-access > :nth-child(3) {
+    /*header*/
+    color: white; }
+    .game9ja-tournament-photo-view-with-limited-access > :nth-child(3) > :nth-child(1) {
+      /*back button*/
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      cursor: pointer; }
+    .game9ja-tournament-photo-view-with-limited-access > :nth-child(3) > :nth-child(2) {
+      /*tournament name*/
+      position: absolute;
+      top: 10px;
+      left: 40px; }
+  .game9ja-tournament-photo-view-with-limited-access footer, .game9ja-tournament-photo-view-with-limited-access .game9ja-tournament-photo-view > :nth-child(4), .game9ja-tournament-photo-view-with-limited-access .game9ja-tournament-photo-view > :nth-child(5), .game9ja-tournament-photo-view-with-limited-access > :nth-child(4), .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    opacity: 0;
+    transition-property: opacity, bottom;
+    transition-duration: 0.3s, 0.3s; }
+  .game9ja-tournament-photo-view-with-limited-access > .game9ja-fly-up, .game9ja-tournament-photo-view-with-limited-access > .game9ja-fly-up-translucent {
+    bottom: 10px;
+    opacity: 1; }
+  .game9ja-tournament-photo-view-with-limited-access > .game9ja-fly-up-translucent {
+    opacity: 0.3; }
+  .game9ja-tournament-photo-view-with-limited-access > :nth-child(4) {
+    /*footer transparent layer*/
+    opacity: 0.3; }
+    .game9ja-tournament-photo-view-with-limited-access > :nth-child(4) > :nth-child(1) {
+      margin: 0 auto;
+      width: 200px;
+      height: 100%;
+      background: black;
+      border-radius: 20px; }
+  .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) {
+    /*Footer*/ }
+    .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) > :nth-child(1) {
+      margin: 0 auto;
+      width: 200px;
+      height: 100%;
+      border-radius: 20px;
+      color: white;
+      overflow: hidden; }
+      .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) > :nth-child(1) > :nth-child(4) {
+        /*hide or show the inhouse  commnet icon*/
+        display: none; }
+      .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) > :nth-child(1) > div {
+        /*all the footer menu*/
+        height: 100%;
+        width: 25%;
+        float: left;
+        cursor: pointer; }
+        .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) > :nth-child(1) > div > i {
+          position: relative;
+          top: 10px;
+          left: 20px; }
+      .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) > :nth-child(1) > div:hover {
+        /*footer menu hover*/ }
+        .game9ja-tournament-photo-view-with-limited-access > :nth-child(5) > :nth-child(1) > div:hover > i {
+          font-size: 18px;
+          color: #eee; }
+
+/*# sourceMappingURL=tournament-photo-view.css.map */

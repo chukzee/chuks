@@ -1,0 +1,57 @@
+
+            /*
+                -webkit-transition-property: -webkit-transform;
+    -webkit-transition-duration: 200ms;
+            */
+
+
+
+            .test{
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                background: yellow;
+                width: 100%;
+            }
+
+
+
+            .test>:nth-child(1){
+                background: burlywood;
+                width: 100%;
+                height: 40px;
+                position: absolute;
+                left: 0px;
+                top: -30px;/*fist hidden */
+                opacity: 0;/*fist hidden */
+                transition-property: top, opacity; 
+                transition-duration: 0.5s, 0.5s;
+                transition-delay: 0s;
+            }
+
+            .test>:nth-child(2){
+                background: burlywood;
+                width: 100%;
+                height: 40px;
+                position: absolute;
+                left: 0px;
+                bottom: -30px;/*fist hidden */
+                opacity: 0;/*fist hidden */
+                transition-property: bottom, opacity; 
+                transition-duration: 0.5s, 0.5s;
+                transition-delay: 0s;
+            }
+
+            
+            
+            .test>.show-fly-down{
+                top: 30px;
+                opacity: 1;
+            }
+
+           .test>.show-fly-up{
+                bottom: 30px;
+                opacity: 1;
+            }
+

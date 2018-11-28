@@ -86,35 +86,47 @@ $user_profile_img_height : 180px;
             white-space: nowrap;
             //background-color: red;
         }
-        >:nth-child(6){/*back botton*/
-            /*color: white; 
-            position: absolute;
-            top: $base_padding * 2;
-            left: $base_padding * 2;
-            cursor: pointer;*/
-            opacity: 0.8; 
-            background: blue; 
-            width: 35px; 
-            height: 35px; 
-            border-radius: 50%;
-            color: white; 
-            position: absolute;
-            top: $base_padding * 2;
-            left: $base_padding * 2;
-            cursor: pointer;
-            >:nth-child(1){
-                position: absolute;
-                top: 8px; 
-                left: 8px;
-            }            
-        }
 
-        >:nth-child(7){/*edit botton*/
+        >:nth-child(6){/*edit botton*/
             color: black; 
             position: absolute;
             bottom: $base_padding * 2;
             right: $base_padding * 2;
             cursor: pointer;
+        }
+               
+        userheader{
+           position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 40px; 
+            width: 100%;
+            color: white; 
+            z-index: 1; 
+        }
+        >:nth-child(7){
+            @extend userheader;
+            background: black; 
+            opacity: 0.3; 
+        }
+        >:nth-child(8){
+            @extend userheader;
+            
+            >:nth-child(1){/*back button*/
+                position: absolute; 
+                top: 10px;
+                left: 10px; 
+                cursor: pointer;
+
+            }
+            
+            >:nth-child(2){/*comment*/
+                position: absolute;
+                top: 10px; 
+                right: 10px; 
+                cursor: pointer;
+
+            }
         }
     }
 

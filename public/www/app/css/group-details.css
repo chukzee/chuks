@@ -78,41 +78,35 @@ and open the template in the editor.
       text-overflow: ellipsis;
       white-space: nowrap; }
     .game9ja-group-details > :nth-child(1) > :nth-child(4) {
-      /*back botton*/
-      opacity: 0.8;
-      background: blue;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      color: white;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      cursor: pointer; }
-      .game9ja-group-details > :nth-child(1) > :nth-child(4) > :nth-child(1) {
-        position: absolute;
-        top: 8px;
-        left: 8px; }
-    .game9ja-group-details > :nth-child(1) > :nth-child(5) {
       /*edit botton*/
       color: black;
       position: absolute;
       bottom: 10px;
       right: 10px;
       cursor: pointer; }
-    .game9ja-group-details > :nth-child(1) > :nth-child(6) {
-      /*menu botton*/
-      opacity: 0.8;
-      background: blue;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
+    .game9ja-group-details > :nth-child(1) groupheader, .game9ja-group-details > :nth-child(1) > :nth-child(5), .game9ja-group-details > :nth-child(1) > :nth-child(6) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 40px;
+      width: 100%;
       color: white;
+      z-index: 1; }
+    .game9ja-group-details > :nth-child(1) > :nth-child(5) {
+      background: black;
+      opacity: 0.3; }
+    .game9ja-group-details > :nth-child(1) > :nth-child(6) > :nth-child(1) {
+      /*back button*/
+      position: absolute;
+      top: 10px;
+      left: 10px;
       cursor: pointer; }
-      .game9ja-group-details > :nth-child(1) > :nth-child(6) > :nth-child(1) {
-        position: absolute;
-        top: 9px;
-        left: 16px; }
+    .game9ja-group-details > :nth-child(1) > :nth-child(6) > :nth-child(2) {
+      /*comment*/
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer; }
   .game9ja-group-details > :nth-child(2) {
     /*group basics*/
     border-radius: 0px !important;

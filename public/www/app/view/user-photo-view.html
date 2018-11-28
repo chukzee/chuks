@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="../app/css/user-photo-view.css" />
+
+        <script src="../lib/jquery-1.10.2.min.js"></script>
+    </head>
+    <body>
+        <div id="user-photo-view" class="game9ja-user-photo-view">
+            <!--OR <div class="game9ja-user-photo-view-with-limited-access" >  --> <!--limited access removes comment icon-->   
+
+            <div><!--image container-->
+                <div  id="user-photo-view-image-container">
+                    <img  id="user-photo-view-image" alt=""/>
+                </div>
+            </div>
+
+
+            <div id="user-photo-view-header-transparent-layer"><!--header transparent layer--></div>
+            <div  id="user-photo-view-header"><!--header-->
+
+                <i id="user-photo-view-back-btn"  class="fa fa-arrow-left"></i>
+
+                <span id="user-photo-view-name"><!--Chuks Alimele--></span>
+
+            </div>
+
+
+            <div id="user-photo-view-footer-transparent-layer"><!--footer transparent layer-->
+                <div style=""><!--footer-->
+                </div>
+            </div>
+
+            <div id="user-photo-view-footer" ><!--footer-->
+                <div>
+                    <div id="user-photo-view-expand"><i class="fa fa-plus-circle"><!--expand the image to largest size--></i></div>
+                    <div id="user-photo-view-open-profile"><i class="fa fa-info-circle"><!--click to open the profile view--></i></div>
+                    <div id="user-photo-view-open-comment"><i class="fa fa-comments"><!--click to chat with user--></i></div>
+                    <div id="user-photo-view-share"><i class="fa fa-share-alt"><!--share--></i></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            var timeout_id;
+            function doIt() {
+                if (!$("#user-photo-view-header-transparent-layer").hasClass("game9ja-fly-down-translucent")) {
+                    $("#user-photo-view-header-transparent-layer").addClass("game9ja-fly-down-translucent");
+                }
+                if (!$("#user-photo-view-header").hasClass("game9ja-fly-down")) {
+                    $("#user-photo-view-header").addClass("game9ja-fly-down");
+                }
+
+                if (!$("#user-photo-view-footer-transparent-layer").hasClass("game9ja-fly-up-translucent")) {
+                    $("#user-photo-view-footer-transparent-layer").addClass("game9ja-fly-up-translucent");
+                }
+
+                if (!$("#user-photo-view-footer").hasClass("game9ja-fly-up")) {
+                    $("#user-photo-view-footer").addClass("game9ja-fly-up");
+                }
+
+                clearTimeout(timeout_id);
+
+                timeout_id = setTimeout(function () {
+                    $("#user-photo-view-header-transparent-layer").removeClass("game9ja-fly-down-translucent");
+                    $("#user-photo-view-header").removeClass("game9ja-fly-down");
+
+                    $("#user-photo-view-footer-transparent-layer").removeClass("game9ja-fly-up-translucent");
+                    $("#user-photo-view-footer").removeClass("game9ja-fly-up");
+                }, 5000);
+
+            }
+
+        </script>
+
+    </body>
+</html>

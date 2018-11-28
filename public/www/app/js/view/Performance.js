@@ -212,7 +212,7 @@ Ns.view.Performance = {
 
     expandPhoto: function () {
         var user = this.user;
-        Ns.ui.UI.expandPhoto(user, 'user');
+        Ns.ui.Photo.show(user);
     },
 
     save: function (obj) {

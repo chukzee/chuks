@@ -31,5 +31,41 @@
         "startTime": 1519903910000,
         "repeat": false,
         "count_run": 0
-    }
+    },
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "1_ID_7N1xcv68uVYM90NxnHPamXvdgOOHou4eGPcvoO5yRQLxiSMfAkR4_YkjIOaM0nDU"
+    ],
+    "taskId": "2_ID_7N1xcv68uVYM90NxnHPamXvdgOOHou4eGPcvoO5yRQLxiSMfAkR4_YkjIOaM0nDU",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1542750777599,
+    "repeat": false,
+    "count_run": 0
+},
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "4_ID_7N1xcv68uVYM90NxnHPamXvdgOOHou4eGPcvoO5yRQLxiSMfAkR4_YkjIOaM0nDU"
+    ],
+    "taskId": "5_ID_7N1xcv68uVYM90NxnHPamXvdgOOHou4eGPcvoO5yRQLxiSMfAkR4_YkjIOaM0nDU",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1542750797417,
+    "repeat": false,
+    "count_run": 0
+},
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "7_ID_7N1xcv68uVYM90NxnHPamXvdgOOHou4eGPcvoO5yRQLxiSMfAkR4_YkjIOaM0nDU"
+    ],
+    "taskId": "8_ID_7N1xcv68uVYM90NxnHPamXvdgOOHou4eGPcvoO5yRQLxiSMfAkR4_YkjIOaM0nDU",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1542751157382,
+    "repeat": false,
+    "count_run": 0
+}
 ]

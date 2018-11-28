@@ -5,11 +5,14 @@ Ns.view.Notifications = {
 
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
     playRequestCount: 0,
-    upcomingMatchCount: 0,
+    count: 0,
     constructor: function () {
         var obj = {
             play_request: 'game/PlayRequest',
-            tourn: 'info/Tournament'
+            tourn: 'info/Tournament',
+            group: 'info/Group',
+            news: 'info/News',
+            chat: 'game/Chat'
         };
 
         Main.rcall.live(obj);
@@ -30,7 +33,9 @@ Ns.view.Notifications = {
 
         Ns.PlayRequest.playRequestList = list;
 
-        function addNotificationListItem(notifications) {
+        function addPlayTabNotificationListItem(notifications) {
+
+            Ns.view.Notifications.displayNotificationCount();
 
             if (notifications.length === 0) {
                 return;
@@ -46,16 +51,33 @@ Ns.view.Notifications = {
             }
         }
 
+        function addChatsTabNotificationListItem(notifications) {
+
+            Ns.view.Notifications.displayNotificationCount();
+
+        }
+
+        function addNewsTabNotificationListItem(notifications) {
+
+            Ns.view.Notifications.displayNotificationCount();
+
+            //TODO
+        }
+
         Main.rcall.live(function () {
             var user_id = Ns.view.UserProfile.appUser.user_id;
             var game_name = Ns.ui.UI.selectedGame;
             var skip = 0;
             var limit = Ns.Const.MAX_LIST_SIZE;
-            var promise_count = 0;
-            var notifications = [];
+            var play_tab_waiting = 0;
+            var play_tab_notifications = [];
 
             Main.ro.play_request.get(user_id, game_name, skip, limit)
+                    .before(function () {
+                        play_tab_waiting++;
+                    })
                     .after(function (data, err) {
+                        play_tab_waiting--;
                         var play_requests = [];
                         if (err) {
                             //TODO - display error
@@ -71,15 +93,19 @@ Ns.view.Notifications = {
                         }
 
                         Ns.view.Notifications.displayReqCountInfo(play_requests.length);
-                        notifications = notifications.concat(play_requests);
-                        promise_count++;
-                        if (promise_count === 2) {
-                            addNotificationListItem(notifications);
+                        play_tab_notifications = play_tab_notifications.concat(play_requests);
+
+                        if (play_tab_waiting === 0) {
+                            addPlayTabNotificationListItem(play_tab_notifications);
                         }
                     });
 
             Main.ro.tourn.getUpcomingMatches(user_id, game_name, skip, limit)
+                    .before(function () {
+                        play_tab_waiting++;
+                    })
                     .after(function (data, err) {
+                        play_tab_waiting--;
                         var upcoming_matches = [];
                         if (err) {
                             //TODO - display error
@@ -87,15 +113,76 @@ Ns.view.Notifications = {
                         } else {
                             upcoming_matches = data.upcoming_matches;
                         }
-                        Ns.view.Notifications.displayUpcomingMatchCountInfo(upcoming_matches.length);
-                        notifications = notifications.concat(upcoming_matches);
-                        promise_count++;
-                        if (promise_count === 2) {
-                            addNotificationListItem(notifications);
+
+                        play_tab_notifications = play_tab_notifications.concat(upcoming_matches);
+
+                        if (play_tab_waiting === 0) {
+                            addPlayTabNotificationListItem(play_tab_notifications);
                         }
                     });
 
 
+            Main.ro.group.getGroupJoinRequests(user_id, skip, limit)
+                    .before(function () {
+                        play_tab_waiting++;
+                    })
+                    .after(function (data, err) {
+                        play_tab_waiting--;
+                        var group_join_requests = [];
+                        if (err) {
+                            //TODO - display error
+                            console.log(err);
+                        } else {
+                            group_join_requests = data.group_join_requests;
+                        }
+
+                        play_tab_notifications = play_tab_notifications.concat(group_join_requests);
+
+                        if (play_tab_waiting === 0) {
+                            addPlayTabNotificationListItem(play_tab_notifications);
+                        }
+                    });
+
+
+            var chat_search_obj = {
+                user_id: user_id,
+                period: {month: 1},
+                tournaments: Ns.view.UserProfile.appUser.tournaments_belong,
+                groups: Ns.view.UserProfile.appUser.groups_belong,
+                contacts: Ns.view.UserProfile.appUser.contacts
+            };
+
+            Main.ro.chat.searchUserChats(chat_search_obj, skip, limit)
+                    .before(function () {
+                    })
+                    .after(function (data, err) {
+                        if (err) {
+                            //TODO - display error
+                            console.log(err);
+                            return;
+                        }
+
+
+                        addChatsTabNotificationListItem(data.chats);
+
+                    });
+
+
+
+            Main.ro.news.get(skip, limit)
+                    .before(function () {
+                    })
+                    .after(function (data, err) {
+                        if (err) {
+                            //TODO - display error
+                            console.log(err);
+                            return;
+                        }
+
+
+                        addNewsTabNotificationListItem(data.news);
+
+                    });
         });
 
 
@@ -105,7 +192,7 @@ Ns.view.Notifications = {
 
         if (use_uiupdater) {
             Main.uiupdater.show({
-                container: 'game-notifications-body',
+                container: 'game-notifications-tab-play',
                 delay: 5,
                 data: notification,
                 //countdown: ....,
@@ -116,51 +203,80 @@ Ns.view.Notifications = {
         }
 
         function doAddNotification(notificat) {
-            if (notificat.tournament_name) {
-
-                Main.tpl.template({
-                    tplUrl: 'upcoming-tournament-match-tpl.html',
-                    data: notificat,
-                    onReplace: function (tpl_var, data) {
-                        if (tpl_var === 'kickoff') {
-                            return data.start_time;
-                        }
-                    },
-                    afterReplace: Ns.view.Notifications._addUpcomingMatchItem
-                });
-
-            } else {//play request
-
-                Main.tpl.template({
-                    tplUrl: 'play-request-tpl.html',
-                    data: notificat,
-                    onReplace: function (tpl_var, data) {
-                        var user_id = Ns.view.UserProfile.appUser.user_id;
-                        var opponent = data.players[0].user_id !== user_id ? data.players[0] : data.players[1];
-                        if (tpl_var === 'param') {
-                            if (data.group_name) {
-                                return data.group_name;
-                            } else {
-                                return opponent.user_id;
-                            }
-                        }
-                        if (tpl_var === 'full_name') {
-                            return opponent.full_name;
-                        }
-
-                    },
-                    afterReplace: Ns.view.Notifications._addPlayRequestItem
-                });
+            switch (notificat.notification_type) {
+                case 'upcoming_tournament_match':
+                    {
+                        tplUpcomingMatch(notificat);
+                    }
+                    break;
+                case 'play_request':
+                    {
+                        tplPlayRequest(notificat);
+                    }
+                    break;
+                case 'group_join_request':
+                    {
+                        tplGroupJoinRequest(notificat);
+                    }
+                    break;
             }
         }
 
+        function tplUpcomingMatch(notification) {
+            Main.tpl.template({
+                tplUrl: 'upcoming-tournament-match-tpl.html',
+                data: notification,
+                onReplace: function (tpl_var, data) {
+                    if (tpl_var === 'kickoff') {
+                        return data.start_time;
+                    }
+                },
+                afterReplace: Ns.view.Notifications._addUpcomingMatchItem
+            });
+        }
+
+
+        function tplPlayRequest(notification) {
+            Main.tpl.template({
+                tplUrl: 'play-request-tpl.html',
+                data: notification,
+                onReplace: function (tpl_var, data) {
+                    var user_id = Ns.view.UserProfile.appUser.user_id;
+                    var opponent = data.players[0].user_id !== user_id ? data.players[0] : data.players[1];
+                    if (tpl_var === 'param') {
+                        if (data.group_name) {
+                            return data.group_name;
+                        } else {
+                            return opponent.user_id;
+                        }
+                    }
+                    if (tpl_var === 'full_name') {
+                        return opponent.full_name;
+                    }
+
+                },
+                afterReplace: Ns.view.Notifications._addPlayRequestItem
+            });
+        }
+
+
+        function tplGroupJoinRequest(notification) {
+            Main.tpl.template({
+                tplUrl: 'group-join-request-tpl.html',
+                data: notification,
+                onReplace: function (tpl_var, data) {
+
+                },
+                afterReplace: Ns.view.Notifications._addGroupJoinRequestItem
+            });
+        }
     },
     _domExtraField: function (id) {
         return id + Ns.view.Notifications.DOM_EXTRA_FIELD_PREFIX;
     },
     _addItem: function (html, data) {
 
-        var el_id = 'game-notifications-body';
+        var el_id = 'game-notifications-tab-play';
         var dom_extra_field = Ns.view.Notifications._domExtraField(el_id);
 
         //now add the item
@@ -194,12 +310,27 @@ Ns.view.Notifications = {
         var opponent_photo = el.querySelector('img[name=opponent_photo]');
 
         $(kickoff_btn).on('click', data, Ns.view.Notifications._countdownToKickoff);
-        $(opponent_photo).on('click', data, Ns.view.Notifications._onClickPlayerPhoto);
+        
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        var opponent = data.players[0].user_id !== user_id ? data.players[0] : data.players[1];
+        
+        $(opponent_photo).on('click', opponent, Ns.view.Notifications._onClickPlayerPhoto);
+    },
+
+    _addGroupJoinRequestItem: function (html, data) {
+
+        var el = Ns.view.Notifications._addItem(html, data);
+
+        var decline_btn = el.querySelector('input[name=decline_btn]');
+        var join_btn = el.querySelector('img[name=join_btn]');
+        data.el = el;
+        $(decline_btn).on('click', data, Ns.view.Notifications._onClickDeclineGroupJoin);
+        $(join_btn).on('click', data, Ns.view.Notifications._onClickAcceptGroupJoin);
     },
 
     displayReqCountInfo: function (count) {
 
-        var el = document.getElementById('game-notifications-body');
+        var el = document.getElementById('game-notifications-tab-play');
         if (!el) {
             return;
         }
@@ -209,21 +340,23 @@ Ns.view.Notifications = {
         document.getElementById('game-notifications-play-request-text').innerHTML = text;
     },
 
-    displayUpcomingMatchCountInfo: function (count) {
+    displayNotificationCount: function () {
 
-        var el = document.getElementById('game-notifications-body');
+        var el = document.getElementById('game-notifications-tab-play');
         if (!el) {
             return;
         }
-        Ns.view.Notifications.upcomingMatchCount = count;
-        var text = count < 2 ? "upcoming match." : "upcoming matches.";
-        document.getElementById('game-notifications-upcoming-count').innerHTML = count;
-        document.getElementById('game-notifications-upcoming-text').innerHTML = text;
+        /*
+         Ns.view.Notifications.count = count;
+         var text = count < 2 ? "update." : "updates.";
+         document.getElementById('game-notifications-count').innerHTML = count;
+         document.getElementById('game-notifications-text').innerHTML = text;
+         */
     },
 
     expireStartButton: function (game_id) {
-        
-        var el_id = 'game-notifications-body';
+
+        var el_id = 'game-notifications-tab-play';
         var dom_extra_field = Ns.view.Notifications._domExtraField(el_id);
 
         //now add the item
@@ -248,8 +381,8 @@ Ns.view.Notifications = {
     },
 
     _onClickPlayerPhoto: function (argu) {
-        var data = argu.data;
-        alert('_onClickPlayerPhoto');
+        var opponent = argu.data;
+        Ns.ui.Photo.show(opponent);
     },
 
     _countdownToKickoff: function (argu) {
@@ -257,6 +390,69 @@ Ns.view.Notifications = {
 
     },
 
+    _onClickAcceptGroupJoin: function (argu) {
+        var authorization_token = argu.data.authorization_token;
+        var group_name = argu.data.group_name;
+        var el = argu.data.el;
+
+
+        Main.ro.group.acceptGroupJoinRequest(authorization_token)
+                .before(function () {
+                    el.innerHTML = 'Joining...';
+                    el.disabled = 'disabled';
+                })
+                .after(function (data, err) {
+                    el.innerHTML = 'JOIN';
+                    el.removeAttribute('disabled');
+                })
+                .get(function (data) {
+
+                    //remove the item
+                    $(el).remove();
+
+                    Main.toast.show(data);
+
+                    //go to the group view
+                    Ns.GameHome.showGroupDetails(group_name);
+
+                    console.log(data);
+                })
+                .error(function (err) {
+                    Main.toast.show(err);
+
+                    console.log(err);
+
+                });
+    },
+
+    _onClickDeclineGroupJoin: function (argu) {
+        var authorization_token = argu.data.authorization_token;
+        var el = argu.data.el;
+        Main.ro.group.rejectGroupJoinRequest(authorization_token)
+                .before(function () {
+                    el.innerHTML = 'Declining...';
+                    el.disabled = 'disabled';
+                })
+                .after(function (data, err) {
+                    el.innerHTML = 'DECLINE';
+                    el.removeAttribute('disabled');
+                })
+                .get(function (data) {
+
+                    //remove the item
+                    $(el).remove();
+
+                    Main.toast.show(data);
+
+                    console.log(data);
+                })
+                .error(function (err) {
+                    Main.toast.show(err);
+
+                    console.log(err);
+
+                });
+    },
     _onClickStartGame: function (argu) {
         var play_request = argu.data;
         var game_id = play_request.game_id;

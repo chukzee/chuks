@@ -153,7 +153,7 @@ Ns.view.Contacts = {
     },
 
     onClickContactPhoto: function (contact) {
-        alert('onClickContactPhoto');
+        Ns.ui.Photo.show(contact);
     },
 
     onClickLetsPlay: function (contact) {

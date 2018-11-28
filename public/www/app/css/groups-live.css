@@ -74,7 +74,7 @@ and open the template in the editor.
     .game9a-groups-live > .game9a-groups-live-header > :nth-child(3) {
       /*the group profile status*/
       position: absolute;
-      top: 23px;
+      bottom: 5px;
       left: 45px;
       width: 35%;
       font-size: 11px;

@@ -1,0 +1,86 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 1, 2017, 4:28:52 PM
+    Author     : Engr Chuks
+*/
+@import "base-var.scss";
+@import "header-items.scss";
+
+
+
+
+.game9ja-contacts-select{
+    position: absolute;
+    top : 0;
+    left: 0;
+    width : 100%;
+    height: 100%;
+
+    > .game9ja-contacts-select-header{
+        @extend .game9ja-header;
+        > :nth-child(1){ /*holding title*/
+            margin: 0 auto; // try centering it
+            width: 200px;     
+            height:  100%;
+            padding: 5px;
+            font-size: 18px;
+            text-align: center;
+            @include box-sizing(border-box);
+
+        }
+
+    }
+
+    > .game9ja-contacts-select-body{/* holds center panel for game playiing area e.g game board*/
+
+        //background: red;
+        width: 100%;
+        overflow: hidden;
+        display: block;
+        position: relative;
+        top: $header_height;
+        bottom: 0;
+        > :nth-child(1){
+            > :nth-child(1){
+                > :nth-child(1){
+                    outline: none;
+                    border: none;
+                    padding: 5px;
+                    color: #222;
+                }
+            }
+            > :nth-child(2){
+                > :nth-child(1){
+                    padding: 5px;
+                    outline: none;
+                    border: none;
+                    background: #ddd;
+                    color: #111;
+                }
+            }
+
+            > :nth-child(3){
+                position: absolute;
+                right: 10px;
+                padding: 5px;
+                color: #656;
+                outline: none;
+                background: transparent;
+                border: none;
+            }
+
+        }
+
+        > div{
+            padding: 5px;
+        }
+
+
+
+    }
+
+}
