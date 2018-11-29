@@ -4909,6 +4909,37 @@ var Main = {};
         Main.click(el, callback, capture);
     };
 
+
+    Main.longpress = function (el, callback, capture) {
+        // Create variable for setTimeout
+        var delay;
+
+        // Set number of milliseconds for longpress
+        var longpress = 1300;
+
+        el.addEventListener('mousedown', function (e) {
+            //var _this = this;
+            delay = setTimeout(check, longpress);
+
+            function check() {
+                //_this.classList.add('is-selected');
+                callback();
+            }
+
+        }, capture);
+
+        el.addEventListener('mouseup', function (e) {
+            // On mouse up, we know it is no longer a longpress
+            clearTimeout(delay);
+        });
+
+        el.addEventListener('mouseout', function (e) {
+            clearTimeout(delay);
+        });
+
+
+    };
+
     Main.swipe = function (obj) {
 
         if (!obj.el.addEventListener || !obj.el.removeEventListener) {

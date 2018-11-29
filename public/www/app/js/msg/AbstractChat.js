@@ -1,9 +1,12 @@
 
 
+/* global Ns, Main */
+
 Ns.msg.AbstractChat = {
     chat_view: null,
     chat_view_body: null,
     chatList: [],
+    selectionMode: false,
 
     _validate: function () {
         if (!this.chat_view_body) {
@@ -23,6 +26,7 @@ Ns.msg.AbstractChat = {
         var me = this;
         this.initContent(data);
         this.set(this.chatList);
+        this.selectionMode = false;
 
         this.chat_view = document.getElementById(this.getViewID());
         if (!this.chat_view) {
@@ -76,20 +80,6 @@ Ns.msg.AbstractChat = {
     rcallGetChats: function () {
     },
 
-    setViewBodyID: function (chat_view_body_id) {
-        this.chat_view_body = document.getElementById(chat_view_body_id);
-        if (!this.chat_view_body) {
-            throw Error('unknown id for chat view body - ' + chat_view_body_id);
-        }
-    },
-
-    setViewID: function (view_id) {
-        this.chat_view = document.getElementById(view_id);
-        if (!this.chat_view) {
-            throw Error('unknown id for chat view - ' + view_id);
-        }
-    },
-
     /**
      * replace the existing chat messages with new ones
      * 
@@ -109,18 +99,18 @@ Ns.msg.AbstractChat = {
             tplUrl: 'chat-tpl.html',
             afterReplace: function (html, data) {
                 //clear chat
-                var chat_body = $(html).find('[data-chat="body"]')[0];
+                var chat_body = $(html).find('div[data-chat="body"]')[0];
                 $(chat_body).html(''); // come back to test for correctness
 
                 Ns.msg.AbstractChat._addContent(html, chats);
 
-                var btn_send = $(html).find('[data-chat="send"]')[0];
-                var txt_input = $(html).find('[data-chat="input-content"]')[0];
-                var emoji = $(html).find('[data-chat="emoji"]')[0];
+                var btn_send = $(html).find('i[data-chat="send"]')[0];
+                var txt_input = $(html).find('textarea[data-chat="input-content"]')[0];
+                var emoji = $(html).find('div[data-chat="emoji"]')[0];
 
                 $(btn_send).on('click', {txt_input: txt_input}, Ns.msg.AbstractChat._sendChatMessage);
 
-                $(emoji).on('click', Ns.msg.AbstractChat._showEmoji);
+                $(emoji).on('click', Ns.msg.AbstractChat._showEmojis);
 
             }
         });
@@ -154,19 +144,28 @@ Ns.msg.AbstractChat = {
     },
 
     _addContent: function (html, chats) {
-
+        var user_ids = [];
         for (var i = 0; i < chats.length; i++) {
-            var c = chats[i];
-
-            var is_recieved_msg = true; // TODO
-
-            if (is_recieved_msg) {
-                Ns.msg.AbstractChat._addReceived(c);
-            } else {
-                Ns.msg.AbstractChat._addSent(c);
+            var u_id = chats[i].user_id;
+            if (user_ids.indexOf(u_id) < 0) {
+                user_ids.push(u_id);
             }
-
         }
+        Ns.view.UserProfile.getUsersInfo(user_ids, function (users) {
+
+            for (var i = 0; i < chats.length; i++) {
+                var c = chats[i];
+                var msg_user_id = c.user_id;
+                var is_sent_msg = msg_user_id === Ns.view.UserProfile.appUser.user_id;
+                if (is_sent_msg) {
+                    Ns.msg.AbstractChat._addSent(c);
+                } else {
+                    Ns.msg.AbstractChat._addReceived(c, users);
+                }
+
+            }
+        });
+
 
     },
 
@@ -186,10 +185,6 @@ Ns.msg.AbstractChat = {
 
     },
 
-    _showEmoji: function () {
-
-        alert('TODO: _showEmoji');
-    },
     /**
      * Subclass must override this method and return the promise of the rcall<br>
      * <br>
@@ -203,13 +198,23 @@ Ns.msg.AbstractChat = {
     rcallSendMessage: function () {
     },
 
-    _addReceived: function (msg) {
+    _addReceived: function (msg, users) {
 
         Main.tpl.template({
             tplUrl: 'chat-received-tpl.html',
             data: msg,
             onReplace: function (tpl_var, data) {
-
+                if (tpl_var === 'time') {
+                    return Ns.Util.formatTime(data[tpl_var]);
+                }
+                if (tpl_var === 'full_name') {
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i].user_id === data.user_id) {
+                            return users[i].full_name;
+                        }
+                    }
+                    return data.user_id; // else display the phone number which is the user id
+                }
             },
             afterReplace: function (html, data) {}
         });
@@ -224,9 +229,57 @@ Ns.msg.AbstractChat = {
             onReplace: function (tpl_var, data) {
 
             },
-            afterReplace: function (html, data) {}
+            afterReplace: function (html, data) {
+
+                var chat_body = $(Ns.msg.AbstractChat.chat_view_body).find('div[data-chat="body"]')[0];
+                $(chat_body).append(html);
+
+                var children = chat_body.children;
+                var last_child = children[children.length - 1];
+
+                var indicator = $(last_child).find('span[data-chat-sent="indicator"]')[0];
+                if (data.status === 'seen') {
+                    indicator.className = 'game9ja-seen';
+                } else if (data.status === 'delivered') {
+                    indicator.className = 'game9ja-delivered';
+                } else if (data.status === 'sent') {
+                    indicator.className = 'game9ja-sent';
+                } else {//not sent
+                    indicator.className = 'game9ja-not-sent';
+                }
+
+
+                Main.longpress(last_child, function () {
+                    Ns.msg.AbstractChat.selectionMode = true;
+                    if (!$(last_child).hasClass('game9ja-chat-message-selected')) {
+                        $(last_child).addClass('game9ja-chat-message-selected');
+                    }
+                });
+
+                Main.click(last_child, function () {
+                    if (Ns.msg.AbstractChat.selectionMode) {
+                        if (!$(last_child).hasClass('game9ja-chat-message-selected')) {
+                            $(last_child).addClass('game9ja-chat-message-selected');
+                        }
+                    } else {
+                        $(last_child).removeClass('game9ja-chat-message-selected');
+                    }
+                });
+
+
+            }
         });
 
+    },
+
+    _deseleteAll: function () {
+        var chat_body = $(this.chat_view_body).find('div[data-chat="body"]')[0];
+
+        var children = chat_body.children;
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            $(child).removeClass('game9ja-chat-message-selected');
+        }
     },
 
     /**
@@ -288,10 +341,11 @@ Ns.msg.AbstractChat = {
      * 
      * @returns {undefined}
      */
-    showEmojis: function () {
+    _showEmojis: function () {
         if (!this._validate()) {
             return;
         }
+        alert('TODO: _showEmojis');
 
 
     }

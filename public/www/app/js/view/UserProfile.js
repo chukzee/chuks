@@ -136,8 +136,8 @@ Ns.view.UserProfile = {
             Ns.view.UserProfile.getInfo(user_id, function (user) {
                 setContent(user);
             });
-        }else{
-           setContent(u); 
+        } else {
+            setContent(u);
         }
 
 
@@ -257,6 +257,27 @@ Ns.view.UserProfile = {
 
     getUsersInfo: function (user_id_arr, callback) {
 
+        var local_users = [];
+        for (var i = 0; i < Ns.view.UserProfile.userList.length; i++) {
+            for (var k = 0; k < user_id_arr.length; k++) {
+                if (user_id_arr[k] === Ns.view.UserProfile.userList[i].user_id) {
+                    var u = Ns.view.UserProfile.userList[i];
+                    local_users.push(u);
+                    user_id_arr.slice(k, 1);
+                    k--;
+                    continue;
+                }
+            }
+        }
+
+        if (user_id_arr.length === 0) {
+            if (Main.util.isFunc(callback)) {
+                callback(local_users);
+            }
+            return;
+        }
+
+
         Main.rcall.live(function () {
 
             Main.ro.user.getInfoList(user_id_arr)
@@ -267,6 +288,7 @@ Ns.view.UserProfile = {
                         }
                         Ns.view.UserProfile.merge(users);
                         if (Main.util.isFunc(callback)) {
+                            users = local_users.concat(users);
                             callback(users);
                         }
                     })

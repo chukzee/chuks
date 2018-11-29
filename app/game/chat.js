@@ -424,7 +424,7 @@ class Chat extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
-            //status: 'sent', // e.g sent , delivered, seen
+            status: 'sent', // e.g sent , delivered, seen
             time: now.getTime()
         };
 
@@ -457,7 +457,7 @@ class Chat extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
-            //status: 'sent', // e.g sent , delivered, seen
+            status: 'sent', // e.g sent , delivered, seen
             time: now.getTime(),
             notification_type: "contact_chat",
             notification_time: now.getTime()
@@ -492,7 +492,7 @@ class Chat extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
-            //status: 'sent', // e.g sent , delivered, seen
+            status: 'sent', // e.g sent , delivered, seen
             time: now.getTime(),
             notification_type: "group_chat",
             notification_time: now.getTime()
@@ -538,7 +538,7 @@ class Chat extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
-            //status: 'sent', // e.g sent , delivered, seen
+            status: 'sent', // e.g sent , delivered, seen
             time: now.getTime(),
             notification_type: "tournament_inhouse_chat",
             notification_time: now.getTime()
@@ -595,7 +595,7 @@ class Chat extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
-            //status: 'sent', // e.g sent , delivered, seen
+            status: 'sent', // e.g sent , delivered, seen
             time: now.getTime(),
             notification_type: "tournament_general_chat",
             notification_time: now.getTime()
@@ -664,7 +664,7 @@ class Chat extends   WebApplication {
                 content_type: 'text', //e.g text or voice (as in WhatsApp)
                 vioce_data_url: 'path/voice_data', //the url of the voice data to download the voice from (as in WhatsApp)
                 vioce_data_byte_size: '2MB',
-                //status: 'seen'//e.g sent , delivered, seen
+                status: 'seen'//e.g sent , delivered, seen
             };
 
             obj.push(content);

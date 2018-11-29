@@ -1,5 +1,7 @@
 
 
+/* global Main, Ns */
+
 Ns.msg.AbstractComment = {
     comment_view: null,
     comment_view_body: null,
@@ -62,19 +64,6 @@ Ns.msg.AbstractComment = {
         return true;
 
     },
-    setViewBodyID: function (comment_view_body_id) {
-        this.comment_view_body = document.getElementById(comment_view_body_id);
-        if (!this.comment_view_body) {
-            throw Error('unknown id for comment view body - ' + comment_view_body_id);
-        }
-    },
-
-    setViewID: function (view_id) {
-        this.comment_view = document.getElementById(view_id);
-        if (!this.comment_view) {
-            throw Error('unknown id for comment view - ' + view_id);
-        }
-    },
 
     /**
      * replace the existing comments messages with new ones
@@ -97,10 +86,18 @@ Ns.msg.AbstractComment = {
             tplUrl: 'comment-tpl.html',
             afterReplace: function(html, data){
                 //clear comment
-                var comment_body = $(html).find('[data-comment="body"]')[0];
+                var comment_body = $(html).find('div[data-comment="body"]')[0];
                 $(comment_body).html(''); // come back to test for correctness
-                
+
                 Ns.msg.AbstractComment._addContent(html, comments);
+
+                var btn_send = $(html).find('i[data-comment="send"]')[0];
+                var txt_input = $(html).find('textarea[data-comment="input-content"]')[0];
+                var emoji = $(html).find('div[data-comment="emoji"]')[0];
+
+                $(btn_send).on('click', {txt_input: txt_input}, Ns.msg.AbstractComment._sendCommentMessage);
+
+                $(emoji).on('click', Ns.msg.AbstractComment._showEmojis);
             }
         });
 
@@ -139,6 +136,36 @@ Ns.msg.AbstractComment = {
     _addContent: function(html, comments){
         
     },
+    
+    _sendCommentMessage: function (argu) {
+        var txt_input = argu.data.txt_input;
+        var content = txt_input.innerHTML; //textarea
+        var me = this;
+        Main.rcall.live(function () {
+            me.rcallSendMessage(content)
+                    .get(function (data) {
+
+                    })
+                    .error(function (err) {
+
+                    });
+        });
+
+    },
+
+    /**
+     * Subclass must override this method and return the promise of the rcall<br>
+     * <br>
+     * example: <br>
+     *     rcallSendMessage: function(content){<br>
+     *            return Main.ro.sendGameComment(); // return the promise of the rcall<br>
+     *      }<br>
+     * <br>
+     * @returns {undefined}
+     */
+    rcallSendMessage: function () {
+    },
+
     /**
      * Remove one comment message at the specified index
      * 
@@ -198,11 +225,12 @@ Ns.msg.AbstractComment = {
      * 
      * @returns {undefined}
      */
-    showEmojis: function () {
+    _showEmojis: function () {
         if (!this._validate()) {
             return;
         }
 
+        alert('TODO: _showEmojis');
 
     }
 

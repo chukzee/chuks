@@ -39,6 +39,10 @@ $box_shadow :  0 1px 1px rgba(0, 0, 0, 0.2);
     //background-color: blue;
 }
 
+.game9ja-chat-message-selected{
+    background : #ededde !important;
+}
+
 .game9ja-chat-sent{
     position: relative;
     right: $width - 100%;
@@ -50,7 +54,7 @@ $box_shadow :  0 1px 1px rgba(0, 0, 0, 0.2);
     background-color : #fff;
     margin-top: $msg_margin;
     margin-bottom: $msg_margin;
-       
+
     > :nth-child(1){/*chat message*/
         position: relative;
         top : 0;
@@ -58,20 +62,65 @@ $box_shadow :  0 1px 1px rgba(0, 0, 0, 0.2);
         font-size: 14px;
         color : #444444;
     }
-    > :nth-child(2){/*chat time ago*/
+    > :nth-child(2){/*chat time*/
         position: absolute;
         bottom: 5px;        
         right: 10px;
         font-size: 10px;
         color : #888888;
     }
-    
-    > :nth-child(3){/*message sent and delivery indicator*/
+
+    > .game9ja-seen{/*message sent and delivery indicator*/
         position: relative;
-        top: 5px;        
+        top: 0px;        
         left: 5px;
-        width: 20px;
-        height: 10px;
+        color: green;
+        font-size: 14px;
+        //font-weight: bold;
+        > :nth-child(1):after{/*message sent and delivery indicator*/
+            content: '\2713';
+        }
+        > :nth-child(2):after{/*message sent and delivery indicator*/
+            content: '\2713';
+            position: relative;
+            top: 0px;        
+            left: -15px;
+        }
+    }
+    
+    > .game9ja-delivered{/*message sent and delivery indicator*/
+        position: relative;
+        top: 0px;        
+        left: 5px;
+        font-size: 14px;        
+        > :nth-child(1):after{/*message sent and delivery indicator*/
+            content: '\2713';
+        }
+        > :nth-child(2):after{/*message sent and delivery indicator*/
+            content: '\2713';
+            position: relative;
+            top: 0px;        
+            left: -15px;
+        }
+    }
+    
+    > .game9ja-sent{/*message sent and delivery indicator*/
+        position: relative;
+        top: 0px;        
+        left: 5px;
+        font-size: 14px;        
+        > :nth-child(1):after{/*message sent and delivery indicator*/
+            content: '\2713';
+        }
+    }
+    
+    > .game9ja-not-sent{/*message sent and delivery indicator*/
+        position: relative;
+        top: 0px;        
+        left: 5px;        
+        > :nth-child(1):after{/*message sent and delivery indicator*/
+            content: '...';
+        }
     }
 }
 
@@ -86,21 +135,28 @@ $box_shadow :  0 1px 1px rgba(0, 0, 0, 0.2);
     box-shadow: $box_shadow;
     margin-top: $msg_margin;
     margin-bottom: $msg_margin;
-    
-    
+
+
     > :nth-child(1){/*chat message*/
+        position: relative;
+        top : 0;
+        left: 0;
+        font-size: 12px;
+        color : #002200;
+    }
+    > :nth-child(2){/*chat message*/
         position: relative;
         top : 0;
         left: 0;
         font-size: 14px;
         color : #008800;
     }
-    > :nth-child(2){/*chat time ago*/
+    > :nth-child(3){/*chat time ago*/
         width: 100%;
         font-size: 10px;
         text-align: right;
         color : #004400;
     }
-    
+
 }
 

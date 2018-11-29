@@ -55,6 +55,9 @@ and open the template in the editor.
   box-sizing: border-box;
   overflow: auto; }
 
+.game9ja-chat-message-selected {
+  background: #ededde !important; }
+
 .game9ja-chat-sent {
   position: relative;
   right: -35%;
@@ -74,19 +77,60 @@ and open the template in the editor.
     font-size: 14px;
     color: #444444; }
   .game9ja-chat-sent > :nth-child(2) {
-    /*chat time ago*/
+    /*chat time*/
     position: absolute;
     bottom: 5px;
     right: 10px;
     font-size: 10px;
     color: #888888; }
-  .game9ja-chat-sent > :nth-child(3) {
+  .game9ja-chat-sent > .game9ja-seen {
     /*message sent and delivery indicator*/
     position: relative;
-    top: 5px;
+    top: 0px;
     left: 5px;
-    width: 20px;
-    height: 10px; }
+    color: green;
+    font-size: 14px; }
+    .game9ja-chat-sent > .game9ja-seen > :nth-child(1):after {
+      /*message sent and delivery indicator*/
+      content: '\2713'; }
+    .game9ja-chat-sent > .game9ja-seen > :nth-child(2):after {
+      /*message sent and delivery indicator*/
+      content: '\2713';
+      position: relative;
+      top: 0px;
+      left: -15px; }
+  .game9ja-chat-sent > .game9ja-delivered {
+    /*message sent and delivery indicator*/
+    position: relative;
+    top: 0px;
+    left: 5px;
+    font-size: 14px; }
+    .game9ja-chat-sent > .game9ja-delivered > :nth-child(1):after {
+      /*message sent and delivery indicator*/
+      content: '\2713'; }
+    .game9ja-chat-sent > .game9ja-delivered > :nth-child(2):after {
+      /*message sent and delivery indicator*/
+      content: '\2713';
+      position: relative;
+      top: 0px;
+      left: -15px; }
+  .game9ja-chat-sent > .game9ja-sent {
+    /*message sent and delivery indicator*/
+    position: relative;
+    top: 0px;
+    left: 5px;
+    font-size: 14px; }
+    .game9ja-chat-sent > .game9ja-sent > :nth-child(1):after {
+      /*message sent and delivery indicator*/
+      content: '\2713'; }
+  .game9ja-chat-sent > .game9ja-not-sent {
+    /*message sent and delivery indicator*/
+    position: relative;
+    top: 0px;
+    left: 5px; }
+    .game9ja-chat-sent > .game9ja-not-sent > :nth-child(1):after {
+      /*message sent and delivery indicator*/
+      content: '...'; }
 
 .game9ja-chat-received {
   position: relative;
@@ -103,9 +147,16 @@ and open the template in the editor.
     position: relative;
     top: 0;
     left: 0;
+    font-size: 12px;
+    color: #002200; }
+  .game9ja-chat-received > :nth-child(2) {
+    /*chat message*/
+    position: relative;
+    top: 0;
+    left: 0;
     font-size: 14px;
     color: #008800; }
-  .game9ja-chat-received > :nth-child(2) {
+  .game9ja-chat-received > :nth-child(3) {
     /*chat time ago*/
     width: 100%;
     font-size: 10px;
