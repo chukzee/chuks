@@ -4923,7 +4923,7 @@ var Main = {};
 
             function check() {
                 //_this.classList.add('is-selected');
-                callback();
+                callback(e);
             }
 
         }, capture);

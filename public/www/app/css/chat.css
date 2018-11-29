@@ -55,7 +55,7 @@ and open the template in the editor.
   box-sizing: border-box;
   overflow: auto; }
 
-.game9ja-chat-message-selected {
+.game9ja-chat-selected {
   background: #ededde !important; }
 
 .game9ja-chat-sent {

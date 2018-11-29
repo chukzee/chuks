@@ -38,6 +38,35 @@ Ns.msg.AbstractChat = {
             throw Error('unknown id for chat view body - ' + this.getViewBodyID());
         }
 
+        Main.longpress(this.chat_view_body, function (evt) {
+            var target = evt.target;
+            
+            if(target.className !== 'game9ja-chat-received' && 
+                    target.className !== 'game9ja-chat-sent'){
+                return;
+            }
+            
+            Ns.msg.AbstractChat.selectionMode = true;
+            if (!$(target).hasClass('game9ja-chat-selected')) {
+                $(target).addClass('game9ja-chat-selected');
+            }
+        });
+
+        Main.click(this.chat_view_body, function (evt) {
+            var target = evt.target;
+            
+            if(target.className !== 'game9ja-chat-received' && 
+                    target.className !== 'game9ja-chat-sent'){
+                return;
+            }
+                
+            if (Ns.msg.AbstractChat.selectionMode) {
+                if (!$(target).hasClass('game9ja-chat-selected')) {
+                    $(target).addClass('game9ja-chat-selected');
+                }
+            }
+        });
+        
         //TODO: show loading indicator
 
         Main.rcall.live(function () {
@@ -249,22 +278,7 @@ Ns.msg.AbstractChat = {
                 }
 
 
-                Main.longpress(last_child, function () {
-                    Ns.msg.AbstractChat.selectionMode = true;
-                    if (!$(last_child).hasClass('game9ja-chat-message-selected')) {
-                        $(last_child).addClass('game9ja-chat-message-selected');
-                    }
-                });
 
-                Main.click(last_child, function () {
-                    if (Ns.msg.AbstractChat.selectionMode) {
-                        if (!$(last_child).hasClass('game9ja-chat-message-selected')) {
-                            $(last_child).addClass('game9ja-chat-message-selected');
-                        }
-                    } else {
-                        $(last_child).removeClass('game9ja-chat-message-selected');
-                    }
-                });
 
 
             }

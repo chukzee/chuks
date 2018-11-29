@@ -22,6 +22,35 @@ Ns.msg.AbstractComment = {
             throw Error('unknown id for comment view body - ' + this.getViewBodyID());
         }
 
+        Main.longpress(this.comment_view_body, function (evt) {
+            var target = evt.target;
+            
+            if(target.className !== 'game9ja-comment-received' && 
+                    target.className !== 'game9ja-comment-sent'){
+                return;
+            }
+            
+            Ns.msg.AbstractChat.selectionMode = true;
+            if (!$(target).hasClass('game9ja-comment-selected')) {
+                $(target).addClass('game9ja-comment-selected');
+            }
+        });
+
+        Main.click(this.comment_view_body, function (evt) {
+            var target = evt.target;
+            
+            if(target.className !== 'game9ja-comment-received' && 
+                    target.className !== 'game9ja-comment-sent'){
+                return;
+            }
+                
+            if (Ns.msg.AbstractChat.selectionMode) {
+                if (!$(target).hasClass('game9ja-comment-selected')) {
+                    $(target).addClass('game9ja-comment-selected');
+                }
+            }
+        });
+        
         //TODO: show loading indicator
 
         Main.rcall.live(function () {

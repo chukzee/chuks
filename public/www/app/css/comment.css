@@ -52,6 +52,8 @@ and open the template in the editor.
   width: 100%;
   padding: 0;
   overflow: auto; }
+  .game9ja-comment-body > div > .game9ja-comment-selected {
+    background: #ededde !important; }
 
 .game9ja-comment-item {
   position: relative;

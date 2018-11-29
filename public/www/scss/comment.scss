@@ -32,6 +32,12 @@ $b_color : #777;
     width: 100%;
     padding: 0;
     overflow: auto;
+    >div{
+        >.game9ja-comment-selected{
+            background: #ededde !important;
+        }
+        
+    }
 }
 
 
@@ -41,8 +47,8 @@ $b_color : #777;
     padding: 10px;
     box-sizing: border-box;
     color: $b_color;
-    
-    
+
+
     > :nth-child(1){/*user profile pic*/
         width: $profile_img_size;
         height: $profile_img_size;
@@ -52,7 +58,7 @@ $b_color : #777;
         border-radius: 50%;
         cursor: pointer;        
     }
-    
+
     > :nth-child(2){/*user full name*/
         width: 100px;
         position: absolute;
@@ -61,7 +67,7 @@ $b_color : #777;
         color: #444;
         font-size: 14px;
     }
-    
+
     > :nth-child(3){/*time ago*/
         width: 80px;
         position: absolute;
@@ -69,7 +75,7 @@ $b_color : #777;
         right: 0;
         font-size: 11px;
     }
-    
+
     > :nth-child(4){/*user comment content*/
         width: 100%;
         position: relative;
@@ -77,14 +83,14 @@ $b_color : #777;
         left: 4px;
         font-size: 14px;
     }
-    
+
     > :nth-child(5){/*reply comment icon*/
         position: relative;
         top: 5px;        
         left: 4px;
         cursor: pointer;        
     }
-    
+
     > :nth-child(6){/*like comment icon*/
         position: absolute;
         bottom: 5px;        
