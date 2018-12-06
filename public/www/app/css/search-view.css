@@ -7,7 +7,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-search-header, .game9ja-search-view-header {
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -16,6 +16,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;
@@ -35,7 +38,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-search-header, .game9ja-search-view-header {
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -44,6 +47,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;
@@ -82,6 +88,42 @@ and open the template in the editor.
   position: absolute;
   top: 10px;
   right: 70px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-c {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-d {
+  position: absolute;
+  top: 10px;
+  right: 130px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-e {
+  position: absolute;
+  top: 10px;
+  right: 160px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -135,7 +177,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-search-header, .game9ja-search-view-header {
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -144,6 +186,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;
@@ -163,7 +208,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-search-header, .game9ja-search-view-header {
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -172,6 +217,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;
@@ -210,6 +258,42 @@ and open the template in the editor.
   position: absolute;
   top: 10px;
   right: 70px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-c {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-d {
+  position: absolute;
+  top: 10px;
+  right: 130px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-e {
+  position: absolute;
+  top: 10px;
+  right: 160px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -263,7 +347,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-search-header, .game9ja-search-view-header {
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -272,6 +356,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;

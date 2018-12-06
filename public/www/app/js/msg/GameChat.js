@@ -1,4 +1,6 @@
 
+/* global Main */
+
 Ns.msg.GameChat = {
 
     extend: 'Ns.msg.AbstractChat',
@@ -38,7 +40,7 @@ Ns.msg.GameChat = {
      *
      * @returns {undefined}
      */
-    rcallGetChats: function () {
+    rcallGetMessages: function () {
         Main.ro.getGameChats(this.match.game_id);
     },
     /**

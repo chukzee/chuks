@@ -94,15 +94,32 @@ $b_color : #777;
     > :nth-child(6){/*like comment icon*/
         position: absolute;
         bottom: 5px;        
-        right: 80px;
+        right: 100px;
         cursor: pointer;
         font-size: 11px;
     }
     > :nth-child(7){/*dislike comment icon*/
         position: absolute;
         bottom: 5px;        
-        right: 5px;
+        right: 25px;
         cursor: pointer;
         font-size: 11px;
+    }
+    
+    :nth-child(8){
+        position: absolute;
+        bottom: 5px;        
+        right: 5px;
+        
+    }
+   
+    > .comment-sent:after{/*sent comment status*/
+        font-size: 12px;
+        content: '\2713';
+    }
+    
+    > .comment-not-sent:after{/*not sent comment status*/
+        font-size: 12px;
+        content: '...';//come back
     }
 }

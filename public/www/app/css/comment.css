@@ -16,7 +16,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header {
+.game9ja-header, .game9ja-light-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -25,6 +25,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;
@@ -102,15 +105,27 @@ and open the template in the editor.
     /*like comment icon*/
     position: absolute;
     bottom: 5px;
-    right: 80px;
+    right: 100px;
     cursor: pointer;
     font-size: 11px; }
   .game9ja-comment-item > :nth-child(7) {
     /*dislike comment icon*/
     position: absolute;
     bottom: 5px;
-    right: 5px;
+    right: 25px;
     cursor: pointer;
     font-size: 11px; }
+  .game9ja-comment-item :nth-child(8) {
+    position: absolute;
+    bottom: 5px;
+    right: 5px; }
+  .game9ja-comment-item > .comment-sent:after {
+    /*sent comment status*/
+    font-size: 12px;
+    content: '\2713'; }
+  .game9ja-comment-item > .comment-not-sent:after {
+    /*not sent comment status*/
+    font-size: 12px;
+    content: '...'; }
 
 /*# sourceMappingURL=comment.css.map */

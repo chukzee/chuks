@@ -62,6 +62,12 @@ $footer_bg : $header_bg;
 }
 
 
+.game9ja-light-header{
+    @extend .game9ja-header;
+    background: #565;
+}
+
+
 .game9ja-footer{
     
     position: absolute;

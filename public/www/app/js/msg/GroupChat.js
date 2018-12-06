@@ -1,4 +1,6 @@
 
+/* global Main */
+
 Ns.msg.GroupChat = {
 
     extend: 'Ns.msg.AbstractChat',
@@ -43,7 +45,7 @@ Ns.msg.GroupChat = {
      *
      * @returns {undefined}
      */
-    rcallGetChats: function(){    
+    rcallGetMessages: function(){    
         Main.ro.getGroupChats(this.group.name);
     }, 
         /**

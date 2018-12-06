@@ -16,7 +16,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header {
+.game9ja-header, .game9ja-light-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -25,6 +25,9 @@ and open the template in the editor.
   background: #333;
   background: #222;
   color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
 
 .game9ja-footer {
   position: absolute;

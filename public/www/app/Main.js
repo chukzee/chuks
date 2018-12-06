@@ -3076,6 +3076,10 @@ var Main = {};
                 }
             }
 
+            if (Main.util.isFunc(out_card.obj.onHide)) {
+                out_card.obj.onHide(out_card.obj.data);
+            }
+
         };
     }
 
@@ -3371,7 +3375,19 @@ var Main = {};
 
 
     function Dom() {
-        this.addListener = function (e, type, callback, capture) {
+
+        var fns = [];
+        var bind_fns = [];
+
+        this.addListener = function (e, type, a2, a3, a4) {
+
+            var param = _analyzeEvtParam(a2, a3, a4);
+
+            var data = param.data;
+            var callback = param.callback;
+            var capture = param.capture;
+
+
             var el = e;
             if (Main.util.isString(e)) {
                 e = e.charAt(0) === '#' ? e.substring(1) : e;
@@ -3381,12 +3397,21 @@ var Main = {};
                 }
             }
 
+            Main.dom.removeListener(e, type, callback, capture);//first remove event of same type on same element with same listener
+
+            var callbackBindFn;
+            if (Main.util.isFunc(callback)) {
+                callbackBindFn = callback.bind(null, data);
+                fns.push(callback);
+                bind_fns.push(callbackBindFn);
+            }
+            
             if (el.addEventListener) {
-                el.removeEventListener(type, callback, capture);//first remove event of same type on same element with same listener
-                el.addEventListener(type, callback, capture);
+                //el.removeEventListener(type, callbackFn, capture);//@deprecated - replaced with Main.dom.removeListener above
+                el.addEventListener(type, callbackBindFn, capture);
             } else if (el.attachEvent) {//IE
-                el.detachEvent('on' + type, callback, capture);//first remove event of same type on same element with same listener
-                el.attachEvent('on' + type, callback, capture);
+                //el.detachEvent('on' + type, callbackFn, capture);//@deprecated - replaced with Main.dom.removeListener above
+                el.attachEvent('on' + type, callbackBindFn, capture);
             }
         };
 
@@ -3399,11 +3424,20 @@ var Main = {};
                     throw new Error('unknown element id - ' + e);
                 }
             }
+            var callbackBindFn;
+            for (var i = 0; i < fns.length; i++) {
+                if (fns[i] === callback) {
+                    callbackBindFn = bind_fns[i];
+                    fns.splice(i, 1);
+                    bind_fns.splice(i, 1);
+                    break;
+                }
+            }
 
             if (el.removeEventListener) {
-                el.removeEventListener(type, callback, capture);
+                el.removeEventListener(type, callbackBindFn, capture);
             } else if (el.detachEvent) {//IE
-                el.detachEvent('on' + type, callback, capture);
+                el.detachEvent('on' + type, callbackBindFn, capture);
             }
         };
     }
@@ -4896,21 +4930,53 @@ var Main = {};
         }
 
     };
-    Main.click = function (el, callback, capture) {
+    
+    function _analyzeEvtParam(a1, a2, a3){
+        var param = {
+            data: null,
+            callback: null,
+            capture: null
+        };
+        if(arguments.length === 3 && typeof a2 === 'function'){
+            param.data = a1;
+            param.callback = a2;
+            param.capture = a3;
+        }else if(arguments.length === 2 && typeof a1 === 'function' && typeof a2 !== 'function'){
+            param.callback = a1;
+            param.capture = a2;
+        }else if(arguments.length === 2 && typeof a2 === 'function'){
+            param.data = a1;
+            param.callback = a2;
+        }else if(arguments.length === 1 && typeof a1 === 'function'){
+            param.callback = a1;
+        }
+        
+        return param;
+    }
+    
+    Main.click = function (el, argu1, argu2, argu3) {
+
         if (Main.device.isMobileDeviceReady) {//implement mobile tap event
-            Main.dom.addListener(el, 'touchstart', null, capture);
-            Main.dom.addListener(el, 'touchend', callback, capture);
+            Main.dom.addListener(el, 'touchstart', null, null, false);
+            Main.dom.addListener(el, 'touchend', argu1, argu2, argu3);
         } else {
-            Main.dom.addListener(el, 'click', callback, capture);
+            Main.dom.addListener(el, 'click', argu1, argu2, argu3);
         }
     };
 
-    Main.tap = function (el, callback, capture) {
-        Main.click(el, callback, capture);
+    Main.tap = function (el, argu1, argu2, argu3) {
+        Main.click(el, argu1, argu2, argu3);
     };
 
 
-    Main.longpress = function (el, callback, capture) {
+    Main.longpress = function (el, argu1, argu2, argu3) {
+
+        var param = _analyzeEvtParam(argu1, argu2, argu3);
+
+        var data = param.data;
+        var callback = param.callback;
+        var capture = param.capture;
+
         // Create variable for setTimeout
         var delay;
 
@@ -4923,7 +4989,7 @@ var Main = {};
 
             function check() {
                 //_this.classList.add('is-selected');
-                callback(e);
+                callback(e, data);
             }
 
         }, capture);

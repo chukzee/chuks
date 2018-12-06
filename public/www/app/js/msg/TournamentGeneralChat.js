@@ -1,4 +1,6 @@
 
+/* global Main */
+
 Ns.msg.TournamentGeneralChat = {
 
     extend: 'Ns.msg.AbstractChat',
@@ -42,7 +44,7 @@ Ns.msg.TournamentGeneralChat = {
      *
      * @returns {undefined}
      */
-    rcallGetChats: function(){    
+    rcallGetMessages: function(){    
         Main.ro.getTournamentGeneralChats(this.tournament.name);
     }, 
             /**

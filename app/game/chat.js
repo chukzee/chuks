@@ -11,6 +11,23 @@ class Chat extends   WebApplication {
     }
 
     /**
+     * The delete the chat for the specified user
+     * 
+     * @param {type} user_id
+     * @param {type} msg_id
+     * @returns {Boolean}
+     */
+    async deleteFor(user_id, msg_id) {
+
+        var c = this.sObj.db.collection(this.sObj.col.chats);
+
+        var r = await c.updateOne({msg_id: msg_id}, {$set: {delete_for: user_id}});
+        
+                
+        return 'Successful';
+    }
+    
+    /**
      * Get the chat messages of the specified game id
      * 
      * @param {type} game_id
@@ -425,6 +442,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
+            delete_for: [],//holds user_ids of users who deleted the chat
             time: now.getTime()
         };
 
@@ -433,7 +451,9 @@ class Chat extends   WebApplication {
         //forward to the other user        
         this.send(this.evt.game_chat, chat_msg, opponent_id, true);
 
-        return 'sent successfully';
+        delete chat_msg.content; // delete the content to reduce payload
+        
+        return chat_msg;
     }
 
     async sendContactChat(user_id, contact_user_id, content, content_type) {
@@ -458,6 +478,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
+            delete_for: [],//holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "contact_chat",
             notification_time: now.getTime()
@@ -468,7 +489,9 @@ class Chat extends   WebApplication {
         //forward to the other user        
         this.send(this.evt.game_chat, chat_msg, contact_user_id, true);
 
-        return 'sent successfully';
+        delete chat_msg.content; // delete the content to reduce payload
+        
+        return chat_msg;
     }
 
     async sendGroupChat(user_id, group_name, content, content_type) {
@@ -493,6 +516,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
+            delete_for: [],//holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "group_chat",
             notification_time: now.getTime()
@@ -513,7 +537,9 @@ class Chat extends   WebApplication {
 
         this.broadcast(this.evt.group_chat, chat_msg, members_ids, true);
 
-        return 'sent successfully';
+        delete chat_msg.content; // delete the content to reduce payload
+        
+        return chat_msg;
     }
 
     async sendTournamentInhouseChat(user_id, tournament_name, content, content_type) {
@@ -539,6 +565,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
+            delete_for: [],//holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "tournament_inhouse_chat",
             notification_time: now.getTime()
@@ -569,8 +596,10 @@ class Chat extends   WebApplication {
         }
 
         this.broadcast(this.evt.tournament_inhouse_chat, chat_msg, members_ids, true);
-
-        return 'sent successfully';
+       
+        delete chat_msg.content; // delete the content to reduce payload
+        
+        return chat_msg;
     }
 
     async sendTournamentGeneralChat(user_id, tournament_name, content, content_type) {
@@ -596,6 +625,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
+            delete_for: [],//holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "tournament_general_chat",
             notification_time: now.getTime()
@@ -629,7 +659,9 @@ class Chat extends   WebApplication {
         // periodically pull on new tournament general chat message when in the
         //the chat area and stop the pulling when out of the chat area.
 
-        return 'sent successfully';
+        delete chat_msg.content; // delete the content to reduce payload
+        
+        return chat_msg;
     }
 
     /**

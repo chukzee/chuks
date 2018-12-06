@@ -44,6 +44,42 @@ $header_item_spacing : 30px;
     @include box-sizing(border-box);
 }
 
+.game9ja-header-item-right-c {
+    position: absolute;
+    top: $header_item_top; 
+    right: $header_item_top + 3 * $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
+.game9ja-header-item-right-d {
+    position: absolute;
+    top: $header_item_top; 
+    right: $header_item_top + 4 * $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
+.game9ja-header-item-right-e {
+    position: absolute;
+    top: $header_item_top; 
+    right: $header_item_top + 5 * $header_item_spacing;
+    font-size: $header_item_font_size;   
+    cursor: pointer;
+    width: $header_item_size;
+    height: $header_item_size;
+    padding: $header_item_padding;
+    @include box-sizing(border-box);
+}
+
 .game9ja-header-item-left {
     position: absolute;
     top: $header_item_top; 

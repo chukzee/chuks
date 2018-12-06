@@ -45,7 +45,7 @@ Ns.msg.GameComment = {
      *
      * @returns {undefined}
      */
-    rcallGetComments: function(){    
+    rcallGetMessages: function(){    
         Main.ro.getGameComments(this.match.game_id);
     }, 
       

@@ -1,4 +1,6 @@
 
+/* global Main, Ns */
+
 Ns.msg.ContactChat = {
 
     extend: 'Ns.msg.AbstractChat',
@@ -41,7 +43,7 @@ Ns.msg.ContactChat = {
      *
      * @returns {undefined}
      */
-    rcallGetChats: function(){    
+    rcallGetMessages: function(){    
         var user_id = Ns.view.UserProfile.appUser.user_id;
         Main.ro.getContactChats(user_id, this.contact.user_id);
     },    

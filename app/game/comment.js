@@ -10,20 +10,81 @@ class Comment extends   WebApplication {
         super(sObj, util, evt);
     }
 
+    async _normalizeComments(user_id, comments){
+        
+        //the the users info
+        var user_ids = [];
+        for (var i = 0; i < comments.length; i++) {
+            user_ids.push(comments[i].user_id);
+        }
+
+        var user = new User(this.sObj, this.util);
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var users = await user.getInfoList(user_ids, required_fields);
+
+        //map the user info to thier corresponding comments
+        if (Array.isArray(users)) {
+            for (var i = 0; i < comments.length; i++) {
+                for (var k = 0; k < users.length; k++) {
+                    if (users[k].user_id === comments[i].user_id) {
+                        comments[i].user = users[k]; // set the user property on the comment object
+                        break;
+                    }
+                }
+            }
+        }
+        
+        
+        for(var i=0; i<comments.length; i++){
+            //set the number of likes and dislikes
+            comments[i].likes_count =  comments[i].likes.length;
+            comments[i].dislikes_count =  comments[i].dislikes.length;
+            
+            //set whether the user has has liked or disliked the comment
+            comments[i].has_user_liked =  comments[i].likes.indexOf(user_id) > 0;
+            comments[i].has_user_disliked =  comments[i].dislikes.indexOf(user_id) > 0;
+            
+            //remove the likes and dislikes array to reduce payload
+            delete comments[i].likes;
+            delete comments[i].dislikes;
+           
+        }
+        return comments;
+    }
+
+    /**
+     * The delete the comment for the specified user
+     * 
+     * @param {type} user_id
+     * @param {type} msg_id
+     * @returns {Boolean}
+     */
+    async deleteFor(user_id, msg_id) {
+
+        var c = this.sObj.db.collection(this.sObj.col.comments);
+
+        var r = await c.updateOne({msg_id: msg_id}, {$set: {delete_for: user_id}});
+        
+                
+        return 'Successful';
+    }
+
     /**
      * Get the comments of the specified game id
      * 
+     * @param {type} user_id
      * @param {type} game_id
      * @param {type} skip
      * @param {type} limit
      * @returns {nm$_comment.Comment.getGameComments.data}
      */
-    async getGameComments(game_id, skip, limit) {
+    async getGameComments(user_id, game_id, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
-            game_id = arguments[0].user_id;
+            user_id = arguments[0].user_id;
+            game_id = arguments[0].game_id;
             skip = arguments[0].skip;
             limit = arguments[0].limit;
         }
@@ -67,28 +128,8 @@ class Comment extends   WebApplication {
                 .skip(skip)
                 .toArray();
 
+        data.comments = await this._normalizeComments(user_id, data.comments);       
 
-        //the the users info
-        var user_ids = [];
-        for (var i = 0; i < data.comments.length; i++) {
-            user_ids.push(data.comments[i].user_id);
-        }
-
-        var user = new User(this.sObj, this.util);
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
-        var users = await user.getInfoList(user_ids, required_fields);
-
-        //map the user info to thier corresponding comments
-        if (Array.isArray(users)) {
-            for (var i = 0; i < data.comments.length; i++) {
-                for (var k = 0; k < users.length; k++) {
-                    if (users[k].user_id === data.comments[i].user_id) {
-                        data.comments[i].user = users[k]; // set the user property on the comment object
-                        break;
-                    }
-                }
-            }
-        }
 
         return data;
     }
@@ -149,7 +190,9 @@ class Comment extends   WebApplication {
                 .limit(limit)
                 .skip(skip)
                 .toArray();
-
+        
+        data.comments = await this._normalizeComments(user_id, data.comments); 
+        
         return data;
     }
 
@@ -194,9 +237,10 @@ class Comment extends   WebApplication {
             msg_id: msg_id,
             content: content, //text message or audio url if the comment is audio type (voice)
             content_type: content_type,
-            //status: 'sent', // e.g sent , delivered, seen
-            like: 0,
-            dislike: 0,
+            status: 'sent', // sent status
+            likes: [], //holds user_ids of users who liked the comment
+            dislikes: [],//holds user_ids of users who disliked the comment
+            delete_for: [],//holds user_ids of users who deleted the comment
             time: now.getTime()
         };
 
@@ -245,55 +289,57 @@ class Comment extends   WebApplication {
 
 
 
-        return 'sent successfully';
+        delete msg.content; // delete the content to reduce payload
+        
+        return msg;
     }
 
     /**
-     * Like a comment by increasing the number of likes.
-     * This method is expected to return immediately because
-     * the write concerns are low
+     * adds the user id to the 'likes' array.
      * 
+     * If the user_id is already in the array then is undoes the 'like'
+     * 
+     * @param {type} user_id
      * @param {type} msg_id
      * @returns {Boolean}
      */
-    like(msg_id) {
+    async like(user_id, msg_id) {
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
 
-        c.updateOne({msg_id: msg_id}, {$inc: {like: 1}})
-                .then(function (result) {
-                    //do nothing       
-                })
-                .catch(function (err) {
-                    console.log(err);
-                });
-
-        return true;
+        var r = await c.updateOne({msg_id: msg_id}, {$set: {likes: user_id}});
+        if (r.result.nModified === 0) {//undo like
+             r = await c.updateOne({msg_id: msg_id}, {$pull: {likes: user_id}});
+        } 
+        
+        var comment = await c.findOne({msg_id: msg_id}, {_id: 0});
+        
+        return comment;
     }
 
     /**
-     * Dislike a comment by increasing the number of dislikes.
-     * This method is expected to return immediately because
-     * the write concerns are low
+     * adds the user id to the 'dislikes' array.
      * 
+     * If the user_id is already in the array then is undoes the 'dislike'
+     * 
+     * @param {type} user_id
      * @param {type} msg_id
      * @returns {Boolean}
      */
-    async dislike(msg_id) {
+    async dislike(user_id, msg_id) {
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
 
-        c.updateOne({msg_id: msg_id}, {$inc: {dislike: 1}})
-                .then(function (result) {
-                    //do nothing       
-                })
-                .catch(function (err) {
-                    console.log(err);
-                });
-
-        return true;
+        var r = await c.updateOne({msg_id: msg_id}, {$set: {dislikes: user_id}});
+        if (r.result.nModified === 0) {//undo like
+             r = await c.updateOne({msg_id: msg_id}, {$pull: {dislikes: user_id}});
+        } 
+        
+        var comment = await c.findOne({msg_id: msg_id}, {_id: 0});
+        
+        return comment;
     }
-
+    
 }
 
 module.exports = Comment;
