@@ -21,15 +21,15 @@ Ns.msg.AbstractChat = {
     getMsgReceivedClassName: function () {
         return 'game9ja-chat-received';
     },
-    
+
     getNotSentIndicatorClassName: function () {
         return 'game9ja-not-sent';
     },
-    
+
     getSentIndicatorClassName: function () {
         return 'game9ja-sent';
     },
-    
+
     getDeliveredIndicatorClassName: function () {
         return 'game9ja-delivered';
     },
@@ -37,13 +37,13 @@ Ns.msg.AbstractChat = {
     getSeenIndicatorClassName: function () {
         return 'game9ja-seen';
     },
-    
+
     getMsgBodySelector: function () {
         return 'div[data-chat="body"]';
     },
 
     getMsgInputSelector: function () {
-        return 'textarea[data-chat="input-content"]';
+        return 'textarea[data-chat="input-msg"]';
     },
 
     getMsgSendBottonSelector: function () {
@@ -53,9 +53,13 @@ Ns.msg.AbstractChat = {
     getMsgEmojisBottonSelector: function () {
         return 'div[data-chat="emoji"]';
     },
-    
-    getMsgStatusIndicatorSelector: function(){
+
+    getMsgStatusIndicatorSelector: function () {
         return 'span[data-chat-sent="indicator"]';
+    },
+
+    getMainTpl: function () {
+        return 'chat-tpl.html';
     },
 
     getMsgReceivedTpl: function () {
@@ -65,13 +69,15 @@ Ns.msg.AbstractChat = {
     getMsgSentTpl: function () {
         return 'chat-sent-tpl.html';
     },
-
+    getResponseMsgs: function (response) {
+        return response.chats;
+    },
     /**
      * @param {type} tpl_var
      * @param {type} data
      * @returns {undefined}
-     */    
-    onPrepareSentMsgTpl: function(tpl_var, data){
+     */
+    onPrepareSentMsgTpl: function (tpl_var, data) {
     },
 
     /**
@@ -79,25 +85,25 @@ Ns.msg.AbstractChat = {
      * @param {type} data
      * @returns {undefined}
      */
-    onFinishPrepareSentMsgTpl: function(html, data){
+    onFinishPrepareSentMsgTpl: function (html, data) {
     },
 
     /**
      * @param {type} tpl_var
      * @param {type} data
      * @returns {undefined}
-     */    
-    onPrepareReceivedMsgTpl: function(tpl_var, data){
+     */
+    onPrepareReceivedMsgTpl: function (tpl_var, data) {
     },
 
     /**
      * @param {type} html
      * @param {type} data
      * @returns {undefined}
-     */    
-    onFinishPrepareReceivedMsgTpl: function(html, data){
+     */
+    onFinishPrepareReceivedMsgTpl: function (html, data) {
     },
-    
+
 };
 
 

@@ -1,5 +1,5 @@
 
-/* global Main */
+/* global Main, Ns */
 
 Ns.msg.GroupChat = {
 
@@ -31,6 +31,9 @@ Ns.msg.GroupChat = {
      */
     initContent:function(group){
         this.group = group;
+        document.getElementById('group-chat-view-photo').src = group.photo_url;
+        document.getElementById('group-chat-view-name').innerHTML = group.name;
+        document.getElementById('group-chat-view-status').innerHTML = group.status_message;
     },
     getViewID: function(){
         return 'group-chat-view';
@@ -46,7 +49,7 @@ Ns.msg.GroupChat = {
      * @returns {undefined}
      */
     rcallGetMessages: function(){    
-        Main.ro.getGroupChats(this.group.name);
+        return Main.ro.chat.getGroupChats(this.group.name);
     }, 
         /**
      * Send the chat message
@@ -54,7 +57,7 @@ Ns.msg.GroupChat = {
      * <br>
      * example: <br>
      *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *            return Main.ro.chat.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
      *      }<br>
      * <br>
      * @returns {undefined}
@@ -62,7 +65,7 @@ Ns.msg.GroupChat = {
     rcallSendMessage: function(content){
         
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.sendGroupChat(user_id, this.group.name, content, 'text');
+        return Main.ro.chat.sendGroupChat(user_id, this.group.name, content, 'text');
     },
     onChat: function(obj){
         this.add(obj.data);

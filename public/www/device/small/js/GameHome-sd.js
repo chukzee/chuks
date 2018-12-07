@@ -177,6 +177,48 @@ Ns.GameHome = {
             data: data
         });
     },
+    showContactChat: function (contact) {
+        
+         Main.page.show({
+            url: 'contact-chat-view.html',
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.GameContactChat.Content,
+            data: contact
+        });
+        
+    },
+    showGroupChat: function (group) {
+        
+         Main.page.show({
+            url: 'group-chat-view.html',
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.GameGroupChat.Content,
+            data: group
+        });
+        
+    },
+    showTournamentGeneralChat: function (tournament) {
+        
+         Main.page.show({
+            url: 'tournament-general-chat-view.html',
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.GameTournamentGeneralChat.Content,
+            data: tournament
+        });     
+    },
+    showTournamentInhouseChat: function (tournament) {
+        
+         Main.page.show({
+            url: 'tournament-inhouse-chat-view.html',
+            effect: "slideleft",
+            duration: 500,
+            onBeforeShow: Ns.GameTournamentInhouseChat.Content,
+            data: tournament
+        });    
+    },
     showCreateGroup: function (data) {
 
     },

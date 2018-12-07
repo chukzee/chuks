@@ -41,7 +41,7 @@ Ns.msg.AbstractComment = {
     },
 
     getMsgInputSelector: function () {
-        return 'textarea[data-comment="input-content"]';
+        return 'textarea[data-comment="input-msg"]';
     },
 
     getMsgSendBottonSelector: function () {
@@ -55,6 +55,10 @@ Ns.msg.AbstractComment = {
     getMsgStatusIndicatorSelector: function () {
         return 'span[data-comment-sent="indicator"]';
     },
+    
+    getMainTpl: function(){
+      return 'commnet-tpl.html';  
+    },
 
     getMsgReceivedTpl: function () {
         return 'comment-item-tpl.html';//same as sent tpl
@@ -64,6 +68,9 @@ Ns.msg.AbstractComment = {
         return 'comment-item-tpl.html';//same as received tpl
     },
 
+    getResponseMsgs: function (response) {
+        return response.comments;
+    },
     /**
      * @param {type} tpl_var
      * @param {type} data

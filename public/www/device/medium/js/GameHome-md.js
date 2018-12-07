@@ -235,6 +235,50 @@ Ns.GameHome = {
             onShow: Ns.GameContacts.Content
         });
     },
+    showContactChat: function (contact) {
+        
+        Main.card.to({
+            container: '#home-main',
+            url:'contact-chat-view.html',
+            fade:true,
+            data : contact,
+            onShow: Ns.GameContactChat.Content
+        });
+        
+    },
+    showGroupChat: function (group) {
+        
+        Main.card.to({
+            container: '#home-main',
+            url:'group-chat-view.html',
+            fade:true,
+            data : group,
+            onShow: Ns.GameGroupChat.Content
+        });
+        
+    },
+    showTournamentGeneralChat: function (tournament) {
+        
+        Main.card.to({
+            container: '#home-main',
+            url:'tournament-general-chat-view.html',
+            fade:true,
+            data : tournament,
+            onShow: Ns.GameTournamentGeneralChat.Content
+        });
+        
+    },
+    showTournamentInhouseChat: function (tournament) {
+        
+        Main.card.to({
+            container: '#home-main',
+            url:'tournament-inhouse-chat-view.html',
+            fade:true,
+            data : tournament,
+            onShow: Ns.GameTournamentInhouseChat.Content
+        });
+        
+    },
     showCreateGroup: function () {
 
     },

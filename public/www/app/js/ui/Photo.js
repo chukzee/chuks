@@ -1,4 +1,6 @@
 
+/* global Ns, Main */
+
 Ns.ui.Photo = {
 
     show: function (data, type) {
@@ -41,6 +43,12 @@ Ns.ui.Photo = {
                     Ns.GameHome.showUserProfile(data);
                 });
 
+                var comment_btn = document.getElementById('user-photo-view-comment');
+                $(comment_btn).on('click', function () {
+                    me.hide();
+                    Ns.GameHome.showContactChat(data);
+                });
+                
                 var share_btn = document.getElementById('user-photo-view-share');
                 $(share_btn).on('click', data, Ns.ui._sharePhoto);
 
@@ -81,7 +89,7 @@ Ns.ui.Photo = {
                 var comment_btn = document.getElementById('group-photo-view-comment');
                 $(comment_btn).on('click', function () {
                     me.hide();
-                    alert('TODO - show group comment');
+                    Ns.GameHome.showGroupChat(data);
                 });
 
                 var share_btn = document.getElementById('group-photo-view-share');
@@ -121,12 +129,18 @@ Ns.ui.Photo = {
                     Ns.GameHome.showTournamentDetails(data);
                 });
 
-                var comment_btn = document.getElementById('tournament-photo-view-comment');
-                $(comment_btn).on('click', function () {
+                var general_comment_btn = document.getElementById('tournament-photo-view-comment-general');
+                $(general_comment_btn).on('click', function () {
                     me.hide();
-                    alert('TODO - show tournament comment');
+                    Ns.GameHome.showTournamentGeneralChat(data);
                 });
 
+                var inhouse_comment_btn = document.getElementById('tournament-photo-view-comment-inhouse');
+                $(inhouse_comment_btn).on('click', function () {
+                    me.hide();
+                    Ns.GameHome.showTournamentInhouseChat(data);
+                });
+                
                 var share_btn = document.getElementById('tournament-photo-view-share');
                 $(share_btn).on('click', data, Ns.ui._sharePhoto);
 

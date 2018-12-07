@@ -116,7 +116,7 @@
             "user-photo-view.css",
             "group-photo-view.css",
             "tournament-photo-view.css",
-            "user-chat-view.css",
+            "contact-chat-view.css",
             "group-chat-view.css",
             "tournament-general-chat-view.css",
             "tournament-inhouse-chat-view.css"
@@ -132,8 +132,15 @@
             "Bluetooth.js",
             "Match.js",
             "PlayRequest.js",
-            "msg/Chat.js",
-            "msg/Comment.js",
+            "msg/AbstractChat.js",
+            "msg/AbstractComment.js",
+            "msg/AbstractMessage.js",
+            "msg/GameComment.js",
+            "msg/GameChat.js",
+            "msg/ContactChat.js",
+            "msg/GroupChat.js",
+            "msg/TournamentGeneralChat.js",
+            "msg/TournamentInhouseChat.js",
             "msg/VideoCall.js",
             "msg/VoiceCall.js",
             "ui/UI.js",
@@ -191,7 +198,11 @@
             "GameRankings-sd.js",
             "GamePerformance-sd.js",
             "GameSearchView-sd.js",
-            "GameNotifications-sd.js"
+            "GameNotifications-sd.js",
+            "GameContactChat-sd.js",
+            "GameGroupChat-sd.js",
+            "GameTournamentGeneralChat-sd.js",
+            "GameTournamentInhouseChat-sd.js"
         ] 
     },
 
@@ -217,7 +228,11 @@
             "GameRankings-md.js",
             "GamePerformance-md.js",
             "GameSearchView-md.js",
-            "GameNotifications-md.js"
+            "GameNotifications-md.js",
+            "GameContactChat-md.js",
+            "GameGroupChat-md.js",
+            "GameTournamentGeneralChat-md.js",
+            "GameTournamentInhouseChat-md.js"
         ]
     },
 
@@ -243,7 +258,11 @@
             "GameRankings-ld.js",
             "GamePerformance-ld.js",
             "GameSearchView-ld.js",
-            "GameNotifications-ld.js"
+            "GameNotifications-ld.js",
+            "GameContactChat-ld.js",
+            "GameGroupChat-ld.js",
+            "GameTournamentGeneralChat-ld.js",
+            "GameTournamentInhouseChat-ld.js"
         ]
     }
 }

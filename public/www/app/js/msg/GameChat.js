@@ -41,7 +41,7 @@ Ns.msg.GameChat = {
      * @returns {undefined}
      */
     rcallGetMessages: function () {
-        Main.ro.getGameChats(this.match.game_id);
+        return Main.ro.chat.getGameChats(this.match.game_id);
     },
     /**
      * Send the chat message
@@ -49,7 +49,7 @@ Ns.msg.GameChat = {
      * <br>
      * example: <br>
      *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *            return Main.ro.chat.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
      *      }<br>
      * <br>
      * @returns {undefined}
@@ -62,7 +62,7 @@ Ns.msg.GameChat = {
                 this.match.players[0].user_id
                 : this.match.players[1].user_id;
                 
-        return Main.ro.sendGameChat(user_id, opponent_id, this.match.game_id, content, 'text');
+        return Main.ro.chat.sendGameChat(user_id, opponent_id, this.match.game_id, content, 'text');
     },
     getViewID: function () {
         return 'TODO';

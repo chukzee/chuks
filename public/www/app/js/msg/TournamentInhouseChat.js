@@ -31,6 +31,8 @@ Ns.msg.TournamentInhouseChat = {
      */
     initContent:function(tournament){
         this.tournament = tournament;
+        document.getElementById('tournament-inhouse-chat-view-photo').src = tournament.photo_url;
+        document.getElementById('tournament-inhouse-chat-view-name').innerHTML = tournament.name;
     },
     getViewID: function(){
         return 'tournament-inhouse-chat-view';
@@ -46,7 +48,7 @@ Ns.msg.TournamentInhouseChat = {
      * @returns {undefined}
      */
     rcallGetMessages: function(){    
-        Main.ro.getTournamentInhouseChats(this.tournament.name);
+        return Main.ro.chat.getTournamentInhouseChats(this.tournament.name);
     }, 
             /**
      * Send the chat message
@@ -54,14 +56,14 @@ Ns.msg.TournamentInhouseChat = {
      * <br>
      * example: <br>
      *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *            return Main.ro.chat.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
      *      }<br>
      * <br>
      * @returns {undefined}
      */
     rcallSendMessage: function(content){
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.sendTournamentInhouseChat(user_id, this.tournament.name, content, 'text');
+        return Main.ro.chat.sendTournamentInhouseChat(user_id, this.tournament.name, content, 'text');
     },
     onChat: function(obj){
         this.add(obj.data);

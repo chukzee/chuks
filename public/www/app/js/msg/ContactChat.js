@@ -30,6 +30,9 @@ Ns.msg.ContactChat = {
      */
     initContent:function(contact){
         this.contact = contact;
+        
+        document.getElementById('contact-chat-view-photo').src = contact.photo_url;
+        document.getElementById('contact-chat-view-full-name').innerHTML = contact.full_name;
     },
     getViewID: function(){
         return 'contact-chat-view';
@@ -45,7 +48,7 @@ Ns.msg.ContactChat = {
      */
     rcallGetMessages: function(){    
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        Main.ro.getContactChats(user_id, this.contact.user_id);
+        return Main.ro.chat.getContactChats(user_id, this.contact.user_id);
     },    
     /**
      * Send the chat message
@@ -53,7 +56,7 @@ Ns.msg.ContactChat = {
      * <br>
      * example: <br>
      *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *            return Main.ro.chat.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
      *      }<br>
      * <br>
      * @returns {undefined}
@@ -61,7 +64,7 @@ Ns.msg.ContactChat = {
     rcallSendMessage: function(content){
         var user_id = Ns.view.UserProfile.appUser.user_id;
         
-        return Main.ro.sendContactChat(user_id, this.contact.user_id, content, 'text');
+        return Main.ro.chat.sendContactChat(user_id, this.contact.user_id, content, 'text');
     },
     onChat: function(obj){
         this.add(obj.data);

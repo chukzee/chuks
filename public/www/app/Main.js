@@ -1912,6 +1912,9 @@ var Main = {};
             if (!param_arr) {
                 var regex = /{[a-zA-Z_][a-zA-Z0-9._-]*}/g;
                 param_arr = html.match(regex);
+                if(!param_arr){
+                    param_arr = [];
+                }
                 for (var i = 0; i < param_arr.length; i++) {
                     //remove the opening and closing braces - { and }
                     param_arr[i] = param_arr[i].substring(1, param_arr[i].length - 1);
@@ -1965,7 +1968,7 @@ var Main = {};
             waitTplLoading = true;
             doGet(obj);
 
-            console.log(obj.tplUrl, '---', obj.data.user_id);
+            //console.log(obj.tplUrl, '---', obj.data);
 
             function next() {
                 waitTplLoading = false;
@@ -1974,7 +1977,7 @@ var Main = {};
                     return;
                 }
 
-                console.log(obj.tplUrl, '---next---', obj.data.user_id);
+                console.log(obj.tplUrl, '---next---', obj.data);
 
                 var qObj = queue[0];
                 if (qObj) {
@@ -1987,7 +1990,7 @@ var Main = {};
                 if (res) {//already have it in memory
                     tplReplace(res, obj, obj.data);
 
-                    console.log(obj.tplUrl, '---before Sync next---', obj.data.user_id);
+                    console.log(obj.tplUrl, '---before Sync next---', obj.data);
 
                     next();
                     return;
@@ -1997,7 +2000,7 @@ var Main = {};
                     tplList[obj.tplUrl] = response;
                     tplReplace(response, obj, obj.data);
 
-                    console.log(obj.tplUrl, '---before Async next---', obj.data.user_id);
+                    console.log(obj.tplUrl, '---before Async next---', obj.data);
 
                     next();
 
@@ -3399,19 +3402,21 @@ var Main = {};
 
             Main.dom.removeListener(e, type, callback, capture);//first remove event of same type on same element with same listener
 
-            var callbackBindFn;
+            var callbackWrapFn;
             if (Main.util.isFunc(callback)) {
-                callbackBindFn = callback.bind(null, data);
+                callbackWrapFn = function(evt){
+                     callback(evt, data);
+                };
                 fns.push(callback);
-                bind_fns.push(callbackBindFn);
+                bind_fns.push(callbackWrapFn);
             }
             
             if (el.addEventListener) {
                 //el.removeEventListener(type, callbackFn, capture);//@deprecated - replaced with Main.dom.removeListener above
-                el.addEventListener(type, callbackBindFn, capture);
+                el.addEventListener(type, callbackWrapFn, capture);
             } else if (el.attachEvent) {//IE
                 //el.detachEvent('on' + type, callbackFn, capture);//@deprecated - replaced with Main.dom.removeListener above
-                el.attachEvent('on' + type, callbackBindFn, capture);
+                el.attachEvent('on' + type, callbackWrapFn, capture);
             }
         };
 
@@ -3424,10 +3429,10 @@ var Main = {};
                     throw new Error('unknown element id - ' + e);
                 }
             }
-            var callbackBindFn;
+            var callbackWrapFn;
             for (var i = 0; i < fns.length; i++) {
                 if (fns[i] === callback) {
-                    callbackBindFn = bind_fns[i];
+                    callbackWrapFn = bind_fns[i];
                     fns.splice(i, 1);
                     bind_fns.splice(i, 1);
                     break;
@@ -3435,9 +3440,9 @@ var Main = {};
             }
 
             if (el.removeEventListener) {
-                el.removeEventListener(type, callbackBindFn, capture);
+                el.removeEventListener(type, callbackWrapFn, capture);
             } else if (el.detachEvent) {//IE
-                el.detachEvent('on' + type, callbackBindFn, capture);
+                el.detachEvent('on' + type, callbackWrapFn, capture);
             }
         };
     }
@@ -4937,17 +4942,24 @@ var Main = {};
             callback: null,
             capture: null
         };
-        if(arguments.length === 3 && typeof a2 === 'function'){
+        if(typeof a3 !== 'undefined' 
+                && typeof a2 === 'function'){
             param.data = a1;
             param.callback = a2;
             param.capture = a3;
-        }else if(arguments.length === 2 && typeof a1 === 'function' && typeof a2 !== 'function'){
+        }else if(typeof a3 === 'undefined' 
+                && typeof a2 !== 'undefined' 
+                && typeof a1 === 'function' 
+                && typeof a2 !== 'function'){
             param.callback = a1;
             param.capture = a2;
-        }else if(arguments.length === 2 && typeof a2 === 'function'){
+        }else if(typeof a3 === 'undefined' 
+                && typeof a2 === 'function'){
             param.data = a1;
             param.callback = a2;
-        }else if(arguments.length === 1 && typeof a1 === 'function'){
+        }else if(typeof a3 === 'undefined' 
+                && typeof a2 === 'undefined' 
+                && typeof a1 === 'function'){
             param.callback = a1;
         }
         

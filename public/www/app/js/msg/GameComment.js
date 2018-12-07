@@ -46,7 +46,7 @@ Ns.msg.GameComment = {
      * @returns {undefined}
      */
     rcallGetMessages: function(){    
-        Main.ro.getGameComments(this.match.game_id);
+       return Main.ro.comment.getGameComments(this.match.game_id);
     }, 
       
     /**
@@ -55,7 +55,7 @@ Ns.msg.GameComment = {
      * <br>
      * example: <br>
      *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.sendGameComment(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *            return Main.ro.comment.sendGameComment(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
      *      }<br>
      * <br>
      * @returns {undefined}
@@ -63,7 +63,7 @@ Ns.msg.GameComment = {
     rcallSendMessage: function(content){
         var user_id = Ns.view.UserProfile.appUser.user_id;
         var msg_replied_id; // TODO
-        return Main.ro.sendGameComment(user_id, this.match.game_id, content, 'text', msg_replied_id);
+        return Main.ro.comment.sendGameComment(user_id, this.match.game_id, content, 'text', msg_replied_id);
     },        
     onComment: function(obj){
         this.add(obj.data);

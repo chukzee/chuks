@@ -115,6 +115,12 @@ Ns.msg.AbstractMessage = {
     getMsgSentTpl: function () {
     },
 
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getResponseMsgs: function () {
+    },
     _validate: function () {
         if (!this.view_body) {
             throw Error('Invalid setup - ' + this.getMsgType() + ' view body cannot be null. ensure to set view body id.');
@@ -132,7 +138,6 @@ Ns.msg.AbstractMessage = {
 
         var me = this;
         this.initContent(data);
-        this.set(this.msgList);
         this.selectionMode = false;
 
         this.view = document.getElementById(this.getViewID());
@@ -145,6 +150,8 @@ Ns.msg.AbstractMessage = {
             throw Error('unknown id for ' + this.getMsgType() + ' view body - ' + this.getViewBodyID());
         }
 
+        this.set(this.msgList);
+
         Main.longpress(this.view_body, this, this._onLongpressToSelect);
 
         Main.click(this.view_body, this, this._onClickToSelect);
@@ -155,7 +162,7 @@ Ns.msg.AbstractMessage = {
 
             me.rcallGetMessages(data)
                     .get(function (res) {
-                        me.set(res);
+                        me.set(me.getResponseMsgs(res));
                     })
                     .error(function (err) {
                         console.log(err);
@@ -318,6 +325,13 @@ Ns.msg.AbstractMessage = {
      * Overridden by subclass
      * @returns {undefined}
      */
+    getMainTpl: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
     getViewID: function () {
     },
 
@@ -357,16 +371,18 @@ Ns.msg.AbstractMessage = {
 
         Main.tpl.template({
             tplUrl: me.getMainTpl(),
+            onReplace: function (tpl_var, data) {},
             afterReplace: function (html, data) {
+                $(me.view_body).html(html);
                 //clear msg
-                var msg_body = $(html).find(me.getMsgBodySelector())[0];
+                var msg_body = $(me.view_body).find(me.getMsgBodySelector())[0];
                 $(msg_body).html(''); // come back to test for correctness
 
-                me._addContent(html, msgs);
+                me._addContent(msgs);
 
-                var btn_send = $(html).find(me.getMsgSendBottonSelector())[0];
-                var txt_input = $(html).find(me.getMsgInputSelector())[0];
-                var emoji = $(html).find(me.getMsgEmojisBottonSelector())[0];
+                var btn_send = $(me.view_body).find(me.getMsgSendBottonSelector())[0];
+                var txt_input = $(me.view_body).find(me.getMsgInputSelector())[0];
+                var emoji = $(me.view_body).find(me.getMsgEmojisBottonSelector())[0];
 
                 $(btn_send).on('click', {txt_input: txt_input}, me._sendMessage);
 
@@ -396,14 +412,15 @@ Ns.msg.AbstractMessage = {
         var me = this;
         Main.tpl.template({
             tplUrl: me.getMainTpl(),
+            onReplace: function (tpl_var, data) {},
             afterReplace: function (html, data) {
-                me._addContent(html, msg);
+                me._addContent(msg);
             }
         });
 
     },
 
-    _addContent: function (html, msgs) {
+    _addContent: function (msgs) {
         var me = this;
 
         if (msgs.length > 0 && msgs[0].user) {//if the message came with the user info
@@ -455,11 +472,11 @@ Ns.msg.AbstractMessage = {
         var user = Ns.view.UserProfile.appUser;
         var msgObj = {
             user_id: user.user_id,
-            user:user,
+            user: user,
             content: content,
             sending_msg_id: Main.util.serilaNo()
         };
-        
+
         Main.rcall.live(function () {
             me.rcallSendMessage(content)
                     .before(function () {
@@ -512,6 +529,10 @@ Ns.msg.AbstractMessage = {
                     //which is always available
                     return data.user ? data.user.full_name : data.user_id;
                 }
+                
+                if (tpl_var === 'content') {
+                    return data.content ? data.content : data.msg;
+                }
             },
             afterReplace: function (html, data) {
                 me.onFinishPrepareReceivedMsgTpl(html, data);
@@ -521,7 +542,7 @@ Ns.msg.AbstractMessage = {
 
     },
 
-    _addSent: function (msg, is_sending) {
+    _addSent: function (msg) {
         var me = this;
         Main.tpl.template({
             tplUrl: me.getMsgSentTpl(),
@@ -533,6 +554,13 @@ Ns.msg.AbstractMessage = {
                     return replace;
                 }
 
+                if (tpl_var === 'time') {
+                    return Ns.Util.formatTime(data[tpl_var]);
+                }
+
+                if (tpl_var === 'content') {
+                    return data.content ? data.content : data.msg;
+                }
 
             },
             afterReplace: function (html, data) {
@@ -554,43 +582,43 @@ Ns.msg.AbstractMessage = {
                 } else {//not sent
                     indicator.className = me.getNotSentIndicatorClassName();
                 }
-                
-                if(is_sending !== true){
+
+                if (data.sending_msg_id) {
                     me.onFinishPrepareSentMsgTpl(html, data);
                 }
-                
+
                 me._addMsgItem(html, data);
             }
         });
 
     },
-    
-    _addSending: function(msgObj){
-        this._addSent(msgObj, true);
+
+    _addSending: function (msgObj) {
+        this._addSent(msgObj);
     },
-    
-    _removeSending: function(msgObj){
+
+    _removeSending: function (msgObj) {
         var msg_body = $(this.view_body).find(this.getMsgBodySelector())[0];
         var children = msg_body.children;
-        for(var i = children.length -1; i > -1; i--){
+        for (var i = children.length - 1; i > -1; i--) {
             var child = children[i];
             var el_id = this.view_body.id;
-             var dom_extra_field = this.domExtraFieldPrefix(el_id);
-            if(child[dom_extra_field].sending_msg_id === msgObj.sending_msg_id){//come back
+            var dom_extra_field = this.domExtraFieldPrefix(el_id);
+            if (child[dom_extra_field].sending_msg_id === msgObj.sending_msg_id) {//come back
                 $(child).remove();
                 break;
             }
         }
     },
-    
-    _markSendingFailed: function(){
-        
+
+    _markSendingFailed: function () {
+
     },
-    
+
     domExtraFieldPrefix: function (id) {
         return id + this.DOM_EXTRA_FIELD_PREFIX;
     },
-    
+
     _addMsgItem: function (html, data) {
 
         var el_id = this.view_body.id;
@@ -607,7 +635,7 @@ Ns.msg.AbstractMessage = {
         last_child[dom_extra_field] = data;
         return last_child;
     },
-    
+
     _deseleteAll: function () {
         var msg_body = $(this.view_body).find(this.getMsgBodySelector())[0];
 
