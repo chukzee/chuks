@@ -22,11 +22,11 @@ class Chat extends   WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.chats);
 
         var r = await c.updateOne({msg_id: msg_id}, {$set: {delete_for: user_id}});
-        
-                
+
+
         return 'Successful';
     }
-    
+
     /**
      * Get the chat messages of the specified game id
      * 
@@ -442,7 +442,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
-            delete_for: [],//holds user_ids of users who deleted the chat
+            delete_for: [], //holds user_ids of users who deleted the chat
             time: now.getTime()
         };
 
@@ -451,8 +451,6 @@ class Chat extends   WebApplication {
         //forward to the other user        
         this.send(this.evt.game_chat, chat_msg, opponent_id, true);
 
-        delete chat_msg.content; // delete the content to reduce payload
-        
         return chat_msg;
     }
 
@@ -478,7 +476,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
-            delete_for: [],//holds user_ids of users who deleted the chat
+            delete_for: [], //holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "contact_chat",
             notification_time: now.getTime()
@@ -489,8 +487,6 @@ class Chat extends   WebApplication {
         //forward to the other user        
         this.send(this.evt.game_chat, chat_msg, contact_user_id, true);
 
-        delete chat_msg.content; // delete the content to reduce payload
-        
         return chat_msg;
     }
 
@@ -516,7 +512,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
-            delete_for: [],//holds user_ids of users who deleted the chat
+            delete_for: [], //holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "group_chat",
             notification_time: now.getTime()
@@ -524,21 +520,21 @@ class Chat extends   WebApplication {
 
         c.insertOne(chat_msg);
 
-
-        //broadcast message to the group members        
+        //broadcast message to the group members except the user who sent the message      
 
         c = this.sObj.db.collection(this.sObj.col.groups);
         var group = await c.findOne({name: group_name});
 
         var members_ids = [];
         for (var i = 0; i < group.members.length; i++) {
-            members_ids[i] = group.members[i].user_id;
+            if (user_id !== group.members[i].user_id) {
+                members_ids[i] = group.members[i].user_id;
+            }
+
         }
 
         this.broadcast(this.evt.group_chat, chat_msg, members_ids, true);
 
-        delete chat_msg.content; // delete the content to reduce payload
-        
         return chat_msg;
     }
 
@@ -565,7 +561,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
-            delete_for: [],//holds user_ids of users who deleted the chat
+            delete_for: [], //holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "tournament_inhouse_chat",
             notification_time: now.getTime()
@@ -576,7 +572,7 @@ class Chat extends   WebApplication {
         //forward to the other user        
         //this.send('tournament_inhouse_chat', opponent_id, chat_msg);
 
-        //broadcast message to the tournament members - officials and players       
+        //broadcast message to the tournament members - officials and players except the user who sent the message     
 
         c = this.sObj.db.collection(this.sObj.col.tournaments);
         var tourn = await c.findOne({name: tournament_name});
@@ -584,21 +580,23 @@ class Chat extends   WebApplication {
         var members_ids = [];
         if (Array.isArray(tourn.officials)) {
             for (var i = 0; i < tourn.officials.length; i++) {
-                members_ids.push(tourn.officials[i].user_id);
+                if (user_id !== tourn.officials[i].user_id) {
+                    members_ids.push(tourn.officials[i].user_id);
+                }
             }
         }
 
         if (Array.isArray(tourn.registered_players)) {
             for (var i = 0; i < tourn.registered_players.length; i++) {
-                members_ids.push(tourn.registered_players[i].user_id);
+                if (user_id !== tourn.registered_players[i].user_id) {
+                    members_ids.push(tourn.registered_players[i].user_id);
+                }
             }
 
         }
 
         this.broadcast(this.evt.tournament_inhouse_chat, chat_msg, members_ids, true);
-       
-        delete chat_msg.content; // delete the content to reduce payload
-        
+
         return chat_msg;
     }
 
@@ -625,7 +623,7 @@ class Chat extends   WebApplication {
             content: content, //text message or audio url if the content is audio type (voice)
             content_type: content_type,
             status: 'sent', // e.g sent , delivered, seen
-            delete_for: [],//holds user_ids of users who deleted the chat
+            delete_for: [], //holds user_ids of users who deleted the chat
             time: now.getTime(),
             notification_type: "tournament_general_chat",
             notification_time: now.getTime()
@@ -640,13 +638,17 @@ class Chat extends   WebApplication {
         var members_ids = [];
         if (Array.isArray(tourn.officials)) {
             for (var i = 0; i < tourn.officials.length; i++) {
-                members_ids.push(tourn.officials[i].user_id);
+                if (user_id !== tourn.officials[i].user_id) {
+                    members_ids.push(tourn.officials[i].user_id);
+                }
             }
         }
 
         if (Array.isArray(tourn.registered_players)) {
             for (var i = 0; i < tourn.registered_players.length; i++) {
-                members_ids.push(tourn.registered_players[i].user_id);
+                if (user_id !== tourn.registered_players[i].user_id) {
+                    members_ids.push(tourn.registered_players[i].user_id);
+                }
             }
 
         }
@@ -659,8 +661,6 @@ class Chat extends   WebApplication {
         // periodically pull on new tournament general chat message when in the
         //the chat area and stop the pulling when out of the chat area.
 
-        delete chat_msg.content; // delete the content to reduce payload
-        
         return chat_msg;
     }
 

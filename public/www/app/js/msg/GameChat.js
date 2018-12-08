@@ -19,10 +19,7 @@ Ns.msg.GameChat = {
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('game_chat', this.onChat);
-        Main.eventio.on('group_chat', this.onGroupChat);
-        Main.eventio.on('tournament_inhouse_chat', this.onTournamentInhouseChat);
-        Main.eventio.on('tournament_general_chat', this.onTournamentGeneralChat);
+        Main.eventio.on('game_chat', this.onChat.bind(this));
 
     },
 

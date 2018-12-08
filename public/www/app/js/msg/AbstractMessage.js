@@ -5,7 +5,6 @@
 Ns.msg.AbstractMessage = {
     view: null,
     view_body: null,
-    header_id: null,
     msgList: [],
     selectionMode: false,
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
@@ -152,7 +151,7 @@ Ns.msg.AbstractMessage = {
 
         this.set(this.msgList);
 
-        Main.longpress(this.view_body, this, this._onLongpressToSelect);
+        Main.click(this.view_body, this, this._onLongpressToSelect);
 
         Main.click(this.view_body, this, this._onClickToSelect);
 
@@ -172,22 +171,34 @@ Ns.msg.AbstractMessage = {
 
     },
 
+    _itemTargetEl: function (target) {
+
+        var parent = target;
+        while (parent && parent !== document.body) {
+            if (parent.className !== this.getMsgReceivedClassName() &&
+                    parent.className !== this.getMsgSentClassName()) {
+                return parent;
+            }
+
+            parent = parent.parentNode;
+        }
+    },
+
     _onLongpressToSelect: function (evt, _this) {
         var me = _this;
         if (me.selectionMode) {
             return;
         }
-        var target = evt.target;
 
-        if (target.className !== me.getMsgReceivedClassName() &&
-                target.className !== me.getMsgSentClassName()) {
+        var target = me._itemTargetEl.call(me, evt.target);
+
+        if (!target) {
             return;
         }
 
-
         //show selection header
         Main.card.to({
-            container: me.header_id,
+            container: me.getViewHeaderID(),
             url: 'selection-header.html',
             fade: false,
             data: null,
@@ -197,10 +208,10 @@ Ns.msg.AbstractMessage = {
                     $(target).addClass(me.getMsgSelectionClassName());
                     me._incrementSelectionCount.call(me);
                 }
-                var back_btn = $('#' + this.header_id).find('i[data-selection-header="back"]')[0];
-                var share_btn = $('#' + this.header_id).find('i[data-selection-header="share"]')[0];
-                var copy_btn = $('#' + this.header_id).find('i[data-selection-header="copy"]')[0];
-                var delete_btn = $('#' + this.header_id).find('i[data-selection-header="delete"]')[0];
+                var back_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="back"]')[0];
+                var share_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="share"]')[0];
+                var copy_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="copy"]')[0];
+                var delete_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="delete"]')[0];
 
                 Main.click(back_btn, me, me._closeSelection);
 
@@ -215,11 +226,11 @@ Ns.msg.AbstractMessage = {
     },
 
     _onClickToSelect: function (evt, _this) {
-        var target = evt.target;
         var me = _this;
 
-        if (target.className !== me.getMsgReceivedClassName() &&
-                target.className !== me.getMsgSentClassName()) {
+        var target = me._itemTargetEl.call(me, evt.target);
+
+        if (!target) {
             return;
         }
 
@@ -240,19 +251,7 @@ Ns.msg.AbstractMessage = {
     },
 
     _decrementSelectionCount: function () {
-        var el = $('#' + this.header_id).find('i[data-selection-header="count"]')[0];
-        if (!el.innerHTML) {
-            el.innerHTML = 0;
-        }
-        var count = el.innerHTML - 0;//implicitly convert to numeric
-        count += 1;
-        el.innerHTML = count;
-
-        return count;
-    },
-
-    _incrementSelectionCount: function () {
-        var el = $('#' + this.header_id).find('i[data-selection-header="count"]')[0];
+        var el = $('#' + this.getViewHeaderID()).find('span[data-selection-header="count"]')[0];
         if (!el.innerHTML) {
             el.innerHTML = 0;
         }
@@ -263,9 +262,21 @@ Ns.msg.AbstractMessage = {
         return count;
     },
 
+    _incrementSelectionCount: function () {
+        var el = $('#' + this.getViewHeaderID()).find('span[data-selection-header="count"]')[0];
+        if (!el.innerHTML) {
+            el.innerHTML = 0;
+        }
+        var count = el.innerHTML - 0;//implicitly convert to numeric
+        count += 1;
+        el.innerHTML = count;
+
+        return count;
+    },
+
     _closeSelection: function (evt, _this) {
         var me = _this;
-        Main.card.back(me.header_id);
+        Main.card.back(me.getViewHeaderID());
     },
 
     shareSelectedContent: function () {
@@ -339,6 +350,13 @@ Ns.msg.AbstractMessage = {
      * Overridden by subclass
      * @returns {undefined}
      */
+    getViewHeaderID: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
     getViewBodyID: function () {
     },
     /**
@@ -384,9 +402,14 @@ Ns.msg.AbstractMessage = {
                 var txt_input = $(me.view_body).find(me.getMsgInputSelector())[0];
                 var emoji = $(me.view_body).find(me.getMsgEmojisBottonSelector())[0];
 
-                $(btn_send).on('click', {txt_input: txt_input}, me._sendMessage);
 
-                $(emoji).on('click', me._showEmojis);
+                //$(btn_send).on('click', {txt_input: txt_input, _this: me}, me._sendMessage);
+
+                Main.click(btn_send, {txt_input: txt_input, _this: me}, me._sendMessage);
+
+                //$(emoji).on('click',{_this: me}, me._showEmojis);
+
+                Main.click(emoji, {_this: me}, me._showEmojis);
 
             }
         });
@@ -399,9 +422,6 @@ Ns.msg.AbstractMessage = {
      * @returns {undefined}
      */
     add: function (msg) {
-        if (!this._validate()) {
-            return;
-        }
 
         if (!Main.util.isArray(msg)) {
             msg = [msg];
@@ -409,6 +429,12 @@ Ns.msg.AbstractMessage = {
         for (var i = 0; i < msg.length; i++) {
             this.msgList.push(msg[i]);
         }
+
+
+        if (!$(this.view).is(':visible')) {
+            return;
+        }
+
         var me = this;
         Main.tpl.template({
             tplUrl: me.getMainTpl(),
@@ -435,6 +461,7 @@ Ns.msg.AbstractMessage = {
                 user_ids.push(u_id);
             }
         }
+
         Ns.view.UserProfile.getUsersInfo(user_ids, function (users) {
             me._handleMsgs(msgs, users);
         });
@@ -465,10 +492,10 @@ Ns.msg.AbstractMessage = {
         }
     },
 
-    _sendMessage: function (argu) {
-        var txt_input = argu.data.txt_input;
-        var content = txt_input.innerHTML; //textarea
-        var me = this;
+    _sendMessage: function (evt, data) {
+        var txt_input = data.txt_input;
+        var content = txt_input.value; //textarea
+        var me = data._this;
         var user = Ns.view.UserProfile.appUser;
         var msgObj = {
             user_id: user.user_id,
@@ -480,11 +507,11 @@ Ns.msg.AbstractMessage = {
         Main.rcall.live(function () {
             me.rcallSendMessage(content)
                     .before(function () {
+                        txt_input.value = '';
                         me._addSending.call(me, msgObj);
                     })
                     .get(function (data) {
                         me._removeSending.call(me, msgObj);
-                        data.content = content; // reset the cotent removed in the server to reduce payload
                         me.add.call(me, data);
                     })
                     .error(function (err) {
@@ -521,22 +548,25 @@ Ns.msg.AbstractMessage = {
                 }
 
                 if (tpl_var === 'time') {
-                    return Ns.Util.formatTime(data[tpl_var]);
+                    return data[tpl_var] ? Ns.Util.formatTime(data[tpl_var]) : '';
                 }
+
                 if (tpl_var === 'full_name') {
                     //if the user info object is available then just return the
                     //full name from it, otherwise return the user_id on th data object
                     //which is always available
                     return data.user ? data.user.full_name : data.user_id;
                 }
-                
+
                 if (tpl_var === 'content') {
                     return data.content ? data.content : data.msg;
                 }
             },
             afterReplace: function (html, data) {
-                me.onFinishPrepareReceivedMsgTpl(html, data);
-                me._addMsgItem(html, data);
+
+                var el_item_added = me._addMsgItem(html, data);
+                me.onFinishPrepareReceivedMsgTpl(el_item_added, data);
+
             }
         });
 
@@ -555,39 +585,34 @@ Ns.msg.AbstractMessage = {
                 }
 
                 if (tpl_var === 'time') {
-                    return Ns.Util.formatTime(data[tpl_var]);
+                    return data[tpl_var] ? Ns.Util.formatTime(data[tpl_var]) : '';
                 }
 
                 if (tpl_var === 'content') {
                     return data.content ? data.content : data.msg;
                 }
 
+                if (tpl_var === 'indicator_class') {
+
+                    if (data.status === 'seen') {
+                        return me.getSeenIndicatorClassName();
+                    } else if (data.status === 'delivered') {
+                        return me.getDeliveredIndicatorClassName();
+                    } else if (data.status === 'sent') {
+                        return me.getSentIndicatorClassName();
+                    } else {//not sent
+                        return me.getNotSentIndicatorClassName();
+                    }
+                }
+
             },
             afterReplace: function (html, data) {
 
-                var msg_body = $(me.view_body).find(me.getMsgBodySelector())[0];
-                $(msg_body).append(html);
+                var el_item_added = me._addMsgItem(html, data);
 
-                var children = msg_body.children;
-                var last_child = children[children.length - 1];
-
-                var indicator = $(last_child).find(me.getMsgStatusIndicatorSelector())[0];
-
-                if (data.status === 'seen') {
-                    indicator.className = me.getSeenIndicatorClassName();
-                } else if (data.status === 'delivered') {
-                    indicator.className = me.getDeliveredIndicatorClassName();
-                } else if (data.status === 'sent') {
-                    indicator.className = me.getSentIndicatorClassName();
-                } else {//not sent
-                    indicator.className = me.getNotSentIndicatorClassName();
+                if (!data.sending_msg_id) {
+                    me.onFinishPrepareSentMsgTpl(el_item_added, data);
                 }
-
-                if (data.sending_msg_id) {
-                    me.onFinishPrepareSentMsgTpl(html, data);
-                }
-
-                me._addMsgItem(html, data);
             }
         });
 
@@ -604,8 +629,8 @@ Ns.msg.AbstractMessage = {
             var child = children[i];
             var el_id = this.view_body.id;
             var dom_extra_field = this.domExtraFieldPrefix(el_id);
-            if (child[dom_extra_field].sending_msg_id === msgObj.sending_msg_id) {//come back
-                $(child).remove();
+            if (child[dom_extra_field].sending_msg_id === msgObj.sending_msg_id) {
+                msg_body.removeChild(child);
                 break;
             }
         }
@@ -629,8 +654,9 @@ Ns.msg.AbstractMessage = {
         if (!el) {
             return;
         }
-        $(el).append(html);
-        var children = el.children;
+        var msg_body = $(el).find(this.getMsgBodySelector())[0];
+        $(msg_body).append(html);
+        var children = msg_body.children;
         var last_child = children[children.length - 1];
         last_child[dom_extra_field] = data;
         return last_child;

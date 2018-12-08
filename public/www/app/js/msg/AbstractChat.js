@@ -81,11 +81,11 @@ Ns.msg.AbstractChat = {
     },
 
     /**
-     * @param {type} html
+     * @param {type} el_item_added
      * @param {type} data
      * @returns {undefined}
      */
-    onFinishPrepareSentMsgTpl: function (html, data) {
+    onFinishPrepareSentMsgTpl: function (el_item_added, data) {
     },
 
     /**
@@ -97,11 +97,11 @@ Ns.msg.AbstractChat = {
     },
 
     /**
-     * @param {type} html
+     * @param {type} el_item_added
      * @param {type} data
      * @returns {undefined}
      */
-    onFinishPrepareReceivedMsgTpl: function (html, data) {
+    onFinishPrepareReceivedMsgTpl: function (el_item_added, data) {
     },
 
 };

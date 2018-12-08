@@ -19,7 +19,7 @@ Ns.msg.GroupChat = {
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('group_chat', this.onChat);
+        Main.eventio.on('group_chat', this.onChat.bind(this));
 
     },
 
@@ -38,7 +38,11 @@ Ns.msg.GroupChat = {
     getViewID: function(){
         return 'group-chat-view';
     },
-    
+
+    getViewHeaderID: function(){
+        return "group-chat-view-header";
+    },
+        
     getViewBodyID: function(){
         return 'group-chat-view-body';        
     },

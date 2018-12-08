@@ -182,8 +182,15 @@ Ns.view.UserProfile = {
             //document.getElementById("user-profile-groups-belong").innerHTML = user.blablablah;
             //document.getElementById("user-profile-groups-in-common").innerHTML = user.blablablah;
             //document.getElementById("user-profile-tournaments-belong").innerHTML = user.blablablah;
+            
+            Main.click("user-profile-comment", user, Ns.view.UserProfile._onClickContactChat);
+
         }
 
+    },
+
+    _onClickContactChat: function(evt, contact){
+        Ns.GameHome.showContactChat(contact);
     },
 
     getInfo: function (user_id, callback, refresh) {
@@ -263,7 +270,7 @@ Ns.view.UserProfile = {
                 if (user_id_arr[k] === Ns.view.UserProfile.userList[i].user_id) {
                     var u = Ns.view.UserProfile.userList[i];
                     local_users.push(u);
-                    user_id_arr.slice(k, 1);
+                    user_id_arr.splice(k, 1);
                     k--;
                     continue;
                 }

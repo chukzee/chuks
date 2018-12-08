@@ -19,7 +19,7 @@ Ns.msg.GameComment = {
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('comment', this.onComment);
+        Main.eventio.on('comment', this.onComment.bind(this));
 
     },
     

@@ -82,6 +82,7 @@ Ns.view.Group = {
             document.getElementById("group-details-members-count").innerHTML = group.total_members;
             document.getElementById("group-details-admins-count").innerHTML = group.total_admins;
 
+            Main.click("group-details-comment", group, Ns.view.Group._onClickGroupChat);
 
             /*<ul class="game9ja-user-show-list">
              
@@ -101,23 +102,7 @@ Ns.view.Group = {
              </li>
              </ul>*/
 
-            /* 
-             var admins_html = '';
-             var app_user_id = Ns.view.UserProfile.appUser.user_id;
-             for (var i = 0; i < group.admins.length; i++) {
-             var set_exit_group = group.admins[i].user_id === app_user_id;
-             admins_html += Ns.view.Group.memberHtml(group.name, group.admins[i], set_exit_group);
-             }
-             document.getElementById("group-details-admins").innerHTML = admins_html;
-             
-             var members_html = '';
-             
-             for (var i = 0; i < group.members.length; i++) {
-             var set_exit_group = group.members[i].user_id === app_user_id;
-             members_html += Ns.view.Group.memberHtml(group.name, group.members[i], set_exit_group);
-             }
-             document.getElementById("group-details-members").innerHTML = members_html;
-             */
+            
 
             var admins_container = '#group-details-admins';
 
@@ -203,13 +188,10 @@ Ns.view.Group = {
             }
         }
 
-        /*
-         $('#group-details-back-btn').on('click', function () {
-         Main.card.back({
-         container: '#home-main',
-         });
-         });
-         */
+        
+    },
+    _onClickGroupChat: function(evt, group){
+      Ns.GameHome.showGroupChat(group);  
     },
     isLocalGroupMember: function (user_id) {
 
@@ -340,38 +322,7 @@ Ns.view.Group = {
                     });
         });
     },
-    /*
-     memberHtml: function (group_name, memObj, set_exit_group) {
-     var action_value = 'Lets play';
-     var action_clazz = '';
-     if (set_exit_group) {
-     action_value = 'Exit Group';
-     action_clazz = 'class="game9ja-exit-group-btn"';
-     }
-     var onclick_action = 'onclick = \'Ns.view.Group.onClickMember(event, "' + group_name + '","' + memObj.user_id + '")\'';
-     
-     
-     //var id_prefix = 'game-group-' + Main.util.serilaNo() + '-';
-     
-     return '<ul ' + onclick_action + ' class="game9ja-user-show-list">'
-     
-     + '  <li><img name="member_photo"  src="' + memObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>'
-     + '   <li>'
-     + '       ' + memObj.full_name
-     + '   </li>'
-     + '    <li>'
-     + '        ' + memObj.user_id
-     + '    </li>'
-     
-     + '    <li>'
-     + '        <input  name="action"  ' + action_clazz + ' type="button" value="' + action_value + '"/>'
-     + '    </li>'
-     + '    <li>'
-     + '         ' + memObj.date_joined
-     + '     </li>'
-     + ' </ul>';
-     },
-     */
+   
     onClickMember: function (evt, group_name, user_id) {
 
         Ns.view.Group.getInfo(group_name, function (group) {

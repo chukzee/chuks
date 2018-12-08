@@ -19,7 +19,7 @@ Ns.msg.TournamentGeneralChat = {
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('tournament_general_chat', this.onChat);
+        Main.eventio.on('tournament_general_chat', this.onChat.bind(this));
 
     },
     
@@ -36,7 +36,11 @@ Ns.msg.TournamentGeneralChat = {
     getViewID: function(){
         return 'tournament-general-chat-view';
     },
-    
+
+    getViewHeaderID: function(){
+        return "tournament-general-chat-view-header";
+    },
+        
     getViewBodyID: function(){
         return 'tournament-general-chat-view-body';        
     },

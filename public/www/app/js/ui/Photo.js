@@ -37,7 +37,7 @@ Ns.ui.Photo = {
                 data.el = document.getElementById('user-photo-view-image');
                 $(expand_btn).on('click', data, Ns.ui.Photo._expandPhotoSize);
 
-                var open_btn = document.getElementById('user-photo-view-open-profile');
+                var open_btn = document.getElementById('user-photo-view-profile');
                 $(open_btn).on('click', function () {
                     me.hide();
                     Ns.GameHome.showUserProfile(data);
@@ -80,7 +80,7 @@ Ns.ui.Photo = {
                 data.el = document.getElementById('group-photo-view-image');
                 $(expand_btn).on('click', data, Ns.ui.Photo._expandPhotoSize);
 
-                var open_btn = document.getElementById('group-photo-view-open-profile');
+                var open_btn = document.getElementById('group-photo-view-profile');
                 $(open_btn).on('click', function () {
                     me.hide();
                     Ns.GameHome.showGroupDetails(data);
@@ -123,7 +123,7 @@ Ns.ui.Photo = {
                 data.el = document.getElementById('tournament-photo-view-image');
                 $(expand_btn).on('click', data, Ns.ui.Photo._expandPhotoSize);
 
-                var open_btn = document.getElementById('tournament-photo-view-open-profile');
+                var open_btn = document.getElementById('tournament-photo-view-profile');
                 $(open_btn).on('click', function () {
                     me.hide();
                     Ns.GameHome.showTournamentDetails(data);

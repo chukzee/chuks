@@ -20,7 +20,7 @@ Ns.msg.ContactChat = {
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('contact_chat', this.onChat);
+        Main.eventio.on('contact_chat', this.onChat.bind(this));
 
     },
     /**
@@ -36,6 +36,10 @@ Ns.msg.ContactChat = {
     },
     getViewID: function(){
         return 'contact-chat-view';
+    },
+    
+    getViewHeaderID: function(){
+        return "contact-chat-view-header";
     },
     
     getViewBodyID: function(){

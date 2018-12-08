@@ -80,11 +80,11 @@ Ns.msg.AbstractComment = {
     },
 
     /**
-     * @param {type} html
+     * @param {type} el_item_added
      * @param {type} data
      * @returns {undefined}
      */
-    onFinishPrepareSentMsgTpl: function (html, data) {
+    onFinishPrepareSentMsgTpl: function (el_item_added, data) {
     },
 
     /**
@@ -96,18 +96,19 @@ Ns.msg.AbstractComment = {
     },
 
     /**
-     * @param {type} html
+     * @param {type} el_item_added
      * @param {type} data
      * @returns {undefined}
      */
-    onFinishPrepareReceivedMsgTpl: function (html, data) {
+    onFinishPrepareReceivedMsgTpl: function (el_item_added, data) {
+        
     },
 
-    createCommentListeners: function (html) {
+    createCommentListeners: function (el) {
 
-        var btn_reply = $(html).find(me.getMsgSendBottonSelector())[0];
-        var btn_like = $(html).find(me.getMsgInputSelector())[0];
-        var btn_dislike = $(html).find(me.getMsgEmojisBottonSelector())[0];
+        var btn_reply = $(el).find(this.getMsgSendBottonSelector())[0];
+        var btn_like = $(el).find(this.getMsgInputSelector())[0];
+        var btn_dislike = $(el).find(this.getMsgEmojisBottonSelector())[0];
         //var sent_indicator = $(html).find('')[0];
 
         

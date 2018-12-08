@@ -120,6 +120,9 @@ Ns.view.Tournament = {
                     ? tournament.registered_players.length + ' Registered players'
                     : tournament.registered_players.length + ' Registered player';
 
+            Main.click("tournament-details-comment-general", tournament, Ns.view.Tournament._onClickTournamentGeneralChat);
+            Main.click("tournament-details-comment-inhouse", tournament, Ns.view.Tournament._onClickTournamentInhouseChat);
+
             Ns.view.Tournament._renderOfficials(tournament);
 
             Ns.view.Tournament._renderRegisteredPlayers(tournament);
@@ -428,7 +431,15 @@ Ns.view.Tournament = {
         }
 
     },
-
+    
+    _onClickTournamentGeneralChat: function (evt, tournament) {
+        Ns.GameHome.showTournamentGeneralChat(tournament); 
+    },
+    
+    _onClickTournamentInhouseChat: function (evt, tournament) {
+        Ns.GameHome.showTournamentInhouseChat(tournament); 
+    },
+    
     _isAppUserOfficial: function (officials) {
         for (var i = 0; i < officials.length; i++) {
             if (officials[i].user_id === Ns.view.UserProfile.appUser.user_id) {

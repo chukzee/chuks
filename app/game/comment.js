@@ -10,8 +10,8 @@ class Comment extends   WebApplication {
         super(sObj, util, evt);
     }
 
-    async _normalizeComments(user_id, comments){
-        
+    async _normalizeComments(user_id, comments) {
+
         //the the users info
         var user_ids = [];
         for (var i = 0; i < comments.length; i++) {
@@ -33,21 +33,21 @@ class Comment extends   WebApplication {
                 }
             }
         }
-        
-        
-        for(var i=0; i<comments.length; i++){
+
+
+        for (var i = 0; i < comments.length; i++) {
             //set the number of likes and dislikes
-            comments[i].likes_count =  comments[i].likes.length;
-            comments[i].dislikes_count =  comments[i].dislikes.length;
-            
+            comments[i].likes_count = comments[i].likes.length;
+            comments[i].dislikes_count = comments[i].dislikes.length;
+
             //set whether the user has has liked or disliked the comment
-            comments[i].has_user_liked =  comments[i].likes.indexOf(user_id) > 0;
-            comments[i].has_user_disliked =  comments[i].dislikes.indexOf(user_id) > 0;
-            
+            comments[i].has_user_liked = comments[i].likes.indexOf(user_id) > 0;
+            comments[i].has_user_disliked = comments[i].dislikes.indexOf(user_id) > 0;
+
             //remove the likes and dislikes array to reduce payload
             delete comments[i].likes;
             delete comments[i].dislikes;
-           
+
         }
         return comments;
     }
@@ -64,8 +64,8 @@ class Comment extends   WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.comments);
 
         var r = await c.updateOne({msg_id: msg_id}, {$set: {delete_for: user_id}});
-        
-                
+
+
         return 'Successful';
     }
 
@@ -88,7 +88,7 @@ class Comment extends   WebApplication {
             skip = arguments[0].skip;
             limit = arguments[0].limit;
         }
-        
+
 
         if (skip !== undefined && limit !== undefined) {
             skip = skip - 0;
@@ -128,12 +128,12 @@ class Comment extends   WebApplication {
                 .skip(skip)
                 .toArray();
 
-        data.comments = await this._normalizeComments(user_id, data.comments);       
+        data.comments = await this._normalizeComments(user_id, data.comments);
 
 
         return data;
     }
-    
+
     /**
      * Get the comments of the specified user
      * 
@@ -151,7 +151,7 @@ class Comment extends   WebApplication {
             skip = arguments[0].skip;
             limit = arguments[0].limit;
         }
-        
+
 
         if (skip !== undefined && limit !== undefined) {
             skip = skip - 0;
@@ -190,9 +190,9 @@ class Comment extends   WebApplication {
                 .limit(limit)
                 .skip(skip)
                 .toArray();
-        
-        data.comments = await this._normalizeComments(user_id, data.comments); 
-        
+
+        data.comments = await this._normalizeComments(user_id, data.comments);
+
         return data;
     }
 
@@ -224,7 +224,7 @@ class Comment extends   WebApplication {
             content_type = arguments[0].content_type;
             msg_replied_id = arguments[0].msg_replied_id;
         }
-        
+
         var c = this.sObj.db.collection(this.sObj.col.comments);
 
         var now = new Date();
@@ -239,15 +239,15 @@ class Comment extends   WebApplication {
             content_type: content_type,
             status: 'sent', // sent status
             likes: [], //holds user_ids of users who liked the comment
-            dislikes: [],//holds user_ids of users who disliked the comment
-            delete_for: [],//holds user_ids of users who deleted the comment
+            dislikes: [], //holds user_ids of users who disliked the comment
+            delete_for: [], //holds user_ids of users who deleted the comment
             time: now.getTime()
         };
 
 
         c.insertOne(msg);
 
-        //broadcast to the players
+        //broadcast to the players except the user that sent the message
         var mc = this.sObj.db.collection(this.sObj.col.matches);
         mc.findOne({game_id: game_id}, {_id: 0})
                 .then(function (match) {
@@ -260,7 +260,9 @@ class Comment extends   WebApplication {
                     }
                     var players_ids = [];
                     for (var i = 0; i < match.players.length; i++) {
-                        players_ids.push(match.players[i].user_id);
+                        if (user_id !== match.players[i].user_id) {//except the user
+                            players_ids.push(match.players[i].user_id);
+                        }
                     }
                     this.broadcast(this.evt.comment, players_ids, msg);
                 })
@@ -279,7 +281,9 @@ class Comment extends   WebApplication {
 
                     var spectators_ids = [];
                     for (var i = 0; i < spectators.length; i++) {
-                        spectators_ids.push(spectators[i].user_id);
+                        if (user_id !== spectators[i].user_id) {//except the user
+                            spectators_ids.push(spectators[i].user_id);
+                        }
                     }
                     this.broadcast(this.evt.comment, msg, spectators_ids);
                 })
@@ -288,9 +292,6 @@ class Comment extends   WebApplication {
                 });
 
 
-
-        delete msg.content; // delete the content to reduce payload
-        
         return msg;
     }
 
@@ -309,11 +310,11 @@ class Comment extends   WebApplication {
 
         var r = await c.updateOne({msg_id: msg_id}, {$set: {likes: user_id}});
         if (r.result.nModified === 0) {//undo like
-             r = await c.updateOne({msg_id: msg_id}, {$pull: {likes: user_id}});
-        } 
-        
+            r = await c.updateOne({msg_id: msg_id}, {$pull: {likes: user_id}});
+        }
+
         var comment = await c.findOne({msg_id: msg_id}, {_id: 0});
-        
+
         return comment;
     }
 
@@ -332,14 +333,14 @@ class Comment extends   WebApplication {
 
         var r = await c.updateOne({msg_id: msg_id}, {$set: {dislikes: user_id}});
         if (r.result.nModified === 0) {//undo like
-             r = await c.updateOne({msg_id: msg_id}, {$pull: {dislikes: user_id}});
-        } 
-        
+            r = await c.updateOne({msg_id: msg_id}, {$pull: {dislikes: user_id}});
+        }
+
         var comment = await c.findOne({msg_id: msg_id}, {_id: 0});
-        
+
         return comment;
     }
-    
+
 }
 
 module.exports = Comment;

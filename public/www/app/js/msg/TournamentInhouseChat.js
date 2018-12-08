@@ -19,7 +19,7 @@ Ns.msg.TournamentInhouseChat = {
 
         Main.rcall.live(obj);
 
-        Main.eventio.on('tournament_inhouse_chat', this.onChat);
+        Main.eventio.on('tournament_inhouse_chat', this.onChat.bind(this));
 
     },
 
@@ -37,7 +37,11 @@ Ns.msg.TournamentInhouseChat = {
     getViewID: function(){
         return 'tournament-inhouse-chat-view';
     },
-    
+
+    getViewHeaderID: function(){
+        return "tournament-inhouse-chat-view-header";
+    },
+        
     getViewBodyID: function(){
         return 'tournament-inhouse-chat-view-body';        
     },
