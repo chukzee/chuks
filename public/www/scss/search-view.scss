@@ -4,6 +4,21 @@
 @import "search-header.scss";
 
 $pagination_height: 30px;
+.game9ja-search{
+    position: absolute;
+    top : 0;
+    left: 0;
+    width : 100%;
+    max-width: 100%;
+    height: 100%;
+    overflow: hidden; 
+
+}
+
+.game9ja-search-header{
+    @extend .game9ja-header;
+    position: relative;
+}
 
 .game9ja-search-view{
     @extend .game9ja-search;

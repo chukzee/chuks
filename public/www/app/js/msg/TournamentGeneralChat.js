@@ -1,5 +1,5 @@
 
-/* global Main */
+/* global Main, Ns */
 
 Ns.msg.TournamentGeneralChat = {
 
@@ -23,6 +23,10 @@ Ns.msg.TournamentGeneralChat = {
 
     },
     
+    getSaveKeyPrefix(){
+        return 'save_msg_tournament_general_chat';
+    },
+    
     /**
      * Override this method - called by super class
      * @param {type} tournament
@@ -44,14 +48,23 @@ Ns.msg.TournamentGeneralChat = {
     getViewBodyID: function(){
         return 'tournament-general-chat-view-body';        
     },
+
+    getSearchButtonID: function(){
+        return 'tournament-general-chat-view-search';        
+    },
     
+    getMenuButtonID: function(){
+        return 'tournament-general-chat-view-menu';        
+    },
+        
     /**
      * must override this method and return the promise of the rcall<br>
      *
      * @returns {undefined}
      */
     rcallGetMessages: function(){    
-        return Main.ro.chat.getTournamentGeneralChats(this.tournament.name);
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        return Main.ro.chat.getTournamentGeneralChats(user_id, this.tournament.name);
     }, 
             /**
      * Send the chat message
@@ -64,12 +77,12 @@ Ns.msg.TournamentGeneralChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function(content){
+    rcallSendMessage: function(content, bindFn){
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.sendTournamentGeneralChat(user_id, this.tournament.name, content, 'text');
+        return Main.ro.chat.sendTournamentGeneralChat(user_id, this.tournament.name, content, 'text', bindFn);
     },
-    onChat: function(obj){
-        this.add(obj.data);
+    onChat: function(evtObj){
+        this.add(evtObj.data);
     },
 
   

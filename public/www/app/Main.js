@@ -691,7 +691,7 @@ var Main = {};
         var rcallWaitingFn = [];
         var isGetRcallLive = false;
         var MAX_WAIT_CONNECT = 60; //60 seconds
-        var rcalFailures = {};
+        var rcallFailures = {};
         var nextRCallLiveRetrySec = 2;
         var retryLiveArgs = [];
         var rio;
@@ -826,11 +826,11 @@ var Main = {};
                         return;
                     }
 
-                    //console.log('Object.getOwnPropertyNames(rcalFailures)  ', Object.getOwnPropertyNames(rcalFailures));
-                    //console.log('Object.getOwnPropertyNames(rcalFailures).length  ', Object.getOwnPropertyNames(rcalFailures).length);
+                    //console.log('Object.getOwnPropertyNames(rcallFailures)  ', Object.getOwnPropertyNames(rcallFailures));
+                    //console.log('Object.getOwnPropertyNames(rcallFailures).length  ', Object.getOwnPropertyNames(rcallFailures).length);
 
-                    if (Object.getOwnPropertyNames(rcalFailures).length > 0) {
-                        this.live(rcalFailures, arguments[0]);
+                    if (Object.getOwnPropertyNames(rcallFailures).length > 0) {
+                        this.live(rcallFailures, arguments[0]);
                         //retry the failures
                         return;
                     }
@@ -850,7 +850,7 @@ var Main = {};
                     if (classes.indexOf(cls) === -1) {//avoid duplicate
                         classes.push(cls);
                     }
-                    rcalFailures[n] = cls;//save - we shall delete if the operation is successful
+                    rcallFailures[n] = cls;//save - we shall delete if the operation is successful
                 }
             }
 
@@ -876,7 +876,7 @@ var Main = {};
             Main.ajax.post('rcall', data,
                     function (res) {
                         for (var n in objInst) {
-                            delete rcalFailures[n]; //the operation is successful so delete the entry
+                            delete rcallFailures[n]; //the operation is successful so delete the entry
                         }
 
                         isGetRcallLive = false;
@@ -897,12 +897,14 @@ var Main = {};
                                 for (var k = 0; k < rem_methods.length; k++) {
                                     var method = rem_methods[k];
                                     var promiseFn = function () {
+                                        this._data_bind = {};//default
                                         this._getFn;
                                         this._errFn;
                                         this._beforeFn;
                                         this._afterFn;
                                         var _busy_obj = null; //yes
                                         var me = this;
+
                                         this.get = function (fn) {
                                             this._getFn = fn;
                                             return me;
@@ -950,13 +952,24 @@ var Main = {};
                                         var method = this.method;
                                         var promise = this.promiseFn();
                                         var argu = arguments;
+                                        var fnBind = arguments[arguments.length - 1];
+                                        if (Main.util.isFunc(fnBind)) {
+                                            argu = [];
+                                            for (var i = 0; i < arguments.length - 1; i++) {
+                                                argu[i] = arguments[i];
+                                            }
+                                        } else {
+                                            fnBind = null;
+                                        }
+
                                         //run asynchronously to ensure promise is created
                                         window.setTimeout(doRemoteMethod, 0);
 
                                         function doRemoteMethod() {
+                                            var bind = fnBind ? fnBind() : promise._data_bind; //local bind - value will be available in the promise
                                             try {
                                                 if (Main.util.isFunc(promise._beforeFn)) {
-                                                    promise._beforeFn();
+                                                    promise._beforeFn.call(bind);
                                                 }
                                             } catch (e) {
                                                 console.log(e);
@@ -964,41 +977,44 @@ var Main = {};
 
                                             if (promise._getBusyObj()) {
                                                 //show busy
-                                                Main.busy.show(promise._getBusyObj());
+                                                Main.busy.show(promise._getBusyObj.call(bind));
                                             }
 
                                             Main.rcall.exec({
                                                 class: className,
                                                 method: method,
                                                 param: argu,
-                                                callback: function (response) {
-                                                    try {
-                                                        var data, err;
-                                                        if (response.success) {
-                                                            data = response.data;
-                                                            if (Main.util.isFunc(promise._getFn)) {
-                                                                promise._getFn(data);
-                                                            }
-                                                        } else {
-                                                            err = response.data;
-                                                            if (Main.util.isFunc(promise._errFn)) {
-                                                                promise._errFn(err);
-                                                            }
-                                                        }
-                                                    } catch (e) {
-                                                        console.log(e);
-                                                    }
-
-                                                    if (promise._getBusyObj()) {
-                                                        //hide busy
-                                                        Main.busy.hide();
-                                                    }
-
-                                                    if (Main.util.isFunc(promise._afterFn)) {
-                                                        promise._afterFn(data, err);
-                                                    }
-                                                }
+                                                callback: rcallCallback,
+                                                bind: bind
                                             });
+
+                                            function rcallCallback(response, bind) {
+                                                try {
+                                                    var data, err;
+                                                    if (response.success) {
+                                                        data = response.data;
+                                                        if (Main.util.isFunc(promise._getFn)) {
+                                                            promise._getFn.call(bind, data);
+                                                        }
+                                                    } else {
+                                                        err = response.data;
+                                                        if (Main.util.isFunc(promise._errFn)) {
+                                                            promise._errFn.call(bind, err);
+                                                        }
+                                                    }
+                                                } catch (e) {
+                                                    console.log(e);
+                                                }
+
+                                                if (promise._getBusyObj()) {
+                                                    //hide busy
+                                                    Main.busy.hide();
+                                                }
+
+                                                if (Main.util.isFunc(promise._afterFn)) {
+                                                    promise._afterFn.call(bind, data, err);
+                                                }
+                                            }
                                         }
 
 
@@ -1068,14 +1084,14 @@ var Main = {};
                 }
 
                 window.setTimeout(function () {
-                    if (Object.getOwnPropertyNames(rcalFailures).length > 0) {
+                    if (Object.getOwnPropertyNames(rcallFailures).length > 0) {
 
-                        console.log('rcalFailures', rcalFailures);
+                        console.log('rcallFailures', rcallFailures);
 
                         //we are only interesed in initializing the rcall variables to 
                         //avoid error caued by access remote method when not already created
                         //ie Cannot read property 'TheMethod' of undefined
-                        meThis.live(rcalFailures);
+                        meThis.live(rcallFailures);
                     }
 
                 }, nextRCallLiveRetrySec * 1000);
@@ -1088,11 +1104,11 @@ var Main = {};
             var r;
             if (arguments.length === 1) {
                 if ((r = validateSingeArg(param))) {
-                    remoteExec(r.objArr, r.callback);
+                    remoteExec(r.objArr, r.callback, r.bind);
                 }
             } else {
                 if ((r = validateMultiArgs(arguments))) {
-                    remoteExec(r.objArr, r.callback);
+                    remoteExec(r.objArr, r.callback, r.bind);
                 }
             }
 
@@ -1189,10 +1205,10 @@ var Main = {};
                     o_arr.push(o);
                 }
 
-                return {objArr: o_arr, callback: obj.callback};
+                return {objArr: o_arr, callback: obj.callback, bind: obj.bind};
             }
 
-            function remoteExec(objArr, callback) {
+            function remoteExec(objArr, callback, bind) {
 
                 if (rio.checkConnect()) {
                     rio.send(objArr, successFn, errorFn);
@@ -1215,16 +1231,19 @@ var Main = {};
                             //do nothing
                         }
                     }
-                    callback(res);
+                    callback(res, bind);
                 }
                 function errorFn(statusText, status) {
                     var respose = {};
+                    if (status === 0) {
+                        statusText = 'Please check connection!'; // we prefer this description
+                    }
                     if (status === 504) {
-                        statusText = 'connection to the server has timed out!'; // we prefer this description
+                        statusText = 'Connection to the server has timed out!'; // we prefer this description
                     }
                     respose.success = false;
                     respose.data = statusText;
-                    callback(respose);
+                    callback(respose, bind);
                 }
 
             }
@@ -1287,9 +1306,10 @@ var Main = {};
                 evtList[evt_name] = null;
             } else if (evtList[evt_name]) {
                 var listeners = evtList[evt_name];
-                for (var f in listeners) {
-                    if (listeners[f] === func) {
-                        listeners[f].splice(f, 1);
+                for (var i = 0; i < listeners.length; i++) {
+                    if (listeners[i] === func) {
+                        listeners.splice(i, 1);
+                        break;
                     }
                 }
             }
@@ -1912,7 +1932,7 @@ var Main = {};
             if (!param_arr) {
                 var regex = /{[a-zA-Z_][a-zA-Z0-9._-]*}/g;
                 param_arr = html.match(regex);
-                if(!param_arr){
+                if (!param_arr) {
                     param_arr = [];
                 }
                 for (var i = 0; i < param_arr.length; i++) {
@@ -1944,16 +1964,22 @@ var Main = {};
 
                 html = html.replace('{' + param + '}', v);
             }
-
-            var content = $('<div></div>').html(html);
+            var div_wapper = '<div></div>';
+            var content = $(div_wapper).html(html);
 
             //remove title, script, link and meta tags if present
             $(content).find('title , script, link , meta').each(function (index) {
                 this.remove();
             });
 
+            //remove the div_wapper
+            var cnt = content[0];// jquery to plain js dom
+            var rpl_children = cnt.children;
+            if (rpl_children.length === 1) {
+                rpl_children = rpl_children[0];
+            }
             if (obj.afterReplace) {
-                obj.afterReplace(content, data);
+                obj.afterReplace(rpl_children, data);
             }
 
         }
@@ -1977,7 +2003,7 @@ var Main = {};
                     return;
                 }
 
-                console.log(obj.tplUrl, '---next---', obj.data);
+                //console.log(obj.tplUrl, '---next---', obj.data);
 
                 var qObj = queue[0];
                 if (qObj) {
@@ -1990,7 +2016,7 @@ var Main = {};
                 if (res) {//already have it in memory
                     tplReplace(res, obj, obj.data);
 
-                    console.log(obj.tplUrl, '---before Sync next---', obj.data);
+                    //console.log(obj.tplUrl, '---before Sync next---', obj.data);
 
                     next();
                     return;
@@ -2000,7 +2026,7 @@ var Main = {};
                     tplList[obj.tplUrl] = response;
                     tplReplace(response, obj, obj.data);
 
-                    console.log(obj.tplUrl, '---before Async next---', obj.data);
+                    //console.log(obj.tplUrl, '---before Async next---', obj.data);
 
                     next();
 
@@ -3007,16 +3033,19 @@ var Main = {};
             var container, data, onShow;
 
             if (!Main.util.isString(arg0)
-                    || arguments.length === 1) {//detecting that an object is passed
+                    && arguments.length === 1) {//detecting that an object is passed
                 container = arg0.container;
                 data = arg0.data;
                 onShow = arg0.onShow;
 
+            } else if (Main.util.isString(arg0)
+                    && arguments.length === 1) {//detecting that only the cotainer id is passed
+                container = arg0;
             } else if (Main.util.isString(arg0) && Main.util.isFunc(arg1)) {
                 container = arg0;
                 onShow = arg1;
             } else {
-                console.warn('invalid method arguments - must be  either a one argument object or two argument with the first string type and the second function type. ');
+                console.warn('invalid method arguments - must be  either a one argument object or  one argument container id (string) or two argument with the first string type and the second function type. ');
                 return;
             }
 
@@ -3061,10 +3090,29 @@ var Main = {};
             var prev = cds[cds.length - 1];
             var last_content = prev.content.children;
             var len = last_content.length;
+            var rem_chidren = [];
             for (var i = 0; i < len; i++) {
                 var rem_child = prev.content.removeChild(last_content[0]);//removing the first
+
+                if (!rem_child.style.visibility) {//only consider elements with no visibility property set.
+                    //Brilliant technique by hidding the element to prevent the child 
+                    //from recieving event of the outgoing card element 
+                    //on same position - was a difficult buggy to solve
+                    rem_child.style.visibility = 'hidden';
+                    rem_chidren.push(rem_child);
+                }
+
                 cont.appendChild(rem_child); //adding the removed child
             }
+
+            //Brilliant technique by asynchronously reshowing to prevent the child 
+            //from recieving event of the outgoing card element 
+            //on same position - was a difficult buggy to solve
+            window.setTimeout(function () {
+                for (var i = 0; i < rem_chidren.length; i++) {
+                    rem_chidren[i].style.visibility = '';//set to empty - the original value
+                }
+            }, 10);
 
             if (out_card.fade || out_card.fadein || out_card.fadeIn) {
                 Main.anim.to(cont, 500, {opacity: 1}, function () {
@@ -3104,10 +3152,57 @@ var Main = {};
     Main.task = new Task();
     Main.countdown = new Countdown();
     Main.uiupdater = new UIUpdater();
+    Main.clipboard = new Clipboard();
+
 
     Main.intentUrl = function (url) {
         return intentUrl(url);
     };
+
+    function Clipboard() {
+
+        this.copy = function (text, is_show_toast) {
+
+            if (text === '' || text === null || typeof text === 'undefined') {
+                if(is_show_toast){
+                    Main.toast.show('Nothing to copy');
+                }
+                return false;
+            }
+
+            var txa = document.createElement('textarea');
+            txa.value = text;
+
+            txa.style.posiion = 'fixed';
+            txa.style.top = '0';
+            txa.style.left = '0';
+            txa.style.width = '2em';
+            txa.style.height = '2em';
+            
+            document.body.appendChild(txa);
+
+            txa.focus();
+            txa.select();
+            var result;
+            try {
+                result = document.execCommand('copy');
+            } catch (e) {
+                console.log(e);
+            }
+                        
+            if (is_show_toast === true) {
+                if (result) {
+                    Main.toast.show('Selected text copied');
+                }else{
+                    Main.toast.show('Could not copy');
+                }
+            }
+
+            document.body.removeChild(txa);//remove the textarea from the dom
+            
+            return result;
+        };
+    }
 
     function UIUpdater() {
         /**
@@ -3404,13 +3499,13 @@ var Main = {};
 
             var callbackWrapFn;
             if (Main.util.isFunc(callback)) {
-                callbackWrapFn = function(evt){
-                     callback(evt, data);
+                callbackWrapFn = function (evt) {
+                    callback(evt, data);
                 };
                 fns.push(callback);
                 bind_fns.push(callbackWrapFn);
             }
-            
+
             if (el.addEventListener) {
                 //el.removeEventListener(type, callbackFn, capture);//@deprecated - replaced with Main.dom.removeListener above
                 el.addEventListener(type, callbackWrapFn, capture);
@@ -3501,7 +3596,7 @@ var Main = {};
      * Displays option dialog box
      * 
      * @param {type} callback - a callback function called when a button is clicked or confirm box closed - the callback argument
-     *  contains the text of the button clicked or undefined if the close button was clicked
+     *  contains the text of the button clicked
      * @param {type} msg - message
      * @param {type} title - message title
      * @param {type} optionButtons - option buttons type (see Main.const )or array of custom option buttons 
@@ -3531,7 +3626,6 @@ var Main = {};
             }
         }
 
-        var is_close_btn = true;
 
         Main.dialog.show({
             content: msg,
@@ -3542,7 +3636,6 @@ var Main = {};
             closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
             touchOutClose: true, //close the dialog if the user touch outside it
             action: function (el, value) {//not close button   
-                is_close_btn = false;
                 this.hide();
                 if (Main.util.isFunc(callback)) {
                     callback(value);
@@ -3550,10 +3643,7 @@ var Main = {};
 
             },
             onHide: function () {
-                if (is_close_btn && Main.util.isFunc(callback)) {//close button clicked
-                    callback();
-                }
-
+                //do nothing
             }
         });
 
@@ -4213,8 +4303,8 @@ var Main = {};
                     return;
                 }
 
-                console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
-                console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
+                //console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
+                //console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
 
 
                 var base_new_width = 0;
@@ -4224,7 +4314,7 @@ var Main = {};
                     base_new_width = pad_factor * cb.width;
                     base.style.width = base_new_width + 'px';
 
-                    console.log('base.style.width = ', base_new_width + 'px');
+                    //console.log('base.style.width = ', base_new_width + 'px');
 
 
                 }
@@ -4233,7 +4323,7 @@ var Main = {};
                     base_new_width = pad_factor * window.innerWidth;
                     base.style.width = base_new_width + 'px';
 
-                    console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
+                    //console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
 
 
                 }
@@ -4242,7 +4332,7 @@ var Main = {};
                     base_new_height = pad_factor * cb.height;
                     base.style.height = base_new_height + 'px';
 
-                    console.log('base.style.height = ', base_new_height + 'px');
+                    //console.log('base.style.height = ', base_new_height + 'px');
 
                 }
                 if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
@@ -4250,7 +4340,7 @@ var Main = {};
                     base_new_height = pad_factor * window.innerHeight;
                     base.style.height = base_new_height + 'px';
 
-                    console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
+                    //console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
 
                 }
 
@@ -4270,12 +4360,12 @@ var Main = {};
                 body_el.style.height = bd_h + 'px';
                 body_el.style.width = base_w + 'px';
 
-                console.log('ft_h = ', ft_h);
-                console.log('hd_h = ', hd_h);
-                console.log('base_h = ', base_h);
-                console.log('bd_h = ', bd_h);
+                //console.log('ft_h = ', ft_h);
+                //console.log('hd_h = ', hd_h);
+                //console.log('base_h = ', base_h);
+                //console.log('bd_h = ', bd_h);
 
-                console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h);
+                //console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h);
 
                 var compXY = computeXY(cb, bound);
                 base.style.left = compXY.x + 'px';
@@ -4935,37 +5025,37 @@ var Main = {};
         }
 
     };
-    
-    function _analyzeEvtParam(a1, a2, a3){
+
+    function _analyzeEvtParam(a1, a2, a3) {
         var param = {
             data: null,
             callback: null,
             capture: null
         };
-        if(typeof a3 !== 'undefined' 
-                && typeof a2 === 'function'){
+        if (typeof a3 !== 'undefined'
+                && typeof a2 === 'function') {
             param.data = a1;
             param.callback = a2;
             param.capture = a3;
-        }else if(typeof a3 === 'undefined' 
-                && typeof a2 !== 'undefined' 
-                && typeof a1 === 'function' 
-                && typeof a2 !== 'function'){
+        } else if (typeof a3 === 'undefined'
+                && typeof a2 !== 'undefined'
+                && typeof a1 === 'function'
+                && typeof a2 !== 'function') {
             param.callback = a1;
             param.capture = a2;
-        }else if(typeof a3 === 'undefined' 
-                && typeof a2 === 'function'){
+        } else if (typeof a3 === 'undefined'
+                && typeof a2 === 'function') {
             param.data = a1;
             param.callback = a2;
-        }else if(typeof a3 === 'undefined' 
-                && typeof a2 === 'undefined' 
-                && typeof a1 === 'function'){
+        } else if (typeof a3 === 'undefined'
+                && typeof a2 === 'undefined'
+                && typeof a1 === 'function') {
             param.callback = a1;
         }
-        
+
         return param;
     }
-    
+
     Main.click = function (el, argu1, argu2, argu3) {
 
         if (Main.device.isMobileDeviceReady) {//implement mobile tap event
@@ -4993,27 +5083,29 @@ var Main = {};
         var delay;
 
         // Set number of milliseconds for longpress
-        var longpress = 1300;
+        var longpress_duration = 1300;
 
-        el.addEventListener('mousedown', function (e) {
-            //var _this = this;
-            delay = setTimeout(check, longpress);
+        if (Main.device.isMobileDeviceReady) {
+            el.addEventListener('touchstart', onPress, capture);
+            el.addEventListener('touchend', clearAction);
+            el.addEventListener('touchcancel', clearAction);
+        } else {
+            el.addEventListener('mousedown', onPress, capture);
+            el.addEventListener('mouseup', clearAction);
+            el.addEventListener('mouseout', clearAction);
+        }
 
+        function onPress(e) {
+            delay = setTimeout(check, longpress_duration);
             function check() {
-                //_this.classList.add('is-selected');
                 callback(e, data);
             }
+        }
 
-        }, capture);
-
-        el.addEventListener('mouseup', function (e) {
-            // On mouse up, we know it is no longer a longpress
+        function clearAction(e)
+        {
             clearTimeout(delay);
-        });
-
-        el.addEventListener('mouseout', function (e) {
-            clearTimeout(delay);
-        });
+        }
 
 
     };

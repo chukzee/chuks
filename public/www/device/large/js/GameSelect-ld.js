@@ -7,10 +7,13 @@ Main.on("pagecreate", function (arg) {
         return;
     }
     
-    Main.device.styleDesktopScrollbar(arg.isIndexPage);
-    
     //at this point it is the index page which is what we want.
 
+    //disable context menu that disturb our custom longpress event
+    window.oncontextmenu = function(){return false;};
+    
+    Main.device.styleDesktopScrollbar(arg.isIndexPage);
+    
     Ns.Auth.login();
     
 

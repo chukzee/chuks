@@ -6,10 +6,12 @@ Main.on("pagecreate", function (arg) {
     if (!arg.isIndexPage) {
         return;
     }
+    //at this point it is the index page which is what we want.
+    
+    //disable context menu that disturb our custom longpress event
+    window.oncontextmenu = function(){return false;};
     
     Main.device.styleDesktopScrollbar(arg.isIndexPage);
-
-    //at this point it is the index page which is what we want.
 
     Ns.Auth.login();
     $('#game-select-chess').on('click', function () {

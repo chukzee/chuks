@@ -23,6 +23,10 @@ Ns.msg.GroupChat = {
 
     },
 
+    getSaveKeyPrefix(){
+        return 'save_msg_group_chat';
+    },
+    
     
     /**
      * Override this method - called by super class
@@ -46,14 +50,23 @@ Ns.msg.GroupChat = {
     getViewBodyID: function(){
         return 'group-chat-view-body';        
     },
+
+    getSearchButtonID: function(){
+        return 'group-chat-view-search';        
+    },
     
+    getMenuButtonID: function(){
+        return 'group-chat-view-menu';        
+    },
+        
     /**
      * must override this method and return the promise of the rcall<br>
      *
      * @returns {undefined}
      */
     rcallGetMessages: function(){    
-        return Main.ro.chat.getGroupChats(this.group.name);
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        return Main.ro.chat.getGroupChats(user_id, this.group.name);
     }, 
         /**
      * Send the chat message
@@ -66,13 +79,13 @@ Ns.msg.GroupChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function(content){
+    rcallSendMessage: function(content, bindFn){
         
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.sendGroupChat(user_id, this.group.name, content, 'text');
-    },
-    onChat: function(obj){
-        this.add(obj.data);
+        return Main.ro.chat.sendGroupChat(user_id, this.group.name, content, 'text', bindFn);
+    }, 
+    onChat: function(evtObj){
+        this.add(evtObj.data);
     },
 
   

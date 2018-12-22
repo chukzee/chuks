@@ -6,7 +6,6 @@ Ns.view.Performance = {
 
     constructor: function () {
         try {
-            var list = window.localStorage.clear();//COMMENT OUT LATER
             
             var list = window.localStorage.getItem(Ns.Const.PERFORMANCE_STANDINGS_LIST_KEY);
             list = JSON.parse(list);

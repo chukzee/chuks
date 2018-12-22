@@ -14,15 +14,25 @@ class Chat extends   WebApplication {
      * The delete the chat for the specified user
      * 
      * @param {type} user_id
-     * @param {type} msg_id
+     * @param {type} msg_ids
      * @returns {Boolean}
      */
-    async deleteFor(user_id, msg_id) {
+    async deleteFor(user_id, msg_ids) {
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
 
-        var r = await c.updateOne({msg_id: msg_id}, {$set: {delete_for: user_id}});
+        if (!Array.isArray(msg_ids)) {
+            msg_ids = [msg_ids];
+        }
 
+        var query = {
+            $or: []
+        };
+        for (var i = 0; i < msg_ids.length; i++) {
+            query.$or.push({msg_id: msg_ids[i]});
+        }
+
+        var r = await c.updateMany(query, {$addToSet: {delete_for: user_id}});
 
         return 'Successful';
     }
@@ -30,17 +40,19 @@ class Chat extends   WebApplication {
     /**
      * Get the chat messages of the specified game id
      * 
+     * @param {type} user_id
      * @param {type} game_id
      * @param {type} skip
      * @param {type} limit
      * @returns {nm$_chat.Chat.getGameChats.data}
      */
-    async getGameChats(game_id, skip, limit) {
+    async getGameChats(user_id, game_id, skip, limit) {
 
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
             game_id = arguments[0].game_id;
             skip = arguments[0].skip;
             limit = arguments[0].limit;
@@ -59,7 +71,8 @@ class Chat extends   WebApplication {
         }
 
         var query = {
-            game_id: game_id
+            game_id: game_id,
+            delete_for: {$nin: [user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -77,8 +90,7 @@ class Chat extends   WebApplication {
             return data;
         }
 
-
-        data.chats = await c.find(query, {_id: 0})
+        data.chats = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
                 .limit(limit)
                 .skip(skip)
                 .toArray();
@@ -119,10 +131,29 @@ class Chat extends   WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        var query = {
+        /*var query = {
+            game_id: {$exists: false},
             user_id: user_id,
-            contact_user_id: contact_user_id
+            contact_user_id: contact_user_id,
+            delete_for: {$nin: [user_id]},
+
+        };*/
+
+        var query = {
+            $and: [
+                {game_id: {$exists: false}},
+                {delete_for: {$nin: [user_id]}},
+                {$or: [
+                        {$and: [
+                                {user_id: user_id},
+                                {contact_user_id: contact_user_id}]},
+                        {$and: [
+                                {user_id: contact_user_id},
+                                {contact_user_id: user_id}]}
+                    ]}
+            ]
         };
+
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
 
@@ -139,20 +170,21 @@ class Chat extends   WebApplication {
             return data;
         }
 
-
-        data.chats = await c.find(query, {_id: 0})
+        data.chats = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
                 .limit(limit)
                 .skip(skip)
                 .toArray();
 
+
         return data;
     }
 
-    async getGroupChats(group_name, skip, limit) {
+    async getGroupChats(user_id, group_name, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
             group_name = arguments[0].group_name;
             skip = arguments[0].skip;
             limit = arguments[0].limit;
@@ -171,7 +203,9 @@ class Chat extends   WebApplication {
         }
 
         var query = {
-            group_name: group_name
+            game_id: {$exists: false},
+            group_name: group_name,
+            delete_for: {$nin: [user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -190,7 +224,7 @@ class Chat extends   WebApplication {
         }
 
 
-        data.chats = await c.find(query, {_id: 0})
+        data.chats = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
                 .limit(limit)
                 .skip(skip)
                 .toArray();
@@ -198,11 +232,12 @@ class Chat extends   WebApplication {
         return data;
     }
 
-    async getTournamentInhouseChats(tournament_name, skip, limit) {
+    async getTournamentInhouseChats(user_id, tournament_name, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
             skip = arguments[0].skip;
             limit = arguments[0].limit;
@@ -221,8 +256,10 @@ class Chat extends   WebApplication {
         }
 
         var query = {
+            game_id: {$exists: false},
             tournament_name: tournament_name,
-            chat_type: 'inhouse'
+            chat_type: 'inhouse',
+            delete_for: {$nin: [user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -241,7 +278,7 @@ class Chat extends   WebApplication {
         }
 
 
-        data.chats = await c.find(query, {_id: 0})
+        data.chats = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
                 .limit(limit)
                 .skip(skip)
                 .toArray();
@@ -249,11 +286,12 @@ class Chat extends   WebApplication {
         return data;
     }
 
-    async getTournamentGeneralChats(tournament_name, skip, limit) {
+    async getTournamentGeneralChats(user_id, tournament_name, skip, limit) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
             skip = arguments[0].skip;
             limit = arguments[0].limit;
@@ -272,8 +310,10 @@ class Chat extends   WebApplication {
         }
 
         var query = {
+            game_id: {$exists: false},
             tournament_name: tournament_name,
-            chat_type: 'general'
+            chat_type: 'general',
+            delete_for: {$nin: [user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -292,7 +332,7 @@ class Chat extends   WebApplication {
         }
 
 
-        data.chats = await c.find(query, {_id: 0})
+        data.chats = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
                 .limit(limit)
                 .skip(skip)
                 .toArray();
@@ -303,7 +343,7 @@ class Chat extends   WebApplication {
     /**
      * Get chat messages of the specified user
      * 
-     * @param {type} searchObj - object format is <br>
+     * @param {Object} searchObj - object format is <br>
      * var obj = {  <br>
      *      user_id: the_user_id,  <br>
      *      period: {month: 1},  <br>
@@ -313,8 +353,8 @@ class Chat extends   WebApplication {
      *      game_ids:[]  <br>
      *  }  <br>
      *  
-     * @param {type} skip
-     * @param {type} limit
+     * @param {Number} skip
+     * @param {Number} limit
      * @returns {nm$_chat.Chat.searchChats.data}
      */
     async searchChats(searchObj, skip, limit) {
@@ -485,7 +525,7 @@ class Chat extends   WebApplication {
         c.insertOne(chat_msg);
 
         //forward to the other user        
-        this.send(this.evt.game_chat, chat_msg, contact_user_id, true);
+        this.send(this.evt.contact_chat, chat_msg, contact_user_id, true);
 
         return chat_msg;
     }
@@ -666,16 +706,74 @@ class Chat extends   WebApplication {
 
     /**
      * 
+     * @param {type} msg_ids
      * @param {type} sender_id
      * @param {type} recipient_id
-     * @param {type} game_id
-     * @param {type} msg
      * @returns {undefined}
      */
-    deliveryFeedback(sender_id, recipient_id, game_id, msg) {
-
+    async deliveryFeedback(msg_ids, sender_id, recipient_id) {
+        return this.statusFeedback('delivered', msg_ids, sender_id, recipient_id);
     }
 
+    /**
+     * 
+     * @param {type} msg_ids
+     * @param {type} sender_id
+     * @param {type} recipient_id
+     * @returns {undefined}
+     */
+    async seenFeedback(msg_ids, sender_id, recipient_id) {
+        return this.statusFeedback('seen', msg_ids, sender_id, recipient_id);
+    }
+    /**
+     * 
+     * @param {type} status
+     * @param {type} msg_ids
+     * @param {type} sender_id
+     * @param {type} recipient_id
+     * @returns {undefined}
+     */
+    async statusFeedback(status, msg_ids, sender_id, recipient_id) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            status = arguments[0].status;
+            msg_ids = arguments[0].msg_ids;
+            sender_id = arguments[0].sender_id;
+            recipient_id = arguments[0].recipient_id;
+        }
+
+        if (!Array.isArray(msg_ids)) {
+            msg_ids = [msg_ids];
+        }
+
+        var c = this.sObj.db.collection(this.sObj.col.chats);
+        
+        var query = {
+            $or: []
+        };
+        for (var i = 0; i < msg_ids.length; i++) {
+            query.$or.push({msg_id: msg_ids[i]});
+        }
+
+        try {
+            var r = await c.updateMany(query, {$set: {status: status}});
+        } catch (e) {
+            console.log(e);
+            return this.error(`could not modify chat message status to ${status}`);
+        }
+
+
+        var two_user_ids = [sender_id, recipient_id];
+        var obj = {
+            sender_id: sender_id,
+            msg_ids: msg_ids,
+            status: status
+        };
+        this.broadcast(this.evt.chat_msg_status, obj, two_user_ids, true);
+
+    }
     /**
      * This method is just a simulation
      * 

@@ -17,7 +17,7 @@ and open the template in the editor.
     top: 0;
     left: 0;
     color : $header_text_color;
-    
+
     > :nth-child(1){/*panel header*/
         background: $small_header_bg;
         width: 100%;
@@ -27,25 +27,28 @@ and open the template in the editor.
         left: 0;
         padding: 5px;
         box-sizing: border-box;
-        font-size: 18px;
-    }
-    
-    
-    > :nth-child(2){/*left panel close btn icon*/
         
-        position: absolute;
-        top: 5px;
-        right: 15px;
-        cursor: pointer;
+        > :nth-child(1){/*right panel header title*/
+            font-size: 18px;
+        }
+
+        > :nth-child(2){/*right panel close btn icon*/
+
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            cursor: pointer;
+        }
+
     }
-    
-    > :nth-child(3){/*body of the left panel*/
+
+    > :nth-child(2){/*body of the right panel*/
         width: 100%;
         position: absolute;
         top: $small_header_height;
         bottom: 0;
         left: 0;  
         background-color: $body_bg;
-        
+
     }
 }

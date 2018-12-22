@@ -109,7 +109,7 @@ and open the template in the editor.
       padding-right: 5px;
       box-sizing: border-box; }
     .game9ja-tournament-details > :nth-child(1) tournheader, .game9ja-tournament-details > :nth-child(1) > :nth-child(7), .game9ja-tournament-details > :nth-child(1) > :nth-child(8) {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       height: 40px;

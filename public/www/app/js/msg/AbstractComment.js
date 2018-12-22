@@ -3,7 +3,20 @@
 Ns.msg.AbstractComment = {
 
     extend: 'Ns.msg.AbstractMessage',
-
+ 
+    /**
+     * must override this method and return the promise of the rcall<br>
+     * @param {type} comments
+     * @returns {undefined}
+     */
+    rcallDeleteMessages: function(comments){    
+        var msg_ids = [];
+        for(var i=0; i<comments.length; i++){
+            msg_ids.push(comments[i].msg_id);
+        }
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        return Main.ro.comment.deleteFor(user_id, msg_ids);
+    },
     getMsgType: function () {
         return 'comment';
     },
@@ -55,6 +68,14 @@ Ns.msg.AbstractComment = {
     getMsgStatusIndicatorSelector: function () {
         return 'span[data-comment-sent="indicator"]';
     },
+    
+    getMsgSentTimeSelector: function () {
+        return 'div[data-comment-item="time"]';
+    },    
+
+    getMsgReceivedTimeSelector: function () {
+        return 'div[data-comment-item="time"]';
+    },    
     
     getMainTpl: function(){
       return 'commnet-tpl.html';  

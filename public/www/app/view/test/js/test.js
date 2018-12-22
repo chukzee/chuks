@@ -63,13 +63,13 @@ Main.on("pagecreate", function (arg) {
                 white_pic: "app/images/white_player.jpg",
                 white_activity: "making move...",
                 white_countdown: "3:21",
-                white_wld: "W 2, L 3, D 5",
+                white_wdl: "W 2, L 3, D 5",
                 black_id: "08024044943", //must be a phone number
                 black_name: "Onome Okoro",
                 black_pic: "app/images/black_player.jpg",
                 black_activity: "thinking...",
                 black_countdown: "5:42",
-                black_wld: "W 3, L 2, D 5",
+                black_wdl: "W 3, L 2, D 5",
                 game_score: "2 - 0",
                 game_status: "Live",
                 game_position: "The game position goes here",
@@ -103,13 +103,13 @@ Main.on("pagecreate", function (arg) {
                 white_pic: "app/images/white_player.jpg",
                 white_activity: "making moving...",
                 white_countdown: "3:21",
-                white_wld: "W 2, L 3, D 5",
+                white_wdl: "W 2, L 3, D 5",
                 black_id: "08024044943", //must be a phone number
                 black_name: "Onome Okoro",
                 black_pic: "app/images/black_player.jpg",
                 black_activity: "thinking...",
                 black_countdown: "5:42",
-                black_wld: "W 3, L 2, D 5",
+                black_wdl: "W 3, L 2, D 5",
                 game_score: "2 - 0",
                 game_status: "Live",
                 game_position: "The game position goes here",
@@ -169,6 +169,9 @@ Main.on("pagecreate", function (arg) {
     
     Main.device.isTesting = true; //TESTING!!!
     Main.device.isMobileDeviceReady = true; //TESTING!!!
+    
+    console.log('Test line to be removed - Main.device.isMobileDeviceReady = true;');
+    
     document.body.addEventListener('keypress', Main.test.simulateBackButtonListener);
 
     callCard();

@@ -68,11 +68,12 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-get-game-chats').on('click', function () {
 
+        var user_id = prompt('user_id', '07032710628');
         var game_id = prompt('game_id', '');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
 
-        Main.ro.chat.getGameChats(game_id, skip, limit)
+        Main.ro.chat.getGameChats(user_id, game_id, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -85,12 +86,13 @@ Main.on("pagecreate", function (arg) {
     });
 
     $('#btn-get-group-chats').on('click', function () {
-
+        
+        var user_id = prompt('user_id', '07032710628');
         var group_name = prompt('group_name', 'Group1');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
 
-        Main.ro.chat.getGroupChats(group_name, skip, limit)
+        Main.ro.chat.getGroupChats(user_id, group_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -104,11 +106,12 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-get-tournament-inhouse-chats').on('click', function () {
 
+        var user_id = prompt('user_id', '07032710628');
         var tournament_name = prompt('tournament_name', '');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
 
-        Main.ro.chat.getTournamentInhousChats(tournament_name, skip, limit)
+        Main.ro.chat.getTournamentInhousChats(user_id, tournament_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);
@@ -122,11 +125,12 @@ Main.on("pagecreate", function (arg) {
 
     $('#btn-get-tournament-general-chats').on('click', function () {
 
+        var user_id = prompt('user_id', '07032710628');
         var tournament_name = prompt('tournament_name', '');
         var skip = prompt('skip', 0);
         var limit = prompt('limit', 50);
 
-        Main.ro.chat.getTournamentGeneralChats(tournament_name, skip, limit)
+        Main.ro.chat.getTournamentGeneralChats(user_id, tournament_name, skip, limit)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

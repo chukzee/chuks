@@ -179,6 +179,26 @@ module.exports = function () {
             'second.player_id': 1
         }
         , callback);
+        
+        
+        db.collection(col.chats).ensureIndex({
+            user_id: 1,
+            game_id: 1,
+            group_name: 1,
+            tournament_name: 1,
+            delete_for: 1,
+            chat_type: 1
+        }
+        , callback);
+        
+        db.collection(col.comments).ensureIndex({
+            user_id: 1,
+            game_id: 1,
+            group_name: 1,
+            tournament_name: 1,
+            delete_for: 1
+        }
+        , callback);
 
     };
 

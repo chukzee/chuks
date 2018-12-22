@@ -6,14 +6,16 @@ Ns.GameWatch = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
-    leftPanelTitleComp: null,
+    rightPanelTitleComp: null,
 
-    afterLeftContentHide: function () {
-        if (Ns.GameWatch.leftPanelTitleComp) {
-            Ns.GameWatch.leftPanelTitleComp.innerHTML = '';
+    afterRightContentHide: function () {
+        if (Ns.GameWatch.rightPanelTitleComp) {
+            Ns.GameWatch.rightPanelTitleComp.innerHTML = '';
         }
     },
-    showLeftContent: function (func) {
+    showRightContent: function (data, title, func) {
+        Ns.GameView.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
+        Ns.GameView.rightPanelTitleComp.innerHTML = title;
         var el = document.getElementById('game-watch-right-content');
 
         el.style.width = Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
@@ -29,17 +31,19 @@ Ns.GameWatch = {
         func();
         Main.anim.to('game-watch-right-content', 500, {right: '0%'});
     },
-    hideLeftContent: function () {
+    hideRightContent: function () {
 
         var el = document.getElementById('game-watch-right-content');
         var negative_width = "-100%";//yes must be -100%
 
         if (el.style.right === '0%') {
             el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterLeftContentHide);
+            Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterRightContentHide);
         }
     },
     Content: function (data) {
+
+        Ns.ui.GamePanel.rightContentName = '';
 
         var panel_main = document.getElementById('game-watch-main');
         var board_el = document.getElementById('game-watch-main-board');
@@ -47,8 +51,8 @@ Ns.GameWatch = {
         var lower_el = document.getElementById('game-watch-main-lower');
 
         Ns.ui.GamePanel.watchGame(data, panel_main, resizeMain);
-        
-        function resizeMain(board_size, upper_height, lower_height){
+
+        function resizeMain(match, board_size, upper_height, lower_height) {
             board_el.style.width = board_size + 'px';
             board_el.style.height = board_size + 'px';
 
@@ -66,10 +70,14 @@ Ns.GameWatch = {
             } else {
                 el.style.width = Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;
             }
-            
+
+
+            var flip; //TODO
+
+            Ns.ui.GamePanel.showGame(data, 'game-watch-main-board', flip);
         }
-        
-  
+
+
         $('#game-watch-back-btn').on('click', function () {
             Ns.GameHome.home();
         });

@@ -78,7 +78,9 @@ and open the template in the editor.
     top: 0;
     left: 0;
     font-size: 14px;
-    color: #444444; }
+    color: #444444;
+    white-space: pre-wrap;
+    word-wrap: break-word; }
   .game9ja-chat-sent > :nth-child(2) {
     /*chat time*/
     position: absolute;
@@ -107,7 +109,8 @@ and open the template in the editor.
     position: relative;
     top: 0px;
     left: 5px;
-    font-size: 14px; }
+    font-size: 14px;
+    color: #222222; }
     .game9ja-chat-sent > .game9ja-delivered > :nth-child(1):after {
       /*message sent and delivery indicator*/
       content: '\2713'; }
@@ -122,7 +125,8 @@ and open the template in the editor.
     position: relative;
     top: 0px;
     left: 5px;
-    font-size: 14px; }
+    font-size: 14px;
+    color: #222222; }
     .game9ja-chat-sent > .game9ja-sent > :nth-child(1):after {
       /*message sent and delivery indicator*/
       content: '\2713'; }
@@ -130,7 +134,8 @@ and open the template in the editor.
     /*message sent and delivery indicator*/
     position: relative;
     top: 0px;
-    left: 5px; }
+    left: 5px;
+    color: #222222; }
     .game9ja-chat-sent > .game9ja-not-sent > :nth-child(1):after {
       /*message sent and delivery indicator*/
       content: '...'; }
@@ -144,26 +149,25 @@ and open the template in the editor.
   background-color: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   margin-top: 5px;
-  margin-bottom: 5px; }
+  margin-bottom: 5px;
+  color: #008800; }
   .game9ja-chat-received > :nth-child(1) {
-    /*chat message*/
+    /*full name*/
     position: relative;
     top: 0;
     left: 0;
-    font-size: 12px;
-    color: #002200; }
+    font-size: 12px; }
   .game9ja-chat-received > :nth-child(2) {
     /*chat message*/
     position: relative;
     top: 0;
     left: 0;
     font-size: 14px;
-    color: #008800; }
+    white-space: pre-wrap; }
   .game9ja-chat-received > :nth-child(3) {
     /*chat time ago*/
     width: 100%;
     font-size: 10px;
-    text-align: right;
-    color: #004400; }
+    text-align: right; }
 
 /*# sourceMappingURL=chat.css.map */

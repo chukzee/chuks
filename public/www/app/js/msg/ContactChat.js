@@ -3,8 +3,8 @@
 
 Ns.msg.ContactChat = {
 
-    extend: 'Ns.msg.AbstractChat',
-    
+    extend: 'Ns.msg.AbstractPeerToPeerChat',
+
     contact: null,
     /**
      * this constructor is called once automatically by the framework
@@ -21,39 +21,54 @@ Ns.msg.ContactChat = {
         Main.rcall.live(obj);
 
         Main.eventio.on('contact_chat', this.onChat.bind(this));
+        Main.eventio.on('chat_msg_status', this.onChatMsgStatus.bind(this));
 
     },
+
+    getSaveKeyPrefix() {
+        return 'save_msg_contact_chat';
+    },
+
     /**
      * Override this method - called by super class
      * @param {type} contact
      * @returns {undefined}
      */
-    initContent:function(contact){
+    initContent: function (contact) {
         this.contact = contact;
-        
+
         document.getElementById('contact-chat-view-photo').src = contact.photo_url;
         document.getElementById('contact-chat-view-full-name').innerHTML = contact.full_name;
     },
-    getViewID: function(){
+    getViewID: function () {
         return 'contact-chat-view';
     },
-    
-    getViewHeaderID: function(){
+
+    getViewHeaderID: function () {
         return "contact-chat-view-header";
     },
-    
-    getViewBodyID: function(){
-        return 'contact-chat-view-body';        
+
+    getViewBodyID: function () {
+        return 'contact-chat-view-body';
     },
+
+    getSearchButtonID: function () {
+        return 'contact-chat-view-search';
+    },
+
+    getMenuButtonID: function () {
+        return 'contact-chat-view-menu';
+    },
+
     /**
      * must override this method and return the promise of the rcall<br>
      *
      * @returns {undefined}
      */
-    rcallGetMessages: function(){    
+    rcallGetMessages: function () {
         var user_id = Ns.view.UserProfile.appUser.user_id;
         return Main.ro.chat.getContactChats(user_id, this.contact.user_id);
-    },    
+    },
     /**
      * Send the chat message
      * Must override this method and return the promise of the rcall<br>
@@ -65,16 +80,11 @@ Ns.msg.ContactChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function(content){
+    rcallSendMessage: function (content, bindFn) {
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        
-        return Main.ro.chat.sendContactChat(user_id, this.contact.user_id, content, 'text');
-    },
-    onChat: function(obj){
-        this.add(obj.data);
-    },
 
-  
+        return Main.ro.chat.sendContactChat(user_id, this.contact.user_id, content, 'text', bindFn);
+    },
 
 };
 

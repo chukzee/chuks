@@ -6,7 +6,6 @@ Ns.view.Rankings = {
 
     constructor: function () {
         try {
-            var list = window.localStorage.clear();//COMMENT OUT LATER
             
             var list = window.localStorage.getItem(Ns.Const.RANKINGS_LIST_KEY);
             list = JSON.parse(list);

@@ -56,14 +56,25 @@ class Comment extends   WebApplication {
      * The delete the comment for the specified user
      * 
      * @param {type} user_id
-     * @param {type} msg_id
+     * @param {type} msg_ids
      * @returns {Boolean}
      */
-    async deleteFor(user_id, msg_id) {
+    async deleteFor(user_id, msg_ids) {
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
-
-        var r = await c.updateOne({msg_id: msg_id}, {$set: {delete_for: user_id}});
+        
+        if(!Array.isArray(msg_ids)){
+            msg_ids = [msg_ids];
+        }
+        
+        var query = {
+            $or:[]
+        };
+        for(var i=0; i< msg_ids.length; i++){
+            query.$or.push({msg_id: msg_ids[i]});
+        }
+        
+        var r = await c.updateMany(query, {$addToSet: {delete_for: user_id}});
 
 
         return 'Successful';
@@ -104,7 +115,8 @@ class Comment extends   WebApplication {
 
 
         var query = {
-            game_id: game_id
+            game_id: game_id,
+            delete_for: {$nin:[user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
@@ -123,14 +135,14 @@ class Comment extends   WebApplication {
         }
 
 
-        data.comments = await c.find(query, {_id: 0})
+        data.comments = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
                 .limit(limit)
                 .skip(skip)
                 .toArray();
 
         data.comments = await this._normalizeComments(user_id, data.comments);
 
-
+        
         return data;
     }
 
@@ -167,7 +179,8 @@ class Comment extends   WebApplication {
 
 
         var query = {
-            user_id: user_id
+            user_id: user_id,
+            delete_for: {$nin:[user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.comments);

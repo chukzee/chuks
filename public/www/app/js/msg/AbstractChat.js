@@ -5,7 +5,21 @@
 Ns.msg.AbstractChat = {
 
     extend: 'Ns.msg.AbstractMessage',
-
+ 
+    /**
+     * must override this method and return the promise of the rcall<br>
+     * @param {type} chats
+     * @returns {undefined}
+     */
+    rcallDeleteMessages: function(chats){    
+        var msg_ids = [];
+        for(var i=0; i<chats.length; i++){
+            msg_ids.push(chats[i].msg_id);
+        }
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        return Main.ro.chat.deleteFor(user_id, msg_ids);
+    },
+    
     getMsgType: function () {
         return 'chat';
     },
@@ -57,7 +71,15 @@ Ns.msg.AbstractChat = {
     getMsgStatusIndicatorSelector: function () {
         return 'span[data-chat-sent="indicator"]';
     },
+    
+    getMsgSentTimeSelector: function () {
+        return 'div[data-chat-sent="time"]';
+    },    
 
+    getMsgReceivedTimeSelector: function () {
+        return 'div[data-chat-received="time"]';
+    },    
+    
     getMainTpl: function () {
         return 'chat-tpl.html';
     },

@@ -90,6 +90,10 @@ class Evt{
         return 'tournament_inhouse_chat';
     }
     
+    get contact_chat(){
+        return 'contact_chat';
+    }
+    
     get group_chat(){
         return 'group_chat';
     }
@@ -101,6 +105,11 @@ class Evt{
     get comment(){
         return 'comment';
     }
+    
+    get chat_msg_status(){
+        return 'chat_msg_status';
+    }
+    
 }
 
 var evt = new Evt();

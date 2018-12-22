@@ -3,6 +3,64 @@
 
 Ns.ui.GamePanel = {
 
+    matchData: null,
+    rightContentName: null,
+    
+    showGame: function(match, container, flip){
+        if(!match){
+            return;
+        }
+        var obj = {
+            flip : flip,//used in watched games only. whether the board should face black to white direction. ie black is below and white above
+            white : match.players[0].user_id === Ns.view.UserProfile.appUser.user_id,
+            container: container,
+            boardTheme: 'wooddark',
+            pieceTheme: 'alpha',
+            
+        };
+        
+        if(match.game_name === 'chess'){
+            
+            Ns.ui.GamePanel.showChess(obj);
+            
+        }else if(match.game_name === 'draughts'){
+                        
+            Ns.ui.GamePanel.showDraughts(obj);
+            
+        }
+        
+        
+    },
+
+    showChess: function (prop) {
+        var obj = {
+            //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
+            white: prop.white, //whether the user is white or black. For watched games this field in absent
+            container: prop.container,
+            boardTheme: prop.boardTheme ? prop.boardTheme :  'wooddark',
+            pieceTheme: prop.pieceTheme ? prop.pieceTheme :  'alpha',
+            is3D: false,
+        };
+
+        Ns.game.Chess.load(obj);
+
+    },
+
+    showDraughts: function (prop) {
+        var obj = {
+            variant: prop.variant ? prop.variant :  'international-draughts',
+            //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
+            white: prop.white, //whether the user is white or black. For watched games this field in absent
+            container: prop.container,
+            boardTheme: prop.boardTheme ? prop.boardTheme :  'wooddark',
+            pieceTheme: prop.pieceTheme ? prop.pieceTheme :  'alpha',
+            is3D: false,
+        };
+
+        Ns.game.Draughts.load(obj);
+
+    },
+
     gameAreaDimension: function (elem) {
 
         var el = elem ? elem : this.element;
@@ -51,7 +109,7 @@ Ns.ui.GamePanel = {
         return {board_size: board_size, upper_height: upper_height, lower_height: lower_height};
     },
 
-    fixSizeConfig: function (panel_main, setSizeFn, checkPanelSizeFn) {
+    fixSizeConfig: function (match, panel_main, setSizeFn, checkPanelSizeFn) {
 
         mainResizeListener();
         sizingMain();
@@ -70,7 +128,7 @@ Ns.ui.GamePanel = {
             //console.log(dim);
 
             //setting the sizes of the panels
-            setSizeFn(dim.board_size, dim.upper_height, dim.lower_height);
+            setSizeFn(match, dim.board_size, dim.upper_height, dim.lower_height);
 
             if (checkPanelSizeFn) {
                 checkPanelSizeFn.bind(this)();
@@ -123,16 +181,20 @@ Ns.ui.GamePanel = {
 
     },
 
-    ownGameView: function (data, panel_main, resizeFn, checkPanelSizeFn) {
+    ownGameView: function (match, panel_main, resizeFn, checkPanelSizeFn) {
 
-        Ns.ui.GamePanel.fixSizeConfig(panel_main, resizeFn, checkPanelSizeFn);
+        Ns.ui.GamePanel.matchData = match;
 
-        $('#game-view-white-name').html(data.white_name);
-        $('#game-view-white-pic').attr({src: data.white_pic});
-        $('#game-view-black-name').html(data.black_name);
-        $('#game-view-black-pic').attr({src: data.black_pic});
-        $('#game-view-game-score').html(data.game_score);
-        $('#game-view-game-status').html(data.game_status);
+        Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn, checkPanelSizeFn);
+
+        document.getElementById('game-view-white-pic').src = match.players[0].photo_url;
+
+        $('#game-view-white-name').html(match.players[0].full_name);
+        $('#game-view-black-name').html(match.players[1].full_name);
+
+        document.getElementById('game-view-black-pic').src = match.players[1].photo_url;
+        $('#game-view-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
+        $('#game-view-game-status').html(match.status);
 
 
         Main.menu.create({
@@ -158,121 +220,130 @@ Ns.ui.GamePanel = {
         });
 
 
-        if (Ns.view.UserProfile.appUser.id === data.white_id) {
+        if (Ns.view.UserProfile.appUser.id === match.players[0].user_id) {
 
-            $('#game-view-user-wld').html(data.white_wld);
-            $('#game-view-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
+            $('#game-view-user-wdl').html(match.players[0].wdl);
+            $('#game-view-user-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
-            $('#game-view-opponent-countdown').html(data.black_countdown);
-            $('#game-view-opponent-activity').html(data.black_activity);
-            $('#game-view-opponent-wld').html(data.black_wld);
+            $('#game-view-opponent-countdown').html(match.players[1].countdown);
+            $('#game-view-opponent-activity').html(match.players[1].activity);
+            $('#game-view-opponent-wdl').html(match.players[1].wdl);
 
-        } else if (Ns.view.UserProfile.appUser.id === data.black_id) {
+        } else if (Ns.view.UserProfile.appUser.id === match.players[1].user_id) {
 
-            $('#game-view-user-wld').html(data.black_wld);
-            $('#game-view-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
+            $('#game-view-user-wdl').html(match.players[1].wdl);
+            $('#game-view-user-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
 
-            $('#game-view-opponent-countdown').html(data.white_countdown);
-            $('#game-view-opponent-activity').html(data.white_activity);
-            $('#game-view-opponent-wld').html(data.white_wld);
+            $('#game-view-opponent-countdown').html(match.players[0].countdown);
+            $('#game-view-opponent-activity').html(match.players[0].activity);
+            $('#game-view-opponent-wdl').html(match.players[0].wdl);
 
         }
 
-        var leftPanelTitleComp = document.getElementById("game-view-right-panel-header-title");
-        var lefPanelBody = document.getElementById("game-view-right-panel-body");
         var ogv = Ns.GameView;
-        ogv.leftPanelTitleComp = leftPanelTitleComp;
 
         var obj = {
-            data: data,
-            leftPanelTitleComp: leftPanelTitleComp,
-            lefPanelBody: lefPanelBody
+            data: match,
+        };
+
+        var id_obj = {
+            view_id: "game-view-right-content",
+            view_body_id: "game-view-right-panel-body",
+            view_header_id: "game-view-right-panel-header",
+            search_button_id: "TODO"
         };
 
         var titleChat = 'Chat';
         if (Main.device.isXLarge()) {
-            leftPanelTitleComp.innerHTML = titleChat;
-            lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Ns.msg.Chat.content.bind(obj));
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, titleChat, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
         }
 
         $('#game-view-footer-chat').on('click', function () {
             var title = titleChat;
-            if (leftPanelTitleComp.innerHTML === title) {
-                ogv.hideLeftContent();
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
                 return;
             }
-            leftPanelTitleComp.innerHTML = title;
-            lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Ns.msg.Chat.content.bind(obj));
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
         });
 
         $('#game-view-footer-comments').on('click', function () {
             var title = 'Comments';
-            if (leftPanelTitleComp.innerHTML === title) {
-                ogv.hideLeftContent();
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
                 return;
             }
-            leftPanelTitleComp.innerHTML = title;
-            lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Ns.msg.Comment.content.bind(obj));
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
         });
 
         $('#game-view-footer-voice-call').on('click', function () {
             var title = 'Voice Call';
-            if (leftPanelTitleComp.innerHTML === title) {
-                ogv.hideLeftContent();
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
                 return;
             }
-            leftPanelTitleComp.innerHTML = title;
-            lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Ns.msg.VoiceCall.content.bind(obj));
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.VoiceCall.content.bind(obj));
         });
 
         $('#game-view-footer-video-call').on('click', function () {
             var title = 'Video Call';
-            if (leftPanelTitleComp.innerHTML === title) {
-                ogv.hideLeftContent();
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
                 return;
             }
-            leftPanelTitleComp.innerHTML = title;
-            lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Ns.msg.VideoCall.content.bind(obj));
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.VideoCall.content.bind(obj));
         });
 
         $('#game-view-footer-spectators').on('click', function () {
             var title = 'Spectators';
-            if (leftPanelTitleComp.innerHTML === title) {
-                ogv.hideLeftContent();
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
                 return;
             }
-            leftPanelTitleComp.innerHTML = title;
-            lefPanelBody.innerHTML = '';
-            ogv.showLeftContent(Ns.Spectators.content.bind(obj));
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Spectators.content.bind(obj));
         });
 
         $('#game-view-right-panel-close').on('click', function () {
-            ogv.hideLeftContent();
+            ogv.hideRightContent();
         });
 
         $('#game-view-main').on('click', function () {
             if (!Main.device.isXLarge()) {
-                ogv.hideLeftContent();
+                ogv.hideRightContent();
             }
         });
 
     },
 
-    ownGameViewB: function (data, panel_main, resizeFn, checkPanelSizeFn) {
+    ownGameViewB: function (match, panel_main, resizeFn, checkPanelSizeFn) {
 
-        Ns.ui.GamePanel.fixSizeConfig(panel_main, resizeFn, checkPanelSizeFn);
+        Ns.ui.GamePanel.matchData = match;
 
-        $('#game-view-b-white-name').html(data.white_name);
-        $('#game-view-b-white-pic').attr({src: data.white_pic});
-        $('#game-view-b-black-name').html(data.black_name);
-        $('#game-view-b-black-pic').attr({src: data.black_pic});
-        $('#game-view-b-game-score').html(data.game_score);
-        $('#game-view-b-game-status').html(data.game_status);
+        Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn, checkPanelSizeFn);
+
+        document.getElementById('game-view-b-black-pic').src = match.players[0].photo_url;
+
+        $('#game-view-b-white-name').html(match.players[0].full_name);
+        $('#game-view-b-black-name').html(match.players[1].full_name);
+
+        document.getElementById('game-view-b-black-pic').src = match.players[1].photo_url;
+        $('#game-view-b-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
+        $('#game-view-b-game-status').html(match.status);
 
         Main.menu.create({
             width: 150,
@@ -297,36 +368,40 @@ Ns.ui.GamePanel = {
         });
 
 
-        if (Ns.view.UserProfile.appUser.id === data.white_id) {
+        var id_obj = {
+            view_id: "game-view-b-right-content",
+            view_body_id: "game-view-b-right-panel-body",
+            view_header_id: "game-view-b-right-panel-header",
+            search_button_id: "TODO"
+        };
 
-            $('#game-view-b-user-wld').html(data.white_wld);
-            $('#game-view-b-user-countdown').html(data.white_countdown);//may not be necessary - will be done locally
+        if (Ns.view.UserProfile.appUser.id === match.players[0].user_id) {
 
-            $('#game-view-b-opponent-countdown').html(data.black_countdown);
-            $('#game-view-b-opponent-activity').html(data.black_activity);
-            $('#game-view-b-opponent-wld').html(data.black_wld);
+            $('#game-view-b-user-wdl').html(match.players[0].wdl);
+            $('#game-view-b-user-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
-        } else if (Ns.view.UserProfile.appUser.id === data.black_id) {
+            $('#game-view-b-opponent-countdown').html(match.players[1].countdown);
+            $('#game-view-b-opponent-activity').html(match.players[1].activity);
+            $('#game-view-b-opponent-wdl').html(match.players[1].wdl);
 
-            $('#game-view-b-user-wld').html(data.black_wld);
-            $('#game-view-b-user-countdown').html(data.black_countdown);//may not be necessary - will be done locally
+        } else if (Ns.view.UserProfile.appUser.id === match.players[1].user_id) {
 
-            $('#game-view-b-opponent-countdown').html(data.white_countdown);
-            $('#game-view-b-opponent-activity').html(data.white_activity);
-            $('#game-view-b-opponent-wld').html(data.white_wld);
+            $('#game-view-b-user-wdl').html(match.players[1].wdl);
+            $('#game-view-b-user-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
+
+            $('#game-view-b-opponent-countdown').html(match.players[0].countdown);
+            $('#game-view-b-opponent-activity').html(match.players[0].activity);
+            $('#game-view-b-opponent-wdl').html(match.players[0].wdl);
 
         }
 
-        var leftPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
-        var lefPanelBody = document.getElementById("game-view-b-right-panel-body");
         var ogvb = Ns.GameView;
-        ogvb.leftPanelTitleComp = leftPanelTitleComp;
 
         $('#game-view-b-bluetooth-icon').on('click', function () {
             var device_name = 'TODO device name'; //TODO
             var signal_strength = 'TODO  excellent';//TODO
             var elapse_time = 'TODO 456';//TODO
-            
+
             var msg = '<table>'
                     + '<tr><td>Device : </td><td>' + device_name + '</td></tr>'
                     + '<tr><td>Signal strenght : </td><td>' + signal_strength + '</td></tr>'
@@ -336,35 +411,39 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-view-b-right-panel-close').on('click', function () {
-            ogvb.hideLeftContent();
+            ogvb.hideRightContent();
         });
 
         $('#game-view-b-main').on('click', function () {
             if (!Main.device.isXLarge()) {
-                ogvb.hideLeftContent();
+                ogvb.hideRightContent();
             }
         });
 
     },
 
-    watchGame: function (data, panel_main, resizeFn) {
+    watchGame: function (match, panel_main, resizeFn) {
 
-        Ns.ui.GamePanel.fixSizeConfig(panel_main, resizeFn);
+        Ns.ui.GamePanel.matchData = match;
 
-        $('#game-watch-white-name').html(data.white_name);
-        $('#game-watch-white-countdown').html(data.white_countdown);
-        $('#game-watch-white-activity').html(data.white_activity);
-        $('#game-watch-white-wld').html(data.white_wld);
-        $('#game-watch-white-profile-pic').attr({src: data.white_pic});
+        Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn);
 
-        $('#game-watch-black-name').html(data.black_name);
-        $('#game-watch-black-countdown').html(data.black_countdown);
-        $('#game-watch-black-wld').html(data.black_wld);
-        $('#game-watch-black-activity').html(data.black_activity);
-        $('#game-watch-black-profile-pic').attr({src: data.black_pic});
+        $('#game-watch-white-name').html(match.players[0].full_name);
+        $('#game-watch-white-countdown').html(match.players[0].countdown);
+        $('#game-watch-white-activity').html(match.players[0].activity);
+        $('#game-watch-white-wdl').html(match.players[0].wdl);
 
-        $('#game-watch-game-score').html(data.game_score);
-        $('#game-watch-game-status').html(data.game_status);
+        document.getElementById('game-watch-white-profile-pic').src = match.players[0].photo_url;
+
+        $('#game-watch-black-name').html(match.players[1].full_name);
+        $('#game-watch-black-countdown').html(match.players[1].countdown);
+        $('#game-watch-black-wdl').html(match.players[1].wdl);
+        $('#game-watch-black-activity').html(match.players[1].activity);
+
+        document.getElementById('game-watch-black-profile-pic').src = match.players[1].photo_url;
+
+        $('#game-watch-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
+        $('#game-watch-game-status').html(match.status);
 
 
         Main.menu.create({
@@ -389,43 +468,43 @@ Ns.ui.GamePanel = {
             }
         });
 
-        var leftPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
-        var lefPanelBody = document.getElementById("game-watch-right-panel-body");
         var gw = Ns.GameWatch;
-        gw.leftPanelTitleComp = leftPanelTitleComp;
 
         var obj = {
-            data: data,
-            leftPanelTitleComp: leftPanelTitleComp,
-            lefPanelBody: lefPanelBody
+            data: match,
+        };
+
+        var id_obj = {
+            view_id: "game-watch-right-content",
+            view_body_id: "game-watch-right-panel-body",
+            view_header_id: "game-watch-right-panel-header",
+            search_button_id: "TODO"
         };
 
         var titleComment = 'Comments';
         if (Main.device.isXLarge()) {
-            leftPanelTitleComp.innerHTML = titleComment;
-            lefPanelBody.innerHTML = '';
-            gw.showLeftContent(Ns.msg.Comment.content.bind(obj));
+            gw.showRightContent(Ns.ui.GamePanel.matchData, titleComment, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
         }
 
 
         $('#game-watch-comment-icon').on('click', function () {
             var title = titleComment;
-            if (leftPanelTitleComp.innerHTML === title) {
-                gw.hideLeftContent();
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                gw.hideRightContent();
                 return;
             }
-            leftPanelTitleComp.innerHTML = title;
-            lefPanelBody.innerHTML = '';
-            gw.showLeftContent(Ns.msg.Comment.content.bind(obj));
+            Ns.ui.GamePanel.rightContentName = title;
+            gw.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
         });
 
         $('#game-watch-right-panel-close').on('click', function () {
-            gw.hideLeftContent();
+            gw.hideRightContent();
         });
 
         $('#game-watch-main').on('click', function () {
             if (!Main.device.isXLarge()) {
-                gw.hideLeftContent();
+                gw.hideRightContent();
             }
         });
 
@@ -474,15 +553,17 @@ Ns.ui.GamePanel = {
             var gamePanel = document.getElementById("home-game-panel");
             if (Ns.Match.hasMatchData) {
                 var user = Ns.view.UserProfile.appUser;
-                if (first_match_data.white_id === user.id
-                        || first_match_data.black_id === user.id) {
+                if (first_match_data.players[0].user_id === user.id
+                        || first_match_data.players[1].user_id === user.id) {
                     //show the current app user game
                     gamePanel.innerHTML = Ns.ui.UI.gameViewHtml;
+                    Ns.ui.GamePanel.matchData = first_match_data;
                     Ns.GameView.Content(first_match_data);
 
                 } else {
                     //watch other players live
                     gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml;
+                    Ns.ui.GamePanel.matchData = match_data;
                     Ns.GameWatch.Content(match_data);
                 }
                 isGamePanelInit = true;
@@ -503,8 +584,8 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            
-            Main.ajax.get(Main.intentUrl(Ns.GameHome.GAME_VIEW_HTML),
+            var url = Main.intentUrl(Ns.GameHome.GAME_VIEW_HTML);
+            Main.ajax.get(url,
                     function (res) {
                         Ns.ui.UI.gameViewHtml = res;
                         if (fn) {
@@ -527,8 +608,8 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            
-            Main.ajax.get(Main.intentUrl(Ns.GameHome.GAME_VIEW_B_HTML),
+            var url = Main.intentUrl(Ns.GameHome.GAME_VIEW_B_HTML);
+            Main.ajax.get(url,
                     function (res) {
                         Ns.ui.UI.gameViewBHtml = res;
                         if (fn) {
@@ -551,8 +632,8 @@ Ns.ui.GamePanel = {
                 }
                 return;
             }
-            
-            Main.ajax.get(Main.intentUrl(Ns.GameHome.GAME_WATCH_HTML),
+            var url = Main.intentUrl(Ns.GameHome.GAME_WATCH_HTML);
+            Main.ajax.get(url,
                     function (res) {
                         Ns.ui.UI.gameWatchHtml = res;
                         if (fn) {

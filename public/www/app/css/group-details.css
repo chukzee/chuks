@@ -88,7 +88,7 @@ and open the template in the editor.
       right: 10px;
       cursor: pointer; }
     .game9ja-group-details > :nth-child(1) groupheader, .game9ja-group-details > :nth-child(1) > :nth-child(5), .game9ja-group-details > :nth-child(1) > :nth-child(6) {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       height: 40px;

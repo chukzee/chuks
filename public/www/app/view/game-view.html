@@ -35,7 +35,7 @@ and open the template in the editor.
                         and when it stop it means the opponent has played or the countdown is over i.e timeout-->
                         <div id="game-view-opponent-countdown"></div> <!--countdown-->
                         <div id="game-view-opponent-activity"></div> <!--activity e.g making move... , thinking...-->
-                        <div id="game-view-opponent-wld"></div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                        <div id="game-view-opponent-wdl"></div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
                     </div>
                     <div id="game-view-main-board"><!--sizing and positioning using javascript-->
                         <!--the game board-->
@@ -43,15 +43,17 @@ and open the template in the editor.
                     <div id="game-view-main-lower"><!--sizing and positioning using javascript-->
                         <!--some lower display e.g time countdown -->
                         <div id="game-view-user-countdown"></div> <!-- 03:25 countdown-->
-                        <div id="game-view-user-wld"></div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
+                        <div id="game-view-user-wdl"></div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
                     </div>
                 </div>
                 <div id="game-view-right-content">
                     <!--holds panel in the side. this show by default in 
-                    large device but hidden in small device gets revealled dynamically-->
+                    large device but hidden in small device gets revealed dynamically-->
                     <div class="game9ja-game-view-right-panel">
-                        <span id="game-view-right-panel-header-title"></span>
-                        <span class="fa fa-close" id="game-view-right-panel-close"></span>                        
+                        <span id="game-view-right-panel-header">
+                            <span id="game-view-right-panel-header-title"></span>
+                            <span class="fa fa-close" id="game-view-right-panel-close"></span>
+                        </span>                      
                         <div id="game-view-right-panel-body">
                             
                         </div>

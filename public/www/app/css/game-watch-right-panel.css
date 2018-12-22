@@ -56,14 +56,17 @@ and open the template in the editor.
     padding: 5px;
     box-sizing: border-box;
     font-size: 18px; }
+    .game9ja-game-watch-right-panel > :nth-child(1) > :nth-child(1) {
+      /*right panel header title*/
+      font-size: 18px; }
+    .game9ja-game-watch-right-panel > :nth-child(1) > :nth-child(2) {
+      /*right panel close btn icon*/
+      position: absolute;
+      top: 5px;
+      right: 15px;
+      cursor: pointer; }
   .game9ja-game-watch-right-panel > :nth-child(2) {
-    /*left panel close btn icon*/
-    position: absolute;
-    top: 5px;
-    right: 15px;
-    cursor: pointer; }
-  .game9ja-game-watch-right-panel > :nth-child(3) {
-    /*body of the left panel*/
+    /*body of the right panel*/
     width: 100%;
     position: absolute;
     top: 35px;

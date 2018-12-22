@@ -7,7 +7,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-light-header, .game9ja-search-header {
+.game9ja-header, .game9ja-light-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -38,7 +38,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-light-header, .game9ja-search-header {
+.game9ja-header, .game9ja-light-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -62,8 +62,8 @@ and open the template in the editor.
 
 .game9ja-header-item-right {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -74,8 +74,8 @@ and open the template in the editor.
 
 .game9ja-header-item-right-a {
   position: absolute;
-  top: 10px;
-  right: 40px;
+  top: 5px;
+  right: 35px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -86,8 +86,8 @@ and open the template in the editor.
 
 .game9ja-header-item-right-b {
   position: absolute;
-  top: 10px;
-  right: 70px;
+  top: 5px;
+  right: 65px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -98,8 +98,8 @@ and open the template in the editor.
 
 .game9ja-header-item-right-c {
   position: absolute;
-  top: 10px;
-  right: 100px;
+  top: 5px;
+  right: 95px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -110,8 +110,8 @@ and open the template in the editor.
 
 .game9ja-header-item-right-d {
   position: absolute;
-  top: 10px;
-  right: 130px;
+  top: 5px;
+  right: 125px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -122,8 +122,8 @@ and open the template in the editor.
 
 .game9ja-header-item-right-e {
   position: absolute;
-  top: 10px;
-  right: 160px;
+  top: 5px;
+  right: 155px;
   font-size: 14px;
   cursor: pointer;
   width: 20px;
@@ -134,7 +134,7 @@ and open the template in the editor.
 
 .game9ja-header-item-left {
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 20px;
   font-size: 14px;
   cursor: pointer;
@@ -146,7 +146,7 @@ and open the template in the editor.
 
 .game9ja-header-item-left-a {
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 50px;
   font-size: 14px;
   cursor: pointer;
@@ -158,7 +158,7 @@ and open the template in the editor.
 
 .game9ja-header-item-left-b {
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 80px;
   font-size: 14px;
   cursor: pointer;
@@ -177,7 +177,7 @@ and open the template in the editor.
     Created on : May 20, 2017, 3:37:46 PM
     Author     : Engr Chuks
 */
-.game9ja-header, .game9ja-light-header, .game9ja-search-header {
+.game9ja-header, .game9ja-light-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -224,19 +224,8 @@ and open the template in the editor.
     position: absolute;
     right: 0;
     bottom: 5px;
-    width: 20px; }
-
-.game9ja-search {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  overflow: hidden; }
-
-.game9ja-search-header {
-  position: relative; }
+    width: 20px;
+    text-align: center; }
 
 .game9ja-search-header-input {
   height: 40px;

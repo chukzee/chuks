@@ -12,6 +12,7 @@ and open the template in the editor.
 
 $profile_img_size : 30px;
 $b_color : #777;
+$tick_color: #222222;
 
 
 .game9ja-comment{
@@ -82,6 +83,8 @@ $b_color : #777;
         top: 0;        
         left: 4px;
         font-size: 14px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
     }
 
     > :nth-child(5){/*reply comment icon*/
@@ -115,11 +118,13 @@ $b_color : #777;
    
     > .comment-sent:after{/*sent comment status*/
         font-size: 12px;
-        content: '\2713';
+        content: '\2713';   
+        color : $tick_color;
     }
     
     > .comment-not-sent:after{/*not sent comment status*/
         font-size: 12px;
-        content: '...';//come back
+        content: '...';//come back   
+        color : $tick_color;
     }
 }

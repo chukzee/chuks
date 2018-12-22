@@ -15,7 +15,7 @@ Structure of 'matches' collection documents
                     large_pic : ....,
                     activity : ...., e.g thinking...
                     countdown : .... e.g 5:42
-                    wld : ....., e.g W '3, L 2, D 5'
+                    wdl : ....., e.g W '3, L 2, D 5'
                 },
                 {
                     type : ...,//e.g black in the case of chess and draft - may be something else in other games
@@ -25,7 +25,7 @@ Structure of 'matches' collection documents
                     large_pic : ....,
                     activity : ...., e.g thinking...
                     countdown : .... e.g 5:42
-                    wld : ....., e.g W '3, L 2, D 5',
+                    wdl : ....., e.g W '3, L 2, D 5',
                 }
             ];
             game_id :.....,

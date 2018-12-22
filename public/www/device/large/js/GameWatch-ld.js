@@ -5,15 +5,18 @@
 
 Ns.GameWatch = {
 
-    leftPanelTitleComp: null,
-    
-    afterLeftContentHide: function () {
-        if (Ns.GameWatch.leftPanelTitleComp) {
-            Ns.GameWatch.leftPanelTitleComp.innerHTML = '';
-            Ns.GameWatch.isShowLeftPanel = false;
+    rightPanelTitleComp: null,
+
+    afterRightContentHide: function () {
+        if (Ns.GameWatch.rightPanelTitleComp) {
+            Ns.GameWatch.rightPanelTitleComp.innerHTML = '';
+            Ns.GameWatch.isShowRightPanel = false;
         }
     },
-    showLeftContent: function (func) {
+    showRightContent: function (data, title, func) {
+
+        Ns.GameView.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
+        Ns.GameView.rightPanelTitleComp.innerHTML = title;
         if (Main.device.isXLarge()) {
             var elm = document.getElementById('game-watch-main');
             elm.style.width = '60%';
@@ -23,7 +26,7 @@ Ns.GameWatch = {
             var dim = Ns.ui.GamePanel.gameAreaDimension(elm);
             if (dim) {
                 //setting the sizes of the panels
-                Ns.GameWatch.resizeMain(dim.board_size, dim.upper_height, dim.lower_height);
+                Ns.GameWatch.resizeMain(data, dim.board_size, dim.upper_height, dim.lower_height);
             }
 
             func();
@@ -31,7 +34,7 @@ Ns.GameWatch = {
 
             var elm = document.getElementById('game-watch-main');
             elm.style.width = '100%';
-            
+
             var el = document.getElementById('game-watch-right-content');
 
             el.style.width = '65%';//we set this width programatically here
@@ -42,29 +45,29 @@ Ns.GameWatch = {
             func();
             Main.anim.to('game-watch-right-content', 500, {right: '0%'});
         }
-        
-        Ns.GameWatch.isShowLeftPanel = true;
+
+        Ns.GameWatch.isShowRightPanel = true;
     },
-    hideLeftContent: function () {
+    hideRightContent: function () {
 
         if (Main.device.isXLarge()) {
             var elm = document.getElementById('game-watch-main');
             elm.style.width = '100%';
             var el = document.getElementById('game-watch-right-content');
             el.style.display = 'none';
-            Ns.GameWatch.afterLeftContentHide();
+            Ns.GameWatch.afterRightContentHide();
         } else {
             var el = document.getElementById('game-watch-right-content');
             var negative_width = '-65%';//set to negative of the width we have in css file or the width we set programatically here
 
             if (el.style.right === '0%') {
                 el.style.display = 'block';//ensure visible        
-                Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterLeftContentHide);
+                Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterRightContentHide);
             }
         }
 
     },
-    resizeMain: function (board_size, upper_height, lower_height) {
+    resizeMain: function (data, board_size, upper_height, lower_height) {
 
         var board_el = document.getElementById('game-watch-main-board');
         var upper_el = document.getElementById('game-watch-main-upper');
@@ -79,8 +82,12 @@ Ns.GameWatch = {
         lower_el.style.width = board_el.style.width;
         lower_el.style.height = lower_height + 'px';
 
+        var flip; //TODO
+        Ns.ui.GamePanel.showGame(data, 'game-watch-main-board', flip);
     },
     Content: function (data) {
+        
+        Ns.ui.GamePanel.rightContentName = '';
 
         var panel_main = document.getElementById('game-watch-main');
 
@@ -99,11 +106,11 @@ Ns.GameWatch = {
                 rhs_el.style.width = '40%';
                 rhs_el.style.right = '0%';//always visible
                 rhs_el.style.display = 'block';//always visible
-                
-                if(Ns.GameWatch.isShowLeftPanel){
-                    
+
+                if (Ns.GameWatch.isShowRightPanel) {
+
                 }
-                
+
             } else {
 
                 this.element.style.width = '100%';
@@ -112,9 +119,11 @@ Ns.GameWatch = {
                 rhs_el.style.width = '65%';
                 rhs_el.style.display = 'block';//always visible
                 rhs_el.style.right = '-' + rhs_el.style.width;
-                Ns.GameWatch.afterLeftContentHide();
+                Ns.GameWatch.afterRightContentHide();
 
             }
+            
+            
         }
 
     }

@@ -42,7 +42,8 @@ $search_input_height: 25px;
         position: absolute;
         right: 0;
         bottom: $base_padding;
-        width: $close_icon_width;     
+        width: $close_icon_width;  
+        text-align: center;
         //height:  100%;
     }
 }

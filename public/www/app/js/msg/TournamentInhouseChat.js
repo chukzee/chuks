@@ -1,5 +1,5 @@
 
-/* global Main */
+/* global Main, Ns */
 
 Ns.msg.TournamentInhouseChat = {
 
@@ -23,6 +23,9 @@ Ns.msg.TournamentInhouseChat = {
 
     },
 
+    getSaveKeyPrefix(){
+        return 'save_msg_tournament_inhouse_chat';
+    },
     
     /**
      * Override this method - called by super class
@@ -45,14 +48,23 @@ Ns.msg.TournamentInhouseChat = {
     getViewBodyID: function(){
         return 'tournament-inhouse-chat-view-body';        
     },
+
+    getSearchButtonID: function(){
+        return 'tournament-inhouse-chat-view-search';        
+    },
     
+    getMenuButtonID: function(){
+        return 'tournament-inhouse-chat-view-menu';        
+    },
+            
     /**
      * must override this method and return the promise of the rcall<br>
      *
      * @returns {undefined}
      */
     rcallGetMessages: function(){    
-        return Main.ro.chat.getTournamentInhouseChats(this.tournament.name);
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        return Main.ro.chat.getTournamentInhouseChats(user_id, this.tournament.name);
     }, 
             /**
      * Send the chat message
@@ -65,12 +77,12 @@ Ns.msg.TournamentInhouseChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function(content){
+    rcallSendMessage: function(content, bindFn){
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.sendTournamentInhouseChat(user_id, this.tournament.name, content, 'text');
+        return Main.ro.chat.sendTournamentInhouseChat(user_id, this.tournament.name, content, 'text', bindFn);
     },
-    onChat: function(obj){
-        this.add(obj.data);
+    onChat: function(evtObj){
+        this.add(evtObj.data);
     },
 
   

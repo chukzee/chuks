@@ -7,15 +7,17 @@ Ns.GameViewB = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
-    leftPanelTitleComp: null,
+    rightPanelTitleComp: null,
 
-    afterLeftContentHide: function () {
-        if (Ns.GameViewB.leftPanelTitleComp) {
-            Ns.GameViewB.leftPanelTitleComp.innerHTML = '';
+    afterRightContentHide: function () {
+        if (Ns.GameViewB.rightPanelTitleComp) {
+            Ns.GameViewB.rightPanelTitleComp.innerHTML = '';
         }
     },
-    showLeftContent: function (func) {
+    showRightContent: function (data, title, func) {
 
+        Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
+        Ns.GameView.rightPanelTitleComp.innerHTML = title;
         var el = document.getElementById('game-view-b-right-content');
 
         el.style.width = Ns.GameViewB.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
@@ -31,17 +33,19 @@ Ns.GameViewB = {
         func();
         Main.anim.to('game-view-b-right-content', 500, {right: '0%'});
     },
-    hideLeftContent: function () {
+    hideRightContent: function () {
 
         var el = document.getElementById('game-view-b-right-content');
         var negative_width = "-100%";//yes must be -100%
 
         if (el.style.right === '0%') {
             el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Ns.GameViewB.afterLeftContentHide);
+            Main.anim.to('game-view-b-right-content', 500, {right: negative_width}, Ns.GameViewB.afterRightContentHide);
         }
     },
     Content: function (data) {
+        
+        Ns.ui.GamePanel.rightContentName = '';
 
         var panel_main = document.getElementById('game-view-b-main');
         var board_el = document.getElementById('game-view-b-main-board');
@@ -50,7 +54,7 @@ Ns.GameViewB = {
 
         Ns.ui.GamePanel.ownGameViewB(data, panel_main, resizeMain);
 
-        function resizeMain(board_size, upper_height, lower_height) {
+        function resizeMain(match, board_size, upper_height, lower_height) {
 
             board_el.style.width = board_size + 'px';
             board_el.style.height = board_size + 'px';
@@ -71,6 +75,7 @@ Ns.GameViewB = {
                 el.style.width = Ns.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;
             }
 
+            Ns.ui.GamePanel.showGame(data, 'game-view-b-main-board');
         }
 
         $('#game-view-b-back-btn').on('click', function () {

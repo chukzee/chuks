@@ -94,7 +94,9 @@ and open the template in the editor.
     position: relative;
     top: 0;
     left: 4px;
-    font-size: 14px; }
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word; }
   .game9ja-comment-item > :nth-child(5) {
     /*reply comment icon*/
     position: relative;
@@ -122,10 +124,12 @@ and open the template in the editor.
   .game9ja-comment-item > .comment-sent:after {
     /*sent comment status*/
     font-size: 12px;
-    content: '\2713'; }
+    content: '\2713';
+    color: #222222; }
   .game9ja-comment-item > .comment-not-sent:after {
     /*not sent comment status*/
     font-size: 12px;
-    content: '...'; }
+    content: '...';
+    color: #222222; }
 
 /*# sourceMappingURL=comment.css.map */
