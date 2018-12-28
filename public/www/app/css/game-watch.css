@@ -216,7 +216,9 @@ and open the template in the editor.
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(#999, #bbb); }
+      background: radial-gradient(black 15%, transparent 16%) 0 0, radial-gradient(black 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
+      background-color: #282828;
+      background-size: 16px 16px; }
       .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) {
         /*center the upper panel inside the ceter panel*/
         position: relative;
@@ -350,7 +352,9 @@ and open the template in the editor.
       right: 0;
       width: 75%;
       height: 100%;
-      background: linear-gradient(#999, #bbb);
+      background: radial-gradient(black 15%, transparent 16%) 0 0, radial-gradient(black 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
+      background-color: #282828;
+      background-size: 16px 16px;
       display: none;
       box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2); }
 

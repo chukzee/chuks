@@ -6,11 +6,29 @@ Ns.ui.GamePanel = {
     matchData: null,
     rightContentName: null,
     
+    /**
+     * this constructor is called once automatically by the framework
+     * 
+     * @returns {undefined}
+     */
+    constructor: function () {
+
+        Main.eventio.on('game_move_sent', this.onMoveSent.bind(this));
+
+    },
+    
+    onMoveSent: function(evt){
+        var data = evt.data;
+        console.log(data);
+        alert('TODO - onMoveSent');
+    },
+    
     showGame: function(match, container, flip){
         if(!match){
             return;
         }
         var obj = {
+            
             flip : flip,//used in watched games only. whether the board should face black to white direction. ie black is below and white above
             white : match.players[0].user_id === Ns.view.UserProfile.appUser.user_id,
             container: container,

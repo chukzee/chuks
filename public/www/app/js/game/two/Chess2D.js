@@ -6,6 +6,11 @@ Ns.game.two.Chess2D = {
 
     extend: 'Ns.game.AbstractBoard2D',
 
+    
+    rcallSendMove: function (from, to) {
+        
+    },
+    
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('img');
         pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';

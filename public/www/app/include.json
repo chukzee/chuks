@@ -131,6 +131,7 @@
             "Spectators.js",
             "Bluetooth.js",
             "Match.js",
+            "GameEventsController.js",
             "PlayRequest.js",
             "msg/AbstractChat.js",
             "msg/AbstractPeerToPeerChat.js",

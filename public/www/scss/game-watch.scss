@@ -11,8 +11,6 @@ and open the template in the editor.
 @import "header-items.scss";
 
 
-$main_body_bg : linear-gradient(#999, #bbb);
-
 $score_color : #ff4444;
 $score_width : 100px;
 
@@ -65,7 +63,7 @@ $right_panel_width_ld : 30%;
             left: 0;
             width: 100%;
             height: 100%;
-            background: $main_body_bg;
+            @include bg-carbon-fibre();
 
             >:nth-child(1){/*center the upper panel inside the ceter panel*/
                 position: relative;
@@ -212,7 +210,7 @@ $right_panel_width_ld : 30%;
             right: 0;
             width: 75%;
             height: 100%;
-            background: $main_body_bg;
+            @include bg-carbon-fibre();
             display: none;//hide for certain size of device
             box-shadow: -1.5px 0px 1px rgba(0, 0, 0, 0.2);
         }

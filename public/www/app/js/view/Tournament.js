@@ -13,6 +13,8 @@ Ns.view.Tournament = {
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
 
     tournamentList: [],
+    
+    _lstMatchFixtures: null,
 
     /**
      * this constructor is called once automatically by the framework
@@ -47,7 +49,7 @@ Ns.view.Tournament = {
     },
 
     content: function (tournament) {
-
+        
         var round_index;
         var players_map = {};
 
@@ -373,12 +375,12 @@ Ns.view.Tournament = {
                 tplUrl: 'match-fixture-tpl.html',
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
-                onSelect: function (evt, match_data) {
-
+                onSelect: function (evt, fixture) {
+                    
 
                 },
                 onRender: function (tpl_var, data) {
-
+                    
                     if (tpl_var === 'start_time') {
                         if (!data[tpl_var]) {
                             return '';
@@ -417,7 +419,9 @@ Ns.view.Tournament = {
 
                 },
                 onReady: function () {
-
+                    
+                    Ns.view.Tournament._lstMatchFixtures = this;
+                    
                     var fixtures = rd.fixtures;
                     for (var i = 0; i < fixtures.length; i++) {
                         this.appendItem(fixtures[i]);
@@ -432,6 +436,10 @@ Ns.view.Tournament = {
 
     },
     
+    updateMatch: function (match) {
+
+    },
+
     _onClickTournamentGeneralChat: function (evt, tournament) {
         Ns.GameHome.showTournamentGeneralChat(tournament); 
     },

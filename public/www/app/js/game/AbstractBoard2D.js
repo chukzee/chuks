@@ -13,7 +13,7 @@ Ns.game.AbstractBoard2D = {
     CAPTURED_SQUARE_STYLE: 'background: blue', //TODO - use beautiful bacground, possibly beautiful imgage
 
     /**
-     * Loads and sets up the game on the specified contaner using
+     * Loads and sets up the game on the specified contianer using
      * the provided game position. If the game position is not provided
      * then the starting position is setup. The provided theme is used
      * if provided otherwise the default is used.<br>
@@ -104,12 +104,12 @@ Ns.game.AbstractBoard2D = {
         var resizeBoardContainer = function (evt) {
             me.boardContainer = me.properlySizedBoardContainer(el, me.boardRowCount, obj.boardTheme, obj.inverseBoard);
         };
-        
+
         el.addEventListener('resize', resizeBoardContainer);
         el.addEventListener('orientationchange', resizeBoardContainer);
-        
+
         el[extra_dom_prop] = resizeBoardContainer; //register the handler for later removal
-        
+
         resizeBoardContainer();
 
         el.innerHTML = '';//clear any previous
@@ -181,6 +181,26 @@ Ns.game.AbstractBoard2D = {
 
     makeMove: function (from, to) {
         throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    rcallSendMove: function (from, to) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    sendGameMove: function (from, to) {
+        var me = this;
+        Main.rcall.live(function () {
+            me.rcallSendMove(from, to)
+                    .after(function () {
+                    })
+                    .get(function (res) {
+
+                    })
+                    .error(function (err) {
+                        console.log(err);
+                        
+                    });
+        });
     },
 
     arrangeBoard: function (container, piece_theme) {
@@ -549,6 +569,7 @@ Ns.game.AbstractBoard2D = {
     },
 
     onClickBoard: function (evt, container, is_tap) {
+
         if (is_tap) {
             this.boardX = this.startTouchBoardX;
             this.boardY = this.startTouchBoardY;
@@ -572,7 +593,7 @@ Ns.game.AbstractBoard2D = {
 
                 // NOTE it is valid for 'from square' to be equal to 'to square'
                 //especially in the game of draughts in a roundabout trip capture
-                //move where the jumping piece eventaully return to its original 
+                //move where the jumping piece eventaully returns to its original 
                 //square. So it is upto the subsclass to check for where 'from square'
                 //ie equal to 'to square' where necessary  an code accordingly
 
@@ -588,6 +609,10 @@ Ns.game.AbstractBoard2D = {
                     throw Error('Move result returned by subcalss must contain the field, "error"');
                 } else if (!('capture' in moveResult)) {
                     throw Error('Move result returned by subcalss must contain the field, "capture"');
+                }
+
+                if (moveResult.done && !moveResult.error) {
+                    this.sendGameMove(from, to);
                 }
 
                 if (moveResult.mark_capture) {
@@ -606,7 +631,7 @@ Ns.game.AbstractBoard2D = {
 
                     //animate the piece by to the original position
                     this.movePiece(this.pickedPiece, pk_sq);
-                } else {//error
+                } else {
                     this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture);
                 }
 
@@ -641,10 +666,14 @@ Ns.game.AbstractBoard2D = {
         var sqn = this.toSquareNotation(sq);
 
         var pce = this.getInternalPiece(sqn);
+        if (!pce) {
+            console.log('Empty piece on internal board square -', sqn);
+            return;
+        }
         var side1 = this.isWhite(pce);
         var side2 = this.userSide === 'w';
         if (pce
-                /*&& side1 === side2*/ //UNCOMMENT LATER
+                && side1 === side2 //COMMENT THIS LINE IF TESTING
                 ) {
             this.pickedSquare = this.squareList[sq];
             this.highlightSquare(this.pickedSquare, this.PICKED_SQUARE_STYLE);
@@ -791,7 +820,7 @@ Ns.game.AbstractBoard2D = {
                 this.highlightSquare(this.hoverSquare, '');//remove the highlight
             }
             this.hoverSquare = null;
-            console.log('leave');
+            //console.log('leave');
             return;
         }
 

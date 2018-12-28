@@ -1,5 +1,7 @@
 
 
+/* global Ns */
+
 Ns.game.Draughts = {
 
     game: null,

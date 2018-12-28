@@ -59,14 +59,14 @@ class Match extends WebApplication {
             opponent_ids = arguments[0].opponent_ids;
             game_id = arguments[0].game_id;
             set = arguments[0].set;
-            move = arguments[0].move; // one main use for this is to obtain the zip code
+            move = arguments[0].move;
         }
 
         if (!Array.isArray(opponent_ids)) {
             opponent_ids = [opponent_ids];
         }
 
-        //make user only opponents ids are in the list
+        //make sure only opponents ids are in the list
         for (var i = 0; i < opponent_ids.length; i++) {
             if (user_id === opponent_ids[i]) {
                 return this.error(`Invalid input- expected only opponent id(s) but found user id - ${user_id}`);

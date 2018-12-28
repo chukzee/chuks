@@ -417,6 +417,7 @@ Ns.msg.AbstractMessage = {
         var value = txt_input.value;
         if (value === '') {
             me.set(me.msgList, false);
+            return;
         }
         var msg_arr = [];
         for (var i = 0; i < me.msgList.length; i++) {
@@ -1152,7 +1153,7 @@ Ns.msg.AbstractMessage = {
 
     },
 
-    _handlePreparedItem(el, data, replace_element) {
+    _handlePreparedItem: function (el, data, replace_element) {
 
         var obj = {
             el: el,
@@ -1160,8 +1161,11 @@ Ns.msg.AbstractMessage = {
             replace_element: replace_element
         };
 
-        if (this.msgList.indexOf(data) > -1) {
-            this._prepared_items.push(obj);
+        for (var i = 0; i < this.msgList.length; i++) {
+            if (this.msgList[i].msg_id === data.msg_id) {
+                this._prepared_items.push(obj);
+                break;
+            }
         }
 
         if (this._prepared_items.length < this._new_set_count + this._new_added_count) {

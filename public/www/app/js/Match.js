@@ -32,20 +32,6 @@ Ns.Match = {
         Main.rcall.live(obj);
 
 
-        Main.eventio.on('notify_upcoming_match', this.onNotifyUpComingMatch);//match reminder - ie say 10 mins before time
-        Main.eventio.on('game_start', this.onGameStart);
-        Main.eventio.on('game_start_next_set', this.onGameStartNextSet);
-        Main.eventio.on('watch_game_start', this.onWatchGameStart);
-        Main.eventio.on('watch_game_start_next_set', this.onWatchGameStartNextSet);
-        Main.eventio.on('game_resume', this.onGameResume);
-        Main.eventio.on('watch_game_resume', this.onWatchGameResume);
-        Main.eventio.on('game_pause', this.onGamePause);
-        Main.eventio.on('game_abandon', this.onGameAbandon);
-        Main.eventio.on('game_move', this.onGameMove);
-        Main.eventio.on('game_move_sent', this.onGameMoveSent);
-        Main.eventio.on('game_finish', this.onGameFinish);
-
-
     },
     liveMatchList: function (container, matches) {
 
@@ -382,7 +368,79 @@ Ns.Match = {
 
     },
 
-    updateMatchListview: function (match) {
+    updateMatchList: function (match) {
+
+        //contacts
+        if (!match.tournament_name && !match.group_name) {
+            var key = Ns.Match.contactsMatchKey();
+            var matches = window.localStorage.getItem(key);
+            try {
+                if (matches) {
+                    matches = JSON.parse(matches);
+                    for (var i = 0; i < matches.length; i++) {
+                        if (matches[i].game_id === match.game_id) {
+                            matches[i] = match;
+                            Ns.Match._lstContactsMatch.replaceItem(match, function (data) {
+                                return data.game_id === match.game_id;
+                            });
+                            window.localStorage.setItem(key, JSON.stringify(matches));
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        //group
+        if (match.group_name) {
+            var key = Ns.Match.groupMatchKey();
+            var matches = window.localStorage.getItem(key);
+            try {
+                if (matches) {
+                    matches = JSON.parse(matches);
+                    for (var i = 0; i < matches.length; i++) {
+                        if (matches[i].game_id === match.game_id) {
+                            matches[i] = match;
+                            var item = Ns.Match._lstGroupsMatch.replaceItem(match, function (data) {
+                                return data.game_id === match.game_id;
+                            });
+                            window.localStorage.setItem(key, JSON.stringify(matches));
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        //tournament
+        if (match.tournament_name) {
+            var key = Ns.Match.tournamentMatchKey();
+            var matches = window.localStorage.getItem(key);
+            try {
+                if (matches) {
+                    matches = JSON.parse(matches);
+                    for (var i = 0; i < matches.length; i++) {
+                        if (matches[i].game_id === match.game_id) {
+                            matches[i] = match;
+                            var item = Ns.Match._lstTournamentsMatch.replaceItem(match, function (data) {
+                                return data.game_id === match.game_id;
+                            });
+                            window.localStorage.setItem(key, JSON.stringify(matches));
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+    },
+
+    updateMatch: function (match) {
         if (!match) {
             return;
         }
@@ -411,96 +469,6 @@ Ns.Match = {
 
 
     },
-
-    onNotifyUpComingMatch: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-
-    },
-
-    onGameStart: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.prependMatchListview(match);
-
-    },
-
-    onGameStartNextSet: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.prependMatchListview(match);
-
-    },
-
-    onWatchGameStart: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.prependMatchListview(match);
-
-    },
-
-    onWatchGameStartNextSet: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.prependMatchListview(match);
-
-    },
-
-    onGameResume: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.updateMatchListview(match);
-
-    },
-
-    onWatchGameResume: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.updateMatchListview(match);
-
-    },
-
-    onGamePause: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.updateMatchListview(match);
-
-    },
-
-    onGameAbandon: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.updateMatchListview(match);
-
-    },
-
-    onGameMove: function (obj) {
-        console.log(obj);
-
-    },
-
-    onGameMoveSent: function (obj) {
-        console.log(obj);
-
-    },
-
-    onGameFinish: function (obj) {
-        console.log(obj);
-
-        var match = obj.data.match;
-        Ns.Match.updateMatchListview(match);
-
-
-    }
 
 
 };

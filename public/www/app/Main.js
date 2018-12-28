@@ -651,7 +651,7 @@ var Main = {};
                     socket.emit(evt_name, data, callback);
                 };
             }
-            ;
+
 
             //call the listeners for this event
             var data = msg.data;
@@ -2134,6 +2134,52 @@ var Main = {};
 
             };
 
+            this.replaceItem = function (data, fn) {
+
+                var up_out = upOut[container_id];
+                for (var i = 0; i < up_out.length; i++) {
+                    var dom_data = up_out[i];
+                    if (fn(dom_data) === true) {
+                        up_out[i] = data;
+                        return true;
+                    }
+                }
+                
+                var down_out = downOut[container_id];
+                for (var i = 0; i < down_out.length; i++) {
+                    var dom_data = down_out[i];
+                    if (fn(dom_data) === true) {
+                        down_out[i] = data;
+                        return true;
+                    }
+                }
+
+                var children = $(obj.container).children();
+                var el;
+                for (var i = 0; i < children.length; i++) {
+                    var child = children[i];
+                    var dom_data = child[_game9ja_Dom_Hold_Data];
+                    if (typeof dom_data !== 'undefined' && fn(dom_data) === true) {
+                        el = child;
+                        break;
+                    }
+                }
+
+                if (!el) {
+                    return false;
+                }
+
+                //now replace with the new data
+
+                var replacement = tplParam(html, obj, data);
+                var parent = el.parentNode;
+                if (!parent) {
+                    return false;
+                }
+                parent.replaceChild(el, replacement);
+                return true;
+            };
+
             this.setSelectionColor = function (b) {
                 var clazz = 'game9ja-listview-item-selected';
                 if (!lastSelectedListviewItem) {
@@ -3164,7 +3210,7 @@ var Main = {};
         this.copy = function (text, is_show_toast) {
 
             if (text === '' || text === null || typeof text === 'undefined') {
-                if(is_show_toast){
+                if (is_show_toast) {
                     Main.toast.show('Nothing to copy');
                 }
                 return false;
@@ -3178,7 +3224,7 @@ var Main = {};
             txa.style.left = '0';
             txa.style.width = '2em';
             txa.style.height = '2em';
-            
+
             document.body.appendChild(txa);
 
             txa.focus();
@@ -3189,17 +3235,17 @@ var Main = {};
             } catch (e) {
                 console.log(e);
             }
-                        
+
             if (is_show_toast === true) {
                 if (result) {
                     Main.toast.show('Selected text copied');
-                }else{
+                } else {
                     Main.toast.show('Could not copy');
                 }
             }
 
             document.body.removeChild(txa);//remove the textarea from the dom
-            
+
             return result;
         };
     }

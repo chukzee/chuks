@@ -40,13 +40,13 @@ $small_header_bg : $h_color_1;
 $footer_bg : $header_bg;
 
 //chats and comments
- $message_input_height : 40px;
+$message_input_height : 40px;
 
- //list variables
- $list_item_height : 70px;
- $list_divider_width : 0.0325em;
- $list_divider_color : #eee;
- $list_item_hover_color: #eee;
+//list variables
+$list_item_height : 70px;
+$list_divider_width : 0.0325em;
+$list_divider_color : #eee;
+$list_item_hover_color: #eee;
 
 .game9ja-header{
     position: absolute;
@@ -69,7 +69,7 @@ $footer_bg : $header_bg;
 
 
 .game9ja-footer{
-    
+
     position: absolute;
     left:0;
     bottom :0;
@@ -98,5 +98,15 @@ $footer_bg : $header_bg;
 @mixin box-sizing($sizing){
     -webkit-box-sizing: $sizing;
     box-sizing: $sizing;
+}
+
+@mixin bg-carbon-fibre(){
+    background:
+        radial-gradient(black 15%, transparent 16%) 0 0,
+        radial-gradient(black 15%, transparent 16%) 8px 8px,
+        radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+        radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+    background-color:#282828;
+    background-size:16px 16px;
 }
 

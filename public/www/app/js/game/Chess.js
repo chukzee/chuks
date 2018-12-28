@@ -1,4 +1,5 @@
 
+/* global Ns */
 
 Ns.game.Chess = {
 

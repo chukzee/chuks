@@ -746,7 +746,7 @@ function draftFn(size) {
 
     function normalizeKingCaps(caps) {
 
-        norm_caps = [];
+        var norm_caps = [];
 
         for (var i = 0; i < caps.length; i++) {
             var c = caps[i];
@@ -1145,7 +1145,7 @@ function draftFn(size) {
 
     function validateKingMove(from, to, fn) {
 
-        for (i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
+        for (var i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
             var lookup = this.LOOKUP_DIRECTIONS[i];
             var next = this.board[from][lookup];
             while (true) {
@@ -1904,12 +1904,12 @@ function draftFn(size) {
             if (is_maximizer) {
 
                 if (n_depth === 0) {
-
+                    var best_move;
                     if (value > pre_value) {
-                        best_move = toMoveObj.call(this, moves[i]);//current move
+                         best_move = toMoveObj.call(this, moves[i]);//current move
                     } else {
                         //TODO: Investigate this else block for correctness
-                        best_move = toMoveObj.call(this, moves[0]);//try first move
+                         best_move = toMoveObj.call(this, moves[0]);//try first move
                     }
                     return best_move;
                 }
