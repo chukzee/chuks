@@ -209,6 +209,20 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
+    checkAccess : function(match){
+          
+        if (match.game_id !== this.config.match.game_id
+                || Ns.ui.UI.selectedGame !== match.game_name) {
+            return false; //we should only access if the expected game is in view
+        }
+
+        if (!$(this.boardContainer).is(':visible')) {
+            return false; //we should only access if the view is showing
+        }
+
+        return true;
+    },
+
     displayTurn: function () {
         if (this.config.white === true || this.config.white === false) {//must be true of false
             this.activityFeedbackEl({
@@ -281,6 +295,11 @@ Ns.game.AbstractBoard2D = {
     },
 
     remoteMakeMove: function (user_id, notation, match) {
+                
+        if(!this.checkAccess(match)){
+            return;
+        }      
+        
         var path = this.notationToPath(notation);
 
         var me = this;
@@ -332,15 +351,11 @@ Ns.game.AbstractBoard2D = {
     },
 
     reloadGame: function (match, toast_text) {
-        if (match.game_id !== this.config.match.game_id
-                || Ns.ui.UI.selectedGame !== match.game_name) {
-            return; //leave - we should only reload if the expected game is in view
+      
+        if(!this.checkAccess(match)){
+            return;
         }
-
-        if (!$(this.boardContainer).is(':visible')) {
-            return;//leave - we should only reload if the view is showing
-        }
-
+      
         if (typeof toast_text !== 'undefined' && toast_text !== null) {
             Main.toast.show(toast_text);
         }

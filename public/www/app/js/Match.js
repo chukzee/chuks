@@ -109,7 +109,7 @@ Ns.Match = {
                     }
 
                     if (match.tournament_name) {//tournament match
-                        
+
                         if (tourn_matches
                                 && tourn_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
                             tourn_matches.push(match);
@@ -117,7 +117,7 @@ Ns.Match = {
                             window.localStorage.setItem(key, JSON.stringify(tourn_matches));
                         }
                     } else if (match.group_name) {//group match
-                        
+
                         if (group_matches
                                 && group_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
                             group_matches.push(match);
@@ -125,7 +125,7 @@ Ns.Match = {
                             window.localStorage.setItem(key, JSON.stringify(group_matches));
                         }
                     } else {//contact match
-                        
+
                         if (contact_matches
                                 && contact_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
                             contact_matches.push(match);
@@ -475,106 +475,57 @@ Ns.Match = {
 
     },
 
+    _doUpdateMatchList: function (key, listview, match) {
+        var matches = window.localStorage.getItem(key);
+        try {
+            if (matches) {
+                matches = JSON.parse(matches);
+                //check if the match is stored and replace if found
+                var found = false;
+                for (var i = 0; i < matches.length; i++) {
+                    if (matches[i].game_id === match.game_id) {
+                        matches[i] = match;
+                        listview.replaceItem(match, function (data) {
+                            return data.game_id === match.game_id;
+                        });
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {//not found so added to the top of the array and the listview
+                    matches.unshift(match);//add to top
+                    listview.prependItem(match);//also add to the top of the listview
+                }
+            } else {//new match
+                matches = [];
+                matches.push(match);
+                listview.prependItem(match);//add to the listview
+            }
+            window.localStorage.setItem(key, JSON.stringify(matches));//save the changes
+        } catch (e) {
+            console.warn(e);
+        }
+    },
+
     updateMatchList: function (match) {
 
         //contacts
         if (!match.tournament_name && !match.group_name) {
             var key = Ns.Match.contactsMatchKey();
-            var matches = window.localStorage.getItem(key);
-            try {
-                if (matches) {
-                    matches = JSON.parse(matches);
-                    for (var i = 0; i < matches.length; i++) {
-                        if (matches[i].game_id === match.game_id) {
-                            matches[i] = match;
-                            Ns.Match._lstContactsMatch.replaceItem(match, function (data) {
-                                return data.game_id === match.game_id;
-                            });
-                            window.localStorage.setItem(key, JSON.stringify(matches));
-                            return;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn(e);
-            }
+            this._doUpdateMatchList(key, Ns.Match._lstContactsMatch, match);
         }
 
         //group
         if (match.group_name) {
             var key = Ns.Match.groupMatchKey();
-            var matches = window.localStorage.getItem(key);
-            try {
-                if (matches) {
-                    matches = JSON.parse(matches);
-                    for (var i = 0; i < matches.length; i++) {
-                        if (matches[i].game_id === match.game_id) {
-                            matches[i] = match;
-                            var item = Ns.Match._lstGroupsMatch.replaceItem(match, function (data) {
-                                return data.game_id === match.game_id;
-                            });
-                            window.localStorage.setItem(key, JSON.stringify(matches));
-                            break;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn(e);
-            }
+            this._doUpdateMatchList(key, Ns.Match._lstGroupsMatch, match);
         }
 
         //tournament
         if (match.tournament_name) {
             var key = Ns.Match.tournamentMatchKey();
-            var matches = window.localStorage.getItem(key);
-            try {
-                if (matches) {
-                    matches = JSON.parse(matches);
-                    for (var i = 0; i < matches.length; i++) {
-                        if (matches[i].game_id === match.game_id) {
-                            matches[i] = match;
-                            var item = Ns.Match._lstTournamentsMatch.replaceItem(match, function (data) {
-                                return data.game_id === match.game_id;
-                            });
-                            window.localStorage.setItem(key, JSON.stringify(matches));
-                            break;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn(e);
-            }
+            this._doUpdateMatchList(key, Ns.Match._lstTournamentsMatch, match);
         }
-    },
-
-    updateMatch: function (match) {
-        if (!match) {
-            return;
-        }
-
-        if (match.group_name) {
-
-        } else if (match.tournament_name) {
-
-        } else {//contact match
-
-        }
-
-    },
-
-    prependMatchListview: function (match) {
-        if (!match) {
-            return;
-        }
-        if (match.group_name) {
-            Ns.Match._lstGroupsMatch.prependItem(match);
-        } else if (match.tournament_name) {
-            Ns.Match._lstTournamentsMatch.prependItem(match);
-        } else {//contact match
-            Ns.Match._lstContactsMatch.prependItem(match);
-        }
-
-
     },
 
 };

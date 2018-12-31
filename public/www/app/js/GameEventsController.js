@@ -30,7 +30,7 @@ Ns.GameEventsController = {
 
     },
 
-    loadGameByMatch: function (match) {
+    _loadGameByMatch: function (match) {
 
         switch (match.game_name) {
             case 'chess':
@@ -64,6 +64,40 @@ Ns.GameEventsController = {
         }
     },
 
+    _makeMove: function (user_id, notation, match) {
+        
+        switch (match.game_name) {
+            case 'chess':
+                {
+                    Ns.game.two.Chess2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+            case 'draughts':
+                {
+                    Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+            case 'ludo':
+                {
+
+                    Ns.game.two.Ludo2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+            case 'solitaire':
+                {
+
+                    Ns.game.two.Solitaire2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+            case 'whot':
+                {
+
+                    Ns.game.two.Whot2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+        }
+    },
+
     onNotifyUpComingMatch: function (obj) {
         console.log(obj);
 
@@ -75,48 +109,42 @@ Ns.GameEventsController = {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.prependMatchListview(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onGameStartNextSet: function (obj) {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.prependMatchListview(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onWatchGameStart: function (obj) {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.prependMatchListview(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onWatchGameStartNextSet: function (obj) {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.prependMatchListview(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onGameResume: function (obj) {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.updateMatch(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onWatchGameResume: function (obj) {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.updateMatch(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onGamePause: function (obj) {
@@ -124,8 +152,7 @@ Ns.GameEventsController = {
 
         var pause_by = obj.data.pause_by;
         var match = obj.data.match;
-        Ns.Match.updateMatch(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onGameAbandon: function (obj) {
@@ -136,8 +163,7 @@ Ns.GameEventsController = {
         var terminate_reason = obj.data.terminate_reason;
         var match = obj.data.match;
 
-        Ns.Match.updateMatch(match);
-
+        Ns.Match.updateMatchList(match);
     },
 
     onGameMove: function (obj) {
@@ -147,50 +173,10 @@ Ns.GameEventsController = {
         var match = obj.data.match;
         var notation = obj.data.notation;
 
-        var game_id = match.game_id;
-        Ns.Match.getMatch(game_id, function (matchObj) {
-            if (!matchObj) {
-                return;
-            }
-
-            var players = matchObj.players;// get the players field which most likely contains the user info
-            match = matchObj;
-            match.players = players; // now set the players field which most likely contains the user info
-            Ns.Match.updateMatch(match);
-        });
+        Ns.Match.updateMatchList(match);
 
         //move the piece
-        switch (match.game_name) {
-            case 'chess':
-                {
-                    Ns.game.two.Chess2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'draughts':
-                {
-                    Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'ludo':
-                {
-
-                    Ns.game.two.Ludo2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'solitaire':
-                {
-
-                    Ns.game.two.Solitaire2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'whot':
-                {
-
-                    Ns.game.two.Whot2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-        }
-
+        this._makeMove(user_id, notation, match);
     },
 
     onGameWatchMove: function (obj) {
@@ -201,50 +187,10 @@ Ns.GameEventsController = {
         var match = obj.data.match;
         var notation = obj.data.notation;
 
-        var game_id = match.game_id;
-        Ns.Match.getMatch(game_id, function (matchObj) {
-            if (!matchObj) {
-                return;
-            }
-
-            var players = matchObj.players;// get the players field which most likely contains the user info
-            match = matchObj;
-            match.players = players; // now set the players field which most likely contains the user info
-            Ns.Match.updateMatch(match);
-        });
-
-        //move the piece
-        switch (match.game_name) {
-            case 'chess':
-                {
-                    Ns.game.two.Chess2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'draughts':
-                {
-                    Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'ludo':
-                {
-
-                    Ns.game.two.Ludo2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'solitaire':
-                {
-
-                    Ns.game.two.Solitaire2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'whot':
-                {
-
-                    Ns.game.two.Whot2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-        }
-
+        Ns.Match.updateMatchList(match);
+        
+        //move the piece        
+        this._makeMove(user_id, notation, match);
 
     },
 
@@ -255,17 +201,7 @@ Ns.GameEventsController = {
         var notation = obj.data.notation;//not necessary
         var match = obj.data.match;
 
-        var game_id = match.game_id;
-        Ns.Match.getMatch(game_id, function (matchObj) {
-            if (!matchObj) {
-                return;
-            }
-
-            var players = matchObj.players;// get the players field which most likely contains the user info
-            match = matchObj;
-            match.players = players; // now set the players field which most likely contains the user info
-            Ns.Match.updateMatch(match);
-        });
+        Ns.Match.updateMatchList(match);
 
     },
 
@@ -337,7 +273,7 @@ Ns.GameEventsController = {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.updateMatch(match);
+        Ns.Match.updateMatchList(match);
 
     },
 
@@ -345,9 +281,9 @@ Ns.GameEventsController = {
         console.log(obj);
 
         var match = obj.data;
-        Ns.Match.updateMatch(match);
+        Ns.Match.updateMatchList(match);
 
-        this.loadGameByMatch(match);
+        this._loadGameByMatch(match);
 
     },
 
@@ -362,7 +298,7 @@ Ns.GameEventsController = {
             if (!match) {
                 return;
             }
-            me.loadGameByMatch(match);
+            me._loadGameByMatch(match);
         });
 
     }
