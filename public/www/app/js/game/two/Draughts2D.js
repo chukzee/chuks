@@ -9,6 +9,21 @@ Ns.game.two.Draughts2D = {
 
     extend: 'Ns.game.AbstractBoard2D',
     capturePath: [],
+
+    constructor: function () {
+
+        var obj = {
+            match: 'game/Match'
+        };
+
+        Main.rcall.live(obj);
+
+    },
+
+    getGamePostion: function () {
+        return this.internalGame.toFEN();
+    },
+
     createPieceElement: function (pce, piece_theme) {
         var pe = document.createElement('div');
         pe.className = pce.white ? 'white-piece-o' : 'black-piece-o';
@@ -25,10 +40,35 @@ Ns.game.two.Draughts2D = {
     pieceSquarRatio: function () {
         return 0.6;
     },
+    
+    isWhiteTurn: function(){
+        return this.internalGame.turn;
+    },
 
     isWhite: function (pce) {
         return pce.white;
     },
+
+    notationToPath: function (notation) {
+        var from, to;
+        if (notation.indexOf('-')) {
+            var arr = notation.split('-');
+            from = arr[0];
+            to = arr[1];
+        } else {
+            var arr = notation.split('x');
+            to = [];
+            for (var i = 0; i < arr.length; i++) {
+                if (i === 0) {
+                    from = arr[i];
+                } else {
+                    to.push(arr[i]);
+                }
+            }
+        }
+        return {from: from, to: to};
+    },
+
 
     makeMove: function (from, to) {
         var caps = this.internalGame.capturableSAN(from);
@@ -36,7 +76,9 @@ Ns.game.two.Draughts2D = {
             done: false,
             hasMore: false, //whether jumping in on
             capture: null, //capture squares
-            error: null
+            error: null,
+            notation: null,
+            board_position: null
         };
         //we know caps is two dimensional array
         if (caps.length > 0 && caps[0].length > 0) {//capture
@@ -65,7 +107,7 @@ Ns.game.two.Draughts2D = {
                             all_match = false;
                             break;
                         }
-                        cap_sq =  p[k].cap_sq;
+                        cap_sq = p[k].cap_sq;
                         cap_move += 'x' + this.capturePath[k];
                     }
                     if (all_match) {
@@ -81,6 +123,8 @@ Ns.game.two.Draughts2D = {
                 resObj.mark_capture = cap_sq;  // for the purpose of highlighting captured square
                 resObj.capture = result.capture;
                 resObj.error = result.error;
+                resObj.notation = result.move;
+                resObj.board_position = result.board_position;
             } else if (all_match && this.capturePath.length < match_len) {
                 resObj.done = false;
                 resObj.hasMore = true;
@@ -93,11 +137,13 @@ Ns.game.two.Draughts2D = {
             }
 
         } else if (to !== from) {
-                var result = this.internalGame.move(from + '-' + to);
-                resObj.done = !result.error;
-                resObj.hasMore = false;
-                resObj.error = result.error;
-        }else{//where to === from
+            var result = this.internalGame.move(from + '-' + to);
+            resObj.done = !result.error;
+            resObj.hasMore = false;
+            resObj.error = result.error;
+            resObj.notation = result.move;
+            resObj.board_position = result.board_position;
+        } else {//where to === from
             resObj.done = true;//just drop the piece
         }
 

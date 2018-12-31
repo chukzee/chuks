@@ -33,6 +33,113 @@ Ns.Match = {
 
 
     },
+
+    getMatch: function (game_id, callback) {
+
+        //contact
+        var contact_matches = window.localStorage.getItem(Ns.Match.contactsMatchKey());
+
+        try {
+            if (contact_matches) {
+                contact_matches = JSON.parse(contact_matches);
+                for (var i = 0; i < contact_matches.length; i++) {
+                    if (contact_matches[i].game_id === game_id) {
+                        if (Main.util.isFunc(callback)) {
+                            callback(contact_matches[i]);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+
+
+        //group
+        var group_matches = window.localStorage.getItem(Ns.Match.groupMatchKey());
+
+        try {
+            if (group_matches) {
+                group_matches = JSON.parse(group_matches);
+                for (var i = 0; i < group_matches.length; i++) {
+                    if (group_matches[i].game_id === game_id) {
+                        if (Main.util.isFunc(callback)) {
+                            callback(group_matches[i]);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+
+        //tournament
+        var tourn_matches = window.localStorage.getItem(Ns.Match.tournamentMatchKey());
+
+        try {
+            if (tourn_matches) {
+                tourn_matches = JSON.parse(tourn_matches);
+                for (var i = 0; i < tourn_matches.length; i++) {
+                    if (tourn_matches[i].game_id === game_id) {
+                        if (Main.util.isFunc(callback)) {
+                            callback(tourn_matches[i]);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+
+
+        //at this point the match is not found locally so get it remotely
+
+        Main.ro.match.getMatch(game_id)
+                .get(function (data) {
+                    var match = data.match;
+                    if (Main.util.isFunc(callback)) {
+                        callback(match);
+                    }
+
+                    if (!match) {
+                        return;
+                    }
+
+                    if (match.tournament_name) {//tournament match
+                        
+                        if (tourn_matches
+                                && tourn_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
+                            tourn_matches.push(match);
+                            var key = Ns.Match.tournamentMatchKey();
+                            window.localStorage.setItem(key, JSON.stringify(tourn_matches));
+                        }
+                    } else if (match.group_name) {//group match
+                        
+                        if (group_matches
+                                && group_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
+                            group_matches.push(match);
+                            var key = Ns.Match.groupMatchKey();
+                            window.localStorage.setItem(key, JSON.stringify(group_matches));
+                        }
+                    } else {//contact match
+                        
+                        if (contact_matches
+                                && contact_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
+                            contact_matches.push(match);
+                            var key = Ns.Match.contactsMatchKey();
+                            window.localStorage.setItem(key, JSON.stringify(contact_matches));
+                        }
+                    }
+                })
+                .error(function (err) {
+                    console.log(err);
+                });
+
+    },
+
     liveMatchList: function (container, matches) {
 
         /*var now = new Date();
@@ -147,7 +254,7 @@ Ns.Match = {
 
                         //sort the matches in descending order to show the latest matches first
                         matches = matches.sort(function (mat1, mat2) {
-                            return mat1.game_start_time < mat2.game_start_time;
+                            return mat1.start_time < mat2.start_time;
                         });
 
                         if (matches.length) {
@@ -241,7 +348,7 @@ Ns.Match = {
                         var matches = data.matches;
                         //sort the matches in descending order to show the latest matches first
                         matches = matches.sort(function (mat1, mat2) {
-                            return mat1.game_start_time < mat2.game_start_time;
+                            return mat1.start_time < mat2.start_time;
                         });
 
                         if (matches.length) {
@@ -346,7 +453,7 @@ Ns.Match = {
 
                         //sort the matches in descending order to show the latest matches first
                         matches = matches.sort(function (mat1, mat2) {
-                            return mat1.game_start_time < mat2.game_start_time;
+                            return mat1.start_time < mat2.start_time;
                         });
 
                         if (matches.length) {
@@ -469,7 +576,6 @@ Ns.Match = {
 
 
     },
-
 
 };
 

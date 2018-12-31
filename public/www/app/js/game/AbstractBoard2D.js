@@ -4,6 +4,8 @@
 
 Ns.game.AbstractBoard2D = {
 
+    config: null,
+    moveResendCountdownFn: null,
     internalGame: null, // the game engine. e.g chessj.s and my draftgame.js
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
     isBoardFlip: false, //whether black to white direction. default is white to black (false)
@@ -53,11 +55,12 @@ Ns.game.AbstractBoard2D = {
      *      a    b    c    d    e    f    g    h
      *      
      * @param {type} internal_game
-     * @param {type} obj
+     * @param {type} config
      * @param {type} callback
      * @returns {undefined}
      */
-    load: function (internal_game, obj, callback) {
+    load: function (internal_game, config, callback) {
+        this.config = config;
         this.squareList = {};
         this.squarePieces = [];
         this.hoverSquare = null;
@@ -80,18 +83,20 @@ Ns.game.AbstractBoard2D = {
         this.startTouchBoardSq = -1;
         this.isTouchingBoard = false;
 
-        if (obj.variant) {
-            var vrnt = this.getVariant(obj.variant);
+        if (config.variant) {
+            var vrnt = this.getVariant(config.variant);
             var board_size = vrnt.size;
             var s = board_size.split('x'); //e.g 8x8, 10x10, 12x12
             this.boardRowCount = s[0] - 0;//implicitly convet to numeric
         }
 
         this.internalGame = internal_game;
-        this.userSide = obj.white === true ? 'w' : (obj.white === false ? 'b' : null); //strictly true or false
-        this.isBoardFlip = obj.flip;
+        this.userSide = config.white === true ? 'w' : (config.white === false ? 'b' : null); //strictly true or false
+        this.isBoardFlip = config.flip;
 
-        var el = document.getElementById(obj.container);
+        this.displayTurn();
+
+        var el = document.getElementById(config.container);
 
         var me = this;
         var extra_dom_prop = '_resizeBoardContainerHandler_game9ja'; // must be a constant - do not use datetime
@@ -102,7 +107,7 @@ Ns.game.AbstractBoard2D = {
         }
 
         var resizeBoardContainer = function (evt) {
-            me.boardContainer = me.properlySizedBoardContainer(el, me.boardRowCount, obj.boardTheme, obj.inverseBoard);
+            me.boardContainer = me.properlySizedBoardContainer(el, me.boardRowCount, config.boardTheme, config.inverseBoard);
         };
 
         el.addEventListener('resize', resizeBoardContainer);
@@ -117,7 +122,7 @@ Ns.game.AbstractBoard2D = {
 
         //var board_cls = this.getBoardClass(obj.inverseBoard);//@Deprecated
 
-        var gameboard = this.board(el, obj.pieceTheme, obj.boardTheme);
+        var gameboard = this.board(el, config.pieceTheme, config.boardTheme);
 
         this.boardContainer.appendChild(gameboard);
 
@@ -159,11 +164,16 @@ Ns.game.AbstractBoard2D = {
 
         return proper_container;
     },
+
     createPieceElement: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
     pieceSquarRatio: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    isWhiteTurn: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
@@ -179,7 +189,15 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
+    getGamePostion: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
     makeMove: function (from, to) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    remoteMove: function (from, to) {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
@@ -187,20 +205,250 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
-    sendGameMove: function (from, to) {
-        var me = this;
-        Main.rcall.live(function () {
-            me.rcallSendMove(from, to)
-                    .after(function () {
-                    })
-                    .get(function (res) {
+    notationToPath: function (notation) {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
 
-                    })
-                    .error(function (err) {
-                        console.log(err);
-                        
-                    });
+    displayTurn: function () {
+        if (this.config.white === true || this.config.white === false) {//must be true of false
+            this.activityFeedbackEl({
+                container: 'game-view-activity',
+                text: this.isWhiteTurn() === this.config.white ? "Your turn!" : "Opponent's turn!"
+            });
+        } else {
+            this.activityFeedbackEl({
+                container: 'game-view-activity',
+                text: this.isWhiteTurn() ? "White turn!" : "Black turn!"
+            });
+        }
+    },
+
+    activityFeedbackEl: function (obj) {
+        var container;
+        if (Main.util.isString(obj.container)) {
+            container = obj.container.charAt('#') ? obj.container.substring(1) : obj.container;
+        }
+
+        var act_el = document.getElementById(container);
+
+        if (!act_el) {
+            return;
+        }
+
+        var cel, text_el, action_wrapper, action_el;
+
+        cel = act_el.querySelector('span[data-game-activity="content"]');
+
+        if (cel) {
+            text_el = cel.querySelector('span[data-game-activity="text"]');
+            action_el = cel.querySelector('span[data-game-activity="action"]');
+        } else {
+
+            cel = document.createElement('div');
+            cel.style.color = '#ddd';
+            cel.setAttribute('data-game-activity', 'content');
+
+            text_el = document.createElement('span');
+            text_el.setAttribute('data-game-activity', 'text');
+
+            action_wrapper = document.createElement('span');
+            action_wrapper.style.marginLeft = '5px'; //come back
+            action_el = document.createElement('a');
+            action_el.setAttribute('data-game-activity', 'action');
+
+            cel.appendChild(text_el);
+            text_el.appendChild(action_wrapper);
+            action_wrapper.appendChild(action_el);
+            act_el.appendChild(cel);
+
+        }
+
+        if (typeof obj.text !== 'undefined' && obj.text !== null) {
+            text_el.innerHTML = obj.text;
+        } else {
+            text_el.innerHTML = '';
+        }
+
+        if (obj.action) {
+            action_el.style.display = 'block';
+            action_el.innerHTML = obj.action.text;
+            action_el.onclick = obj.action.fn;
+        } else {
+            action_el.style.display = 'none';
+        }
+
+
+    },
+
+    remoteMakeMove: function (user_id, notation, match) {
+        var path = this.notationToPath(notation);
+
+        var me = this;
+        var _to = path.to;
+        var index = -1;
+        if (Main.util.isArray(path.to)) {
+            index = 0;
+            _to = path.to[index];
+        }
+
+        doRemoteMove.call(me, path.from, _to, index);
+
+        function doRemoteMove(from, to, index) {
+
+            var moveResult = me.makeMove(from, to);
+
+            if (moveResult.done || moveResult.error) {
+                if (moveResult.board_position === match.game_position) {
+                    return; //all is well
+                }
+                if (moveResult.error) {//this should not happen
+                    console.log('Something is wrong - opponent move generate error!');
+                } else {//board positions is different (incorrect). likely cause is unupdated match object
+                    console.log('Something is wrong - opponent cause unequal board position!');
+                }
+
+                //So, reload the game with the match object passed as parament to remoteMakeMove
+                me.reloadGame(match);
+
+
+                return;
+            }
+
+            me.markCapturedPiece(moveResult);
+
+            if (Main.util.isArray(path.to)) {
+                ++index;
+                to = path.to[index];
+            }
+
+            me.movePiece(from, to, moveResult.capture, doRemoteMove.bind(me, from, to));
+
+            me.afterMoveComplete(moveResult);
+
+        }
+
+
+
+    },
+
+    reloadGame: function (match, toast_text) {
+        if (match.game_id !== this.config.match.game_id
+                || Ns.ui.UI.selectedGame !== match.game_name) {
+            return; //leave - we should only reload if the expected game is in view
+        }
+
+        if (!$(this.boardContainer).is(':visible')) {
+            return;//leave - we should only reload if the view is showing
+        }
+
+        if (typeof toast_text !== 'undefined' && toast_text !== null) {
+            Main.toast.show(toast_text);
+        }
+        var obj = this.config;
+        if (match) {
+            obj.match = match;
+        }
+        Ns.ui.GamePanel.loadGame(obj);
+    },
+
+    sendGameMove: function (move_notation, game_position) {
+        var me = this;
+
+        Main.countdown.stop(this.moveResendCountdownFn);
+
+        var promise;
+        this.activityFeedbackEl({
+            container: 'game-view-activity',
+            text: 'Sending..'
         });
+
+        if (this.config.network === 'internet') {
+            promise = this._internetSendMove(move_notation, game_position);
+        } else if (this.config.network === 'bluetooth') {
+            promise = this._bluetoothSendMove(move_notation, game_position);
+        }
+
+
+        var delay;
+        this.retryWaitDuartion *= 2;
+
+        if (this.retryWaitDuartion > 128) {
+            this.retryWaitDuartion = 4;
+        }
+
+        delay = 1000 * this.retryWaitDuartion;
+
+        promise.get(function (res) {
+            me.retryWaitDuartion = 1;//initialize
+            me.activityFeedbackEl({
+                container: 'game-view-activity',
+                text: "Opponent's turn"
+            });
+        }).error(function (err, err_code, connect_err) {
+
+            console.log(err);
+
+            Main.toast.show(err);
+
+            if (!connect_err) { //if not a connection problem
+                return; //leave since not a connection problem
+            }
+
+            //At this point it is a connection problem so retry
+
+            me.moveResendCountdownFn = function (value, finish) {
+                var bndSendGameMove = me.sendGameMove.bind(me, move_notation, game_position);
+                me.activityFeedbackEl({
+                    container: 'game-view-activity',
+                    text: 'Resend move in ' + value + ' sec...',
+                    action: {
+                        text: 'Retry now',
+                        fn: bndSendGameMove
+                    }
+                });
+
+                if (finish) {
+                    bndSendGameMove();
+                }
+
+            };
+
+            Main.countdown.start(me.moveResendCountdownFn);
+
+        });
+
+
+    },
+
+    _internetSendMove: function (move_notation, game_position) {
+
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        var player_id_1 = this.config.match.players[0].user_id;
+        var player_id_2 = this.config.match.players[1].user_id;
+        var opponent_id = player_id_1 !== user_id ? player_id_1 : player_id_2;
+
+        var data = {
+            user_id: user_id,
+            opponent_ids: opponent_id, //opponent(s) - can be array of opponents ids or a single string of opponent id
+            next_turn_player_user_id: opponent_id, //next turn player id
+            game_name: this.config.match.game_name,
+            game_id: this.config.match.game_id,
+            current_set: this.config.match.current_set,
+            move_counter: this.config.match.move_counter,
+            notation: move_notation,
+            game_position: game_position
+        };
+
+        return Main.ro.sendMove(data);
+    },
+
+    _bluetoothSendMove: function (move_notation, game_position) {
+
+        console.log('TODO _bluetoothSendMove - send move via bluetooth');
+
+        //TODO - return a promise of get and error functions like rcall
+        
+        //REMIND - the err function of promise return must contain all argument type as in rcall - err, err_code, connect_err
     },
 
     arrangeBoard: function (container, piece_theme) {
@@ -425,7 +673,7 @@ Ns.game.AbstractBoard2D = {
         return col + row;
     },
 
-    movePiece: function (from, to, capture) {
+    movePiece: function (from, to, capture, callback) {
         var target;
         if (typeof from === 'object'
                 && typeof from !== 'number'
@@ -481,6 +729,9 @@ Ns.game.AbstractBoard2D = {
             target.style.top = py + 'px';
             target.style.left = px + 'px';
             target.style.zIndex = null;
+            if (Main.util.isFunc(callback)) {
+                callback();
+            }
         });
 
     },
@@ -568,6 +819,35 @@ Ns.game.AbstractBoard2D = {
 
     },
 
+    undoMove: function (from, to) {
+        //TODO
+    },
+
+    markCapturedPiece: function (moveResult) {
+        if (moveResult.mark_capture) {
+            var cap_sq = this.toNumericSq(moveResult.mark_capture);
+            if (this.squareList[cap_sq]) {
+                this.highlightSquare(this.squareList[cap_sq], this.CAPTURED_SQUARE_STYLE);
+                this.captureSquareList.push(this.squareList[cap_sq]);
+            }
+
+        }
+    },
+
+    afterMoveComplete: function (moveResult) {
+        if (moveResult.done || moveResult.error) {
+            this.pickedSquare = null;
+            this.pickedPiece = null;
+            var capSqLst = this.captureSquareList;
+            this.captureSquareList = [];
+            window.setTimeout(function (me, el_list) {
+                for (var i = 0; i < el_list.length; i++) {
+                    me.highlightSquare(el_list[i], '');//remove the highlight
+                }
+            }, 1000, this, capSqLst);
+        }
+    },
+
     onClickBoard: function (evt, container, is_tap) {
 
         if (is_tap) {
@@ -609,20 +889,19 @@ Ns.game.AbstractBoard2D = {
                     throw Error('Move result returned by subcalss must contain the field, "error"');
                 } else if (!('capture' in moveResult)) {
                     throw Error('Move result returned by subcalss must contain the field, "capture"');
+                } else if (!('notation' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "notation"');
+                } else if (!('board_position' in moveResult)) {
+                    throw Error('Move result returned by subcalss must contain the field, "board_position"');
                 }
 
-                if (moveResult.done && !moveResult.error) {
-                    this.sendGameMove(from, to);
+                if (moveResult.done && moveResult.notation && !moveResult.error) {
+                    //this.sendGameMove(moveResult.notation, moveResult.board_position); //REMOVE COMMENT LATER
                 }
 
-                if (moveResult.mark_capture) {
-                    var cap_sq = this.toNumericSq(moveResult.mark_capture);
-                    if (this.squareList[cap_sq]) {
-                        this.highlightSquare(this.squareList[cap_sq], this.CAPTURED_SQUARE_STYLE);
-                        this.captureSquareList.push(this.squareList[cap_sq]);
-                    }
 
-                }
+                this.markCapturedPiece(moveResult);
+
 
                 if (moveResult.error) {
                     //TODO display the error message
@@ -635,20 +914,8 @@ Ns.game.AbstractBoard2D = {
                     this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture);
                 }
 
-                //nullify the picked square if move is completed or a move error occur
-                if (moveResult.done || moveResult.error) {
-                    this.pickedSquare = null;
-                    this.pickedPiece = null;
-                    var capSqLst = this.captureSquareList;
-                    this.captureSquareList = [];
-                    window.setTimeout(function (me, el_list) {
-                        for (var i = 0; i < el_list.length; i++) {
-                            me.highlightSquare(el_list[i], '');//remove the highlight
-                        }
-                    }, 1000, this, capSqLst);
-
-
-                }
+                //nullify the picked square if move is completed or a move error occur                
+                this.afterMoveComplete(moveResult);
 
             }
 
@@ -673,7 +940,7 @@ Ns.game.AbstractBoard2D = {
         var side1 = this.isWhite(pce);
         var side2 = this.userSide === 'w';
         if (pce
-                && side1 === side2 //COMMENT THIS LINE IF TESTING
+                //&& side1 === side2 //COMMENT THIS LINE IF TESTING
                 ) {
             this.pickedSquare = this.squareList[sq];
             this.highlightSquare(this.pickedSquare, this.PICKED_SQUARE_STYLE);

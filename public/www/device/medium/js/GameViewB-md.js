@@ -75,7 +75,7 @@ Ns.GameViewB = {
                 el.style.width = Ns.GameViewB.PORTRAIT_RHS_PANEL_WIDTH;
             }
 
-            Ns.ui.GamePanel.showGame(data, 'game-view-b-main-board');
+            Ns.ui.GamePanel.showGameB(data, 'game-view-b-main-board');
         }
 
         $('#game-view-b-back-btn').on('click', function () {

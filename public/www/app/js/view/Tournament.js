@@ -13,7 +13,7 @@ Ns.view.Tournament = {
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
 
     tournamentList: [],
-    
+
     _lstMatchFixtures: null,
 
     /**
@@ -49,7 +49,7 @@ Ns.view.Tournament = {
     },
 
     content: function (tournament) {
-        
+
         var round_index;
         var players_map = {};
 
@@ -376,11 +376,33 @@ Ns.view.Tournament = {
                 wrapItem: false,
                 //itemClass: "game9ja-live-games-list",
                 onSelect: function (evt, fixture) {
-                    
+
+                    Ns.Match.getMatch(fixture.game_id, function (match) {
+                        if (!match) {
+                            Main.toast.show('Match not found!');
+                            return;
+                        }
+
+                        var user = Ns.view.UserProfile.appUser;
+                        var is_me_player = false;
+                        for (var n in match.players) {
+                            if (match.players[n].user_id === user.user_id) {
+                                is_me_player = true;
+                                break;
+                            }
+                        }
+                        if (is_me_player) {
+                            //show the current app user game
+                            Ns.GameHome.showGameView(match);
+                        } else {
+                            //watch other players live
+                            Ns.GameHome.showGameWatch(match);
+                        }
+                    });
 
                 },
                 onRender: function (tpl_var, data) {
-                    
+
                     if (tpl_var === 'start_time') {
                         if (!data[tpl_var]) {
                             return '';
@@ -419,9 +441,9 @@ Ns.view.Tournament = {
 
                 },
                 onReady: function () {
-                    
+
                     Ns.view.Tournament._lstMatchFixtures = this;
-                    
+
                     var fixtures = rd.fixtures;
                     for (var i = 0; i < fixtures.length; i++) {
                         this.appendItem(fixtures[i]);
@@ -435,19 +457,19 @@ Ns.view.Tournament = {
         }
 
     },
-    
+
     updateMatch: function (match) {
 
     },
 
     _onClickTournamentGeneralChat: function (evt, tournament) {
-        Ns.GameHome.showTournamentGeneralChat(tournament); 
+        Ns.GameHome.showTournamentGeneralChat(tournament);
     },
-    
+
     _onClickTournamentInhouseChat: function (evt, tournament) {
-        Ns.GameHome.showTournamentInhouseChat(tournament); 
+        Ns.GameHome.showTournamentInhouseChat(tournament);
     },
-    
+
     _isAppUserOfficial: function (officials) {
         for (var i = 0; i < officials.length; i++) {
             if (officials[i].user_id === Ns.view.UserProfile.appUser.user_id) {

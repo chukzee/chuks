@@ -82,6 +82,14 @@ class Evt{
         return 'game_abandon';
     }
     
+    get game_state_update(){
+        return 'game_state_update';
+    }
+    
+    get game_reload_replay(){
+        return 'game_reload_replay';        
+    }
+    
     get tournament_general_chat(){
         return 'tournament_general_chat';
     }

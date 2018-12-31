@@ -998,8 +998,10 @@ var Main = {};
                                                         }
                                                     } else {
                                                         err = response.data;
+                                                        var connect_err = response.connect_err;
+                                                        var err_code = response.err_code;
                                                         if (Main.util.isFunc(promise._errFn)) {
-                                                            promise._errFn.call(bind, err);
+                                                            promise._errFn.call(bind, err, err_code, connect_err);
                                                         }
                                                     }
                                                 } catch (e) {
@@ -1235,14 +1237,19 @@ var Main = {};
                 }
                 function errorFn(statusText, status) {
                     var respose = {};
+                    var connect_err = false;
                     if (status === 0) {
+                        connect_err = true;
                         statusText = 'Please check connection!'; // we prefer this description
                     }
                     if (status === 504) {
+                        connect_err = true;
                         statusText = 'Connection to the server has timed out!'; // we prefer this description
                     }
                     respose.success = false;
                     respose.data = statusText;
+                    respose.err_code = status;
+                    respose.connect_err = connect_err;
                     callback(respose, bind);
                 }
 
@@ -2144,7 +2151,7 @@ var Main = {};
                         return true;
                     }
                 }
-                
+
                 var down_out = downOut[container_id];
                 for (var i = 0; i < down_out.length; i++) {
                     var dom_data = down_out[i];
@@ -3340,6 +3347,9 @@ var Main = {};
         var fn_list = [];
         var interval_list = [];
         this.stop = function (fn) {
+            if (!fn) {
+                return;
+            }
             for (var i = 0; i < fn_list.length; i++) {
                 if (fn_list[i] === fn) {
                     clearInterval(interval_list[i]);
@@ -3353,10 +3363,12 @@ var Main = {};
         };
 
         this.start = function (fn, initial_value, pattern) {
-            /*if (!Main.util.isFunc(fn)) {
-             console.warn('first parameter must be a function');
-             return;
-             }*/
+            
+            if (!Main.util.isFunc(fn)) {
+                console.warn('first parameter must be a function');
+                return;
+            }
+            
             initial_value = initial_value - 0;
             if (isNaN(initial_value)) {
                 console.warn('initial value (second parameter) not a number');

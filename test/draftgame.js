@@ -238,7 +238,7 @@ function draftFn(size) {
         fen = fen.split(':');
         if (fen[0] === 'W' || fen[0] === 'w') {
             position.turn = true;//white
-        } else if (fen[0] === 'B' || fen[0] === 'B') {
+        } else if (fen[0] === 'B' || fen[0] === 'b') {
             position.turn = false;//black
         } else {
             throw Error('Invalid FEN body - invalid turn token, expecte W or B!');
@@ -425,11 +425,11 @@ function draftFn(size) {
         //console.log('whiteKingCount ', whiteKingCount);
         //console.log('blackKingCount ', blackKingCount);
     }
-    this.getPiece = function(sq_notation){
+    this.getPiece = function (sq_notation) {
         var sq = this.SAN[sq_notation];
         return this.board[sq].piece;
     };
-    
+
     this.setPiece = function (sq, white, crowned) {
 
         var r = (this.SIZE - 2) / 2;
@@ -699,9 +699,9 @@ function draftFn(size) {
     this.capturableSAN = function (sq) {
         sq = this.SAN[sq];//to the internal board square
         var paths = this.searchCapturePaths(sq);
-        
+
         var san = [];
-        for(var i=0; i<paths.length; i++){
+        for (var i = 0; i < paths.length; i++) {
             var p = paths[i];
             var sp = [];
             for (var k = 0; k < p.length; k++) {
@@ -711,7 +711,7 @@ function draftFn(size) {
             }
             san.push(sp);
         }
-        
+
         return san;
     };
 
@@ -894,20 +894,20 @@ function draftFn(size) {
     }
 
     function manCaptive(origin, next, after_next, opponent) {
-        
-        
-         if (next.piece
+
+
+        if (next.piece
                 && next.piece.white === opponent
                 && after_next.sq !== draft.OFF_BOARD
                 && (!after_next.piece || after_next.sq === origin)) {
             return {cid: next.piece.id, capture: next.piece.sqLoc, dest_sq: after_next.sq};
         }
-        
+
     }
 
     function kingCaptive(origin, from_sq, lookupDirection, opponent) {
 
-        
+
         var from = from_sq.constructor === Array ? from_sq[0] : from_sq;
 
         var next = draft.board[from][lookupDirection];
@@ -932,7 +932,7 @@ function draftFn(size) {
 
             next = next[lookupDirection];
         }
-                      
+
     }
 
     /**
@@ -1082,7 +1082,7 @@ function draftFn(size) {
         }
 
         if (result) {
-            
+
             var from_san = this.SqNumber[from].SAN;
             var to_san = this.SqNumber[to].SAN;
             var move_notation = from_san;
@@ -1103,7 +1103,7 @@ function draftFn(size) {
                 to: to_san,
                 move: move_notation,
                 capture: capture,
-                boardPositon: toFEN.call(this)
+                board_position: this.toFEN.call(this)
             };
 
             if (result === true) {
@@ -1362,7 +1362,7 @@ function draftFn(size) {
      * @param {Objet} board_position 
      * @returns {undefined}  
      */
-    function toFEN(board_position) {
+    this.toFEN = function (board_position) {
 
         var _turn, pces;
         if (board_position) {
@@ -1372,26 +1372,36 @@ function draftFn(size) {
             _turn = this.turn;
             pces = this.pieces;
         }
-        
+
+        _turn = _turn ? 'W' : 'B';
+
         var wp = 'W';
         var bp = 'B';
         for (var i = 0; i < pces.length; i++) {
             var p = pces[i];
-            if(p.sqLoc === this.OFF_BOARD){
+            if (p.sqLoc === this.OFF_BOARD) {
                 continue;
             }
             var sq = this.SqNumber[p.sqLoc].SAN;// convert Standard Numeric Notation 
             sq = p.crowned ? ('K' + sq) : sq;
             if (p.white) {
-                wp += i < pces.length - 1 ? sq + ',' : sq;
+                wp += sq + ',';
             } else {
-                bp += i < pces.length - 1 ? sq + ',' : sq;
+                bp += sq + ',';
             }
+        }
+
+        if (wp.charAt(wp.length - 1) === ',') {
+            wp = wp.substring(0, wp.length - 1);
+        }
+
+        if (bp.charAt(bp.length - 1) === ',') {
+            bp = bp.substring(0, bp.length - 1);
         }
 
         return '[FEN "' + _turn + ':' + wp + ':' + bp + '"]';
 
-    }
+    };
 
 
 
@@ -1576,14 +1586,14 @@ function draftFn(size) {
         }
         if (is_capture) {
             path = this.filterPaths(from, path);
-            if(path.length > 1){
+            if (path.length > 1) {
                 this.lastError = 'Ambiguous capture path';
                 return {error: this.lastError};
-            }else if(path.length === 0){
+            } else if (path.length === 0) {
                 this.lastError = 'No capture path found';
                 return {error: this.lastError};
-            } 
-            
+            }
+
             path = path[0];
         } else {
             path = path[0];
@@ -1606,7 +1616,7 @@ function draftFn(size) {
     this.moveTo = function (from, path, result) {
         if (result) {
             if (!validateMove.call(this, from, path, result)) {
-                if(result === true){
+                if (result === true) {
                     return {error: this.lastError};
                 }
             }
@@ -1906,10 +1916,10 @@ function draftFn(size) {
                 if (n_depth === 0) {
                     var best_move;
                     if (value > pre_value) {
-                         best_move = toMoveObj.call(this, moves[i]);//current move
+                        best_move = toMoveObj.call(this, moves[i]);//current move
                     } else {
                         //TODO: Investigate this else block for correctness
-                         best_move = toMoveObj.call(this, moves[0]);//try first move
+                        best_move = toMoveObj.call(this, moves[0]);//try first move
                     }
                     return best_move;
                 }

@@ -43,6 +43,11 @@ and open the template in the editor.
             var device_category = "medium";
             var Main = {
                 anim : new Animate(),
+                util:{
+                  isString: function(a){
+                      return typeof a === 'string';
+                  }  
+                },
                 device: {
                     isMobileDeviceReady: false,
 

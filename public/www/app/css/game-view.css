@@ -84,8 +84,7 @@ and open the template in the editor.
       top: 15px;
       left: 35%;
       right: 35%;
-      text-align: center;
-      color: #ff4444; }
+      text-align: center; }
     .game9ja-game-view-header > div > :nth-child(4) {
       /*holds live status indicator*/
       top: 32px;
@@ -161,8 +160,7 @@ and open the template in the editor.
         position: absolute;
         top: 15px;
         left: 140px;
-        text-align: center;
-        color: #ff4444; }
+        text-align: center; }
       .game9ja-game-view-header > div > :nth-child(4) {
         /*holds live status indicator*/
         width: 50px;
@@ -240,6 +238,7 @@ and open the template in the editor.
   position: absolute;
   top: 50px;
   bottom: 35px;
+  color: #ddd;
   /*mobile first*/ }
   .game9ja-game-view-body > :nth-child(1) {
     /* holds center panel for game playiing area e.g game board*/

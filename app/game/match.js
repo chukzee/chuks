@@ -1,4 +1,6 @@
 
+/* global Promise */
+
 "use strict";
 
 var WebApplication = require('../web-application');
@@ -45,21 +47,36 @@ class Match extends WebApplication {
      *   
      * 
      * @param {type} user_id
-     * @param {type} opponent_ids - array of opponent ids. for two player games like 
-     * chess and draft it can be a single string. 
+     * @param {type} opponent_ids - array of opponent ids. for two player games like  chess and draft it can be a single string. 
+     * @param {type} next_turn_player_user_id - the next player expected to player     
+     * @param {type} game_name
      * @param {type} game_id
-     * @param {type} set the serial number of the game set
-     * @param {type} move - the move. It must contain the serial_no field
+     * @param {type} current_set the serial number of the game set
+     * @param {type} move_counter this is not the move number by a counter of all moves (even in all sets) - is use to validate the match to be sure move of old match state is not received
+     * @param {type} notation - the move notation
+     * @param {type} game_position - the game position
      * @returns {String}
      */
-    async sendMove(user_id, opponent_ids, game_id, set, move) {
+    async sendMove(user_id,
+            opponent_ids,
+            next_turn_player_user_id,
+            game_name, 
+            game_id,
+            current_set,
+            move_counter,
+            notation,
+            game_position) {
 
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             opponent_ids = arguments[0].opponent_ids;
+            next_turn_player_user_id = arguments[0].next_player_user_id;
+            game_name = arguments[0].game_name;
             game_id = arguments[0].game_id;
-            set = arguments[0].set;
-            move = arguments[0].move;
+            current_set = arguments[0].current_set;
+            move_counter = arguments[0].move_counter;
+            notation = arguments[0].notation;
+            game_position = arguments[0].game_position;
         }
 
         if (!Array.isArray(opponent_ids)) {
@@ -74,39 +91,128 @@ class Match extends WebApplication {
         }
 
         //check if the move contains the serial_no field
-        if (!('serial_no' in move)) {
+        if (!('serial_no' in notation)) {
             return this.error('Invalid input - missing serial_no field in move object!');
         }
 
-        if (!isFinite(move.serial_no) || move.serial_no < 1) {
+        if (!isFinite(notation.serial_no) || notation.serial_no < 1) {
             return this.error('Invalid input - move serial number must be a positive integer number!');
         }
 
-        //first quickly forward the move to the opponenct
-        var data = {
-            game_id: game_id,
-            set: set,
-            move: move
-        };
+        if (user_id === next_turn_player_user_id) {
+            return this.error(`Invalid input - next turn player ${next_turn_player_user_id} cannot be same is current turn player!`);
+        }
 
-        this.broadcast(this.evt.game_move, data, opponent_ids, true);//forward move to the opponents
+        if (opponent_ids.indexOf(next_turn_player_user_id) === -1) {
+            return this.error(`Invalid input - next turn player ${next_turn_player_user_id} is not an opponent!`);
+        }
 
-        //save the move in the server asynchronously
         var c = this.sObj.db.collection(this.sObj.col.matches);
         var me = this;
-        var set_index = set - 1;
-        var pObj = {};
-        pObj['sets.' + set_index + '.moves'] = move; //NOT YET TESTED - using the dot operator to access the array
 
-        c.updateOne({game_id: game_id}, {$push: pObj})//moves' array is the game position of the the game. it holds all the move of the game
-                .then(function (result) {
-                    if (!result) {
+        //first validate to necessary thing
+        var prevMatchObj = await c.findOne({game_id: game_id});
+
+        //validate the players
+        var found_user = false;
+        for (var i = 0; i < prevMatchObj.players.length; i++) {
+            var p = prevMatchObj.players[i];
+            if(typeof p !== 'string'){//not s tring therefore and object
+                p = p.user_id;
+            }
+            if(p === user_id){
+                found_user = true;
+            }
+            var found_opponent = false;
+            for (var k = 0; k < opponent_ids.length; k++) {
+                if(p=== opponent_ids[k]){
+                    found_opponent = true;
+                    break;
+                }
+            }
+            if(!found_opponent){
+                return this.error(`Invalid input -  ${opponent_ids[k]} not an opponent!`);
+            }
+        }
+
+        if(!found_user){
+            return this.error(`Invalid input -  ${user_id} is not a player!`);
+        }
+
+        if(typeof prevMatchObj.move_counter === 'undefined'){
+            prevMatchObj.move_counter = 0;
+        }
+
+        //validate move counter        
+        if(prevMatchObj.move_counter !== move_counter){
+            if(prevMatchObj.move_counter < move_counter){
+                this.error(`game state out of date!`);
+                this.send(this.evt.game_state_update, prevMatchObj, user_id);
+            }else{
+                //where move counter is grater - this can only happen (though very rare)
+                //when match object in not updated across all server clusters.
+                //So the solution is to reload and replay again, hopefully the clusters are fully updated
+                this.error(`reload game and replay!`);
+                var prev_game_id = prevMatchObj.game_id; //the client will use the game id to get the match locally and reload to replay
+                this.send(this.evt.game_reload_replay, prev_game_id, user_id);
+            }   
+            return this;//now leave and return the error
+        }
+
+        //validate the player turn
+        if(prevMatchObj.turn_player_id 
+                && prevMatchObj.turn_player_id !== user_id){//client side can avoid this
+            this.error(`wrong player turn - ${user_id}`);
+            this.send(this.evt.game_state_update, prevMatchObj, user_id); // just revalidate the game
+            return this;//leave
+        }
+        
+        var queryObj = {game_id: game_id};
+        var set_index = current_set - 1;
+        var pObj = {};
+        pObj[`sets.${set_index}.moves`] = notation; //using the dot operator to access the array
+        var editObj  = {$push: pObj, $set:{turn_player_id: user_id}, $inc:{move_counter: 1}};
+        
+        c.findOneAndUpdate(queryObj, editObj,
+                {
+                    projection: {_id: 0},
+                    returnOriginal: false //return the updated document
+                })
+                .then(async function (r) {
+                    if (!r) {
                         return;
                     }
+                    var match = r.match;
+                    if (!match) {
+                        return Promise.reject('Match no longer exist - move not sent!');
+                    }
+
+                    var obj = {
+                        user_id: user_id,
+                        notation: notation,
+                        match: match
+                    };
+
                     //Acknowlege move sent by notifying the player that
                     //the sever has receive the move and sent it to the opponents
-                    data.move_sent = true;
-                    return me.send(me.evt.game_move_sent, data, user_id, true);
+                    //data.move_sent = true;
+                    me.broadcast(this.evt.game_move, obj, opponent_ids, true);//forward move to the opponents
+                    me.send(me.evt.game_move_sent, obj, user_id, true);
+
+                    //next, broadcast to the game spectators.
+
+                    //so lets get the spectators viewing this game
+                    var sc = this.sObj.db.collection(this.sObj.col.spectators);
+                    var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+
+                    var spectators_ids = [];
+                    for (var i = 0; i < spectators.length; i++) {
+                        spectators_ids[i] = spectators[i].user_id;
+                    }
+
+                    //now broadcast to the spectators                    
+                    this.broadcast(this.evt.game_move, obj, spectators_ids);
+
                 })
                 .catch(function (err) {
 
@@ -116,21 +222,6 @@ class Match extends WebApplication {
                         console.log(err);
                     }
                 });
-
-
-        //next, broadcast to the game spectators.
-
-        //so lets get the spectators viewing this game
-        var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
-
-        var spectators_ids = [];
-        for (var i = 0; i < spectators.length; i++) {
-            spectators_ids[i] = spectators[i].user_id;
-        }
-
-        //now broadcast to the spectators
-        this.broadcast(this.evt.game_move, data, spectators_ids);
 
     }
 
@@ -348,14 +439,24 @@ class Match extends WebApplication {
 
         edit[`sets.${prev_set_index}.end_time`] = now_date;
         edit[`sets.${next_set_index}.start_time`] = now_date;
+        var game_id = match.game_id;
+        c.findOneAndUpdate({game_id: game_id},
+                {$inc: {current_set: 1}, $set: edit},
+                {
+                    projection: {_id: 0},
+                    returnOriginal: false, //return the updated document
+                    w: 'majority'
+                })
+                .then(async function (r) {
 
-        c.updateOne({game_id: match.game_id}, {$inc: {current_set: 1}, $set: edit})
-                .then(async function (result) {
-
-                    var players_ids = match.players;
-                    for (var i = 0; i < match.players.length; i++) {
-                        if (typeof match.players[i] === 'object') {//just in case
-                            players_ids[i] = match.players[i].user_id;
+                    var matchObj = r.value;
+                    if (!matchObj) {
+                        return Promise.reject('No game to start next set');
+                    }
+                    var players_ids = matchObj.players;
+                    for (var i = 0; i < matchObj.players.length; i++) {
+                        if (typeof matchObj.players[i] === 'object') {//just in case
+                            players_ids[i] = matchObj.players[i].user_id;
                         }
                     }
                     var user = new User(me.sObj, me.util, me.evt);
@@ -374,12 +475,12 @@ class Match extends WebApplication {
                     }
 
                     //broadcast the game_start_next_set event to all the players concern
-                    match.players = players;
-                    me.broadcast(me.evt.game_start_next_set, match, players_ids, true, me.sObj.GAME_MAX_WAIT_IN_SEC);
+                    matchObj.players = players;
+                    me.broadcast(me.evt.game_start_next_set, matchObj, players_ids, true, me.sObj.GAME_MAX_WAIT_IN_SEC);
 
                     //broadcast the watch_game_start_next_set event to users related in one way
                     //or the other to any of the players - ie via contacts or group or tournament
-                    me._broadcastWatchGame(match, me.evt.watch_game_start_next_set);
+                    me._broadcastWatchGame(matchObj, me.evt.watch_game_start_next_set);
 
                 })
                 .catch(function (err) {
@@ -473,7 +574,7 @@ class Match extends WebApplication {
                 sn: i + 1, //serial number                
                 start_time: "",
                 end_time: "",
-                moves: [], //game position
+                moves: [], //array of move notations
                 points: [0, 0]//score point - user 3-1-0 scoring system as in football where a win is 3 points, draw is 1 and loss is zero
             };
 
@@ -495,9 +596,11 @@ class Match extends WebApplication {
             scores: [0, 0],
             start_time: new Date(),
             end_time: "", //to be set at the end of the last game set
+            move_counter : 0,//this is not the move number by a counter of all moves (even in all sets) - is use to validate the match to be sure move of old match state is not received
             current_set: 1, //first set - important!
             sets: sets,
-            players: players
+            players: players,
+            turn_player_id: null// user id of player who made the last move
         };
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
@@ -531,7 +634,7 @@ class Match extends WebApplication {
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
-            var match = await c.findOne({game_id: game_id});
+            var match = await c.findOne({game_id: game_id}, {_id: 0});
             if (!match) {
                 return this.error('No game to resume');
             }
@@ -678,6 +781,7 @@ class Match extends WebApplication {
     async abandon(user_id, game_id) {
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
+
         try {
             //count available players
             var match = await c.findOne({game_id: game_id});
@@ -706,7 +810,8 @@ class Match extends WebApplication {
 
                 //relocate the match document to the match_history collection
                 match.status = 'abandon'; //set the status to abandon
-                await c.insertOne(match);
+                var mhc = this.sObj.db.collection(this.sObj.col.match_history);
+                await mhc.insertOne(match);
                 terminated = true;
             }
 
@@ -1049,6 +1154,36 @@ class Match extends WebApplication {
         var rank = new Rankings(this.sObj, this.util, this.evt);
         rank.updateRanking(match, winner_user_id);
 
+    }
+
+    /**
+     * Get match by the specified game id
+     * 
+     * @param {type} game_id
+     * @returns {Array|nm$_match.Match.getMatc.data}
+     */
+    async getMatch(game_id) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            game_id = arguments[0].game_id;
+        }
+
+        c = this.sObj.db.collection(this.sObj.col.matches);
+
+        var query = {
+            game_id: game_id
+        };
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var data = {
+            match: null
+        };
+
+        data.match = await c.findOne(query, {_id: 0});
+
+        return data;
     }
 
     /**

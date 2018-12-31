@@ -1054,9 +1054,11 @@ Ns.msg.AbstractMessage = {
             me._retryUnsentMessage.call(me, 2);
         }
 
-        function errFn(err) {
-            var mObj = this;// the result of the bind function 'bindFn' returned to us
-            me._retryUnsentMessage.call(me);
+        function errFn(err, err_code, connect_err) {
+            if (connect_err) {//only retry if it is a connection problem
+                var mObj = this;// the result of the bind function 'bindFn' returned to us
+                me._retryUnsentMessage.call(me);
+            }
         }
     },
 

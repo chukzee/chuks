@@ -6,11 +6,20 @@ Ns.game.two.Chess2D = {
 
     extend: 'Ns.game.AbstractBoard2D',
 
-    
-    rcallSendMove: function (from, to) {
-        
+    constructor: function () {
+
+        var obj = {
+            match: 'game/Match'
+        };
+
+        Main.rcall.live(obj);
+
     },
-    
+
+    getGamePostion: function () {
+        return this.internalGame.fen();
+    },
+
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('img');
         pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
@@ -54,9 +63,23 @@ Ns.game.two.Chess2D = {
     pieceSquarRatio: function () {
         return 0.8;
     },
+    
+    isWhiteTurn: function(){
+        return this.internalGame.turn() === 'w';
+    },
 
     isWhite: function (pce) {
         return pce.color === 'w';
+    },
+
+    notationToPath: function (notation) {
+        var arr;
+        if (notation.indexOf('-')) {
+            arr = notation.split('-');
+        } else {
+            arr = notation.split('x');
+        }
+        return {from : arr[0], to : arr[1]};
     },
 
     makeMove: function (from, to) {
@@ -65,7 +88,9 @@ Ns.game.two.Chess2D = {
             done: false,
             hasMore: false,
             capture: null,
-            error: null
+            error: null,
+            notation: null,
+            board_position: null
         };
 
         if (from === to) {
@@ -79,7 +104,7 @@ Ns.game.two.Chess2D = {
                     //promotion : TODO - see chessjs doc LATER for how to use this field 
         };
 
-        var result = this.internalGame.move(obj);
+        var result = this.internalGame.move(obj, {sloppy: true});
         var cap;
         if (result && result.captured) {
             if (result.flags === 'e') {//en passant capture
@@ -91,6 +116,8 @@ Ns.game.two.Chess2D = {
 
         console.log(result);
 
+        resObj.notation = !result ? null : this.toSquareNotation(result.from) + (cap ? 'x' : '-') + this.toSquareNotation(result.to);
+        resObj.board_position = this.internalGame.fen();
         resObj.done = result ? true : false;
         resObj.capture = cap;
         resObj.error = !result ? 'Invalid move' : null;

@@ -11,7 +11,6 @@ and open the template in the editor.
 @import "base-var.scss";
 
 
-$score_color : #ff4444;
 
 $footer_height : $small_header_height;
 
@@ -91,7 +90,6 @@ $right_panel_width_ld : 30%;
             text-align: center;
             //font-size: 18px;
             //font-weight: 500;
-            color: $score_color;
             //background-color: yellowgreen;
         }
 
@@ -192,7 +190,6 @@ $right_panel_width_ld : 30%;
                 top: 15px;
                 left: $fullname_width + $profile_img_size+ 2* $hgap;
                 text-align: center;
-                color: $score_color;
 
                 //background-color: yellowgreen;
             }
@@ -299,6 +296,7 @@ $right_panel_width_ld : 30%;
     position: absolute;
     top: $header_height;
     bottom: $footer_height;
+    color: #ddd;
 
     /*mobile first*/
     > :nth-child(1){/* holds center panel for game playiing area e.g game board*/

@@ -5,7 +5,7 @@ Ns.ui.GamePanel = {
 
     matchData: null,
     rightContentName: null,
-    
+
     /**
      * this constructor is called once automatically by the framework
      * 
@@ -16,47 +16,73 @@ Ns.ui.GamePanel = {
         Main.eventio.on('game_move_sent', this.onMoveSent.bind(this));
 
     },
-    
-    onMoveSent: function(evt){
+
+    onMoveSent: function (evt) {
         var data = evt.data;
         console.log(data);
         alert('TODO - onMoveSent');
     },
-    
-    showGame: function(match, container, flip){
-        if(!match){
-            return;
-        }
-        var obj = {
-            
-            flip : flip,//used in watched games only. whether the board should face black to white direction. ie black is below and white above
-            white : match.players[0].user_id === Ns.view.UserProfile.appUser.user_id,
+
+    showGameB: function (match, container, flip) {
+        Ns.ui.GamePanel.loadGame({
+            network: 'bluetooth',
+            match: match,
             container: container,
-            boardTheme: 'wooddark',
-            pieceTheme: 'alpha',
-            
-        };
-        
-        if(match.game_name === 'chess'){
-            
-            Ns.ui.GamePanel.showChess(obj);
-            
-        }else if(match.game_name === 'draughts'){
-                        
-            Ns.ui.GamePanel.showDraughts(obj);
-            
-        }
-        
-        
+            flip: flip,
+        });
     },
 
-    showChess: function (prop) {
+    showGame: function (match, container, flip) {
+        Ns.ui.GamePanel.loadGame({
+            network: 'internet',
+            match: match,
+            container: container,
+            flip: flip,
+        });
+    },
+
+    loadGame: function (obj) {
+
+        if (!obj.match) {
+            return;
+        }
+
+        var is_spectator = true;
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        
+        for (var i = 0; i < obj.match.players.length; i++) {
+            if (obj.match.players[i].user_id === user_id) {
+                is_spectator = false;
+                break;
+            }
+        }
+
+        if (!is_spectator) {
+            obj.white = obj.match.players[0].user_id === user_id;
+        }
+
+        obj.boardTheme = 'wooddark';
+        obj.pieceTheme = 'alpha';
+
+        if (obj.match.game_name === 'chess') {
+
+            Ns.ui.GamePanel._loadChess(obj);
+
+        } else if (obj.match.game_name === 'draughts') {
+
+            Ns.ui.GamePanel._loadDraughts(obj);
+
+        }
+
+    },
+
+    _loadChess: function (prop) {
         var obj = {
             //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
             white: prop.white, //whether the user is white or black. For watched games this field in absent
             container: prop.container,
-            boardTheme: prop.boardTheme ? prop.boardTheme :  'wooddark',
-            pieceTheme: prop.pieceTheme ? prop.pieceTheme :  'alpha',
+            boardTheme: prop.boardTheme ? prop.boardTheme : 'wooddark',
+            pieceTheme: prop.pieceTheme ? prop.pieceTheme : 'alpha',
             is3D: false,
         };
 
@@ -64,14 +90,14 @@ Ns.ui.GamePanel = {
 
     },
 
-    showDraughts: function (prop) {
+    _loadDraughts: function (prop) {
         var obj = {
-            variant: prop.variant ? prop.variant :  'international-draughts',
+            variant: prop.variant ? prop.variant : 'international-draughts',
             //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
             white: prop.white, //whether the user is white or black. For watched games this field in absent
             container: prop.container,
-            boardTheme: prop.boardTheme ? prop.boardTheme :  'wooddark',
-            pieceTheme: prop.pieceTheme ? prop.pieceTheme :  'alpha',
+            boardTheme: prop.boardTheme ? prop.boardTheme : 'wooddark',
+            pieceTheme: prop.pieceTheme ? prop.pieceTheme : 'alpha',
             is3D: false,
         };
 
@@ -244,7 +270,6 @@ Ns.ui.GamePanel = {
             $('#game-view-user-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
             $('#game-view-opponent-countdown').html(match.players[1].countdown);
-            $('#game-view-opponent-activity').html(match.players[1].activity);
             $('#game-view-opponent-wdl').html(match.players[1].wdl);
 
         } else if (Ns.view.UserProfile.appUser.id === match.players[1].user_id) {
@@ -253,7 +278,6 @@ Ns.ui.GamePanel = {
             $('#game-view-user-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
 
             $('#game-view-opponent-countdown').html(match.players[0].countdown);
-            $('#game-view-opponent-activity').html(match.players[0].activity);
             $('#game-view-opponent-wdl').html(match.players[0].wdl);
 
         }
@@ -399,7 +423,6 @@ Ns.ui.GamePanel = {
             $('#game-view-b-user-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
             $('#game-view-b-opponent-countdown').html(match.players[1].countdown);
-            $('#game-view-b-opponent-activity').html(match.players[1].activity);
             $('#game-view-b-opponent-wdl').html(match.players[1].wdl);
 
         } else if (Ns.view.UserProfile.appUser.id === match.players[1].user_id) {
@@ -408,7 +431,6 @@ Ns.ui.GamePanel = {
             $('#game-view-b-user-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
 
             $('#game-view-b-opponent-countdown').html(match.players[0].countdown);
-            $('#game-view-b-opponent-activity').html(match.players[0].activity);
             $('#game-view-b-opponent-wdl').html(match.players[0].wdl);
 
         }
@@ -448,7 +470,6 @@ Ns.ui.GamePanel = {
 
         $('#game-watch-white-name').html(match.players[0].full_name);
         $('#game-watch-white-countdown').html(match.players[0].countdown);
-        $('#game-watch-white-activity').html(match.players[0].activity);
         $('#game-watch-white-wdl').html(match.players[0].wdl);
 
         document.getElementById('game-watch-white-profile-pic').src = match.players[0].photo_url;
@@ -456,7 +477,6 @@ Ns.ui.GamePanel = {
         $('#game-watch-black-name').html(match.players[1].full_name);
         $('#game-watch-black-countdown').html(match.players[1].countdown);
         $('#game-watch-black-wdl').html(match.players[1].wdl);
-        $('#game-watch-black-activity').html(match.players[1].activity);
 
         document.getElementById('game-watch-black-profile-pic').src = match.players[1].photo_url;
 

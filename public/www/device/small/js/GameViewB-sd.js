@@ -53,7 +53,7 @@ Ns.GameViewB = {
             lower_el.style.width = board_el.style.width;
             lower_el.style.height = lower_height + 'px';
             
-            Ns.ui.GamePanel.showGame(data, 'game-view-b-main-board');
+            Ns.ui.GamePanel.showGameB(data, 'game-view-b-main-board');
         }
 
 
