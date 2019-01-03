@@ -116,7 +116,7 @@ Ns.game.two.Chess2D = {
 
         console.log(result);
 
-        resObj.notation = !result ? null : this.toSquareNotation(result.from) + (cap ? 'x' : '-') + this.toSquareNotation(result.to);
+        resObj.notation = !result ? null : result.from + (cap ? 'x' : '-') + result.to;
         resObj.board_position = this.internalGame.fen();
         resObj.done = result ? true : false;
         resObj.capture = cap;

@@ -49,7 +49,7 @@ Ns.ui.GamePanel = {
 
         var is_spectator = true;
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        
+
         for (var i = 0; i < obj.match.players.length; i++) {
             if (obj.match.players[i].user_id === user_id) {
                 is_spectator = false;
@@ -76,31 +76,17 @@ Ns.ui.GamePanel = {
 
     },
 
-    _loadChess: function (prop) {
-        var obj = {
-            //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
-            white: prop.white, //whether the user is white or black. For watched games this field in absent
-            container: prop.container,
-            boardTheme: prop.boardTheme ? prop.boardTheme : 'wooddark',
-            pieceTheme: prop.pieceTheme ? prop.pieceTheme : 'alpha',
-            is3D: false,
-        };
+    _loadChess: function (obj) {
 
+        obj.is3D = false;
         Ns.game.Chess.load(obj);
 
     },
 
-    _loadDraughts: function (prop) {
-        var obj = {
-            variant: prop.variant ? prop.variant : 'international-draughts',
-            //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
-            white: prop.white, //whether the user is white or black. For watched games this field in absent
-            container: prop.container,
-            boardTheme: prop.boardTheme ? prop.boardTheme : 'wooddark',
-            pieceTheme: prop.pieceTheme ? prop.pieceTheme : 'alpha',
-            is3D: false,
-        };
+    _loadDraughts: function (obj) {
 
+        obj.variant = obj.variant ? obj.variant : 'international-draughts';
+        obj.is3D = false;
         Ns.game.Draughts.load(obj);
 
     },

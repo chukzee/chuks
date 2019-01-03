@@ -2122,7 +2122,7 @@ var Main = {};
                 }
                 var up_out = upOut[container_id];
                 var down_out = downOut[container_id];
-                var children = $(obj.container).children();
+                var children = document.getElementById(container_id).children;
                 if (index < up_out.length) {
                     up_out.splice(index, 1);
                 } else if (index < up_out.length + children.length) {
@@ -2161,13 +2161,15 @@ var Main = {};
                     }
                 }
 
-                var children = $(obj.container).children();
+                var children = document.getElementById(container_id).children;
                 var el;
+                var el_index = -1;
                 for (var i = 0; i < children.length; i++) {
                     var child = children[i];
                     var dom_data = child[_game9ja_Dom_Hold_Data];
                     if (typeof dom_data !== 'undefined' && fn(dom_data) === true) {
                         el = child;
+                        el_index = i;
                         break;
                     }
                 }
@@ -2179,11 +2181,33 @@ var Main = {};
                 //now replace with the new data
 
                 var replacement = tplParam(html, obj, data);
-                var parent = el.parentNode;
-                if (!parent) {
-                    return false;
+
+                /*var parent = el.parentNode;
+                 if (!parent) {
+                 return false;
+                 }
+                 
+                 parent.replaceChild(el, replacement);*/
+                if (Main.util.isString(replacement)) {//html string
+                    el.outerHTML = replacement;
+                } else if ('outerHTML' in replacement) {//hmtl element
+                    el.outerHTML = replacement.outerHTML;
+                } else if ('length' in replacement) {//html collection
+                    var outer_html = '';
+                    for (var i = 0; i < replacement.length; i++) {
+                        outer_html += replacement[i].outerHTML;
+                    }
+                    el.outerHTML = outer_html;
                 }
-                parent.replaceChild(el, replacement);
+                
+                el[_game9ja_Dom_Hold_Data] = data;
+                var cont = document.getElementById(container_id);
+                var d_children = cont.children;
+                cont.replaceChild(el, d_children[el_index]);
+                
+                var test_children = document.getElementById(container_id).children;
+                var is_true = test_children[0] === el;
+                
                 return true;
             };
 
@@ -2257,8 +2281,11 @@ var Main = {};
             $(content).find('title , script, link , meta').each(function (index) {
                 this.remove();
             });
+
+            content = content[0];
+
             if (obj.wrapItem === false) {
-                return content.html();
+                return content.children;
             }
             return content;
         }
@@ -2557,8 +2584,8 @@ var Main = {};
             var parent = evt.target;
 
             while (parent && parent !== document.body) {
-                var saved_data = parent[_game9ja_Dom_Hold_Data];
-                if (typeof saved_data !== 'undefined') {
+                var saved_data = parent[_game9ja_Dom_Hold_Data];                
+                if (_game9ja_Dom_Hold_Data in parent) {    
                     lastSelectedListviewItem = parent;
                     if (Main.util.isFunc(this.onSelect)) {
                         //call the onSelect callback
@@ -3363,12 +3390,12 @@ var Main = {};
         };
 
         this.start = function (fn, initial_value, pattern) {
-            
+
             if (!Main.util.isFunc(fn)) {
                 console.warn('first parameter must be a function');
                 return;
             }
-            
+
             initial_value = initial_value - 0;
             if (isNaN(initial_value)) {
                 console.warn('initial value (second parameter) not a number');

@@ -1101,7 +1101,7 @@ function draftFn(size) {
                 error: null, //yes, the user must check for error
                 from: from_san,
                 to: to_san,
-                move: move_notation,
+                notation: move_notation,
                 capture: capture,
                 board_position: this.toFEN.call(this)
             };

@@ -263,7 +263,6 @@ and open the template in the editor.
       .game9ja-game-view-body > :nth-child(1) > :nth-child(1) > :nth-child(2) {
         /*the oppontent activity display in the upper panel*/
         margin: 0 auto;
-        width: 180px;
         max-width: 100%;
         font-size: 14px;
         font-style: italic;

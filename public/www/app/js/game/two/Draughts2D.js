@@ -123,7 +123,7 @@ Ns.game.two.Draughts2D = {
                 resObj.mark_capture = cap_sq;  // for the purpose of highlighting captured square
                 resObj.capture = result.capture;
                 resObj.error = result.error;
-                resObj.notation = result.move;
+                resObj.notation = result.notation;
                 resObj.board_position = result.board_position;
             } else if (all_match && this.capturePath.length < match_len) {
                 resObj.done = false;
@@ -141,7 +141,7 @@ Ns.game.two.Draughts2D = {
             resObj.done = !result.error;
             resObj.hasMore = false;
             resObj.error = result.error;
-            resObj.notation = result.move;
+            resObj.notation = result.notation;
             resObj.board_position = result.board_position;
         } else {//where to === from
             resObj.done = true;//just drop the piece

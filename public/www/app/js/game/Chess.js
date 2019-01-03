@@ -18,8 +18,10 @@ Ns.game.Chess = {
         }
         var chess;
 
-        if (obj.gamePosition) {
-            chess = new Chess(obj.gamePosition);
+        if (obj.match._unsentGamePosition) {//first retry the pending (unsent) game position
+            chess = new Chess(obj.match._unsentGamePosition);
+        } else if (obj.match.game_position) {
+            chess = new Chess(obj.match.game_position);
         } else {
             chess = new Chess();//starting position
         }

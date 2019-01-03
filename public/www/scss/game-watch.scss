@@ -103,7 +103,8 @@ $right_panel_width_ld : 30%;
                         top : 5px;
                     }
                     > :nth-child(3){/*player_1 activity status*/
-                        width: 150px;
+                        //width : 240px;
+                        max-width: 100%;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
@@ -172,7 +173,8 @@ $right_panel_width_ld : 30%;
                         top : 0px;
                     }
                     > :nth-child(3){/*player_2 activity status*/
-                        width: 150px;
+                        //width : 240px;
+                        max-width: 100%;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;

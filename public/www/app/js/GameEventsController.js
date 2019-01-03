@@ -7,23 +7,23 @@ Ns.GameEventsController = {
 
 
 
-        Main.eventio.on('notify_upcoming_match', this.onNotifyUpComingMatch);//match reminder - ie say 10 mins before time
-        Main.eventio.on('game_start', this.onGameStart);
-        Main.eventio.on('game_start_next_set', this.onGameStartNextSet);
-        Main.eventio.on('watch_game_start', this.onWatchGameStart);
-        Main.eventio.on('watch_game_start_next_set', this.onWatchGameStartNextSet);
-        Main.eventio.on('game_resume', this.onGameResume);
-        Main.eventio.on('watch_game_resume', this.onWatchGameResume);
-        Main.eventio.on('game_pause', this.onGamePause);
-        Main.eventio.on('game_abandon', this.onGameAbandon);
-        Main.eventio.on('game_move', this.onGameMove);
-        Main.eventio.on('game_watch_move', this.onGameWatchMove);
-        Main.eventio.on('game_move_sent', this.onGameMoveSent);
-        Main.eventio.on('thinking', this.onThinking);
-        Main.eventio.on('watch_thinking', this.onWatchThinking);
-        Main.eventio.on('game_finish', this.onGameFinish);
-        Main.eventio.on('game_state_update', this.onGameStateUpdate);
-        Main.eventio.on('game_reload_replay', this.onGameReloadReplay);
+        Main.eventio.on('notify_upcoming_match', this.onNotifyUpComingMatch.bind(this));//match reminder - ie say 10 mins before time
+        Main.eventio.on('game_start', this.onGameStart.bind(this));
+        Main.eventio.on('game_start_next_set', this.onGameStartNextSet.bind(this));
+        Main.eventio.on('watch_game_start', this.onWatchGameStart.bind(this));
+        Main.eventio.on('watch_game_start_next_set', this.onWatchGameStartNextSet.bind(this));
+        Main.eventio.on('game_resume', this.onGameResume.bind(this));
+        Main.eventio.on('watch_game_resume', this.onWatchGameResume.bind(this));
+        Main.eventio.on('game_pause', this.onGamePause.bind(this));
+        Main.eventio.on('game_abandon', this.onGameAbandon.bind(this));
+        Main.eventio.on('game_move', this.onGameMove.bind(this));
+        Main.eventio.on('game_watch_move', this.onGameWatchMove.bind(this));
+        Main.eventio.on('game_move_sent', this.onGameMoveSent.bind(this));
+        Main.eventio.on('thinking', this.onThinking.bind(this));
+        Main.eventio.on('watch_thinking', this.onWatchThinking.bind(this));
+        Main.eventio.on('game_finish', this.onGameFinish.bind(this));
+        Main.eventio.on('game_state_update', this.onGameStateUpdate.bind(this));
+        Main.eventio.on('game_reload_replay', this.onGameReloadReplay.bind(this));
 
 
 
@@ -65,7 +65,7 @@ Ns.GameEventsController = {
     },
 
     _makeMove: function (user_id, notation, match) {
-        
+
         switch (match.game_name) {
             case 'chess':
                 {
@@ -93,6 +93,54 @@ Ns.GameEventsController = {
                 {
 
                     Ns.game.two.Whot2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+        }
+    },
+    
+    /**
+     * Display that the player is thinking
+     * 
+     * the expected fields of prop below
+     * 
+     * var prop = {
+     *      game_id: ...,
+     *      game_name:...,
+     *      user_id:..., //the user id of player thinking
+     * }
+     * 
+     * @param {type} prop
+     * @returns {undefined}
+     */
+    _thinking: function (prop) {
+
+        switch (prop.game_name) {
+            case 'chess':
+                {
+                    Ns.game.two.Chess2D.displayThinking(prop);
+                }
+                break;
+            case 'draughts':
+                {
+                    Ns.game.two.Draughts2D.displayThinking(prop);
+                }
+                break;
+            case 'ludo':
+                {
+
+                    Ns.game.two.Ludo2D.displayThinking(prop);
+                }
+                break;
+            case 'solitaire':
+                {
+
+                    Ns.game.two.Solitaire2D.displayThinking(prop);
+                }
+                break;
+            case 'whot':
+                {
+
+                    Ns.game.two.Whot2D.displayThinking(prop);
                 }
                 break;
         }
@@ -188,10 +236,9 @@ Ns.GameEventsController = {
         var notation = obj.data.notation;
 
         Ns.Match.updateMatchList(match);
-        
+
         //move the piece        
         this._makeMove(user_id, notation, match);
-
     },
 
     onGameMoveSent: function (obj) {
@@ -202,71 +249,18 @@ Ns.GameEventsController = {
         var match = obj.data.match;
 
         Ns.Match.updateMatchList(match);
-
     },
 
     onThinking: function (obj) {
         console.log(obj);
 
-        var game_name = obj.game_name;
-        var user_id = obj.user_id;
-
-        if (Ns.ui.UI.selectedGame !== game_name) {
-            return;
-        }
-
-        if (Ns.view.UserProfile.appUser.user_id === user_id) {
-            return;
-        }
-
-        Ns.game.AbstractBoard2D.activityFeedbackEl({
-            container: 'game-view-activity',
-            text: 'Thinking...'
-        });
-
-
+        this._thinking(obj.data);
     },
 
     onWatchThinking: function (obj) {
         console.log(obj);
-
-        var game_name = obj.game_name;
-        var is_white = obj.is_white;
-        var user_id = obj.user_id;
-
-        if (Ns.ui.UI.selectedGame !== game_name) {
-            return;
-        }
-
-        if (Ns.view.UserProfile.appUser.user_id === user_id) {
-            return;
-        }
-
-        if (is_white) {
-
-            Ns.game.AbstractBoard2D.activityFeedbackEl({
-                container: 'game-watch-white-activity',
-                text: 'Thinking...'
-            });
-            Ns.game.AbstractBoard2D.activityFeedbackEl({
-                container: 'game-watch-black-activity',
-                text: ''
-            });
-        } else {
-            if (is_white) {
-
-                Ns.game.AbstractBoard2D.activityFeedbackEl({
-                    container: 'game-watch-black-activity',
-                    text: ''
-                });
-                Ns.game.AbstractBoard2D.activityFeedbackEl({
-                    container: 'game-watch-black-activity',
-                    text: 'Thinking...'
-                });
-            }
-        }
-
-
+        
+        this._thinking(obj.data);
     },
 
     onGameFinish: function (obj) {
@@ -274,7 +268,6 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
-
     },
 
     onGameStateUpdate: function (obj) {
@@ -292,12 +285,19 @@ Ns.GameEventsController = {
 
         var me = this;
 
-        var game_id = obj; //we needed only the game id since the match in the server cluster is not updated already
+        var game_id = obj.data; //we needed only the game id since the match in the server cluster is not updated already
         //we need to find the locally stored match which was used to send the move
         Ns.Match.getMatch(game_id, function (match) {
             if (!match) {
                 return;
             }
+            
+            //delete the saved move and game position
+            delete match._unsentMove;
+            delete match._unsentGamePosition;
+            
+            Ns.Match.updateMatchList(match);//update
+            
             me._loadGameByMatch(match);
         });
 

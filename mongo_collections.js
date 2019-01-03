@@ -89,8 +89,7 @@ module.exports = function () {
 
         //matches
         db.collection(col.matches).ensureIndex({
-            game_id: 1,
-            'moves.serial_no': 1// come back to check for correctness
+            game_id: 1
         }
         , uinqueObj, callback);
 

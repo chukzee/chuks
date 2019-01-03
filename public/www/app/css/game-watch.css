@@ -259,7 +259,7 @@ and open the template in the editor.
             top: 5px; }
           .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(3) {
             /*player_1 activity status*/
-            width: 150px;
+            max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -324,7 +324,7 @@ and open the template in the editor.
             top: 0px; }
           .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(3) > :nth-child(2) > :nth-child(3) {
             /*player_2 activity status*/
-            width: 150px;
+            max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;

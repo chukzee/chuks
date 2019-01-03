@@ -60,7 +60,7 @@ class Match extends WebApplication {
     async sendMove(user_id,
             opponent_ids,
             next_turn_player_user_id,
-            game_name, 
+            game_name,
             game_id,
             current_set,
             move_counter,
@@ -70,7 +70,7 @@ class Match extends WebApplication {
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             opponent_ids = arguments[0].opponent_ids;
-            next_turn_player_user_id = arguments[0].next_player_user_id;
+            next_turn_player_user_id = arguments[0].next_turn_player_user_id;
             game_name = arguments[0].game_name;
             game_id = arguments[0].game_id;
             current_set = arguments[0].current_set;
@@ -90,17 +90,8 @@ class Match extends WebApplication {
             }
         }
 
-        //check if the move contains the serial_no field
-        if (!('serial_no' in notation)) {
-            return this.error('Invalid input - missing serial_no field in move object!');
-        }
-
-        if (!isFinite(notation.serial_no) || notation.serial_no < 1) {
-            return this.error('Invalid input - move serial number must be a positive integer number!');
-        }
-
         if (user_id === next_turn_player_user_id) {
-            return this.error(`Invalid input - next turn player ${next_turn_player_user_id} cannot be same is current turn player!`);
+            return this.error(`Invalid input - next turn player ${next_turn_player_user_id} cannot be same as current turn player!`);
         }
 
         if (opponent_ids.indexOf(next_turn_player_user_id) === -1) {
@@ -114,65 +105,83 @@ class Match extends WebApplication {
         var prevMatchObj = await c.findOne({game_id: game_id});
 
         //validate the players
-        var found_user = false;
-        for (var i = 0; i < prevMatchObj.players.length; i++) {
-            var p = prevMatchObj.players[i];
-            if(typeof p !== 'string'){//not s tring therefore and object
-                p = p.user_id;
-            }
-            if(p === user_id){
-                found_user = true;
-            }
+
+        
+        for (var i = 0; i < opponent_ids.length; i++) {
             var found_opponent = false;
-            for (var k = 0; k < opponent_ids.length; k++) {
-                if(p=== opponent_ids[k]){
+            for (var k = 0; k < prevMatchObj.players.length; k++) {
+                var p = prevMatchObj.players[k];
+                if (typeof p !== 'string') {//not s tring therefore and object
+                    p = p.user_id;
+                }
+                if(p === user_id){
+                    continue;
+                }
+                if (p === opponent_ids[i]) {
                     found_opponent = true;
                     break;
                 }
             }
-            if(!found_opponent){
-                return this.error(`Invalid input -  ${opponent_ids[k]} not an opponent!`);
+
+            if (!found_opponent) {
+                return this.error(`Invalid input -  ${opponent_ids[i]} is not an opponent!`);
             }
         }
 
-        if(!found_user){
+        var found_player = false;
+        for (var i = 0; i < prevMatchObj.players.length; i++) {
+            var p = prevMatchObj.players[i];
+            if (typeof p !== 'string') {//not s tring therefore and object
+                p = p.user_id;
+            }
+            if (p === user_id) {
+                found_player = true;
+                break;
+            }
+        }
+
+        if (!found_player) {
             return this.error(`Invalid input -  ${user_id} is not a player!`);
         }
 
-        if(typeof prevMatchObj.move_counter === 'undefined'){
+        if (typeof move_counter === 'undefined') {
+            move_counter = 0;
+        }
+        
+        if (typeof prevMatchObj.move_counter === 'undefined') {
             prevMatchObj.move_counter = 0;
         }
 
         //validate move counter        
-        if(prevMatchObj.move_counter !== move_counter){
-            if(prevMatchObj.move_counter < move_counter){
+        if (prevMatchObj.move_counter !== move_counter) {
+            if (prevMatchObj.move_counter < move_counter) {
                 this.error(`game state out of date!`);
                 this.send(this.evt.game_state_update, prevMatchObj, user_id);
-            }else{
+            } else {
                 //where move counter is grater - this can only happen (though very rare)
                 //when match object in not updated across all server clusters.
                 //So the solution is to reload and replay again, hopefully the clusters are fully updated
                 this.error(`reload game and replay!`);
                 var prev_game_id = prevMatchObj.game_id; //the client will use the game id to get the match locally and reload to replay
                 this.send(this.evt.game_reload_replay, prev_game_id, user_id);
-            }   
+            }
             return this;//now leave and return the error
         }
 
         //validate the player turn
-        if(prevMatchObj.turn_player_id 
-                && prevMatchObj.turn_player_id !== user_id){//client side can avoid this
+        if (prevMatchObj.turn_player_id
+                && prevMatchObj.turn_player_id === user_id) {//client side can avoid this
             this.error(`wrong player turn - ${user_id}`);
             this.send(this.evt.game_state_update, prevMatchObj, user_id); // just revalidate the game
             return this;//leave
         }
-        
+
         var queryObj = {game_id: game_id};
         var set_index = current_set - 1;
         var pObj = {};
         pObj[`sets.${set_index}.moves`] = notation; //using the dot operator to access the array
-        var editObj  = {$push: pObj, $set:{turn_player_id: user_id}, $inc:{move_counter: 1}};
-        
+        var editObj = {$push: pObj, $set: {turn_player_id: user_id, game_position: game_position}, $inc: {move_counter: 1}};
+
         c.findOneAndUpdate(queryObj, editObj,
                 {
                     projection: {_id: 0},
@@ -182,7 +191,8 @@ class Match extends WebApplication {
                     if (!r) {
                         return;
                     }
-                    var match = r.match;
+                    
+                    var match = r.value;
                     if (!match) {
                         return Promise.reject('Match no longer exist - move not sent!');
                     }
@@ -196,13 +206,13 @@ class Match extends WebApplication {
                     //Acknowlege move sent by notifying the player that
                     //the sever has receive the move and sent it to the opponents
                     //data.move_sent = true;
-                    me.broadcast(this.evt.game_move, obj, opponent_ids, true);//forward move to the opponents
+                    me.broadcast(me.evt.game_move, obj, opponent_ids, true);//forward move to the opponents
                     me.send(me.evt.game_move_sent, obj, user_id, true);
 
                     //next, broadcast to the game spectators.
 
                     //so lets get the spectators viewing this game
-                    var sc = this.sObj.db.collection(this.sObj.col.spectators);
+                    var sc = me.sObj.db.collection(me.sObj.col.spectators);
                     var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
 
                     var spectators_ids = [];
@@ -211,12 +221,12 @@ class Match extends WebApplication {
                     }
 
                     //now broadcast to the spectators                    
-                    this.broadcast(this.evt.game_move, obj, spectators_ids);
+                    me.broadcast(me.evt.game_move, obj, spectators_ids);
 
                 })
                 .catch(function (err) {
 
-                    if (~err.message.indexOf('11000')) {
+                    if (~err.indexOf('11000')) {
                         //move already stored hence the duplicate key exception!
                     } else {
                         console.log(err);
@@ -596,7 +606,7 @@ class Match extends WebApplication {
             scores: [0, 0],
             start_time: new Date(),
             end_time: "", //to be set at the end of the last game set
-            move_counter : 0,//this is not the move number by a counter of all moves (even in all sets) - is use to validate the match to be sure move of old match state is not received
+            move_counter: 0, //this is not the move number by a counter of all moves (even in all sets) - is use to validate the match to be sure move of old match state is not received
             current_set: 1, //first set - important!
             sets: sets,
             players: players,
