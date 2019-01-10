@@ -46,7 +46,10 @@ and open the template in the editor.
                 util:{
                   isString: function(a){
                       return typeof a === 'string';
-                  }  
+                  },  
+                  isFunc: function(a){
+                      return typeof a === 'function';
+                  }   
                 },
                 device: {
                     isMobileDeviceReady: false,
@@ -80,7 +83,7 @@ and open the template in the editor.
             function showChess(parameters) {
                 var obj = {
                     //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
-                    white: true, //whether the user is white or black. For watched games this field in absent
+                    white: false, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
                     boardTheme:'wooddark',
                     pieceTheme: 'alpha',

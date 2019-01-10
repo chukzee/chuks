@@ -589,6 +589,8 @@ var Main = {};
 
     var EventIO = function () {
         var evtListeners = {};
+        var ack_msg_ids = [];
+        var MAX_TRACK_MSG_IDS = 20; //max message ids to track in order to detect and prevent duplicate messages
         var is_midware_set;
         this.on = function (event_name, listener) {
             if (!Main.util.isFunc(listener)) {
@@ -638,6 +640,19 @@ var Main = {};
                     acknowledge_delivery: msg.acknowledge_delivery
                 };
                 socket.emit('acknowledge_delivery', ack);
+                
+                if(ack_msg_ids.indexOf(msg.msg_id) > -1){
+                    console.log('detect duplicate recieved message with id - '+msg.msg_id);
+                    return;
+                }
+                
+                ack_msg_ids.push(msg.msg_id);
+                
+                if(ack_msg_ids.length > MAX_TRACK_MSG_IDS){//
+                    //remove the top in the list
+                    ack_msg_ids.splice(0, 1);
+                }
+                
             }
 
             //more midware checks may go below before calling the listeners

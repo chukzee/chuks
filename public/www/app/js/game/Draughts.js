@@ -17,6 +17,22 @@ Ns.game.Draughts = {
         } else if (obj.white === false) {//strictly false
             obj.flip = true;
         }
+        
+        var gameObj;
+        if (obj.is3D) {
+            gameObj = Ns.game.three.Draughts3D;
+        } else {
+            gameObj = Ns.game.two.Draughts2D;
+        }
+        var prevMatch = gameObj.config ? gameObj.config.match : null;
+
+        if (prevMatch
+                && prevMatch.game_name === obj.match.game_name
+                && prevMatch.game_id === obj.match.game_id
+                && prevMatch.move_counter > obj.match.move_counter) {
+            obj.match = prevMatch; //most up-to-data match object            
+        }
+
         var draughts = Draft9ja();//defualt
         
         if (obj.match._unsentGamePosition) {//first retry the pending (unsent) game position
@@ -25,11 +41,8 @@ Ns.game.Draughts = {
             draughts.boardPosition(obj.match.game_position);
         }
 
-        if (obj.is3D) {
-            Ns.game.three.Draughts3D.load(draughts, obj, this._onLoad);
-        } else {
-            Ns.game.two.Draughts2D.load(draughts, obj, this._onLoad);
-        }
+        gameObj.load(draughts, obj, this._onLoad);
+
     },
 
     _onLoad: function (game) {

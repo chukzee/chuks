@@ -51,7 +51,7 @@ Ns.game.two.Draughts2D = {
 
     notationToPath: function (notation) {
         var from, to;
-        if (notation.indexOf('-')) {
+        if (notation.indexOf('-') > -1) {
             var arr = notation.split('-');
             from = arr[0];
             to = arr[1];

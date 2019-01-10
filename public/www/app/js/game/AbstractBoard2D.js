@@ -95,8 +95,6 @@ Ns.game.AbstractBoard2D = {
         this.userSide = config.white === true ? 'w' : (config.white === false ? 'b' : null); //strictly true or false
         this.isBoardFlip = config.flip;
 
-        this.displayTurn();
-
         var el = document.getElementById(config.container);
 
         var me = this;
@@ -127,9 +125,18 @@ Ns.game.AbstractBoard2D = {
 
         this.boardContainer.appendChild(gameboard);
 
-        if (this.config.match._unsentGamePosition) {
+        this.displayTurn(this.config.match);
+
+        if (this.config.match && this.config.match._unsentGamePosition) {
             this.sendGameMove(this.config.match._unsentMove, this.config.match._unsentGamePosition);
         }
+
+        if (!this.config._skipCheckUpdate) {
+            this.checkUpdate(this.config.match);
+        }
+
+        delete this.config._skipCheckUpdate;
+
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
     },
@@ -213,6 +220,18 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
+    /**
+     * The method is used to verify if the game view should be modified so as not
+     * to corrupt the view with data of other games as the user moves (changes) from one view
+     * to the other. Since some processes are asynchronous the views can get corrupt
+     * with data from other views running asynchronously. So this method is a safety
+     * method to prevent that. 
+     * Call this method at the begining of any method that
+     * may be called from any asynchronous process.
+     *  
+     * @param {type} match
+     * @returns {Boolean}
+     */
     checkAccess: function (match) {
 
         if (match.game_id !== this.config.match.game_id
@@ -227,41 +246,45 @@ Ns.game.AbstractBoard2D = {
         return true;
     },
 
-    clearActivity: function () {
+    clearFeedback: function () {
 
         if (this.config.white === true || this.config.white === false) {//must be true of false
-            this.activityFeedbackEl({
-                container: 'game-view-activity',
+            this.feedbackEl({
+                container: 'game-view-feedback',
                 text: ''
             });
         } else {//watch game view
-            this.activityFeedbackEl({
-                container: 'game-watch-white-activity',
+            this.feedbackEl({
+                container: 'game-watch-white-feedback',
                 text: ''
             });
 
-            this.activityFeedbackEl({
-                container: 'game-watch-black-activity',
+            this.feedbackEl({
+                container: 'game-watch-black-feedback',
                 text: ''
             });
         }
     },
 
-    displayTurn: function () {
+    displayTurn: function (match) {
 
-        if (this.config.white === true || this.config.white === false) {//must be true of false
-            this.activityFeedbackEl({
-                container: 'game-view-activity',
+        if (!this.checkAccess(match)) {
+            return;
+        }
+
+        if (this.config.white === true || this.config.white === false) {//must be true of false - own game view
+            this.feedbackEl({
+                container: 'game-view-feedback',
                 text: this.isWhiteTurn() === this.config.white ? "Your turn!" : "Opponent's turn!"
             });
         } else {//watch game view
-            this.activityFeedbackEl({
-                container: 'game-watch-white-activity',
+            this.feedbackEl({
+                container: 'game-watch-white-feedback',
                 text: this.isWhiteTurn() ? "White turn!" : ""
             });
 
-            this.activityFeedbackEl({
-                container: 'game-watch-black-activity',
+            this.feedbackEl({
+                container: 'game-watch-black-feedback',
                 text: !this.isWhiteTurn() ? "Black turn!" : ""
             });
         }
@@ -290,25 +313,25 @@ Ns.game.AbstractBoard2D = {
         var match = this.config.match; //using this match object since prop contain subset of the match properties
 
         if (this.config.white === true || this.config.white === false) {//must be true of false
-            this.activityFeedbackEl({
-                container: 'game-view-activity',
+            this.feedbackEl({
+                container: 'game-view-feedback',
                 text: 'Thinking...'
             });
         } else {//watch game view
             var is_white = prop.user_id === match.players[0].user_id;
-            this.activityFeedbackEl({
-                container: 'game-watch-white-activity',
+            this.feedbackEl({
+                container: 'game-watch-white-feedback',
                 text: is_white ? 'Thinking...' : ''
             });
 
-            this.activityFeedbackEl({
-                container: 'game-watch-black-activity',
+            this.feedbackEl({
+                container: 'game-watch-black-feedback',
                 text: !is_white ? 'Thinking...' : ''
             });
         }
     },
 
-    activityFeedbackEl: function (obj) {
+    feedbackEl: function (obj) {
         var container;
         if (Main.util.isString(obj.container)) {
             container = obj.container.charAt('#') === 0 ? obj.container.substring(1) : obj.container;
@@ -322,24 +345,24 @@ Ns.game.AbstractBoard2D = {
 
         var cel, text_el, action_wrapper, action_el;
 
-        cel = act_el.querySelector('span[data-game-activity="content"]');
+        cel = act_el.querySelector('span[data-game-feedback="content"]');
 
         if (cel) {
-            text_el = cel.querySelector('span[data-game-activity="text"]');
-            action_el = cel.querySelector('a[data-game-activity="action"]');
+            text_el = cel.querySelector('span[data-game-feedback="text"]');
+            action_el = cel.querySelector('a[data-game-feedback="action"]');
         } else {
 
             cel = document.createElement('span');
             cel.style.color = '#ddd';
-            cel.setAttribute('data-game-activity', 'content');
+            cel.setAttribute('data-game-feedback', 'content');
 
             text_el = document.createElement('span');
-            text_el.setAttribute('data-game-activity', 'text');
+            text_el.setAttribute('data-game-feedback', 'text');
 
             action_wrapper = document.createElement('span');
             action_wrapper.style.marginLeft = '5px'; //come back
             action_el = document.createElement('a');
-            action_el.setAttribute('data-game-activity', 'action');
+            action_el.setAttribute('data-game-feedback', 'action');
 
             cel.appendChild(text_el);
             cel.appendChild(action_wrapper);
@@ -372,7 +395,7 @@ Ns.game.AbstractBoard2D = {
             return;
         }
 
-        this.clearActivity();
+        this.clearFeedback();
 
         var path = this.notationToPath(notation);
 
@@ -388,38 +411,52 @@ Ns.game.AbstractBoard2D = {
 
         function doRemoteMove(from, to, index) {// come back - NOT COMPLETE ABEGO!!!
 
-            var moveResult = me.makeMove(from, to);            
+            var moveResult = me.makeMove(from, to);
             try {
-                
+
                 me.markCapturedPiece(moveResult);
-                
-                if (Main.util.isArray(path.to)) {
-                    ++index;
-                    to = path.to[index];
+
+                var to_num = me.toNumericSq(to);
+                var from_num = me.toNumericSq(from);
+
+                if (me.isBoardFlip) {
+                    to_num = me.flipSquare(to_num);
+                    from_num = me.flipSquare(from_num);
                 }
-                
-                me.movePiece(from, to, moveResult.capture, doRemoteMove.bind(me, from, to));
-                
+
+                me.movePiece(from_num, to_num, moveResult.capture, function () {
+                    var move_result = this;
+                    if (move_result.done || move_result.error) {
+                        return;
+                    }
+                    var to_sq = path.to;
+                    if (Main.util.isArray(path.to)) {
+                        ++index;
+                        to_sq = path.to[index];
+                    }
+                    return doRemoteMove.bind(me, path.from, to_sq);
+                }.bind(moveResult));
+
                 me.afterMoveComplete(moveResult);
-                
+
             } catch (e) {
                 console.log(e);
             }
-        
+
             if (moveResult.done || moveResult.error) {
                 if (moveResult.board_position === match.game_position) {
-                    me.displayTurn();
+                    me.setMatch(match);
+                    me.displayTurn(match);
                     return; //all is well
                 }
                 if (moveResult.error) {//this should not happen
-                    console.log('Something is wrong - opponent move generate error!');
+                    console.log('Something is wrong - opponent or remote player move generate error!');
                 } else {//board positions is different (incorrect). likely cause is unupdated match object
-                    console.log('Something is wrong - opponent cause unequal board position!');
+                    console.log('Something is wrong - opponent or remote player move cause inconsistent board position!');
                 }
 
                 //So, reload the game with the match object passed as parament to remoteMakeMove
                 me.reloadGame(match);
-
 
                 return;
             }
@@ -436,14 +473,42 @@ Ns.game.AbstractBoard2D = {
             return;
         }
 
-        if (typeof toast_text !== 'undefined' && toast_text !== null) {
-            Main.toast.show(toast_text);
-        }
         var obj = this.config;
         if (match) {
             obj.match = match;
         }
+
+        obj._skipCheckUpdate = true;
+
         Ns.ui.GamePanel.loadGame(obj);
+
+        if (typeof toast_text !== 'undefined' && toast_text !== null) {
+            Main.toast.show(toast_text);
+        }
+
+        return true;
+    },
+
+    setMatch: function (match) {
+
+        if (!this.checkAccess(match)) {
+            return;
+        }
+
+        if (match) {
+            this.config.match = match;
+        }
+
+    },
+
+    checkUpdate: function (match) {
+        Main.ro.match.checkMatchUpdate(match.game_id, match.move_counter, match.game_position)
+                .get(function (data) {
+                    Main.event.fire('update_match_event', data);
+                })
+                .error(function (err) {
+
+                });
     },
 
     sendGameMove: function (move_notation, game_position) {
@@ -456,8 +521,8 @@ Ns.game.AbstractBoard2D = {
         Main.countdown.stop(this.moveResendCountdownFn);
 
         var promise;
-        this.activityFeedbackEl({
-            container: 'game-view-activity',
+        this.feedbackEl({
+            container: 'game-view-feedback',
             text: 'Sending..'
         });
 
@@ -479,8 +544,8 @@ Ns.game.AbstractBoard2D = {
 
         promise.get(function (res) {
             me.retryWaitDuartion = 1;//initialize
-            me.activityFeedbackEl({
-                container: 'game-view-activity',
+            me.feedbackEl({
+                container: 'game-view-feedback',
                 text: "Opponent's turn"
             });
         }).error(function (err, err_code, connect_err) {
@@ -497,8 +562,8 @@ Ns.game.AbstractBoard2D = {
 
             me.moveResendCountdownFn = function (value, finish) {
                 var bndSendGameMove = me.sendGameMove.bind(me, move_notation, game_position);
-                me.activityFeedbackEl({
-                    container: 'game-view-activity',
+                me.feedbackEl({
+                    container: 'game-view-feedback',
                     text: 'Resend move in ' + value + ' sec...',
                     action: {
                         text: 'Retry now',
@@ -567,14 +632,17 @@ Ns.game.AbstractBoard2D = {
         //range pieces
         var SQ_COUNT = this.boardRowCount * this.boardRowCount;
         for (var i = 0; i < SQ_COUNT; i++) {
-            var sqn = this.toSquareNotation(i);
+            var sq = i;
+
+            var sqn = this.toSquareNotation(sq);
             var pce = this.getInternalPiece(sqn);
             if (!pce) {
                 continue;
             }
-            var sq = i;
+
+
             if (this.isBoardFlip) {
-                sq = this.flipSquare(i);
+                sq = this.flipSquare(sq);
             }
 
             //create piece element
@@ -584,6 +652,7 @@ Ns.game.AbstractBoard2D = {
             pe.dataset.type = "piece";
             pe.style.width = pw + 'px';
             pe.style.height = ph + 'px';
+
             var center = this.squareCenter(sq);
             var py = center.y - ph / 2;
             var px = center.x - pw / 2;
@@ -592,7 +661,7 @@ Ns.game.AbstractBoard2D = {
             pe.style.top = py + 'px';
             pe.style.left = px + 'px';
 
-            this.squarePieces[i] = pe;
+            this.squarePieces[sq] = pe;
 
             container.appendChild(pe);
 
@@ -667,12 +736,8 @@ Ns.game.AbstractBoard2D = {
             var sqs = rw[i].children;
             for (var k = 0; k < sqs.length; k++) {
                 sq++;
-                var s = sq;
-                if (this.isBoardFlip) {//new
-                    s = this.flipSquare(sq);
-                }
-                this.squareList[s] = sqs[k];
-                this.squareList[s].dataset.square = s;//for identifying the squares
+                this.squareList[sq] = sqs[k];
+                this.squareList[sq].dataset.square = sq;//for identifying the squares
             }
         }
 
@@ -783,12 +848,7 @@ Ns.game.AbstractBoard2D = {
                 && typeof from !== 'string') {
             target = from; //element
         }
-        if (this.isBoardFlip) {
-            if (!target) {
-                from = this.flipSquare(from);
-            }
-            to = this.flipSquare(to);
-        }
+
         if (!target) {
             target = this.getPieceOnSquare(from);
             if (!target) {
@@ -881,7 +941,7 @@ Ns.game.AbstractBoard2D = {
     },
 
     getPieceOnSquare: function (sq) {
-        //var center = this.squareCenter(sq);        
+        //var center = this.squareCenter(sq);
         return this.squarePieces[sq];
     },
 
@@ -905,9 +965,16 @@ Ns.game.AbstractBoard2D = {
             capture = [this.toNumericSq(capture)]; //mare array
         }
 
+
         //remove captured piece from the board
         for (var i = 0; capture && i < capture.length; i++) {
+
             var cap_sq = capture[i];
+
+            if (this.isBoardFlip) {//new
+                cap_sq = this.flipSquare(cap_sq);
+            }
+
             var pce = this.squarePieces[cap_sq];
 
             this.squarePieces[cap_sq] = null;// clear the square
@@ -974,6 +1041,15 @@ Ns.game.AbstractBoard2D = {
                 var pk_sq = this.pickedSquare.dataset.square;
                 var from = this.toSquareNotation(pk_sq);
                 var to = this.toSquareNotation(this.boardSq);
+                var from_pos = from, to_pos = to;
+
+                if (this.isBoardFlip) {
+                    from_pos = this.flipSquare(pk_sq);
+                    from_pos = this.toSquareNotation(from_pos);
+
+                    to_pos = this.flipSquare(this.boardSq);
+                    to_pos = this.toSquareNotation(to_pos);
+                }
 
                 // NOTE it is valid for 'from square' to be equal to 'to square'
                 //especially in the game of draughts in a roundabout trip capture
@@ -981,7 +1057,7 @@ Ns.game.AbstractBoard2D = {
                 //square. So it is upto the subsclass to check for where 'from square'
                 //ie equal to 'to square' where necessary  an code accordingly
 
-                var moveResult = this.makeMove(from, to);
+                var moveResult = this.makeMove(from_pos, to_pos);
 
                 //validate the move result returned by the subclass.
                 //the result must contain neccessary fields
@@ -1034,8 +1110,12 @@ Ns.game.AbstractBoard2D = {
         }
 
         var sq = this.boardSq;
+        var sq_pos = sq;
+        if (this.isBoardFlip) {
+            sq_pos = this.flipSquare(sq_pos);
+        }
 
-        var sqn = this.toSquareNotation(sq);
+        var sqn = this.toSquareNotation(sq_pos);
 
         var pce = this.getInternalPiece(sqn);
         if (!pce) {
@@ -1196,10 +1276,12 @@ Ns.game.AbstractBoard2D = {
             return;
         }
 
-        if (this.isBoardFlip) {//new - flip row an col
-            row = this.boardRowCount - row - 1;
-            col = this.boardRowCount - col - 1;
-        }
+
+        /*if (this.isBoardFlip) {
+         row = this.boardRowCount - row - 1;
+         col = this.boardRowCount - col - 1;
+         }*/
+
 
         var sq = row * this.boardRowCount + col;
 

@@ -5,7 +5,7 @@ Ns.GameEventsController = {
 
     constructor: function () {
 
-
+        Main.event.on('update_match_event', this.updateMatchListener.bind(this));
 
         Main.eventio.on('notify_upcoming_match', this.onNotifyUpComingMatch.bind(this));//match reminder - ie say 10 mins before time
         Main.eventio.on('game_start', this.onGameStart.bind(this));
@@ -30,35 +30,79 @@ Ns.GameEventsController = {
 
     },
 
-    _loadGameByMatch: function (match) {
+    updateMatchListener: function (data) {
+
+        if (data.up_to_date || !data.match) {//if client match object is up-to-date or no match is found
+            return;//leave 
+        }
+
+        //At this point the client match object is not up-to-date so reload the view        
+        var match = data.match;
+        Ns.Match.updateMatchList(match);
+        var toast_text = 'game position updated!';
+        this._loadGameByMatch(match, toast_text);
+    },
+
+    _setGameMatch: function (match) {
 
         switch (match.game_name) {
             case 'chess':
                 {
-                    Ns.game.two.Chess2D.reloadGame(match);
+                    Ns.game.two.Chess2D.setMatch(match);
                 }
                 break;
             case 'draughts':
                 {
-                    Ns.game.two.Draughts2D.reloadGame(match);
+                    Ns.game.two.Draughts2D.setMatch(match);
+                }
+                break;
+            case 'ludo':
+                {
+                    Ns.game.two.Ludo2D.setMatch(match);
+                }
+                break;
+            case 'solitaire':
+                {
+                    Ns.game.two.Solitaire2D.setMatch(match);
+                }
+                break;
+            case 'whot':
+                {
+                    Ns.game.two.Whot2D.setMatch(match);
+                }
+                break;
+        }
+    },
+    
+    _loadGameByMatch: function (match, toast_text) {
+
+        switch (match.game_name) {
+            case 'chess':
+                {
+                    Ns.game.two.Chess2D.reloadGame(match, toast_text);
+                }
+                break;
+            case 'draughts':
+                {
+                    Ns.game.two.Draughts2D.reloadGame(match, toast_text);
                 }
                 break;
             case 'ludo':
                 {
 
-                    Ns.game.two.Ludo2D.reloadGame(match);
+                    Ns.game.two.Ludo2D.reloadGame(match, toast_text);
                 }
                 break;
             case 'solitaire':
                 {
 
-                    Ns.game.two.Solitaire2D.reloadGame(match);
+                    Ns.game.two.Solitaire2D.reloadGame(match, toast_text);
                 }
                 break;
             case 'whot':
                 {
 
-                    Ns.game.two.Whot2D.reloadGame(match);
+                    Ns.game.two.Whot2D.reloadGame(match, toast_text);
                 }
                 break;
         }
@@ -97,7 +141,7 @@ Ns.GameEventsController = {
                 break;
         }
     },
-    
+
     /**
      * Display that the player is thinking
      * 
@@ -249,6 +293,7 @@ Ns.GameEventsController = {
         var match = obj.data.match;
 
         Ns.Match.updateMatchList(match);
+        this._setGameMatch(match);
     },
 
     onThinking: function (obj) {
@@ -259,7 +304,7 @@ Ns.GameEventsController = {
 
     onWatchThinking: function (obj) {
         console.log(obj);
-        
+
         this._thinking(obj.data);
     },
 
@@ -291,13 +336,13 @@ Ns.GameEventsController = {
             if (!match) {
                 return;
             }
-            
+
             //delete the saved move and game position
             delete match._unsentMove;
             delete match._unsentGamePosition;
-            
+
             Ns.Match.updateMatchList(match);//update
-            
+
             me._loadGameByMatch(match);
         });
 

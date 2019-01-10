@@ -16,21 +16,33 @@ Ns.game.Chess = {
         } else if (obj.white === false) {//strictly false
             obj.flip = true;
         }
+        var gameObj;
+        if (obj.is3D) {
+            gameObj = Ns.game.three.Chess3D;
+        } else {
+            gameObj = Ns.game.two.Chess2D;
+        }
+        var prevMatch = gameObj.config ? gameObj.config.match : null;
+
+        if (prevMatch
+                && prevMatch.game_name === obj.match.game_name
+                && prevMatch.game_id === obj.match.game_id
+                && prevMatch.move_counter > obj.match.move_counter) {
+            obj.match = prevMatch; //most up-to-data match object            
+        }
+
         var chess;
 
-        if (obj.match._unsentGamePosition) {//first retry the pending (unsent) game position
+        if (obj.match && obj.match._unsentGamePosition) {//first retry the pending (unsent) game position
             chess = new Chess(obj.match._unsentGamePosition);
-        } else if (obj.match.game_position) {
+        } else if (obj.match && obj.match.game_position) {
             chess = new Chess(obj.match.game_position);
         } else {
             chess = new Chess();//starting position
         }
 
-        if (obj.is3D) {
-            Ns.game.three.Chess3D.load(chess, obj, this._onLoad);
-        } else {
-            Ns.game.two.Chess2D.load(chess, obj, this._onLoad);
-        }
+        gameObj.load(chess, obj, this._onLoad);
+
     },
 
     _onLoad: function (game) {

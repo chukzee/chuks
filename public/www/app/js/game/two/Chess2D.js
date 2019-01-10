@@ -74,7 +74,7 @@ Ns.game.two.Chess2D = {
 
     notationToPath: function (notation) {
         var arr;
-        if (notation.indexOf('-')) {
+        if (notation.indexOf('-') > -1) {
             arr = notation.split('-');
         } else {
             arr = notation.split('x');

@@ -23,7 +23,7 @@ Ns.Match = {
     },
 
     constructor: function () {
-
+        
         var obj = {
             match: 'game/Match'
                     //more may go below

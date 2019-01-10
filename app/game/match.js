@@ -106,7 +106,7 @@ class Match extends WebApplication {
 
         //validate the players
 
-        
+
         for (var i = 0; i < opponent_ids.length; i++) {
             var found_opponent = false;
             for (var k = 0; k < prevMatchObj.players.length; k++) {
@@ -114,7 +114,7 @@ class Match extends WebApplication {
                 if (typeof p !== 'string') {//not s tring therefore and object
                     p = p.user_id;
                 }
-                if(p === user_id){
+                if (p === user_id) {
                     continue;
                 }
                 if (p === opponent_ids[i]) {
@@ -147,7 +147,7 @@ class Match extends WebApplication {
         if (typeof move_counter === 'undefined') {
             move_counter = 0;
         }
-        
+
         if (typeof prevMatchObj.move_counter === 'undefined') {
             prevMatchObj.move_counter = 0;
         }
@@ -191,7 +191,7 @@ class Match extends WebApplication {
                     if (!r) {
                         return;
                     }
-                    
+
                     var match = r.value;
                     if (!match) {
                         return Promise.reject('Match no longer exist - move not sent!');
@@ -206,8 +206,11 @@ class Match extends WebApplication {
                     //Acknowlege move sent by notifying the player that
                     //the sever has receive the move and sent it to the opponents
                     //data.move_sent = true;
-                    me.broadcast(me.evt.game_move, obj, opponent_ids, true);//forward move to the opponents
-                    me.send(me.evt.game_move_sent, obj, user_id, true);
+                    var ack_delivery = true; // REMIND - set to false later! i am doing some testing of detecting duplicate messages! 
+                    console.log('var ack_delivery  = true; // REMIND - set to false later! i am doing some testing of detecting duplicate messages!');
+
+                    me.broadcast(me.evt.game_move, obj, opponent_ids, ack_delivery);//forward move to the opponents
+                    me.send(me.evt.game_move_sent, obj, user_id, ack_delivery);
 
                     //next, broadcast to the game spectators.
 
@@ -610,7 +613,8 @@ class Match extends WebApplication {
             current_set: 1, //first set - important!
             sets: sets,
             players: players,
-            turn_player_id: null// user id of player who made the last move
+            turn_player_id: null, // user id of player who made the last move
+            game_position: null
         };
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
@@ -1170,7 +1174,7 @@ class Match extends WebApplication {
      * Get match by the specified game id
      * 
      * @param {type} game_id
-     * @returns {Array|nm$_match.Match.getMatc.data}
+     * @returns {Array|nm$_match.Match.getMatch.data}
      */
     async getMatch(game_id) {
 
@@ -1192,6 +1196,69 @@ class Match extends WebApplication {
         };
 
         data.match = await c.findOne(query, {_id: 0});
+
+        return data;
+    }
+
+    /**
+     * check if the match is up-to-date returns the match if not
+     * 
+     * @param {type} game_id
+     * @param {type} move_counter
+     * @param {type} game_position
+     * @returns {Array|nm$_match.Match.checkMatchUpdate.data}
+     */
+    async checkMatchUpdate(game_id, move_counter, game_position) {
+
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            game_id = arguments[0].game_id;
+            move_counter = arguments[0].move_counter;
+            game_position = arguments[0].game_position;
+        }
+
+
+        c = this.sObj.db.collection(this.sObj.col.matches);
+
+        var query = {
+            game_id: game_id
+        };
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        var data = {
+            match: null,
+            up_to_date: false
+        };
+
+        data.match = await c.findOne(query, {_id: 0});
+
+        if (!move_counter) {
+            move_counter = 0;
+        }
+
+        if (!game_position) {
+            game_position = null;
+        }
+
+        if (data.match) {
+            
+            if (!data.match.move_counter) {
+                data.match.move_counter = 0;
+            }
+            
+            if (!data.match.game_position) {
+                data.match.game_position = null;
+            }
+            
+            if (data.match.move_counter === move_counter
+                    && data.match.game_position === game_position) {
+                data.match = null; //if the match is up-to-date then no need to return it. the client should just use what it has - no need of reloading
+                data.up_to_date = true;
+            }
+        }
+
+
 
         return data;
     }
