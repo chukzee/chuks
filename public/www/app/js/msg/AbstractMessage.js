@@ -15,7 +15,6 @@ Ns.msg.AbstractMessage = {
     retryWaitDuartion: 1,
     retrySendTimerID: null,
     _waitingNextTick: false,
-    evt_message_added: 'evt_message_added',
     _prepared_items: [],
     _new_added_count: 0,
     _new_set_count: 0,
@@ -191,7 +190,7 @@ Ns.msg.AbstractMessage = {
 
         if (this.msgList.length > 0) {
             var bndOnMessageAdded = onMessageAdded.bind(data);
-            Main.event.on(this.evt_message_added, bndOnMessageAdded);
+            Main.event.on(Ns.Const.EVT_MESSAGE_ADDED, bndOnMessageAdded);
             this.set(this.msgList);
         } else {
             this._remoteGetMessages.call(this, data);
@@ -223,7 +222,7 @@ Ns.msg.AbstractMessage = {
             }
 
             //at this point the last message is added
-            Main.event.off(me.evt_message_added, bndOnMessageAdded);//stop the event
+            Main.event.off(Ns.Const.EVT_MESSAGE_ADDED, bndOnMessageAdded);//stop the event
 
             me._remoteGetMessages.call(me, view_data);
 
@@ -1333,7 +1332,7 @@ Ns.msg.AbstractMessage = {
 
         msg_body.scrollTop = msg_body.scrollHeight;// scroll to be bottom to view the last message
 
-        Main.event.fire(this.evt_message_added, data);
+        Main.event.fire(Ns.Const.EVT_MESSAGE_ADDED, data);
 
         return el;
     },

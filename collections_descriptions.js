@@ -8,7 +8,7 @@ Structure of 'matches' collection documents
             tournament_name:..., //available only if it is a match between players in a tournament . ie tournament match
             players : [ // can be more than two player unlike chess e.g ludo , whot
                 {
-                    type : ...,//e.g white in the case of chess and draft - may be something else in other games
+                    type : ...,//e.g white in the case of chess and draughts - may be something else in other games
                     user_id : ...,
                     name : ....,
                     pic : ....,
@@ -18,7 +18,7 @@ Structure of 'matches' collection documents
                     wdl : ....., e.g W '3, L 2, D 5'
                 },
                 {
-                    type : ...,//e.g black in the case of chess and draft - may be something else in other games
+                    type : ...,//e.g black in the case of chess and draughts - may be something else in other games
                     user_id : ...,
                     name : ....,
                     pic : ....,

@@ -80,7 +80,7 @@ class PlayRequest extends WebApplication {
      * @param {type} initiator_id - id of user who made the request
      * @param {type} opponent_ids - id of the user or users requested. Can be
      *  an array of user ids for game of more than two players e.g ludo , whot
-     * @param {type} game_name - the name of the game e.g chess, draft , ludo e.t.c
+     * @param {type} game_name - the name of the game e.g chess, draughts , ludo e.t.c
      * @param {type} rules - (optional) the rules to apply in the game. If not provided
      *  then the default game rules is used when the game starts
      * @param {type} group_name - the name of the user's group where he selected

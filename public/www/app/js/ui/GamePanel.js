@@ -68,7 +68,7 @@ Ns.ui.GamePanel = {
 
             Ns.ui.GamePanel._loadChess(obj);
 
-        } else if (obj.match.game_name === 'draughts') {
+        } else if (obj.match.game_name === 'draughts' || obj.match.game_name === 'draft') {
 
             Ns.ui.GamePanel._loadDraughts(obj);
 
@@ -232,7 +232,7 @@ Ns.ui.GamePanel = {
             target: "#game-view-menu",
             items: [
                 'Draw offer',
-                'Draft variant', //for draft - we display the draft variant and the rules for the variant
+                'Draughts variant', //for draughts - we display the draughts variant and the rules for the variant
                 'Rules applied',
                 'Rules',
                 'Stats',
@@ -378,7 +378,7 @@ Ns.ui.GamePanel = {
             target: "#game-view-b-menu",
             items: [
                 'Draw offer',
-                'Draft variant', //for draft - we display the draft variant and the rules for the variant
+                'Draughts variant', //for draughts - we display the draughts variant and the rules for the variant
                 'Rules applied',
                 'Rules',
                 'Stats',
@@ -475,7 +475,7 @@ Ns.ui.GamePanel = {
             target: "#game-watch-menu",
             items: [
                 'Spectators',
-                'Draft variant', //for draft - we display the draft variant and the rules for the variant
+                'Draughts variant', //for draughts - we display the draughts variant and the rules for the variant
                 'Rules applied',
                 'Rules',
                 'Stats',
@@ -549,19 +549,19 @@ Ns.ui.GamePanel = {
         var isGamePanelInit;
 
         getGameWatch(function (html) {
-            Main.event.fire('game_panel_setup');
+            Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP);
         });
 
         getGameView(function (html) {
-            Main.event.fire('game_panel_setup');
+            Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP);
         });
 
         getGameViewB(function (html) {
-            Main.event.fire('game_panel_setup');
+            Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP);
         });
 
         var first_match_data;
-        Main.event.on('game_panel_setup', function (match_data) {
+        Main.event.on(Ns.Const.EVT_GAME_PANEL_SETUP, function (match_data) {
             if (!first_match_data) {
                 first_match_data = match_data;
             }

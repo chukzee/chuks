@@ -203,7 +203,7 @@ Ns.Match = {
                 if (!Ns.Match.hasMatchData && matches.length) {
                     Ns.Match.hasMatchData = true;
                     var last_match = matches[matches.length - 1]; // last in the array will be shown first since we prepend data in the list
-                    Main.event.fire('game_panel_setup', last_match);
+                    Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP, last_match);
                     alert('onReady');
                 }
 
@@ -476,6 +476,9 @@ Ns.Match = {
     },
 
     _doUpdateMatchList: function (key, listview, match) {
+        if(!listview){
+            return;
+        }
         var matches = window.localStorage.getItem(key);
         try {
             if (matches) {

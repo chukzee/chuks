@@ -29,7 +29,7 @@ $dark_cell_bg_gradient : #444; //TODO - Use gradient to design
     border : $border;
 }
 
-.game9ja-chess-board , .game9ja-draft-board-inverse{/*Deprecated*/
+.game9ja-chess-board , .game9ja-draughts-board-inverse{/*Deprecated*/
     @extend .game9ja-board-abstract;
 }
 
@@ -60,19 +60,19 @@ $dark_cell_bg_gradient : #444; //TODO - Use gradient to design
 }
 */
 
-.game9ja-draft-board{
+.game9ja-draughts-board{
     @extend .game9ja-chess-board;
 }
 
-.game9ja-draft-board-inverse{
+.game9ja-draughts-board-inverse{
    border: $border;
 }
 
-.game9ja-draft-board-inverse tr:nth-child(odd) td:nth-child(odd){
+.game9ja-draughts-board-inverse tr:nth-child(odd) td:nth-child(odd){
     background : #000;
 }
 
-.game9ja-draft-board-inverse tr:nth-child(even) td:nth-child(even){
+.game9ja-draughts-board-inverse tr:nth-child(even) td:nth-child(even){
     background : #000;
 }
 

@@ -47,7 +47,7 @@ class Match extends WebApplication {
      *   
      * 
      * @param {type} user_id
-     * @param {type} opponent_ids - array of opponent ids. for two player games like  chess and draft it can be a single string. 
+     * @param {type} opponent_ids - array of opponent ids. for two player games like  chess and draughts it can be a single string. 
      * @param {type} next_turn_player_user_id - the next player expected to player     
      * @param {type} game_name
      * @param {type} game_id
@@ -510,7 +510,7 @@ class Match extends WebApplication {
      * appropriate collection is searched. This is useful to
      * reduce search load when you already know where to search
      * 
-     * For a two players game like chess and draft
+     * For a two players game like chess and draughts
      * the first player in the players array is the white ahd
      * the second is the black.
      * 

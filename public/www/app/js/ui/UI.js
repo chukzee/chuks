@@ -3,7 +3,7 @@
 
 Ns.ui.UI = {
 
-    selectedGame: 'chess', //default is chess - set dynamically  when the user selects a type of game e.g chess, draft e.tc
+    selectedGame: 'chess', //default is chess - set dynamically  when the user selects a type of game e.g chess, draughts e.tc
 
     gameViewHtml: null, //set dynamically depending on the device category
 

@@ -74,6 +74,7 @@
             //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
             "app-main.css",
+            "board.css",
             "form.css",
             "tab.css",
             "login.css",

@@ -5,7 +5,7 @@ Ns.GameEventsController = {
 
     constructor: function () {
 
-        Main.event.on('update_match_event', this.updateMatchListener.bind(this));
+        Main.event.on(Ns.Const.EVT_UPDATE_MATCH, this.updateMatchListener.bind(this));
 
         Main.eventio.on('notify_upcoming_match', this.onNotifyUpComingMatch.bind(this));//match reminder - ie say 10 mins before time
         Main.eventio.on('game_start', this.onGameStart.bind(this));
@@ -56,6 +56,11 @@ Ns.GameEventsController = {
                     Ns.game.two.Draughts2D.setMatch(match);
                 }
                 break;
+            case 'draft'://OR draft
+                {
+                    Ns.game.two.Draughts2D.setMatch(match);
+                }
+                break;
             case 'ludo':
                 {
                     Ns.game.two.Ludo2D.setMatch(match);
@@ -83,6 +88,11 @@ Ns.GameEventsController = {
                 }
                 break;
             case 'draughts':
+                {
+                    Ns.game.two.Draughts2D.reloadGame(match, toast_text);
+                }
+                break;
+            case 'draft'://OR draft
                 {
                     Ns.game.two.Draughts2D.reloadGame(match, toast_text);
                 }
@@ -117,6 +127,11 @@ Ns.GameEventsController = {
                 }
                 break;
             case 'draughts':
+                {
+                    Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
+                }
+                break;
+            case 'draft'://OR draft
                 {
                     Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
                 }
@@ -165,6 +180,11 @@ Ns.GameEventsController = {
                 }
                 break;
             case 'draughts':
+                {
+                    Ns.game.two.Draughts2D.displayThinking(prop);
+                }
+                break;
+            case 'draft'://OR draft
                 {
                     Ns.game.two.Draughts2D.displayThinking(prop);
                 }

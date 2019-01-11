@@ -24,11 +24,6 @@ function draftFn(size) {
     var eval_count = 0;
     var prune_count = 0;
     var node_count = 0;
-    this.DefaultBoardPostion = {
-        turn: true, //white
-        size: 0, //set automatically upon initialization
-        pieces: null //set automatically upon initialization
-    };
     var up_right = 1,
             up_left = 2,
             down_right = 3,
@@ -90,12 +85,13 @@ function draftFn(size) {
 
         this.turn = board_positon.turn;
         initBoard.call(this, brd_size);
+
         var gm_pieces = board_positon.pieces;
 
         //validate pieces : e.g check for duplicate piece id ; check piece properties
         for (var i = 0; i < gm_pieces.length; i++) {
             for (var k = 0; k < gm_pieces.length; k++) {
-                if (k === i) {
+                if (i === k) {
                     continue;
                 }
                 if (gm_pieces[i].id !== null
@@ -122,7 +118,7 @@ function draftFn(size) {
             }
         }
 
-        if (board_positon.pieces.length < BoardPieceCount[this.SIZE]) {
+        if (gm_pieces.length < BoardPieceCount[this.SIZE]) {
             //first count white and black captured
             var w = 0;
             var b = 0;
@@ -137,8 +133,8 @@ function draftFn(size) {
             var cw = BoardPieceCount[this.SIZE] / 2 - w;
             var cb = BoardPieceCount[this.SIZE] / 2 - b;
 
-            if (cw < 0 || cb) {
-                throw new Error("number of " + (cw ? "white" : "black") + " pieces is greater than maximum of " + BoardPieceCount[SIZE] / 2);
+            if (cw < 0 || cb < 0) {
+                throw new Error("number of " + (cw < 0 ? "white" : "black") + " pieces is greater than maximum of " + BoardPieceCount[SIZE] / 2);
             }
 
             //white off board
@@ -152,50 +148,16 @@ function draftFn(size) {
 
         }
 
-        for (var i = 0; i < gm_pieces.length; i++) {
-            var pce = gm_pieces[i];
-            this.setPiece(pce.sqLoc, pce.white, pce.crowned);
+
+        this.pieces = gm_pieces;
+
+        for (var sq = 0; sq < this.board.length; sq++) {
+            this.board[sq].piece = null;
         }
 
-        //now prevserse the ids
         for (var i = 0; i < gm_pieces.length; i++) {
-            var pce = gm_pieces[i];
-            if (pce.sqLoc === this.pieces[i].sqLoc
-                    && pce.id !== this.pieces[i].id) {
-                this.pieces[i].id = pce.id;//set the id
-                //now check if any other id already has this id
-                for (var k = 0; k < gm_pieces.length; k++) {
-                    if (k === i) {
-                        continue;//skip
-                    }
-
-                    if (this.pieces[i].id === pce.id) {//found so cancel the id
-                        this.pieces[i].id = null;//cancel in the meantime
-                    }
-                }
-            }
-        }
-
-        //now reassign any cancelled id and set captured pieces
-        for (var i = 0; i < this.pieces.length; i++) {
-
-            if (!this.pieces[i].id && this.pieces[i].id !== 0) {
-                for (var id = 0; id < this.pieces.length; id++) {
-                    var found = false;
-                    //check if it already exist
-                    for (var k = 0; k < this.pieces.length; k++) {
-                        if (id === this.pieces[i].id) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        //does not ready exist so assign it.
-                        this.pieces[i].id = id;
-                    }
-                }
-            }
-
+            var sq_loc = gm_pieces[i].sqLoc;
+            this.board[sq_loc].piece = gm_pieces[i];
         }
 
         //finally
@@ -235,6 +197,8 @@ function draftFn(size) {
             throw Error('Invalid FEN body  - openning or closing double quote missing!');
         }
 
+        fen = fen.substring(1, fen.length - 1);//remove the double quote at each end
+
         fen = fen.split(':');
         if (fen[0] === 'W' || fen[0] === 'w') {
             position.turn = true;//white
@@ -247,11 +211,17 @@ function draftFn(size) {
         var w_pos, b_pos;
         if (fen[1].charAt(0) === 'W' || fen[1].charAt(0) === 'w') {
             w_pos = fen[1];
-        } else if (fen[1].charAt(0) === 'B' || fen[1].charAt(0) === 'b') {
+        }
+
+        if (fen[1].charAt(0) === 'B' || fen[1].charAt(0) === 'b') {
             b_pos = fen[1];
-        } else if (fen[2].charAt(0) === 'W' || fen[2].charAt(0) === 'w') {
+        }
+
+        if (fen[2].charAt(0) === 'W' || fen[2].charAt(0) === 'w') {
             w_pos = fen[2];
-        } else if (fen[2].charAt(0) === 'B' || fen[2].charAt(0) === 'b') {
+        }
+
+        if (fen[2].charAt(0) === 'B' || fen[2].charAt(0) === 'b') {
             b_pos = fen[2];
         }
 
@@ -526,8 +496,6 @@ function draftFn(size) {
             this.SIZE = size;
         }
 
-        this.DefaultBoardPostion.size = this.SIZE;
-
         this.SQ_COUNT = this.SIZE * this.SIZE;
         this.OFF_BOARD = this.SQ_COUNT;
         this.LAST_SQ_INDEX = this.SQ_COUNT - 1;
@@ -560,9 +528,11 @@ function draftFn(size) {
         this.board[this.SQ_COUNT].SquareRightDown = this.board[this.SQ_COUNT];
         this.board[this.SQ_COUNT].SquareLeftDown = this.board[this.SQ_COUNT];
 
+
         for (var i = 0; i < len; i++) {
             this.setPiece(i);
         }
+
 
         for (var i = 0; i < this.SQ_COUNT; i++) {
             this.board[i].SquareRightUp = this.board[this.board[i].rightUp];
@@ -571,8 +541,6 @@ function draftFn(size) {
             this.board[i].SquareLeftDown = this.board[this.board[i].leftDown];
         }
 
-        this.DefaultBoardPostion.pieces = this.pieces;
-
         initNotations.call(this);
     }
 
@@ -580,7 +548,7 @@ function draftFn(size) {
     function Piece(sq, white, crowned) {
         //the piece id is set during board initializatin - see initBoard function
         //NOTE: The piece id must only be used by the game engine. It must not be
-        //used in other purposes unless if the board in well synchronize between the
+        //used in other purposes unless if the board in well synchronized between the
         //remote players, otherwise it may cause some hard-to-find bug
         if (arguments.length === 0) {
             this.sqLoc = draft.OFF_BOARD;

@@ -161,9 +161,9 @@ Ns.game.two.Draughts2D = {
 
     getBoardClass: function (inverse_board) {
         if (inverse_board) {
-            return 'game9ja-draft-board-inverse';
+            return 'game9ja-draughts-board-inverse';
         } else {
-            return 'game9ja-draft-board';
+            return 'game9ja-draughts-board';
         }
     },
     getVariant: function (variant) {

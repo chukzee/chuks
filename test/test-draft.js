@@ -77,7 +77,8 @@ draft.moveTo(22,cap, function(obj){
 });
 
 var depth = 5;
-var robot = new draft.Robot(draft.DefaultBoardPostion, depth);
+var BoardPostion = '';//TODO
+var robot = new draft.Robot(BoardPostion, depth);
 
 var startTime = new Date().getTime();
 

@@ -56,7 +56,7 @@ Main.on("pagecreate", function (arg) {
             duration: 500,
             onBeforeShow: Ns.GameView.Content,
             data: {
-                game: "name of game e.g chess , draft etc",
+                game: "name of game e.g chess , draughts etc",
                 game_id: "3i393kj383k2c83j", //a unique id for this match
                 white_id: "07038428492", //must be a phone number
                 white_name: "Chuks Alimele",
@@ -96,7 +96,7 @@ Main.on("pagecreate", function (arg) {
             duration: 500,
             onBeforeShow: Ns.GameWatch.Content,
             data: {
-                game: "name of game e.g chess , draft etc",
+                game: "name of game e.g chess , draughts etc",
                 game_id: "3i393kj383k2c83j", //a unique id for this match
                 white_id: "07038428492", //must be a phone number
                 white_name: "Chuks Alimele",

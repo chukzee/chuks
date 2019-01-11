@@ -36,7 +36,7 @@ Ns.game.AbstractBoard3D = {
      * <br>
      * obj = {<br>
      *        container: 'the_container', //compulsory <br>
-     *        variant:'the variant', //compulsory for draft only <br>
+     *        variant:'the variant', //compulsory for draughts only <br>
      *        gamePosition: 'the_game_posiont', //optional<br>
      *        white: true, //whether the user is white or black. For watched games this field in absent<br>
      *        flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above<br>

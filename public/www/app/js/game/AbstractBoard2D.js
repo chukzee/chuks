@@ -25,7 +25,7 @@ Ns.game.AbstractBoard2D = {
      * <br>
      * obj = {<br>
      *        container: 'the_container', //compulsory <br>
-     *        variant:'the variant', //compulsory for draft only <br>
+     *        variant:'the variant', //compulsory for draughts only <br>
      *        gamePosition: 'the_game_posiont', //optional<br>
      *        white: true, //whether the user is white or black. For watched games this field in absent<br>
      *        flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above<br>
@@ -409,7 +409,7 @@ Ns.game.AbstractBoard2D = {
 
         doRemoteMove.call(me, path.from, _to, index);
 
-        function doRemoteMove(from, to, index) {// come back - NOT COMPLETE ABEGO!!!
+        function doRemoteMove(from, to, index) {
 
             var moveResult = me.makeMove(from, to);
             try {
@@ -451,7 +451,7 @@ Ns.game.AbstractBoard2D = {
                 }
                 if (moveResult.error) {//this should not happen
                     console.log('Something is wrong - opponent or remote player move generate error!');
-                } else {//board positions is different (incorrect). likely cause is unupdated match object
+                } else {//board positions is different (incorrect). likely cause is none up-to-date match object
                     console.log('Something is wrong - opponent or remote player move cause inconsistent board position!');
                 }
 
@@ -504,10 +504,15 @@ Ns.game.AbstractBoard2D = {
     checkUpdate: function (match) {
         Main.ro.match.checkMatchUpdate(match.game_id, match.move_counter, match.game_position)
                 .get(function (data) {
-                    Main.event.fire('update_match_event', data);
+                    Main.event.fire(Ns.Const.EVT_UPDATE_MATCH, data);
                 })
-                .error(function (err) {
-
+                .error(function (err, err_code, connect_err) {
+                    if (connect_err) {
+                        Main.toast.show('Please check connection. Could not check game update!');
+                    } else {
+                        Main.toast.show('Could not check game update!');
+                    }
+                    console.log(err);
                 });
     },
 

@@ -35,9 +35,9 @@ Ns.game.Draughts = {
 
         var draughts = Draft9ja();//defualt
         
-        if (obj.match._unsentGamePosition) {//first retry the pending (unsent) game position
+        if (obj.match && obj.match._unsentGamePosition) {//first retry the pending (unsent) game position
             draughts.boardPosition(obj.match._unsentGamePosition);
-        }else if(obj.match.game_position){
+        }else if(obj.match && obj.match.game_position){
             draughts.boardPosition(obj.match.game_position);
         }
 

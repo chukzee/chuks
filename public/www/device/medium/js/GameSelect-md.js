@@ -24,13 +24,13 @@ Main.on("pagecreate", function (arg) {
             data: 'chess'
         });
     });
-    $('#game-select-draft').on('click', function () {
+    $('#game-select-draughts').on('click', function () {
         Main.page.show({
             url: "game-home-md.html",
             effect: "fade",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: 'draft'
+            data: 'draughts'
         });
     });
     $('#game-select-ludo').on('click', function () {

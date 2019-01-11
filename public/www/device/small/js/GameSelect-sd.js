@@ -25,13 +25,13 @@ Main.on("pagecreate", function (arg) {
 
     });
 
-    $('#game-select-draft').on('click', function () {
+    $('#game-select-draughts').on('click', function () {
         Main.page.show({
             url: "game-home.html",
             effect: "slideleft",
             duration: 500,
             onBeforeShow: Ns.GameHome.Content,
-            data: 'draft'
+            data: 'draughts'
         });
     });
 
