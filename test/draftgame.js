@@ -1050,7 +1050,8 @@ function draftFn(size) {
         }
 
         if (result) {
-
+            //the engine does not get to this point.
+            this.turn = !this.turn;//switch to next turn - ok to switch turn here since the game engine does not get here. the game engine does its switch in move search method
             var from_san = this.SqNumber[from].SAN;
             var to_san = this.SqNumber[to].SAN;
             var move_notation = from_san;
