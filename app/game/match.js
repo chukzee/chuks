@@ -632,7 +632,7 @@ class Match extends WebApplication {
         //or the other to any of the players - ie via contacts or group or tournament
         this._broadcastWatchGame(match, this.evt.watch_game_start);
 
-        return 'Game started.';
+        return match;
     }
 
     /**

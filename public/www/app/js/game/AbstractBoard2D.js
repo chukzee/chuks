@@ -416,8 +416,13 @@ Ns.game.AbstractBoard2D = {
 
                 me.markCapturedPiece(moveResult);
 
+                var pce_from = from;
+                if (index > 0) {
+                    pce_from = path.to[index - 1];
+                }
+
                 var to_num = me.toNumericSq(to);
-                var from_num = me.toNumericSq(from);
+                var from_num = me.toNumericSq(pce_from);
 
                 if (me.isBoardFlip) {
                     to_num = me.flipSquare(to_num);
@@ -434,7 +439,8 @@ Ns.game.AbstractBoard2D = {
                         ++index;
                         to_sq = path.to[index];
                     }
-                    return doRemoteMove.bind(me, path.from, to_sq);
+
+                    doRemoteMove.call(me, path.from, to_sq, index);
                 }.bind(moveResult));
 
                 me.afterMoveComplete(moveResult);
@@ -892,8 +898,8 @@ Ns.game.AbstractBoard2D = {
             //making sure the piece is on the right spot just in
             //case the orientation changes or the board is resized
             center = me.squareCenter(to);
-            py = center.y - this.pieceHeight / 2;
-            px = center.x - this.pieceWidth / 2;
+            py = center.y - me.pieceHeight / 2;
+            px = center.x - me.pieceWidth / 2;
             target.style.top = py + 'px';
             target.style.left = px + 'px';
             target.style.zIndex = null;
@@ -985,10 +991,17 @@ Ns.game.AbstractBoard2D = {
             this.squarePieces[cap_sq] = null;// clear the square
             var box = pce.getBoundingClientRect();
             var dist = box.width ? box.width : '200';
+            var hd = dist/2;
             dist = '-' + dist + 'px';
-            Main.anim.to(pce, 1000, {right: dist, top: dist}, function () {
-                //do nothing for now atleast
-            });
+            hd = '-' + hd + 'px';
+            Main.anim.to(pce, 1000, {top: dist}, function () {
+                var pce_el = this;
+                var disappear = {opacity: 0, width: 0, height: 0, top: hd}; //make the piece disappear
+                
+                Main.anim.to(pce_el, 1000,disappear , function () {
+                    //do nothing for now atleast
+                });
+            }.bind(pce));
         }
 
 
@@ -1001,6 +1014,11 @@ Ns.game.AbstractBoard2D = {
     markCapturedPiece: function (moveResult) {
         if (moveResult.mark_capture) {
             var cap_sq = this.toNumericSq(moveResult.mark_capture);
+
+            if (this.isBoardFlip) {//new
+                cap_sq = this.flipSquare(cap_sq);
+            }
+
             if (this.squareList[cap_sq]) {
                 this.highlightSquare(this.squareList[cap_sq], this.CAPTURED_SQUARE_STYLE);
                 this.captureSquareList.push(this.squareList[cap_sq]);
@@ -1080,7 +1098,7 @@ Ns.game.AbstractBoard2D = {
                     throw Error('Move result returned by subcalss must contain the field, "board_position"');
                 }
 
-                if (moveResult.done && moveResult.notation && !moveResult.error) {
+                if (moveResult.done && moveResult.notation && !moveResult.error && !this.config.isTesting) {
                     this.sendGameMove(moveResult.notation, moveResult.board_position); //REMOVE COMMENT LATER
                 }
 
@@ -1129,8 +1147,9 @@ Ns.game.AbstractBoard2D = {
         }
         var side1 = this.isWhite(pce);
         var side2 = this.userSide === 'w';
-        if (pce
-                && side1 === side2 //COMMENT THIS LINE IF TESTING
+        if ((pce
+                && side1 === side2)
+                || this.config.isTesting
                 ) {
             this.pickedSquare = this.squareList[sq];
             this.highlightSquare(this.pickedSquare, this.PICKED_SQUARE_STYLE);

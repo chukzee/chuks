@@ -329,6 +329,11 @@ function draftFn(size) {
             position.pieces.push(pce);
         }
 
+        //set piece id
+        for(var i=0; i< position.pieces.length; i++){
+            position.pieces[i].id = i;
+        }
+
         return position;
     }
 
