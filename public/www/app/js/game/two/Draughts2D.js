@@ -20,6 +20,59 @@ Ns.game.two.Draughts2D = {
 
     },
 
+    checkGameOver: function () {
+        //first check the match status field because in the case of draw offer
+        //the internal game cannot tell if there was a draw offer
+        if (this.config.match.status === 'finish') {
+            return true;
+        }
+        return this.internalGame.isGameOver();
+    },
+    getGameOverMessage: function () {
+        var messgage = '';
+        var is_white_winner;
+        var is_draw;
+        var match = this.config.match;
+        //first check the match status field because in the case of draw offer
+        //the internal game cannot tell if there was a draw offer
+        if (match.status === 'finish') {
+            if (match.winner) {
+                is_white_winner = match.players[0].user_id === match.winner;
+            } else {
+                is_draw = true;
+            }
+        } else if (this.internalGame.isGameOver()) {
+            is_white_winner = this.internalGame.getWinner() === 'w';
+            is_draw = !this.internalGame.getWinner();
+        } else {
+            return '';
+        }
+
+        //At this point the game is over
+
+        messgage = '';
+        if (is_draw) {
+            messgage += 'Draw!';
+        } else if (this.config.white === true || this.config.white === false) {//must be true of false - own game view
+            var user_id = Ns.view.UserProfile.appUser.user_id;
+            var is_white_player = match.players[0].user_id === user_id;
+            messgage += is_white_winner === is_white_player ? 'You win!' : 'You loss!';
+        } else {//watch game view
+            messgage += is_white_winner ? 'White wins!' : 'Black wins!';
+        }
+
+
+        return messgage;
+    },
+    
+    /**
+     * must return 'w' for white and 'b' for black
+     * @returns {unresolved}
+     */
+    getWinnerSide: function () {
+        return this.internalGame.getWinner();
+    },
+
     getGamePostion: function () {
         return this.internalGame.toFEN();
     },
@@ -40,8 +93,8 @@ Ns.game.two.Draughts2D = {
     pieceSquarRatio: function () {
         return 0.6;
     },
-    
-    isWhiteTurn: function(){
+
+    isWhiteTurn: function () {
         return this.internalGame.turn;
     },
 
@@ -69,7 +122,6 @@ Ns.game.two.Draughts2D = {
         return {from: from, to: to};
     },
 
-
     makeMove: function (from, to) {
         var caps = this.internalGame.capturableSAN(from);
         var resObj = {
@@ -80,6 +132,14 @@ Ns.game.two.Draughts2D = {
             notation: null,
             board_position: null
         };
+
+        if (!caps) {
+            resObj.done = false;
+            resObj.hasMore = false;
+            resObj.error = 'unexpected result! may be cause by no piece on internal board square or less likely, internal board piece square error - see respective internal game caller method.';
+            return;
+        }
+
         //we know caps is two dimensional array
         if (caps.length > 0 && caps[0].length > 0) {//capture
             if (!this.capturePath) {

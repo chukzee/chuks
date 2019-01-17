@@ -16,6 +16,55 @@ Ns.game.two.Chess2D = {
 
     },
 
+    checkGameOver: function () {
+        return this.internalGame.game_over();
+    },
+
+    getGameOverMessage: function () {
+
+        var match = this.config.match;
+
+        var messgage = '';
+        if (this.internalGame.in_insufficient_material()) {
+            messgage = 'Draw by insufficient material!';
+        } else if (this.internalGame.in_threefold_repitition()) { // depends on the rule i think
+            messgage = 'Draw by threefold repitition!';
+        } else if (this.internalGame.in_stalemate()) {
+            messgage = 'Draw by stalemate!';
+        } else if (this.internalGame.in_draw()) {//at this point the draw should be due to fifty move rule 
+            messgage = 'Draw by fifty move rule!';
+        } else if (this.internalGame.in_checkmate()) {
+            messgage = 'Checkmate! ';
+            var side = this._winnerSide(true);
+            var is_white_winner = side === 'w';
+            if (this.config.white === true || this.config.white === false) {//must be true of false - own game view
+                var user_id = Ns.view.UserProfile.appUser.user_id;
+                var is_white_player = match.players[0].user_id === user_id;
+                messgage += is_white_winner === is_white_player ? 'You win!' : 'You loss!';
+            } else {//watch game view
+                messgage += is_white_winner ? 'White wins!' : 'Black wins!';
+            }
+        }
+
+    },
+
+    /**
+     * must return 'w' for white and 'b' for black
+     * @returns {unresolved}
+     */
+    getWinnerSide: function () {
+        var chatemate = this.internalGame.in_checkmate();
+        return this._winnerSide(chatemate);         
+    },
+
+    _winnerSide: function (chatemate) {
+        if (chatemate) {
+            var turn = this.internalGame.turn();//the side to move that has been checkmated
+            return turn === 'w' ? 'b' : 'w';//if white  then black is the winner and vice versa
+        }
+        return null;
+    },
+
     getGamePostion: function () {
         return this.internalGame.fen();
     },
@@ -63,8 +112,8 @@ Ns.game.two.Chess2D = {
     pieceSquarRatio: function () {
         return 0.8;
     },
-    
-    isWhiteTurn: function(){
+
+    isWhiteTurn: function () {
         return this.internalGame.turn() === 'w';
     },
 
@@ -79,7 +128,7 @@ Ns.game.two.Chess2D = {
         } else {
             arr = notation.split('x');
         }
-        return {from : arr[0], to : arr[1]};
+        return {from: arr[0], to: arr[1]};
     },
 
     makeMove: function (from, to) {
@@ -116,11 +165,21 @@ Ns.game.two.Chess2D = {
 
         console.log(result);
 
+        var err_msg = null;
+
+        if (!result) {
+            if (this.internalGame.in_check()) {
+                err_msg = 'King in check!';
+            } else {
+                err_msg = 'Invalid move!';
+            }
+        }
+
         resObj.notation = !result ? null : result.from + (cap ? 'x' : '-') + result.to;
         resObj.board_position = this.internalGame.fen();
         resObj.done = result ? true : false;
         resObj.capture = cap;
-        resObj.error = !result ? 'Invalid move' : null;
+        resObj.error = err_msg;
 
         return resObj;
     },

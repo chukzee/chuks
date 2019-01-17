@@ -1,14 +1,19 @@
 
-var draft = {};
+var draughts = {};
 
-var Draft9ja = draftFn.bind(draft); //bind the 'this' of draftFn to draft - this technique is twice faster than not using the bind method - I have tested it!!!
+var Draughts = draughtsFn.bind(draughts); //bind the 'this' of draughtsFn to draughts - this technique is twice faster than not using the bind method - I have tested it!!!
 
-function draftFn(size) {
+function draughtsFn(variant) {
+
+    //12 x 12 board is supported only for human to human players and not for robot.
+    //12 x 12 board is not supported by the game engine (robot) because the bit value max is 127 and so storing bit move is very difficult if not impossible for maximum performance 
+    //with 12 x 12 board (ie 144 squares which is greate than 127). so we only support 10 x 10 and 8 x 8 for robot.
+    
     this.MAX_VALUE = 1000000;
     this.turn = true; //white
     this.board = [];
     this.pieces = [];
-    this.SIZE = 10; //default is 10 by 10
+    this.SIZE;
     this.SQ_COUNT;
     this.OFF_BOARD;
     this.LAST_SQ_INDEX;
@@ -18,6 +23,10 @@ function draftFn(size) {
     this.blackKingCount = 0;
     this.DEPTH = 5;
     this.lastError = null;
+    this.NOTHING = null;
+    this.WHITE = 'w';
+    this.BLACK = 'b';
+    this.DRAW = 0;
     this.SAN = {}; // Mapping for the Standard Algebraic Notation (SAN) to the internal square number (or square index).
     this.NN = {};// Mappping for the  Numeric Notation (NN) to the internal square number (or square index).
     this.SqNumber = {};// Mapping for the internal square number (or square index) to the Standard Algebraic Notation (SAN) and Numeric Notation (NN).
@@ -30,7 +39,8 @@ function draftFn(size) {
             down_left = 4;
 
     var REVERSE_DIRECTION = [];
-    BoardPieceCount = {//these are the supported
+    BoardPieceCount = {//these are the supported for now since FROM_SQUARE_MASK is max 127
+        12: 60, //12 x 12 = 60 pieces - only supported for human to human player. Not supported by the game engine (robot)
         10: 40, //10 x 10 = 40 pieces
         8: 24 // 8 x 8    = 24 pieces
     };
@@ -47,6 +57,29 @@ function draftFn(size) {
     this.FROM_SQUARE_SHIFT = 0;
     this.TO_SQUARE_SHIFT = this.FROM_SQUARE_SHIFT + 7;
 
+    this.DEFAULT_VARIANT = 'international draughts';
+
+    this.Rules = {
+        first_turn: false,
+        board_size: null,
+        inverted_board: false,
+        men_capture_backward: false,
+        flying_kings: false,
+        lose_after_single_piece_remain: false, //the player with only one piece remaining automatically loses the game
+        prefer_king_as_capturer: false,
+        mandatory_capture: false,
+        men_cannot_capture_king: false,
+        max_capture: false, //whether to consider the path with max pieces
+        max_kings_capture: false, //whether to consider the path with max kings
+        max_equal_pieces_capture_value: false, //whether to consider the path whose capture value is max if the number of capturables are equal -  the king are give a value less then two men but greater then 1 man
+        captures_a_king_first_chosen: false, //if after filtering the capture seqences for max_capture and max_kings_capture then consider the sequence that first begin with king captive
+        forfeit_king: false, //whether to forfeit the king if player fails to utilize king capture opportunity. When the player fails to use the king to capture the king is seized
+        forfeit_piece: false////whether to forfeit the piece if player fails to utilize any capture opportunity.
+    };
+
+    setRules.call(this, variant);
+
+
     this.getBoard = function () {
         return this.board;
     };
@@ -57,15 +90,6 @@ function draftFn(size) {
      * If the parameter is string then it is assumed to be the game
      * position represent in Forsyth-Edwards Notation FEN<br> 
      * 
-     * If the parameter is an object the following compulsory properties
-     * must be provided:<br>
-     * 
-     * turn -  player's turn. ie white or black<br>
-     * size - The size of the game<br>
-     * pieces - The pieces on the board or the entire pieces of the game.<br>
-     *          NOTE: if only the pieces on the board are provided, the rest <br>
-     *          will be automaticcally set with their square location set to<br>
-     *          OFF_BOARD and other default properties.<br>
      * 
      * @param {type} boardPositonObj
      * @return {undefined}
@@ -73,6 +97,8 @@ function draftFn(size) {
     this.boardPosition = function (board_positon) {
         if (typeof board_positon === 'string') {
             board_positon = parseFEN.call(this, board_positon);
+        } else {
+            throw new Error("expected FEN string representation of board position");
         }
 
         if (board_positon.turn !== true && board_positon.turn !== false) {
@@ -84,7 +110,7 @@ function draftFn(size) {
         }
 
         this.turn = board_positon.turn;
-        initBoard.call(this, brd_size);
+        initBoard.call(this);
 
         var gm_pieces = board_positon.pieces;
 
@@ -330,7 +356,7 @@ function draftFn(size) {
         }
 
         //set piece id
-        for(var i=0; i< position.pieces.length; i++){
+        for (var i = 0; i < position.pieces.length; i++) {
             position.pieces[i].id = i;
         }
 
@@ -449,17 +475,34 @@ function draftFn(size) {
          console.log("----------------- ");
          */
 
-        if (row % 2 === 0) {
+        if (row % 2 === 0 && !this.Rules.inverted_board) {
             if (col % 2 === 0) {
                 square.dark = true;
             } else {
                 square.dark = false;
             }
-        } else {
+        } else if (row % 2 !== 0 && !this.Rules.inverted_board) {
             if (col % 2 === 0) {
                 square.dark = false;
             } else {
                 square.dark = true;
+            }
+        }
+
+
+        //new
+        if (row % 2 === 0 && this.Rules.inverted_board) {
+            if (col % 2 === 0) {
+                square.dark = false;
+            } else {
+                square.dark = true;
+            }
+
+        } else if (row % 2 !== 0 && this.Rules.inverted_board) {
+            if (col % 2 === 0) {
+                square.dark = true;
+            } else {
+                square.dark = false;
             }
         }
 
@@ -490,16 +533,235 @@ function draftFn(size) {
         boardPiecesCount.call(this);
     };
 
-    initBoard.call(this, size);
 
-    function initBoard(size) {
+    initBoard.call(this);
+
+    function setRules(variant) {
+        if (typeof variant === 'undefined' || variant === null) {
+            variant = this.DEFAULT_VARIANT;
+        }
+
+        var v = variant.toLowerCase();
+        var space = ' ';
+        v = v.replace(/_/g, space);
+        v = v.replace(/-/g, space);
+        v = v.replace(/ /g, space);
+
+        var spl = v.split(' ');
+        if (spl[1] !== 'draughts' && spl[1] !== 'checkers') {
+            throw Error('unknown variant - ' + variant);
+        }
+
+        var country = spl[0];
+
+        switch (country) {
+            case 'international':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 10;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'polish'://same as international
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 10;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'ghanaian':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 10;
+                    this.Rules.inverted_board = true;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                    this.Rules.forfeit_king = true;
+                    this.lose_after_single_piece_remain = true;
+                }
+                break;
+            case 'frisian'://not supported because capture can also be made straight forward and sideways
+                {
+                    //Not supported
+                }
+                break;
+            case 'canadian'://robot for canadian will not be supported
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 12;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'brazilian':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 8;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'pool':
+                {
+                    this.Rules.first_turn = false;
+                    this.Rules.board_size = 8;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'jamaican':
+                {
+                    this.Rules.first_turn = false;
+                    this.Rules.board_size = 8;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'russian':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 8;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'mozambican':
+                {
+
+                    this.Rules.first_turn = true;//not fixed so we just choose white
+                    this.Rules.board_size = 8;
+                    this.Rules.inverted_board = true;
+                    this.Rules.men_capture_backward = true;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'spanish'://not supported because play is on light square
+                {
+                    //Not supported
+                }
+                break;
+            case 'malaysian'://Robot for this will not be supported
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 12;
+                    this.Rules.flying_kings = true;
+                    this.Rules.forfeit_king = true;
+                    this.Rules.forfeit_piece = true;
+                }
+                break;
+            case 'singaporean'://Robot for this will not be supported
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 12;
+                    this.Rules.flying_kings = true;
+                    this.Rules.forfeit_king = true;
+                    this.Rules.forfeit_piece = true;
+                }
+                break;
+            case 'czech':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 12;
+                    this.Rules.flying_kings = true;
+                    this.Rules.prefer_king_as_capturer = true;
+                }
+                break;
+            case 'hungarian'://not supported since all pieces are long range
+                {
+
+                }
+                break;
+            case 'highlander'://not supported since all pieces are long range
+                {
+
+                }
+                break;
+            case 'slovak'://not supported since all pieces are long range
+                {
+
+                }
+                break;
+            case 'argentinian':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 8; // only its 8 x 8 variant is support since its 10 x 10 variant has 15 piece each as against the conventional 20 piecess
+                    this.Rules.inverted_board = true;
+                    this.Rules.flying_kings = true;
+                    this.Rules.prefer_king_as_capturer = true;
+                    this.Rules.max_capture = true;
+                    this.Rules.max_kings_capture = true;
+                }
+                break;
+            case 'thai':
+                {
+                    this.Rules.first_turn = false;
+                    this.Rules.board_size = 8;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'german':
+                {
+                    this.Rules.first_turn = false;
+                    this.Rules.board_size = 8;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'turkish'://not supported since the men move straigt forward instead of diagonal
+                {
+
+                }
+                break;
+            case 'myanmar':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 8;
+                    this.Rules.flying_kings = true;
+                }
+                break;
+            case 'tanzanian':
+                {
+                    this.Rules.first_turn = true;//not fixed so we just choose white
+                    this.Rules.board_size = 8;
+                    this.Rules.flying_kings = true;
+                    this.Rules.mandatory_capture = true;
+                }
+                break;
+            case 'english':
+                {
+                    this.Rules.first_turn = false;
+                    this.Rules.board_size = 8;
+                }
+                break;
+            case 'americal'://same as english
+                {
+                    this.Rules.first_turn = false;
+                    this.Rules.board_size = 8;
+                }
+                break;
+            case 'italian':
+                {
+                    this.Rules.first_turn = true;
+                    this.Rules.board_size = 8;
+                    this.Rules.inverted_board = true;
+                    this.Rules.men_cannot_capture_king = true;
+                    this.Rules.prefer_king_as_capturer = true;
+                    this.Rules.max_capture = true;
+                    this.Rules.max_kings_capture = true;
+                    this.Rules.captures_a_king_first_chosen = true;
+                }
+                break;
+        }
+
+    }
+
+    function initBoard() {
+
+        this.SIZE = this.Rules.board_size;
 
         this.board = [];
         this.pieces = [];
-
-        if (size) {
-            this.SIZE = size;
-        }
 
         this.SQ_COUNT = this.SIZE * this.SIZE;
         this.OFF_BOARD = this.SQ_COUNT;
@@ -556,13 +818,13 @@ function draftFn(size) {
         //used in other purposes unless if the board in well synchronized between the
         //remote players, otherwise it may cause some hard-to-find bug
         if (arguments.length === 0) {
-            this.sqLoc = draft.OFF_BOARD;
-            this.sqCap = draft.OFF_BOARD;//square captured from
+            this.sqLoc = draughts.OFF_BOARD;
+            this.sqCap = draughts.OFF_BOARD;//square captured from
             this.white = true;
             this.crowned = false;
         } else {
             this.sqLoc = sq;
-            this.sqCap = draft.OFF_BOARD;//square captured from
+            this.sqCap = draughts.OFF_BOARD;//square captured from
             this.white = white;
             this.crowned = crowned;
         }
@@ -571,60 +833,60 @@ function draftFn(size) {
     }
 
     function getRow(sq) {
-        return sq > -1 && sq < draft.SQ_COUNT ? Math.floor(sq / draft.SIZE) : null;
+        return sq > -1 && sq < draughts.SQ_COUNT ? Math.floor(sq / draughts.SIZE) : null;
     }
 
     function getCol(sq) {
 
-        return sq > -1 && sq < draft.SQ_COUNT ? (sq % draft.SIZE) : null;
+        return sq > -1 && sq < draughts.SQ_COUNT ? (sq % draughts.SIZE) : null;
     }
 
     function leftUp(sq) {
-        if (sq > -1 && sq < draft.SQ_COUNT) {
-            var loc = sq + draft.SIZE - 1;
+        if (sq > -1 && sq < draughts.SQ_COUNT) {
+            var loc = sq + draughts.SIZE - 1;
             if (getRow(sq) + 1 !== getRow(loc)
-                    || loc > draft.LAST_SQ_INDEX) {
-                return draft.OFF_BOARD;
+                    || loc > draughts.LAST_SQ_INDEX) {
+                return draughts.OFF_BOARD;
             }
             return loc;
         }
-        return draft.OFF_BOARD;
+        return draughts.OFF_BOARD;
     }
 
     function  rightUp(sq) {
-        if (sq > -1 && sq < draft.SQ_COUNT) {
-            var loc = sq + draft.SIZE + 1;
+        if (sq > -1 && sq < draughts.SQ_COUNT) {
+            var loc = sq + draughts.SIZE + 1;
             if (getRow(sq) + 1 !== getRow(loc)
-                    || loc > draft.LAST_SQ_INDEX) {
-                return draft.OFF_BOARD;
+                    || loc > draughts.LAST_SQ_INDEX) {
+                return draughts.OFF_BOARD;
             }
             return loc;
         }
-        return draft.OFF_BOARD;
+        return draughts.OFF_BOARD;
     }
 
     function leftDown(sq) {
-        if (sq > -1 && sq < draft.SQ_COUNT) {
-            var loc = sq - draft.SIZE - 1;
+        if (sq > -1 && sq < draughts.SQ_COUNT) {
+            var loc = sq - draughts.SIZE - 1;
             if (getRow(sq) - 1 !== getRow(loc)
                     || loc < 0) {
-                return draft.OFF_BOARD;
+                return draughts.OFF_BOARD;
             }
             return loc;
         }
-        return draft.OFF_BOARD;
+        return draughts.OFF_BOARD;
     }
 
     function rightDown(sq) {
-        if (sq > -1 && sq < draft.SQ_COUNT) {
-            var loc = sq - draft.SIZE + 1;
+        if (sq > -1 && sq < draughts.SQ_COUNT) {
+            var loc = sq - draughts.SIZE + 1;
             if (getRow(sq) - 1 !== getRow(loc)
                     || loc < 0) {
-                return draft.OFF_BOARD;
+                return draughts.OFF_BOARD;
             }
             return loc;
         }
-        return draft.OFF_BOARD;
+        return draughts.OFF_BOARD;
     }
 
     function tranverseSq(sq, diagonal, fn, done, argu) {
@@ -664,7 +926,7 @@ function draftFn(size) {
     /**
      * This is a helper method to convert the internal square number returned
      * from the capture search path to Standard Algebraic Notation and must
-     * not be called by the draughts engine for performance
+     * not be called by the draughts engine for performance reason
      * 
      * @param {type} sq - square must be in Standard Algebraic Notation
      * @returns {undefined}
@@ -672,7 +934,9 @@ function draftFn(size) {
     this.capturableSAN = function (sq) {
         sq = this.SAN[sq];//to the internal board square
         var paths = this.searchCapturePaths(sq);
-
+        if (!paths) {
+            return null;
+        }
         var san = [];
         for (var i = 0; i < paths.length; i++) {
             var p = paths[i];
@@ -706,7 +970,7 @@ function draftFn(size) {
 
         if (pce.sqLoc !== sq) {
             console.warn("Invalid piece square location - Piece does not bear the exact square " + sq + " it is found on!");
-            return;
+            return null;
         }
 
         var caps = [];
@@ -818,33 +1082,33 @@ function draftFn(size) {
         switch (direction) {
             case up_right:
                 {
-                    if (!crowned) {
-                        var next = draft.board[from_sq].SquareRightUp;
+                    if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
+                        var next = draughts.board[from_sq].SquareRightUp;
                         return manCaptive(origin, next, next.SquareRightUp, opponent);
                     } else {
-                        return kingCaptive(origin, from_sq, 'SquareRightUp', opponent);
+                        return flyingKingCaptive(origin, from_sq, 'SquareRightUp', opponent);
                     }
                 }
                 break;
             case up_left:
                 {
 
-                    if (!crowned) {
-                        var next = draft.board[from_sq].SquareLeftUp;
+                    if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
+                        var next = draughts.board[from_sq].SquareLeftUp;
                         return manCaptive(origin, next, next.SquareLeftUp, opponent);
                     } else {
-                        return kingCaptive(origin, from_sq, 'SquareLeftUp', opponent);
+                        return flyingKingCaptive(origin, from_sq, 'SquareLeftUp', opponent);
                     }
 
                 }
                 break;
             case down_right:
                 {
-                    if (!crowned) {
-                        var next = draft.board[from_sq].SquareRightDown;
+                    if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
+                        var next = draughts.board[from_sq].SquareRightDown;
                         return manCaptive(origin, next, next.SquareRightDown, opponent);
                     } else {
-                        return kingCaptive(origin, from_sq, 'SquareRightDown', opponent);
+                        return flyingKingCaptive(origin, from_sq, 'SquareRightDown', opponent);
                     }
 
                 }
@@ -852,11 +1116,11 @@ function draftFn(size) {
             case down_left:
                 {
 
-                    if (!crowned) {
-                        var next = draft.board[from_sq].SquareLeftDown;
+                    if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
+                        var next = draughts.board[from_sq].SquareLeftDown;
                         return manCaptive(origin, next, next.SquareLeftDown, opponent);
                     } else {
-                        return kingCaptive(origin, from_sq, 'SquareLeftDown', opponent);
+                        return flyingKingCaptive(origin, from_sq, 'SquareLeftDown', opponent);
                     }
                 }
                 break;
@@ -871,24 +1135,24 @@ function draftFn(size) {
 
         if (next.piece
                 && next.piece.white === opponent
-                && after_next.sq !== draft.OFF_BOARD
+                && after_next.sq !== draughts.OFF_BOARD
                 && (!after_next.piece || after_next.sq === origin)) {
             return {cid: next.piece.id, capture: next.piece.sqLoc, dest_sq: after_next.sq};
         }
 
     }
 
-    function kingCaptive(origin, from_sq, lookupDirection, opponent) {
+    function flyingKingCaptive(origin, from_sq, lookupDirection, opponent) {
 
 
         var from = from_sq.constructor === Array ? from_sq[0] : from_sq;
 
-        var next = draft.board[from][lookupDirection];
+        var next = draughts.board[from][lookupDirection];
 
-        while (next.sq !== draft.OFF_BOARD) {
+        while (next.sq !== draughts.OFF_BOARD) {
             if (next.piece) {
                 if (next.piece.white === opponent
-                        && next[lookupDirection].sq !== draft.OFF_BOARD
+                        && next[lookupDirection].sq !== draughts.OFF_BOARD
                         && (!next[lookupDirection].piece || next[lookupDirection].sq === origin)) {
                     var sqs = [];
                     var pce = next.piece;
@@ -896,7 +1160,7 @@ function draftFn(size) {
                     do {
                         sqs.push(next.sq);
                         next = next[lookupDirection];
-                    } while (next.sq !== draft.OFF_BOARD && !next.piece)
+                    } while (next.sq !== draughts.OFF_BOARD && !next.piece)
 
                     return {cid: pce.id, capture: pce.sqLoc, dest_sq: sqs};
                 }
@@ -919,7 +1183,7 @@ function draftFn(size) {
      * @param {type} from square of the piece to move
      * @param {type} tos matching capture squares. ie all the squares the moving
      * piece jump to.
-     * @returns {Array|unresolved|nm$_draftgame-1.norm_caps|Array,undefined|draftFn.searchCapturePaths.caps|nm$_draftgame-1.draftFn.filterPaths.caps|undefined|draftFn.filterPaths.caps}     */
+     * @returns {Array|unresolved|nm$_draftgame-1.norm_caps|Array,undefined|draughtsFn.searchCapturePaths.caps|nm$_draftgame-1.draughtsFn.filterPaths.caps|undefined|draughtsFn.filterPaths.caps}     */
     this.filterPaths = function (from, tos) {
 
         var caps = this.searchCapturePaths(from);
@@ -947,10 +1211,62 @@ function draftFn(size) {
     };
 
     function isSquare(sq) {
-        return sq > -1 && sq < draft.SQ_COUNT;
+        return sq > -1 && sq < draughts.SQ_COUNT;
     }
 
     function canManCapture(sq, opponent) {
+
+        if (this.board[sq].SquareLeftUp.piece
+                && (this.board[sq].SquareLeftUp.piece.white//white
+                        || this.Rules.men_capture_backward)//or any piece which can capture backward (ie capture in both direction)
+                ) {
+            if (this.board[sq].SquareLeftUp.piece.white === opponent
+                    && this.board[sq].SquareLeftUp.SquareLeftUp.sq !== this.OFF_BOARD
+                    && !this.board[sq].SquareLeftUp.SquareLeftUp.piece) {
+                return true;
+            }
+        }
+
+
+        if (this.board[sq].SquareRightUp.piece
+                && (this.board[sq].SquareRightUp.piece.white//white
+                        || this.Rules.men_capture_backward)//or any piece which can capture backward (ie capture in both direction)
+                ) {
+            if (this.board[sq].SquareRightUp.piece.white === opponent
+                    && this.board[sq].SquareRightUp.SquareRightUp.sq !== this.OFF_BOARD
+                    && !this.board[sq].SquareRightUp.SquareRightUp.piece) {
+                return true;
+            }
+        }
+
+
+        if (this.board[sq].SquareLeftDown.piece
+                && (!this.board[sq].SquareLeftDown.piece.white// black
+                        || this.Rules.men_capture_backward)//or any piece which can capture backward (ie capture in both direction)
+                ) {
+            if (this.board[sq].SquareLeftDown.piece.white === opponent
+                    && this.board[sq].SquareLeftDown.SquareLeftDown.sq !== this.OFF_BOARD
+                    && !this.board[sq].SquareLeftDown.SquareLeftDown.piece) {
+                return true;
+            }
+        }
+
+
+        if (this.board[sq].SquareRightDown.piece
+                && (!this.board[sq].SquareRightDown.piece.white//black
+                        || this.Rules.men_capture_backward) //or any piece which can capture backward (ie capture in both direction)
+                ) {
+            if (this.board[sq].SquareRightDown.piece.white === opponent
+                    && this.board[sq].SquareRightDown.SquareRightDown.sq !== this.OFF_BOARD
+                    && !this.board[sq].SquareRightDown.SquareRightDown.piece) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function canNonFlyingKingCapture(sq, opponent) {
 
         if (this.board[sq].SquareLeftUp.piece
                 && this.board[sq].SquareLeftUp.piece.white === opponent
@@ -985,6 +1301,10 @@ function draftFn(size) {
 
 
     function canKingCapture(sq, opponent) {
+
+        if (!this.Rules.flying_kings) { // non-flying kings
+            return canNonFlyingKingCapture(sq, opponent);
+        }
 
         for (var i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
             var next = this.board[sq][this.LOOKUP_DIRECTIONS[i]];
@@ -1030,7 +1350,7 @@ function draftFn(size) {
                     }
 
                     this.pieces[cid].sqCap = cap_sq;//yes                   
-                    this.pieces[cid].sqLoc = draft.OFF_BOARD;//yes
+                    this.pieces[cid].sqLoc = draughts.OFF_BOARD;//yes
                     this.board[cap_sq].piece = null;//yes also
 
 
@@ -1276,7 +1596,57 @@ function draftFn(size) {
 
     }
 
+    function nonFlyingKingPlainMoves(from_sq, moves) {
+
+
+        if (this.board[from_sq].SquareRightUp.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareRightUp.piece) {
+
+            var bit_move = 0;//initialize - it is important to initialize
+            bit_move |= from_sq;
+            bit_move |= this.board[from_sq].SquareRightUp.sq << this.TO_SQUARE_SHIFT;
+            moves.push(bit_move);
+
+        }
+
+        if (this.board[from_sq].SquareLeftUp.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareLeftUp.piece) {
+
+            var bit_move = 0;//initialize - it is important to initialize
+            bit_move |= from_sq;
+            bit_move |= this.board[from_sq].SquareLeftUp.sq << this.TO_SQUARE_SHIFT;
+            moves.push(bit_move);
+
+        }
+
+        if (this.board[from_sq].SquareRightDown.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareRightDown.piece) {
+
+            var bit_move = 0;//initialize - it is important to initialize
+            bit_move |= from_sq;
+            bit_move |= this.board[from_sq].SquareRightDown.sq << this.TO_SQUARE_SHIFT;
+            moves.push(bit_move);
+
+        }
+
+        if (this.board[from_sq].SquareLeftDown.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareLeftDown.piece) {
+
+            var bit_move = 0;//initialize - it is important to initialize
+            bit_move |= from_sq;
+            bit_move |= this.board[from_sq].SquareLeftDown.sq << this.TO_SQUARE_SHIFT;
+            moves.push(bit_move);
+
+        }
+
+
+    }
+
     function kingPlainMoves(from_sq, moves) {
+
+        if (!this.Rules.flying_kings) { // non-flying kings
+            return nonFlyingKingPlainMoves(from_sq, moves);
+        }
 
         var bit_move;
 
@@ -1642,6 +2012,188 @@ function draftFn(size) {
 
     };
 
+    this.isGameOver = function () {
+        return this.getWinner() !== this.NOTHING;
+    };
+
+    this.getWinner = function () {
+        var w_count = 0, wk_count = 0, b_count = 0, bk_count = 0;
+
+        for (var i = 0; i < this.pieces.length; i++) {
+            var pce = pieces[i];
+            if (pce.sqLoc === this.OFF_BOARD) {
+                continue;
+            }
+            if (pce.white) {
+                w_count++;//count white pieces
+            } else if (pce.white && pce.crowned) {
+                wk_count++;//count white kings
+            } else if (!pce.white) {
+                b_count++;//count black pieces
+            } else if (!pce.white && pce.crowned) {
+                bk_count++;//count black kings
+            }
+        }
+
+        if (this.Rules.lose_after_single_piece_remain) {//Ghanian draughts
+            if (w_count === 1 && b_count > 1) {
+                return this.BLACK;
+            }
+
+            if (b_count === 1 && w_count > 1) {
+                return this.WHITE;
+            }
+        }
+
+        if (w_count === 0 && b_count > 0) {
+            return this.BLACK;
+        }
+
+        if (b_count === 0 && w_count > 0) {
+            return this.WHITE;
+        }
+
+        if (this.SIZE === 10) {//For 10 x 10
+            if (wk_count > 0 || b_count <= 3) {//it is believed the game can no longer be won
+                return this.DRAW; //draw
+            }
+
+            if (bk_count > 0 || w_count <= 3) {//it is believed the game can no longer be won
+                return this.DRAW;//draw
+            }
+        }
+
+        //next check the case where the side to play has no legal move
+
+        //get possible move of the side to play if not found the other player wins
+        var has_legal_move = false;
+        for (var i = 0; i < this.pieces.length; i++) {
+            var pce = pieces[i];
+            if (pce.white !== this.turn) {
+                continue;
+            }
+            if (pce.sqLoc === this.OFF_BOARD) {
+                continue;
+            }
+            has_legal_move = this.hasLegalMove(pce.sqLoc);
+            if (has_legal_move) {
+                break;
+            }
+        }
+
+        if (!has_legal_move) {
+            return this.turn ? this.BLACK : this.WHITE; // yes! the other player wins
+        }
+
+        return this.NOTHING;//not game over
+    };
+
+    /**
+     * Men move forward one step 
+     *
+     * @param {type} from_sq
+     * @returns {Boolean}   
+     **/
+    function hasManLegalMove(from_sq) {
+
+        if (this.board[from_sq].piece.white) {//white
+
+            if (this.board[from_sq].SquareRightUp.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareRightUp.piece) {
+                return true;
+            }
+            if (this.board[from_sq].SquareLeftUp.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareLeftUp.piece) {
+                return true;
+            }
+
+        } else {//black
+            if (this.board[from_sq].SquareRightDown.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareRightDown.piece) {
+                return true;
+            }
+            if (this.board[from_sq].SquareLeftDown.sq !== this.OFF_BOARD
+                    && !this.board[from_sq].SquareLeftDown.piece) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Non-flying kings move forward or backward one step 
+     *
+     * @param {type} from_sq
+     * @returns {Boolean}   
+     **/
+    function hasNonFlyingKingLegalMove(from_sq) {
+
+        if (this.board[from_sq].SquareRightUp.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareRightUp.piece) {
+            return true;
+        }
+
+        if (this.board[from_sq].SquareLeftUp.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareLeftUp.piece) {
+            return true;
+        }
+
+        if (this.board[from_sq].SquareRightDown.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareRightDown.piece) {
+            return true;
+        }
+
+        if (this.board[from_sq].SquareLeftDown.sq !== this.OFF_BOARD
+                && !this.board[from_sq].SquareLeftDown.piece) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Kings fly any number of steps in both direction but non-flying kings only
+     * move forward and backward one step
+     *
+     * @param {type} from_sq
+     * @returns {Boolean}   
+     **/
+    function hasKingLegalMove(from_sq) {
+
+        if (!this.Rules.flying_kings) { // non-flying kings
+            return hasNonFlyingKingLegalMove(from_sq);
+        }
+
+        for (var i = 0; i < this.LOOKUP_DIRECTIONS.length; i++) {
+            var next = this.board[from_sq][this.LOOKUP_DIRECTIONS[i]];
+            while (next.sq !== this.OFF_BOARD && !next.piece) {
+                return true;
+                next = next[this.LOOKUP_DIRECTIONS[i]];
+            }
+        }
+
+        return false;
+    }
+
+    this.hasLegalMove = function (from_sq) {
+        if (!this.board[from_sq].piece) {
+            return false;
+        }
+        if (!this.board[from_sq].piece.crowned) {
+            if (canManCapture.call(this, from_sq, !this.board[from_sq].piece.white)) {
+                return true;
+            }
+            return hasManLegalMove.call(this, from_sq);
+        } else {
+            if (canKingCapture.call(this, from_sq, !this.board[from_sq].piece.white)) {
+                return true;
+            }
+            return hasKingLegalMove.call(this, from_sq);
+        }
+        return false;
+    };
+
     this.clearBoard = function () {
         for (var i = 0; i < this.SQ_COUNT; i++) {
             if (this.board[i].piece) {
@@ -1961,16 +2513,22 @@ function draftFn(size) {
 
     this.Robot = function (boardPositonObj, depth) {
 
-        if (depth) {
-            draft.DEPTH = depth;
+        if (this.SIZE > 10) {
+            //12 x 12 is not supported by the game engine because the bit value max is 127 and so storing bit move very difficult if not impossible 
+            //with 12 x 12 board (ie 144 square which is greate than 127). so we only support 10 x 10 and 8 x 8.
+            throw Error(this.SIZE + ' x ' + this.SIZE + ' board is only supported for human to human players and not for robot! Please use 10 x 10 or 8 x 8 instead.');
         }
 
-        draft.boardPosition(boardPositonObj);
+        if (depth) {
+            draughts.DEPTH = depth;
+        }
+
+        draughts.boardPosition(boardPositonObj);
 
         this.play = function (fn) {
 
-            var best = bestMove.call(draft, draft.DEPTH);
-            draft.moveTo(best.from, best.path, fn);
+            var best = bestMove.call(draughts, draughts.DEPTH);
+            draughts.moveTo(best.from, best.path, fn);
         };
     };
 
@@ -2081,5 +2639,5 @@ function draftFn(size) {
 ;
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = Draft9ja;
+    module.exports = Draughts;
 }

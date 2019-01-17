@@ -1,7 +1,7 @@
 
 /* global Ns */
 
-Ns.Stats = {
+Ns.Options = {
     content: function(){
         
     }

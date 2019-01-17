@@ -27,6 +27,22 @@ Ns.msg.GameChat = {
         Main.eventio.on('chat_msg_status', this.onChatMsgStatus.bind(this));
     },
 
+    getName:function(){
+        return 'Ns.msg.GameChat';
+    },
+
+    getCode:function(){
+        return this.match.game_id;
+    },
+    
+    getExtraCode:function(){
+        return;
+    },
+    
+    getMsgCode: function(msg){
+        return msg.game_id;
+    },
+    
     getSaveKeyPrefix(){
         return 'save_msg_game_chat';
     },

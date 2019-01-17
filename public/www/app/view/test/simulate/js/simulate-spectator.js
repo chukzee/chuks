@@ -33,9 +33,10 @@ Main.on("pagecreate", function (arg) {
 
         var user_id = prompt('user_id', '');
         var game_id = prompt('game_id', '');
+        var prev_game_id = prompt('prev_game_id', '');
         var game_start_time = prompt('game_start_time', '');
         
-        Main.ro.spectator.join(user_id, game_id, game_start_time)
+        Main.ro.spectator.join(user_id, game_id, prev_game_id,  game_start_time)
                 .get(function (data) {
                     alert(data);
                     console.log(data);

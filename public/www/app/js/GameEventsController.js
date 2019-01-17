@@ -43,118 +43,46 @@ Ns.GameEventsController = {
         this._loadGameByMatch(match, toast_text);
     },
 
-    _setGameMatch: function (match) {
+    _getGameObject: function (game_name) {
 
-        switch (match.game_name) {
+        switch (game_name) {
             case 'chess':
-                {
-                    Ns.game.two.Chess2D.setMatch(match);
-                }
-                break;
+            {
+                return Ns.game.two.Chess2D;
+            }
             case 'draughts':
-                {
-                    Ns.game.two.Draughts2D.setMatch(match);
-                }
-                break;
+            {
+                return Ns.game.two.Draughts2D;
+            }
             case 'draft'://OR draft
-                {
-                    Ns.game.two.Draughts2D.setMatch(match);
-                }
-                break;
+            {
+                return Ns.game.two.Draughts2D;
+            }
             case 'ludo':
-                {
-                    Ns.game.two.Ludo2D.setMatch(match);
-                }
-                break;
+            {
+                return Ns.game.two.Ludo2D;
+            }
             case 'solitaire':
-                {
-                    Ns.game.two.Solitaire2D.setMatch(match);
-                }
-                break;
+            {
+                return Ns.game.two.Solitaire2D;
+            }
             case 'whot':
-                {
-                    Ns.game.two.Whot2D.setMatch(match);
-                }
-                break;
+            {
+                return Ns.game.two.Whot2D;
+            }
         }
     },
-    
+
+    _setGameMatch: function (match) {
+        this._getGameObject(match.game_name).setMatch(match);
+    },
+
     _loadGameByMatch: function (match, toast_text) {
-
-        switch (match.game_name) {
-            case 'chess':
-                {
-                    Ns.game.two.Chess2D.reloadGame(match, toast_text);
-                }
-                break;
-            case 'draughts':
-                {
-                    Ns.game.two.Draughts2D.reloadGame(match, toast_text);
-                }
-                break;
-            case 'draft'://OR draft
-                {
-                    Ns.game.two.Draughts2D.reloadGame(match, toast_text);
-                }
-                break;
-            case 'ludo':
-                {
-
-                    Ns.game.two.Ludo2D.reloadGame(match, toast_text);
-                }
-                break;
-            case 'solitaire':
-                {
-
-                    Ns.game.two.Solitaire2D.reloadGame(match, toast_text);
-                }
-                break;
-            case 'whot':
-                {
-
-                    Ns.game.two.Whot2D.reloadGame(match, toast_text);
-                }
-                break;
-        }
+        this._getGameObject(match.game_name).reloadGame(match, toast_text);
     },
 
     _makeMove: function (user_id, notation, match) {
-
-        switch (match.game_name) {
-            case 'chess':
-                {
-                    Ns.game.two.Chess2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'draughts':
-                {
-                    Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'draft'://OR draft
-                {
-                    Ns.game.two.Draughts2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'ludo':
-                {
-
-                    Ns.game.two.Ludo2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'solitaire':
-                {
-
-                    Ns.game.two.Solitaire2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-            case 'whot':
-                {
-
-                    Ns.game.two.Whot2D.remoteMakeMove(user_id, notation, match);
-                }
-                break;
-        }
+        this._getGameObject(match.game_name).remoteMakeMove(user_id, notation, match);
     },
 
     /**
@@ -172,42 +100,7 @@ Ns.GameEventsController = {
      * @returns {undefined}
      */
     _thinking: function (prop) {
-
-        switch (prop.game_name) {
-            case 'chess':
-                {
-                    Ns.game.two.Chess2D.displayThinking(prop);
-                }
-                break;
-            case 'draughts':
-                {
-                    Ns.game.two.Draughts2D.displayThinking(prop);
-                }
-                break;
-            case 'draft'://OR draft
-                {
-                    Ns.game.two.Draughts2D.displayThinking(prop);
-                }
-                break;
-            case 'ludo':
-                {
-
-                    Ns.game.two.Ludo2D.displayThinking(prop);
-                }
-                break;
-            case 'solitaire':
-                {
-
-                    Ns.game.two.Solitaire2D.displayThinking(prop);
-                }
-                break;
-            case 'whot':
-                {
-
-                    Ns.game.two.Whot2D.displayThinking(prop);
-                }
-                break;
-        }
+        this._getGameObject(prop.game_name).displayThinking(prop);
     },
 
     onNotifyUpComingMatch: function (obj) {
@@ -222,6 +115,8 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
+        
+        this._loadGameByMatch(match);
     },
 
     onGameStartNextSet: function (obj) {
@@ -229,6 +124,12 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
+        
+        var gameObj = this._getGameObject(match.game_name);
+        
+        if(!gameObj.isShowGameOverAlert()){
+            gameObj.reloadGame(match);
+        }
     },
 
     onWatchGameStart: function (obj) {
@@ -236,6 +137,9 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
+        
+        this._loadGameByMatch(match);
+        
     },
 
     onWatchGameStartNextSet: function (obj) {
@@ -243,6 +147,12 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
+        
+        var gameObj = this._getGameObject(match.game_name);
+        
+        if(!gameObj.isShowGameOverAlert()){
+            gameObj.reloadGame(match);
+        }
     },
 
     onGameResume: function (obj) {
@@ -250,6 +160,8 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
+        
+        this._loadGameByMatch(match);
     },
 
     onWatchGameResume: function (obj) {
@@ -257,6 +169,8 @@ Ns.GameEventsController = {
 
         var match = obj.data;
         Ns.Match.updateMatchList(match);
+        
+        this._loadGameByMatch(match);
     },
 
     onGamePause: function (obj) {
@@ -343,6 +257,7 @@ Ns.GameEventsController = {
 
         this._loadGameByMatch(match);
 
+        Main.toast.show('update game position!');
     },
 
     onGameReloadReplay: function (obj) {

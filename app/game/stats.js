@@ -36,39 +36,39 @@ class Stats extends   WebApplication {
 
         try {
             var queryObj = {$or: [
-                    {'first.player_id': player_1_id, 'second.player_id': player_2_id},
-                    {'first.player_id': player_2_id, 'second.player_id': player_1_id}
+                    {'white.player_id': player_1_id, 'black.player_id': player_2_id},
+                    {'white.player_id': player_2_id, 'black.player_id': player_1_id}
                 ]};
 
             var wdl = await c.findOne(queryObj);
 
             var obj = {//default
 
-                first: {
+                white: {//white
                     player_id: player_1_id,
                     specific: {
-                        notation: 'W 0 D 0 L 0',
+                        wdl: 'W 0 D 0 L 0',
                         wins: 0,
                         draws: 0,
                         losses: 0
                     },
                     overall: {
-                        notation: 'W 0 D 0 L 0',
+                        wdl: 'W 0 D 0 L 0',
                         wins: 0,
                         draws: 0,
                         losses: 0
                     }
                 },
-                second: {
+                black: {//black
                     player_id: player_2_id,
                     specific: {
-                        notation: 'W 0 D 0 L 0',
+                        wdl: 'W 0 D 0 L 0',
                         wins: 0,
                         draws: 0,
                         losses: 0
                     },
                     overall: {
-                        notation: 'W 0 D 0 L 0',
+                        wdl: 'W 0 D 0 L 0',
                         wins: 0,
                         draws: 0,
                         losses: 0
@@ -81,100 +81,100 @@ class Stats extends   WebApplication {
             }
 
 
-            obj.first.player_id = wdl.first.player_id;
-            obj.second.player_id = wdl.second.player_id;
+            obj.white.player_id = wdl.white.player_id;
+            obj.black.player_id = wdl.black.player_id;
 
             if (category === 'contact') {//specific
-                //first player
-                obj.first.specific.wins = wdl.first.contact.wins;
-                obj.first.specific.draws = wdl.first.contact.draws;
-                obj.first.specific.losses = wdl.first.contact.losses;
-                obj.first.specific.notation = `W ${wdl.first.contact.wins} D ${wdl.first.contact.draws} L ${wdl.first.contact.losses}`;
+                //white player
+                obj.white.specific.wins = wdl.white.contact.wins;
+                obj.white.specific.draws = wdl.white.contact.draws;
+                obj.white.specific.losses = wdl.white.contact.losses;
+                obj.white.specific.wdl = `W ${wdl.white.contact.wins} D ${wdl.white.contact.draws} L ${wdl.white.contact.losses}`;
 
-                //second player
-                obj.second.specific.wins = wdl.second.contact.wins;
-                obj.second.specific.draws = wdl.second.contact.draws;
-                obj.second.specific.losses = wdl.second.contact.losses;
-                obj.second.specific.notation = `W ${wdl.second.contact.wins} D ${wdl.second.contact.draws} L ${wdl.second.contact.losses}`;
+                //black player
+                obj.black.specific.wins = wdl.black.contact.wins;
+                obj.black.specific.draws = wdl.black.contact.draws;
+                obj.black.specific.losses = wdl.black.contact.losses;
+                obj.black.specific.wdl = `W ${wdl.black.contact.wins} D ${wdl.black.contact.draws} L ${wdl.black.contact.losses}`;
             }
 
 
-            //first player
-            obj.first.overall.wins = wdl.first.contact.wins;
-            obj.first.overall.draws = wdl.first.contact.draws;
-            obj.first.overall.losses = wdl.first.contact.losses;
+            //white player
+            obj.white.overall.wins = wdl.white.contact.wins;
+            obj.white.overall.draws = wdl.white.contact.draws;
+            obj.white.overall.losses = wdl.white.contact.losses;
 
-            for (var i = 0; i < wdl.first.groups.length; i++) {
-                obj.first.overall.wins += wdl.first.groups[i].wins;
-                obj.first.overall.draws += wdl.first.groups[i].draws;
-                obj.first.overall.losses += wdl.first.groups[i].losses;
+            for (var i = 0; i < wdl.white.groups.length; i++) {
+                obj.white.overall.wins += wdl.white.groups[i].wins;
+                obj.white.overall.draws += wdl.white.groups[i].draws;
+                obj.white.overall.losses += wdl.white.groups[i].losses;
 
-                if (category === 'group' && name === wdl.first.groups[i].name) {//specific
-                    obj.first.specific.wins = wdl.first.groups[i].wins;
-                    obj.first.specific.draws = wdl.first.groups[i].draws;
-                    obj.first.specific.losses = wdl.first.groups[i].losses;
-                    obj.first.specific.notation = `W ${wdl.first.groups[i].wins} D ${wdl.first.groups[i].draws} L ${wdl.first.groups[i].losses}`;
+                if (category === 'group' && name === wdl.white.groups[i].name) {//specific
+                    obj.white.specific.wins = wdl.white.groups[i].wins;
+                    obj.white.specific.draws = wdl.white.groups[i].draws;
+                    obj.white.specific.losses = wdl.white.groups[i].losses;
+                    obj.white.specific.wdl = `W ${wdl.white.groups[i].wins} D ${wdl.white.groups[i].draws} L ${wdl.white.groups[i].losses}`;
                 }
             }
 
-            for (var i = 0; i < wdl.first.tournaments.length; i++) {
-                obj.first.overall.wins += wdl.first.tournaments[i].wins;
-                obj.first.overall.draws += wdl.first.tournaments[i].draws;
-                obj.first.overall.losses += wdl.first.tournaments[i].losses;
+            for (var i = 0; i < wdl.white.tournaments.length; i++) {
+                obj.white.overall.wins += wdl.white.tournaments[i].wins;
+                obj.white.overall.draws += wdl.white.tournaments[i].draws;
+                obj.white.overall.losses += wdl.white.tournaments[i].losses;
 
-                if (category === 'tournament' && name === wdl.first.tournaments[i].name) {//specific
-                    obj.first.specific.wins = wdl.first.tournaments[i].wins;
-                    obj.first.specific.draws = wdl.first.tournaments[i].draws;
-                    obj.first.specific.losses = wdl.first.tournaments[i].losses;
-                    obj.first.specific.notation = `W ${wdl.first.tournaments[i].wins} D ${wdl.first.tournaments[i].draws} L ${wdl.first.tournaments[i].losses}`;
+                if (category === 'tournament' && name === wdl.white.tournaments[i].name) {//specific
+                    obj.white.specific.wins = wdl.white.tournaments[i].wins;
+                    obj.white.specific.draws = wdl.white.tournaments[i].draws;
+                    obj.white.specific.losses = wdl.white.tournaments[i].losses;
+                    obj.white.specific.wdl = `W ${wdl.white.tournaments[i].wins} D ${wdl.white.tournaments[i].draws} L ${wdl.white.tournaments[i].losses}`;
                 }
             }
 
-            obj.first.overall.notation = `W ${obj.first.overall.wins} D ${obj.first.overall.draws} L ${obj.first.overall.losses}`;
+            obj.white.overall.wdl = `W ${obj.white.overall.wins} D ${obj.white.overall.draws} L ${obj.white.overall.losses}`;
 
-            //second player
-            obj.second.overall.wins = wdl.second.contact.wins;
-            obj.second.overall.draws = wdl.second.contact.draws;
-            obj.second.overall.losses = wdl.second.contact.losses;
+            //black player
+            obj.black.overall.wins = wdl.black.contact.wins;
+            obj.black.overall.draws = wdl.black.contact.draws;
+            obj.black.overall.losses = wdl.black.contact.losses;
 
-            for (var i = 0; i < wdl.second.groups.length; i++) {
-                obj.second.overall.wins += wdl.second.groups[i].wins;
-                obj.second.overall.draws += wdl.second.groups[i].draws;
-                obj.second.overall.losses += wdl.second.groups[i].losses;
+            for (var i = 0; i < wdl.black.groups.length; i++) {
+                obj.black.overall.wins += wdl.black.groups[i].wins;
+                obj.black.overall.draws += wdl.black.groups[i].draws;
+                obj.black.overall.losses += wdl.black.groups[i].losses;
 
-                if (category === 'group' && name === wdl.second.groups[i].name) {//specific
-                    obj.second.specific.wins = wdl.second.groups[i].wins;
-                    obj.second.specific.draws = wdl.second.groups[i].draws;
-                    obj.second.specific.losses = wdl.second.groups[i].losses;
-                    obj.second.specific.notation = `W ${wdl.second.groups[i].wins} D ${wdl.second.groups[i].draws} L ${wdl.second.groups[i].losses}`;
+                if (category === 'group' && name === wdl.black.groups[i].name) {//specific
+                    obj.black.specific.wins = wdl.black.groups[i].wins;
+                    obj.black.specific.draws = wdl.black.groups[i].draws;
+                    obj.black.specific.losses = wdl.black.groups[i].losses;
+                    obj.black.specific.wdl = `W ${wdl.black.groups[i].wins} D ${wdl.black.groups[i].draws} L ${wdl.black.groups[i].losses}`;
                 }
             }
 
-            for (var i = 0; i < wdl.second.tournaments.length; i++) {
-                obj.second.overall.wins += wdl.second.tournaments[i].wins;
-                obj.second.overall.draws += wdl.second.tournaments[i].draws;
-                obj.second.overall.losses += wdl.second.tournaments[i].losses;
+            for (var i = 0; i < wdl.black.tournaments.length; i++) {
+                obj.black.overall.wins += wdl.black.tournaments[i].wins;
+                obj.black.overall.draws += wdl.black.tournaments[i].draws;
+                obj.black.overall.losses += wdl.black.tournaments[i].losses;
 
-                if (category === 'tournament' && name === wdl.second.tournaments[i].name) {//specific
-                    obj.second.specific.wins = wdl.second.tournaments[i].wins;
-                    obj.second.specific.draws = wdl.second.tournaments[i].draws;
-                    obj.second.specific.losses = wdl.second.tournaments[i].losses;
-                    obj.second.specific.notation = `W ${wdl.second.tournaments[i].wins} D ${wdl.second.tournaments[i].draws} L ${wdl.second.tournaments[i].losses}`;
+                if (category === 'tournament' && name === wdl.black.tournaments[i].name) {//specific
+                    obj.black.specific.wins = wdl.black.tournaments[i].wins;
+                    obj.black.specific.draws = wdl.black.tournaments[i].draws;
+                    obj.black.specific.losses = wdl.black.tournaments[i].losses;
+                    obj.black.specific.wdl = `W ${wdl.black.tournaments[i].wins} D ${wdl.black.tournaments[i].draws} L ${wdl.black.tournaments[i].losses}`;
                 }
             }
 
-            obj.second.overall.notation = `W ${obj.second.overall.wins} D ${obj.second.overall.draws} L ${obj.second.overall.losses}`;
+            obj.black.overall.wdl = `W ${obj.black.overall.wins} D ${obj.black.overall.draws} L ${obj.black.overall.losses}`;
 
             //we want to return the result in the order the player ids were passed to this method
             var wdlObj = {};
 
-            if (obj.first.player_id === player_1_id) {//same order so return as it is
-                wdlObj.first = obj.first;
-                wdlObj.second = obj.second;
+            if (obj.white.player_id === player_1_id) {//same order so return as it is
+                wdlObj.white = obj.white;
+                wdlObj.black = obj.black;
             } else {//opposite order so swap to reflect 
                 //the order the player ids were passed to this method
-                wdlObj.first = obj.second;
-                wdlObj.second = obj.first;
+                wdlObj.white = obj.black;
+                wdlObj.black = obj.white;
             }
 
 

@@ -45,8 +45,8 @@ draft.setPiece(15, false, false);
 draft.setPiece(37, false, false);
 draft.setPiece(17, false, false);
 
+console.log('----------------------------------------');
 
-//draft.printBoard();
 
 var caps = draft.searchCapturePaths(22);
 
@@ -76,17 +76,23 @@ draft.moveTo(22,cap, function(obj){
     console.log(JSON.stringify(obj).length);
 });
 
+console.log('-------------------------------------');
+
+draft.printBoard();
+
 var depth = 5;
-var BoardPostion = '';//TODO
+/*var BoardPostion = '';//TODO
 var robot = new draft.Robot(BoardPostion, depth);
 
-var startTime = new Date().getTime();
 
 robot.play(function(result){
     console.log(JSON.stringify(result));
 });
+*/
 
 draft.printBoard();
+
+var startTime = new Date().getTime();
 
 console.log('elapse ', (new Date().getTime() - startTime)/1000, 'secs');
 

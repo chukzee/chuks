@@ -26,6 +26,22 @@ Ns.msg.GameComment = {
         Main.eventio.on('comment', this.onComment.bind(this));
 
     },
+
+    getName:function(){
+        return 'Ns.msg.GameComment';
+    },
+
+    getCode:function(){
+        return this.match.game_id;
+    },
+
+    getExtraCode:function(){
+        return;
+    },
+      
+    getMsgCode: function(msg){
+        return msg.game_id;
+    },
     
     getSaveKeyPrefix(){
         return 'save_msg_game_comment';

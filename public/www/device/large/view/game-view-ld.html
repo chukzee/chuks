@@ -24,23 +24,24 @@ and open the template in the editor.
             <div class="game9ja-game-view-body">
                 <div id="game-view-main">
                     
-                    
+                                        
                     <div id="game-view-main-upper"><!--sizing and positioning using javascript-->
                         <!--some upper display e.g time countdown and online status-->
                         <!--note when countdown starts it means the move is delivered to the opponent
                         and when it stop it means the opponent has played or the countdown is over i.e timeout-->
-                        <div id="game-view-opponent-countdown"></div> <!--countdown-->
+                        <div id="game-view-white-wdl"></div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
                         <div id="game-view-feedback"></div> <!--feedback e.g making move... , thinking...-->
-                        <div id="game-view-opponent-wdl"></div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                        <div id="game-view-black-wdl"></div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
                     </div>
                     <div id="game-view-main-board"><!--sizing and positioning using javascript-->
                         <!--the game board-->
                     </div>
                     <div id="game-view-main-lower"><!--sizing and positioning using javascript-->
                         <!--some lower display e.g time countdown -->
-                        <div id="game-view-user-countdown"></div> <!-- 03:25 countdown-->
-                        <div id="game-view-user-wdl"></div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
+                        <div id="game-view-white-countdown"></div> <!-- 03:25 countdown-->
+                        <div id="game-view-black-countdown"></div> <!--countdown-->
                     </div>
+                    
                 </div>
                 <div id="game-view-right-content">
                     <!--holds panel in the side. this show by default in 
@@ -66,16 +67,16 @@ and open the template in the editor.
                     <i class="fa fa-comments"></i> <div >Comments</div>
                 </div> 
                 <div id="game-view-footer-spectators">
-                    <!--holds stats icon tab -->
+                    <!--holds spectators icon tab -->
                     <i class="fa fa-users"></i> <div >Spectators</div>
-                </div>   
-                <div id="game-view-footer-voice-call">
-                    <!--holds voice call icon tab -->
-                    <i class="fa fa-phone"></i> <div >Voice call</div>
+                </div>      
+                <div id="game-view-footer-stats">
+                    <!--holds statistics icon tab -->
+                    <i class="fa fa-line-chart"></i> <div >Stats</div>
                 </div>
-                <div id="game-view-footer-video-call">
-                    <!--holds video call icon tab -->
-                    <i class="fa fa-video-camera"></i> <div >Video call</div>
+                <div id="game-view-footer-options">
+                    <!--holds options icon tab -->
+                    <i class="fa fa-wrench"></i> <div >Options</div>
                 </div>
 
             </div>

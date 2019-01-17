@@ -24,7 +24,26 @@ Ns.msg.ContactChat = {
         Main.eventio.on('chat_msg_status', this.onChatMsgStatus.bind(this));
 
     },
+    
+    getName:function(){
+        return 'Ns.msg.ContactChat';
+    },
+    
+    getCode:function(){
+        if(Main.util.isString(this.contact)){
+            return this.contact;
+        }
+        return this.contact.user_id;  
+    },
 
+    getExtraCode:function(){
+        return;
+    },
+    
+    getMsgCode: function(msg){
+        return msg.contact_user_id;
+    },
+    
     getSaveKeyPrefix() {
         return 'save_msg_contact_chat';
     },

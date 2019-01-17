@@ -13,15 +13,9 @@ Ns.ui.GamePanel = {
      */
     constructor: function () {
 
-        Main.eventio.on('game_move_sent', this.onMoveSent.bind(this));
 
     },
 
-    onMoveSent: function (evt) {
-        var data = evt.data;
-        console.log(data);
-        alert('TODO - onMoveSent');
-    },
 
     showGameB: function (match, container, flip) {
         Ns.ui.GamePanel.loadGame({
@@ -231,14 +225,11 @@ Ns.ui.GamePanel = {
             width: 150,
             target: "#game-view-menu",
             items: [
-                'Draw offer',
-                'Draughts variant', //for draughts - we display the draughts variant and the rules for the variant
-                'Rules applied',
-                'Rules',
-                'Stats',
-                'Theme',
-                'Sound',
-                'Leave',
+                'Draw offer',//offer a draw
+                'Rules',//rules of the game. in the case of draughts, the variant and its applied rules will be shown
+                'Stats',//show head to head statistics of both players
+                'Options', //set pieces and board styles, sound etc
+                'Leave',//abort the game
                 'Help'
             ],
             onSelect: function (evt) {
@@ -310,8 +301,8 @@ Ns.ui.GamePanel = {
             ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
         });
 
-        $('#game-view-footer-voice-call').on('click', function () {
-            var title = 'Voice Call';
+        $('#game-view-footer-stats').on('click', function () {
+            var title = 'Stats';
 
             if (Ns.ui.GamePanel.rightContentName
                     && Ns.ui.GamePanel.rightContentName === title) {
@@ -319,11 +310,11 @@ Ns.ui.GamePanel = {
                 return;
             }
             Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.VoiceCall.content.bind(obj));
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Stats.content.bind(obj));
         });
-
-        $('#game-view-footer-video-call').on('click', function () {
-            var title = 'Video Call';
+      
+        $('#game-view-footer-options').on('click', function () {
+            var title = 'Options';
 
             if (Ns.ui.GamePanel.rightContentName
                     && Ns.ui.GamePanel.rightContentName === title) {
@@ -331,7 +322,7 @@ Ns.ui.GamePanel = {
                 return;
             }
             Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.VideoCall.content.bind(obj));
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Options.content.bind(obj));
         });
 
         $('#game-view-footer-spectators').on('click', function () {

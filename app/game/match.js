@@ -52,9 +52,11 @@ class Match extends WebApplication {
      * @param {type} game_name
      * @param {type} game_id
      * @param {type} current_set the serial number of the game set
-     * @param {type} move_counter this is not the move number by a counter of all moves (even in all sets) - is use to validate the match to be sure move of old match state is not received
+     * @param {type} move_counter this is not the move number but a counter of all moves in a set. it is reset to 0 at the end of a set - is use to validate the match to be sure move of old match state is not received
      * @param {type} notation - the move notation
      * @param {type} game_position - the game position
+     * @param {type} is_game_over - whether it is game over
+     * @param {type} winner_user_id - the user id of the winner. If null or zero then the game is a draw if game over
      * @returns {String}
      */
     async sendMove(user_id,
@@ -65,7 +67,9 @@ class Match extends WebApplication {
             current_set,
             move_counter,
             notation,
-            game_position) {
+            game_position,
+            is_game_over,
+            winner_user_id) {
 
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
@@ -77,6 +81,8 @@ class Match extends WebApplication {
             move_counter = arguments[0].move_counter;
             notation = arguments[0].notation;
             game_position = arguments[0].game_position;
+            is_game_over = arguments[0].is_game_over;
+            winner_user_id = arguments[0].winner_user_id;
         }
 
         if (!Array.isArray(opponent_ids)) {
@@ -153,9 +159,10 @@ class Match extends WebApplication {
         }
 
         //validate move counter        
-        if (prevMatchObj.move_counter !== move_counter) {
-            if (prevMatchObj.move_counter < move_counter) {
-                this.error(`game state out of date!`);
+        if (current_set === prevMatchObj.current_set 
+                && prevMatchObj.move_counter !== move_counter) {
+            if (move_counter < prevMatchObj.move_counter ) {
+                this.error(`outdated game position detected!`);
                 this.send(this.evt.game_state_update, prevMatchObj, user_id);
             } else {
                 //where move counter is grater - this can only happen (though very rare)
@@ -166,6 +173,10 @@ class Match extends WebApplication {
                 this.send(this.evt.game_reload_replay, prev_game_id, user_id);
             }
             return this;//now leave and return the error
+        }else if (current_set < prevMatchObj.current_set){
+                this.error(`old game set detected!`);
+                this.send(this.evt.game_state_update, prevMatchObj, user_id);
+                return this;
         }
 
         //validate the player turn
@@ -225,6 +236,10 @@ class Match extends WebApplication {
 
                     //now broadcast to the spectators                    
                     me.broadcast(me.evt.game_move, obj, spectators_ids);
+
+                    if(is_game_over){
+                        me._doFinishGame(match, winner_user_id);
+                    }
 
                 })
                 .catch(function (err) {
@@ -452,6 +467,12 @@ class Match extends WebApplication {
 
         edit[`sets.${prev_set_index}.end_time`] = now_date;
         edit[`sets.${next_set_index}.start_time`] = now_date;
+        
+        //initialize the game controller variables
+        edit['game_position'] = null;
+        edit['turn_player_id'] = null;
+        edit['move_counter'] = 0;
+        
         var game_id = match.game_id;
         c.findOneAndUpdate({game_id: game_id},
                 {$inc: {current_set: 1}, $set: edit},
@@ -609,7 +630,7 @@ class Match extends WebApplication {
             scores: [0, 0],
             start_time: new Date(),
             end_time: "", //to be set at the end of the last game set
-            move_counter: 0, //this is not the move number by a counter of all moves (even in all sets) - is use to validate the match to be sure move of old match state is not received
+            move_counter: 0, //this is not the move number but a counter of all moves in a set. it is reset to 0 at the end of a set - is use to validate the match to be sure move of old match state is not received
             current_set: 1, //first set - important!
             sets: sets,
             players: players,
@@ -1056,6 +1077,7 @@ class Match extends WebApplication {
     }
 
     /**
+     * Public method called to finish a game
      * 
      * @param {type} game_id - the game id
      * @param {type} winner_user_id - the user id of the winner if there is
@@ -1071,7 +1093,7 @@ class Match extends WebApplication {
             game_id = arguments[0].game_id;
             winner_user_id = arguments[0].winner_user_id;
         }
-
+        
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
 
@@ -1080,6 +1102,27 @@ class Match extends WebApplication {
             if (!match) {
                 return this.error('No game to finish');
             }
+            return this._doFinishGame(match, winner_user_id);
+        }catch(e){
+            this.error('Could not end game');
+            return this;
+        }
+        
+    }
+
+    /**
+     * Private method called to finish a game
+     * 
+     * @param {type} match - the match object
+     * @param {type} winner_user_id - the user id of the winner if there is
+     * a winner in the game. If not specified or a value of 0 or null will
+     * mean that the game ended in a draw
+     * @returns {String|nm$_match.Match}
+     */
+    async _doFinishGame(match, winner_user_id) {
+
+        var c = this.sObj.db.collection(this.sObj.col.matches);
+        try {
 
             //check if the winner is a valid player id
             if (winner_user_id) {
@@ -1121,7 +1164,7 @@ class Match extends WebApplication {
                 return;
             }
 
-            var r = await c.deleteOne({game_id: game_id}, {w: 'majority'});
+            var r = await c.deleteOne({game_id: match.game_id}, {w: 'majority'});
 
             //relocate the match document to the match_history collection
             match.is_draw = winner_user_id ? false : true;
@@ -1149,7 +1192,7 @@ class Match extends WebApplication {
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+        var spectators = await sc.find({game_id: match.game_id}, {_id: 0}).toArray();
 
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);
@@ -1161,7 +1204,6 @@ class Match extends WebApplication {
         if (match.tournament_name) {
             var t = new Tournament(this.sObj, this.util, this.evt);
             t._onTournamentMatchEnd(match);
-
         }
 
         //finally update the players ranking
@@ -1204,16 +1246,18 @@ class Match extends WebApplication {
      * check if the match is up-to-date returns the match if not
      * 
      * @param {type} game_id
+     * @param {type} current_set
      * @param {type} move_counter
      * @param {type} game_position
      * @returns {Array|nm$_match.Match.checkMatchUpdate.data}
      */
-    async checkMatchUpdate(game_id, move_counter, game_position) {
+    async checkMatchUpdate(game_id, current_set ,move_counter, game_position) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             game_id = arguments[0].game_id;
+            current_set = arguments[0].current_set;
             move_counter = arguments[0].move_counter;
             game_position = arguments[0].game_position;
         }
@@ -1252,7 +1296,8 @@ class Match extends WebApplication {
             }
             
             if (data.match.move_counter === move_counter
-                    && data.match.game_position === game_position) {
+                    && data.match.game_position === game_position
+                    && data.match.current_set === current_set) {
                 data.match = null; //if the match is up-to-date then no need to return it. the client should just use what it has - no need of reloading
                 data.up_to_date = true;
             }

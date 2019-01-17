@@ -115,7 +115,7 @@ Ns.game.AbstractBoard3D = {
         var el = document.getElementById(obj.container);
         this.boardContainer = el;
         el.innerHTML = '';//clear any previous
-        //var board_cls = this.getBoardClass(obj.inverseBoard);
+        //var board_cls = this.getBoardClass(obj.invertedBoard);
         this.board(el);
 
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess

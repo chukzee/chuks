@@ -27,6 +27,7 @@ Ns.game.Chess = {
         if (prevMatch
                 && prevMatch.game_name === obj.match.game_name
                 && prevMatch.game_id === obj.match.game_id
+                && prevMatch.current_set === obj.match.current_set
                 && prevMatch.move_counter > obj.match.move_counter) {
             obj.match = prevMatch; //most up-to-data match object            
         }

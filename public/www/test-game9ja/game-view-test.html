@@ -32,23 +32,23 @@ and open the template in the editor.
             <div class="game9ja-game-view-body">
                 <div id="game9ja-game-view-main">
                     
-                    
-                    <div id="test_width" style="background-color: red;"><!--sizing and positioning using javascript-->
+                    <div id="game-view-main-upper"><!--sizing and positioning using javascript-->
                         <!--some upper display e.g time countdown and online status-->
                         <!--note when countdown starts it means the move is delivered to the opponent
                         and when it stop it means the opponent has played or the countdown is over i.e timeout-->
-                        <div>05:34</div> <!--countdown-->
-                        <div>thinking...</div> <!--feedback e.g making move... , thinking...-->
-                        <div>W 3, L 2, D 3 </div> <!--win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                        <div id="game-view-white-wdl">W 3, L 2, D 3</div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
+                        <div id="game-view-feedback">thinking...</div> <!--feedback e.g making move... , thinking...-->
+                        <div id="game-view-black-wdl">W 2, L 3, D 3</div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
                     </div>
-                    <div style="background-color: blue;"><!--sizing and positioning using javascript-->
+                    <div id="game-view-main-board"><!--sizing and positioning using javascript-->
                         <!--the game board-->
                     </div>
-                    <div style="background-color: green;"><!--sizing and positioning using javascript-->
+                    <div id="game-view-main-lower"><!--sizing and positioning using javascript-->
                         <!--some lower display e.g time countdown -->
-                        <div>03:25</div> <!--countdown-->
-                        <div>W 2, L 3, D 3 </div> <!--win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                        <div id="game-view-white-countdown">05:34</div> <!-- 03:25 countdown-->
+                        <div id="game-view-black-countdown">04:21</div> <!--countdown-->
                     </div>
+                    
                 </div>
                 <div id="game9ja-game-view-right-content">
                     <!--holds panel in the side. this show by default in 
@@ -75,41 +75,18 @@ and open the template in the editor.
                     <!--holds stats icon tab -->
                     <i class="fa fa-users"></i> <div >Spectators</div>
                 </div>   
-                <div id="game-view-footer-voice-call">
+                <div id="game-view-footer-stats">
                     <!--holds voice call icon tab -->
-                    <i class="fa fa-phone"></i> <div >Voice call</div>
+                    <i class="fa fa-line-chart"></i> <div >Stats</div>
                 </div>
-                <div id="game-view-footer-video-call">
+                <div id="game-view-footer-options">
                     <!--holds video call icon tab -->
-                    <i class="fa fa-video-camera"></i> <div >Video call</div>
+                    <i class="fa fa-wrench"></i> <div >Options</div>
                 </div>
 
             </div>
         </div>
 
-        <script>
-            alert("width = "+window.screen.width +", heigt = "+window.screen.height);
-            
-            var el = document.getElementById("test");
-            el.addEventListener('touchmove', function(evt){
-                evt.preventDefault();//prevent other events propagation 
-                console.log('touchmove');
-            });
-            el.addEventListener('touchend', function(evt){
-                evt.preventDefault();//prevent click event
-                console.log('touchend');
-            });
-            el.addEventListener('click', function(){
-                console.log('click');
-            });
-            
-            var elm = document.getElementById("test_width");
-            
-            alert(elm.clientTop);
-            alert(elm.clientLeft);
-            alert(elm.clientHeight);
-            alert(elm.clientWidth);
-        </script>
             
     </body>
 </html>

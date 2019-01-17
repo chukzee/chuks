@@ -22,7 +22,26 @@ Ns.msg.TournamentGeneralChat = {
         Main.eventio.on('tournament_general_chat', this.onChat.bind(this));
 
     },
-    
+
+    getName:function(){
+        return 'Ns.msg.TournamentGeneralChat';
+    },
+
+    getCode:function(){
+        if(Main.util.isString(this.tournament)){
+            return this.tournament;
+        }
+        return this.tournament.tournament_name;
+    },
+
+    getExtraCode:function(){
+        return 'general';
+    },
+
+    getMsgCode: function(msg){
+        return msg.tournament_name;
+    },
+            
     getSaveKeyPrefix(){
         return 'save_msg_tournament_general_chat';
     },

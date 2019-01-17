@@ -9,6 +9,7 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/app-main.css" />
         <link rel="stylesheet" href="../app/css/board.css" />
         <script src="../lib/chess.min.js"></script>
         <script src="../lib/jquery-1.10.2.min.js"></script>
@@ -40,9 +41,49 @@ and open the template in the editor.
                     }
                 };
             }
+            function Toast() {
+                var wait;
+                var txts = [];
+                this.show = function (text) {
+
+                    var me = this;
+                    if (arguments.length > 0) {
+                        txts.push(text);
+                    }
+
+                    if (wait) {
+                        return;
+                    }
+
+                    wait = true;
+
+                    var toast_el = document.createElement('div');
+                    toast_el.style.zIndex = 10000;
+                    toast_el.className = 'game9ja-toast';
+                    toast_el.innerHTML = txts[0];
+                    toast_el.style.display = 'none';
+                    document.body.appendChild(toast_el);
+
+                    $(toast_el).stop()
+                            .fadeIn(400)
+                            .delay(3000)
+                            .fadeOut(400, function () {
+                                document.body.removeChild(toast_el);
+                                txts.splice(0, 1);
+                                wait = false;
+                                if (txts.length > 0) {
+                                    me.show.call(me);
+                                }
+                            });
+
+                };
+            }
+
             var device_category = "medium";
             var Main = {
-                anim : new Animate(),
+                anim: new Animate(),
+                toast: new Toast(),
+
                 util:{
                   isString: function(a){
                       return typeof a === 'string';

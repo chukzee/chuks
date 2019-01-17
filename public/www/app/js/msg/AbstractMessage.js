@@ -3,6 +3,7 @@
 /* global Ns, Main */
 
 Ns.msg.AbstractMessage = {
+    refStateIndex: 0,
     view: null,
     view_body: null,
     msgList: [],
@@ -18,8 +19,12 @@ Ns.msg.AbstractMessage = {
     _prepared_items: [],
     _new_added_count: 0,
     _new_set_count: 0,
+    _new_sending_count: 0,
     _redisplay_timer_id: null,
-
+    _name: null,
+    _code: null,
+    _extra_code: null,
+    
     getMsgList: function () {
         return this.msgList;
     },
@@ -144,10 +149,66 @@ Ns.msg.AbstractMessage = {
 
     /**
      * Overridden by subclass
+     * 
+     * A name given to this view - one of the three information
+     * used to detect which view a particular message belongs to.
+     * 
+     * The three information for detecting the view a message belong to are:
+     * getName() - a reliable tracking name
+     * getCode(msg) - a reliable tracking code in the message object
+     * getExtraCode() -  any reliable tracking information for perfecting the detection
+     * 
+     * @returns {undefined}
+     */
+    getName: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * 
+     * A reliable tracking code in the message object - one of the three information
+     * used to detect which view a particular message belongs to.
+     * 
+     * The three information for detecting the view a message belong to are:
+     * getName() - a reliable tracking name
+     * getCode(msg) - a reliable tracking code in the message object
+     * getExtraCode() -  any reliable tracking information for perfecting the detection
+     * 
+     * @returns {undefined}
+     */
+    getCode: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * 
+     * Any reliable tracking information given to this view - one of the three information
+     * used to detect which view a particular message belongs to.
+     * 
+     * The three information for detecting the view a message belong to are:
+     * getName() - a reliable tracking name
+     * getCode(msg) - a reliable tracking code in the message object
+     * getExtraCode() -  any reliable tracking information for perfecting the detection
+     *      
+     * * @returns {undefined}
+     */
+    getExtraCode: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getMsgCode: function () {
+    },
+
+    /**
+     * Overridden by subclass
      * @returns {undefined}
      */
     getResponseMsgs: function () {
     },
+
     _validate: function () {
         if (!this.view_body) {
             throw Error('Invalid setup - ' + this.getMsgType() + ' view body cannot be null. ensure to set view body id.');
@@ -162,6 +223,12 @@ Ns.msg.AbstractMessage = {
 
     },
     content: function (data, argu1) {
+
+        this.refStateIndex++;
+
+        this._name = this.getName();
+        this._code = this.getCode();
+        this._extra_code = this.getExtraCode();
 
         var me = this;
         this.initContent(data, argu1);
@@ -182,7 +249,7 @@ Ns.msg.AbstractMessage = {
             this.msgList = this._localGetMessages();
         }
 
-        if (this._unsentMsgList.length === 0) {
+        if (this.refStateIndex === 1) {//the first time this view is loaded
             this._unsentMsgList = this._localGetUnsentMessages();
         }
 
@@ -210,7 +277,6 @@ Ns.msg.AbstractMessage = {
         Main.longpress(this.view_body, this, this._onLongpressToSelect);
 
         Main.click(this.view_body, this, this._onClickToSelect);
-
 
         var me = this;
 
@@ -282,40 +348,49 @@ Ns.msg.AbstractMessage = {
         var me = this;
 
         //TODO: show loading indicator
+        function bindFn() {
+            var code_obj = {};
+            me._codifyMsg(code_obj);//we just need the coded information
+            return code_obj;
+        }
 
-        Main.rcall.live(function () {
+        me.rcallGetMessages(data, bindFn)
+                .after(function () {
+                    me._retryUnsentMessage.call(me);
+                })
+                .get(function (res) {
+                    var codeObj = this;
+                    if (!me.checkAccess(codeObj)) {
+                        return;
+                    }
 
-            me.rcallGetMessages(data)
-                    .after(function () {
-                        //add unsent messages
-                        for (var i = 0; i < me._unsentMsgList.length; i++) {
-                            me.addSending(me._unsentMsgList[i]);
-                        }
-                        me._retryUnsentMessage.call(me);
-                    })
-                    .get(function (res) {
-                        var msgs = me.getResponseMsgs(res);
-                        me.set(msgs);
+                    var msgs = me.getResponseMsgs(res);
 
-                        //send 'seen' status
-                        var user_id = Ns.view.UserProfile.appUser.user_id;
-                        var msg_ids = [];
-                        for (var i = 0; i < msgs.length; i++) {
-                            var msg = msgs[i];
-                            if (msg.user_id !== user_id) {
-                                if (msg.status !== 'seen') {
-                                    msg_ids.push(msg.msg_id);
-                                }
+                    for (var i = 0; i < msgs.length; i++) {
+                        this._codifyMsg(msgs[i]);
+                    }
+
+                    me.set(msgs);
+
+                    //send 'seen' status
+                    var user_id = Ns.view.UserProfile.appUser.user_id;
+                    var msg_ids = [];
+                    for (var i = 0; i < msgs.length; i++) {
+                        var msg = msgs[i];
+                        if (msg.user_id !== user_id) {
+                            if (msg.status !== 'seen') {
+                                msg_ids.push(msg.msg_id);
                             }
                         }
-                        if (msg_ids.length > 0) {
-                            me.sendSeenStatus(msg_ids, msg.user_id, user_id);
-                        }
-                    })
-                    .error(function (err) {
-                        console.log(err);
-                    });
-        });
+                    }
+                    if (msg_ids.length > 0) {
+                        me.sendSeenStatus(msg_ids, msg.user_id, user_id);
+                    }
+                })
+                .error(function (err) {
+                    console.log(err);
+                });
+
     },
 
     _localSaveMessages: function () {
@@ -845,6 +920,7 @@ Ns.msg.AbstractMessage = {
      */
     add: function (msgs, replace_element) {
 
+
         var is_showing = this.isShowing();
 
         if (!Main.util.isArray(msgs)) {
@@ -860,6 +936,13 @@ Ns.msg.AbstractMessage = {
             }
 
             msgs = [msgs];//convert to array
+        }
+
+        for (var i = 0; i < msgs.length; i++) {
+            if (this.getMsgCode(msgs[i]) !== this._code) {//for receive msg this is the correct way to detect if we are on the rigth view
+                return;//so leave since the view has changed
+            }
+            this._codifyMsg(msgs[i]);
         }
 
         //avoid duplicate addition
@@ -996,28 +1079,18 @@ Ns.msg.AbstractMessage = {
                 sending_msg_id: Main.util.serilaNo()
             };
 
-            me._addSending.call(me, msgObj);
+
             me._unsentMsgList.push(msgObj);
+            me._addSending.call(me, msgObj);
 
             me._localSaveUnsentMessages.call(me);
+        } else {//new
+            me = this;
+            msgObj = data;
+            me._addSending.call(me, msgObj);
         }
 
-
-        var MAX_SEND = 10;
-        var len = me._unsentMsgList.length;
-        if (len === 0) {//possibly the user has deleted them.
-            return;
-        }
-
-        if (len > MAX_SEND) {
-            len = MAX_SEND;
-        }
-
-
-        for (var i = 0; i < len; i++) {
-            me._doSendMsg.call(me, me._unsentMsgList[i]);
-        }
-
+        me._doSendMsg.call(me, msgObj);//new
 
     },
 
@@ -1026,8 +1099,8 @@ Ns.msg.AbstractMessage = {
 
         console.log('_doSendMsg msgObj - ', msgObj);
 
-
         me.rcallSendMessage(msgObj.content, bindFn)
+                .retry(retryFn)//force to retry is it is connection problem
                 .get(getFn)
                 .error(errFn);
 
@@ -1040,8 +1113,18 @@ Ns.msg.AbstractMessage = {
             return msgObj; //return to us the exact reference we need even if the rcall is in a for loop
         }
 
+        function retryFn(sec_remain) {
+            console.log('retry in ' + sec_remain + ' seconds');
+        }
+
         function getFn(data) {
             var mObj = this;// the result of the bind function 'bindFn' returned to us
+            if (!me.checkAccess(mObj)) {//the view has changed
+                return;//so leave
+            }
+
+            me._codifyMsg(data);
+
             var index = me._unsentMsgList.indexOf(mObj);
             if (index > -1) {
                 me._unsentMsgList.splice(index, 1);//remove from unsent messages
@@ -1050,13 +1133,11 @@ Ns.msg.AbstractMessage = {
             var remove_el = me._getPendingMsgElement.call(me, mObj);
             me.add.call(me, data, remove_el);
 
-            me._retryUnsentMessage.call(me, 2);
         }
 
         function errFn(err, err_code, connect_err) {
             if (connect_err) {//only retry if it is a connection problem
-                var mObj = this;// the result of the bind function 'bindFn' returned to us
-                me._retryUnsentMessage.call(me);
+
             }
         }
     },
@@ -1169,7 +1250,14 @@ Ns.msg.AbstractMessage = {
             }
         }
 
-        if (this._prepared_items.length < this._new_set_count + this._new_added_count) {
+        for (var i = 0; i < this._unsentMsgList.length; i++) {
+            if (this._unsentMsgList[i].sending_msg_id === data.sending_msg_id) {
+                this._prepared_items.push(obj);
+                break;
+            }
+        }
+
+        if (this._prepared_items.length < this._new_set_count + this._new_added_count + this._new_sending_count) {
             return;
         }
 
@@ -1190,6 +1278,7 @@ Ns.msg.AbstractMessage = {
         //initial the relevant variables
         this._new_set_count = 0;
         this._new_added_count = 0;
+        this._new_sending_count = 0;
         this._prepared_items = [];
 
 
@@ -1197,6 +1286,8 @@ Ns.msg.AbstractMessage = {
     },
 
     _addSending: function (msgObj) {
+        this._codifyMsg(msgObj);
+        this._new_sending_count++;
         this._addSent(msgObj);
     },
 
@@ -1267,42 +1358,9 @@ Ns.msg.AbstractMessage = {
 
     _retryUnsentMessage: function (sec) {
 
-        if (this._unsentMsgList.length === 0) {
-            window.clearTimeout(this.retrySendTimerID);
-            this.retrySendTimerID = null;
-            return;
+        for (var i = 0; i < this._unsentMsgList.length; i++) {//new
+            this._sendMessage(null, this._unsentMsgList[i]);
         }
-
-        if (this._waitingNextTick) {
-            return;
-        }
-
-        var delay;
-        if (sec > 0) {
-            window.clearTimeout(this.retrySendTimerID);//cancel previous one
-            this.retrySendTimerID = null;
-            this.retryWaitDuartion = sec;
-        } else {
-            this.retryWaitDuartion *= 2;
-
-            if (this.retryWaitDuartion > 256) {
-                this.retryWaitDuartion = 16;
-            }
-        }
-
-        delay = 1000 * this.retryWaitDuartion;
-
-        this._waitingNextTick = true;
-
-        this.retrySendTimerID = window.setTimeout(this._doResend.bind(this), delay);
-    },
-
-    _doResend: function () {
-
-        this._waitingNextTick = false;
-
-        //now resend all unsent
-        this._sendMessage(null, {_this: this});
 
     },
 
@@ -1310,7 +1368,29 @@ Ns.msg.AbstractMessage = {
         return id + this.DOM_EXTRA_FIELD_PREFIX;
     },
 
+    _codifyMsg: function (msg) {
+        msg._name = this.getName();
+        msg._code = this.getMsgCode(msg);
+        msg._extra_code = this.getExtraCode();
+    },
+
+    checkAccess: function (msg) {
+        if (this.getName() === this._name
+                && this.getMsgCode(msg) === this._code
+                && this.getExtraCode() === this._extra_code) {
+            return true;
+        }
+
+        return false;
+    },
+
     _addItemToDom: function (el, data, replace_element) {
+
+        //ok before we add the message to the dom we must first check if the view
+        //is what we are expecting 
+        if (!this.checkAccess(data)) {//the view has changed
+            return;//so leave
+        }
 
         var vb_id = this.view_body.id;
         var dom_extra_field = this.domExtraFieldPrefix(vb_id);

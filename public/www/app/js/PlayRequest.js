@@ -9,11 +9,6 @@ Ns.PlayRequest = {
     
     constructor: function () {
 
-
-        var obj = {
-            play_request: 'game/PlayRequest'
-        };
-
         Main.eventio.on('game_start', this.onGameStart);
         Main.eventio.on('play_request', this.onPlayRequest);
         Main.eventio.on('play_request_rejected', this.onPlayRequestRejected);

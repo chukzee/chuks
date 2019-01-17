@@ -1,7 +1,7 @@
 
 var draft = {};
 
-var Draft9ja = draftFn.bind(draft); //bind the 'this' of draftFn to draft - this technique is twice faster than not using the bind method - I have tested it!!!
+var Draughts = draftFn.bind(draft); //bind the 'this' of draftFn to draft - this technique is twice faster than not using the bind method - I have tested it!!!
 
 function draftFn(size) {
     this.MAX_VALUE = 1000000;
@@ -2097,5 +2097,5 @@ function draftFn(size) {
 ;
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = Draft9ja;
+    module.exports = Draughts;
 }

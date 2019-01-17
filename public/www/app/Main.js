@@ -640,19 +640,19 @@ var Main = {};
                     acknowledge_delivery: msg.acknowledge_delivery
                 };
                 socket.emit('acknowledge_delivery', ack);
-                
-                if(ack_msg_ids.indexOf(msg.msg_id) > -1){
-                    console.log('detect duplicate recieved message with id - '+msg.msg_id);
+
+                if (ack_msg_ids.indexOf(msg.msg_id) > -1) {
+                    console.log('detect duplicate recieved message with id - ' + msg.msg_id);
                     return;
                 }
-                
+
                 ack_msg_ids.push(msg.msg_id);
-                
-                if(ack_msg_ids.length > MAX_TRACK_MSG_IDS){//
+
+                if (ack_msg_ids.length > MAX_TRACK_MSG_IDS) {//
                     //remove the top in the list
                     ack_msg_ids.splice(0, 1);
                 }
-                
+
             }
 
             //more midware checks may go below before calling the listeners
@@ -710,12 +710,81 @@ var Main = {};
         var nextRCallLiveRetrySec = 2;
         var retryLiveArgs = [];
         var rio;
+        var retrials = [];
+        var nextRCallExecRetrySec = 1;
+        var nextRetryExecTime;
+        var isRetryingExec = false;
+        var rcallRetryExecTimerId = null;
 
         Main.ready(function () {
             if (!rio) {
                 rio = new RIO();
             }
         });
+
+        function addRetry(obj_param) {
+            retrials.push(obj_param);
+            execRetry();
+        }
+
+        function doRetryExec() {
+            isRetryingExec = false;
+            nextRetryExecTime = new Date().getTime() + getNextRetryExecSec(nextRCallExecRetrySec) * 1000;
+            if (retrials.length === 0) {
+                nextRetryExecTime = 0;
+                return;
+            }
+
+            for (var i = 0; i < retrials.length; i++) {
+                Main.rcall.exec(retrials[i]);
+            }
+
+            retrials = [];//clear all
+
+            execRetry();
+        }
+
+        function secondsRemainToRetry() {
+            if (nextRetryExecTime) {
+                return Math.ceil((nextRetryExecTime - new Date().getTime()) / 1000);
+            } else {
+                return getNextRetryExecSec(nextRCallExecRetrySec);
+            }
+        }
+
+        function execRetry() {
+            
+            if (isRetryingExec) {
+                return;
+            }
+
+            isRetryingExec = true;
+            nextRCallExecRetrySec = getNextRetryExecSec(nextRCallExecRetrySec);
+            rcallRetryExecTimerId = window.setTimeout(doRetryExec, nextRCallExecRetrySec * 1000);
+
+            if (nextRCallExecRetrySec === 0) {
+                nextRCallExecRetrySec = 1;
+            }
+        }
+
+        function retryNow() {
+            isRetryingExec = false;
+            if (rcallRetryExecTimerId) {                
+                window.clearTimeout(rcallRetryExecTimerId);
+            }
+            nextRCallExecRetrySec = 0;
+            execRetry();
+        }
+
+        function getNextRetryExecSec(sec) {
+
+            sec *= 2;
+            if (sec >= 256) {
+                sec = 4;
+            }
+
+            return sec;
+        }
 
         function RIO() {
             var sucFnList = {};
@@ -828,6 +897,9 @@ var Main = {};
             }
         }
 
+        this.resend = function () {
+            retryNow();
+        };
 
         this.live = function () {
             var objInst, fn;
@@ -917,6 +989,7 @@ var Main = {};
                                         this._errFn;
                                         this._beforeFn;
                                         this._afterFn;
+                                        this._retryFn;
                                         var _busy_obj = null; //yes
                                         var me = this;
 
@@ -924,18 +997,27 @@ var Main = {};
                                             this._getFn = fn;
                                             return me;
                                         };
+
                                         this.error = function (fn) {
                                             this._errFn = fn;
                                             return me;
                                         };
+
                                         this.before = function (fn) {
                                             this._beforeFn = fn;
                                             return me;
                                         };
+
                                         this.after = function (fn) {
                                             this._afterFn = fn;
                                             return me;
                                         };
+
+                                        this.retry = function (fn) {
+                                            this._retryFn = fn;
+                                            return me;
+                                        };
+
                                         this.busy = function (obj) {
                                             var o = obj || {};
                                             if (!o.el) {
@@ -947,6 +1029,8 @@ var Main = {};
                                         this._getBusyObj = function () {
                                             return _busy_obj;
                                         };
+
+
                                         return this;
                                     };
                                     if (k === 0) {
@@ -995,26 +1079,45 @@ var Main = {};
                                                 Main.busy.show(promise._getBusyObj.call(bind));
                                             }
 
-                                            Main.rcall.exec({
+                                            var objParam = {
                                                 class: className,
                                                 method: method,
                                                 param: argu,
-                                                callback: rcallCallback,
                                                 bind: bind
-                                            });
+                                            };
+
+                                            var bndRcallCallback = rcallCallback.bind(objParam);
+
+                                            objParam.callback = bndRcallCallback;
+
+                                            Main.rcall.exec(objParam);
 
                                             function rcallCallback(response, bind) {
                                                 try {
                                                     var data, err;
                                                     if (response.success) {
+                                                        nextRCallExecRetrySec = 1;//initialize retry 
                                                         data = response.data;
                                                         if (Main.util.isFunc(promise._getFn)) {
                                                             promise._getFn.call(bind, data);
                                                         }
+
                                                     } else {
+
                                                         err = response.data;
                                                         var connect_err = response.connect_err;
                                                         var err_code = response.err_code;
+
+                                                        //new start
+                                                        if (Main.util.isFunc(promise._retryFn)) {
+                                                            var retry_strategy = promise._retryFn.call(bind, secondsRemainToRetry());
+
+                                                            var execObjParam = this;
+                                                            addRetry(execObjParam);
+                                                            return;
+                                                        }
+                                                        //new end
+
                                                         if (Main.util.isFunc(promise._errFn)) {
                                                             promise._errFn.call(bind, err, err_code, connect_err);
                                                         }
@@ -1250,6 +1353,7 @@ var Main = {};
                     }
                     callback(res, bind);
                 }
+
                 function errorFn(statusText, status) {
                     var respose = {};
                     var connect_err = false;
@@ -1261,6 +1365,7 @@ var Main = {};
                         connect_err = true;
                         statusText = 'Connection to the server has timed out!'; // we prefer this description
                     }
+
                     respose.success = false;
                     respose.data = statusText;
                     respose.err_code = status;
@@ -2067,8 +2172,6 @@ var Main = {};
         var listTplWaitCount = {};
         var ListTplGetting = {};
         var _game9ja_Dom_Hold_Data = '_game9ja_Dom_Hold_Data_' + new Date().getTime(); // a unique property to be created in dom element for storing data
-        var upOut = {};
-        var downOut = {};
         //MAX_OFF of 15 has some problem on my itel device - come back to resolve this bug later!
         var MAX_OFF = 100;//max number of elements off view before consodering remove element from dom.
         var MAX_REMAINING_OFF = MAX_OFF - 5;//max number of elements to be left after removal for excess 
@@ -2079,102 +2182,53 @@ var Main = {};
 
             var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
 
+            /**
+             * Get the data in the listview at the specified index
+             * 
+             * @param {type} index
+             * @returns {undefined|jQuery|MainL#4.Listview.listThis.getData.children|MainL#4.Listview.listThis.getData.child}
+             */
+            this.getData = function (index) {
+                if (index < 0) {
+                    return;//important
+                }
+                var children = $(container_id).children();
+                if (index < children.length) {
+                    var child = children[index];
+                    if (child) {
+                        return child[_game9ja_Dom_Hold_Data];
+                    }
+                }
+
+            };
+
             this.addItem = function (data) {//analogous to appendItem
                 this.appendItem(data);
             };
 
             this.appendItem = function (data) {
-
-                topCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
-
-                bottomCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
-
-                if (downOut[container_id].length) {
-                    downOut[container_id].unshift(data);
-                } else {
-                    putItem(html, obj, data, doAppendItem);
-                }
-
-                /*
-                 //TESTING!!!
-                 if (downOut[container_id].length + $(obj.container).children().length === 100) {//TESTING!!! TO BE REMOVED
-                 
-                 for(var i=0; i<downOut[container_id].length; i++){
-                 console.log(downOut[container_id][i].black_player_name);
-                 }
-                 }*/
-
+                putItem(html, obj, data, doAppendItem);
             };
 
             this.prependItem = function (data) {
-
-                bottomCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
-
-                topCutOff(obj.container, obj.scrollContainer, container_id, html, obj);
-
-                if (upOut[container_id].length) {
-                    upOut[container_id].unshift(data);
-                } else {
-                    putItem(html, obj, data, doPrependItem);
-                }
-
-                /*
-                 //TESTING!!!
-                 if (upOut[container_id].length + $(obj.container).children().length === 100) {//TESTING!!! TO BE REMOVED
-                 
-                 for(var i=0; i<upOut[container_id].length; i++){
-                 console.log(upOut[container_id][i].black_player_name);
-                 }
-                 
-                 }*/
-
+                putItem(html, obj, data, doPrependItem);
             };
 
-            //NOT YET TESTED
             this.removeItemAt = function (index) {
                 if (index < 0) {
                     return;//important
                 }
-                var up_out = upOut[container_id];
-                var down_out = downOut[container_id];
                 var children = document.getElementById(container_id).children;
-                if (index < up_out.length) {
-                    up_out.splice(index, 1);
-                } else if (index < up_out.length + children.length) {
-                    var c_index = index - up_out.length;
-                    var child = children[c_index];
+                if (index < children.length) {
+                    var child = children[index];
                     if (child) {
                         child.remove();
                     }
-                } else {
-                    //TODO - NOT YET TESTED
-                    var c_index = index - up_out.length - children.length;
-                    down_out.splice(c_index, 1);
                 }
-
-
 
             };
 
             this.replaceItem = function (data, fn) {
-
-                var up_out = upOut[container_id];
-                for (var i = 0; i < up_out.length; i++) {
-                    var dom_data = up_out[i];
-                    if (fn(dom_data) === true) {
-                        up_out[i] = data;
-                        return true;
-                    }
-                }
-
-                var down_out = downOut[container_id];
-                for (var i = 0; i < down_out.length; i++) {
-                    var dom_data = down_out[i];
-                    if (fn(dom_data) === true) {
-                        down_out[i] = data;
-                        return true;
-                    }
-                }
 
                 var children = document.getElementById(container_id).children;
                 var el;
@@ -2197,12 +2251,6 @@ var Main = {};
 
                 var replacement = tplParam(html, obj, data);
 
-                /*var parent = el.parentNode;
-                 if (!parent) {
-                 return false;
-                 }
-                 
-                 parent.replaceChild(el, replacement);*/
                 if (Main.util.isString(replacement)) {//html string
                     el.outerHTML = replacement;
                 } else if ('outerHTML' in replacement) {//hmtl element
@@ -2214,15 +2262,12 @@ var Main = {};
                     }
                     el.outerHTML = outer_html;
                 }
-                
+
                 el[_game9ja_Dom_Hold_Data] = data;
                 var cont = document.getElementById(container_id);
                 var d_children = cont.children;
                 cont.replaceChild(el, d_children[el_index]);
-                
-                var test_children = document.getElementById(container_id).children;
-                var is_true = test_children[0] === el;
-                
+
                 return true;
             };
 
@@ -2331,12 +2376,6 @@ var Main = {};
 
         function handle(html, obj) {
             var container_id = obj.container.charAt(0) === "#" ? obj.container.substring(1) : obj.container;
-            if (!upOut[container_id]) {
-                upOut[container_id] = []; // initialize
-            }
-            if (!downOut[container_id]) {
-                downOut[container_id] = []; // initialize
-            }
 
 
             $(obj.container).html('');//clear previous content
@@ -2373,220 +2412,12 @@ var Main = {};
 
             if (this.lastScrollTop < evt.target.scrollTop) {
 
-                while (topCutOff(this.container, this.scrollContainer, this.container_id, this.itemHtml, this.obj)) {
-                    //continue until no more cutoff
-
-                    console.log('count topCutOff looping ', ++count);
-                }
             } else {
 
-                while (bottomCutOff(this.container, this.scrollContainer, this.container_id, this.itemHtml, this.obj)) {
-                    //continue until no more cutoff
-
-                    console.log('count bottomCutOff looping ', ++count);
-                }
             }
 
 
             this.lastScrollTop = evt.target.scrollTop;
-        }
-
-        function topCutOff(_container, _scrollContainer, container_id, itemHtml, obj) {
-            var container, scrollContainer;
-
-            if (Main.util.isString(_container)) {
-                var cid = _container.charAt(0) === '#' ? _container.substring(1) : _container;
-                container = document.getElementById(cid);
-            } else if (_container) {
-                container = _container;
-            } else {
-                return;
-            }
-
-            if (Main.util.isString(_scrollContainer)) {
-                var sid = _scrollContainer.charAt(0) === '#' ? _scrollContainer.substring(1) : _scrollContainer;
-                scrollContainer = document.getElementById(sid);
-            } else if (_scrollContainer) {
-                scrollContainer = _scrollContainer;
-            } else {
-                return;
-            }
-
-            var firstChild = container.children[0];
-            if (!firstChild) {
-                return;
-            }
-            var firstChildBound = firstChild.getBoundingClientRect();
-            var scrollBound = scrollContainer.getBoundingClientRect();
-
-            var item_up_top = firstChildBound.top;
-            var item_size = firstChildBound.height;
-            if (!item_size || !scrollBound.height) {
-                return;
-            }
-
-            var count_off_up = (scrollBound.top - item_up_top) / item_size;
-            var up_out = upOut[container_id];
-            var trim;
-            if (count_off_up >= MAX_OFF) {
-                var CUT_OFF = MAX_OFF - MAX_REMAINING_OFF;
-                for (var i = 0; i < CUT_OFF; i++) {
-                    var child = container.children[0];
-
-                    if (container.removeChild(child)) {
-                        var data = child[_game9ja_Dom_Hold_Data];
-                        up_out.push(data);
-                        trim = true;
-
-                        console.log("removed top - child count = ", container.children.length);
-                    }
-                }
-            }
-
-            addBackBottomCutOff(container, scrollBound, container_id, itemHtml, obj);
-
-            return trim;
-        }
-
-        function bottomCutOff(_container, _scrollContainer, container_id, itemHtml, obj) {
-            var container, scrollContainer;
-
-            if (Main.util.isString(_container)) {
-                var cid = _container.charAt(0) === '#' ? _container.substring(1) : _container;
-                container = document.getElementById(cid);
-            } else if (_container) {
-                container = _container;
-            } else {
-                return;
-            }
-
-            if (Main.util.isString(_scrollContainer)) {
-                var sid = _scrollContainer.charAt(0) === '#' ? _scrollContainer.substring(1) : _scrollContainer;
-                scrollContainer = document.getElementById(sid);
-            } else if (_scrollContainer) {
-                scrollContainer = _scrollContainer;
-            } else {
-                return;
-            }
-
-            var lastChild = container.children[container.children.length - 1];
-            if (!lastChild) {
-                return;
-            }
-            var lastChildBound = lastChild.getBoundingClientRect();
-            var scrollBound = scrollContainer.getBoundingClientRect();
-
-            var item_size = lastChildBound.height;
-            if (!item_size || !scrollBound.height) {
-                return;
-            }
-
-            var item_bottom = lastChildBound.top + lastChildBound.height;
-            var scroll_cont_bottom = scrollBound.top + scrollBound.height;
-
-            var count_off_bottom = (item_bottom - scroll_cont_bottom) / item_size;
-
-            var down_out = downOut[container_id];
-            var trim;
-            if (count_off_bottom >= MAX_OFF) {
-                var CUT_OFF = MAX_OFF - MAX_REMAINING_OFF;
-                for (var i = 0; i < CUT_OFF; i++) {
-                    var last_child = container.children[container.children.length - 1];
-
-                    if (container.removeChild(last_child)) {
-                        var data = last_child[_game9ja_Dom_Hold_Data];
-                        down_out.push(data);
-                        trim = true;
-
-                        console.log("removed bottom - child count = ", container.children.length);
-                    }
-                }
-            }
-
-
-            addBackTopCutOff(container, scrollBound, container_id, itemHtml, obj);
-
-            return trim;
-        }
-
-        function addBackTopCutOff(container, scrollBound, container_id, itemHtml, obj) {
-
-            if (!upOut[container_id].length) {
-                return;
-            }
-
-            var firstChild = container.children[0];
-            if (!firstChild) {
-                return;
-            }
-            var firstChildBound = firstChild.getBoundingClientRect();
-            var item_up_top = firstChildBound.top;
-            var item_size = firstChildBound.height;
-            if (!item_size || !scrollBound.height) {
-                return;
-            }
-
-            var count_off_up = (scrollBound.top - item_up_top) / item_size;
-            var up_out = upOut[container_id];
-            if (count_off_up < MAX_REMAINING_OFF) {
-                var add_back_count = MAX_OFF - count_off_up;
-                add_back_count = add_back_count > up_out.length ? up_out.length : add_back_count;
-
-                for (var i = 0; i < add_back_count; i++) {
-                    var last_index = up_out.length - 1;
-                    if (last_index < 0) {
-                        break;
-                    }
-                    var last_data = up_out[last_index];
-                    putItem(itemHtml, obj, last_data, doPrependItem);
-                    up_out.splice(last_index, 1);
-                }
-
-            }
-
-        }
-
-
-        function addBackBottomCutOff(container, scrollBound, container_id, itemHtml, obj) {
-
-            if (!downOut[container_id].length) {
-                return;
-            }
-
-            var lastChild = container.children[container.children.length - 1];
-            if (!lastChild) {
-                return;
-            }
-
-            var lastChildBound = lastChild.getBoundingClientRect();
-
-            var item_size = lastChildBound.height;
-            if (!item_size || !scrollBound.height) {
-                return;
-            }
-
-            var item_bottom = lastChildBound.top + lastChildBound.height;
-            var scroll_cont_bottom = scrollBound.top + scrollBound.height;
-
-            var count_off_bottom = (item_bottom - scroll_cont_bottom) / item_size;
-            var down_out = downOut[container_id];
-            if (count_off_bottom < MAX_REMAINING_OFF) {
-                var add_back_count = MAX_OFF - count_off_bottom;
-                add_back_count = add_back_count > down_out.length ? down_out.length : add_back_count;
-
-                for (var i = 0; i < add_back_count; i++) {
-                    var last_index = down_out.length - 1;
-                    if (last_index < 0) {
-                        break;
-                    }
-                    var last_data = down_out[last_index];
-                    putItem(itemHtml, obj, last_data, doAppendItem);
-                    down_out.splice(last_index, 1);
-                }
-
-            }
-
-
         }
 
 
@@ -2599,8 +2430,8 @@ var Main = {};
             var parent = evt.target;
 
             while (parent && parent !== document.body) {
-                var saved_data = parent[_game9ja_Dom_Hold_Data];                
-                if (_game9ja_Dom_Hold_Data in parent) {    
+                var saved_data = parent[_game9ja_Dom_Hold_Data];
+                if (_game9ja_Dom_Hold_Data in parent) {
                     lastSelectedListviewItem = parent;
                     if (Main.util.isFunc(this.onSelect)) {
                         //call the onSelect callback
@@ -2688,35 +2519,6 @@ var Main = {};
                     console.log("could not get resource:", url);
                 });
             }
-
-            /**
-             * Get the data in the listview at the specified index
-             * 
-             */
-            this.getData = function (index) {
-                if (index < 0) {
-                    return;//important
-                }
-                var container_id = this.container.charAt(0) === '#' ? this.container.substring(1) : this.container;
-                var up_out = upOut[container_id];
-                var down_out = downOut[container_id];
-                var children = $(obj.container).children();
-                if (index < up_out.length) {
-                    return  up_out[index];
-                } else if (index < up_out.length + children.length) {
-                    var c_index = index - up_out.length;
-                    var child = children[c_index];
-                    if (child) {
-                        return child[_game9ja_Dom_Hold_Data];
-                    }
-                } else {
-                    //TODO - NOT YET TESTED
-                    var c_index = index - up_out.length - children.length;
-                    return down_out[index];
-                }
-
-
-            }.bind(obj);
 
             return this;
         };
@@ -3788,13 +3590,25 @@ var Main = {};
     };
 
     function Toast() {
-
+        var wait;
+        var txts = [];
         this.show = function (text) {
+
+            var me = this;
+            if (arguments.length > 0) {
+                txts.push(text);
+            }
+
+            if (wait) {
+                return;
+            }
+
+            wait = true;
 
             var toast_el = document.createElement('div');
             toast_el.style.zIndex = Main.const.Z_INDEX;
             toast_el.className = 'game9ja-toast';
-            toast_el.innerHTML = text;
+            toast_el.innerHTML = txts[0];
             toast_el.style.display = 'none';
             document.body.appendChild(toast_el);
 
@@ -3803,6 +3617,11 @@ var Main = {};
                     .delay(3000)
                     .fadeOut(400, function () {
                         document.body.removeChild(toast_el);
+                        txts.splice(0, 1);
+                        wait = false;
+                        if (txts.length > 0) {
+                            me.show.call(me);
+                        }
                     });
 
         };

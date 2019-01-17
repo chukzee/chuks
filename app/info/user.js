@@ -268,7 +268,7 @@ class User extends WebApplication {
 
         var user = await c.updateOne({user_id: user_id}, {$set: editObj});
 
-        return 'updated successfully.';
+        return 'Updated successfully.';
     }
 
     async addPhoneNumber(user_id, additional_phone_no) {
@@ -292,7 +292,7 @@ class User extends WebApplication {
 
         var user = await c.updateOne({user_id: user_id}, {$set: editObj});
 
-        return 'updated successfully.';
+        return 'Updated successfully.';
     }
 
     _normalizeInfo(user) {
