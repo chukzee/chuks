@@ -23,10 +23,6 @@ Ns.msg.GroupChat = {
 
     },
 
-    getName:function(){
-        return 'Ns.msg.GroupChat';
-    },
-
     getCode:function(){
         if(Main.util.isString(this.group)){
             return this.group;
@@ -34,14 +30,14 @@ Ns.msg.GroupChat = {
         return this.group.group_name;
     },
 
-    getExtraCode:function(){
-        return;
-    },
-
     getMsgCode: function(msg){
         return msg.group_name;
     },
-    
+ 
+    setMsgCode: function(msg){    
+        msg.group_name = this.getCode();
+    },
+       
     getSaveKeyPrefix(){
         return 'save_msg_group_chat';
     },

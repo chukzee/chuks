@@ -24,7 +24,7 @@ Ns.msg.AbstractMessage = {
     _name: null,
     _code: null,
     _extra_code: null,
-    
+
     getMsgList: function () {
         return this.msgList;
     },
@@ -150,29 +150,7 @@ Ns.msg.AbstractMessage = {
     /**
      * Overridden by subclass
      * 
-     * A name given to this view - one of the three information
-     * used to detect which view a particular message belongs to.
-     * 
-     * The three information for detecting the view a message belong to are:
-     * getName() - a reliable tracking name
-     * getCode(msg) - a reliable tracking code in the message object
-     * getExtraCode() -  any reliable tracking information for perfecting the detection
-     * 
-     * @returns {undefined}
-     */
-    getName: function () {
-    },
-
-    /**
-     * Overridden by subclass
-     * 
-     * A reliable tracking code in the message object - one of the three information
-     * used to detect which view a particular message belongs to.
-     * 
-     * The three information for detecting the view a message belong to are:
-     * getName() - a reliable tracking name
-     * getCode(msg) - a reliable tracking code in the message object
-     * getExtraCode() -  any reliable tracking information for perfecting the detection
+     * A reliable tracking code in the message object
      * 
      * @returns {undefined}
      */
@@ -181,25 +159,16 @@ Ns.msg.AbstractMessage = {
 
     /**
      * Overridden by subclass
-     * 
-     * Any reliable tracking information given to this view - one of the three information
-     * used to detect which view a particular message belongs to.
-     * 
-     * The three information for detecting the view a message belong to are:
-     * getName() - a reliable tracking name
-     * getCode(msg) - a reliable tracking code in the message object
-     * getExtraCode() -  any reliable tracking information for perfecting the detection
-     *      
-     * * @returns {undefined}
+     * @returns {undefined}
      */
-    getExtraCode: function () {
+    getMsgCode: function () {
     },
 
     /**
      * Overridden by subclass
      * @returns {undefined}
      */
-    getMsgCode: function () {
+    setMsgCode: function () {
     },
 
     /**
@@ -226,15 +195,12 @@ Ns.msg.AbstractMessage = {
 
         this.refStateIndex++;
 
-        this._name = this.getName();
-        this._code = this.getCode();
-        this._extra_code = this.getExtraCode();
-
         var me = this;
         this.initContent(data, argu1);
         this.selectionMode = false;
         this._isViewReady = false;
-
+        this._code = this.getCode();
+        
         this.view = document.getElementById(this.getViewID());
         if (!this.view) {
             throw Error('unknown id for ' + this.getMsgType() + ' view - ' + this.getViewID());
@@ -348,27 +314,24 @@ Ns.msg.AbstractMessage = {
         var me = this;
 
         //TODO: show loading indicator
-        function bindFn() {
-            var code_obj = {};
-            me._codifyMsg(code_obj);//we just need the coded information
-            return code_obj;
-        }
 
-        me.rcallGetMessages(data, bindFn)
+
+        me.rcallGetMessages(data)
                 .after(function () {
                     me._retryUnsentMessage.call(me);
                 })
                 .get(function (res) {
-                    var codeObj = this;
-                    if (!me.checkAccess(codeObj)) {
-                        return;
-                    }
 
                     var msgs = me.getResponseMsgs(res);
 
-                    for (var i = 0; i < msgs.length; i++) {
-                        this._codifyMsg(msgs[i]);
+                    if (msgs.length === 0) {
+                        return;
                     }
+
+                    if (!me.checkAccess(msgs[0])) {
+                        return;
+                    }
+
 
                     me.set(msgs);
 
@@ -938,13 +901,6 @@ Ns.msg.AbstractMessage = {
             msgs = [msgs];//convert to array
         }
 
-        for (var i = 0; i < msgs.length; i++) {
-            if (this.getMsgCode(msgs[i]) !== this._code) {//for receive msg this is the correct way to detect if we are on the rigth view
-                return;//so leave since the view has changed
-            }
-            this._codifyMsg(msgs[i]);
-        }
-
         //avoid duplicate addition
 
         for (var i = 0; i < msgs.length; i++) {
@@ -1123,8 +1079,6 @@ Ns.msg.AbstractMessage = {
                 return;//so leave
             }
 
-            me._codifyMsg(data);
-
             var index = me._unsentMsgList.indexOf(mObj);
             if (index > -1) {
                 me._unsentMsgList.splice(index, 1);//remove from unsent messages
@@ -1286,7 +1240,7 @@ Ns.msg.AbstractMessage = {
     },
 
     _addSending: function (msgObj) {
-        this._codifyMsg(msgObj);
+        this.setMsgCode(msgObj);
         this._new_sending_count++;
         this._addSent(msgObj);
     },
@@ -1368,29 +1322,25 @@ Ns.msg.AbstractMessage = {
         return id + this.DOM_EXTRA_FIELD_PREFIX;
     },
 
-    _codifyMsg: function (msg) {
-        msg._name = this.getName();
-        msg._code = this.getMsgCode(msg);
-        msg._extra_code = this.getExtraCode();
-    },
-
     checkAccess: function (msg) {
-        if (this.getName() === this._name
-                && this.getMsgCode(msg) === this._code
-                && this.getExtraCode() === this._extra_code) {
-            return true;
+        if (this.getMsgCode(msg) !== this._code) {
+            return false;
         }
 
-        return false;
+        if (!this.isShowing()) {
+            return false;
+        }
+
+        return true;
     },
 
     _addItemToDom: function (el, data, replace_element) {
 
-        //ok before we add the message to the dom we must first check if the view
-        //is what we are expecting 
+
         if (!this.checkAccess(data)) {//the view has changed
             return;//so leave
         }
+
 
         var vb_id = this.view_body.id;
         var dom_extra_field = this.domExtraFieldPrefix(vb_id);

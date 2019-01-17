@@ -23,10 +23,6 @@ Ns.msg.TournamentGeneralChat = {
 
     },
 
-    getName:function(){
-        return 'Ns.msg.TournamentGeneralChat';
-    },
-
     getCode:function(){
         if(Main.util.isString(this.tournament)){
             return this.tournament;
@@ -34,14 +30,14 @@ Ns.msg.TournamentGeneralChat = {
         return this.tournament.tournament_name;
     },
 
-    getExtraCode:function(){
-        return 'general';
-    },
-
     getMsgCode: function(msg){
         return msg.tournament_name;
     },
-            
+       
+    setMsgCode: function(msg){    
+        msg.tournament_name = this.getCode();
+    },
+         
     getSaveKeyPrefix(){
         return 'save_msg_tournament_general_chat';
     },

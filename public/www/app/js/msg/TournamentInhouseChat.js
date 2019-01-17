@@ -23,10 +23,6 @@ Ns.msg.TournamentInhouseChat = {
 
     },
 
-    getName:function(){
-        return 'Ns.msg.TournamentInhouseChat';
-    },
-
     getCode:function(){
 
         if(Main.util.isString(this.tournament)){
@@ -35,14 +31,14 @@ Ns.msg.TournamentInhouseChat = {
         return this.tournament.tournament_name;
     },
 
-    getExtraCode:function(){
-        return 'inhouse';
-    },
-
     getMsgCode: function(msg){
         return msg.tournament_name;
     },
-         
+      
+    setMsgCode: function(msg){    
+        msg.tournament_name = this.getCode();
+    },
+       
     getSaveKeyPrefix(){
         return 'save_msg_tournament_inhouse_chat';
     },

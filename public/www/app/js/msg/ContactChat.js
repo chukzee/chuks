@@ -25,10 +25,6 @@ Ns.msg.ContactChat = {
 
     },
     
-    getName:function(){
-        return 'Ns.msg.ContactChat';
-    },
-    
     getCode:function(){
         if(Main.util.isString(this.contact)){
             return this.contact;
@@ -36,12 +32,18 @@ Ns.msg.ContactChat = {
         return this.contact.user_id;  
     },
 
-    getExtraCode:function(){
+    
+    getMsgCode: function(msg){     
+        if(msg.contact_user_id === this.contact.user_id //sending
+                 || msg.user_id === this.contact.user_id//receiving
+                 ){
+             return this.contact.user_id;
+        }
         return;
     },
     
-    getMsgCode: function(msg){
-        return msg.contact_user_id;
+    setMsgCode: function(msg){    
+        msg.contact_user_id = this.getCode();
     },
     
     getSaveKeyPrefix() {
