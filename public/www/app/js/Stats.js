@@ -2,7 +2,7 @@
 /* global Ns */
 
 Ns.Stats = {
-    content: function(){
+    content: function(match, id_obj){
         
     }
 };

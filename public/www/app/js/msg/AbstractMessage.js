@@ -200,7 +200,7 @@ Ns.msg.AbstractMessage = {
         this.selectionMode = false;
         this._isViewReady = false;
         this._code = this.getCode();
-        
+
         this.view = document.getElementById(this.getViewID());
         if (!this.view) {
             throw Error('unknown id for ' + this.getMsgType() + ' view - ' + this.getViewID());
@@ -324,12 +324,10 @@ Ns.msg.AbstractMessage = {
 
                     var msgs = me.getResponseMsgs(res);
 
-                    if (msgs.length === 0) {
-                        return;
-                    }
-
-                    if (!me.checkAccess(msgs[0])) {
-                        return;
+                    if (msgs.length > 0) {
+                        if (!me.checkAccess(msgs[0])) {
+                            return;
+                        }
                     }
 
 

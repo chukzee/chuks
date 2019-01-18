@@ -2,7 +2,7 @@
 /* global Ns */
 
 Ns.Options = {
-    content: function(){
+    content: function(match, id_obj){
         
     }
 };

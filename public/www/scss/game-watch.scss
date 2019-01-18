@@ -69,8 +69,19 @@ $right_panel_width_ld : 30%;
                 position: relative;
                 margin : 0 auto;
                 //background: red;
+                > :nth-child(1){/*general feedback*/
+                    font-size: 14px;
+                    font-style: italic;
+                    width: 100%;
+                    text-align: center;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
 
-                > :nth-child(1){/*the player_1 countdown time in the upper panel*/
+                > :nth-child(2){/*the player_1 countdown time in the upper panel*/
                     position: absolute;
                     bottom: 0px;
                     left: $base_padding;
@@ -78,7 +89,7 @@ $right_panel_width_ld : 30%;
 
                 }
 
-                > :nth-child(2){/*the player_1 profile pic and name display*/
+                > :nth-child(3){/*the player_1 profile pic and name display*/
                     position: relative;
                     margin : 0 auto;
                     width : 200px;
@@ -117,7 +128,7 @@ $right_panel_width_ld : 30%;
                     }
                 }
 
-                > :nth-child(3){/*the player_1 win, loss, draw, display*/
+                > :nth-child(4){/*the player_1 win, loss, draw, display*/
                     position: absolute;
                     bottom: 0px;
                     right: $base_padding;

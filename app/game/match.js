@@ -7,6 +7,7 @@ var WebApplication = require('../web-application');
 var User = require('../info/user');
 var Rankings = require('../info/rankings');
 var Tournament = require('../info/tournament');
+var Stats = require('../game/Stats');
 
 
 class Match extends WebApplication {
@@ -159,9 +160,9 @@ class Match extends WebApplication {
         }
 
         //validate move counter        
-        if (current_set === prevMatchObj.current_set 
+        if (current_set === prevMatchObj.current_set
                 && prevMatchObj.move_counter !== move_counter) {
-            if (move_counter < prevMatchObj.move_counter ) {
+            if (move_counter < prevMatchObj.move_counter) {
                 this.error(`outdated game position detected!`);
                 this.send(this.evt.game_state_update, prevMatchObj, user_id);
             } else {
@@ -173,10 +174,10 @@ class Match extends WebApplication {
                 this.send(this.evt.game_reload_replay, prev_game_id, user_id);
             }
             return this;//now leave and return the error
-        }else if (current_set < prevMatchObj.current_set){
-                this.error(`old game set detected!`);
-                this.send(this.evt.game_state_update, prevMatchObj, user_id);
-                return this;
+        } else if (current_set < prevMatchObj.current_set) {
+            this.error(`old game set detected!`);
+            this.send(this.evt.game_state_update, prevMatchObj, user_id);
+            return this;
         }
 
         //validate the player turn
@@ -237,7 +238,7 @@ class Match extends WebApplication {
                     //now broadcast to the spectators                    
                     me.broadcast(me.evt.game_move, obj, spectators_ids);
 
-                    if(is_game_over){
+                    if (is_game_over) {
                         me._doFinishGame(match, winner_user_id);
                     }
 
@@ -467,12 +468,12 @@ class Match extends WebApplication {
 
         edit[`sets.${prev_set_index}.end_time`] = now_date;
         edit[`sets.${next_set_index}.start_time`] = now_date;
-        
+
         //initialize the game controller variables
         edit['game_position'] = null;
         edit['turn_player_id'] = null;
         edit['move_counter'] = 0;
-        
+
         var game_id = match.game_id;
         c.findOneAndUpdate({game_id: game_id},
                 {$inc: {current_set: 1}, $set: edit},
@@ -635,8 +636,12 @@ class Match extends WebApplication {
             sets: sets,
             players: players,
             turn_player_id: null, // user id of player who made the last move
-            game_position: null
+            game_position: null,
+            wdl: null// will be set by _setMatchWDL
         };
+
+        //modify the wdl on the match object        
+        await this._setMatchWDL(match);//await 
 
         var c = this.sObj.db.collection(this.sObj.col.matches);
         var r = await c.insertOne(match, {w: 'majority'});
@@ -645,8 +650,7 @@ class Match extends WebApplication {
             return this.error('Could not start game');
         }
 
-        //broadcast the game start event to all the players concern
-        match.players = players;
+        //broadcast the game start event to all the players concern        
         this.broadcast(this.evt.game_start, match, players_ids, true, this.sObj.GAME_MAX_WAIT_IN_SEC);
 
         //broadcast the watch_game_start event to users related in one way
@@ -896,15 +900,15 @@ class Match extends WebApplication {
         var c = this.sObj.db.collection(this.sObj.col.wdl);
         try {
             var queryObj = {$or: [
-                    {'first.player_id': player_1_id, 'second.player_id': player_2_id},
-                    {'first.player_id': player_2_id, 'second.player_id': player_1_id}
+                    {'white.player_id': player_1_id, 'black.player_id': player_2_id},
+                    {'white.player_id': player_2_id, 'black.player_id': player_1_id}
                 ]};
 
             var wdl = await c.findOne(queryObj);
 
             if (!wdl) {
                 wdl = {
-                    first: {
+                    white: {
                         player_id: player_1_id,
                         contact: {
                             wins: 0,
@@ -914,7 +918,7 @@ class Match extends WebApplication {
                         groups: [], //array of groups
                         tournaments: []//array of tournaments
                     },
-                    second: {
+                    black: {
                         player_id: player_2_id,
                         contact: {
                             wins: 0,
@@ -933,7 +937,7 @@ class Match extends WebApplication {
             if (match.group_name) {
                 var index = -1;
                 var found = false;
-                var arr = wdl.first.groups;
+                var arr = wdl.white.groups;
                 for (var i = 0; i < arr.length; i++) {
                     index = i;
                     if (arr[i].name === match.group_name) {
@@ -944,35 +948,35 @@ class Match extends WebApplication {
                 if (!found) {
                     index++;//move to next index - for implicitly creating a new element of array as in javascript
 
-                    $set[`first.groups.${index}.name`] = match.group_name;
-                    $set[`first.groups.${index}.wins`] = 0;
-                    $set[`first.groups.${index}.draws`] = 0;
-                    $set[`first.groups.${index}.losses`] = 0;
+                    $set[`white.groups.${index}.name`] = match.group_name;
+                    $set[`white.groups.${index}.wins`] = 0;
+                    $set[`white.groups.${index}.draws`] = 0;
+                    $set[`white.groups.${index}.losses`] = 0;
 
-                    $set[`second.groups.${index}.name`] = match.group_name;
-                    $set[`second.groups.${index}.wins`] = 0;
-                    $set[`second.groups.${index}.draws`] = 0;
-                    $set[`second.groups.${index}.losses`] = 0;
+                    $set[`black.groups.${index}.name`] = match.group_name;
+                    $set[`black.groups.${index}.wins`] = 0;
+                    $set[`black.groups.${index}.draws`] = 0;
+                    $set[`black.groups.${index}.losses`] = 0;
 
                     editObj['$set'] = $set;
                 }
 
                 if (is_draw) {
-                    $inc[`first.groups.${index}.draws`] = 1;
-                    $inc[`second.groups.${index}.draws`] = 1;
-                } else if (winner_user_id === wdl.first.player_id) {
-                    $inc[`first.groups.${index}.wins`] = 1;
-                    $inc[`second.groups.${index}.losses`] = 1;
-                } else if (winner_user_id === wdl.second.player_id) {
-                    $inc[`second.groups.${index}.wins`] = 1;
-                    $inc[`first.groups.${index}.losses`] = 1;
+                    $inc[`white.groups.${index}.draws`] = 1;
+                    $inc[`black.groups.${index}.draws`] = 1;
+                } else if (winner_user_id === wdl.white.player_id) {
+                    $inc[`white.groups.${index}.wins`] = 1;
+                    $inc[`black.groups.${index}.losses`] = 1;
+                } else if (winner_user_id === wdl.black.player_id) {
+                    $inc[`black.groups.${index}.wins`] = 1;
+                    $inc[`white.groups.${index}.losses`] = 1;
                 }
 
 
             } else if (match.tournament_name) {
                 var index = -1;
                 var found = false;
-                var arr = wdl.first.tournaments;
+                var arr = wdl.white.tournaments;
                 for (var i = 0; i < arr.length; i++) {
                     index = i;
                     if (arr[i].name === match.tournament_name) {
@@ -983,41 +987,41 @@ class Match extends WebApplication {
                 if (!found) {
                     index++;//move to next index - for implicitly creating a new element of array as in javascript
 
-                    $set[`first.tournaments.${index}.name`] = match.tournament_name;
-                    $set[`first.tournaments.${index}.wins`] = 0;
-                    $set[`first.tournaments.${index}.draws`] = 0;
-                    $set[`first.tournaments.${index}.losses`] = 0;
+                    $set[`white.tournaments.${index}.name`] = match.tournament_name;
+                    $set[`white.tournaments.${index}.wins`] = 0;
+                    $set[`white.tournaments.${index}.draws`] = 0;
+                    $set[`white.tournaments.${index}.losses`] = 0;
 
-                    $set[`second.tournaments.${index}.name`] = match.tournament_name;
-                    $set[`second.tournaments.${index}.wins`] = 0;
-                    $set[`second.tournaments.${index}.draws`] = 0;
-                    $set[`second.tournaments.${index}.losses`] = 0;
+                    $set[`black.tournaments.${index}.name`] = match.tournament_name;
+                    $set[`black.tournaments.${index}.wins`] = 0;
+                    $set[`black.tournaments.${index}.draws`] = 0;
+                    $set[`black.tournaments.${index}.losses`] = 0;
 
                     editObj['$set'] = $set;
                 }
 
                 if (is_draw) {
-                    $inc[`first.tournaments.${index}.draws`] = 1;
-                    $inc[`second.tournaments.${index}.draws`] = 1;
-                } else if (winner_user_id === wdl.first.player_id) {
-                    $inc[`first.tournaments.${index}.wins`] = 1;
-                    $inc[`second.tournaments.${index}.losses`] = 1;
-                } else if (winner_user_id === wdl.second.player_id) {
-                    $inc[`second.tournaments.${index}.wins`] = 1;
-                    $inc[`first.tournaments.${index}.losses`] = 1;
+                    $inc[`white.tournaments.${index}.draws`] = 1;
+                    $inc[`black.tournaments.${index}.draws`] = 1;
+                } else if (winner_user_id === wdl.white.player_id) {
+                    $inc[`white.tournaments.${index}.wins`] = 1;
+                    $inc[`black.tournaments.${index}.losses`] = 1;
+                } else if (winner_user_id === wdl.black.player_id) {
+                    $inc[`black.tournaments.${index}.wins`] = 1;
+                    $inc[`white.tournaments.${index}.losses`] = 1;
                 }
 
             } else {//contact
 
                 if (is_draw) {
-                    $inc[`first.contact.draws`] = 1;
-                    $inc[`second.contact.draws`] = 1;
-                } else if (winner_user_id === wdl.first.player_id) {
-                    $inc[`first.contact.wins`] = 1;
-                    $inc[`second.contact.losses`] = 1;
-                } else if (winner_user_id === wdl.second.player_id) {
-                    $inc[`second.contact.wins`] = 1;
-                    $inc[`first.contact.losses`] = 1;
+                    $inc[`white.contact.draws`] = 1;
+                    $inc[`black.contact.draws`] = 1;
+                } else if (winner_user_id === wdl.white.player_id) {
+                    $inc[`white.contact.wins`] = 1;
+                    $inc[`black.contact.losses`] = 1;
+                } else if (winner_user_id === wdl.black.player_id) {
+                    $inc[`black.contact.wins`] = 1;
+                    $inc[`white.contact.losses`] = 1;
                 }
 
             }
@@ -1026,12 +1030,42 @@ class Match extends WebApplication {
 
             await c.updateOne(queryObj, editObj);
 
+
         } catch (e) {
             console.log(e);//DO NOT DO THIS IS PRODUCTION
             return;//return nothing
         }
 
         return wdl;
+    }
+
+    async _setMatchWDL(match) {
+
+        //modify the wdl on the match object
+
+        var stats = new Stats(this.sObj, this.util, this.evt);
+
+        var newWDL;
+        var player_1_id = match.players[0].user_id;
+        var player_2_id = match.players[1].user_id;
+
+        if (match.tournament_name) {
+            newWDL = await stats.getTournamentWDL(player_1_id, player_2_id, match.tournament_name);
+        } else if (match.group_name) {
+            newWDL = await stats.getTournamentWDL(player_1_id, player_2_id, match.group_name);
+        } else {
+            newWDL = await stats.getContactWDL(player_1_id, player_2_id, );
+        }
+
+
+        if (stats.lastError) {
+            this.error(stats.lastEror);
+            return;
+        }
+
+        match.wdl = newWDL;
+
+        return true;
     }
 
     async _updateMatchScores(c, match, winner_user_id) {
@@ -1093,7 +1127,7 @@ class Match extends WebApplication {
             game_id = arguments[0].game_id;
             winner_user_id = arguments[0].winner_user_id;
         }
-        
+
         var c = this.sObj.db.collection(this.sObj.col.matches);
         try {
 
@@ -1103,11 +1137,11 @@ class Match extends WebApplication {
                 return this.error('No game to finish');
             }
             return this._doFinishGame(match, winner_user_id);
-        }catch(e){
+        } catch (e) {
             this.error('Could not end game');
             return this;
         }
-        
+
     }
 
     /**
@@ -1157,6 +1191,11 @@ class Match extends WebApplication {
             if (!wdl) {
                 return this.error('Could not finish game! Something went wrong');
             }
+
+
+            //modify the wdl on the match object
+            await this._setMatchWDL(match);
+
 
             //check if all sets is played -  if not then automatically start the next set
             if (match.current_set < match.sets.length) {
@@ -1251,7 +1290,7 @@ class Match extends WebApplication {
      * @param {type} game_position
      * @returns {Array|nm$_match.Match.checkMatchUpdate.data}
      */
-    async checkMatchUpdate(game_id, current_set ,move_counter, game_position) {
+    async checkMatchUpdate(game_id, current_set, move_counter, game_position) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -1286,15 +1325,15 @@ class Match extends WebApplication {
         }
 
         if (data.match) {
-            
+
             if (!data.match.move_counter) {
                 data.match.move_counter = 0;
             }
-            
+
             if (!data.match.game_position) {
                 data.match.game_position = null;
             }
-            
+
             if (data.match.move_counter === move_counter
                     && data.match.game_position === game_position
                     && data.match.current_set === current_set) {

@@ -61,45 +61,30 @@ class Spectator extends WebApplication {
                 user_id: user_id,
                 game_id: game_id
             });
+            
 
             if (f) {
                 return 'Already joined';
             }
 
-            //next asynchronously delete the spectators from all other games
-            if(prev_game_id){
-                sc.deleteOne({user_id: user_id, game_id: prev_game_id})
-                    .then(function (result) {
-                        //do nothing
-                    })
-                    .catch(function (err) {
-                        console.log(err);
-                    });
-            }else{
-                sc.deleteMany({user_id: user_id})//delete alll
-                    .then(function (result) {
-                        //do nothing
-                    })
-                    .catch(function (err) {
-                        console.log(err);
-                    });
-            }
 
             await sc.insertOne({
+                user_id: user_id,
                 game_id: game_id,
                 game_start_time: new Date(game_start_time),
                 joined_time: new Date(),
-                user_id: user_id,
                 first_name: user.first_name,
                 last_name: user.last_name,
                 full_name: user.full_name,
                 photo_url: user.photo_url
             });
-
+            
         } catch (e) {
             this.error('Could not join in spectator');
             return this;
         }
+
+        
 
         // NOTE: do not broacdcast events of spectators joining or leaving a match
         // as doing so may be too expensive in terms of bandwith. As a workaround
@@ -207,7 +192,7 @@ class Spectator extends WebApplication {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
-        if (arguments.length === 1) {
+        if (arguments.length === 1 && typeof arguments[0] === 'object') {
             game_id = arguments[0].game_id;
             skip = arguments[0].skip;
             limit = arguments[0].limit;
@@ -243,7 +228,6 @@ class Spectator extends WebApplication {
         if (!total) {
             return data;
         }
-
 
         data.spectators = await c.find(query, {_id: 0})
                 .limit(limit)

@@ -147,12 +147,6 @@ module.exports = function () {
 
         //spectators
         db.collection(col.spectators).ensureIndex({
-            game_start_time: 1 //this will be be used to expire the document
-        }
-        , {expireAfterSeconds: 24 * 60 * 60}, callback);
-
-
-        db.collection(col.spectators).ensureIndex({
             game_id: 1,
             user_id: 1
         }

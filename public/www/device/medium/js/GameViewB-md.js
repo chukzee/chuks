@@ -16,6 +16,10 @@ Ns.GameViewB = {
     },
     showRightContent: function (data, title, func) {
 
+        $('#game-view-b-right-panel-close').on('click', function () {
+            Ns.GameViewB.hideRightContent();
+        });
+        
         Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
         Ns.GameView.rightPanelTitleComp.innerHTML = title;
         var el = document.getElementById('game-view-b-right-content');

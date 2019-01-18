@@ -73,13 +73,13 @@ $tick_color: #222222;
         color : #888888;
     }
 
-    > .game9ja-seen{/*message sent and delivery indicator*/
+    > .game9ja-seen{/*message sent and delivery and seen indicator*/
         position: relative;
         top: 0px;        
         left: 5px;
-        color: green;
+        color: #006699;
         font-size: 14px;
-        //font-weight: bold;
+        font-weight: bold;
         > :nth-child(1):after{/*message sent and delivery indicator*/
             content: '\2713';
         }

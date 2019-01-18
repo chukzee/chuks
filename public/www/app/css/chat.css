@@ -89,12 +89,13 @@ and open the template in the editor.
     font-size: 10px;
     color: #888888; }
   .game9ja-chat-sent > .game9ja-seen {
-    /*message sent and delivery indicator*/
+    /*message sent and delivery and seen indicator*/
     position: relative;
     top: 0px;
     left: 5px;
-    color: green;
-    font-size: 14px; }
+    color: #006699;
+    font-size: 14px;
+    font-weight: bold; }
     .game9ja-chat-sent > .game9ja-seen > :nth-child(1):after {
       /*message sent and delivery indicator*/
       content: '\2713'; }

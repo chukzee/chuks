@@ -17,16 +17,16 @@ Ns.Spectators = {
 
     },
 
-    content: function (container, match) {
+    content: function (match, id_obj) {
         
         if (!Ns.Spectators.gamesSpecators[match.game_id]) {
             Ns.Spectators.gamesSpecators[match.game_id] = [];
         }
 
         Main.listview.create({
-            container: container,
-            scrollContainer: container,
-            tplUrl: 'simple-list-c-tpl',
+            container: '#'+id_obj.view_body_id,
+            scrollContainer: '#'+id_obj.view_body_id,
+            tplUrl: 'simple-list-c-tpl.html',
             wrapItem: false,
             data: Ns.Spectators.gamesSpecators[match.game_id],
             //itemClass: "game9ja-live-games-list",
@@ -58,7 +58,6 @@ Ns.Spectators = {
                             var spectators = data.spectators;
 
                             var gm_spects = Ns.Spectators.gamesSpecators[match.game_id];
-                            var new_spects = [];//new spectators
                             for (var i = 0; i < spectators.length; i++) {
 
                                 var index = gm_spects.findIndex(function (spect) {
@@ -66,13 +65,12 @@ Ns.Spectators = {
                                 });
 
                                 if (index === -1) {
-                                    new_spects.push(spectators[i]);
                                     gm_spects.push(spectators[i]);
                                 }
                             }
                             
-                            for (var i = 0; i < new_spects.length; i++) {
-                                list.prependItem(new_spects[i]);                                
+                            for (var i = 0; i < gm_spects.length; i++) {
+                                list.prependItem(gm_spects[i]);                                
                             }                           
 
                         })

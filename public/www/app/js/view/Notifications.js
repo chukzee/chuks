@@ -152,7 +152,7 @@ Ns.view.Notifications = {
                 contacts: Ns.view.UserProfile.appUser.contacts
             };
 
-            Main.ro.chat.searchUserChats(chat_search_obj, skip, limit)
+            Main.ro.chat.searchChats(chat_search_obj, skip, limit)
                     .before(function () {
                     })
                     .after(function (data, err) {

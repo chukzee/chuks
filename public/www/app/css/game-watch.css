@@ -224,12 +224,23 @@ and open the template in the editor.
         position: relative;
         margin: 0 auto; }
         .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(1) {
+          /*general feedback*/
+          font-size: 14px;
+          font-style: italic;
+          width: 100%;
+          text-align: center;
+          padding-top: 3px;
+          padding-bottom: 2px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap; }
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) {
           /*the player_1 countdown time in the upper panel*/
           position: absolute;
           bottom: 0px;
           left: 5px;
           font-size: 12px; }
-        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) {
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(3) {
           /*the player_1 profile pic and name display*/
           position: relative;
           margin: 0 auto;
@@ -239,7 +250,7 @@ and open the template in the editor.
           padding-top: 5px;
           -webkit-box-sizing: border-box;
           box-sizing: border-box; }
-          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(1) {
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(3) > :nth-child(1) {
             /*player_1 profile image*/
             width: 30px;
             height: 30px;
@@ -248,7 +259,7 @@ and open the template in the editor.
             -ms-border-radius: 50%;
             border-radius: 50%;
             margin-right: 5px; }
-          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(2) {
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(3) > :nth-child(2) {
             /*player_1 profile full name*/
             width: 150px;
             overflow: hidden;
@@ -257,7 +268,7 @@ and open the template in the editor.
             position: absolute;
             left: 40px;
             top: 5px; }
-          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(2) > :nth-child(3) {
+          .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(3) > :nth-child(3) {
             /*player_1 activity status*/
             max-width: 100%;
             overflow: hidden;
@@ -269,7 +280,7 @@ and open the template in the editor.
             font-size: 14px;
             font-style: italic;
             color: #00bb00; }
-        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(3) {
+        .game9ja-game-watch > .game9ja-game-watch-body > :nth-child(1) > :nth-child(1) > :nth-child(4) {
           /*the player_1 win, loss, draw, display*/
           position: absolute;
           bottom: 0px;

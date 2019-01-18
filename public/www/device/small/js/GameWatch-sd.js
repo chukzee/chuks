@@ -8,11 +8,16 @@ Ns.GameWatch = {
     rightPanelTitleComp: null,
 
     afterRightContentHide: function () {
+        Ns.ui.GamePanel.rightContentName = '';
         if (Ns.GameWatch.rightPanelTitleComp) {
             Ns.GameWatch.rightPanelTitleComp.innerHTML = '';
         }
     },
     showRightContent: function (data, title, func) {
+
+        $('#game-watch-right-panel-close').on('click', function () {
+            Ns.GameWatch.hideRightContent();
+        });
 
         Ns.GameView.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
         Ns.GameView.rightPanelTitleComp.innerHTML = title;

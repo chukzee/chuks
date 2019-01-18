@@ -16,7 +16,6 @@ Ns.ui.GamePanel = {
 
     },
 
-
     showGameB: function (match, container, flip) {
         Ns.ui.GamePanel.loadGame({
             network: 'bluetooth',
@@ -116,7 +115,7 @@ Ns.ui.GamePanel = {
 
         console.log('client height gotten after ', this.elaspeTime + ' ms');
 
-        var upper_height = 40;
+        var upper_height = 60;
         var lower_height = 40;
         var board_size;
 
@@ -225,11 +224,11 @@ Ns.ui.GamePanel = {
             width: 150,
             target: "#game-view-menu",
             items: [
-                'Draw offer',//offer a draw
-                'Rules',//rules of the game. in the case of draughts, the variant and its applied rules will be shown
-                'Stats',//show head to head statistics of both players
+                'Draw offer', //offer a draw
+                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
+                'Stats', //show head to head statistics of both players
                 'Options', //set pieces and board styles, sound etc
-                'Leave',//abort the game
+                'Leave', //abort the game
                 'Help'
             ],
             onSelect: function (evt) {
@@ -240,22 +239,31 @@ Ns.ui.GamePanel = {
             }
         });
 
+        var white_wdl, black_wdl;
+        if (match.wdl) {
+            white_wdl = match.wdl.white.specific.wdl;
+        }
 
-        if (Ns.view.UserProfile.appUser.id === match.players[0].user_id) {
+        if (match.wdl) {
+            black_wdl = match.wdl.black.specific.wdl;
+        }
 
-            $('#game-view-user-wdl').html(match.players[0].wdl);
-            $('#game-view-user-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
-            $('#game-view-opponent-countdown').html(match.players[1].countdown);
-            $('#game-view-opponent-wdl').html(match.players[1].wdl);
+        if (Ns.view.UserProfile.appUser.user_id === match.players[0].user_id) {
 
-        } else if (Ns.view.UserProfile.appUser.id === match.players[1].user_id) {
+            $('#game-view-white-wdl').html(white_wdl);
+            $('#game-view-white-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
-            $('#game-view-user-wdl').html(match.players[1].wdl);
-            $('#game-view-user-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
+            $('#game-view-black-countdown').html(match.players[1].countdown);
+            $('#game-view-black-wdl').html(black_wdl);
 
-            $('#game-view-opponent-countdown').html(match.players[0].countdown);
-            $('#game-view-opponent-wdl').html(match.players[0].wdl);
+        } else if (Ns.view.UserProfile.appUser.user_id === match.players[1].user_id) {
+
+            $('#game-view-black-wdl').html(black_wdl);
+            $('#game-view-black-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
+
+            $('#game-view-white-countdown').html(match.players[0].countdown);
+            $('#game-view-white-wdl').html(white_wdl);
 
         }
 
@@ -301,30 +309,6 @@ Ns.ui.GamePanel = {
             ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
         });
 
-        $('#game-view-footer-stats').on('click', function () {
-            var title = 'Stats';
-
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Stats.content.bind(obj));
-        });
-      
-        $('#game-view-footer-options').on('click', function () {
-            var title = 'Options';
-
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Options.content.bind(obj));
-        });
-
         $('#game-view-footer-spectators').on('click', function () {
             var title = 'Spectators';
 
@@ -334,12 +318,33 @@ Ns.ui.GamePanel = {
                 return;
             }
             Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Spectators.content.bind(obj));
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Spectators.content.bind(Ns.Spectators, Ns.ui.GamePanel.matchData, id_obj));
         });
 
-        $('#game-view-right-panel-close').on('click', function () {
-            ogv.hideRightContent();
+        $('#game-view-footer-stats').on('click', function () {
+            var title = 'Stats';
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
+                return;
+            }
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Stats.content.bind(Ns.Stats, Ns.ui.GamePanel.matchData, id_obj));
         });
+
+        $('#game-view-footer-options').on('click', function () {
+            var title = 'Options';
+
+            if (Ns.ui.GamePanel.rightContentName
+                    && Ns.ui.GamePanel.rightContentName === title) {
+                ogv.hideRightContent();
+                return;
+            }
+            Ns.ui.GamePanel.rightContentName = title;
+            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Options.content.bind(Ns.Options, Ns.ui.GamePanel.matchData, id_obj));
+        });
+
 
         $('#game-view-main').on('click', function () {
             if (!Main.device.isXLarge()) {
@@ -368,14 +373,11 @@ Ns.ui.GamePanel = {
             width: 150,
             target: "#game-view-b-menu",
             items: [
-                'Draw offer',
-                'Draughts variant', //for draughts - we display the draughts variant and the rules for the variant
-                'Rules applied',
-                'Rules',
-                'Stats',
-                'Theme',
-                'Sound',
-                'Leave',
+                'Draw offer', //offer a draw
+                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
+                'Stats', //show head to head statistics of both players
+                'Options', //set pieces and board styles, sound etc
+                'Leave', //abort the game
                 'Help'
             ],
             onSelect: function (evt) {
@@ -394,21 +396,30 @@ Ns.ui.GamePanel = {
             search_button_id: "TODO"
         };
 
-        if (Ns.view.UserProfile.appUser.id === match.players[0].user_id) {
+        var white_wdl, black_wdl;
+        if (match.wdl) {
+            white_wdl = match.wdl.white.specific.wdl;
+        }
 
-            $('#game-view-b-user-wdl').html(match.players[0].wdl);
-            $('#game-view-b-user-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
+        if (match.wdl) {
+            black_wdl = match.wdl.black.specific.wdl;
+        }
 
-            $('#game-view-b-opponent-countdown').html(match.players[1].countdown);
-            $('#game-view-b-opponent-wdl').html(match.players[1].wdl);
+        if (Ns.view.UserProfile.appUser.user_id === match.players[0].user_id) {
 
-        } else if (Ns.view.UserProfile.appUser.id === match.players[1].user_id) {
+            $('#game-view-b-white-wdl').html(white_wdl);
+            $('#game-view-b-white-countdown').html(match.players[0].countdown);//may not be necessary - will be done locally
 
-            $('#game-view-b-user-wdl').html(match.players[1].wdl);
-            $('#game-view-b-user-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
+            $('#game-view-b-black-countdown').html(match.players[1].countdown);
+            $('#game-view-b-black-wdl').html(black_wdl);
 
-            $('#game-view-b-opponent-countdown').html(match.players[0].countdown);
-            $('#game-view-b-opponent-wdl').html(match.players[0].wdl);
+        } else if (Ns.view.UserProfile.appUser.user_id === match.players[1].user_id) {
+
+            $('#game-view-b-black-wdl').html(black_wdl);
+            $('#game-view-b-black-countdown').html(match.players[1].countdown);//may not be necessary - will be done locally
+
+            $('#game-view-b-white-countdown').html(match.players[0].countdown);
+            $('#game-view-b-white-wdl').html(white_wdl);
 
         }
 
@@ -427,10 +438,6 @@ Ns.ui.GamePanel = {
             Main.alert(msg, 'Connected bluetooth device');
         });
 
-        $('#game-view-b-right-panel-close').on('click', function () {
-            ogvb.hideRightContent();
-        });
-
         $('#game-view-b-main').on('click', function () {
             if (!Main.device.isXLarge()) {
                 ogvb.hideRightContent();
@@ -445,15 +452,26 @@ Ns.ui.GamePanel = {
 
         Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn);
 
+
+        var white_wdl, black_wdl;
+        if (match.wdl) {
+            white_wdl = match.wdl.white.specific.wdl;
+        }
+
+        if (match.wdl) {
+            black_wdl = match.wdl.black.specific.wdl;
+        }
+
+
         $('#game-watch-white-name').html(match.players[0].full_name);
         $('#game-watch-white-countdown').html(match.players[0].countdown);
-        $('#game-watch-white-wdl').html(match.players[0].wdl);
+        $('#game-watch-white-wdl').html(white_wdl);
 
         document.getElementById('game-watch-white-profile-pic').src = match.players[0].photo_url;
 
         $('#game-watch-black-name').html(match.players[1].full_name);
         $('#game-watch-black-countdown').html(match.players[1].countdown);
-        $('#game-watch-black-wdl').html(match.players[1].wdl);
+        $('#game-watch-black-wdl').html(black_wdl);
 
         document.getElementById('game-watch-black-profile-pic').src = match.players[1].photo_url;
 
@@ -466,13 +484,10 @@ Ns.ui.GamePanel = {
             target: "#game-watch-menu",
             items: [
                 'Spectators',
-                'Draughts variant', //for draughts - we display the draughts variant and the rules for the variant
-                'Rules applied',
-                'Rules',
-                'Stats',
-                'Theme',
-                'Sound',
-                'Leave',
+                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
+                'Stats', //show head to head statistics of both players
+                'Options', //set pieces and board styles, sound etc
+                'Leave', //abort the game
                 'Help'
             ],
             onSelect: function (evt) {
@@ -511,10 +526,6 @@ Ns.ui.GamePanel = {
             }
             Ns.ui.GamePanel.rightContentName = title;
             gw.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
-        });
-
-        $('#game-watch-right-panel-close').on('click', function () {
-            gw.hideRightContent();
         });
 
         $('#game-watch-main').on('click', function () {

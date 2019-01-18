@@ -320,7 +320,7 @@ $right_panel_width_ld : 30%;
                 
             }
 
-            > :nth-child(2){/*the oppontent activity display in the upper panel*/
+            > :nth-child(2){/*the feedback display in the upper panel*/
                 margin : 0 auto;
                 //width : 240px;
                 max-width: 100%;
@@ -332,6 +332,7 @@ $right_panel_width_ld : 30%;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                padding-top: 3px;
 
             }
 

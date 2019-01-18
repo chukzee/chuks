@@ -15,6 +15,10 @@ Ns.GameWatch = {
     },
     showRightContent: function (data, title, func) {
 
+        $('#game-watch-right-panel-close').on('click', function () {
+            Ns.GameWatch.hideRightContent();
+        });
+
         Ns.GameView.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
         Ns.GameView.rightPanelTitleComp.innerHTML = title;
         if (Main.device.isXLarge()) {

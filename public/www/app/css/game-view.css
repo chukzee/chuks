@@ -261,7 +261,7 @@ and open the template in the editor.
         left: 5px;
         font-size: 12px; }
       .game9ja-game-view-body > :nth-child(1) > :nth-child(1) > :nth-child(2) {
-        /*the oppontent activity display in the upper panel*/
+        /*the feedback display in the upper panel*/
         margin: 0 auto;
         max-width: 100%;
         font-size: 14px;
@@ -270,7 +270,8 @@ and open the template in the editor.
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap; }
+        white-space: nowrap;
+        padding-top: 3px; }
       .game9ja-game-view-body > :nth-child(1) > :nth-child(1) > :nth-child(3), .game9ja-game-view-body > .game9ja-game-view-header:nth-child(1) > div:nth-child(1) > :nth-child(4) {
         /*the oppontent win, loss, draw, display*/
         position: absolute;

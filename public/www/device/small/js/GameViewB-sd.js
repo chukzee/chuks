@@ -7,22 +7,27 @@ Ns.GameViewB = {
     rightPanelTitleComp: null,
 
     afterRightContentHide: function () {
+        Ns.ui.GamePanel.rightContentName = '';
         if (Ns.GameViewB.rightPanelTitleComp) {
             Ns.GameViewB.rightPanelTitleComp.innerHTML = '';
         }
     },
     showRightContent: function (data, title, func) {
-        
-            Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
-            Ns.GameView.rightPanelTitleComp.innerHTML = title;
-            var el = document.getElementById('game-view-b-right-content');
 
-            el.style.width = '80%';//we set this width programatically here
-            el.style.right = "-80%";//set to negative of the width we have in css file or the width we set programatically here
-            el.style.display = 'block';//make visible
-            //animate the element to right of 0%
-            func();
-            Main.anim.to('game-view-b-right-content', 500, {right: '0%'});
+        $('#game-view-b-right-panel-close').on('click', function () {
+            Ns.GameViewB.hideRightContent();
+        });
+
+        Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
+        Ns.GameView.rightPanelTitleComp.innerHTML = title;
+        var el = document.getElementById('game-view-b-right-content');
+
+        el.style.width = '80%';//we set this width programatically here
+        el.style.right = "-80%";//set to negative of the width we have in css file or the width we set programatically here
+        el.style.display = 'block';//make visible
+        //animate the element to right of 0%
+        func();
+        Main.anim.to('game-view-b-right-content', 500, {right: '0%'});
     },
     hideRightContent: function () {
         var el = document.getElementById('game-view-b-right-content');
@@ -33,17 +38,17 @@ Ns.GameViewB = {
         }
     },
     Content: function (data) {
-        
+
         Ns.ui.GamePanel.rightContentName = '';
-        
+
         var panel_main = document.getElementById('game-view-b-main');
         var board_el = document.getElementById('game-view-b-main-board');
         var upper_el = document.getElementById('game-view-b-main-upper');
         var lower_el = document.getElementById('game-view-b-main-lower');
 
         Ns.ui.GamePanel.ownGameViewB(data, panel_main, resizeMain);
-        
-        function resizeMain(data, board_size, upper_height, lower_height){
+
+        function resizeMain(data, board_size, upper_height, lower_height) {
             board_el.style.width = board_size + 'px';
             board_el.style.height = board_size + 'px';
 
@@ -52,7 +57,7 @@ Ns.GameViewB = {
 
             lower_el.style.width = board_el.style.width;
             lower_el.style.height = lower_height + 'px';
-            
+
             Ns.ui.GamePanel.showGameB(data, 'game-view-b-main-board');
         }
 

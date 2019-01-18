@@ -10,14 +10,37 @@ class Stats extends   WebApplication {
         super(sObj, util, evt);
     }
 
+    /**
+     * Note this method is also used internally in this server
+     * 
+     * @param {type} player_1_id
+     * @param {type} player_2_id
+     * @returns {nm$_stats.Stats._getWDL.wdlObj|undefined|nm$_stats.Stats._getWDL.obj}
+     */
     async getContactWDL(player_1_id, player_2_id) {
         return this._getWDL(player_1_id, player_2_id, 'contact');
     }
 
+    /**
+     * Note this method is also used internally in this server
+     * 
+     * @param {type} player_1_id
+     * @param {type} player_2_id
+     * @param {type} group_name
+     * @returns {nm$_stats.Stats._getWDL.wdlObj|undefined|nm$_stats.Stats._getWDL.obj}
+     */
     async getGroupWDL(player_1_id, player_2_id, group_name) {
         return this._getWDL(player_1_id, player_2_id, 'group', group_name);
     }
 
+    /**
+     * Note this method is also used internally in this server
+     * 
+     * @param {type} player_1_id
+     * @param {type} player_2_id
+     * @param {type} tournament_name
+     * @returns {nm$_stats.Stats._getWDL.wdlObj|undefined|nm$_stats.Stats._getWDL.obj}
+     */
     async getTournamentWDL(player_1_id, player_2_id, tournament_name) {
         return this._getWDL(player_1_id, player_2_id, 'tournament', tournament_name);
     }

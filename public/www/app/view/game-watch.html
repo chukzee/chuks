@@ -34,9 +34,10 @@ and open the template in the editor.
                         <!--some upper display e.g time countdown and online status-->
                         <!--note when countdown starts it means the move is delivered to the opponent
                         and when it stop it means the opponent has played or the countdown is over i.e timeout-->
+                        <div id="game-watch-feedback">Player turn</div> <!--Feedback-->
                         <div id="game-watch-black-countdown"></div> <!--countdown-->
                         <div><!-- user profile display.-->
-                            <img id="game-watch-black-profile-pic" src="" alt=""/>
+                            <img onerror="Main.helper.loadDefaultProfilePhoto(event)"  id="game-watch-black-profile-pic" src="" alt=""/>
                             <span id="game-watch-black-name"></span>
                             <span id="game-watch-black-feedback"></span>
                         </div>                  
@@ -49,7 +50,7 @@ and open the template in the editor.
                         <!--some lower display e.g time countdown -->
                         <div id="game-watch-white-countdown"></div> <!--countdown-->
                         <div><!-- user profile display.-->
-                            <img  id="game-watch-white-profile-pic" src="" alt=""/>
+                            <img onerror="Main.helper.loadDefaultProfilePhoto(event)" id="game-watch-white-profile-pic" src="" alt=""/>
                             <span id="game-watch-white-name"></span>
                             <span id="game-watch-white-feedback"></span>
                         </div> 

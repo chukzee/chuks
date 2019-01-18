@@ -13,6 +13,10 @@ Ns.GameView = {
     },
     showRightContent: function (data, title, func) {
 
+        $('#game-view-right-panel-close').on('click', function () {
+            Ns.GameView.hideRightContent();
+        });
+        
         Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-right-panel-header-title");
         Ns.GameView.rightPanelTitleComp.innerHTML = title;
         if (Main.device.isXLarge()) {

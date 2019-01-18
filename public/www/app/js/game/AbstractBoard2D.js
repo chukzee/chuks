@@ -87,6 +87,8 @@ Ns.game.AbstractBoard2D = {
         this.startTouchBoardSq = -1;
         this.isTouchingBoard = false;
         this.retryWaitDuartion = 1;
+        this.isCaptureAnim = false;
+        this.isPieceAnim = false;
 
         if (config.variant) {
             var vrnt = this.getVariant(config.variant);
@@ -130,11 +132,13 @@ Ns.game.AbstractBoard2D = {
         this.boardContainer.appendChild(gameboard);
 
         this.displayTurn(this.config.match);
+        
+        //this.displayWDL(this.config.match);
 
         /*@deprecated since we now use the rcall internal retry strategy to resend the move
-        if (this.config.match && this.config.match._unsentGamePosition) {
-            this.sendGameMove(this.config.match._unsentMove, this.config.match._unsentGamePosition);
-        }*/
+         if (this.config.match && this.config.match._unsentGamePosition) {
+         this.sendGameMove(this.config.match._unsentMove, this.config.match._unsentGamePosition);
+         }*/
 
         if (!this.config._skipCheckUpdate) {
             this.checkUpdate(this.config.match);
@@ -149,15 +153,8 @@ Ns.game.AbstractBoard2D = {
             this.spectatorJoin(this.config.match);
         }
 
-
-
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
 
-
-        /*window.setTimeout(function (el) {//testing
-            me.showGameOver(me.config.match);
-
-        }, 5000);*/
     },
 
     /**
@@ -424,7 +421,7 @@ Ns.game.AbstractBoard2D = {
 
         promise.get(function (data) {
             var matchObj = this;
-            if(!me.checkAccess(matchObj)){//the view has changed
+            if (!me.checkAccess(matchObj)) {//the view has changed
                 return;//so leave
             }
 
@@ -433,12 +430,9 @@ Ns.game.AbstractBoard2D = {
 
         }).error(function (err, err_code, connect_err) {
             var matchObj = this;
-            if(!me.checkAccess(matchObj)){//the view has changed
+            if (!me.checkAccess(matchObj)) {//the view has changed
                 return;//so leave
             }
-            
-
-
 
         });
 
@@ -458,14 +452,10 @@ Ns.game.AbstractBoard2D = {
             });
         } else {//watch game view
             this.feedbackEl({
-                container: 'game-watch-white-feedback',
-                text: this.isWhiteTurn() ? "White turn!" : ""
+                container: 'game-watch-feedback',
+                text: this.isWhiteTurn() ? "White turn!" : "Black turn!"
             });
 
-            this.feedbackEl({
-                container: 'game-watch-black-feedback',
-                text: !this.isWhiteTurn() ? "Black turn!" : ""
-            });
         }
     },
 
@@ -482,7 +472,7 @@ Ns.game.AbstractBoard2D = {
             });
         } else {//watch game view
             this.feedbackEl({
-                container: 'game-watch-white-feedback',
+                container: 'game-watch-feedback',
                 text: 'GAME OVER! ' + this.getGameOverMessage()
             });
 
@@ -770,9 +760,11 @@ Ns.game.AbstractBoard2D = {
             return me.config.match;
         }
 
-
+        var is_sent = false;
         me.moveResendCountdownFn = function (value, finish) {
-            
+            if (is_sent) {
+                return;
+            }
             me.feedbackEl({
                 container: 'game-view-feedback',
                 text: 'Resend move in ' + value + ' sec...',
@@ -781,20 +773,24 @@ Ns.game.AbstractBoard2D = {
                     fn: Main.rcall.resend  //resend any pending request immediately
                 }
             });
+
         };
 
         promise.retry(function (sec_remaining) {//retry on connection failure
             var matchObj = this;
-            if(!me.checkAccess(matchObj)){//the view has changed
+            if (!me.checkAccess(matchObj)) {//the view has changed
                 return;//so leave
             }
-            
+
             Main.countdown.stop(me.moveResendCountdownFn);
             Main.countdown.start(me.moveResendCountdownFn, sec_remaining);
 
         }).get(function (res) {
+
+            is_sent = true;
+
             var matchObj = this;
-            if(!me.checkAccess(matchObj)){//the view has changed
+            if (!me.checkAccess(matchObj)) {//the view has changed
                 return;
             }
 
@@ -802,7 +798,7 @@ Ns.game.AbstractBoard2D = {
                 container: 'game-view-feedback',
                 text: "Opponent's turn"
             });
-            
+
         }).error(function (err, err_code, connect_err) {
 
             console.log(err);
@@ -810,7 +806,7 @@ Ns.game.AbstractBoard2D = {
             Main.toast.show(err);
 
             var matchObj = this;
-            if(!me.checkAccess(matchObj)){//the view has changed
+            if (!me.checkAccess(matchObj)) {//the view has changed
                 return;//so leave
             }
 
@@ -1127,7 +1123,13 @@ Ns.game.AbstractBoard2D = {
         target.style.zIndex = 1000; // so as to fly over
         var dist = Math.sqrt(px * px + py * py);
         var board_width = this.boardContainer.getBoundingClientRect().width;
+
+        this.isPieceAnim = true;
+
         Main.anim.to(target, this.ANIM_MAX_DURATION * dist / board_width, prop, function () {
+
+            me.isPieceAnim = false;
+
             //making sure the piece is on the right spot just in
             //case the orientation changes or the board is resized
             center = me.squareCenter(to);
@@ -1209,6 +1211,7 @@ Ns.game.AbstractBoard2D = {
             capture = [this.toNumericSq(capture)]; //mare array
         }
 
+        var me = this;
 
         //remove captured piece from the board
         for (var i = 0; capture && i < capture.length; i++) {
@@ -1227,7 +1230,15 @@ Ns.game.AbstractBoard2D = {
             var hd = dist / 2;
             dist = '-' + dist + 'px';
             hd = '-' + hd + 'px';
+
+            if (i === 0) {
+                me.isCaptureAnim = true;
+            }
+            
             Main.anim.to(pce, 1000, {top: dist}, function () {
+
+                me.isCaptureAnim = false;
+
                 var pce_el = this;
                 var disappear = {opacity: 0, width: 0, height: 0, top: hd}; //make the piece disappear
 
@@ -1238,6 +1249,10 @@ Ns.game.AbstractBoard2D = {
         }
 
 
+    },
+
+    isPieceMoving: function () {
+        return this.isPieceAnim || this.isCaptureAnim;
     },
 
     undoMove: function (from, to) {
@@ -1280,6 +1295,11 @@ Ns.game.AbstractBoard2D = {
     },
 
     onClickBoard: function (evt, container, is_tap) {
+
+        if (this.isPieceMoving()) {//block user iteraction on the board
+            return;
+        }
+
         var me = this;
         if (this.isGameOver) {
             return;
@@ -1397,7 +1417,7 @@ Ns.game.AbstractBoard2D = {
 
         var pce = this.getInternalPiece(sqn);
         if (!pce) {
-            console.log('Empty piece on internal board square -', sqn);
+            console.log('No piece on internal board square -', sqn);
             return;
         }
         var side1 = this.isWhite(pce);
@@ -1414,6 +1434,10 @@ Ns.game.AbstractBoard2D = {
     },
     onTouchStartBoard: function (evt, container) {
 
+        if (this.isPieceMoving()) {//block user iteraction on the board
+            return;
+        }
+
         if (this.isGameOver) {
             return;
         }
@@ -1426,6 +1450,10 @@ Ns.game.AbstractBoard2D = {
         }
     },
     onHoverBoard: function (evt, container) {
+
+        if (this.isPieceMoving()) {//block user iteraction on the board
+            return;
+        }
 
         if (this.isGameOver) {
             return;
@@ -1477,6 +1505,10 @@ Ns.game.AbstractBoard2D = {
     },
 
     onHoverBoardEnd: function (evt) {
+
+        if (this.isPieceMoving()) {//block user iteraction on the board
+            return;
+        }
 
         if (this.isGameOver) {
             return;
