@@ -16,36 +16,15 @@ class Spectator extends WebApplication {
      * Add the spectator to this match. Only spectators who are members of the either of the player's group 
      * or contact list can be added. An exception to the rule may be given to 
      * certain users (e.g Premium Users) who may have the privilege to watch top ranked 
-     * players games. However there is going to be a hard limit of visible spectators 
-     * per game. This therefore introduces two type of spectators: visible and hidden.
-     * The hard limit will only affect the hidden spectators. That is, if the total
-     * number of spectators is greater than the maximum allowed then the rest will be 
-     * regarded as hidden spectators. 
-     * The main differenc between visible and hidden spectators is that the former will
-     * receive realtime game session events while the later will not. The reason is that the hidden
-     * spectator will not be stored in the datababase.
-     * When a legitimate spectator joins the match late, his spectator type is marked as 'hidden'
-     * and the status sent to the client. So periodically the hidden spectator will query
-     * the game status. Upon querying, if it is detected that the number of spectators is fallen
-     * below maximum then the hidden spectator wiil be promoted to 'visible'.
-     * 
-     * 
-     * NOTE: do not broadcast events of spectators joining or leaving a match
-     * as doing so may be too expensive in terms of bandwith. As a workaround
-     * instead, the client can periodically refresh the available specatators
-     * by calling the get() method.
+     * players games.
      * 
      * @param {type} user_id - the spectator user id
      * @param {type} game_id -  the game id
      * @param {type} prev_game_id -  the game id of the previous game watch. If null or undefined the server delete all
-     * @param {type} game_start_time - used to expire the spectator document from the collection
      * @returns {Match}
      */
-    async join(user_id, game_id, prev_game_id, game_start_time) {
+    async join(user_id, game_id, prev_game_id) {
 
-        if (isNaN(new Date(game_start_time).getTime())) {
-            return this.error("Invalid input - game start time must be provided and a valid date.");
-        }
 
         try {
 
@@ -61,30 +40,41 @@ class Spectator extends WebApplication {
                 user_id: user_id,
                 game_id: game_id
             });
-            
+
 
             if (f) {
-                return 'Already joined';
+
+                //mark that the spectator has left by set the joined_time to null and left_time to current time
+                await sc.updateOne({user_id: user_id, game_id: prev_game_id},
+                        {$set: {joined_time: null, left_time: new Date()}});
+
+                //mark that the spectator has joine by set the joined_time to current time and left_time to null
+                await sc.updateOne({user_id: user_id, game_id: game_id},
+                        {$set: {joined_time: new Date(), left_time: null}});
+
+
+            } else {
+                await sc.insertOne({
+                    user_id: user_id,
+                    game_id: game_id,
+                    joined_time: new Date(),
+                    left_time: null,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    full_name: user.full_name,
+                    photo_url: user.photo_url,
+                    comment_count: 0
+                });
             }
 
 
-            await sc.insertOne({
-                user_id: user_id,
-                game_id: game_id,
-                game_start_time: new Date(game_start_time),
-                joined_time: new Date(),
-                first_name: user.first_name,
-                last_name: user.last_name,
-                full_name: user.full_name,
-                photo_url: user.photo_url
-            });
-            
+
         } catch (e) {
             this.error('Could not join in spectator');
             return this;
         }
 
-        
+
 
         // NOTE: do not broacdcast events of spectators joining or leaving a match
         // as doing so may be too expensive in terms of bandwith. As a workaround
@@ -107,14 +97,14 @@ class Spectator extends WebApplication {
      * @param {type} game_ids - array of game_ids representing games the spectator should leave - it is possible to be more than one if there happened to be network failure in the client end
      * @returns {.sc@call;findOneAndDelete.value|Spectator.leave.spectator|Spectator@call;error}
      */
-    async leave(user_id, game_ids) {
+    async delete(user_id, game_ids) {
 
-        var result = this._doLeave(user_id, game_ids);
+        var result = this._doDelete(user_id, game_ids);
         if (result === true) {
             return 'Succesful';
         } else {
             return this.error({
-                leave_failures: result
+                delete_failures: result
             });
         }
     }
@@ -132,7 +122,7 @@ class Spectator extends WebApplication {
      * @param {type} game_ids - array of game_ids representing games the spectator should leave - it is possible to be more than one if there happened to be network failure in the client end
      * @returns {.sc@call;findOneAndDelete.value|Spectator.leave.spectator|Spectator@call;error}
      */
-    async _doLeave(user_id, game_ids) {
+    async _doDelete(user_id, game_ids) {
 
         if (!Array.isArray(game_ids)) {
             game_ids = [game_ids];

@@ -21,7 +21,9 @@ class Comment extends   WebApplication {
         var user = new User(this.sObj, this.util);
         var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
         var users = await user.getInfoList(user_ids, required_fields);
-
+        if(users.lastError){
+            return this.error(users.lastError);
+        }
         //map the user info to thier corresponding comments
         if (Array.isArray(users)) {
             for (var i = 0; i < comments.length; i++) {
@@ -36,6 +38,7 @@ class Comment extends   WebApplication {
 
 
         for (var i = 0; i < comments.length; i++) {
+            
             //set the number of likes and dislikes
             comments[i].likes_count = comments[i].likes.length;
             comments[i].dislikes_count = comments[i].dislikes.length;
@@ -62,18 +65,18 @@ class Comment extends   WebApplication {
     async deleteFor(user_id, msg_ids) {
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
-        
-        if(!Array.isArray(msg_ids)){
+
+        if (!Array.isArray(msg_ids)) {
             msg_ids = [msg_ids];
         }
-        
+
         var query = {
-            $or:[]
+            $or: []
         };
-        for(var i=0; i< msg_ids.length; i++){
+        for (var i = 0; i < msg_ids.length; i++) {
             query.$or.push({msg_id: msg_ids[i]});
         }
-        
+
         var r = await c.updateMany(query, {$addToSet: {delete_for: user_id}});
 
 
@@ -116,7 +119,7 @@ class Comment extends   WebApplication {
 
         var query = {
             game_id: game_id,
-            delete_for: {$nin:[user_id]}
+            delete_for: {$nin: [user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
@@ -142,7 +145,7 @@ class Comment extends   WebApplication {
 
         data.comments = await this._normalizeComments(user_id, data.comments);
 
-        
+
         return data;
     }
 
@@ -180,7 +183,7 @@ class Comment extends   WebApplication {
 
         var query = {
             user_id: user_id,
-            delete_for: {$nin:[user_id]}
+            delete_for: {$nin: [user_id]}
         };
 
         var c = this.sObj.db.collection(this.sObj.col.comments);
@@ -205,7 +208,9 @@ class Comment extends   WebApplication {
                 .toArray();
 
         data.comments = await this._normalizeComments(user_id, data.comments);
-
+        if(this.lastError){
+            return this.error(this.lastError);
+        }
         return data;
     }
 
@@ -260,6 +265,8 @@ class Comment extends   WebApplication {
 
         c.insertOne(msg);
 
+        var me = this;
+
         //broadcast to the players except the user that sent the message
         var mc = this.sObj.db.collection(this.sObj.col.matches);
         mc.findOne({game_id: game_id}, {_id: 0})
@@ -277,7 +284,7 @@ class Comment extends   WebApplication {
                             players_ids.push(match.players[i].user_id);
                         }
                     }
-                    this.broadcast(this.evt.comment, players_ids, msg);
+                    me.broadcast(me.evt.comment, msg, players_ids);
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -285,7 +292,7 @@ class Comment extends   WebApplication {
 
         //broadcast to the spectators
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        sc.find({game_id: game_id}, {_id: 0})
+        sc.find({game_id: game_id, left_time: null}, {_id: 0})
                 .toArray()
                 .then(function (spectators) {
                     if (!spectators) {
@@ -304,6 +311,16 @@ class Comment extends   WebApplication {
                     console.log(err);
                 });
 
+        //increment the spectator comment count
+        sc.updateOne({user_id: user_id, game_id: game_id},
+                {$inc: {comment_count: 1}})
+                .then(function (result) {
+                    //do nothing
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        ;
 
         return msg;
     }
@@ -327,8 +344,13 @@ class Comment extends   WebApplication {
         }
 
         var comment = await c.findOne({msg_id: msg_id}, {_id: 0});
-
-        return comment;
+        var comments = [];
+        comments.push(comment);
+        comments =  await this._normalizeComments(user_id, comments);
+        if(this.lastError){
+            return this.error(this.lastError);
+        }
+        return comments[0];//we know it is only one comment we normalized
     }
 
     /**
@@ -350,8 +372,13 @@ class Comment extends   WebApplication {
         }
 
         var comment = await c.findOne({msg_id: msg_id}, {_id: 0});
-
-        return comment;
+        var comments = [];
+        comments.push(comment);
+        comments =  await this._normalizeComments(user_id, comments);
+        if(this.lastError){
+            return this.error(this.lastError);
+        }
+        return comments[0];//we know it is only one comment we normalized
     }
 
 }

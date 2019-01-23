@@ -131,9 +131,7 @@ Ns.game.AbstractBoard2D = {
 
         this.boardContainer.appendChild(gameboard);
 
-        this.displayTurn(this.config.match);
-        
-        //this.displayWDL(this.config.match);
+        this.displayTurn(this.config.match);        
 
         /*@deprecated since we now use the rcall internal retry strategy to resend the move
          if (this.config.match && this.config.match._unsentGamePosition) {
@@ -396,49 +394,6 @@ Ns.game.AbstractBoard2D = {
         }
     },
 
-    displayWDL: function (match) {
-        var me = this;
-        if (this.config.isTesting) {
-            return;
-        }
-
-        //getContactWDL
-        var player_1_id = match.players[0].user_id,
-                player_2_id = match.players[1].user_id;
-
-        var promise;
-        if (match.group_name) {
-            promise = Main.ro.stats.getGroupWDL(player_1_id, player_2_id, player_1_id, match.group_name, bindFn);
-        } else if (match.tournament_name) {
-            promise = Main.ro.stats.getTournamentWDL(player_1_id, player_2_id, player_1_id, match.tournament_name, bindFn);
-        } else {
-            promise = Main.ro.stats.getContactWDL(player_1_id, player_2_id, player_1_id, bindFn);
-        }
-
-        function bindFn() {
-            return match;
-        }
-
-        promise.get(function (data) {
-            var matchObj = this;
-            if (!me.checkAccess(matchObj)) {//the view has changed
-                return;//so leave
-            }
-
-            $("#game-view-white-wdl").html(data.white.specific.wdl);
-            $("#game-view-black-wdl").html(data.black.specific.wdl);
-
-        }).error(function (err, err_code, connect_err) {
-            var matchObj = this;
-            if (!me.checkAccess(matchObj)) {//the view has changed
-                return;//so leave
-            }
-
-        });
-
-
-    },
-
     displayTurn: function (match) {
 
         if (!this.checkAccess(match)) {
@@ -549,8 +504,10 @@ Ns.game.AbstractBoard2D = {
             text_el.setAttribute('data-game-feedback', 'text');
 
             action_wrapper = document.createElement('span');
-            action_wrapper.style.marginLeft = '5px'; //come back
+            action_wrapper.style.marginLeft = '5px';
             action_el = document.createElement('a');
+            action_el.style.cursor = 'pointer';
+            action_el.style.color = '#00D800';//green
             action_el.setAttribute('data-game-feedback', 'action');
 
             cel.appendChild(text_el);

@@ -95,9 +95,24 @@ Ns.msg.GameComment = {
      */
     rcallSendMessage: function(content, bindFn){
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        var msg_replied_id; // TODO
-        return Main.ro.comment.sendGameComment(user_id, this.match.game_id, content, 'text', msg_replied_id, bindFn);
+        return Main.ro.comment.sendGameComment(user_id, this.match.game_id, content, 'text', bindFn);
     },        
+      
+    /**
+     * Send the comment message
+     * Must override this method and return the promise of the rcall<br>
+     * <br>
+     * example: <br>
+     *     rcallSendMessage: function(content){<br>
+     *            return Main.ro.comment.sendGameComment(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *      }<br>
+     * <br>
+     * @returns {undefined}
+     */
+    rcallReplyMessage: function(content, msg_replied_id, bindFn){
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        return Main.ro.comment.sendGameComment(user_id, this.match.game_id, content, 'text', msg_replied_id, bindFn);
+    },    
     onComment: function(evtObj){
         this.add(evtObj.data);
     }

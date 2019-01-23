@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/game-stats.css" />
+
+    </head>
+    <body>
+
+        <table class="game-stats-table"  border="0" width="80%" cellspacing="0" cellpadding="2">
+            <caption>Head To Head Encounters</caption>
+            <thead>
+                <tr>
+                    <th>{specific_name}</th>
+                    <th>White</th>
+                    <th >Black</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr align="center">
+                    <th align="left">Wins</th>
+                    <td>{specific_white_wins}</td>
+                    <td>{specific_black_wins}</td>
+                </tr>
+                <tr align="center">
+                    <th align="left">Draws</th>
+                    <td>{specific_white_draws}</td>
+                    <td>{specific_black_draws}</td>
+                </tr>
+                <tr align="center">
+                    <th align="left">Losses</th>
+                    <td>{specific_white_losses}</td>
+                    <td>{specific_black_losses}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </body>
+</html>

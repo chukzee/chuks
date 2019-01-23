@@ -17,6 +17,10 @@ Ns.GameViewB = {
             Ns.GameViewB.hideRightContent();
         });
         
+        Main.card.back('game-view-right-panel-header');//clear any card on the header
+
+        document.getElementById("game-view-right-panel-body").innerHTML = '';
+
         Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
         Ns.GameView.rightPanelTitleComp.innerHTML = title;
         if (Main.device.isXLarge()) {
@@ -35,14 +39,19 @@ Ns.GameViewB = {
         } else {
 
             var el = document.getElementById('game-view-b-right-content');
-
-            el.style.width = '65%';//we set this width programatically here
-            el.style.right = '-65%';//set to negative of the width we have in css file or the width we set programatically here
+            var is_visible = $(el).is(':visible');
 
             el.style.display = 'block';//make visible
-            //animate the element to right of 0%
+
             func();
-            Main.anim.to('game-view-b-right-content', 500, {right: '0%'});
+
+            if (!is_visible) {
+
+                el.style.width = '65%';//we set this width programatically here
+                el.style.right = '-65%';//set to negative of the width we have in css file or the width we set programatically here
+                //animate the element to right of 0%
+                Main.anim.to('game-view-b-right-content', 500, {right: '0%'});
+            }
         }
     },
     hideRightContent: function () {
@@ -76,12 +85,12 @@ Ns.GameViewB = {
 
         lower_el.style.width = board_el.style.width;
         lower_el.style.height = lower_height + 'px';
-        
+
         Ns.ui.GamePanel.showGameB(data, 'game-view-b-main-board');
 
     },
     Content: function (data) {
-        
+
         Ns.ui.GamePanel.rightContentName = '';
 
         var panel_main = document.getElementById('game-view-b-main');

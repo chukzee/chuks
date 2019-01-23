@@ -753,7 +753,7 @@ var Main = {};
         }
 
         function execRetry() {
-            
+
             if (isRetryingExec) {
                 return;
             }
@@ -769,7 +769,7 @@ var Main = {};
 
         function retryNow() {
             isRetryingExec = false;
-            if (rcallRetryExecTimerId) {                
+            if (rcallRetryExecTimerId) {
                 window.clearTimeout(rcallRetryExecTimerId);
             }
             nextRCallExecRetrySec = 0;
@@ -2073,7 +2073,13 @@ var Main = {};
                 var v;
                 var param = param_arr[i];
                 if (obj.onReplace) {
-                    v = obj.onReplace(param, data);
+                    try {
+                        v = obj.onReplace(param, data);
+                    } catch (e) {
+                        v = undefined;
+                        console.log(e);
+                    }
+
                 }
 
                 var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
@@ -2106,7 +2112,12 @@ var Main = {};
                 rpl_children = rpl_children[0];
             }
             if (obj.afterReplace) {
-                obj.afterReplace(rpl_children, data);
+                try {
+                    obj.afterReplace(rpl_children, data);
+                } catch (e) {
+                    console.log(e);
+                }
+
             }
 
         }
@@ -2141,10 +2152,11 @@ var Main = {};
             function doGet(obj) {
                 var res = tplList[obj.tplUrl];
                 if (res) {//already have it in memory
+                    
                     tplReplace(res, obj, obj.data);
-
+                    
                     //console.log(obj.tplUrl, '---before Sync next---', obj.data);
-
+                    
                     next();
                     return;
                 }
@@ -2310,7 +2322,13 @@ var Main = {};
                 var v;
                 var param = param_arr[i];
                 if (obj.onRender) {
-                    v = obj.onRender(param, data);
+                    try {
+                        v = obj.onRender(param, data);
+                    } catch (e) {
+                        v = undefined;
+                        console.log(e);
+                    }
+
                 }
 
                 var obj_path = param.split('.');//assuming it is object parameter (e.g xxx.yyy.0.zzz) - if not this approach will also work anyway
@@ -3397,6 +3415,8 @@ var Main = {};
                 }
             }
 
+
+
             Main.dom.removeListener(e, type, callback, capture);//first remove event of same type on same element with same listener
 
             var callbackWrapFn;
@@ -3406,6 +3426,10 @@ var Main = {};
                 };
                 fns.push(callback);
                 bind_fns.push(callbackWrapFn);
+            }
+
+            if (!el) {
+                return;
             }
 
             if (el.addEventListener) {
@@ -3434,6 +3458,10 @@ var Main = {};
                     bind_fns.splice(i, 1);
                     break;
                 }
+            }
+
+            if (!el) {
+                return;
             }
 
             if (el.removeEventListener) {

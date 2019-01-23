@@ -19,16 +19,25 @@ Ns.GameWatch = {
             Ns.GameWatch.hideRightContent();
         });
 
+        Main.card.back('game-view-right-panel-header');//clear any card on the header
+        
+        document.getElementById("game-view-right-panel-body").innerHTML = '';
+
         Ns.GameView.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
         Ns.GameView.rightPanelTitleComp.innerHTML = title;
         var el = document.getElementById('game-watch-right-content');
+        var is_visible = $(el).is(':visible');
 
-        el.style.width = '80%';//we set this width programatically here
-        el.style.right = "-80%";//set to negative of the width we have in css file or the width we set programatically here
         el.style.display = 'block';//make visible
-        //animate the element to right of 0%
+
         func();
-        Main.anim.to('game-watch-right-content', 500, {right: '0%'});
+
+        if (!is_visible) {
+            el.style.width = '80%';//we set this width programatically here
+            el.style.right = "-80%";//set to negative of the width we have in css file or the width we set programatically here
+            //animate the element to right of 0%
+            Main.anim.to('game-watch-right-content', 500, {right: '0%'});
+        }
     },
     hideRightContent: function () {
         var el = document.getElementById('game-watch-right-content');

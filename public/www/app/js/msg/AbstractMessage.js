@@ -864,7 +864,7 @@ Ns.msg.AbstractMessage = {
                 var txt_input = $(me.view_body).find(me.getMsgInputSelector())[0];
                 var emoji = $(me.view_body).find(me.getMsgEmojisBottonSelector())[0];
 
-                Main.click(btn_send, {txt_input: txt_input, _this: me}, me._sendMessage);
+                Main.click(btn_send, {txt_input: txt_input}, me.sendMessage.bind(me));
 
                 Main.click(emoji, {_this: me}, me._showEmojis);
 
@@ -1013,13 +1013,14 @@ Ns.msg.AbstractMessage = {
         }
     },
 
-    _sendMessage: function (evt, data) {
+    sendMessage: function (evt, data) {
 
-        var me = data._this;
+        var me = this;
         var msgObj;
 
         if (evt) {
             var txt_input = data.txt_input;
+            var msg_replied_id = this.msg_replied_id;
             content = txt_input.value; //textarea
             if (content === '') {
                 return; //do nothing
@@ -1028,6 +1029,7 @@ Ns.msg.AbstractMessage = {
             var user = Ns.view.UserProfile.appUser;
             msgObj = {
                 user_id: user.user_id,
+                msg_replied_id: msg_replied_id,
                 user: user,
                 content: content,
                 sending_msg_id: Main.util.serilaNo()
@@ -1039,7 +1041,6 @@ Ns.msg.AbstractMessage = {
 
             me._localSaveUnsentMessages.call(me);
         } else {//new
-            me = this;
             msgObj = data;
             me._addSending.call(me, msgObj);
         }
@@ -1050,11 +1051,15 @@ Ns.msg.AbstractMessage = {
 
     _doSendMsg: function (msgObj) {
         var me = this;
+        
+        var promise;
+        if (msgObj.msg_replied_id) {
+            promise = me.rcallReplyMessage(msgObj.content, msgObj.msg_replied_id, bindFn);
+        } else {
+            promise = me.rcallSendMessage(msgObj.content, bindFn);
+        }
 
-        console.log('_doSendMsg msgObj - ', msgObj);
-
-        me.rcallSendMessage(msgObj.content, bindFn)
-                .retry(retryFn)//force to retry is it is connection problem
+        promise.retry(retryFn)//force to retry is it is connection problem
                 .get(getFn)
                 .error(errFn);
 
@@ -1107,6 +1112,19 @@ Ns.msg.AbstractMessage = {
     rcallSendMessage: function () {
     },
 
+    /**
+     * Relevant subclass must override this method and return the promise of the rcall<br>
+     * <br>
+     * example: <br>
+     *     rcallSendMessage: function(content){<br>
+     *            return Main.ro.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *      }<br>
+     * <br>
+     * @returns {undefined}
+     */
+    rcallReplyMessage: function () {
+    },
+
     _addReceived: function (msg, replace_element) {
         var me = this;
 
@@ -1134,6 +1152,7 @@ Ns.msg.AbstractMessage = {
                 if (tpl_var === 'content') {
                     return data.content ? data.content : data.msg;
                 }
+
             },
             afterReplace: function (el, data) {
 
@@ -1154,6 +1173,13 @@ Ns.msg.AbstractMessage = {
                 var replace = me.onPrepareSentMsgTpl(tpl_var, data);
                 if (typeof replace !== 'undefined') {
                     return replace;
+                }
+
+                if (tpl_var === 'full_name') {
+                    //if the user info object is available then just return the
+                    //full name from it, otherwise return the user_id on th data object
+                    //which is always available
+                    return data.user ? data.user.full_name : data.user_id;
                 }
 
                 if (tpl_var === 'time') {
@@ -1222,8 +1248,14 @@ Ns.msg.AbstractMessage = {
         for (var i = 0; i < arr.length; i++) {
             var o = arr[i];
             var el_item_added = this._addItemToDom(o.el, o.data, o.replace_element);
+            var user_id = Ns.view.UserProfile.appUser.user_id;
             if (!data.sending_msg_id) {
-                this.onFinishPrepareSentMsgTpl(el_item_added, data);
+                var recieved_message = user_id !== data.user_id;
+                if (recieved_message) {
+                    this.onFinishPrepareReceivedMsgTpl(el_item_added, o.data);
+                } else {
+                    this.onFinishPrepareSentMsgTpl(el_item_added, o.data);
+                }
             }
         }
 
@@ -1308,10 +1340,26 @@ Ns.msg.AbstractMessage = {
         }
     },
 
+    getMsgElement: function (msgObj) {
+        var msg_body = $(this.view_body).find(this.getMsgBodySelector())[0];
+        if (!msg_body) {//is possible! in the case of asynchronous retry sending when the view is already closed.
+            return;
+        }
+        var children = msg_body.children;
+        for (var index = children.length - 1; index > -1; index--) {
+            var child = children[index];
+            var el_id = this.view_body.id;
+            var dom_extra_field = this.domExtraFieldPrefix(el_id);
+            if (child[dom_extra_field].msg_id === msgObj.msg_id) {
+                return child; // return the element 
+            }
+        }
+    },
+
     _retryUnsentMessage: function (sec) {
 
         for (var i = 0; i < this._unsentMsgList.length; i++) {//new
-            this._sendMessage(null, this._unsentMsgList[i]);
+            this.sendMessage(null, this._unsentMsgList[i]);
         }
 
     },

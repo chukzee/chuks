@@ -228,7 +228,7 @@ class Match extends WebApplication {
 
                     //so lets get the spectators viewing this game
                     var sc = me.sObj.db.collection(me.sObj.col.spectators);
-                    var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+                    var spectators = await sc.find({game_id: game_id, left_time: null}, {_id: 0}).toArray();
 
                     var spectators_ids = [];
                     for (var i = 0; i < spectators.length; i++) {
@@ -746,7 +746,7 @@ class Match extends WebApplication {
         var updated_match = r.value;
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+        var spectators = await sc.find({game_id: game_id, left_time: null}, {_id: 0}).toArray();
 
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);
@@ -798,7 +798,7 @@ class Match extends WebApplication {
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+        var spectators = await sc.find({game_id: game_id, left_time: null}, {_id: 0}).toArray();
 
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);
@@ -880,7 +880,7 @@ class Match extends WebApplication {
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.find({game_id: game_id}, {_id: 0}).toArray();
+        var spectators = await sc.find({game_id: game_id, left_time: null}, {_id: 0}).toArray();
 
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);
@@ -1231,7 +1231,7 @@ class Match extends WebApplication {
         }
 
         var sc = this.sObj.db.collection(this.sObj.col.spectators);
-        var spectators = await sc.find({game_id: match.game_id}, {_id: 0}).toArray();
+        var spectators = await sc.find({game_id: match.game_id, left_time: null}, {_id: 0}).toArray();
 
         for (var i = 0; i < spectators.length; i++) {
             users_ids.push(spectators[i].user_id);

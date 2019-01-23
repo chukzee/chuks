@@ -71,6 +71,7 @@ and open the template in the editor.
     top: 35px;
     bottom: 0;
     left: 0;
-    background-color: #fff; }
+    background-color: #fff;
+    overflow: auto; }
 
 /*# sourceMappingURL=game-view-right-panel.css.map */

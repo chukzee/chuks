@@ -1,0 +1,33 @@
+
+.game-view-options-item{
+    cursor: pointer; 
+    width: 40px; 
+    height: 40px; 
+    box-sizing: border-box;
+}
+.game-view-options-item-select{
+    cursor: pointer; 
+    width: 40px; 
+    height: 40px; 
+    border: #6699ff solid 2px;
+    box-sizing: border-box;
+}
+.game-view-options-title{
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15); 
+    color: #222; 
+    font-size: 18px;
+}
+.game-view-options-pad{
+    padding-top: 5px; 
+    padding-bottom: 5px;
+}
+.game-view-options-reset{
+    background: #eee; 
+    padding: 4px; 
+    border-radius: 25px; 
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15); 
+    color: #27ae60;
+    cursor: pointer; 
+    font-size: 18px;
+    text-align: center;
+}

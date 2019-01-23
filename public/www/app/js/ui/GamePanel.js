@@ -287,7 +287,6 @@ Ns.ui.GamePanel = {
 
         $('#game-view-footer-chat').on('click', function () {
             var title = titleChat;
-
             if (Ns.ui.GamePanel.rightContentName
                     && Ns.ui.GamePanel.rightContentName === title) {
                 ogv.hideRightContent();
@@ -299,7 +298,7 @@ Ns.ui.GamePanel = {
 
         $('#game-view-footer-comments').on('click', function () {
             var title = 'Comments';
-
+            
             if (Ns.ui.GamePanel.rightContentName
                     && Ns.ui.GamePanel.rightContentName === title) {
                 ogv.hideRightContent();

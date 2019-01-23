@@ -54,7 +54,8 @@ and open the template in the editor.
   bottom: 40px;
   width: 100%;
   padding: 0;
-  overflow: auto; }
+  overflow: auto;
+  background: #eee; }
   .game9ja-comment-body > div > .game9ja-comment-selected {
     background: #ededde !important; }
 
