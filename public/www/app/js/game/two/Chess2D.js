@@ -69,6 +69,10 @@ Ns.game.two.Chess2D = {
         return this.internalGame.fen();
     },
 
+    getBoardThemeUrl: function () {
+        return Ns.Options.getChessBoardThemeUrl();
+    },
+
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('img');
         pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';

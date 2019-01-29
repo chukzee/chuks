@@ -23,67 +23,73 @@ Ns.msg.GroupChat = {
 
     },
 
-    getCode:function(){
-        if(Main.util.isString(this.group)){
-            return this.group;
+    getCode: function () {
+        /*if(Main.util.isString(this.group)){
+         return this.group;
+         }
+         return this.group.group_name;*/
+        var grp_name;
+        if (Main.util.isString(this.group)) {
+            grp_name = this.group;
+        } else {
+            grp_name = this.group.group_name;
         }
-        return this.group.group_name;
+        return 'group' + Ns.Util.DELIMITER + grp_name;
     },
 
-    getMsgCode: function(msg){
-        return msg.group_name;
+    getMsgCode: function (msg) {
+        return msg._code;
     },
- 
-    setMsgCode: function(msg){    
-        msg.group_name = this.getCode();
+
+    setMsgCode: function (msg) {
+        msg._code = this.getCode();
     },
-       
-    getSaveKeyPrefix(){
+
+    getSaveKeyPrefix() {
         return 'save_msg_group_chat';
     },
-    
-    
+
     /**
      * Override this method - called by super class
      * @param {type} group
      * @returns {undefined}
      */
-    initContent:function(group){
+    initContent: function (group) {
         this.group = group;
         document.getElementById('group-chat-view-photo').src = group.photo_url;
         document.getElementById('group-chat-view-name').innerHTML = group.name;
         document.getElementById('group-chat-view-status').innerHTML = group.status_message;
     },
-    getViewID: function(){
+    getViewID: function () {
         return 'group-chat-view';
     },
 
-    getViewHeaderID: function(){
+    getViewHeaderID: function () {
         return "group-chat-view-header";
     },
-        
-    getViewBodyID: function(){
-        return 'group-chat-view-body';        
+
+    getViewBodyID: function () {
+        return 'group-chat-view-body';
     },
 
-    getSearchButtonID: function(){
-        return 'group-chat-view-search';        
+    getSearchButtonID: function () {
+        return 'group-chat-view-search';
     },
-    
-    getMenuButtonID: function(){
-        return 'group-chat-view-menu';        
+
+    getMenuButtonID: function () {
+        return 'group-chat-view-menu';
     },
-        
+
     /**
      * must override this method and return the promise of the rcall<br>
      *
      * @returns {undefined}
      */
-    rcallGetMessages: function(){    
+    rcallGetMessages: function (bindFn) {
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.getGroupChats(user_id, this.group.name);
-    }, 
-        /**
+        return Main.ro.chat.getGroupChats(user_id, this.group.name, bindFn);
+    },
+    /**
      * Send the chat message
      * Must override this method and return the promise of the rcall<br>
      * <br>
@@ -94,16 +100,14 @@ Ns.msg.GroupChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function(content, bindFn){
-        
+    rcallSendMessage: function (content, bindFn) {
+
         var user_id = Ns.view.UserProfile.appUser.user_id;
         return Main.ro.chat.sendGroupChat(user_id, this.group.name, content, 'text', bindFn);
-    }, 
-    onChat: function(evtObj){
+    },
+    onChat: function (evtObj) {
         this.add(evtObj.data);
     },
-
-  
 
 };
 

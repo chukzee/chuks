@@ -1,5 +1,6 @@
 
 Ns.Util = {
+    DELIMITER: '\u0000',
     REQUEST_RATE_INTERVAL: 60, //in seconds
     lastContactsMatchRequestTime: 0,
     lastGroupMatchRequestTime: {}, // hold the group name against the  request time

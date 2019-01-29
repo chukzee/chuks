@@ -175,7 +175,7 @@ Ns.game.AbstractBoard2D = {
 
         var proper_container = document.createElement('div');
 
-        proper_container.style.backgroundImage = 'url(../resources/games/chess/board/themes/' + board_theme + '/60' + (inverted_board ? '-inverse' : '') + '.png)';
+        proper_container.style.backgroundImage = 'url('+this.getBoardThemeUrl(inverted_board)+')';
         proper_container.style.backgroundRepeat = 'repeat';
         proper_container.style.backgroundSize = 100 / (this.boardRowCount / 2) + '%';
         console.log(proper_container.style.backgroundSize);
@@ -261,6 +261,10 @@ Ns.game.AbstractBoard2D = {
         }
 
         return el;
+    },
+
+    getBoardThemeUrl: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
     },
 
     createPieceElement: function () {

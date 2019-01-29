@@ -24,28 +24,29 @@ Ns.msg.ContactChat = {
         Main.eventio.on('chat_msg_status', this.onChatMsgStatus.bind(this));
 
     },
-    
-    getCode:function(){
-        if(Main.util.isString(this.contact)){
+
+    getCode: function () {
+        if (Main.util.isString(this.contact)) {
             return this.contact;
         }
-        return this.contact.user_id;  
+        return 'contact' + Ns.Util.DELIMITER + this.contact.user_id;
     },
 
-    
-    getMsgCode: function(msg){     
-        if(msg.contact_user_id === this.contact.user_id //sending
-                 || msg.user_id === this.contact.user_id//receiving
-                 ){
-             return this.contact.user_id;
+    getMsgCode: function (msg) {
+        /*if (msg.contact_user_id === this.contact.user_id //sending
+                || msg.user_id === this.contact.user_id//receiving
+                ) {
+            return this.contact.user_id;
         }
-        return;
+            return;
+        */        
+        return msg._code;
     },
-    
-    setMsgCode: function(msg){    
-        msg.contact_user_id = this.getCode();
+
+    setMsgCode: function (msg) {
+        msg._code = this.getCode();
     },
-    
+
     getSaveKeyPrefix() {
         return 'save_msg_contact_chat';
     },
@@ -86,9 +87,9 @@ Ns.msg.ContactChat = {
      *
      * @returns {undefined}
      */
-    rcallGetMessages: function () {
+    rcallGetMessages: function (bindFn) {
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.getContactChats(user_id, this.contact.user_id);
+        return Main.ro.chat.getContactChats(user_id, this.contact.user_id, bindFn);
     },
     /**
      * Send the chat message

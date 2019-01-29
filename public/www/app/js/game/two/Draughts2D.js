@@ -77,6 +77,10 @@ Ns.game.two.Draughts2D = {
         return this.internalGame.toFEN();
     },
 
+    getBoardThemeUrl: function (inverted_board) {
+        return Ns.Options.getDraughtsBoardThemeUrl(inverted_board);
+    },
+
     createPieceElement: function (pce, piece_theme) {
         var pe = document.createElement('div');
         pe.className = pce.white ? 'white-piece-o' : 'black-piece-o';

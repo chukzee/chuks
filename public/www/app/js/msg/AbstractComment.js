@@ -53,6 +53,10 @@ Ns.msg.AbstractComment = {
         return 'div[data-comment="body"]';
     },
 
+    getMsgScrollContainerSelector: function () {
+        return '.game9ja-comment-body';
+    },
+
     getMsgInputSelector: function () {
         return 'textarea[data-comment="input-msg"]';
     },

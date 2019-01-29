@@ -2152,11 +2152,11 @@ var Main = {};
             function doGet(obj) {
                 var res = tplList[obj.tplUrl];
                 if (res) {//already have it in memory
-                    
+
                     tplReplace(res, obj, obj.data);
-                    
+
                     //console.log(obj.tplUrl, '---before Sync next---', obj.data);
-                    
+
                     next();
                     return;
                 }
@@ -4829,6 +4829,8 @@ var Main = {};
         var btns = $(obj.container).find('.game9ja-tab-header').children();
         var tab_body = $(obj.container).find('.game9ja-tab-body')[0];
 
+        tab_body.style.overflow = 'hidden';//force overflow to hidden to prevent Android swipe event bug issue
+
         var contents = $(tab_body).children();
         var shownIndex = null;
         var active_class = 'game9ja-tab-active';
@@ -4908,6 +4910,162 @@ var Main = {};
             right: swipeTabBody.bind({direction: -1})
         });
 
+        var tab_touch_start_x;
+        var tab_touch_start_y;
+        var tab_touch_end_x;
+        var tab_touch_end_y;
+
+        var dragObj = {
+            buttons: btns,
+            tabBody: tab_body
+        };
+
+        if (tab_body.addEventListener) {
+            tab_body.addEventListener('touchstart', tabStartTouch.bind(dragObj), false);
+            tab_body.addEventListener('touchmove', tabMoveTouch.bind(dragObj), false);
+            tab_body.addEventListener('touchend', tabEndTouch.bind(dragObj), false);
+            tab_body.addEventListener('touchcancel', tabCancelTouch.bind(dragObj), false);
+        }
+
+
+        function tabStartTouch(evt) {
+
+            if (evt.touches.length === 1) {
+                tab_touch_start_x = evt.touches[0].pageX;
+                tab_touch_start_y = evt.touches[0].pageY;
+            }
+
+        }
+
+        function tabMoveTouch(evt) {
+            if (evt.touches.length !== 1) {
+                return;
+            }
+            dragTab.call(this, evt);
+        }
+
+        function tabEndTouch(evt) {
+            finishDragTab.call(this, evt);
+        }
+
+        function tabCancelTouch(evt) {
+            finishDragTab.call(this, evt);
+        }
+
+        function isVert(x, y) {
+            var deg = Math.atan(Math.abs(y/x)) * 180 / Math.PI;
+            if(deg > 10){//TESTING!!!           
+                console.log('veritcal ', deg);
+            }
+            return deg > 10;
+        }
+
+        function finishDragTab(evt) {
+
+            var change_x = tab_touch_start_x - tab_touch_end_x;
+            var change_y = tab_touch_start_y - tab_touch_end_y;
+
+            var tab_cont = getTabDragged.call(this, evt);
+            if (!tab_cont) {
+                return;
+            }
+
+            var contents = $(this.tabBody).children();
+            for (var i = 0; i < contents.length; i++) {
+                if (contents[i] === tab_cont) {
+                    var next_tab_index;
+                    if (change_x > 0) {
+                        next_tab_index = i + 1;
+                        animDraggedTab.call(this, contents[i], contents[i + 1], change_x, true, next_tab_index);
+                    } else {
+                        next_tab_index = i - 1;
+                        animDraggedTab.call(this, contents[i], contents[i - 1], change_x, false, next_tab_index);
+                    }
+                    break;
+                }
+            }
+
+        }
+
+        function getTabDragged(evt) {
+
+            var tab_cont = evt.target;
+
+            while (true) {
+
+                if (tab_cont === document.body || tab_cont === null) {
+                    tab_cont = null;
+                    break;
+                }
+
+                if (tab_cont.parentNode === this.tabBody) {
+                    break;
+                }
+
+                tab_cont = tab_cont.parentNode;
+            }
+
+            return tab_cont;
+        }
+
+        function dragTab(evt) {
+            var end_x = evt.touches[0].pageX;
+            var end_y = evt.touches[0].pageY;
+            var change_x = tab_touch_start_x - end_x;
+            var change_y = tab_touch_start_y - end_y;
+            
+            if (isVert(change_x, change_y)) {
+                return;
+            }
+            
+            tab_touch_end_x = end_x;
+            tab_touch_end_y = end_y;
+
+            var tab_cont = getTabDragged.call(this, evt);
+            if (!tab_cont) {
+                return;
+            }
+
+            var contents = $(this.tabBody).children();
+            for (var i = 0; i < contents.length; i++) {
+                if (contents[i] === tab_cont) {
+                    if (change_x > 0) {
+                        dragShowTab(contents[i], contents[i + 1], change_x, true);
+                    } else {
+                        dragShowTab(contents[i], contents[i - 1], change_x, false);
+                    }
+                    break;
+                }
+            }
+
+        }
+
+        function dragShowTab(comp, new_comp, change, forward) {
+            if (!new_comp) {
+                return;
+            }
+
+            comp.style.display = 'block';
+            new_comp.style.display = 'block';
+            var width = comp.getBoundingClientRect().width;
+
+            if (forward) {
+                if (change > width) {
+                    change = width;
+                }
+                comp.style.left = -change + 'px';
+                new_comp.style.left = -change + width + 'px';
+            } else {
+                change = -change;
+                if (change > width) {
+                    change = width;
+                }
+                comp.style.left = change + 'px';
+                new_comp.style.left = change - width + 'px';
+            }
+
+        }
+
         function swipeTabBody() {
             for (var i = 0; i < btns.length; i++) {
                 if ($(btns[i]).hasClass(active_class)) {
@@ -4955,6 +5113,63 @@ var Main = {};
 
         }
 
+        function animDraggedTab(comp, new_comp, change, forward, next_tab_index) {
+            if (!new_comp) {
+                return;
+            }
+
+            comp.style.display = 'block';
+            new_comp.style.display = 'block';
+
+            var width = comp.getBoundingClientRect().width;
+
+            if (Math.abs(change) > width / 2) {//if the dragging has done mid way
+
+                var func = obj.onShow[id_prefix + this.buttons[next_tab_index].id];
+                if (Main.util.isFunc(func)) {
+                    func();
+                }
+
+                if (forward) {
+                    Main.anim.to(comp, 500, {left: -width + 'px'}, function () {
+                        this.el.style.display = 'none';
+                    }.bind({el: comp}));
+
+                    Main.anim.to(new_comp, 500, {left: '0px'});
+                    setActiveButton(new_comp);
+
+                } else {
+                    Main.anim.to(comp, 500, {left: width + 'px'}, function () {
+                        this.el.style.display = 'none';
+                    }.bind({el: comp}));
+
+                    Main.anim.to(new_comp, 500, {left: '0px'});
+                    setActiveButton(new_comp);
+                }
+
+            } else {
+                //reverse
+                if (forward) {
+                    Main.anim.to(new_comp, 500, {left: width + 'px'}, function () {
+                        this.el.style.display = 'none';
+                    }.bind({el: new_comp}));
+
+                    Main.anim.to(comp, 500, {left: '0px'});
+                    setActiveButton(comp);
+
+                } else {
+                    Main.anim.to(new_comp, 500, {left: -width + 'px'}, function () {
+                        this.el.style.display = 'none';
+                    }.bind({el: new_comp}));
+
+                    Main.anim.to(comp, 500, {left: '0px'});
+                    setActiveButton(comp);
+                }
+            }
+
+
+        }
+
         function animShowTab(newComp, prevComp, forward) {
             newComp.style.display = 'block';
 
@@ -4965,13 +5180,51 @@ var Main = {};
                 newComp.style.left = '100%';
             }
 
+            setActiveButton(newComp);
             Main.anim.to(newComp, 500, {left: '0%'});
+
             Main.anim.to(prevComp, 500, {left: prev_left}, function () {
                 this.el.style.display = 'none';
             }.bind({el: prevComp}));
         }
 
+        function setActiveButton(comp) {
+            var tab_main = comp.parentNode;
+
+            while (true) {
+                if (tab_main === document.body || tab_main === null) {
+                    return;
+                }
+
+                if ($(tab_main).hasClass('game9ja-tab')) {
+                    break;
+                }
+                tab_main = tab_main.parentNode;
+            }
+
+            var tab_body = $(tab_main).find('.game9ja-tab-body')[0];
+            var tab_header = $(tab_main).find('.game9ja-tab-header')[0];
+
+            var btns = tab_header.children;
+            var tab_contents = tab_body.children;
+
+            for (var tab_index = 0; tab_index < tab_contents.length; tab_index++) {
+                var btn = btns[tab_index];
+                if (tab_contents[tab_index] === comp) {
+                    if (!$(btn).hasClass(active_class)) {
+                        $(btn).addClass(active_class);
+                    }
+                } else {
+                    $(btn).removeClass(active_class);
+                }
+            }
+
+
+
+        }
+
     };
+
 
     function _analyzeEvtParam(a1, a2, a3) {
         var param = {

@@ -24,18 +24,26 @@ Ns.msg.TournamentGeneralChat = {
     },
 
     getCode:function(){
-        if(Main.util.isString(this.tournament)){
+        /*if(Main.util.isString(this.tournament)){
             return this.tournament;
         }
-        return this.tournament.tournament_name;
+        return this.tournament.tournament_name;*/
+        
+        var tourn_name;
+        if (Main.util.isString(this.tournament)) {
+            tourn_name = this.tournament;
+        } else {
+            tourn_name = this.tournament.tournament_name;
+        }
+        return 'tournament' + Ns.Util.DELIMITER + 'general' + Ns.Util.DELIMITER + tourn_name;
     },
 
     getMsgCode: function(msg){
-        return msg.tournament_name;
+        return msg._code;
     },
        
     setMsgCode: function(msg){    
-        msg.tournament_name = this.getCode();
+        msg._code = this.getCode();
     },
          
     getSaveKeyPrefix(){
@@ -77,9 +85,9 @@ Ns.msg.TournamentGeneralChat = {
      *
      * @returns {undefined}
      */
-    rcallGetMessages: function(){    
+    rcallGetMessages: function(bindFn){    
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.getTournamentGeneralChats(user_id, this.tournament.name);
+        return Main.ro.chat.getTournamentGeneralChats(user_id, this.tournament.name, bindFn);
     }, 
             /**
      * Send the chat message

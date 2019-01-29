@@ -56,6 +56,10 @@ Ns.msg.AbstractChat = {
         return 'div[data-chat="body"]';
     },
 
+    getMsgScrollContainerSelector: function () {
+        return 'div[data-chat="body"]';
+    },
+
     getMsgInputSelector: function () {
         return 'textarea[data-chat="input-msg"]';
     },

@@ -6,13 +6,17 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>Game9ja</title>
+        <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
         <link rel="stylesheet" href="../app/css/app-main.css" />
         <link rel="stylesheet" href="../app/css/game-main.css" />
         <link rel="stylesheet" href="../app/css/header-items.css" />
+        <script src="../lib/jquery-1.10.2.min.js"></script>
+        <script src="../lib/tween/TweenMax.min.js"></script>
+        <script src="../app/Main.js"></script>
+
     </head>
 
     <body>
@@ -27,7 +31,7 @@ and open the template in the editor.
                 </div>
                 <i class="fa fa-ellipsis-v game9ja-header-item-right"></i> <!--ellipisis menu icon-->                       
             </div>
-            <div class="game9ja-tab">
+            <div  id="home-tab-container"  class="game9ja-tab">
                 <div class="game9ja-tab-header">
                     <button id="game-home-my-contacts-matches" class="game9ja-tab-active" >
                         Contact
@@ -37,7 +41,7 @@ and open the template in the editor.
                         Group
                         <span class="game9ja-unseen"></span>
                     </button>
-                    <button  id="game-home-tournaments-matches">
+                    <button  id="game-home-my-tournaments-matches">
                         Tournament
                         <span class="game9ja-unseen"></span>
                     </button>
@@ -45,28 +49,40 @@ and open the template in the editor.
 
                 <div class="game9ja-tab-body">
                     <div id="home-contacts-live-games" style="background: red;">
-                        
+                        content 1
                     </div>
 
                     <div id="home-group-live-games" style="background: blue;">
-
+                        content 2
                     </div>
 
                     <div id="home-tournaments-live-games" style="background: green;">
-
+                        content 3
                     </div>
                 </div>                    
             </div>
         </div>
-        
-        
-    <script>
-        alert('width '+window.screen.width);
-        alert('height '+window.screen.height);
-        alert('devicePixelRatio ' + window.devicePixelRatio);
-        
-    </script>
-        
+
+
+        <script>
+            /*alert('width '+window.screen.width);
+             alert('height '+window.screen.height);
+             alert('devicePixelRatio ' + window.devicePixelRatio);
+             alert('Main.tab ' + Main.tab);*/
+             
+
+            Main.tab({
+                container: document.getElementById("home-tab-container"),
+                onShow: {
+
+                    "#game-home-my-contacts-matches": function(){console.log('contacts');},
+                    "#game-home-my-group-matches": function(){console.log('group');},
+                    "#game-home-my-tournaments-matches": function(){console.log('tournaments');}//come back for this - not working
+                }
+            });
+
+        </script>
+
     </body>
 
 </html>

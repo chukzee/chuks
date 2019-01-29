@@ -28,15 +28,15 @@ Ns.msg.GameComment = {
     },
 
     getCode:function(){
-        return this.match.game_id;
+        return 'game_comment' + Ns.Util.DELIMITER + this.match.game_id;
     },
   
     getMsgCode: function(msg){
-        return msg.game_id;
+        return msg._code;
     },
 
     setMsgCode: function(msg){    
-        msg.game_id = this.getCode();
+        msg._code = this.getCode();
     },
         
     getSaveKeyPrefix(){
@@ -77,9 +77,9 @@ Ns.msg.GameComment = {
      *
      * @returns {undefined}
      */
-    rcallGetMessages: function(){    
+    rcallGetMessages: function(bindFn){    
         var user_id = Ns.view.UserProfile.appUser.user_id;
-       return Main.ro.comment.getGameComments(user_id, this.match.game_id);
+       return Main.ro.comment.getGameComments(user_id, this.match.game_id, bindFn);
     }, 
       
     /**

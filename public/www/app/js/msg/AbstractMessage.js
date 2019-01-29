@@ -95,6 +95,13 @@ Ns.msg.AbstractMessage = {
      * Overridden by subclass
      * @returns {undefined}
      */
+    getMsgScrollContainerSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
     getMsgInputSelector: function () {
     },
 
@@ -211,6 +218,10 @@ Ns.msg.AbstractMessage = {
             throw Error('unknown id for ' + this.getMsgType() + ' view body - ' + this.getViewBodyID());
         }
 
+
+        var msg_body = $(this.view_body).find(this.getMsgBodySelector())[0];
+        msg_body.innerHTML = ''; //clear the previous messages
+
         if (this.msgList.length === 0) {
             this.msgList = this._localGetMessages();
         }
@@ -312,23 +323,26 @@ Ns.msg.AbstractMessage = {
     _remoteGetMessages: function (data) {
 
         var me = this;
+        var _prev_code = me.getCode();
+
+        var bindFn = function () {
+            return {_code: _prev_code};
+        };
 
         //TODO: show loading indicator
 
 
-        me.rcallGetMessages(data)
+        me.rcallGetMessages(bindFn)
                 .after(function () {
                     me._retryUnsentMessage.call(me);
                 })
                 .get(function (res) {
 
-                    var msgs = me.getResponseMsgs(res);
-
-                    if (msgs.length > 0) {
-                        if (!me.checkAccess(msgs[0])) {
-                            return;
-                        }
+                    var bind = this;
+                    if (bind._code !== me.getCode()) {//the view has changed
+                        return;
                     }
+                    var msgs = me.getResponseMsgs(res);
 
 
                     me.set(msgs);
@@ -355,11 +369,19 @@ Ns.msg.AbstractMessage = {
     },
 
     _localSaveMessages: function () {
-        window.localStorage.setItem(this.getSaveKeyPrefix() + this.MSG_SAVE_KEY, JSON.stringify(this.msgList));
+        window.localStorage.setItem(this.getSaveKeyPrefix()
+                + Ns.Util.DELIMITER
+                + this.getCode()
+                + Ns.Util.DELIMITER
+                + this.MSG_SAVE_KEY, JSON.stringify(this.msgList));
     },
 
     _localSaveUnsentMessages: function () {
-        window.localStorage.setItem(this.getSaveKeyPrefix() + this.UNSENT_MSG_SAVE_KEY, JSON.stringify(this._unsentMsgList));
+        window.localStorage.setItem(this.getSaveKeyPrefix()
+                + Ns.Util.DELIMITER
+                + this.getCode()
+                + Ns.Util.DELIMITER
+                + this.UNSENT_MSG_SAVE_KEY, JSON.stringify(this._unsentMsgList));
     },
 
     _localGetMessages: function () {
@@ -373,7 +395,11 @@ Ns.msg.AbstractMessage = {
     _localGet: function (key) {
         var msgs = [];
         try {
-            var str = window.localStorage.getItem(this.getSaveKeyPrefix() + key);
+            var str = window.localStorage.getItem(this.getSaveKeyPrefix()
+                    + Ns.Util.DELIMITER
+                    + this.getCode()
+                    + Ns.Util.DELIMITER
+                    + key);
             if (str) {
                 msgs = JSON.parse(str);
             }
@@ -834,9 +860,17 @@ Ns.msg.AbstractMessage = {
             return;
         }
 
+        for (var i = 0; i < msgs.length; i++) {
+            this.setMsgCode(msgs[i]);
+        }
+
         if (is_replace_list !== false) {
             this.msgList = msgs;
             this._localSaveMessages();
+        }
+
+        if (!this.isShowing()) {
+            return;
         }
 
         this._new_set_count = msgs.length;
@@ -899,6 +933,10 @@ Ns.msg.AbstractMessage = {
             msgs = [msgs];//convert to array
         }
 
+        for (var i = 0; i < msgs.length; i++) {
+            this.setMsgCode(msgs[i]);
+        }
+
         //avoid duplicate addition
 
         for (var i = 0; i < msgs.length; i++) {
@@ -914,8 +952,6 @@ Ns.msg.AbstractMessage = {
                 }
             }
         }
-
-
 
         if (!Main.util.isArray(replace_element)) {
             replace_element = [replace_element];
@@ -935,7 +971,6 @@ Ns.msg.AbstractMessage = {
         if (!is_showing) {
             return;
         }
-
 
         if (replace_element) {
             this._addContent(msgs, replace_element);
@@ -1051,7 +1086,7 @@ Ns.msg.AbstractMessage = {
 
     _doSendMsg: function (msgObj) {
         var me = this;
-        
+
         var promise;
         if (msgObj.msg_replied_id) {
             promise = me.rcallReplyMessage(msgObj.content, msgObj.msg_replied_id, bindFn);
@@ -1093,8 +1128,10 @@ Ns.msg.AbstractMessage = {
         }
 
         function errFn(err, err_code, connect_err) {
-            if (connect_err) {//only retry if it is a connection problem
 
+            var mObj = this;// the result of the bind function 'bindFn' returned to us
+            if (!me.checkAccess(mObj)) {//the view has changed
+                return;//so leave
             }
         }
     },
@@ -1248,6 +1285,9 @@ Ns.msg.AbstractMessage = {
         for (var i = 0; i < arr.length; i++) {
             var o = arr[i];
             var el_item_added = this._addItemToDom(o.el, o.data, o.replace_element);
+            if (!el_item_added) {
+                continue;
+            }
             var user_id = Ns.view.UserProfile.appUser.user_id;
             if (!data.sending_msg_id) {
                 var recieved_message = user_id !== data.user_id;
@@ -1397,6 +1437,7 @@ Ns.msg.AbstractMessage = {
             return;
         }
         var msg_body = $(view_body_el).find(this.getMsgBodySelector())[0];
+        var msg_scroll_container = $(view_body_el).find(this.getMsgScrollContainerSelector())[0];
 
         el[dom_extra_field] = data;
 
@@ -1406,7 +1447,7 @@ Ns.msg.AbstractMessage = {
             msg_body.replaceChild(el, replace_element);
         }
 
-        msg_body.scrollTop = msg_body.scrollHeight;// scroll to be bottom to view the last message
+        msg_scroll_container.scrollTop = msg_scroll_container.scrollHeight;// scroll to be bottom to view the last message
 
         Main.event.fire(Ns.Const.EVT_MESSAGE_ADDED, data);
 

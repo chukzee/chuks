@@ -44,6 +44,7 @@
         width: 100%;
         //height: 100%;
         //background: blue;
+        overflow: hidden;//!important. must be hidden so that swipe event will work properly on Android (a known issue)
         > div{
             display: none;
             position: absolute;

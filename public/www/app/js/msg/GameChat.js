@@ -27,22 +27,22 @@ Ns.msg.GameChat = {
         Main.eventio.on('chat_msg_status', this.onChatMsgStatus.bind(this));
     },
 
-    getCode:function(){
-        return this.match.game_id;
-    },
-    
-    getMsgCode: function(msg){
-        return msg.game_id;
+    getCode: function () {
+        return 'game_chat' + Ns.Util.DELIMITER + this.match.game_id;
     },
 
-    setMsgCode: function(msg){    
-        msg.game_id = this.getCode();
+    getMsgCode: function (msg) {
+        return msg._code;
     },
-        
-    getSaveKeyPrefix(){
+
+    setMsgCode: function (msg) {
+        msg._code = this.getCode();
+    },
+
+    getSaveKeyPrefix() {
         return 'save_msg_game_chat';
     },
-    
+
     /**
      * Override this method - called by super class
      * @param {type} match
@@ -56,21 +56,21 @@ Ns.msg.GameChat = {
         this.view_header_id = id_obj.view_header_id;
         this.search_button_id = id_obj.search_button_id;
     },
-    
-    getViewID: function(){
+
+    getViewID: function () {
         return this.view_id;
     },
 
-    getViewHeaderID: function(){
+    getViewHeaderID: function () {
         return this.view_header_id;
     },
-        
-    getViewBodyID: function(){
-        return this.view_body_id;        
+
+    getViewBodyID: function () {
+        return this.view_body_id;
     },
 
-    getSearchButtonID: function(){
-        return this.search_button_id;        
+    getSearchButtonID: function () {
+        return this.search_button_id;
     },
 
     /**
@@ -78,9 +78,9 @@ Ns.msg.GameChat = {
      *
      * @returns {undefined}
      */
-    rcallGetMessages: function () {
+    rcallGetMessages: function (bindFn) {
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.getGameChats(user_id, this.match.game_id);
+        return Main.ro.chat.getGameChats(user_id, this.match.game_id, bindFn);
     },
     /**
      * Send the chat message
