@@ -336,8 +336,6 @@ Ns.msg.AbstractMessage = {
 
         }
 
-
-
     },
 
     _redisplayMsgTimeOnNextDay: function () {
@@ -1031,6 +1029,8 @@ Ns.msg.AbstractMessage = {
                 Main.click(emoji_tab2_el, eobj, me._onEmojiTabTwoClick.bind(me));
 
                 Main.click(emoji_tab3_el, eobj, me._onEmojiTabThreeClick.bind(me));
+                
+                Main.click(emoji_list_el, me._onEmojiListClick.bind(me));
 
                 Main.click(close_emoji, pop_emoji, me.closeEmojis.bind(me));
 
@@ -1236,6 +1236,13 @@ Ns.msg.AbstractMessage = {
                 msg_replied_id = rpl_msg.msg_id;
                 this.closeReply(evt, pop_reply);
             }
+            
+            var pop_emoji = $(me.view_body).find('div[data-pop="emoji"]')[0];
+            
+            if ($(pop_emoji).is(':visible')) {
+                this.closeEmojis(evt, pop_emoji);
+            }
+            
             content = txt_input.value; //textarea
             if (content === '') {
                 return; //do nothing
@@ -1750,14 +1757,26 @@ Ns.msg.AbstractMessage = {
         this._fillEmojis(Ns.Emoji.MiscList, eobj.emoji_list_el);
     },
 
+    _onEmojiListClick: function(evt){
+        var target = evt.target;
+        if(target.dataset.content !== "emoji"){
+            return;
+        }
+        
+        var txt_input = $(this.view_body).find(this.getMsgInputSelector())[0];
+        txt_input.value += '' + target.innerHTML;
+    },
+
     _fillEmojis: function (emoji_arr, emoji_list_el) {
 
         emoji_list_el.innerHTML = '';
-
+        var html = '';
         for (var i = 0; i < emoji_arr.length; i++) {
-
+            html +='<span style="margin-right: 10px; cursor: pointer;" data-content="emoji" >'+emoji_arr[i]+'</span>';
         }
-
+        
+        emoji_list_el.innerHTML = html;
+        
     }
 };
 

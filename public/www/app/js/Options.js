@@ -19,6 +19,7 @@ Ns.Options = {
 
     DEFAULT_LIGHT_INTENSITY: 50, //in percent
     DEFAUTLT_IS_SOUND: true,
+    DEFAUTLT_IS_DRAG_PIECE: true,
 
     chessPiece2d: null,
     chessPiece3d: null,
@@ -34,6 +35,7 @@ Ns.Options = {
 
     lightIntensity: null,
     isSound: null,
+    isDragPiece: null,
 
     constructor: function () {
         this.init();
@@ -97,6 +99,11 @@ Ns.Options = {
             this.isSound = this.DEFAUTLT_IS_SOUND;
         }
 
+        this.isDragPiece = this._localGetOption('isDragPiece');
+        if (this.isDragPiece === null) {
+            this.isDragPiece = this.DEFAUTLT_IS_DRAG_PIECE;
+        }
+
         this.lightIntensity = this._localGetOption('lightIntensity');
         if (this.lightIntensity === null) {
             this.lightIntensity = this.DEFAULT_LIGHT_INTENSITY;
@@ -142,6 +149,7 @@ Ns.Options = {
 
                 Main.click(o.el_light, data, me._onClickLight.bind(me));
                 Main.dom.addListener(o.el_sound, 'click', data, me._onClickSound.bind(me));//important! do not use Main.click  -> not working for checkbox because of maybe touchend event used internally for mobile device
+                Main.dom.addListener(o.el_drag_piece, 'click', data, me._onClickDragPiece.bind(me));//important! do not use Main.click  -> not working for checkbox because of maybe touchend event used internally for mobile device
 
                 var el_reset = document.getElementById('game_view_options_reset');
                 Main.click(el_reset, data, me._onClickReset.bind(me));
@@ -349,6 +357,13 @@ Ns.Options = {
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE);
     },
 
+    _onClickDragPiece: function (evt, data) {
+        var check_btn = evt.target;
+        this._localSaveOption('isDragPiece', check_btn.checked);
+        
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_DRAG_PIECE_CHANGE);
+    },
+
     _els: function () {
 
         var obj = {};
@@ -369,7 +384,8 @@ Ns.Options = {
         obj.el_draughts_board_floor = draughts_option[2].querySelector('div[data-board="floor"]');
 
         obj.el_light = document.querySelector('input[data-light="intensity"]');
-        obj.el_sound = document.getElementById('game_view_option_checkbox_slide_id');
+        obj.el_sound = document.getElementById('game_view_option_sound_id');
+        obj.el_drag_piece = document.getElementById('game_view_option_drag_piece_id');
 
         return obj;
     },
@@ -395,6 +411,7 @@ Ns.Options = {
             this.draughtsBoardFloor = this.DEFAULT_DRAUGHTS_BOARD_FLOOR;
 
             this.isSound = this.DEFAUTLT_IS_SOUND;
+            this.isDragPiece = this.DEFAUTLT_IS_DRAG_PIECE;
             this.lightIntensity = this.DEFAULT_LIGHT_INTENSITY;
         }
 
@@ -419,6 +436,9 @@ Ns.Options = {
         //preselect sound
         o.el_sound.checked = this.isSound;
 
+        //preselect drag piece
+        o.el_drag_piece.checked = this.isDragPiece;
+
         if (reset) {
             this._localSaveOption('chessPiece2d', this.chessPiece2d);
             this._localSaveOption('chessPiece3d', this.chessPiece3d);
@@ -433,6 +453,7 @@ Ns.Options = {
             this._localSaveOption('draughtsBoardFloor', this.draughtsBoardFloor);
 
             this._localSaveOption('isSound', this.isSound);
+            this._localSaveOption('isDragPiece', this.isDragPiece);
             this._localSaveOption('lightIntensity', this.lightIntensity);
             
             //fire the events
@@ -490,6 +511,10 @@ Ns.Options = {
 
     isSoundAllow: function () {
         return this.isSound;
+    },
+
+    isDragPieceAllow: function () {
+        return this.isDragPiece;
     },
 
     getLightIntensity: function () {

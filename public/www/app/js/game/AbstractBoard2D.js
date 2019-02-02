@@ -1463,7 +1463,7 @@ Ns.game.AbstractBoard2D = {
             this.pickedPiece.style.zIndex = 1000;
         }
 
-        if (this.pickedPiece && Ns.Config.DragPiece) {
+        if (this.pickedPiece && Ns.Options.isDragPiece) {
             //drag piece
             py = this.boardY - this.pieceHeight / 2;
             px = this.boardX - this.pieceWidth / 2;

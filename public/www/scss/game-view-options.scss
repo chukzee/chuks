@@ -19,7 +19,23 @@
 }
 .game-view-options-pad{
     padding-top: 5px; 
+    padding-bottom: 5px;    
+}
+.game-view-options-inline{
+    padding-top: 5px; 
     padding-bottom: 5px;
+    >:nth-child(1){
+        //background: blue;
+        margin-right: 5px;
+        width: auto;
+        display: inline-block;
+    }
+    >:nth-child(2){
+        //background: red;
+        margin-left: 5px;
+        width: auto;
+        display: inline-block;
+    }
 }
 .game-view-options-reset{
     background: #eee; 

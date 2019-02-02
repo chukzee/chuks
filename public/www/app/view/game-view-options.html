@@ -68,7 +68,7 @@ and open the template in the editor.
                 </div>         
             </div>
             <!-- for chess end--->
-            
+
             <!-- for draughts start--->
             <div data-game-option="draughts">
                 <div class="game-view-options-title">Piece</div>
@@ -127,17 +127,27 @@ and open the template in the editor.
                     <input type="range" data-light="intensity" />
 
                 </div>
-                <div  class="game-view-options-pad">
-                    <div class="game-view-options-title">Sound</div>
+                <div  class="game-view-options-inline">
 
-                    <div class="game9a-checkbox-slide">  
-                        <input type="checkbox" value="None"  name="check" id="game_view_option_checkbox_slide_id" checked/>
-                        <label for="game_view_option_checkbox_slide_id"></label>
+                    <div>   
+                        <div class="game-view-options-title">Sound</div>
+                        <div class="game9a-checkbox-slide">  
+                            <input type="checkbox" value="None"  name="check" id="game_view_option_sound_id" checked/>
+                            <label for="game_view_option_sound_id"></label>
+                        </div>
+                    </div>
+
+                    <div> 
+                        <div class="game-view-options-title">Drag Piece</div>
+                        <div class="game9a-checkbox-slide">  
+                            <input type="checkbox" value="None"  name="check" id="game_view_option_drag_piece_id" checked/>
+                            <label for="game_view_option_drag_piece_id"></label>
+                        </div>
                     </div>
                 </div>
 
             </div>
-
+            
             <div>
                 <div class="game-view-options-reset" id="game_view_options_reset">Reset</div>                        
             </div>

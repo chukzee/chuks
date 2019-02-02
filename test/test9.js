@@ -1,24 +1,16 @@
 
 
-var str = `
-{_1a0_-e}
-{aaa}
-{abf}
-{bc}
-`;
+var arr = [
+'U+1F60C', 'U+1F62A','U+1F634','U+1F637',
+'U+1F635',
+'U+1F60E','U+1F615',
+'U+1F61F','U+2639','U+1F62E','U+1F62F','U+1F632','U+1F633',
+'U+1F626', 'U+1F627','U+1F628','U+1F630','U+1F625','U+1F622',
+'U+1F62D', 'U+1F631','U+1F616','U+1F623','U+1F61E','U+1F613','U+1F629',
+'U+1F62B','U+1F624','U+1F621','U+1F620',
+'U+1F44B','U+1F44C','U+1F44D','U+1F44E', 'U+1F448','U+1F449','U+1F446',
+'U+1F447','U+270A','U+1F44A','U+1F44F','U+1F450','U+1F64F'];
 
-var regex = /{[a-zA-Z_][a-zA-Z0-9._-]*}/g;
-var result = str.match(regex);
-console.log(result);
-
-console.log('------------');
-
-var s = '123.456.789'.split('.');
-console.log(s);
-
-var obj = {
-    a:'aaaaa',
-    b:'bbbbb'
-};
-
-console.log(obj['']);
+for(var i=0; i<arr.length; i++){
+    console.log("'"+arr[i].replace('U+', '\\u')+"',");
+}

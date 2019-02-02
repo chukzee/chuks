@@ -20,6 +20,18 @@
   padding-top: 5px;
   padding-bottom: 5px; }
 
+.game-view-options-inline {
+  padding-top: 5px;
+  padding-bottom: 5px; }
+  .game-view-options-inline > :nth-child(1) {
+    margin-right: 5px;
+    width: auto;
+    display: inline-block; }
+  .game-view-options-inline > :nth-child(2) {
+    margin-left: 5px;
+    width: auto;
+    display: inline-block; }
+
 .game-view-options-reset {
   background: #eee;
   padding: 4px;
