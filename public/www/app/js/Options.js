@@ -345,21 +345,24 @@ Ns.Options = {
 
     _onClickLight: function (evt, data) {
         var ranage_btn = evt.target;
-        this._localSaveOption('lightIntensity', ranage_btn.value);
+        this.lightIntensity = ranage_btn.value;
+        this._localSaveOption('lightIntensity', this.lightIntensity);
         
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_LIGHT_INTENSITY_CHANGE);
     },
 
     _onClickSound: function (evt, data) {
         var check_btn = evt.target;
-        this._localSaveOption('isSound', check_btn.checked);
+        this.isSound = check_btn.checked;
+        this._localSaveOption('isSound', this.isSound);
         
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE);
     },
 
     _onClickDragPiece: function (evt, data) {
         var check_btn = evt.target;
-        this._localSaveOption('isDragPiece', check_btn.checked);
+        this.isDragPiece = check_btn.checked;
+        this._localSaveOption('isDragPiece', this.isDragPiece);
         
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_DRAG_PIECE_CHANGE);
     },
