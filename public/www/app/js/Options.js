@@ -17,7 +17,7 @@ Ns.Options = {
     DEFAULT_DRAUGHTS_BOARD_FRAME: '', //TODO
     DEFAULT_DRAUGHTS_BOARD_FLOOR: '', //TODO
 
-    DEFAULT_LIGHT_INTENSITY: 50,//in percent
+    DEFAULT_LIGHT_INTENSITY: 50, //in percent
     DEFAUTLT_IS_SOUND: true,
 
     chessPiece2d: null,
@@ -36,6 +36,10 @@ Ns.Options = {
     isSound: null,
 
     constructor: function () {
+        this.init();
+    },
+
+    init: function () {
 
         this.chessPiece2d = this._localGetOption('chessPiece2d');
         if (this.chessPiece2d === null) {
@@ -101,7 +105,7 @@ Ns.Options = {
     },
 
     content: function (match, id_obj) {
-
+        this.init();
         var me = this;
         Main.tpl.template({
             tplUrl: 'game-view-options.html',
@@ -113,8 +117,8 @@ Ns.Options = {
             afterReplace: function (el, data) {
                 document.getElementById(id_obj.view_body_id).innerHTML = el.outerHTML;
 
-                $(document.body).find('div[data-game]').each(function () {
-                    if (this.dataset.game !== Ns.ui.UI.selectedGame) {
+                $(document.body).find('div[data-game-option]').each(function () {
+                    if (this.dataset.gameOption !== Ns.ui.UI.selectedGame) {
                         $(this).hide();
                     }
                 });
@@ -137,9 +141,9 @@ Ns.Options = {
                 Main.click(o.el_draughts_board_floor, data, me._onClickDraughtsBoardFloor.bind(me));
 
                 Main.click(o.el_light, data, me._onClickLight.bind(me));
-                Main.click(o.el_sound, data, me._onClickSound.bind(me));
+                Main.dom.addListener(o.el_sound, 'click', data, me._onClickSound.bind(me));//important! do not use Main.click  -> not working for checkbox because of maybe touchend event used internally for mobile device
 
-                var el_reset = document.getElementById('game_view_option_reset');
+                var el_reset = document.getElementById('game_view_options_reset');
                 Main.click(el_reset, data, me._onClickReset.bind(me));
 
             }
@@ -216,6 +220,7 @@ Ns.Options = {
         this.chessPiece2d = theme;
 
         this._localSaveOption('chessPiece2d', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE);
     },
 
     _onClickDraughtsPiece2d: function (evt, data) {
@@ -227,6 +232,7 @@ Ns.Options = {
         this.draughtsPiece2d = theme;
 
         this._localSaveOption('draughtsPiece2d', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE);
     },
 
     _onClickChessPiece3d: function (evt, data) {
@@ -238,7 +244,7 @@ Ns.Options = {
         this.chessPiece3d = theme;
 
         this._localSaveOption('chessPiece3d', theme);
-
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_3D_CHANGE);
     },
 
     _onClickDraughtsPiece3d: function (evt, data) {
@@ -250,6 +256,7 @@ Ns.Options = {
         this.draughtsPiece3d = theme;
 
         this._localSaveOption('draughtsPiece3d', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_3D_CHANGE);
     },
 
     _onClickChessBoardTop: function (evt, data) {
@@ -261,7 +268,7 @@ Ns.Options = {
         this.chessBoardTop = theme;
 
         this._localSaveOption('chessBoardTop', theme);
-
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE);
     },
 
     _onClickDraughtsBoardTop: function (evt, data) {
@@ -273,6 +280,7 @@ Ns.Options = {
         this.draughtsBoardTop = theme;
 
         this._localSaveOption('draughtsBoardTop', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE);
     },
 
     _onClickChessBoardFrame: function (evt, data) {
@@ -284,6 +292,7 @@ Ns.Options = {
         this.chessBoardFrame = theme;
 
         this._localSaveOption('chessBoardFrame', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_FRAME_CHANGE);
 
     },
 
@@ -296,6 +305,7 @@ Ns.Options = {
         this.draughtsBoardFrame = theme;
 
         this._localSaveOption('draughtsBoardFrame', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_FRAME_CHANGE);
 
     },
 
@@ -308,6 +318,7 @@ Ns.Options = {
         this.chessBoardFloor = theme;
 
         this._localSaveOption('chessBoardFloor', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_FLOOR_CHANGE);
 
     },
 
@@ -320,36 +331,44 @@ Ns.Options = {
         this.draughtsBoardFloor = theme;
 
         this._localSaveOption('draughtsBoardFloor', theme);
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_FLOOR_CHANGE);
 
     },
 
     _onClickLight: function (evt, data) {
-
+        var ranage_btn = evt.target;
+        this._localSaveOption('lightIntensity', ranage_btn.value);
+        
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_LIGHT_INTENSITY_CHANGE);
     },
 
     _onClickSound: function (evt, data) {
         var check_btn = evt.target;
         this._localSaveOption('isSound', check_btn.checked);
+        
+        Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE);
     },
 
     _els: function () {
 
         var obj = {};
         //for chess
-        obj.el_chess_piece_2d = document.querySelector('div[data-chess-piece="2d"]');
-        obj.el_chess_piece_3d = document.querySelector('div[data-chess-piece="3d"]');
-        obj.el_chess_board_top = document.querySelector('div[data-chess-board="top"]');
-        obj.el_chess_board_frame = document.querySelector('div[data-chess-board="frame"]');
-        obj.el_chess_board_floor = document.querySelector('div[data-chess-board="floor"]');
+        var chess_option = $('div[data-game-option="chess"]');
+        obj.el_chess_piece_2d = chess_option[0].querySelector('div[data-piece="2d"]');
+        obj.el_chess_piece_3d = chess_option[0].querySelector('div[data-piece="3d"]');
+        obj.el_chess_board_top = chess_option[1].querySelector('div[data-board="top"]');
+        obj.el_chess_board_frame = chess_option[1].querySelector('div[data-board="frame"]');
+        obj.el_chess_board_floor = chess_option[2].querySelector('div[data-board="floor"]');
 
         //for draughts
-        obj.el_draughts_piece_2d = document.querySelector('div[data-draughts-piece="2d"]');
-        obj.el_draughts_piece_3d = document.querySelector('div[data-draughts-piece="3d"]');
-        obj.el_draughts_board_top = document.querySelector('div[data-draughts-board="top"]');
-        obj.el_draughts_board_frame = document.querySelector('div[data-draughts-board="frame"]');
-        obj.el_draughts_board_floor = document.querySelector('div[data-draughts-board="floor"]');
+        var draughts_option = $('div[data-game-option="draughts"]');
+        obj.el_draughts_piece_2d = draughts_option[0].querySelector('div[data-piece="2d"]');
+        obj.el_draughts_piece_3d = draughts_option[0].querySelector('div[data-piece="3d"]');
+        obj.el_draughts_board_top = draughts_option[1].querySelector('div[data-board="top"]');
+        obj.el_draughts_board_frame = draughts_option[1].querySelector('div[data-board="frame"]');
+        obj.el_draughts_board_floor = draughts_option[2].querySelector('div[data-board="floor"]');
 
-        obj.el_light = document.querySelector('div[data-light="intensity"]');
+        obj.el_light = document.querySelector('input[data-light="intensity"]');
         obj.el_sound = document.getElementById('game_view_option_checkbox_slide_id');
 
         return obj;
@@ -361,7 +380,7 @@ Ns.Options = {
     },
 
     _setOptions: function (o, reset) {
-        
+
         if (reset) {
             this.chessPiece2d = this.DEFAULT_CHESS_PIECE_2D;
             this.chessPiece3d = this.DEFAULT_CHESS_PIECE_3D;
@@ -374,7 +393,7 @@ Ns.Options = {
             this.draughtsBoardTop = this.DEFAULT_DRAUGHTS_BOARD_TOP;
             this.draughtsBoardFrame = this.DEFAULT_DRAUGHTS_BOARD_FRAME;
             this.draughtsBoardFloor = this.DEFAULT_DRAUGHTS_BOARD_FLOOR;
-            
+
             this.isSound = this.DEFAUTLT_IS_SOUND;
             this.lightIntensity = this.DEFAULT_LIGHT_INTENSITY;
         }
@@ -394,43 +413,54 @@ Ns.Options = {
         this._preSelectHoziListItemTheme(this.draughtsBoardFloor, o.el_draughts_board_floor);
 
 
-        //TODO - preselect light intensity
+        //preselect light intensity
+        o.el_light.value = this.lightIntensity;
 
         //preselect sound
         o.el_sound.checked = this.isSound;
-        
-        if(reset){
+
+        if (reset) {
             this._localSaveOption('chessPiece2d', this.chessPiece2d);
             this._localSaveOption('chessPiece3d', this.chessPiece3d);
             this._localSaveOption('chessBoardTop', this.chessBoardTop);
             this._localSaveOption('chessBoardFrame', this.chessBoardFrame);
             this._localSaveOption('chessBoardFloor', this.chessBoardFloor);
-            
+
             this._localSaveOption('draughtsPiece2d', this.draughtsPiece2d);
             this._localSaveOption('draughtsPiece3d', this.draughtsPiece3d);
             this._localSaveOption('draughtsBoardTop', this.draughtsBoardTop);
             this._localSaveOption('draughtsBoardFrame', this.draughtsBoardFrame);
             this._localSaveOption('draughtsBoardFloor', this.draughtsBoardFloor);
-            
+
             this._localSaveOption('isSound', this.isSound);
-            this._localSaveOption('lightIntensity', this.lightIntensity);            
+            this._localSaveOption('lightIntensity', this.lightIntensity);
+            
+            //fire the events
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE);
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_3D_CHANGE);
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE);
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_FRAME_CHANGE);
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_BOARD_FLOOR_CHANGE);
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE);
+            Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_LIGHT_INTENSITY_CHANGE);
+
         }
-        
+
     },
 
-    get2DChessPieceThemeUrl: function (pce) {
-        return "../resources/games/chess/2D/pieces/" + this.chessPiece2d + "/" + pce.color + pce.type + ".png";
+    get2DChessPieceTheme: function () {
+        return this.chessPiece2d;
     },
 
-    get2DDraughtsPieceThemeUrl: function (pce) {//TODO
+    get2DDraughtsPieceTheme: function (pce) {//TODO
         return;
     },
 
-    get3DChessPieceThemeUrl: function () {
+    get3DChessPieceTheme: function () {
         //TODO
     },
 
-    get3DDraughtsPieceThemeUrl: function (pce) {//TODO
+    get3DDraughtsPieceTheme: function (pce) {//TODO
         return;
     },
 
@@ -463,7 +493,7 @@ Ns.Options = {
     },
 
     getLightIntensity: function () {
-
+        return this.lightIntensity;
     },
 
 };

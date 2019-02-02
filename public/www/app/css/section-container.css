@@ -47,7 +47,8 @@ and open the template in the editor.
   height: 100%;
   background: #f6f6f6;
   padding: 5px;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  overflow: auto; }
 
 .game9ja-section-container > div {
   width: 100% !important;

@@ -15,7 +15,25 @@ and open the template in the editor.
             <div class="game9ja-chat-body" data-chat="body">        
                 <!-- received and sent messages go here-->
             </div> 
-            <div class="game9ja-message-input">
+            <div class="game9ja-message-input">     
+                
+                <div data-pop="reply"><!--reply-->
+                    <span>
+                        <span data-chat="replied-full-name"></span>
+                        <i class="fa fa-close" data-close-btn="reply"></i>
+                    </span>              
+                    <div data-chat="replied-message"></div>
+                </div>
+                
+                <div data-pop="emoji"><!--emoji-->
+                    <span>
+                        <span data-chat="emoji-tab-1">Smiley</span>
+                        <span data-chat="emoji-tab-2">Activity</span>
+                        <span data-chat="emoji-tab-3">Misc</span>
+                        <i class="fa fa-close" data-close-btn="emoji"></i>
+                    </span>
+                    <div data-chat="emoji-list"></div>
+                </div>
                 <div>
                     <div data-chat="emoji"><i class="fa fa-smile-o"></i> </div>
                     <div>

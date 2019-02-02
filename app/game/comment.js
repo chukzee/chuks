@@ -83,6 +83,62 @@ class Comment extends   WebApplication {
         return 'Successful';
     }
 
+    async _getRepliedComments(comments) {
+
+        var replied_arr = [];
+        
+        if (!Array.isArray(comments)) {
+            return replied_arr;
+        }
+
+        var missing_replied_ids = [];
+        
+
+        for (var i = 0; i < comments.length; i++) {
+            var c = comments[i];
+            if (c.msg_replied_id) {
+                var found = false;
+                for (var k = 0; k < comments.length; k++) {
+                    if (comments[k].msg_id === c.msg_replied_id) {
+                        if (replied_arr.indexOf(comments[k]) === -1) {
+                            replied_arr.push(comments[k]);
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    missing_replied_ids.push(c.msg_replied_id);
+                }
+            }
+        }
+
+        var query = {
+            $or: []
+        };
+
+        if (missing_replied_ids.length > 0) {
+            for (var i = 0; i < missing_replied_ids.length; i++) {
+                var q = {
+                    msg_id: missing_replied_ids[i]
+                };
+                query.$or.push(q);
+            }
+
+            var c = this.sObj.db.collection(this.sObj.col.comments);
+            
+            var rep_msgs = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
+                    .toArray();
+
+            if (!rep_msgs && rep_msgs.length > 0) {
+                replied_arr = replied_arr.concat(rep_msgs);//append the messages
+            }
+
+        }
+        
+        return replied_arr;
+    }
+
     /**
      * Get the comments of the specified game id
      * 
@@ -130,7 +186,8 @@ class Comment extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            comments: []
+            comments: [],
+            replied_comments: []
         };
 
         if (!total) {
@@ -145,6 +202,7 @@ class Comment extends   WebApplication {
 
         data.comments = await this._normalizeComments(user_id, data.comments);
 
+        data.replied_comments = await this._getRepliedComments(data.comments);
 
         return data;
     }
@@ -194,7 +252,8 @@ class Comment extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            comments: []
+            comments: [],
+            replied_comments: []
         };
 
         if (!total) {
@@ -208,6 +267,9 @@ class Comment extends   WebApplication {
                 .toArray();
 
         data.comments = await this._normalizeComments(user_id, data.comments);
+        
+        data.replied_comments = await this._getRepliedComments(data.comments);
+
         if(this.lastError){
             return this.error(this.lastError);
         }

@@ -8,10 +8,13 @@ Ns.GameViewB = {
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
     rightPanelTitleComp: null,
+    rightPanelHTML: null,
 
     afterRightContentHide: function () {
         if (Ns.GameViewB.rightPanelTitleComp) {
             Ns.GameViewB.rightPanelTitleComp.innerHTML = '';
+            document.getElementById('game-view-b-right-content').outerHTML = Ns.GameViewB.rightPanelHTML;
+            Ns.ui.GamePanel.rightContentName = '';
         }
     },
     showRightContent: function (data, title, func) {
@@ -20,12 +23,12 @@ Ns.GameViewB = {
             Ns.GameViewB.hideRightContent();
         });
         
-        Main.card.back('game-view-right-panel-header');//clear any card on the header
+        Main.card.back('game-view-b-right-panel-header');//clear any card on the header
 
-        document.getElementById("game-view-right-panel-body").innerHTML = '';
+        document.getElementById("game-view-b-right-panel-body").innerHTML = '';
 
-        Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
-        Ns.GameView.rightPanelTitleComp.innerHTML = title;
+        Ns.GameViewB.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
+        Ns.GameViewB.rightPanelTitleComp.innerHTML = title;
         var el = document.getElementById('game-view-b-right-content');
         var is_visible = $(el).is(':visible');
 
@@ -59,6 +62,8 @@ Ns.GameViewB = {
     Content: function (data) {
 
         Ns.ui.GamePanel.rightContentName = '';
+
+        Ns.GameViewB.rightPanelHTML = document.getElementById('game-view-b-right-content').outerHTML;
 
         var panel_main = document.getElementById('game-view-b-main');
         var board_el = document.getElementById('game-view-b-main-board');

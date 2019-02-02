@@ -19,7 +19,7 @@ and open the template in the editor.
 
         <div class="game9ja-section-container">
             <!--for chess start--->
-            <div data-game="chess">
+            <div data-game-option="chess">
                 <div class="game-view-options-title">Piece</div>
                 <div class="game9a-horizontal-list" data-piece="2d">
                     <!--2D pieces-->
@@ -35,7 +35,7 @@ and open the template in the editor.
                 </div>
             </div>
 
-            <div data-game="chess">
+            <div data-game-option="chess">
                 <div class="game-view-options-title">Board</div>
 
                 <div class="game9a-horizontal-list" data-board="top">
@@ -59,7 +59,7 @@ and open the template in the editor.
                 </div>    
             </div>
 
-            <div data-game="chess">
+            <div data-game-option="chess">
                 <div class="game-view-options-title">Floor</div>
 
                 <div class="game9a-horizontal-list" data-board="floor">
@@ -70,7 +70,7 @@ and open the template in the editor.
             <!-- for chess end--->
             
             <!-- for draughts start--->
-            <div data-game="draughts">
+            <div data-game-option="draughts">
                 <div class="game-view-options-title">Piece</div>
                 <div class="game9a-horizontal-list" data-piece="2d">
                     <!--2D pieces-->
@@ -86,7 +86,7 @@ and open the template in the editor.
                 </div>
             </div>
 
-            <div data-game="draughts">
+            <div data-game-option="draughts">
                 <div class="game-view-options-title">Board</div>
 
                 <div class="game9a-horizontal-list" data-board="top">
@@ -110,7 +110,7 @@ and open the template in the editor.
                 </div>    
             </div>
 
-            <div data-game="draughts">
+            <div data-game-option="draughts">
                 <div class="game-view-options-title">Floor</div>
 
                 <div class="game9a-horizontal-list" data-board="floor">
@@ -124,16 +124,14 @@ and open the template in the editor.
                 <div class="game-view-options-pad">
                     <div class="game-view-options-title">Light</div>
 
-                    <div data-light="intensity">
-                        light slider goes here
-                    </div> 
+                    <input type="range" data-light="intensity" />
 
                 </div>
                 <div  class="game-view-options-pad">
                     <div class="game-view-options-title">Sound</div>
 
                     <div class="game9a-checkbox-slide">  
-                        <input type="checkbox" value="None"  name="check" id="game_view_option_checkbox_slide_id" checked />
+                        <input type="checkbox" value="None"  name="check" id="game_view_option_checkbox_slide_id" checked/>
                         <label for="game_view_option_checkbox_slide_id"></label>
                     </div>
                 </div>
@@ -141,7 +139,7 @@ and open the template in the editor.
             </div>
 
             <div>
-                <div class="game-view-options-reset">Reset</div>                        
+                <div class="game-view-options-reset" id="game_view_options_reset">Reset</div>                        
             </div>
         </div>
     </body>

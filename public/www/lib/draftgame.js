@@ -1,11 +1,14 @@
-//REMIND!!! CONSIDER INVERTED BOARD AND SET THE VARIANTS
+
 var draughts = {};
 
 var Draughts = draughtsFn.bind(draughts); //bind the 'this' of draughtsFn to draughts - this technique is twice faster than not using the bind method - I have tested it!!!
 
 function draughtsFn(variant) {
 
-
+    //12 x 12 board is supported only for human to human players and not for robot.
+    //12 x 12 board is not supported by the game engine (robot) because the bit value max is 127 and so storing bit move is very difficult if not impossible for maximum performance 
+    //with 12 x 12 board (ie 144 squares which is greate than 127). so we only support 10 x 10 and 8 x 8 for robot.
+    
     this.MAX_VALUE = 1000000;
     this.turn = true; //white
     this.board = [];
@@ -37,6 +40,7 @@ function draughtsFn(variant) {
 
     var REVERSE_DIRECTION = [];
     BoardPieceCount = {//these are the supported for now since FROM_SQUARE_MASK is max 127
+        12: 60, //12 x 12 = 60 pieces - only supported for human to human player. Not supported by the game engine (robot)
         10: 40, //10 x 10 = 40 pieces
         8: 24 // 8 x 8    = 24 pieces
     };
@@ -2016,7 +2020,7 @@ function draughtsFn(variant) {
         var w_count = 0, wk_count = 0, b_count = 0, bk_count = 0;
 
         for (var i = 0; i < this.pieces.length; i++) {
-            var pce = pieces[i];
+            var pce = this.pieces[i];
             if (pce.sqLoc === this.OFF_BOARD) {
                 continue;
             }
@@ -2064,7 +2068,7 @@ function draughtsFn(variant) {
         //get possible move of the side to play if not found the other player wins
         var has_legal_move = false;
         for (var i = 0; i < this.pieces.length; i++) {
-            var pce = pieces[i];
+            var pce = this.pieces[i];
             if (pce.white !== this.turn) {
                 continue;
             }
@@ -2508,6 +2512,12 @@ function draughtsFn(variant) {
     }
 
     this.Robot = function (boardPositonObj, depth) {
+
+        if (this.SIZE > 10) {
+            //12 x 12 is not supported by the game engine because the bit value max is 127 and so storing bit move very difficult if not impossible 
+            //with 12 x 12 board (ie 144 square which is greate than 127). so we only support 10 x 10 and 8 x 8.
+            throw Error(this.SIZE + ' x ' + this.SIZE + ' board is only supported for human to human players and not for robot! Please use 10 x 10 or 8 x 8 instead.');
+        }
 
         if (depth) {
             draughts.DEPTH = depth;

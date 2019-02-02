@@ -56,10 +56,6 @@ Ns.msg.AbstractChat = {
         return 'div[data-chat="body"]';
     },
 
-    getMsgScrollContainerSelector: function () {
-        return 'div[data-chat="body"]';
-    },
-
     getMsgInputSelector: function () {
         return 'textarea[data-chat="input-msg"]';
     },
@@ -70,6 +66,30 @@ Ns.msg.AbstractChat = {
 
     getMsgEmojisBottonSelector: function () {
         return 'div[data-chat="emoji"]';
+    },
+
+    getMsgRepliedFullNameSelector: function () {
+        return 'span[data-chat="replied-full-name"]';
+    },
+
+    getMsgRepliedMessageSelector: function () {
+        return 'div[data-chat="replied-message"]';
+    },
+
+    getMsgEmojiListSelector: function () {
+        return 'div[data-chat="emoji-list"]';
+    },
+
+    getMsgEmojiTabOneSelector: function () {
+        return 'span[data-chat="emoji-tab-1"]';
+    },
+
+    getMsgEmojiTabTwoSelector: function () {
+        return 'span[data-chat="emoji-tab-2"]';
+    },
+
+    getMsgEmojiTabThreeSelector: function () {
+        return 'span[data-chat="emoji-tab-3"]';
     },
 
     getMsgStatusIndicatorSelector: function () {
@@ -97,6 +117,9 @@ Ns.msg.AbstractChat = {
     },
     getResponseMsgs: function (response) {
         return response.chats;
+    },
+    getResponseRepliedMsgs: function (response) {
+        return response.replied_chats;
     },
     /**
      * @param {type} tpl_var

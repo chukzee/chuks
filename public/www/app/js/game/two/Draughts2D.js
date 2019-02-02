@@ -17,7 +17,11 @@ Ns.game.two.Draughts2D = {
         };
 
         Main.rcall.live(obj);
-
+                
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE, this.onOptionPieceChange.bind(this));
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE, this.onOptionBoardTopChange.bind(this));
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE, this.onOptionSoundChange.bind(this));
+        
     },
 
     checkGameOver: function () {
@@ -79,6 +83,14 @@ Ns.game.two.Draughts2D = {
 
     getBoardThemeUrl: function (inverted_board) {
         return Ns.Options.getDraughtsBoardThemeUrl(inverted_board);
+    },
+
+    getPieceTheme: function () {
+        return Ns.Options.get2DDraughtsPieceTheme();
+    },
+
+    setPieceAppearance: function (pceEl, piece_theme) {
+        
     },
 
     createPieceElement: function (pce, piece_theme) {

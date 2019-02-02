@@ -44,6 +44,37 @@ $tick_color: #222222;
     background : #ededde !important;
 }
 
+replied{
+    position: relative;
+    top: 0;        
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #eee;
+    color: #777;
+    border-radius: 10px;
+    padding: 5px;
+    max-height: 42px;           
+    overflow: hidden;
+    word-wrap: break-word;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+
+    >:nth-child(1){//from label
+                   margin-right: 5px;
+    }
+    >:nth-child(2){//replied full name
+                   font-weight: bold;
+    }
+    >:nth-child(3){//replied content
+                   max-height: 45px;           
+                   overflow: hidden;
+                   word-wrap: break-word;
+    }
+
+}
+
 .game9ja-chat-sent{
     position: relative;
     right: $width - 100%;
@@ -56,7 +87,10 @@ $tick_color: #222222;
     margin-top: $msg_margin;
     margin-bottom: $msg_margin;
 
-    > :nth-child(1){/*chat message*/
+    > :nth-child(1){/*user chat replied*/
+        @extend replied
+    }
+    > :nth-child(2){/*chat message*/
         position: relative;
         top : 0;
         left: 0;
@@ -65,7 +99,7 @@ $tick_color: #222222;
         white-space: pre-wrap;
         word-wrap: break-word;
     }
-    > :nth-child(2){/*chat time*/
+    > :nth-child(3){/*chat time*/
         position: absolute;
         bottom: 5px;        
         right: 10px;
@@ -90,7 +124,7 @@ $tick_color: #222222;
             left: -15px;
         }
     }
-    
+
     > .game9ja-delivered{/*message sent and delivery indicator*/
         position: relative;
         top: 0px;        
@@ -107,7 +141,7 @@ $tick_color: #222222;
             left: -15px;
         }
     }
-    
+
     > .game9ja-sent{/*message sent and delivery indicator*/
         position: relative;
         top: 0px;        
@@ -118,7 +152,7 @@ $tick_color: #222222;
             content: '\2713';
         }
     }
-    
+
     > .game9ja-not-sent{/*message sent and delivery indicator*/
         position: relative;
         top: 0px;        
@@ -143,20 +177,26 @@ $tick_color: #222222;
     margin-bottom: $msg_margin;
     color : #008800;
 
+
     > :nth-child(1){/*full name*/
         position: relative;
         top : 0;
         left: 0;
         font-size: 12px;
     }
-    > :nth-child(2){/*chat message*/
+
+    > :nth-child(2){/*user chat replied*/
+        @extend replied;
+    }
+
+    > :nth-child(3){/*chat message*/
         position: relative;
         top : 0;
         left: 0;
         font-size: 14px;
         white-space: pre-wrap;
     }
-    > :nth-child(3){/*chat time ago*/
+    > :nth-child(4){/*chat time ago*/
         width: 100%;
         font-size: 10px;
         text-align: right;

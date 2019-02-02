@@ -46,28 +46,80 @@ and open the template in the editor.
   height: 40px;
   background: #333;
   color: #eee; }
-  .game9ja-message-input > div {
+  .game9ja-message-input > :nth-child(1) {
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    margin: 0;
+    background: #eee;
+    color: #222;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+    display: none; }
+    .game9ja-message-input > :nth-child(1) > :nth-child(1) > span {
+      padding-left: 5px;
+      font-weight: bold; }
+    .game9ja-message-input > :nth-child(1) > :nth-child(1) > i {
+      position: absolute;
+      right: 5px;
+      top: 2px;
+      cursor: pointer; }
+    .game9ja-message-input > :nth-child(1) > :nth-child(2) {
+      padding: 5px;
+      max-height: 50px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: pre-wrap;
+      word-wrap: break-word; }
+  .game9ja-message-input > :nth-child(2) {
+    position: absolute;
+    bottom: 40px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    background: #fff;
+    color: #222;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+    display: none; }
+    .game9ja-message-input > :nth-child(2) > :nth-child(1) > span {
+      margin-right: 10px;
+      cursor: pointer; }
+    .game9ja-message-input > :nth-child(2) > :nth-child(1) > i {
+      position: absolute;
+      right: 5px;
+      top: 2px;
+      cursor: pointer; }
+    .game9ja-message-input > :nth-child(2) > :nth-child(2) {
+      padding: 5px;
+      height: 200px;
+      overflow: auto; }
+  .game9ja-message-input > :nth-child(3) {
     height: 40px;
     position: absolute;
     left: 0;
     right: 40px; }
-    .game9ja-message-input > div > :nth-child(1) {
+    .game9ja-message-input > :nth-child(3) > :nth-child(1) {
       height: 40px;
       position: absolute;
       left: 0;
       width: 40px;
       padding: 11px;
       box-sizing: border-box; }
-      .game9ja-message-input > div > :nth-child(1) > i {
+      .game9ja-message-input > :nth-child(3) > :nth-child(1) > i {
         font-size: 18px;
         cursor: pointer; }
-    .game9ja-message-input > div > :nth-child(2) {
+    .game9ja-message-input > :nth-child(3) > :nth-child(2) {
       height: 40px;
       position: absolute;
       left: 40px;
       right: 0;
       overflow: hidden; }
-      .game9ja-message-input > div > :nth-child(2) > textarea {
+      .game9ja-message-input > :nth-child(3) > :nth-child(2) > textarea {
         padding: 10px;
         box-sizing: border-box;
         height: 40px;
@@ -76,7 +128,7 @@ and open the template in the editor.
         border-bottom: #555 1px solid;
         overflow: hidden;
         margin: 0; }
-  .game9ja-message-input > i {
+  .game9ja-message-input > :nth-child(4) {
     height: 40px;
     position: absolute;
     font-size: 18px;

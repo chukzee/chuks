@@ -26,10 +26,11 @@ $right_panel_width_ld : 30%;
     > .game9ja-game-watch-header{
         @extend .game9ja-header;
         > :nth-child(1){ /*holding the score and the live status*/
-            margin: 0 (100% - $right_panel_width_ld)/2 - 10%; // try centering it
+            margin: 0 auto;
             width: $score_width;     
             height:  100%;
             padding: 5px;
+            //background: blue;
             @include box-sizing(border-box);
 
             > :nth-child(2){/*the actual score*/

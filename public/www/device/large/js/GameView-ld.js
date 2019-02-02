@@ -9,6 +9,7 @@ Ns.GameView = {
     afterRightContentHide: function () {
         if (Ns.GameView.rightPanelTitleComp) {
             Ns.GameView.rightPanelTitleComp.innerHTML = '';
+            Ns.ui.GamePanel.rightContentName = '';
         }
     },
     showRightContent: function (data, title, func) {

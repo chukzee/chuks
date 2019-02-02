@@ -116,6 +116,7 @@ var Main = {};
             successFn = arguments[4];
             errorFn = arguments[5];
         }
+                
         var xhttp;
         if (window.XMLHttpRequest) {
             // code for modern browsers
@@ -145,11 +146,14 @@ var Main = {};
         //rcall is the route path to all RCall requests
         var param = '';
         var headers;
+        var timeout;
+
         if (data) {
             if (Main.util.isString(data)) {
                 param = data;
             } else {
                 headers = data.headers;
+                timeout = data.timeout;
                 if (Main.util.isString(data.param)) {
                     param = data.param;
                 } else {
@@ -165,7 +169,7 @@ var Main = {};
         }
 
 
-        send(xhttp, method, url, param, headers);
+        send(xhttp, method, url, param, headers, timeout);
     }
 
     function callListeners(arr, argu) {
@@ -234,12 +238,17 @@ var Main = {};
                 argu.push(arguments[i]);
             }
             xhrReq.apply(this, argu);
-            function sendGet(xhttp, method, url, param, headers) {
+            function sendGet(xhttp, method, url, param, headers, timeout) {
                 xhttp.open(method, url + (param ? ('?' + param) : ''), true);
+                
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
-
+                
+                if(timeout > 0){
+                    xhttp.timeout = timeout;
+                }
+                
                 xhttp.send();
 
             }
@@ -253,15 +262,21 @@ var Main = {};
                 argu.push(arguments[i]);
             }
             xhrReq.apply(this, argu);
-            function sendPost(xhttp, method, url, param, headers) {
+            function sendPost(xhttp, method, url, param, headers, timeout) {
                 xhttp.open(method, url, true);
 
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
+                
                 if (!headers) {
                     xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');//default
                 }
+                
+                if(timeout > 0){
+                    xhttp.timeout = timeout;
+                }
+                
                 xhttp.send(param);
             }
         }
@@ -989,7 +1004,9 @@ var Main = {};
                                         this._errFn;
                                         this._beforeFn;
                                         this._afterFn;
-                                        this._retryFn;
+                                        this._retry;
+                                        this._timeout;
+                                        
                                         var _busy_obj = null; //yes
                                         var me = this;
 
@@ -1013,8 +1030,17 @@ var Main = {};
                                             return me;
                                         };
 
-                                        this.retry = function (fn) {
-                                            this._retryFn = fn;
+                                        this.timeout = function (param) {
+                                            this._timeout = param;
+                                            return me;
+                                        };
+                                        /**
+                                         * 
+                                         * @param {type} param can be a function or any truthy value
+                                         * @returns {MainL#4.RCall.live.MainL#4#RCall#live#L#964.promiseFn}
+                                         */
+                                        this.retry = function (param) {
+                                            this._retry = param;
                                             return me;
                                         };
 
@@ -1083,7 +1109,8 @@ var Main = {};
                                                 class: className,
                                                 method: method,
                                                 param: argu,
-                                                bind: bind
+                                                bind: bind,
+                                                timeout: promise._timeout
                                             };
 
                                             var bndRcallCallback = rcallCallback.bind(objParam);
@@ -1109,8 +1136,10 @@ var Main = {};
                                                         var err_code = response.err_code;
 
                                                         //new start
-                                                        if (Main.util.isFunc(promise._retryFn)) {
-                                                            var retry_strategy = promise._retryFn.call(bind, secondsRemainToRetry());
+                                                        if (promise._retry) {
+                                                            if (Main.util.isFunc(promise._retry)) {
+                                                                promise._retry.call(bind, secondsRemainToRetry());
+                                                            }
 
                                                             var execObjParam = this;
                                                             addRetry(execObjParam);
@@ -1224,11 +1253,11 @@ var Main = {};
             var r;
             if (arguments.length === 1) {
                 if ((r = validateSingeArg(param))) {
-                    remoteExec(r.objArr, r.callback, r.bind);
+                    remoteExec(r.objArr, r.callback, r.bind, r.timeout);
                 }
             } else {
                 if ((r = validateMultiArgs(arguments))) {
-                    remoteExec(r.objArr, r.callback, r.bind);
+                    remoteExec(r.objArr, r.callback, r.bind, r.timeout);
                 }
             }
 
@@ -1325,10 +1354,10 @@ var Main = {};
                     o_arr.push(o);
                 }
 
-                return {objArr: o_arr, callback: obj.callback, bind: obj.bind};
+                return {objArr: o_arr, callback: obj.callback, bind: obj.bind, timeout: obj.timeout};
             }
 
-            function remoteExec(objArr, callback, bind) {
+            function remoteExec(objArr, callback, bind, timeout) {
 
                 if (rio.checkConnect()) {
                     rio.send(objArr, successFn, errorFn);
@@ -1337,7 +1366,8 @@ var Main = {};
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        param: JSON.stringify({action: 'remote_call', data: objArr})
+                        param: JSON.stringify({action: 'remote_call', data: objArr}),
+                        timeout: timeout
                     };
 
                     Main.ajax.post('rcall', data, successFn, errorFn);
@@ -4953,8 +4983,8 @@ var Main = {};
         }
 
         function isVert(x, y) {
-            var deg = Math.atan(Math.abs(y/x)) * 180 / Math.PI;
-            if(deg > 10){//TESTING!!!           
+            var deg = Math.atan(Math.abs(y / x)) * 180 / Math.PI;
+            if (deg > 10) {//TESTING!!!           
                 console.log('veritcal ', deg);
             }
             return deg > 10;
@@ -5013,11 +5043,11 @@ var Main = {};
             var end_y = evt.touches[0].pageY;
             var change_x = tab_touch_start_x - end_x;
             var change_y = tab_touch_start_y - end_y;
-            
+
             if (isVert(change_x, change_y)) {
                 return;
             }
-            
+
             tab_touch_end_x = end_x;
             tab_touch_end_y = end_y;
 

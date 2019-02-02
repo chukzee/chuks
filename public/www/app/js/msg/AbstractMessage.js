@@ -8,11 +8,15 @@ Ns.msg.AbstractMessage = {
     view_body: null,
     msgList: [],
     _unsentMsgList: [],
+    repliedMsgList: [],
     selectionMode: false,
     _isViewReady: false,
     DOM_EXTRA_FIELD_PREFIX: '-dom-extra-field',
+    DOM_EXTRA_FIELD_REPLY_MSG: 'reply-msg-dom-extra-field',
     MSG_SAVE_KEY: '_MSG_SAVE_KEY',
+    REPLIED_MSG_SAVE_KEY: '_REPLIED_MSG_SAVE_KEY',
     UNSENT_MSG_SAVE_KEY: '_UNSENT_MSG_SAVE_KEY',
+    EMOJI_TAB_BORDER_BOTTOM: '#222 solid 1px',
     retryWaitDuartion: 1,
     retrySendTimerID: null,
     _waitingNextTick: false,
@@ -123,6 +127,51 @@ Ns.msg.AbstractMessage = {
      * Overridden by subclass
      * @returns {undefined}
      */
+    getMsgRepliedFullNameSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getMsgRepliedMessageSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getMsgEmojiListSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getMsgEmojiTabOneSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getMsgEmojiTabTwoSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getMsgEmojiTabThreeSelector: function () {
+    },
+
+    getMsgStatusIndicatorSelector: function () {
+    },
+
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
     getMsgStatusIndicatorSelector: function () {
     },
 
@@ -185,6 +234,13 @@ Ns.msg.AbstractMessage = {
     getResponseMsgs: function () {
     },
 
+    /**
+     * Overridden by subclass
+     * @returns {undefined}
+     */
+    getResponseRepliedMsgs: function () {
+    },
+
     _validate: function () {
         if (!this.view_body) {
             throw Error('Invalid setup - ' + this.getMsgType() + ' view body cannot be null. ensure to set view body id.');
@@ -206,7 +262,10 @@ Ns.msg.AbstractMessage = {
         this.initContent(data, argu1);
         this.selectionMode = false;
         this._isViewReady = false;
+        var last_code = this._code;
         this._code = this.getCode();
+        
+        var isSameView = last_code === this._code;
 
         this.view = document.getElementById(this.getViewID());
         if (!this.view) {
@@ -220,10 +279,16 @@ Ns.msg.AbstractMessage = {
 
 
         var msg_body = $(this.view_body).find(this.getMsgBodySelector())[0];
-        msg_body.innerHTML = ''; //clear the previous messages
+        if (msg_body) {
+            msg_body.innerHTML = ''; //clear the previous messages
+        }
 
-        if (this.msgList.length === 0) {
+        if (!isSameView || (isSameView && this.msgList.length === 0)) {
             this.msgList = this._localGetMessages();
+        }
+
+        if (!isSameView || (isSameView && this.repliedMsgList.length === 0)) {
+            this.repliedMsgList = this._localGetRepliedMessages();
         }
 
         if (this.refStateIndex === 1) {//the first time this view is loaded
@@ -344,6 +409,10 @@ Ns.msg.AbstractMessage = {
                     }
                     var msgs = me.getResponseMsgs(res);
 
+                    var replied_msgs = me.getResponseRepliedMsgs(res);
+                    me.repliedMsgList = replied_msgs;
+                    me._localSaveRepliedMessages();
+
 
                     me.set(msgs);
 
@@ -376,6 +445,14 @@ Ns.msg.AbstractMessage = {
                 + this.MSG_SAVE_KEY, JSON.stringify(this.msgList));
     },
 
+    _localSaveRepliedMessages: function () {
+        window.localStorage.setItem(this.getSaveKeyPrefix()
+                + Ns.Util.DELIMITER
+                + this.getCode()
+                + Ns.Util.DELIMITER
+                + this.REPLIED_MSG_SAVE_KEY, JSON.stringify(this.repliedMsgList));
+    },
+
     _localSaveUnsentMessages: function () {
         window.localStorage.setItem(this.getSaveKeyPrefix()
                 + Ns.Util.DELIMITER
@@ -386,6 +463,10 @@ Ns.msg.AbstractMessage = {
 
     _localGetMessages: function () {
         return this._localGet(this.MSG_SAVE_KEY);
+    },
+
+    _localGetRepliedMessages: function () {
+        return this._localGet(this.REPLIED_MSG_SAVE_KEY);
     },
 
     _localGetUnsentMessages: function () {
@@ -532,12 +613,14 @@ Ns.msg.AbstractMessage = {
                     me._incrementSelectionCount.call(me);
                 }
                 var back_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="back"]')[0];
+                var reply_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="reply"]')[0];
                 var share_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="share"]')[0];
                 var copy_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="copy"]')[0];
                 var delete_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="delete"]')[0];
 
                 Main.click(back_btn, me, me._closeSelection);
 
+                Main.click(reply_btn, me, me.replySelectedContent);
                 Main.click(share_btn, me, me.shareSelectedContent);
                 Main.click(copy_btn, me, me.copySelectedContent);
                 Main.click(delete_btn, me, me.deleteSelectedContent);
@@ -558,16 +641,25 @@ Ns.msg.AbstractMessage = {
         }
 
         if (me.selectionMode) {
+            var count;
             if (!$(target).hasClass(me.getMsgSelectionClassName())) {
                 $(target).addClass(me.getMsgSelectionClassName());
-                me._incrementSelectionCount.call(me);
+                count = me._incrementSelectionCount.call(me);
             } else {//deselect
                 $(target).removeClass(me.getMsgSelectionClassName());
-                var count = me._decrementSelectionCount.call(me);
+                count = me._decrementSelectionCount.call(me);
                 count -= 0;//implicity convert to numeric
                 if (count === 0) {
                     me._closeSelection(evt, me);
                 }
+            }
+
+            var reply_btn = $('#' + me.getViewHeaderID()).find('i[data-selection-header="reply"]')[0];
+
+            if (count === 1) {
+                $(reply_btn).show();
+            } else {
+                $(reply_btn).hide();
             }
         }
 
@@ -614,10 +706,11 @@ Ns.msg.AbstractMessage = {
         var text = '';
         var el_id = me.view_body.id;
         var dom_extra_field = me.domExtraFieldPrefix(el_id);
-
+        var msgs = [];
         for (var i = 0; i < count; i++) {
             var child = selected_children[i];
             var msg = child[dom_extra_field];
+            msgs.push(msg);
             var content = '';
             if (count > 1) {
                 var full_name = msg.user ? msg.user.full_name : msg.user.user_id;
@@ -631,7 +724,7 @@ Ns.msg.AbstractMessage = {
             text += content + (i === count - 1 ? '' : '\n');
         }
 
-        return {count: count, text: text};
+        return {count: count, text: text, msgs: msgs};
     },
 
     shareSelectedContent: function (evt, _this) {
@@ -641,6 +734,17 @@ Ns.msg.AbstractMessage = {
         }
 
         alert('TODO - shareSelectedContent');
+    },
+
+    replySelectedContent: function (evt, _this) {
+        var s = _this._formatSelection(evt, _this);
+        if (s.count === 0) {
+            return;
+        }
+
+
+        _this.showReply(evt, s.msgs[0]);
+        _this._closeSelection(evt, _this);
     },
 
     copySelectedContent: function (evt, _this) {
@@ -898,9 +1002,40 @@ Ns.msg.AbstractMessage = {
                 var txt_input = $(me.view_body).find(me.getMsgInputSelector())[0];
                 var emoji = $(me.view_body).find(me.getMsgEmojisBottonSelector())[0];
 
+                var close_emoji = $(me.view_body).find('i[data-close-btn="emoji"]')[0];
+                var close_reply = $(me.view_body).find('i[data-close-btn="reply"]')[0];
+
+                var pop_emoji = $(me.view_body).find('div[data-pop="emoji"]')[0];
+                var pop_reply = $(me.view_body).find('div[data-pop="reply"]')[0];
+
+                var emoji_tab1_el = $(me.view_body).find(me.getMsgEmojiTabOneSelector())[0];
+                var emoji_tab2_el = $(me.view_body).find(me.getMsgEmojiTabTwoSelector())[0];
+                var emoji_tab3_el = $(me.view_body).find(me.getMsgEmojiTabThreeSelector())[0];
+
+                var emoji_list_el = $(me.view_body).find(me.getMsgEmojiListSelector())[0];
+
+                var eobj = {
+                    pop_emoji: pop_emoji,
+                    emoji_list_el: emoji_list_el,
+                    emoji_tab1_el: emoji_tab1_el,
+                    emoji_tab2_el: emoji_tab2_el,
+                    emoji_tab3_el: emoji_tab3_el
+                }
+
                 Main.click(btn_send, {txt_input: txt_input}, me.sendMessage.bind(me));
 
-                Main.click(emoji, {_this: me}, me._showEmojis);
+                Main.click(emoji, eobj, me.showEmojis.bind(me));
+
+                Main.click(emoji_tab1_el, eobj, me._onEmojiTabOneClick.bind(me));
+
+                Main.click(emoji_tab2_el, eobj, me._onEmojiTabTwoClick.bind(me));
+
+                Main.click(emoji_tab3_el, eobj, me._onEmojiTabThreeClick.bind(me));
+
+                Main.click(close_emoji, pop_emoji, me.closeEmojis.bind(me));
+
+                Main.click(close_reply, pop_reply, me.closeReply.bind(me));
+
 
             }
         });
@@ -914,7 +1049,6 @@ Ns.msg.AbstractMessage = {
      * @returns {undefined}
      */
     add: function (msgs, replace_element) {
-
 
         var is_showing = this.isShowing();
 
@@ -933,8 +1067,27 @@ Ns.msg.AbstractMessage = {
             msgs = [msgs];//convert to array
         }
 
+
+
         for (var i = 0; i < msgs.length; i++) {
             this.setMsgCode(msgs[i]);
+            
+            var msg_replied_id = msgs[i].msg_replied_id;
+            if (msg_replied_id) {//store the replied message if not already stored
+                var rpl_msg = this.repliedMsgList.find(function (m) {
+                    return msg_replied_id === m.msg_id;
+                });
+
+                if (!rpl_msg) {
+                    rpl_msg = this.msgList.find(function (m) {
+                        return msg_replied_id === m.msg_id;
+                    });
+                    if(rpl_msg){
+                        this.repliedMsgList.push(rpl_msg);
+                        this._localSaveRepliedMessages();
+                    }
+                }
+            }
         }
 
         //avoid duplicate addition
@@ -1010,6 +1163,13 @@ Ns.msg.AbstractMessage = {
             }
         }
 
+        for (var i = 0; i < me.repliedMsgList.length; i++) {
+            var u_id = me.repliedMsgList[i].user_id;
+            if (user_ids.indexOf(u_id) < 0) {
+                user_ids.push(u_id);
+            }
+        }
+
         Ns.view.UserProfile.getUsersInfo(user_ids, function (users) {
             me._handleMsgs(msgs, replace_elements, users);
         });
@@ -1020,6 +1180,19 @@ Ns.msg.AbstractMessage = {
     _handleMsgs: function (msgs, replace_elements, users) {
 
         var me = this;
+        var replied_msgs = {};
+        for (var i = 0; i < me.repliedMsgList.length; i++) {
+            var rpl_msg = me.repliedMsgList[i];
+            if (users) {
+                for (var k = 0; k < users.length; k++) {
+                    if (users[k].user_id === rpl_msg.user_id) {
+                        rpl_msg.user = users[k]; //set the user object on the msg object
+                        break;
+                    }
+                }
+            }
+            replied_msgs[rpl_msg.msg_id] = rpl_msg;
+        }
 
         for (var index = 0; index < msgs.length; index++) {
 
@@ -1041,9 +1214,9 @@ Ns.msg.AbstractMessage = {
             }
             var is_sent_msg = msg_user_id === Ns.view.UserProfile.appUser.user_id;
             if (is_sent_msg) {
-                me._addSent.call(me, c, r);
+                me._addSent.call(me, c, r, replied_msgs);
             } else {
-                me._addReceived.call(me, c, r);
+                me._addReceived.call(me, c, r, replied_msgs);
             }
         }
     },
@@ -1055,7 +1228,14 @@ Ns.msg.AbstractMessage = {
 
         if (evt) {
             var txt_input = data.txt_input;
-            var msg_replied_id = this.msg_replied_id;
+            var pop_reply = $(me.view_body).find('div[data-pop="reply"]')[0];
+
+            var msg_replied_id;
+            if ($(pop_reply).is(':visible')) {
+                var rpl_msg = pop_reply[this.DOM_EXTRA_FIELD_REPLY_MSG];
+                msg_replied_id = rpl_msg.msg_id;
+                this.closeReply(evt, pop_reply);
+            }
             content = txt_input.value; //textarea
             if (content === '') {
                 return; //do nothing
@@ -1069,7 +1249,6 @@ Ns.msg.AbstractMessage = {
                 content: content,
                 sending_msg_id: Main.util.serilaNo()
             };
-
 
             me._unsentMsgList.push(msgObj);
             me._addSending.call(me, msgObj);
@@ -1088,11 +1267,8 @@ Ns.msg.AbstractMessage = {
         var me = this;
 
         var promise;
-        if (msgObj.msg_replied_id) {
-            promise = me.rcallReplyMessage(msgObj.content, msgObj.msg_replied_id, bindFn);
-        } else {
-            promise = me.rcallSendMessage(msgObj.content, bindFn);
-        }
+
+        promise = me.rcallSendMessage(msgObj.content, msgObj.msg_replied_id, bindFn);
 
         promise.retry(retryFn)//force to retry is it is connection problem
                 .get(getFn)
@@ -1149,20 +1325,7 @@ Ns.msg.AbstractMessage = {
     rcallSendMessage: function () {
     },
 
-    /**
-     * Relevant subclass must override this method and return the promise of the rcall<br>
-     * <br>
-     * example: <br>
-     *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
-     *      }<br>
-     * <br>
-     * @returns {undefined}
-     */
-    rcallReplyMessage: function () {
-    },
-
-    _addReceived: function (msg, replace_element) {
+    _addReceived: function (msg, replace_element, replied_msgs) {
         var me = this;
 
         Main.tpl.template({
@@ -1186,6 +1349,24 @@ Ns.msg.AbstractMessage = {
                     return data.user ? data.user.full_name : data.user_id;
                 }
 
+                if (data.msg_replied_id && replied_msgs) {
+                    var rplMsg = replied_msgs[data.msg_replied_id];
+                    if (tpl_var === 'replied_full_name') {
+                        if (!rplMsg) {
+                            return '';
+                        }
+                        return rplMsg.user ? rplMsg.user.full_name : rplMsg.user_id;
+                    }
+
+                    if (tpl_var === 'replied_content') {
+                        if (!rplMsg) {
+                            return '';
+                        }
+                        return rplMsg.content ? rplMsg.content : rplMsg.msg;
+                    }
+
+                }
+
                 if (tpl_var === 'content') {
                     return data.content ? data.content : data.msg;
                 }
@@ -1200,7 +1381,7 @@ Ns.msg.AbstractMessage = {
 
     },
 
-    _addSent: function (msg, replace_element) {
+    _addSent: function (msg, replace_element, replied_msgs) {
         var me = this;
         Main.tpl.template({
             tplUrl: me.getMsgSentTpl(),
@@ -1217,6 +1398,24 @@ Ns.msg.AbstractMessage = {
                     //full name from it, otherwise return the user_id on th data object
                     //which is always available
                     return data.user ? data.user.full_name : data.user_id;
+                }
+
+                if (data.msg_replied_id && replied_msgs) {
+                    var rplMsg = replied_msgs[data.msg_replied_id];
+                    if (tpl_var === 'replied_full_name') {
+                        if (!rplMsg) {
+                            return '';
+                        }
+                        return rplMsg.user ? rplMsg.user.full_name : rplMsg.user_id;
+                    }
+
+                    if (tpl_var === 'replied_content') {
+                        if (!rplMsg) {
+                            return '';
+                        }
+                        return rplMsg.content ? rplMsg.content : rplMsg.msg;
+                    }
+
                 }
 
                 if (tpl_var === 'time') {
@@ -1251,6 +1450,11 @@ Ns.msg.AbstractMessage = {
     },
 
     _handlePreparedItem: function (el, data, replace_element) {
+
+        if (!data.msg_replied_id) {//hide the reply element
+            var reply_el = el.querySelector('div[data-reply]');
+            $(reply_el).hide();
+        }
 
         var obj = {
             el: el,
@@ -1437,7 +1641,6 @@ Ns.msg.AbstractMessage = {
             return;
         }
         var msg_body = $(view_body_el).find(this.getMsgBodySelector())[0];
-        var msg_scroll_container = $(view_body_el).find(this.getMsgScrollContainerSelector())[0];
 
         el[dom_extra_field] = data;
 
@@ -1447,7 +1650,7 @@ Ns.msg.AbstractMessage = {
             msg_body.replaceChild(el, replace_element);
         }
 
-        msg_scroll_container.scrollTop = msg_scroll_container.scrollHeight;// scroll to be bottom to view the last message
+        msg_body.scrollTop = msg_body.scrollHeight;// scroll to be bottom to view the last message
 
         Main.event.fire(Ns.Const.EVT_MESSAGE_ADDED, data);
 
@@ -1484,18 +1687,78 @@ Ns.msg.AbstractMessage = {
      * 
      * @returns {undefined}
      */
-    _showEmojis: function (evt, data) {
-        var target = evt.target;
-        var me = data._this;
+    showEmojis: function (evt, obj) {
+        this._onEmojiTabOneClick(evt, obj);
+        $(obj.pop_emoji).show();
+    },
+    /**
+     * Hide emojis
+     * 
+     * @returns {undefined}
+     */
+    closeEmojis: function (evt, el) {
+        $(el).hide();
+    },
 
-        alert('TODO: _showEmojis');
+    /**
+     * Show reply
+     * 
+     * @returns {undefined}
+     */
+    showReply: function (evt, replied_msg) {
 
+        var pop_reply = $(this.view_body).find('div[data-pop="reply"]')[0];
+        var fname_el = $(pop_reply).find(this.getMsgRepliedFullNameSelector())[0];
+        var msg_el = $(pop_reply).find(this.getMsgRepliedMessageSelector())[0];
+
+        fname_el.innerHTML = replied_msg.user ? replied_msg.user.full_name : replied_msg.user_id;
+
+        msg_el.innerHTML = replied_msg.content ? replied_msg.content : replied_msg.msg;
+
+        pop_reply[this.DOM_EXTRA_FIELD_REPLY_MSG] = replied_msg;
+
+        $(pop_reply).show();
+    },
+
+    /**
+     * Hide reply
+     * 
+     * @returns {undefined}
+     */
+    closeReply: function (evt, el) {
+        $(el).hide();
+    },
+
+    _onEmojiTabOneClick: function (evt, eobj) {
+        eobj.emoji_tab1_el.style.borderBottom = this.EMOJI_TAB_BORDER_BOTTOM;
+        eobj.emoji_tab2_el.style.borderBottom = 'none';
+        eobj.emoji_tab3_el.style.borderBottom = 'none';
+        this._fillEmojis(Ns.Emoji.SmileyList, eobj.emoji_list_el);
+    },
+
+    _onEmojiTabTwoClick: function (evt, eobj) {
+        eobj.emoji_tab1_el.style.borderBottom = 'none';
+        eobj.emoji_tab2_el.style.borderBottom = this.EMOJI_TAB_BORDER_BOTTOM;
+        eobj.emoji_tab3_el.style.borderBottom = 'none';
+        this._fillEmojis(Ns.Emoji.ActivityList, eobj.emoji_list_el);
+    }
+    ,
+    _onEmojiTabThreeClick: function (evt, eobj) {
+        eobj.emoji_tab1_el.style.borderBottom = 'none';
+        eobj.emoji_tab2_el.style.borderBottom = 'none';
+        eobj.emoji_tab3_el.style.borderBottom = this.EMOJI_TAB_BORDER_BOTTOM;
+        this._fillEmojis(Ns.Emoji.MiscList, eobj.emoji_list_el);
+    },
+
+    _fillEmojis: function (emoji_arr, emoji_list_el) {
+
+        emoji_list_el.innerHTML = '';
+
+        for (var i = 0; i < emoji_arr.length; i++) {
+
+        }
 
     }
-
-
-
-
 };
 
 

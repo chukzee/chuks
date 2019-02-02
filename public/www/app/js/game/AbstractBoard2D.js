@@ -31,8 +31,6 @@ Ns.game.AbstractBoard2D = {
      *        gamePosition: 'the_game_posiont', //optional<br>
      *        white: true, //whether the user is white or black. For watched games this field in absent<br>
      *        flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above<br>
-     *        pieceTheme: 'the_piece_theme', //optional<br>
-     *        boardTheme: 'the_board_theme'  //optional<br>
      * }<br>
      *
      * The gameboard squares are indexed as illustrated below:
@@ -112,7 +110,7 @@ Ns.game.AbstractBoard2D = {
         }
 
         var resizeBoardContainer = function (evt) {
-            me.boardContainer = me.properlySizedBoardContainer(el, me.boardRowCount, config.boardTheme, config.invertedBoard);
+            me.boardContainer = me.properlySizedBoardContainer(el, me.boardRowCount, config.invertedBoard);
         };
 
         el.addEventListener('resize', resizeBoardContainer);
@@ -127,11 +125,11 @@ Ns.game.AbstractBoard2D = {
 
         //var board_cls = this.getBoardClass(obj.invertedBoard);//@Deprecated
 
-        var gameboard = this.board(el, config.pieceTheme, config.boardTheme);
+        var gameboard = this.board(el);
 
         this.boardContainer.appendChild(gameboard);
 
-        this.displayTurn(this.config.match);        
+        this.displayTurn(this.config.match);
 
         /*@deprecated since we now use the rcall internal retry strategy to resend the move
          if (this.config.match && this.config.match._unsentGamePosition) {
@@ -167,15 +165,14 @@ Ns.game.AbstractBoard2D = {
      * 
      * @param {type} el -  the provided element upon which we will create the board container
      * @param {Integer} row_count 
-     * @param {Integer} board_theme 
      * @param {Integer} inverted_board 
      * @returns {undefined}
      */
-    properlySizedBoardContainer: function (el, row_count, board_theme, inverted_board) {
+    properlySizedBoardContainer: function (el, row_count, inverted_board) {
 
         var proper_container = document.createElement('div');
 
-        proper_container.style.backgroundImage = 'url('+this.getBoardThemeUrl(inverted_board)+')';
+        proper_container.style.backgroundImage = 'url(' + this.getBoardThemeUrl(inverted_board) + ')';
         proper_container.style.backgroundRepeat = 'repeat';
         proper_container.style.backgroundSize = 100 / (this.boardRowCount / 2) + '%';
         console.log(proper_container.style.backgroundSize);
@@ -263,11 +260,43 @@ Ns.game.AbstractBoard2D = {
         return el;
     },
 
+    onOptionPieceChange: function () {
+        if (!this.squarePieces) {
+            return;
+        }
+        for (var i = 0; i < this.squarePieces.length; i++) {
+            var pce_el = this.squarePieces[i];
+            if (!pce_el) {
+                continue;
+            }
+            this.setPieceAppearance(pce_el, this.getPieceTheme());
+        }
+    },
+
+    onOptionBoardTopChange: function () {
+        if (!this.boardContainer) {
+            return;
+        }
+        this.boardContainer.style.backgroundImage = 'url(' + this.getBoardThemeUrl(this.config.invertedBoard) + ')';
+    },
+
+    onOptionSoundChange: function () {
+        alert('onOptionSoundChange');
+    },
+
+    getPieceTheme: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
     getBoardThemeUrl: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
     createPieceElement: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    setPieceAppearance: function (pceEl, piece_theme) {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
@@ -579,8 +608,6 @@ Ns.game.AbstractBoard2D = {
                     from_num = me.flipSquare(from_num);
                 }
 
-
-
                 me.movePiece(from_num, to_num, moveResult.capture, function () {
 
                     me.isGameOver = me.checkGameOver();
@@ -737,16 +764,17 @@ Ns.game.AbstractBoard2D = {
 
         };
 
-        promise.retry(function (sec_remaining) {//retry on connection failure
-            var matchObj = this;
-            if (!me.checkAccess(matchObj)) {//the view has changed
-                return;//so leave
-            }
+        promise.timeout(Ns.Const.SEND_MOVE_TIMEOUT)
+                .retry(function (sec_remaining) {//retry on connection failure
+                    var matchObj = this;
+                    if (!me.checkAccess(matchObj)) {//the view has changed
+                        return;//so leave
+                    }
 
-            Main.countdown.stop(me.moveResendCountdownFn);
-            Main.countdown.start(me.moveResendCountdownFn, sec_remaining);
+                    Main.countdown.stop(me.moveResendCountdownFn);
+                    Main.countdown.start(me.moveResendCountdownFn, sec_remaining);
 
-        }).get(function (res) {
+                }).get(function (res) {
 
             is_sent = true;
 
@@ -871,7 +899,7 @@ Ns.game.AbstractBoard2D = {
 
     },
 
-    board: function (container, piece_theme, board_theme) {
+    board: function (container) {
         var table = document.createElement('table');
         //table.className = board_cls;/*Deprecated*/
 
@@ -942,7 +970,7 @@ Ns.game.AbstractBoard2D = {
             }
         }
 
-        this.arrangeBoard(container, piece_theme);
+        this.arrangeBoard(container, this.getPieceTheme());
 
         return table;
     },
@@ -1195,7 +1223,7 @@ Ns.game.AbstractBoard2D = {
             if (i === 0) {
                 me.isCaptureAnim = true;
             }
-            
+
             Main.anim.to(pce, 1000, {top: dist}, function () {
 
                 me.isCaptureAnim = false;

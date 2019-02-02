@@ -2020,7 +2020,7 @@ function draughtsFn(variant) {
         var w_count = 0, wk_count = 0, b_count = 0, bk_count = 0;
 
         for (var i = 0; i < this.pieces.length; i++) {
-            var pce = pieces[i];
+            var pce = this.pieces[i];
             if (pce.sqLoc === this.OFF_BOARD) {
                 continue;
             }
@@ -2068,7 +2068,7 @@ function draughtsFn(variant) {
         //get possible move of the side to play if not found the other player wins
         var has_legal_move = false;
         for (var i = 0; i < this.pieces.length; i++) {
-            var pce = pieces[i];
+            var pce = this.pieces[i];
             if (pce.white !== this.turn) {
                 continue;
             }

@@ -100,11 +100,12 @@ Ns.msg.GroupChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function (content, bindFn) {
+    rcallSendMessage: function (content, msg_replied_id, bindFn) {
 
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.sendGroupChat(user_id, this.group.name, content, 'text', bindFn);
+        return Main.ro.chat.sendGroupChat(user_id, this.group.name, content, 'text', msg_replied_id, bindFn);
     },
+          
     onChat: function (evtObj) {
         this.add(evtObj.data);
     },

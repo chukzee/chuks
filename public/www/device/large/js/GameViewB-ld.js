@@ -9,6 +9,7 @@ Ns.GameViewB = {
     afterRightContentHide: function () {
         if (Ns.GameViewB.rightPanelTitleComp) {
             Ns.GameViewB.rightPanelTitleComp.innerHTML = '';
+            Ns.ui.GamePanel.rightContentName = '';
         }
     },
     showRightContent: function (data, title, func) {
@@ -17,12 +18,12 @@ Ns.GameViewB = {
             Ns.GameViewB.hideRightContent();
         });
         
-        Main.card.back('game-view-right-panel-header');//clear any card on the header
+        Main.card.back('game-view-b-right-panel-header');//clear any card on the header
 
-        document.getElementById("game-view-right-panel-body").innerHTML = '';
+        document.getElementById("game-view-b-right-panel-body").innerHTML = '';
 
-        Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
-        Ns.GameView.rightPanelTitleComp.innerHTML = title;
+        Ns.GameViewB.rightPanelTitleComp = document.getElementById("game-view-b-right-panel-header-title");
+        Ns.GameViewB.rightPanelTitleComp.innerHTML = title;
         if (Main.device.isXLarge()) {
             var elm = document.getElementById('game-view-b-main');
             elm.style.width = '60%';

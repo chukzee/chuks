@@ -53,10 +53,6 @@ Ns.msg.AbstractComment = {
         return 'div[data-comment="body"]';
     },
 
-    getMsgScrollContainerSelector: function () {
-        return '.game9ja-comment-body';
-    },
-
     getMsgInputSelector: function () {
         return 'textarea[data-comment="input-msg"]';
     },
@@ -67,6 +63,30 @@ Ns.msg.AbstractComment = {
 
     getMsgEmojisBottonSelector: function () {
         return 'div[data-comment="emoji"]';
+    },
+
+    getMsgRepliedFullNameSelector: function () {
+        return 'span[data-comment="replied-full-name"]';
+    },
+
+    getMsgRepliedMessageSelector: function () {
+        return 'div[data-comment="replied-message"]';
+    },
+
+    getMsgEmojiListSelector: function () {
+        return 'div[data-comment="emoji-list"]';
+    },
+
+    getMsgEmojiTabOneSelector: function () {
+        return 'span[data-comment="emoji-tab-1"]';
+    },
+
+    getMsgEmojiTabTwoSelector: function () {
+        return 'span[data-comment="emoji-tab-2"]';
+    },
+
+    getMsgEmojiTabThreeSelector: function () {
+        return 'span[data-comment="emoji-tab-3"]';
     },
 
     getMsgStatusIndicatorSelector: function () {
@@ -95,6 +115,9 @@ Ns.msg.AbstractComment = {
 
     getResponseMsgs: function (response) {
         return response.comments;
+    },
+    getResponseRepliedMsgs: function (response) {
+        return response.replied_comments;
     },
     /**
      * @param {type} tpl_var
@@ -160,7 +183,7 @@ Ns.msg.AbstractComment = {
         var btn_reply = $(el_item_added).find('span[data-comment-item="reply"]')[0];
         var recieved_message = user_id !== data.user_id;
         if (recieved_message) {//since it is not the user sent message so he reply
-            Main.click(btn_reply, data, this._showReplyInput);
+            Main.click(btn_reply, data, this._showReplyInput.bind(this));
         } else {
             //use cannot reply his own message so hide the reply button
             btn_reply.style.opacity = 0;
@@ -174,7 +197,7 @@ Ns.msg.AbstractComment = {
         Main.ro.comment.like(user_id, data.msg_id)
                 .get(function (comment) {
                     var replace_el = me.getMsgElement.call(me, comment);
-                    me.add.call(me, data, replace_el);
+                    me.add.call(me, comment, replace_el);
                 })
                 .error(function (err, err_code, connect_err) {
                     if (connect_err) {
@@ -190,7 +213,7 @@ Ns.msg.AbstractComment = {
         Main.ro.comment.dislike(user_id, data.msg_id)
                 .get(function (comment) {
                     var replace_el = me.getMsgElement.call(me, comment);
-                    me.add.call(me, data, replace_el);
+                    me.add.call(me, comment, replace_el);
                 })
                 .error(function (err, err_code, connect_err) {
                     if (connect_err) {
@@ -201,14 +224,7 @@ Ns.msg.AbstractComment = {
     },
 
     _showReplyInput: function (evt, data) {
-        alert('TODO _showReplyInput');
-        
-        var btn_reply;//TODO
-        var txt_input;//TODO
-        
-        
-        
-        Main.click(btn_reply, {txt_input: txt_input, msg_replied_id: data.msg_id}, this.sendMessage.bind(this));
+        this.showReply(evt, data);
     },
 
 

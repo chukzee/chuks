@@ -38,7 +38,7 @@ $tick_color: #222222;
         >.game9ja-comment-selected{
             background: #ededde !important;
         }
-        
+
     }
 }
 
@@ -78,7 +78,34 @@ $tick_color: #222222;
         font-size: 11px;
     }
 
-    > :nth-child(4){/*user comment content*/
+    > :nth-child(4){/*user comment replied*/
+        position: relative;
+        top: 0;        
+        left: 4px;
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background: #eee;
+        color: #777;
+        border-radius: 10px;
+        padding: 5px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+
+        >:nth-child(1){//from label
+                       margin-right: 5px;
+        }
+        >:nth-child(2){//replied full name
+                       font-weight: bold;
+        }
+        >:nth-child(3){//replied content
+                       max-height: 45px;           
+                       overflow: hidden;
+                       word-wrap: break-word;
+        }
+
+    }
+    > :nth-child(5){/*user comment content*/
         width: 100%;
         position: relative;
         top: 0;        
@@ -88,41 +115,41 @@ $tick_color: #222222;
         word-wrap: break-word;
     }
 
-    > :nth-child(5){/*reply comment icon*/
+    > :nth-child(6){/*reply comment icon*/
         position: relative;
         top: 5px;        
         left: 4px;
         cursor: pointer;        
     }
 
-    > :nth-child(6){/*like comment icon*/
+    > :nth-child(7){/*like comment icon*/
         position: absolute;
         bottom: 5px;        
         right: 100px;
         cursor: pointer;
         font-size: 11px;
     }
-    > :nth-child(7){/*dislike comment icon*/
+    > :nth-child(8){/*dislike comment icon*/
         position: absolute;
         bottom: 5px;        
         right: 25px;
         cursor: pointer;
         font-size: 11px;
     }
-    
-    :nth-child(8){
+
+    :nth-child(9){
         position: absolute;
         bottom: 5px;        
         right: 5px;
-        
+
     }
-   
+
     > .comment-sent:after{/*sent comment status*/
         font-size: 12px;
         content: '\2713';   
         color : $tick_color;
     }
-    
+
     > .comment-not-sent:after{/*not sent comment status*/
         font-size: 12px;
         content: '...';//come back   

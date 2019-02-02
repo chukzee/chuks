@@ -13,7 +13,11 @@ Ns.game.two.Chess2D = {
         };
 
         Main.rcall.live(obj);
-
+                
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE, this.onOptionPieceChange.bind(this));
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE, this.onOptionBoardTopChange.bind(this));
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE, this.onOptionSoundChange.bind(this));
+        
     },
 
     checkGameOver: function () {
@@ -71,6 +75,15 @@ Ns.game.two.Chess2D = {
 
     getBoardThemeUrl: function () {
         return Ns.Options.getChessBoardThemeUrl();
+    },
+    
+    getPieceTheme: function () {
+        return Ns.Options.get2DChessPieceTheme();
+    },
+
+    setPieceAppearance: function (pceEl, piece_theme) {
+        var type = pceEl.dataset.name.charAt(0);
+        pceEl.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pceEl.dataset.color + type + '.png';
     },
 
     createPieceElement: function (pce, piece_theme) {

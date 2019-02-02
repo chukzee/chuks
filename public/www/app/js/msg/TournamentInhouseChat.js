@@ -89,21 +89,23 @@ Ns.msg.TournamentInhouseChat = {
         var user_id = Ns.view.UserProfile.appUser.user_id;
         return Main.ro.chat.getTournamentInhouseChats(user_id, this.tournament.name, bindFn);
     }, 
-            /**
+
+    /**
      * Send the chat message
      * Must override this method and return the promise of the rcall<br>
      * <br>
      * example: <br>
      *     rcallSendMessage: function(content){<br>
-     *            return Main.ro.chat.sendContactChat(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
+     *            return Main.ro.comment.sendGameComment(user_id, contact_user_id, content, content_type); // return the promise of the rcall<br>
      *      }<br>
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function(content, bindFn){
+    rcallSendMessage: function(content, msg_replied_id, bindFn){
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        return Main.ro.chat.sendTournamentInhouseChat(user_id, this.tournament.name, content, 'text', bindFn);
-    },
+        return Main.ro.chat.sendTournamentInhouseChat(user_id, this.tournament.name, content, 'text', msg_replied_id, bindFn);
+    }, 
+    
     onChat: function(evtObj){
         this.add(evtObj.data);
     },

@@ -114,7 +114,7 @@ and open the template in the editor.
       white-space: nowrap; }
   @media screen and (min-width: 600px) {
     .game9ja-game-view-header > div {
-      margin: 0 23%;
+      margin: 0 auto;
       width: 100%;
       height: 100%;
       max-width: 330px;

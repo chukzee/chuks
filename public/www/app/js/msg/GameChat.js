@@ -93,7 +93,7 @@ Ns.msg.GameChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function (content, bindFn) {
+    rcallSendMessage: function (content, msg_replied_id, bindFn) {
 
         var user_id = Ns.view.UserProfile.appUser.user_id;
 
@@ -101,9 +101,9 @@ Ns.msg.GameChat = {
                 this.match.players[1].user_id
                 : this.match.players[0].user_id;
 
-        return Main.ro.chat.sendGameChat(user_id, opponent_id, this.match.game_id, content, 'text', bindFn);
+        return Main.ro.chat.sendGameChat(user_id, opponent_id, this.match.game_id, content, 'text', msg_replied_id, bindFn);
     },
-
+          
 };
 
 

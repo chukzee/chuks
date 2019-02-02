@@ -102,10 +102,9 @@ Ns.msg.ContactChat = {
      * <br>
      * @returns {undefined}
      */
-    rcallSendMessage: function (content, bindFn) {
+    rcallSendMessage: function (content, msg_replied_id, bindFn) {
         var user_id = Ns.view.UserProfile.appUser.user_id;
-
-        return Main.ro.chat.sendContactChat(user_id, this.contact.user_id, content, 'text', bindFn);
+        return Main.ro.chat.sendContactChat(user_id, this.contact.user_id, content, 'text', msg_replied_id, bindFn);
     },
 
 };

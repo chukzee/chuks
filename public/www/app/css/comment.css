@@ -90,6 +90,28 @@ and open the template in the editor.
     right: 0;
     font-size: 11px; }
   .game9ja-comment-item > :nth-child(4) {
+    /*user comment replied*/
+    position: relative;
+    top: 0;
+    left: 4px;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #eee;
+    color: #777;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px; }
+    .game9ja-comment-item > :nth-child(4) > :nth-child(1) {
+      margin-right: 5px; }
+    .game9ja-comment-item > :nth-child(4) > :nth-child(2) {
+      font-weight: bold; }
+    .game9ja-comment-item > :nth-child(4) > :nth-child(3) {
+      max-height: 45px;
+      overflow: hidden;
+      word-wrap: break-word; }
+  .game9ja-comment-item > :nth-child(5) {
     /*user comment content*/
     width: 100%;
     position: relative;
@@ -98,27 +120,27 @@ and open the template in the editor.
     font-size: 14px;
     white-space: pre-wrap;
     word-wrap: break-word; }
-  .game9ja-comment-item > :nth-child(5) {
+  .game9ja-comment-item > :nth-child(6) {
     /*reply comment icon*/
     position: relative;
     top: 5px;
     left: 4px;
     cursor: pointer; }
-  .game9ja-comment-item > :nth-child(6) {
+  .game9ja-comment-item > :nth-child(7) {
     /*like comment icon*/
     position: absolute;
     bottom: 5px;
     right: 100px;
     cursor: pointer;
     font-size: 11px; }
-  .game9ja-comment-item > :nth-child(7) {
+  .game9ja-comment-item > :nth-child(8) {
     /*dislike comment icon*/
     position: absolute;
     bottom: 5px;
     right: 25px;
     cursor: pointer;
     font-size: 11px; }
-  .game9ja-comment-item :nth-child(8) {
+  .game9ja-comment-item :nth-child(9) {
     position: absolute;
     bottom: 5px;
     right: 5px; }

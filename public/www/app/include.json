@@ -129,6 +129,7 @@
             "Auth.js",
             "Const.js",
             "Config.js",
+            "Emoji.js",            
             "Stats.js",
             "Options.js",
             "Util.js",

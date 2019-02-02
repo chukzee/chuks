@@ -37,6 +37,62 @@ class Chat extends   WebApplication {
         return 'Successful';
     }
 
+    async _getRepliedChats(chats) {
+
+        var replied_arr = [];
+        
+        if (!Array.isArray(chats)) {
+            return replied_arr;
+        }
+
+        var missing_replied_ids = [];
+        
+
+        for (var i = 0; i < chats.length; i++) {
+            var c = chats[i];
+            if (c.msg_replied_id) {
+                var found = false;
+                for (var k = 0; k < chats.length; k++) {
+                    if (chats[k].msg_id === c.msg_replied_id) {
+                        if (replied_arr.indexOf(chats[k]) === -1) {
+                            replied_arr.push(chats[k]);
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    missing_replied_ids.push(c.msg_replied_id);
+                }
+            }
+        }
+
+        var query = {
+            $or: []
+        };
+
+        if (missing_replied_ids.length > 0) {
+            for (var i = 0; i < missing_replied_ids.length; i++) {
+                var q = {
+                    msg_id: missing_replied_ids[i]
+                };
+                query.$or.push(q);
+            }
+            
+            var c = this.sObj.db.collection(this.sObj.col.comments);
+
+            var rep_msgs = await c.find(query, {_id: 0, delete_for: 0}) //reduce payload by excluding 'delete_for' field
+                    .toArray();
+
+            if (!rep_msgs && rep_msgs.length > 0) {
+                replied_arr = replied_arr.concat(rep_msgs);//append the messages
+            }
+
+        }
+        
+        return replied_arr;
+    }
+
     /**
      * Get the chat messages of the specified game id
      * 
@@ -83,7 +139,8 @@ class Chat extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            chats: []
+            chats: [],
+            replied_chats: []
         };
 
         if (!total) {
@@ -94,6 +151,8 @@ class Chat extends   WebApplication {
                 .limit(limit)
                 .skip(skip)
                 .toArray();
+
+        data.replied_chats = await this._getRepliedChats(data.chats);
 
         return data;
     }
@@ -131,14 +190,6 @@ class Chat extends   WebApplication {
             limit = this.sObj.MAX_ALLOW_QUERY_SIZE;
         }
 
-        /*var query = {
-            game_id: {$exists: false},
-            user_id: user_id,
-            contact_user_id: contact_user_id,
-            delete_for: {$nin: [user_id]},
-
-        };*/
-
         var query = {
             $and: [
                 {game_id: {$exists: false}},
@@ -163,7 +214,8 @@ class Chat extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            chats: []
+            chats: [],
+            replied_chats: []
         };
 
         if (!total) {
@@ -175,6 +227,7 @@ class Chat extends   WebApplication {
                 .skip(skip)
                 .toArray();
 
+        data.replied_chats = await this._getRepliedChats(data.chats);
 
         return data;
     }
@@ -216,7 +269,8 @@ class Chat extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            chats: []
+            chats: [],
+            replied_chats: []
         };
 
         if (!total) {
@@ -228,6 +282,8 @@ class Chat extends   WebApplication {
                 .limit(limit)
                 .skip(skip)
                 .toArray();
+
+        data.replied_chats = await this._getRepliedChats(data.chats);
 
         return data;
     }
@@ -270,7 +326,8 @@ class Chat extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            chats: []
+            chats: [],
+            replied_chats: []
         };
 
         if (!total) {
@@ -282,6 +339,8 @@ class Chat extends   WebApplication {
                 .limit(limit)
                 .skip(skip)
                 .toArray();
+
+        data.replied_chats = await this._getRepliedChats(data.chats);
 
         return data;
     }
@@ -324,7 +383,8 @@ class Chat extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            chats: []
+            chats: [],
+            replied_chats: []
         };
 
         if (!total) {
@@ -336,6 +396,8 @@ class Chat extends   WebApplication {
                 .limit(limit)
                 .skip(skip)
                 .toArray();
+
+        data.replied_chats = await this._getRepliedChats(data.chats);
 
         return data;
     }
@@ -442,7 +504,8 @@ class Chat extends   WebApplication {
             skip: skip,
             limit: limit,
             total: total,
-            chats: []
+            chats: [],
+            replied_chats: []
         };
 
         if (!total) {
@@ -455,10 +518,12 @@ class Chat extends   WebApplication {
                 .skip(skip)
                 .toArray();
 
+        data.replied_chats = await this._getRepliedChats(data.chats);
+
         return data;
     }
 
-    async sendGameChat(user_id, opponent_id, game_id, content, content_type) {
+    async sendGameChat(user_id, opponent_id, game_id, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -468,6 +533,7 @@ class Chat extends   WebApplication {
             game_id = arguments[0].game_id;
             content = arguments[0].content; //text message or audio url if the content is audio type (voice)
             content_type = arguments[0].content_type;
+            msg_replied_id = arguments[0].msg_replied_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -475,6 +541,8 @@ class Chat extends   WebApplication {
         var now = new Date();
         var msg_id = this.sObj.UniqueNumber; // used for identifying individual message
         var chat_msg = {
+            is_reply: msg_replied_id ? true : false,
+            msg_replied_id: msg_replied_id, //id of the chat message replied to
             game_id: game_id,
             user_id: user_id,
             opponent_id: opponent_id,
@@ -494,7 +562,7 @@ class Chat extends   WebApplication {
         return chat_msg;
     }
 
-    async sendContactChat(user_id, contact_user_id, content, content_type) {
+    async sendContactChat(user_id, contact_user_id, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -503,6 +571,7 @@ class Chat extends   WebApplication {
             contact_user_id = arguments[0].contact_user_id;
             content = arguments[0].content; //text message or audio url if the content is audio type (voice)
             content_type = arguments[0].content_type;//whether it is text, photo, audio or video
+            msg_replied_id = arguments[0].msg_replied_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -510,6 +579,8 @@ class Chat extends   WebApplication {
         var now = new Date();
         var msg_id = this.sObj.UniqueNumber; // used for identifying individual message
         var chat_msg = {
+            is_reply: msg_replied_id ? true : false,
+            msg_replied_id: msg_replied_id, //id of the chat message replied to
             user_id: user_id,
             contact_user_id: contact_user_id,
             msg_id: msg_id,
@@ -530,7 +601,7 @@ class Chat extends   WebApplication {
         return chat_msg;
     }
 
-    async sendGroupChat(user_id, group_name, content, content_type) {
+    async sendGroupChat(user_id, group_name, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -539,6 +610,7 @@ class Chat extends   WebApplication {
             group_name = arguments[0].group_name;
             content = arguments[0].content; //text message or audio url if the content is audio type (voice)
             content_type = arguments[0].content_type;
+            msg_replied_id = arguments[0].msg_replied_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -546,6 +618,8 @@ class Chat extends   WebApplication {
         var now = new Date();
         var msg_id = this.sObj.UniqueNumber; // used for identifying individual message
         var chat_msg = {
+            is_reply: msg_replied_id ? true : false,
+            msg_replied_id: msg_replied_id, //id of the chat message replied to
             group_name: group_name,
             user_id: user_id,
             msg_id: msg_id,
@@ -578,7 +652,7 @@ class Chat extends   WebApplication {
         return chat_msg;
     }
 
-    async sendTournamentInhouseChat(user_id, tournament_name, content, content_type) {
+    async sendTournamentInhouseChat(user_id, tournament_name, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -587,6 +661,7 @@ class Chat extends   WebApplication {
             tournament_name = arguments[0].tournament_name;
             content = arguments[0].content; //text message or audio url if the content is audio type (voice)
             content_type = arguments[0].content_type;
+            msg_replied_id = arguments[0].msg_replied_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -594,6 +669,8 @@ class Chat extends   WebApplication {
         var now = new Date();
         var msg_id = this.sObj.UniqueNumber; // used for identifying individual message
         var chat_msg = {
+            is_reply: msg_replied_id ? true : false,
+            msg_replied_id: msg_replied_id, //id of the chat message replied to
             tournament_name: tournament_name,
             chat_type: 'inhouse',
             user_id: user_id,
@@ -640,7 +717,7 @@ class Chat extends   WebApplication {
         return chat_msg;
     }
 
-    async sendTournamentGeneralChat(user_id, tournament_name, content, content_type) {
+    async sendTournamentGeneralChat(user_id, tournament_name, content, content_type, msg_replied_id) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -649,6 +726,7 @@ class Chat extends   WebApplication {
             tournament_name = arguments[0].tournament_name;
             content = arguments[0].content; //text message or audio url if the content is audio type (voice)
             content_type = arguments[0].content_type;
+            msg_replied_id = arguments[0].msg_replied_id;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
@@ -656,6 +734,8 @@ class Chat extends   WebApplication {
         var now = new Date();
         var msg_id = this.sObj.UniqueNumber; // used for identifying individual message
         var chat_msg = {
+            is_reply: msg_replied_id ? true : false,
+            msg_replied_id: msg_replied_id, //id of the chat message replied to
             tournament_name: tournament_name,
             chat_type: 'general',
             user_id: user_id,
@@ -749,7 +829,7 @@ class Chat extends   WebApplication {
         }
 
         var c = this.sObj.db.collection(this.sObj.col.chats);
-        
+
         var query = {
             $or: []
         };

@@ -8,10 +8,13 @@ Ns.GameView = {
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
     rightPanelTitleComp: null,
+    rightPanelHTML: null,
 
     afterRightContentHide: function () {
         if (Ns.GameView.rightPanelTitleComp) {
             Ns.GameView.rightPanelTitleComp.innerHTML = '';
+            document.getElementById('game-view-right-content').outerHTML = Ns.GameView.rightPanelHTML;
+            Ns.ui.GamePanel.rightContentName = '';
         }
     },
     showRightContent: function (data, title, func) {
@@ -59,6 +62,8 @@ Ns.GameView = {
     Content: function (data) {
 
         Ns.ui.GamePanel.rightContentName = '';
+
+        Ns.GameView.rightPanelHTML = document.getElementById('game-view-right-content').outerHTML;
 
         var panel_main = document.getElementById('game-view-main');
         var board_el = document.getElementById('game-view-main-board');

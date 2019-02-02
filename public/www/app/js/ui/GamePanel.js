@@ -54,17 +54,11 @@ Ns.ui.GamePanel = {
             obj.white = obj.match.players[0].user_id === user_id;
         }
 
-        obj.boardTheme = 'wooddark';
-        obj.pieceTheme = 'alpha';
-
         if (obj.match.game_name === 'chess') {
-
             Ns.ui.GamePanel._loadChess(obj);
 
         } else if (obj.match.game_name === 'draughts' || obj.match.game_name === 'draft') {
-
             Ns.ui.GamePanel._loadDraughts(obj);
-
         }
 
     },
@@ -84,6 +78,128 @@ Ns.ui.GamePanel = {
 
     },
 
+    _showChats: function (view, id_obj) {
+        var title = 'Chat';
+        if (Ns.ui.GamePanel.rightContentName
+                && Ns.ui.GamePanel.rightContentName === title) {
+            view.hideRightContent();
+            return;
+        }
+        Ns.ui.GamePanel.rightContentName = title;
+        view.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
+
+    },
+
+    _showComments: function (view, id_obj) {
+        var title = 'Comments';
+
+        if (Ns.ui.GamePanel.rightContentName
+                && Ns.ui.GamePanel.rightContentName === title) {
+            view.hideRightContent();
+            return;
+        }
+        Ns.ui.GamePanel.rightContentName = title;
+        view.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
+
+    },
+
+    _showSpectators: function (view, id_obj) {
+        var title = 'Spectators';
+
+        if (Ns.ui.GamePanel.rightContentName
+                && Ns.ui.GamePanel.rightContentName === title) {
+            view.hideRightContent();
+            return;
+        }
+        Ns.ui.GamePanel.rightContentName = title;
+        view.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Spectators.content.bind(Ns.Spectators, Ns.ui.GamePanel.matchData, id_obj));
+
+    },
+
+    _showStats: function (view, id_obj) {
+
+        var title = 'Stats';
+
+        if (Ns.ui.GamePanel.rightContentName
+                && Ns.ui.GamePanel.rightContentName === title) {
+            view.hideRightContent();
+            return;
+        }
+        Ns.ui.GamePanel.rightContentName = title;
+        view.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Stats.content.bind(Ns.Stats, Ns.ui.GamePanel.matchData, id_obj));
+    },
+
+    _showOptions: function (view, id_obj) {
+        var title = 'Options';
+
+        if (Ns.ui.GamePanel.rightContentName
+                && Ns.ui.GamePanel.rightContentName === title) {
+            view.hideRightContent();
+            return;
+        }
+        Ns.ui.GamePanel.rightContentName = title;
+        view.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Options.content.bind(Ns.Options, Ns.ui.GamePanel.matchData, id_obj));
+
+    },
+
+    _showByMenuItem: function (item, view, id_obj) {
+
+        switch (item) {
+            case 'Draw offer':
+                {
+
+                }
+                break;
+            case 'Rules':
+                {
+
+                }
+                break;
+            case 'Stats':
+                {
+                    Ns.ui.GamePanel._showStats(view, id_obj);
+                }
+                break;
+            case 'Options':
+                {
+                    Ns.ui.GamePanel._showOptions(view, id_obj);
+                }
+                break;
+            case 'Leave':
+                {
+
+                }
+                break;
+            case 'Help':
+                {
+
+                }
+                break;
+        }
+    },
+
+    _createMenu: function (id_selector, view, id_obj) {
+
+        Main.menu.create({
+            width: 150,
+            target: id_selector,
+            items: [
+                'Draw offer', //offer a draw
+                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
+                'Stats', //show head to head statistics of both players
+                'Options', //set pieces and board styles, sound etc
+                'Leave', //abort the game
+                'Help'
+            ],
+            onSelect: function (evt) {
+                var item = this.item;
+                Ns.ui.GamePanel._showByMenuItem(item, view, id_obj);
+                //finally hide the menu
+                this.hide();
+            }
+        });
+
+    },
     gameAreaDimension: function (elem) {
 
         var el = elem ? elem : this.element;
@@ -205,6 +321,16 @@ Ns.ui.GamePanel = {
     },
 
     ownGameView: function (match, panel_main, resizeFn, checkPanelSizeFn) {
+        var me = this;
+
+        var id_obj = {
+            view_id: "game-view-right-content",
+            view_body_id: "game-view-right-panel-body",
+            view_header_id: "game-view-right-panel-header",
+            search_button_id: "TODO"
+        };
+
+        var titleChat = 'Chat';
 
         Ns.ui.GamePanel.matchData = match;
 
@@ -219,25 +345,7 @@ Ns.ui.GamePanel = {
         $('#game-view-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-view-game-status').html(match.status);
 
-
-        Main.menu.create({
-            width: 150,
-            target: "#game-view-menu",
-            items: [
-                'Draw offer', //offer a draw
-                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
-                'Stats', //show head to head statistics of both players
-                'Options', //set pieces and board styles, sound etc
-                'Leave', //abort the game
-                'Help'
-            ],
-            onSelect: function (evt) {
-                var item = this.item;
-
-                //finally hide the menu
-                this.hide();
-            }
-        });
+        me._createMenu("#game-view-menu", Ns.GameView, id_obj);
 
         var white_wdl, black_wdl;
         if (match.wdl) {
@@ -247,7 +355,6 @@ Ns.ui.GamePanel = {
         if (match.wdl) {
             black_wdl = match.wdl.black.specific.wdl;
         }
-
 
         if (Ns.view.UserProfile.appUser.user_id === match.players[0].user_id) {
 
@@ -267,93 +374,47 @@ Ns.ui.GamePanel = {
 
         }
 
-        var ogv = Ns.GameView;
-
-        var obj = {
-            data: match,
-        };
-
-        var id_obj = {
-            view_id: "game-view-right-content",
-            view_body_id: "game-view-right-panel-body",
-            view_header_id: "game-view-right-panel-header",
-            search_button_id: "TODO"
-        };
-
-        var titleChat = 'Chat';
         if (Main.device.isXLarge()) {
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, titleChat, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
+            Ns.GameView.showRightContent(Ns.ui.GamePanel.matchData, titleChat, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
         }
 
         $('#game-view-footer-chat').on('click', function () {
-            var title = titleChat;
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
+            me._showChats(Ns.GameView, id_obj, titleChat);
         });
 
         $('#game-view-footer-comments').on('click', function () {
-            var title = 'Comments';
-            
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
+            me._showComments(Ns.GameView, id_obj);
         });
 
         $('#game-view-footer-spectators').on('click', function () {
-            var title = 'Spectators';
-
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Spectators.content.bind(Ns.Spectators, Ns.ui.GamePanel.matchData, id_obj));
+            me._showSpectators(Ns.GameView, id_obj);
         });
 
         $('#game-view-footer-stats').on('click', function () {
-            var title = 'Stats';
-
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Stats.content.bind(Ns.Stats, Ns.ui.GamePanel.matchData, id_obj));
+            me._showStats(Ns.GameView, id_obj);
         });
 
         $('#game-view-footer-options').on('click', function () {
-            var title = 'Options';
-
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                ogv.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            ogv.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.Options.content.bind(Ns.Options, Ns.ui.GamePanel.matchData, id_obj));
+            me._showOptions(Ns.GameView, id_obj);
         });
-
 
         $('#game-view-main').on('click', function () {
             if (!Main.device.isXLarge()) {
-                ogv.hideRightContent();
+                Ns.GameView.hideRightContent();
             }
         });
 
     },
 
     ownGameViewB: function (match, panel_main, resizeFn, checkPanelSizeFn) {
+        var me = this;
+
+        var id_obj = {
+            view_id: "game-view-b-right-content",
+            view_body_id: "game-view-b-right-panel-body",
+            view_header_id: "game-view-b-right-panel-header",
+            search_button_id: "TODO"
+        };
 
         Ns.ui.GamePanel.matchData = match;
 
@@ -368,32 +429,7 @@ Ns.ui.GamePanel = {
         $('#game-view-b-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-view-b-game-status').html(match.status);
 
-        Main.menu.create({
-            width: 150,
-            target: "#game-view-b-menu",
-            items: [
-                'Draw offer', //offer a draw
-                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
-                'Stats', //show head to head statistics of both players
-                'Options', //set pieces and board styles, sound etc
-                'Leave', //abort the game
-                'Help'
-            ],
-            onSelect: function (evt) {
-                var item = this.item;
-
-                //finally hide the menu
-                this.hide();
-            }
-        });
-
-
-        var id_obj = {
-            view_id: "game-view-b-right-content",
-            view_body_id: "game-view-b-right-panel-body",
-            view_header_id: "game-view-b-right-panel-header",
-            search_button_id: "TODO"
-        };
+        me._createMenu("#game-view-b-menu", Ns.GameViewB, id_obj);
 
         var white_wdl, black_wdl;
         if (match.wdl) {
@@ -422,8 +458,6 @@ Ns.ui.GamePanel = {
 
         }
 
-        var ogvb = Ns.GameView;
-
         $('#game-view-b-bluetooth-icon').on('click', function () {
             var device_name = 'TODO device name'; //TODO
             var signal_strength = 'TODO  excellent';//TODO
@@ -439,13 +473,23 @@ Ns.ui.GamePanel = {
 
         $('#game-view-b-main').on('click', function () {
             if (!Main.device.isXLarge()) {
-                ogvb.hideRightContent();
+                Ns.GameViewB.hideRightContent();
             }
         });
 
     },
 
     watchGame: function (match, panel_main, resizeFn) {
+        var me = this;
+
+        var id_obj = {
+            view_id: "game-watch-right-content",
+            view_body_id: "game-watch-right-panel-body",
+            view_header_id: "game-watch-right-panel-header",
+            search_button_id: "TODO"
+        };
+
+        var titleComment = 'Comments';
 
         Ns.ui.GamePanel.matchData = match;
 
@@ -477,59 +521,20 @@ Ns.ui.GamePanel = {
         $('#game-watch-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-watch-game-status').html(match.status);
 
+        me._createMenu("#game-watch-menu", Ns.GameWatch, id_obj);
 
-        Main.menu.create({
-            width: 150,
-            target: "#game-watch-menu",
-            items: [
-                'Spectators',
-                'Rules', //rules of the game. in the case of draughts, the variant and its applied rules will be shown
-                'Stats', //show head to head statistics of both players
-                'Options', //set pieces and board styles, sound etc
-                'Leave', //abort the game
-                'Help'
-            ],
-            onSelect: function (evt) {
-                var item = this.item;
-
-                //finally hide the menu
-                this.hide();
-            }
-        });
-
-        var gw = Ns.GameWatch;
-
-        var obj = {
-            data: match,
-        };
-
-        var id_obj = {
-            view_id: "game-watch-right-content",
-            view_body_id: "game-watch-right-panel-body",
-            view_header_id: "game-watch-right-panel-header",
-            search_button_id: "TODO"
-        };
-
-        var titleComment = 'Comments';
         if (Main.device.isXLarge()) {
-            gw.showRightContent(Ns.ui.GamePanel.matchData, titleComment, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
+            Ns.GameWatch.showRightContent(Ns.ui.GamePanel.matchData, titleComment, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
         }
 
 
         $('#game-watch-comment-icon').on('click', function () {
-            var title = titleComment;
-            if (Ns.ui.GamePanel.rightContentName
-                    && Ns.ui.GamePanel.rightContentName === title) {
-                gw.hideRightContent();
-                return;
-            }
-            Ns.ui.GamePanel.rightContentName = title;
-            gw.showRightContent(Ns.ui.GamePanel.matchData, title, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
+            me._showComments(Ns.GameWatch, id_obj, titleComment);
         });
 
         $('#game-watch-main').on('click', function () {
             if (!Main.device.isXLarge()) {
-                gw.hideRightContent();
+                Ns.GameWatch.hideRightContent();
             }
         });
 

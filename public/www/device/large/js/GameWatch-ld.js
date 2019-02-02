@@ -11,6 +11,7 @@ Ns.GameWatch = {
         if (Ns.GameWatch.rightPanelTitleComp) {
             Ns.GameWatch.rightPanelTitleComp.innerHTML = '';
             Ns.GameWatch.isShowRightPanel = false;
+            Ns.ui.GamePanel.rightContentName = '';
         }
     },
     showRightContent: function (data, title, func) {
@@ -19,12 +20,12 @@ Ns.GameWatch = {
             Ns.GameWatch.hideRightContent();
         });
         
-        Main.card.back('game-view-right-panel-header');//clear any card on the header
+        Main.card.back('game-watch-right-panel-header');//clear any card on the header
 
-        document.getElementById("game-view-right-panel-body").innerHTML = '';
+        document.getElementById("game-watch-right-panel-body").innerHTML = '';
 
-        Ns.GameView.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
-        Ns.GameView.rightPanelTitleComp.innerHTML = title;
+        Ns.GameWatch.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
+        Ns.GameWatch.rightPanelTitleComp.innerHTML = title;
         if (Main.device.isXLarge()) {
             var elm = document.getElementById('game-watch-main');
             elm.style.width = '60%';
