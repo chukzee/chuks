@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>
+            <form id="formid" method="post" enctype= "multipart/form-data"  action='/test'>
+                <input type="text" name="first" value="Chuks"/>
+                <input type="text" name="second" value="Ken"/>
+                <input type="text" name="third" value="Alimele" />
+                <input type="file" name="book" />
+                <div>             
+                    <select name="country">
+                        <option>Nigeria</option>
+                        <option selected>Senegal</option>
+                    </select>
+                </div>
+                <div>
+                    <div><input type="checkbox" name="use_book" value="ON" /></div>
+                </div>
+                <div>
+                    <div><textarea name="desc">chuks</textarea></div>
+                </div>
+                <input type="submit" value="Upload"/>
+            </form>
+        </div>
+
+        <script>
+            
+            function onUpload(){
+                var form = document.getElementById('formid');
+                var action_url = '/';
+                fileUploadByChuks(form, action_url);
+            }
+            
+            function fileUploadByChuks(frm, action_url) {
+                var inputs = frm;
+                if (frm instanceof window.HTMLFormElement) {
+                    inputs = frm.querySelectorAll('[name]');
+                } else if (inputs && inputs.constructor !== Array) {
+                    throw new Error('first parameter must be a form or an array of form elements');
+                }
+
+                // Create the iframe...
+                var iframe = document.createElement("iframe");
+                iframe.setAttribute("id", "upload_iframe");
+                iframe.setAttribute("name", "upload_iframe");
+                iframe.setAttribute("width", "0");
+                iframe.setAttribute("height", "0");
+                iframe.setAttribute("border", "0");
+                iframe.setAttribute("style", "width: 0; height: 0; border: none;");
+
+                var ifrForm = document.createElement("form");//chuks
+                for (var i = 0; i < inputs.length; i++) {//chuks
+                    var e = document.createElement(inputs[i].tagName);
+                    e.setAttribute("type", inputs[i].type);
+                    e.setAttribute("name", inputs[i].name);
+                    e.setAttribute("value", inputs[i].value);
+                    if(inputs[i].files){
+                        e.files = inputs[i].files;
+                    }
+                    
+                    ifrForm.appendChild(e);
+                }
+
+                iframe.appendChild(ifrForm);
+
+                // Add to document...
+                document.body.appendChild(iframe);
+                window.frames['upload_iframe'].name = "upload_iframe";
+
+                var iframeId = document.getElementById("upload_iframe");
+
+                // Add event...
+                var eventHandler = function () {
+
+                    if (iframeId.detachEvent){
+                        iframeId.detachEvent("onload", eventHandler);
+                    }else{
+                        iframeId.removeEventListener("load", eventHandler, false);
+                    }
+                    
+                    var content = '';
+
+                    // Message from server...
+                    if (iframeId.contentDocument) {
+                        content = iframeId.contentDocument.body.innerHTML;
+                    } else if (iframeId.contentWindow) {
+                        content = iframeId.contentWindow.document.body.innerHTML;
+                    } else if (iframeId.document) {
+                        content = iframeId.document.body.innerHTML;
+                    }
+
+                    document.getElementById(div_id).innerHTML = content;
+
+                    // Del the iframe...
+                    setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);//come back
+                };
+
+                if (iframeId.addEventListener){
+                    iframeId.addEventListener("load", eventHandler, true);
+                }
+                if (iframeId.attachEvent){
+                    iframeId.attachEvent("onload", eventHandler);
+                }
+
+                // Set properties of form...
+                ifrForm.setAttribute("target", "upload_iframe");
+                ifrForm.setAttribute("action", action_url);
+                ifrForm.setAttribute("method", "post");
+                ifrForm.setAttribute("enctype", "multipart/form-data");
+                ifrForm.setAttribute("encoding", "multipart/form-data");
+
+                // Submit the form...
+                ifrForm.submit();
+
+            }
+
+
+
+            function fileUpload(form, action_url, div_id) {
+                // Create the iframe...
+                var iframe = document.createElement("iframe");
+                iframe.setAttribute("id", "upload_iframe");
+                iframe.setAttribute("name", "upload_iframe");
+                iframe.setAttribute("width", "0");
+                iframe.setAttribute("height", "0");
+                iframe.setAttribute("border", "0");
+                iframe.setAttribute("style", "width: 0; height: 0; border: none;");
+
+                // Add to document...
+                form.parentNode.appendChild(iframe);
+                window.frames['upload_iframe'].name = "upload_iframe";
+
+                var iframeId = document.getElementById("upload_iframe");
+
+                // Add event...
+                var eventHandler = function () {
+
+                    if (iframeId.detachEvent)
+                        iframeId.detachEvent("onload", eventHandler);
+                    else
+                        iframeId.removeEventListener("load", eventHandler, false);
+
+                    var content = '';
+
+                    // Message from server...
+                    if (iframeId.contentDocument) {
+                        content = iframeId.contentDocument.body.innerHTML;
+                    } else if (iframeId.contentWindow) {
+                        content = iframeId.contentWindow.document.body.innerHTML;
+                    } else if (iframeId.document) {
+                        content = iframeId.document.body.innerHTML;
+                    }
+
+                    document.getElementById(div_id).innerHTML = content;
+
+                    // Del the iframe...
+                    setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
+                }
+
+                if (iframeId.addEventListener)
+                    iframeId.addEventListener("load", eventHandler, true);
+                if (iframeId.attachEvent)
+                    iframeId.attachEvent("onload", eventHandler);
+
+                // Set properties of form...
+                form.setAttribute("target", "upload_iframe");
+                form.setAttribute("action", action_url);
+                form.setAttribute("method", "post");
+                form.setAttribute("enctype", "multipart/form-data");
+                form.setAttribute("encoding", "multipart/form-data");
+
+                // Submit the form...
+                form.submit();
+
+                document.getElementById(div_id).innerHTML = "Uploading...";
+            }
+        </script>
+    </body>
+</html>

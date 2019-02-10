@@ -36,7 +36,7 @@ Ns.Auth = {
         Main.page.show({
             url: Ns.GameHome.GAME_LOGIN_HTML,
             effect: "fade",
-            duration: 500,
+            duration: 300,
             hasBackAction : false,//disable back button action
             onBeforeShow: onLoginFormShow
         });

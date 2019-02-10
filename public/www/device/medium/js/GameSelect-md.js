@@ -19,7 +19,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({
             url: "game-home-md.html",
             effect: "fade",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'chess'
         });
@@ -28,7 +28,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({
             url: "game-home-md.html",
             effect: "fade",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'draughts'
         });
@@ -37,7 +37,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({
             url: "game-home-md.html",
             effect: "fade",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'ludo'
         });
@@ -46,7 +46,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({
             url: "game-home-md.html",
             effect: "fade",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'solitaire'
         });
@@ -55,7 +55,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({
             url: "game-home-md.html",
             effect: "fade",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'whot'
         });

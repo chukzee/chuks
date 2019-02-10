@@ -13,10 +13,26 @@ and open the template in the editor.
 $font_color : #444;
 $group_img_height : 180px;
 
+grpbutton{
+    background-color : transparent;
+    cursor: pointer;                
+    height : 100%;
+    font-size: 14px;
+    outline : none;
+    border : none;
+    border-radius : 2px;
+    padding: 0;
+
+    > &:hover{              
+        background-color : #eee;
+        cursor: pointer;
+    } 
+}
+
 .game9ja-group-details{
     padding : 0;
     overflow: auto;
-    
+
     > :nth-child(1){
         border-radius: 0px !important;
         padding : 0 !important;
@@ -70,9 +86,9 @@ $group_img_height : 180px;
             right: $base_padding * 2;
             cursor: pointer;
         }
-        
+
         groupheader{
-           position: absolute; 
+            position: absolute; 
             top: 0; 
             left: 0; 
             height: 40px; 
@@ -87,7 +103,7 @@ $group_img_height : 180px;
         }
         >:nth-child(6){
             @extend groupheader;
-            
+
             >:nth-child(1){/*back button*/
                 position: absolute; 
                 top: 10px;
@@ -95,7 +111,7 @@ $group_img_height : 180px;
                 cursor: pointer;
 
             }
-            
+
             >:nth-child(2){/*comment*/
                 position: absolute;
                 top: 10px; 
@@ -123,60 +139,85 @@ $group_img_height : 180px;
                 left : 0;
             }
         }
+        >:nth-child(2){ /*group settings*/  
+            > input[type=button]{
+                @extend grpbutton;
+            }
+        }
         >:nth-child(3){ /*custom notification*/  
             > input[type=button]{
-                background-color : transparent;
-                cursor: pointer;                
-                height : 100%;
-                font-size: 14px;
-                outline : none;
-                border : 1px #aaa solid;
-                border-radius : 2px;
-                > &:hover{              
-                    background-color : #eee;
-                    cursor: pointer;
-                }  
+                @extend grpbutton;
             }
         }
 
     }
 
-    > :nth-child(3){
+    > :nth-child(3){/*group admins*/
         border-radius: 0px !important;
-        position: relative;
-        >div{
-            font-weight: 500;
-            font-style: italic;
+        position : relative;
+        > :nth-child(1){
+            position : relative;
+            font-size: 14px;  
             color : $font_color; 
-            border-bottom: $list_divider_width #ccc solid;
-            width: 100%;
-        }
-        >span{
-            font-weight: 300;
-            color : $font_color;    
-            background-color: #eee;
-            position: absolute;
-            top : $base_padding;
-            right: 20px;
-            min-width: 30px;
-            @include border-radius(50%);
-            text-align: center;
-        }
+            height: 30px;
+            vertical-align: middle;
+            @include box-sizing(box-sizing);
+            border-bottom: $list_divider_width $list_divider_color solid;
 
+            > :nth-child(1){//Officials
+                            position : absolute;
+                            bottom : 2px;
+                            left : 0;
+                            font-size: 20px; 
+            }
+
+            > :nth-child(2){//Add
+                            position : absolute;
+                            bottom : 2px;
+                            right : $base_padding;
+                            font-size: 14px;
+                            background-color: transparent;
+                            border-color: green;
+                            outline: none;
+            }
+        }
 
     }
 
-    > :nth-child(4){
+    > :nth-child(4){/*group members*/
         border-radius: 0px !important;
-        >div{
-            font-weight: 500;
-            font-style: italic;
-            color : $font_color;  
-            border-bottom: $list_divider_width #ccc solid;
+        position : relative;
+        > :nth-child(1){
+            position : relative;
+            font-size: 14px;  
+            color : $font_color; 
+            height: 30px;
+            vertical-align: middle;
+            @include box-sizing(box-sizing);
+            border-bottom: $list_divider_width $list_divider_color solid;
+
+            > :nth-child(1){//Officials
+                            position : absolute;
+                            bottom : 2px;
+                            left : 0;
+                            font-size: 20px; 
+            }
+
+            > :nth-child(2){//Add
+                            position : absolute;
+                            bottom : 2px;
+                            right : $base_padding;
+                            font-size: 14px;
+                            background-color: transparent;
+                            border-color: green;
+                            outline: none;
+            }
         }
 
-
     }
+
+
+
 } 
 
 .game9ja-exit-group-btn{

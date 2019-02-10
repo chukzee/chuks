@@ -1,16 +1,20 @@
 
+@import "base-var.scss";
+
 $ctr_height: 40px;
 
 .game9ja-form{
     position: relative;    
-    width : 80%;
+    width : 100%;
     max-width: 400px;
     height : 100%;
     font-size: 18px;
-    margin: auto;
+    padding: 20px;
     //background-color :  activecaption;
     top:0;
-    left:0;
+    left:0;    
+    @include box-sizing(border-box);
+    
     
 
     > input[type=submit], input[type=button]{

@@ -116,7 +116,7 @@ var Main = {};
             successFn = arguments[4];
             errorFn = arguments[5];
         }
-                
+
         var xhttp;
         if (window.XMLHttpRequest) {
             // code for modern browsers
@@ -240,15 +240,15 @@ var Main = {};
             xhrReq.apply(this, argu);
             function sendGet(xhttp, method, url, param, headers, timeout) {
                 xhttp.open(method, url + (param ? ('?' + param) : ''), true);
-                
+
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
-                
-                if(timeout > 0){
+
+                if (timeout > 0) {
                     xhttp.timeout = timeout;
                 }
-                
+
                 xhttp.send();
 
             }
@@ -268,19 +268,143 @@ var Main = {};
                 for (var name in headers) {
                     xhttp.setRequestHeader(name, headers[name]);
                 }
-                
+
                 if (!headers) {
                     xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');//default
                 }
-                
-                if(timeout > 0){
+
+                if (timeout > 0) {
                     xhttp.timeout = timeout;
                 }
-                
+
                 xhttp.send(param);
             }
         }
     };
+
+    function IframeAjax() {
+
+        /**
+         * This is the iframe ajax technique for mainly uploading files which is not
+         * possible with javascript ajax ie using XMLHttpRequest
+         * 
+         * @param {type} f can be a form or an array of form fields
+         * @param {type} action_url action url
+         * @param {type} successFn called if successful
+         * @param {type} errorFn called if there is error
+         * @returns {undefined}
+         */
+        this.send = function (f, action_url, successFn, errorFn) {
+            var inputs = f;
+            if (f instanceof window.HTMLFormElement) {
+                inputs = f.querySelectorAll('[name]');
+            } else if (inputs && inputs.constructor !== Array && !(inputs instanceof window.NodeList)) {
+                throw new Error('first parameter must be a form or an array of form elements on html node list');
+            }
+
+            // Create the iframe...
+            var iframe = document.createElement("iframe");
+            var frame_name = "upload_iframe_" + new Date().getTime();
+            iframe.setAttribute("id", frame_name);
+            iframe.setAttribute("name", frame_name);
+            iframe.setAttribute("width", "0");
+            iframe.setAttribute("height", "0");
+            iframe.setAttribute("border", "0");
+            iframe.setAttribute("style", "width: 0; height: 0; border: none;");
+            var resotreInputFiles = function (original, clone) {
+                clone.parentNode.insertBefore(original, clone);
+                clone.parentNode.removeChild(clone);
+            };
+
+            var swaps = [];
+            var ifrForm = document.createElement("form");//chuks
+            for (var i = 0; i < inputs.length; i++) {//chuks
+                var e = document.createElement(inputs[i].tagName);
+                if (inputs[i].type === 'file') {
+                    var clone = inputs[i].cloneNode(true);
+                    inputs[i].parentNode.insertBefore(clone, inputs[i]);
+                    e = inputs[i];//we are moving this file input to the iframe form and replacing the old location with the clone
+                    swaps.push({original: inputs[i], clone: clone});
+                } else {
+                    e.setAttribute("type", inputs[i].type);
+                    e.setAttribute("name", inputs[i].name);
+                    e.setAttribute("value", inputs[i].value);
+                }
+
+                ifrForm.appendChild(e);
+            }
+
+            iframe.appendChild(ifrForm);
+
+            // Add to document...
+            document.body.appendChild(iframe);
+
+            // Add event...
+            var eventHandler = function () {
+
+                if (iframe.detachEvent) {
+                    iframe.detachEvent("onload", eventHandler);
+                } else {
+                    iframe.removeEventListener("load", eventHandler, false);
+                }
+
+                var content = '';
+
+                // Message from server...
+                var success = true;
+                try {
+                    if (iframe.contentDocument) {
+                        content = iframe.contentDocument.body.innerHTML;
+                    } else if (iframe.contentWindow) {
+                        content = iframe.contentWindow.document.body.innerHTML;
+                    } else if (iframe.document) {
+                        content = iframe.document.body.innerHTML;
+                    }
+                } catch (e) {
+                    success = false;
+                    console.log(e);
+                }
+
+
+                //resotore back the original file input
+                for (var i = 0; i < swaps.length; i++) {
+                    resotreInputFiles(swaps[i].original, swaps[i].clone);
+                }
+
+                // Delelt the iframe...
+                iframe.parentNode.removeChild(iframe);
+                var statusCode = null;//must be null. Important! we will use this null value to know that the response is from iframe ajax and take appropriate decisions afterwards
+                if (success) {
+                    if (typeof successFn === 'function') {
+                        successFn(content, statusCode);
+                    }
+                } else {
+                    if (typeof errorFn === 'function') {
+                        errorFn('', statusCode);
+                    }
+                }
+            };
+
+            if (iframe.addEventListener) {
+                iframe.addEventListener("load", eventHandler, true);
+            } else if (iframe.attachEvent) {
+                iframe.attachEvent("onload", eventHandler);
+            }
+
+            // Set properties of form...
+            ifrForm.setAttribute("target", frame_name);
+            ifrForm.setAttribute("action", action_url);
+            ifrForm.setAttribute("method", "post");
+            ifrForm.setAttribute("enctype", "multipart/form-data");
+            ifrForm.setAttribute("encoding", "multipart/form-data");
+
+            // Submit the form...
+            ifrForm.submit();
+
+        };
+    }
+
+
 
     Main.device = {
 
@@ -730,6 +854,7 @@ var Main = {};
         var nextRetryExecTime;
         var isRetryingExec = false;
         var rcallRetryExecTimerId = null;
+        var RCALL_MULTIPART_REQUEST_FIELD_NAME = 'RCALL_MULTIPART_REQUEST_FIELD_NAME';
 
         Main.ready(function () {
             if (!rio) {
@@ -1006,7 +1131,8 @@ var Main = {};
                                         this._afterFn;
                                         this._retry;
                                         this._timeout;
-                                        
+                                        this._attach;
+
                                         var _busy_obj = null; //yes
                                         var me = this;
 
@@ -1035,6 +1161,9 @@ var Main = {};
                                             return me;
                                         };
                                         /**
+                                         * Calling the method will cause rcall to automatically retry
+                                         * the request upon connection timeout of failure using in-built
+                                         * retry strategy
                                          * 
                                          * @param {type} param can be a function or any truthy value
                                          * @returns {MainL#4.RCall.live.MainL#4#RCall#live#L#964.promiseFn}
@@ -1044,6 +1173,39 @@ var Main = {};
                                             return me;
                                         };
 
+                                        /**
+                                         * Call this method to upload files
+                                         * 
+                                         * @param {type} file_inputs - input file element
+                                         * @returns {MainL#4.RCall.live.MainL#4#RCall#live#L#979.promiseFn}
+                                         */
+                                        this.attach = function (file_inputs) {
+                                            if (!Main.util.isArray(file_inputs)
+                                                    && !(file_inputs instanceof window.NodeList)) {
+                                                file_inputs = [file_inputs];
+                                            }
+                                            //verify if the param is an array of input file elements
+                                            for (var i = 0; i < file_inputs.length; i++) {
+                                                var is_input_element = file_inputs[i] instanceof window.HTMLInputElement;
+                                                if (!is_input_element
+                                                        || (is_input_element && file_inputs[i].type !== 'file')) {
+                                                    throw Error('invalid rcall attachements at index ' + i + ' - must be input file element but found ', file_inputs[i]);
+                                                }
+                                                
+                                                if(!file_inputs[i].name){
+                                                    throw Error('invalid rcall attachements at index ' + i + ' - input file element must have a name attribute a value');                                                    
+                                                }
+                                                
+                                                if(file_inputs[i].name === RCALL_MULTIPART_REQUEST_FIELD_NAME){
+                                                    throw Error('invalid rcall attachements at index ' + i + ' - input file element must not be given a name "'+RCALL_MULTIPART_REQUEST_FIELD_NAME+'", which is used internally by rcall.');                                                                                                        
+                                                }
+                                                
+                                                
+                                            }
+
+                                            this._attach = file_inputs;
+                                            return me;
+                                        };
                                         this.busy = function (obj) {
                                             var o = obj || {};
                                             if (!o.el) {
@@ -1110,6 +1272,7 @@ var Main = {};
                                                 method: method,
                                                 param: argu,
                                                 bind: bind,
+                                                attach: promise._attach,
                                                 timeout: promise._timeout
                                             };
 
@@ -1119,10 +1282,10 @@ var Main = {};
 
                                             Main.rcall.exec(objParam);
 
-                                            function rcallCallback(response, bind) {
+                                            function rcallCallback(response, is_iframe_response, bind) {
                                                 try {
                                                     var data, err;
-                                                    if (response.success) {
+                                                    if (response.success === true) {
                                                         nextRCallExecRetrySec = 1;//initialize retry 
                                                         data = response.data;
                                                         if (Main.util.isFunc(promise._getFn)) {
@@ -1130,10 +1293,14 @@ var Main = {};
                                                         }
 
                                                     } else {
-
                                                         err = response.data;
-                                                        var connect_err = response.connect_err;
                                                         var err_code = response.err_code;
+                                                        if(is_iframe_response && typeof response.success === 'undefined'){
+                                                            err = response;//the server most likely sent response message describing the http status error e.g 404
+                                                            err_code = null;
+                                                        }                                                        
+                                                        
+                                                        var connect_err = response.connect_err;
 
                                                         //new start
                                                         if (promise._retry) {
@@ -1253,11 +1420,11 @@ var Main = {};
             var r;
             if (arguments.length === 1) {
                 if ((r = validateSingeArg(param))) {
-                    remoteExec(r.objArr, r.callback, r.bind, r.timeout);
+                    remoteExec(r);
                 }
             } else {
                 if ((r = validateMultiArgs(arguments))) {
-                    remoteExec(r.objArr, r.callback, r.bind, r.timeout);
+                    remoteExec(r);
                 }
             }
 
@@ -1346,46 +1513,71 @@ var Main = {};
                     }
                     obj.param = argu;
 
-
-
                     o.param = obj.param !== null && typeof obj.param !== "undefined" ?
                             (obj.param.constructor === Array ? obj.param : [obj.param]) : null;
 
                     o_arr.push(o);
                 }
 
-                return {objArr: o_arr, callback: obj.callback, bind: obj.bind, timeout: obj.timeout};
+                return {objArr: o_arr, attach: obj.attach, callback: obj.callback, bind: obj.bind, timeout: obj.timeout};
             }
 
-            function remoteExec(objArr, callback, bind, timeout) {
+            function remoteExec(r) {
 
-                if (rio.checkConnect()) {
+                var objArr = r.objArr,
+                        attach = r.attach,
+                        bind = r.bind,
+                        timeout = r.timeout,
+                        callback = r.callback;
+
+                var param = JSON.stringify({action: 'remote_call', data: objArr});        
+
+                if(attach){//for the case with file attachment use iframe ajax for upload
+                    //we just need to convert to array because we want to attach another field to hold other rcall request
+                    var fields = [];
+                    var otherReqField = document.createElement('input');
+                    
+                    otherReqField.setAttribute('type', 'text');
+                    otherReqField.setAttribute('name', RCALL_MULTIPART_REQUEST_FIELD_NAME);
+                    otherReqField.value = param;
+                    
+                    fields.push(otherReqField);
+                    if(attach instanceof window.NodeList || Main.util.isArray(attach)){
+                        for(var i=0; i< attach.length; i++){
+                            fields.push(attach[i]);
+                        }
+                    }
+                    
+                    Main.iframeAjax.send(fields, 'rcall_with_upload', successFn, errorFn);
+                
+                }else if (rio.checkConnect()) {
                     rio.send(objArr, successFn, errorFn);
                 } else {
                     var data = {
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        param: JSON.stringify({action: 'remote_call', data: objArr}),
+                        param: param,
                         timeout: timeout
                     };
 
                     Main.ajax.post('rcall', data, successFn, errorFn);
                 }
 
-                function successFn(res) {
-                    if (Main.util.isString(res)) {
+                function successFn(response, status) {
+                    if (Main.util.isString(response)) {
                         try {//try check if it is json and convert if so
-                            res = JSON.parse(res);
+                            response = JSON.parse(response);
                         } catch (e) {
                             //do nothing
                         }
                     }
-                    callback(res, bind);
+                    var is_iframe_response = status === null;
+                    callback(response, is_iframe_response, bind);
                 }
 
                 function errorFn(statusText, status) {
-                    var respose = {};
+                    var response = {};
                     var connect_err = false;
                     if (status === 0) {
                         connect_err = true;
@@ -1396,11 +1588,13 @@ var Main = {};
                         statusText = 'Connection to the server has timed out!'; // we prefer this description
                     }
 
-                    respose.success = false;
-                    respose.data = statusText;
-                    respose.err_code = status;
-                    respose.connect_err = connect_err;
-                    callback(respose, bind);
+                    response.success = false;
+                    response.data = statusText;
+                    response.err_code = status;
+                    response.connect_err = connect_err;
+                    
+                    var is_iframe_response = status === null;
+                    callback(response, is_iframe_response, bind);
                 }
 
             }
@@ -3083,6 +3277,7 @@ var Main = {};
     Main.event = new Event();
     Main.eventio = new EventIO();
     Main.rcall = new RCall();
+    Main.iframeAjax = new IframeAjax();
     Main.page = new Page();
     Main.listview = new Listview();
     Main.anim = new Animate();
@@ -3699,7 +3894,8 @@ var Main = {};
                     dialogButtonsCreate = param.dialogButtonsCreate,
                     clearSavedlayouts = param.clearSavedlayouts,
                     resizeListenBind = param.resizeListenBind,
-                    touchCloseFn = param.touchCloseFn,
+                    setVisible = param.setVisible;
+            touchCloseFn = param.touchCloseFn,
                     deviceBackHideFunc = param.deviceBackHideFunc,
                     btns = param.btns;
 
@@ -3819,6 +4015,20 @@ var Main = {};
                 return getDialogBodyEl();
             };
 
+            this.setVisible = function (param) {
+                var value, duration;
+                if (arguments.length === 1 && typeof arguments[0] === 'object') {
+                    value = param.value;
+                    duration = param.duration;
+                } else if (arguments.length > 1) {
+                    value = arguments[0].value;
+                    duration = arguments[1].duration;
+                } else {
+                    return;
+                }
+                setVisible(value, duration);
+            };
+
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
@@ -3902,6 +4112,29 @@ var Main = {};
 
 
             var base = document.createElement('div');
+            var initialOpacity = 1;
+            if (obj.visible === false) {
+                base.style.opacity = 0;
+                initialOpacity = 0;
+            }
+
+
+            var setVisible = function (b, trans_duration) {//new
+                if (b === true) {
+                    if (trans_duration > 0) {
+                        Main.anim.to(base, trans_duration, {opacity: 1});
+                    } else {
+                        base.style.opacity = 1;
+                    }
+                } else if (b === false) {
+                    if (trans_duration > 0) {
+                        Main.anim.to(base, trans_duration, {opacity: 0});
+                    } else {
+                        base.style.opacity = 0;
+                    }
+                }
+            };
+
             base.className = 'game9ja-dialog';
 
             var header_el = document.createElement('div');
@@ -3937,7 +4170,11 @@ var Main = {};
 
             var setBodyContent = function (content) {//new
                 content = content ? content : '';
-                content_el.innerHTML = content;
+                if (Main.util.isString(content)) {
+                    content_el.innerHTML = content;
+                } else {
+                    content_el.appendChild(content);
+                }
             };
 
             setBodyContent(obj.content);//new - aviod show undefined or null
@@ -4064,6 +4301,7 @@ var Main = {};
                 getDialogFooterEL: getDialogFooterEL,
                 dialogButtonsCreate: dialogButtonsCreate,
                 resizeListenBind: resizeListenBind,
+                setVisible: setVisible,
                 clearSavedlayouts: clearSavedlayouts,
                 touchCloseFunc: touchCloseFunc,
                 deviceBackHideFunc: deviceBackHideFunc,
@@ -4149,7 +4387,7 @@ var Main = {};
 
 
             if (obj.fade || obj.fadeIn || obj.fadeIn) {
-                Main.anim.to(base, 300, {opacity: 1}, function () {
+                Main.anim.to(base, 300, {opacity: initialOpacity}, function () {
                     if (Main.util.isFunc(obj.onShow)) {
                         try {
                             obj.onShow.call(objThis);
@@ -4160,7 +4398,7 @@ var Main = {};
                     Main.device.addBackAction(deviceBackHideFunc);
                 });
             } else {
-                base.style.opacity = 1;
+                base.style.opacity = initialOpacity;
                 if (Main.util.isFunc(obj.onShow)) {
                     try {
                         obj.onShow.call(objThis);

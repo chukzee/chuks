@@ -41,6 +41,10 @@ html {
   -ms-user-select: none;
   user-select: none; }
 
+body {
+  margin: 0;
+  padding: 0; }
+
 input, textarea {
   -webkit-user-select: auto;
   -khtml-user-select: auto;
@@ -52,7 +56,12 @@ input, select {
   border-top-width: 0px;
   border-left-width: 0px;
   border-right-width: 0px;
-  outline: none; }
+  border-bottom-width: 1px;
+  border-bottom-color: #006633;
+  outline: none;
+  height: 30px;
+  width: 180px;
+  background: #fff; }
 
 input[type=checkbox] {
   width: 25px;

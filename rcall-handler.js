@@ -9,32 +9,33 @@ class RCallHandler {
         this.sObj = sObj;
         this.util = util;
         this.evt = evt;
+        this.files = null;
 
         this.appLoader = appLoader;
     }
 
     replyError(error) {
-        return this.reply(false, error ? error : "An error occur!");
+        return this.reply(false, error ? error : "An error occurred!");
     }
 
     replySuccess(data) {
         return this.reply(true, data);
     }
-    
-    replySuccessWithErrors(data, errors){
-        if(Array.isArray(errors)){
+
+    replySuccessWithErrors(data, errors) {
+        if (Array.isArray(errors)) {
             errors = errors.join('\n');
         }
         return this.reply(true, data, errors);
     }
 
     reply(success, rpl, err) {
-        if(rpl && rpl.data){
+        if (rpl && rpl.data) {
             rpl = rpl.data;
         }
         var obj = {success: success, data: rpl};
-        if(err){
-           obj.error =  err;
+        if (err) {
+            obj.error = err;
         }
         if (this.res) {
             return this.res.json(obj);
@@ -61,14 +62,31 @@ class RCallHandler {
                     this.execMethod(req.body.data);
                     return;
                 default:
-                    this.replyError("Unknown request!");
+                    this.replyError("Unknown rcall request!");
                     return;
             }
-
 
         } else {
             this.replyError("No request body!");
         }
+    }
+
+    processInputWithUpload(rcall_data, files, res) {
+        
+        this.files = files;
+        this.res = res;
+        
+        try {
+            var json = JSON.parse(rcall_data);
+            if (json.action === 'remote_call') {
+                this.execMethod(json.data);
+            } else {
+                this.replyError("Unknown rcall request with upload!");
+            }
+        } catch (e) {
+            this.replyError("Invalid rcall request with upload!");
+        }
+
     }
 
     initVariables(classes) {
@@ -143,7 +161,9 @@ class RCallHandler {
                 //we already know it is a function because we check for that in the app loader.
                 //instantiate the module on demand - safe this way to avoid thread issues if any.
                 var moduleInstance = new Module(this.sObj, this.util, this.evt);
-
+                
+                moduleInstance._files = this.files;//set the files uploaded
+                
                 //call the method in the module and pass the parameters                
                 //var rtv = moduleInstance[input.method].apply(moduleInstance, input.param ? input.param : []);
                 //promise_arr.push(rtv);

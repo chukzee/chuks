@@ -2,6 +2,8 @@
 
 
 
+/* global Main */
+
 Main.on("pagecreate", function (arg) {
 
 
@@ -84,12 +86,13 @@ Main.on("pagecreate", function (arg) {
         var user_id = prompt('user_id', '');
         var tournament_name = prompt('tournament_name', '');
         var game = prompt('game', 'chess');
+        var variant = prompt('variant', '');
         var type = prompt('tournament_type', '');
         var sets_count = prompt('sets_count', '');
         var status_message = prompt('status_message', '');
         var photo_url = prompt('photo_url', '');
 
-        Main.ro.tourn.createTournament(user_id, tournament_name, game, type, sets_count ,status_message, photo_url)
+        Main.ro.tourn.createTournament(user_id, tournament_name, game, variant, type, sets_count ,status_message, photo_url)
                 .get(function (data) {
                     //alert(data);
                     console.log(data);

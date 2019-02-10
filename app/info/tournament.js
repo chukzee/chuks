@@ -2108,13 +2108,14 @@ class Tournament extends WebApplication {
      * @param {type} user_id
      * @param {type} tournament_name
      * @param {type} game
+     * @param {type} variant
      * @param {type} type
      * @param {type} sets_count
      * @param {type} status_message
      * @param {type} photo_url
      * @returns {Tournament@call;error|String}
      */
-    async createTournament(user_id, tournament_name, game, type, sets_count, status_message, photo_url) {
+    async createTournament(user_id, tournament_name, game, variant, type, sets_count, status_message, photo_url) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -2122,6 +2123,7 @@ class Tournament extends WebApplication {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
             game = arguments[0].game;
+            variant = arguments[0].variant;
             type = arguments[0].type;
             sets_count = arguments[0].sets_count;
             status_message = arguments[0].status_message;

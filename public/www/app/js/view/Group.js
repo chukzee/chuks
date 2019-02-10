@@ -33,6 +33,13 @@ Ns.view.Group = {
     },
     content: function (group) {
 
+        var me = this;
+
+        $('#group-details').find('.group-admins-only').each(function () {
+            $(this).hide();
+        });
+
+
         if (Main.util.isString(group)) {
             var group_name = group;
             //find the group
@@ -79,120 +86,235 @@ Ns.view.Group = {
             document.getElementById("group-details-status-message").innerHTML = group.status_message;
             document.getElementById("group-details-created-by").innerHTML = created_by_user ? created_by_user.full_name : group.created_by;
             document.getElementById("group-details-date-created").innerHTML = Ns.Util.formatDate(group.date_created);
-            document.getElementById("group-details-members-count").innerHTML = group.total_members;
-            document.getElementById("group-details-admins-count").innerHTML = group.total_admins;
+            document.getElementById("group-details-members-count").innerHTML = group.total_members > 1
+                    ? group.total_members + ' Members'
+                    : group.total_members + ' Member';
+            document.getElementById("group-details-admins-count").innerHTML = group.total_admins > 1
+                    ? group.total_admins + ' Group admins'
+                    : group.total_admins + ' Group admin';
+
+
+            var user = Ns.view.UserProfile.appUser;
+            var foundAdmin = group.admins.find(function (u) {
+                return user.user_id === u.user_id;
+            });
+
+            if (foundAdmin) {
+
+                $('#group-details').find('.group-admins-only').each(function () {
+                    $(this).show();
+                });
+
+            }
+
 
             Main.click("group-details-comment", group, Ns.view.Group._onClickGroupChat);
 
-            /*<ul class="game9ja-user-show-list">
-             
-             <li><img  src="images/white_player.jpg" alt=" "/></li>
-             <li>
-             Chuks Alimele
-             </li>
-             <li>
-             07083924582
-             </li>
-             
-             <li>
-             <input type="button" value="Lets play"/>
-             </li>
-             <li>show date joined group
-             22/01/2016
-             </li>
-             </ul>*/
 
             
 
-            var admins_container = '#group-details-admins';
+            $('#group-details-edit').off('click');
+            $('#group-details-edit').on('click', function () {
+                Ns.GameHome.showEditGroup(group);
+            });
 
-            Main.listview.create({
-                container: admins_container,
-                scrollContainer: admins_container,
-                tplUrl: 'group-admins-tpl.html',
-                wrapItem: false,
-                //itemClass: "game9ja-live-games-list",
-                onSelect: function (evt, group_admin) {
-
-                    Ns.view.Group.onClickMember(evt, group.name, group_admin.user_id);
-
-                },
-                onRender: function (tpl_var, data) {
-
-                    return onRenderMember(tpl_var, data);
-
-                },
-                onReady: function () {
-
-                    for (var i = 0; i < group.admins.length; i++) {
-                        this.appendItem(group.admins[i]);
-                    }
-
-                }
+            $('#group-details-admins-add').off('click');
+            $('#group-details-admins-add').on('click', function () {
+                Ns.view.Group._onClickAdminsAdd(group);
             });
 
 
-            var members_container = '#group-details-members';
-
-            Main.listview.create({
-                container: members_container,
-                scrollContainer: members_container,
-                tplUrl: 'group-members-tpl.html',
-                wrapItem: false,
-                //itemClass: "game9ja-live-games-list",
-                onSelect: function (evt, group_member) {
-
-                    Ns.view.Group.onClickMember(evt, group.name, group_member.user_id);
-
-                },
-                onRender: function (tpl_var, data) {
-
-                    return onRenderMember(tpl_var, data);
-
-                },
-                onReady: function () {
-
-                    for (var i = 0; i < group.members.length; i++) {
-                        this.appendItem(group.members[i]);
-                    }
-
-                }
+            $('#group-details-members-add').off('click');
+            $('#group-details-members-add').on('click', function () {
+                Ns.view.Group._onClickMembersAdd(group);
             });
 
+            me.adminList(group);
+            me.memberList(group);
 
         }
 
-        function onRenderMember(tpl_var, data) {
+    },
 
-            var app_user_id = Ns.view.UserProfile.appUser.user_id;
-            var set_exit_group = data.user_id === app_user_id;
+    onRenderMember: function (tpl_var, data) {
 
-            if (tpl_var === 'date_joined') {
-                return Ns.Util.formatTime(data[tpl_var]);
-            }
-            if (tpl_var === 'action_value') {
-                if (set_exit_group) {
-                    return 'Exit Group';
-                } else {
-                    return 'Lets Play';
-                }
-            }
+        var app_user_id = Ns.view.UserProfile.appUser.user_id;
+        var set_exit_group = data.user_id === app_user_id;
 
-
-            if (tpl_var === 'action_clazz') {
-                if (set_exit_group) {
-                    return 'game9ja-exit-group-btn';
-                } else {
-                    return '';
-                }
+        if (tpl_var === 'date_joined') {
+            return Ns.Util.formatTime(data[tpl_var]);
+        }
+        if (tpl_var === 'action_value') {
+            if (set_exit_group) {
+                return 'Exit Group';
+            } else {
+                return 'Lets Play';
             }
         }
 
-        
+
+        if (tpl_var === 'action_clazz') {
+            if (set_exit_group) {
+                return 'game9ja-exit-group-btn';
+            } else {
+                return '';
+            }
+        }
     },
-    _onClickGroupChat: function(evt, group){
-      Ns.GameHome.showGroupChat(group);  
+
+    adminList: function (group) {
+
+        var admins_container = '#group-details-admins';
+
+        Main.listview.create({
+            container: admins_container,
+            scrollContainer: admins_container,
+            tplUrl: 'group-admins-tpl.html',
+            wrapItem: false,
+            //itemClass: "game9ja-live-games-list",
+            onSelect: function (evt, group_admin) {
+
+                Ns.view.Group.onClickMember(evt, group.name, group_admin.user_id);
+
+            },
+            onRender: function (tpl_var, data) {
+
+                return Ns.view.Group.onRenderMember(tpl_var, data);
+
+            },
+            onReady: function () {
+
+                for (var i = 0; i < group.admins.length; i++) {
+                    this.appendItem(group.admins[i]);
+                }
+
+            }
+        });
     },
+
+    memberList: function (group) {
+        var members_container = '#group-details-members';
+
+        Main.listview.create({
+            container: members_container,
+            scrollContainer: members_container,
+            tplUrl: 'group-members-tpl.html',
+            wrapItem: false,
+            //itemClass: "game9ja-live-games-list",
+            onSelect: function (evt, group_member) {
+
+                Ns.view.Group.onClickMember(evt, group.name, group_member.user_id);
+
+            },
+            onRender: function (tpl_var, data) {
+
+                return Ns.view.Group.onRenderMember(tpl_var, data);
+
+            },
+            onReady: function () {
+
+                for (var i = 0; i < group.members.length; i++) {
+                    this.appendItem(group.members[i]);
+                }
+
+            }
+        });
+    },
+
+    _onClickGroupChat: function (evt, group) {
+        Ns.GameHome.showGroupChat(group);
+    },
+
+    _onClickAdminsAdd: function (group) {
+
+        var me = this;
+
+        Ns.ui.Dialog.selectContactList({
+            title: 'Add admins',
+            multiSelect: true,
+            onSelect: function (contants) {
+                if (!contants || contants.length === 0) {
+                    return;
+                }
+                var user_ids = [];
+                for (var i = 0; i < contants.length; i++) {
+                    user_ids[i] = contants[i].user_id;
+                }
+                var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                Main.ro.group.adddBulkAdmins(app_user_id, group.name, user_ids)
+                        .get(function (data) {
+
+                            Ns.view.Group.update(data.group);
+
+                            var results = data.msg;
+                            var msg_str = '';
+                            for (var i = 0; i < results.length; i++) {
+                                msg_str += results[i].msg + '<br/>';
+                            }
+
+                            Main.alert(msg_str, 'Message', Main.const.INFO);
+
+                            Ns.view.Group._renderAdminsAdded.call(me, data.group);
+
+                        })
+                        .error(function (err) {
+                            console.log(err);
+                        });
+            }
+        });
+    },
+
+    _onClickMembersAdd: function (group) {
+
+        var me = this;
+
+        Ns.ui.Dialog.selectContactList({
+            title: 'Add members',
+            multiSelect: true,
+            onSelect: function (contants) {
+                if (!contants || contants.length === 0) {
+                    return;
+                }
+                var user_ids = [];
+                for (var i = 0; i < contants.length; i++) {
+                    user_ids[i] = contants[i].user_id;
+                }
+                var app_user_id = Ns.view.UserProfile.appUser.user_id;
+                Main.ro.group.adddBulkMembers(app_user_id, group.name, user_ids)
+                        .get(function (data) {
+
+                            Ns.view.Group.update(data.group);
+
+                            var results = data.msg;
+                            var msg_str = '';
+                            for (var i = 0; i < results.length; i++) {
+                                msg_str += results[i].msg + '<br/>';
+                            }
+
+                            Main.alert(msg_str, 'Message', Main.const.INFO);
+
+                            Ns.view.Group._renderMembersAdded.call(me, data.group);
+
+                        })
+                        .error(function (err) {
+                            console.log(err);
+                        });
+            }
+        });
+    },
+
+    _renderAdminsAdded: function (group) {
+
+        this.adminList(group);
+
+    },
+
+    _renderMembersAdded: function (group) {
+
+        this.memberList(group);
+
+    },
+
     isLocalGroupMember: function (user_id) {
 
         for (var i = 0; i < Ns.view.Group.groupList.length; i++) {
@@ -206,6 +328,7 @@ Ns.view.Group = {
 
         return false;
     },
+
     getInfo: function (group_name, callback, refresh) {
         var group;
         for (var i = 0; i < Ns.view.Group.groupList.length; i++) {
@@ -272,8 +395,23 @@ Ns.view.Group = {
 
         Ns.view.Group.save();
     },
-    save: function () {
+    save: function (groups) {
+
         var list = Ns.view.Group.groupList;
+
+        if (groups) {
+            if (!Main.util.isArray()) {
+                groups = [groups];
+            }
+            for (var i = 0; i < groups.length; i++) {
+                for (var k = 0; k < list.length; k++) {
+                    if (list[k].name === groups[i].name) {
+                        list[k] = groups[i];
+                    }
+                }
+            }
+        }
+
         if (Main.util.isArray(list)) {
             window.localStorage.setItem(Ns.Const.GROUP_LIST_KEY, JSON.stringify(list));
         }
@@ -322,7 +460,7 @@ Ns.view.Group = {
                     });
         });
     },
-   
+
     onClickMember: function (evt, group_name, user_id) {
 
         Ns.view.Group.getInfo(group_name, function (group) {

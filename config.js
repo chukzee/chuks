@@ -23,11 +23,23 @@ module.exports = {
      * @type String
      */
     MONGO_HOST: "localhost",
+    
     /**
      * monogo port
      * @type Number
      */
     MONGO_PORT: 27017,
+    
+    /**
+     * image service host
+     * @type String
+     */
+    IMAGE_SERVICE_HOST: "localhost",
+    /**
+     * image service port
+     * @type Number
+     */
+    IMAGE_SERVICE_PORT: 500,
     /**
      * monogo database name
      * @type String
@@ -48,13 +60,17 @@ module.exports = {
      * @type Number
      */
     MAX_SESSION_PER_SAME_USERNAME: 10,
-    
+  
     /**
+     * Json Web Token (JWT) secret - PLEASE DO NOT MODIFY THIS SECRET EXCEPT WHEN ABSOLUTELY NEEDED.
      * 
+     * NOTE : IF THIS SECRET IS MODIFID IT WILL INVALIDATE THE ENTIRE USERS CONNECTIONS AND THE 
+     * ENTIRE REDIS CACHE MAY NEED TO BE DROPED. SO MODIFY WITH CAUTION
+     * 
+     * @type String
      */
-    
-    
+    jwtSecret: "bfa633968fb6ddd251178f68a1f0c9e3060d5f859f084061b0dc93db198d35afeced835091bc1a1fd54f495971dedfe09c7aac0936ff5eac1184210e786ca205",
+    jwtImageServiceSecret: "f0c9e3060d5f859f0840615091bc1a1fd540e786ca205dedfe09c7aac0936ff5eac118421b0dcbfa633968fb6ddd25f495971ced831178f68a193db198d35afe"
 };
-
 
 

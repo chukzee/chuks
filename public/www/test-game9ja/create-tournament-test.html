@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>GameBaba</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/default-header.css" />
+        <link rel="stylesheet" href="../app/css/app-main.css" />
+        <link rel="stylesheet" href="../app/css/form.css" />
+        <link rel="stylesheet" href="../app/css/choose-icon.css" />
+        <link rel="stylesheet" href="../app/css/font-awesome.min.css" />
+    </head>
+
+    <body>
+
+        <div>
+
+            <div class="game9ja-default-header">
+                <div>
+                    New Chess Tournament
+                </div>
+
+                <i class="fa fa-arrow-left game9ja-header-item-left"></i>
+            </div>
+            <div class="game9ja-form">
+                <div>
+                    <div><input type="text"  placeholder="Tournament name" /></div>                    
+                </div>
+                <div>
+                    <div>
+                        <select>
+                            <option>Select Type</option>
+                            <option>Round Robin</option>
+                            <option>Single Elimination</option>
+                        </select>
+                    </div>                    
+                </div>
+                <div class="draughts-only">
+                    <div>
+                        <select>
+                            <option>Select Draughts Variant</option>
+                        </select>
+                    </div>                    
+                </div>
+                <div>
+                    <div>
+                        <select>
+                            <option>Select number of sets</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">2</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>                    
+                </div>
+                               
+                <div class="game9ja-choose-icon">
+                    <div><span >Choose icon</span></div>
+                    <div><span class="fa fa-camera"></span><input type="file"/></div>                    
+                    <div><img  src="../app/images/default_group.png" alt=""/></div>
+                </div>
+
+                <input type="button" value="Create" />
+                <div  class="game9ja-error"></div>
+            </div>
+        </div>
+    </body>
+
+</html>

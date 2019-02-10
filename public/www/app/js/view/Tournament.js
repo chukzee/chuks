@@ -50,6 +50,11 @@ Ns.view.Tournament = {
 
     content: function (tournament) {
 
+
+        $('#tournament-details').find('.tournament-officials-only').each(function () {
+            $(this).hide();
+        });
+
         var round_index;
         var players_map = {};
 
@@ -114,13 +119,25 @@ Ns.view.Tournament = {
             document.getElementById("tournament-details-date-created").innerHTML = Ns.Util.formatDate(tournament.date_created);
             document.getElementById("tournament-details-tournament-type").innerHTML = tournament.type.substring(0, 1).toUpperCase() + tournament.type.substring(1);
 
-            document.getElementById("tournament-details-officials-count").innerHTML = tournament.officials.length > 0
+            document.getElementById("tournament-details-officials-count").innerHTML = tournament.officials.length > 1
                     ? tournament.officials.length + ' Officials'
                     : tournament.officials.length + ' Official';
 
-            document.getElementById("tournament-details-registered-players-count").innerHTML = tournament.registered_players.length > 0
+            document.getElementById("tournament-details-registered-players-count").innerHTML = tournament.registered_players.length > 1
                     ? tournament.registered_players.length + ' Registered players'
                     : tournament.registered_players.length + ' Registered player';
+
+
+            var user = Ns.view.UserProfile.appUser;
+            var foundOfficial = tournament.officials.find(function (u) {
+                return user.user_id === u.user_id;
+            });
+
+            if (foundOfficial) {
+                $('#tournament-details').find('.tournament-officials-only').each(function () {
+                    $(this).show();
+                });
+            }
 
             Main.click("tournament-details-comment-general", tournament, Ns.view.Tournament._onClickTournamentGeneralChat);
             Main.click("tournament-details-comment-inhouse", tournament, Ns.view.Tournament._onClickTournamentInhouseChat);
@@ -155,17 +172,10 @@ Ns.view.Tournament = {
             //"tournament-details-season-table-standings"
             //"tournament-details-match-fixtures"
 
-            if (!Ns.view.Tournament._isAppUserOfficial(tournament.officials)) {
-                //TODO hide some control away from non offficial
-
-            }
-
 
             $('#tournament-details-edit').off('click');
             $('#tournament-details-edit').on('click', function () {
-
-                alert('TODO tournament-details-edit');
-
+                Ns.GameHome.showEditTournament(tournament);
             });
 
 
@@ -647,7 +657,7 @@ Ns.view.Tournament = {
                             Ns.view.Tournament.update(data.tournament);
 
                             Main.alert(data.msg, 'Success', Main.const.INFO);
-                            Ns.view.Tournament._renderOfficials(tournament);
+                            Ns.view.Tournament._renderOfficials(data.tournament);
 
                         })
                         .error(function (err) {
@@ -680,13 +690,13 @@ Ns.view.Tournament = {
                             var results = data.msg;
                             var msg_str = '';
                             for (var i = 0; i < results.length; i++) {
-                                msg_str = results[i].msg + '<br/>';
+                                msg_str += results[i].msg + '<br/>';
                             }
 
                             Main.alert(msg_str, 'Message', Main.const.INFO);
 
                             //next render on the horizontal list
-                            Ns.view.Tournament._renderRegisteredPlayers(tournament);
+                            Ns.view.Tournament._renderRegisteredPlayers(data.tournament);
 
                         })
                         .error(function (err) {
@@ -825,7 +835,7 @@ Ns.view.Tournament = {
                                 }
 
                                 //update the season players horizontal list
-                                Ns.view.Tournament._renderSeasonPlayers(tournament, season_number);
+                                Ns.view.Tournament._renderSeasonPlayers(data.tournament, season_number);
 
                             })
                             .error(function (err) {
@@ -967,11 +977,11 @@ Ns.view.Tournament = {
 
         if (is_contact) {
             menu_items.push('Lets Play');
-            menu_items.push('View player profile');
         } else {
             //not yet
         }
 
+        menu_items.push('View player profile');
         menu_items.push('View player profile pic'); //expand profile pic
         menu_items.push('View player ranking');
         return  menu_items;
@@ -982,7 +992,11 @@ Ns.view.Tournament = {
 
         if (Ns.view.Tournament._isAppUserOfficial(tournament.officials)
                 && Ns.view.Tournament.isLocalOfficial(info.user_id, tournament)) {
-            menu_items.push('Remove tournament official');
+
+            if (tournament.created_by.user_id !== info.user_id) {//since tournament creator not be removed
+                menu_items.push('Remove tournament official');
+            }
+
         }
 
         return  menu_items;
@@ -1100,8 +1114,23 @@ Ns.view.Tournament = {
 
     },
 
-    save: function () {
+    save: function (tourns) {
+        
         var list = Ns.view.Tournament.tournamentList;
+
+        if (tourns) {
+            if (!Main.util.isArray()) {
+                tourns = [tourns];
+            }
+            for (var i = 0; i < tourns.length; i++) {
+                for (var k = 0; k < list.length; k++) {
+                    if (list[k].name === tourns[i].name) {
+                        list[k] = tourns[i];
+                    }
+                }
+            }
+        }
+        
         if (Main.util.isArray(list)) {
             window.localStorage.setItem(Ns.Const.TOURNAMENT_LIST_KEY, JSON.stringify(list));
         }

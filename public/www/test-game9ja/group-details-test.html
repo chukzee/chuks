@@ -23,7 +23,7 @@ and open the template in the editor.
                 <div>Group Name</div>
                 <div>Building chess players</div><!--Group profile status - expected to be a short phrase-->
 
-                <i  id="group-details-edit"  class="fa fa-edit"></i>
+                <i  id="group-details-edit"  class="fa fa-edit group-admins-only"></i>
                 <div><!--transparent header layer--></div>
                 <div>
                     <i class="fa fa-arrow-left" id="group-details-back-btn"></i>
@@ -35,12 +35,19 @@ and open the template in the editor.
             </div>
             <div><!--group basic-->
                 <div><div>Created by <i><strong>Chuks Alimele</strong></i> on <i>May 4, 2017</i></div></div>
-                <div><div><span>58</span> members</div></div>
-                <div><input type="button" value="Custom Notifications" /></div>
+                <div id="group-details-settings" class="group-admins-only"><!--visible only to group admins-->
+                    <input type="button" value="Group settings" />
+                </div>
+                <div><input type="button" value="Custom notifications" /></div>
             </div>
             <div> <!--group admins-->
-                <div>Group Admins</div>
-                <span>2</span>
+                <div>
+                    <span id="group-details-admins-count">
+                        2 group admins
+                    </span> 
+
+                    <span id="group-details-admins-add" class="group-admins-only">Add <i class="fa fa-plus"></i></span><!--visible only to group admins--> 
+                </div>
                 <ul class="game9ja-user-show-list">
 
                     <li><img  src="../app/images/default_group.png" alt=" "/></li>
@@ -102,8 +109,14 @@ and open the template in the editor.
                 </ul>
             </div>
             
-            <div><!--Other members-->
-                <div>Other Members</div>                
+            <div><!--Group members-->
+                <div>
+                    <span id="group-details-members-count">
+                        34 members
+                    </span> 
+
+                    <span id="group-details-members-add" class="group-admins-only">Add <i class="fa fa-plus"></i></span><!--visible only to group admins--> 
+                </div>
                 <ul class="game9ja-user-show-list">
 
                     <li><img  src="../app/images/default_group.png" alt=" "/></li>

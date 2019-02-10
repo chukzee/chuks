@@ -41,12 +41,18 @@ $scroll_bar_color_hover : #64BB31;
 //disable user selection - though in stackoverflow an user say the solution above 
 //cause some problem in Android 4.1 and 4.2. ie prevents the user from enter values in textfiels
 
+
 html{
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+body{
+    margin: 0;
+    padding: 0;
 }
 
 input , textarea{
@@ -61,9 +67,14 @@ input, select{
     border-top-width: 0px;
     border-left-width: 0px;
     border-right-width: 0px;
+    border-bottom-width: 1px;
+    border-bottom-color: #006633;
     outline: none;
-
+    height: 30px;
+    width: 180px;
+    background: #fff;
 }
+
 
 input[type=checkbox]{
     width: 25px;

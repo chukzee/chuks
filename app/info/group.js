@@ -1,4 +1,6 @@
 
+/* global Promise */
+
 "use strict";
 
 var WebApplication = require('../web-application');
@@ -11,27 +13,27 @@ class Group extends WebApplication {
     }
 
     async _lock(group_name) {
-        console.log('here 1');
+        //console.log('here 1');
         if (this._is_lock) {
             if (this._group_name_lock !== group_name) {
                 throw new Error('Cannot lock more than one groups.');
             }
             return true;
         }
-        console.log('here 2');
+        //console.log('here 2');
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
 
-            console.log('group_name', group_name);
-            console.log(await c.findOne({name: group_name}));//TESTING!!!
+            //console.log('group_name', group_name);
+            //console.log(await c.findOne({name: group_name}));//TESTING!!!
 
             var r = await c.updateOne({name: group_name}, {
                 $set: {
                     _lock: true
                 }});
 
-            console.log('r.result.nModified', r.result.nModified);
-            console.log('r.result', r.result);
+            //console.log('r.result.nModified', r.result.nModified);
+            //console.log('r.result', r.result);
 
             if (r.result.nModified === 0) {
                 return false;
@@ -53,7 +55,8 @@ class Group extends WebApplication {
         this._group_name_lock = group_name;
 
         this._is_lock = true;
-        console.log('here 3');
+        //console.log('here 3');
+
         return this._is_lock;
     }
 
@@ -213,6 +216,95 @@ class Group extends WebApplication {
         return this._addToGroup(request.requested_user_id, request.group_name, false);
     }
 
+    async adddBulkAdmins(user_id, group_name, user_ids) {
+
+        try {
+            //find check if the user to do this is authorized - ie an admin - only admins can make another user admin
+            var c = this.sObj.db.collection(this.sObj.col.groups);
+
+            var adminQuery = {
+                $and: [
+                    {
+                        name: group_name
+                    },
+                    {
+                        'members.user_id': user_id//query does not require positional $ operator to access the field
+                    },
+                    {
+                        'members.is_admin': true//query does not require positional $ operator to access the field
+                    },
+                    {
+                        'members.committed': true
+                    }
+                ]
+            };
+
+            //first check if the user is an admin
+            var admin = await c.findOne(adminQuery, {_id: 0});
+
+
+            if (!admin) {
+                return this.error("Not authorized to make another user an admin.");
+            }
+
+        } catch (e) {
+
+            console.log(e);
+
+            return this.error("Failed operation!");
+        }
+
+        var group = await this._addToGroup(user_ids, group_name, true);
+        if (this.lastError) {
+            return this.error(this.lastError);
+        }
+        return group;
+    }
+
+    async adddBulkMembers(user_id, group_name, user_ids) {
+
+        try {
+            //find check if the user to do this is authorized - ie an admin - only admins can make another user admin
+            var c = this.sObj.db.collection(this.sObj.col.groups);
+
+            var adminQuery = {
+                $and: [
+                    {
+                        name: group_name
+                    },
+                    {
+                        'members.user_id': user_id//query does not require positional $ operator to access the field
+                    },
+                    {
+                        'members.is_admin': true//query does not require positional $ operator to access the field
+                    },
+                    {
+                        'members.committed': true
+                    }
+                ]
+            };
+
+            //first check if the user is an admin
+            var admin = await c.findOne(adminQuery, {_id: 0});
+
+
+            if (!admin) {
+                return this.error("Not authorized to make another user an admin.");
+            }
+
+        } catch (e) {
+
+            console.log(e);
+
+            return this.error("Failed operation!");
+        }
+
+        var group = await this._addToGroup(user_ids, group_name, false);
+        if (this.lastError) {
+            return this.error(this.lastError);
+        }
+        return group;
+    }
     /**
      * Reject a group join request and adds the user to the group
      * 
@@ -224,8 +316,8 @@ class Group extends WebApplication {
         var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
         try {
             var r = await req_col.deleteOne({authorization_token: authorization_token}, {w: 'majority'});
-            if(r.result.n === 0){
-               return 'No group join request!'; 
+            if (r.result.n === 0) {
+                return 'No group join request!';
             }
         } catch (e) {
 
@@ -306,7 +398,11 @@ class Group extends WebApplication {
         };
     }
 
-    async _addToGroup(user_id, group_name, is_admin) {
+    async _addToGroup(user_ids, group_name, is_admin) {
+
+        if (!Array.isArray(user_ids)) {
+            user_ids = [user_ids];
+        }
 
         //acquire lock with the specified number of trials
         var lock_result = await this._tryWith(this._lock, 3, 0, group_name);
@@ -314,12 +410,12 @@ class Group extends WebApplication {
         console.log('lock_result', lock_result);
 
         if (!lock_result) {
-            return 'Server busy!'; //failed to acquire lock after the specifed number of trials
+            return this.error('Server busy!'); //failed to acquire lock after the specifed number of trials
         }
 
         var group_col = this.sObj.db.collection(this.sObj.col.groups);
         var me = this;
-        var memberObj = {};
+        var memberObjs = [];
         var group_members = [];
 
         return group_col.findOne({name: group_name}, {_id: 0})
@@ -336,7 +432,10 @@ class Group extends WebApplication {
                         return Promise.reject("Maximum group members exceeded! Limit allowed is " + me.sObj.MAX_GROUP_MEMBERS + ".");
                     }
 
-                    memberObj = me._groupMemberObj(user_id, is_admin, false);
+                    for (var i = 0; i < user_ids.length; i++) {
+                        memberObjs[i] = me._groupMemberObj(user_ids, is_admin, false);
+                    }
+
                     //we will commit the update if all 
                     //operation is successful - the variable we help us detect if
                     //the member addition is inconsistent so that we call remove it
@@ -344,37 +443,65 @@ class Group extends WebApplication {
                     //This is our simple implementation of two phase commit or rollback 
                     //recommended by MongoDB as an alternative for RDBMS like transaction
 
-                    //check if the member already exist
-                    for (var i = 0; i < group.members.length; i++) {
-                        if (group.members[i].user_id === user_id) {
-                            return Promise.reject(`User already exist in the group - ${user_id}`);
+                    for (var i = 0; i < memberObjs.length; i++) {
+                        var mem = memberObjs[i];
+                        var found = false;
+                        for (var k = 0; k < group.members.length; k++) {
+                            if (group.members[k].user_id === mem.user_id) {
+                                mem.date_joined = group.members[k].date_joined; // retain the date jioned
+                                group.members[k] = mem;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            group.members.push(mem);
                         }
                     }
-
-                    group.members.push(memberObj);
 
                     group_members = group.members; // set the group memeber - 
                     //will be needed down below for committing this operation
 
                     return  group_col.update({name: group_name}, {$set: {members: group.members}}, {w: 'majority'});
                 })
-                .then(function () {
+                .then(function ()
+                {
                     var user_col = me.sObj.db.collection(me.sObj.col.users);
-                    return  user_col.updateOne({user_id: user_id}, {$addToSet: {groups_belong: group_name}}, {w: 'majority'});
+                    var query = {$or: []};
+                    for (var i = 0; i < user_ids.length; i++) {
+                        query.$or.push({
+                            user_id: user_ids[i]
+                        });
+                    }
+                    return  user_col.updateMany(query, {$addToSet: {groups_belong: group_name}}, {w: 'majority'});
                 })
                 .then(function () {
-                    //now commit the change
-                    memberObj.committed = true;
-                    return group_col.updateOne({name: group_name}, {$set: {members: group_members}}, {w: 'majority'});
+                    //now commit the changes
+                    for (var i = 0; i < memberObjs.length; i++) {
+                        memberObjs[i].committed = true;
+                    }
+                    return group_col.findAndUpdateOne({name: group_name}, {$set: {members: group_members}},
+                            {
+                                projection: {_id: 0},
+                                returnOriginal: false, //return the updated document
+                                w: 'majority'
+                            });
                 })
-                .then(function () {
-                    return `Joins group - ${group_name}`;
+                .then(async function (r) {
+                    var group = r.value;
+                    var groups = await  me._normalizeGroupsInfo(group);
+                    if (me.lastError) {
+                        return Promise.reject(me.lastError);
+                    }
+
+                    group = groups[0];//we know it is only one group
+
+                    return group;
                 });
 
     }
 
     async createGroup(user_id, group_name, status_message, photo_url) {
-
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -514,41 +641,13 @@ class Group extends WebApplication {
 
 
             if (!admin) {
-                return "Not authorized to make another user an admin.";
+                return this.error("Not authorized to make another user an admin.");
             }
-
-            //ok you are free to make one of your members an admin
-            /**
-             *
-             * @deprecated NOT WORKING AS EXPECTED IF UNCOMMITTED ENTRIES ARE INSIDE
-             *
-             var newAdminQuery = {
-             $and: [
-             {
-             name: group_name
-             },
-             {
-             'members.user_id': new_admin_user_id
-             },
-             {
-             'members.is_admin': false
-             },
-             {
-             'members.committed': true
-             }
-             ]
-             };
-             
-             
-             //var rs = await c.update(newAdminQuery, {$set: {'members.$.is_admin': true}}, { w: 'majority'});//NOT WORKING PROPERLY IF UNCOMMITTED ENTRIES IN INSIDE
-             
-             */
-
 
             var group = await c.findOne({name: group_name}, {_id: 0});
 
             if (!group) {
-                return 'Not a group';
+                return this.error('Not a group');
             }
 
             if (!Array.isArray(group.members)) {
@@ -564,7 +663,7 @@ class Group extends WebApplication {
                 }
                 if (group.members[i].user_id === new_admin_user_id) {
                     if (group.members[i].is_admin) {
-                        return "member is already an admin";
+                        return this.error("member is already an admin");
                     }
                     group.members[i].is_admin = true;
                     found_member = group.members[i];
@@ -572,7 +671,7 @@ class Group extends WebApplication {
             }
 
             if (!found_member) {
-                return `Admin member not found - ${new_admin_user_id}`;
+                return this.error(`Admin member not found - ${new_admin_user_id}`);
             }
 
             await c.updateOne({name: group_name}, {$set: {members: group.members}});
@@ -580,7 +679,7 @@ class Group extends WebApplication {
             console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
 
             if (group.members.length === 0) {
-                return 'No member';
+                return this.error('No member');
             }
 
             return "Created admin succesfully.";
@@ -618,41 +717,6 @@ class Group extends WebApplication {
             if (group.created_by === demoted_admin_user_id) {
                 return "Cannot demote the group creator!";
             }
-
-            /**
-             * @deprecated NOT WORKING AS EXPECTED IF UNCOMMITTED ENTRIES ARE INSIDE
-             //ok you are free to make one of your members an admin
-             var demotedAdminQuery = {
-             $and: [
-             {
-             name: group_name
-             },
-             {
-             'members.user_id': demoted_admin_user_id
-             },
-             {
-             'members.is_admin': true
-             },
-             {
-             'members.committed': true
-             }
-             ]
-             };
-             
-             //using positional $ operator and dot '.' to access the user_id and set update the value
-             
-             //do not use updateOne here but rather use update - since there is possibility of duplicates of uncommitted entries
-             //which will affect the result
-             var rs = await c.update(demotedAdminQuery, {$set: {'members.$.is_admin': false}}, {w: 'majority'});
-             
-             var result = rs.result;
-             
-             if (result.n > 0 && result.nModified > 0) {
-             return "demoted user succesfully.";
-             } else if (result.n > 0 && result.nModified === 0) {
-             return "member is already not an admin";
-             }
-             */
 
 
             var group = await c.findOne({name: group_name}, {_id: 0});
@@ -812,70 +876,20 @@ class Group extends WebApplication {
      */
     async getGroupInfo(group_name) {
 
-        //simulateGroupDetails(group_name);//TESTING!!!
         try {
             var c = this.sObj.db.collection(this.sObj.col.groups);
             var group = await c.findOne({name: group_name}, {_id: 0});
             if (!group) {
                 return this.error(`Unknown group name - ${group_name}`);
             }
-            //get the group members info
 
-            //var failed_commit_members = [];
-            var hasFailedUncommitMember = false;
-            var members_ids = [];
-            var group_members = group.members;
-            if (!Array.isArray(group_members)) {
-                group_members = [];
-            }
-            for (var k = 0; k < group_members.length; k++) {
-                if (!group_members[k].committed) {
-                    hasFailedUncommitMember = true;
-                    group_members.splice(k, 1);//delete from the list.
-                    k--;//go back one step
-                    continue;//skip - obviously the group member was not properly added - we will correct that
-                }
-                members_ids.push(group_members[k].user_id);
+            var groups = await  this._normalizeGroupsInfo(group);
+            if (this.lastError) {
+                return this.error(this.lastError);
             }
 
+            group = groups[0];//we know it is only one group
 
-            if (hasFailedUncommitMember) {//remove 'fauked commit' members
-                this._removeFailedCommitMembers(group_name);
-            }
-
-            var users_list = await new User(this.sObj, this.util).getInfoList(members_ids);
-            //we expect an array of user info
-            if (!Array.isArray(users_list)) {
-                this.error('Could not get groups info');
-                return this;
-            }
-
-            //at this point the users info was gotten correctly
-
-            if (!Array.isArray(group.members)) {
-                group.members = [];//initialize
-            }
-            var group_members = group.members;
-            for (var k = 0; k < group_members.length; k++) {
-                for (var n = 0; n < users_list.length; n++) {
-                    if (users_list[n].user_id === group_members[k].user_id) {
-                        //copy (merging) the object users_list[n] to group_members[k] to
-                        // complete the user object info related to the group
-                        this.util.merge(users_list[n], group_members[k]);
-                        break;
-                    }
-                }
-            }
-
-            group.admins = Array.isArray(group.members) ? group.members.filter(function (member) {
-                return member.is_admin;
-            }) : [];
-
-            group.total_members = this.util.length(group.members);
-            group.total_admins = this.util.length(group.admins);
-
-
-            //this.sObj.db.close();//not neccessary - the driver does the connection pooling automatically
         } catch (e) {
             console.log(e);
             this.error("Could not get group info!");
@@ -962,6 +976,50 @@ class Group extends WebApplication {
             this.error("Could not get groups info.");
             return this;
         }
+
+        groups = await  this._normalizeGroupsInfo(groups);
+        if (this.lastError) {
+            return this.error(this.lastError);
+        }
+
+        return groups;
+    }
+    /**
+     * Get the list of groups belong to by this user. The list consist of 
+     * the group info.
+     * 
+     * @param {type} user_id
+     * @returns {nm$_group.Group.getGroupsInfoList.groups|Group.getGroupsInfoList.groups|Array|undefined|nm$_group.Group}
+     */
+    async getUserGroupsInfoList(user_id) {
+        try {
+
+            var c = this.sObj.db.collection(this.sObj.col.users);
+            var user = await c.findOne({user_id: user_id}, {_id: 0});
+            if (!user || !user.groups_belong) {
+                return [];
+            }
+            return this.getGroupsInfoList(user.groups_belong);
+
+        } catch (e) {
+            console.log(e);//DO NOT DO THIS IN PRODUCTION
+
+            this.error('Could not get user groups info');
+            return this;
+        }
+    }
+
+    async _normalizeGroupsInfo(groups) {
+
+        if (!groups) {
+            this.error('No group provided.');
+            return;
+        }
+
+        if (!Array.isArray(groups)) {
+            groups = [groups];
+        }
+
         var members_ids = [];
         //var failed_commit_members = [];
         var hasFailedUncommitMember = false;
@@ -998,7 +1056,7 @@ class Group extends WebApplication {
         //we expect an array of user info
         if (!Array.isArray(users_list) || users_list.length === 0) {
             this.error('Could not get groups info');
-            return this;
+            return;
         }
 
         //at this point the users info was gotten correctly
@@ -1032,30 +1090,6 @@ class Group extends WebApplication {
 
 
         return groups;
-    }
-    /**
-     * Get the list of groups belong to by this user. The list consist of 
-     * the group info.
-     * 
-     * @param {type} user_id
-     * @returns {nm$_group.Group.getGroupsInfoList.groups|Group.getGroupsInfoList.groups|Array|undefined|nm$_group.Group}
-     */
-    async getUserGroupsInfoList(user_id) {
-        try {
-
-            var c = this.sObj.db.collection(this.sObj.col.users);
-            var user = await c.findOne({user_id: user_id}, {_id: 0});
-            if (!user || !user.groups_belong) {
-                return [];
-            }
-            return this.getGroupsInfoList(user.groups_belong);
-
-        } catch (e) {
-            console.log(e);//DO NOT DO THIS IN PRODUCTION
-
-            this.error('Could not get user groups info');
-            return this;
-        }
     }
 
 }

@@ -1,5 +1,5 @@
 
-/* global Ns */
+/* global Ns, Main */
 
 Ns.ui.Dialog = {
 
@@ -7,9 +7,22 @@ Ns.ui.Dialog = {
         
         var contacts = Ns.view.Contacts.contactList;
         obj.items = contacts;
-        obj.url = 'simple-list-b-tpl.html';
+        obj.url = 'simple-list-c-tpl.html';
         if(!obj.width){
             obj.width = window.innerWidth * 0.8;
+        }
+        if(!obj.onRender){
+            obj.onRender = function(tpl_var, data){
+                if(tpl_var === 'data_a'){
+                    return data.photo_url;
+                }
+                if(tpl_var === 'data_b'){
+                    return data.full_name;
+                }
+                if(tpl_var === 'data_c'){
+                    return data.user_id;//the phone number
+                }
+            };
         }
         Ns.ui.Dialog._selList(obj);
     },
@@ -33,13 +46,14 @@ Ns.ui.Dialog = {
         }
 
         Main.dialog.show({
+            visible: false,//first hide it - we will manually show it only when the dialog and it content is fully rendered by call setVisible to avoid an annoying visual issue
             title: obj.title ? obj.title : '',
             //content: '<div id="' + container_id + '"></div>',
             width: obj.width,
             height: obj.height,
             maxWidth: obj.maxWidth || 400,
             maxHeight: obj.maxHeight || 600,
-            fade: true,
+            //fade: true,//we do not need this property since the dialog will not be visible immediately until we are ready to call setVisible - so skip this fade transition an call onShow function immediately
             closeButton: !Main.device.isMobileDeviceReady, //do not show the close button in mobile device
             touchOutClose: true, //close the dialog if the user touch outside it  
             modal: true,
@@ -125,6 +139,13 @@ Ns.ui.Dialog = {
                     this.appendItem(obj.items[i]);
                 }*/
                 obj.dialog.layout();
+                
+                //now reveal the dialog after all is set and ok
+                obj.dialog.setVisible({
+                    value : true,
+                    duration: 300
+                });
+                
             }
         });
 

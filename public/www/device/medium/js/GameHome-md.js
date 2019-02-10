@@ -268,6 +268,7 @@ Ns.GameHome = {
         });
         
     },
+
     showTournamentInhouseChat: function (tournament) {
         
         Main.card.to({
@@ -279,12 +280,55 @@ Ns.GameHome = {
         });
         
     },
-    showCreateGroup: function () {
+
+    showCreateGroup: function (data) {
+
+        Main.card.to({
+            container: '#home-main',
+            url: 'create-group.html',
+            fade: true,
+            data: data,
+            onShow: Ns.GameCreateGroup.Content
+        });
 
     },
-    showCreateTournament: function () {
+    
+    showCreateTournament: function (data) {
+
+        Main.card.to({
+            container: '#home-main',
+            url: 'create-tournament.html',
+            fade: true,
+            data: data,
+            onShow: Ns.GameCreateTournament.Content
+        });
 
     },
+    
+    showEditGroup: function (data) {
+
+        Main.card.to({
+            container: '#home-main',
+            url: 'edit-group.html',
+            fade: true,
+            data: data,
+            onShow: Ns.GameEditGroup.Content
+        });
+
+    },
+    
+    showEditTournament: function (data) {
+        
+        Main.card.to({
+            container: '#home-main',
+            url: 'edit-tournament.html',
+            fade: true,
+            data: data,
+            onShow: Ns.GameEditTournament.Content
+        });
+
+    },
+        
     showUserProfile: function (user) {
 
         Main.card.to({

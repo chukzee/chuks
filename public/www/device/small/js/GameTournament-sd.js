@@ -17,8 +17,8 @@ Ns.GameTournament = {
 
         Main.page.show({
             url: 'performance-view.html',
-            effect: "slideleft",
-            duration: 500,
+            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
             onBeforeShow: Ns.GamePerformance.Content,
             data: data
         });

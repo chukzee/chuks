@@ -74,6 +74,8 @@
             //"bootstrap.min.css", // disabled - does not integrate well with game9ja css design 
             //"bootstrap-theme.min.css", // disabled - does not integrate well with game9ja css design 
             "app-main.css",
+            "choose-icon.css",
+            "default-header.css",
             "board.css",
             "form.css",
             "tab.css",
@@ -162,6 +164,10 @@
             "view/Rankings.js",
             "view/TournamentsView.js",
             "view/SearchView.js",
+            "view/CreateGroup.js",
+            "view/CreateTournament.js",
+            "view/EditGroup.js",
+            "view/EditTournament.js",
             "game/Chess.js",
             "game/Draughts.js",
             "game/Ludo.js",
@@ -208,7 +214,11 @@
             "GameContactChat-sd.js",
             "GameGroupChat-sd.js",
             "GameTournamentGeneralChat-sd.js",
-            "GameTournamentInhouseChat-sd.js"
+            "GameTournamentInhouseChat-sd.js",
+            "GameCreateGroup-sd.js",
+            "GameCreateTournament-sd.js",
+            "GameEditGroup-sd.js",
+            "GameEditTournament-sd.js"
         ] 
     },
 
@@ -238,7 +248,11 @@
             "GameContactChat-md.js",
             "GameGroupChat-md.js",
             "GameTournamentGeneralChat-md.js",
-            "GameTournamentInhouseChat-md.js"
+            "GameTournamentInhouseChat-md.js",
+            "GameCreateGroup-md.js",
+            "GameCreateTournament-md.js",
+            "GameEditGroup-md.js",
+            "GameEditTournament-md.js"
         ]
     },
 
@@ -268,7 +282,11 @@
             "GameContactChat-ld.js",
             "GameGroupChat-ld.js",
             "GameTournamentGeneralChat-ld.js",
-            "GameTournamentInhouseChat-ld.js"
+            "GameTournamentInhouseChat-ld.js",
+            "GameCreateGroup-ld.js",
+            "GameCreateTournament-ld.js",
+            "GameEditGroup-ld.js",
+            "GameEditTournament-ld.js"
         ]
     }
 }

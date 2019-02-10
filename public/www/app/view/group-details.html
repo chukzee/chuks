@@ -19,7 +19,7 @@ and open the template in the editor.
                 <div id="group-details-group-name"></div>
                 <div id="group-details-status-message"></div><!--Group profile status - expected to be a short phrase-->
 
-                <i  id="group-details-edit"  class="fa fa-edit"></i>
+                <i  id="group-details-edit"  class="fa fa-edit group-admins-only"></i>
                 <div><!--transparent header layer--></div>
                 <div>
                     <i class="fa fa-arrow-left" id="group-details-back-btn"></i>
@@ -37,214 +37,227 @@ and open the template in the editor.
                         <i  id="group-details-date-created"></i>
                     </div>
                 </div>
-                <div><div><span id="group-details-members-count"></span> members</div></div>
-                <div><input type="button" value="Custom Notifications" /></div>
+                <div id="group-details-settings" class="group-admins-only"><!--visible only to group admins-->
+                    <input type="button" value="Group settings" />
+                </div>
+                <div><input type="button" value="Custom notifications" /></div>
             </div>
             <div> <!--group admins-->
-                <div>Group Admins</div>
-                <span  id="group-details-admins-count"></span>
+                <div>
+                    <span id="group-details-admins-count">
+                        <!--2 group admins-->
+                    </span> 
+
+                    <span id="group-details-admins-add" class="group-admins-only">Add <i class="fa fa-plus"></i></span><!--visible only to group admins--> 
+                </div>
                 <div  id="group-details-admins">
-                <!--
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
+                    <!--
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+                        
+                        <li>
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li>show date joined group
+                            22/01/2016
+                        </li>
+                    </ul>
+    
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            READ !!!
+                            Exit Group button will replace Lets Play button if the 
+                            list item is for that of the  current users of the app.
+                            Note to avoid accidental exiting of group the clicking 
+                            of the Exit Group button will display a question dialog
+                            box where the user will specify the reason why he 
+                            wants to exit the group. The question will be as follow:
+                            
+                            Please specify why you want to exit this group.
+                            a) The group is boring.
+                            b) The players are not my match.
+                            c) I do not get enough challenges.
+                            d) Other reasons.
+                            
+                            An Other Reason input textfield will allow the user to 
+                            type the reason. 
+                            
+                            Note also that the reason for exiting a group must be
+                            made compulsory before the user can exit. If the user
+                            does not consciously specify the reason for exiting, he
+                            must be denied the ability to exit. This will therefore
+                            prevent accidental exiting of the group
+                                                    
+                                                   
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li> show date joined group
+                            21/09/2016
+                        </li>
+                    </ul>
                     
-                    <li>
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li>show date joined group
-                        22/01/2016
-                    </li>
-                </ul>
-
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        READ !!!
-                        Exit Group button will replace Lets Play button if the 
-                        list item is for that of the  current users of the app.
-                        Note to avoid accidental exiting of group the clicking 
-                        of the Exit Group button will display a question dialog
-                        box where the user will specify the reason why he 
-                        wants to exit the group. The question will be as follow:
-                        
-                        Please specify why you want to exit this group.
-                        a) The group is boring.
-                        b) The players are not my match.
-                        c) I do not get enough challenges.
-                        d) Other reasons.
-                        
-                        An Other Reason input textfield will allow the user to 
-                        type the reason. 
-                        
-                        Note also that the reason for exiting a group must be
-                        made compulsory before the user can exit. If the user
-                        does not consciously specify the reason for exiting, he
-                        must be denied the ability to exit. This will therefore
-                        prevent accidental exiting of the group
-                                                
-                                               
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li> show date joined group
-                        21/09/2016
-                    </li>
-                </ul>
-                
-                -->
+                    -->
                 </div>
             </div>
-            
-            <div><!--Other members-->
-                <div>Other Members</div>   
+
+            <div><!--Group members-->
+                <div>
+                    <span id="group-details-members-count">
+                        <!--34 members-->
+                    </span> 
+
+                    <span id="group-details-members-add" class="group-admins-only">Add <i class="fa fa-plus"></i></span><!--visible only to group admins--> 
+                </div>   
                 <div  id="group-details-members">
-                <!--
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        READ !!!
-                        Exit Group button will replace Lets Play button if the 
-                        list item is for that of the  current users of the app.
-                        Note to avoid accidental exiting of group the clicking 
-                        of the Exit Group button will display a question dialog
-                        box where the user will specify the reason why he 
-                        wants to exit the group. The question will be as follow:
-                        
-                        Please specify why you want to exit this group.
-                        a) The group is boring.
-                        b) The players are not my match.
-                        c) I do not get enough challenges.
-                        d) Other reasons.
-                        
-                        An Other Reason input textfield will allow the user to 
-                        type the reason. 
-                        
-                        Note also that the reason for exiting a group must be
-                        made compulsory before the user can exit. If the user
-                        does not consciously specify the reason for exiting, he
-                        must be denied the ability to exit. This will therefore
-                        prevent accidental exiting of the group
-                                                
-                        
-                        <input class="game9ja-exit-group-btn" type="button" value="Exit Group"/>
-                    </li>
-                    <li> show date joined group
-                        12/05/2017
-                    </li>
-                </ul>
-
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li> show date joined group
-                        04/05/2017
-                    </li>
-                </ul>
-
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li>show date joined group
-                        25/09/2016
-                    </li>
-                </ul>
-
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li> show date joined group
-                        04/05/2017
-                    </li>
-                </ul>
-
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li> show date joined group
-                        25/09/2016
-                    </li>
-                </ul>
-
-                <ul class="game9ja-user-show-list">
-
-                    <li><img  src="images/white_player.jpg" alt=" "/></li>
-                    <li>
-                        Chuks Alimele
-                    </li>
-                    <li>
-                        07083924582
-                    </li>
-
-                    <li>
-                        <input type="button" value="Lets play"/>
-                    </li>
-                    <li> show date joined group
-                        04/03/2017
-                    </li>
-                </ul>
-                -->
+                    <!--
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            READ !!!
+                            Exit Group button will replace Lets Play button if the 
+                            list item is for that of the  current users of the app.
+                            Note to avoid accidental exiting of group the clicking 
+                            of the Exit Group button will display a question dialog
+                            box where the user will specify the reason why he 
+                            wants to exit the group. The question will be as follow:
+                            
+                            Please specify why you want to exit this group.
+                            a) The group is boring.
+                            b) The players are not my match.
+                            c) I do not get enough challenges.
+                            d) Other reasons.
+                            
+                            An Other Reason input textfield will allow the user to 
+                            type the reason. 
+                            
+                            Note also that the reason for exiting a group must be
+                            made compulsory before the user can exit. If the user
+                            does not consciously specify the reason for exiting, he
+                            must be denied the ability to exit. This will therefore
+                            prevent accidental exiting of the group
+                                                    
+                            
+                            <input class="game9ja-exit-group-btn" type="button" value="Exit Group"/>
+                        </li>
+                        <li> show date joined group
+                            12/05/2017
+                        </li>
+                    </ul>
+    
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li> show date joined group
+                            04/05/2017
+                        </li>
+                    </ul>
+    
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li>show date joined group
+                            25/09/2016
+                        </li>
+                    </ul>
+    
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li> show date joined group
+                            04/05/2017
+                        </li>
+                    </ul>
+    
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li> show date joined group
+                            25/09/2016
+                        </li>
+                    </ul>
+    
+                    <ul class="game9ja-user-show-list">
+    
+                        <li><img  src="images/white_player.jpg" alt=" "/></li>
+                        <li>
+                            Chuks Alimele
+                        </li>
+                        <li>
+                            07083924582
+                        </li>
+    
+                        <li>
+                            <input type="button" value="Lets play"/>
+                        </li>
+                        <li> show date joined group
+                            04/03/2017
+                        </li>
+                    </ul>
+                    -->
                 </div>
             </div>
 

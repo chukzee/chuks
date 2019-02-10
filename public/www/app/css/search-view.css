@@ -8,9 +8,10 @@ and open the template in the editor.
     Author     : Engr Chuks
 */
 .game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
+  margin: 0;
   width: 100%;
   height: 50px;
   background: #333;
@@ -39,179 +40,10 @@ and open the template in the editor.
     Author     : Engr Chuks
 */
 .game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 50px;
-  background: #333;
-  background: #222;
-  color: #eee; }
-
-.game9ja-light-header {
-  background: #565; }
-
-.game9ja-footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 35px;
-  background: #222;
-  color: #eee; }
-
-.game9ja-header-item-right {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-right-a {
-  position: absolute;
-  top: 5px;
-  right: 35px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-right-b {
-  position: absolute;
-  top: 5px;
-  right: 65px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-right-c {
-  position: absolute;
-  top: 5px;
-  right: 95px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-right-d {
-  position: absolute;
-  top: 5px;
-  right: 125px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-right-e {
-  position: absolute;
-  top: 5px;
-  right: 155px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-left {
-  position: absolute;
-  top: 5px;
-  left: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-left-a {
-  position: absolute;
-  top: 5px;
-  left: 50px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-.game9ja-header-item-left-b {
-  position: absolute;
-  top: 5px;
-  left: 80px;
-  font-size: 14px;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
-
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : May 20, 2017, 3:37:46 PM
-    Author     : Engr Chuks
-*/
-.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 50px;
-  background: #333;
-  background: #222;
-  color: #eee; }
-
-.game9ja-light-header {
-  background: #565; }
-
-.game9ja-footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 35px;
-  background: #222;
-  color: #eee; }
-
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : May 20, 2017, 3:37:46 PM
-    Author     : Engr Chuks
-*/
-.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
-  position: absolute;
-  top: 0;
-  left: 0;
+  margin: 0;
   width: 100%;
   height: 50px;
   background: #333;
@@ -348,9 +180,182 @@ and open the template in the editor.
     Author     : Engr Chuks
 */
 .game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
+  margin: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: #222;
+  color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #222;
+  color: #eee; }
+
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
+  position: relative;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  background: #222;
+  color: #eee; }
+
+.game9ja-light-header {
+  background: #565; }
+
+.game9ja-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  background: #222;
+  color: #eee; }
+
+.game9ja-header-item-right {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-a {
+  position: absolute;
+  top: 5px;
+  right: 35px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-b {
+  position: absolute;
+  top: 5px;
+  right: 65px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-c {
+  position: absolute;
+  top: 5px;
+  right: 95px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-d {
+  position: absolute;
+  top: 5px;
+  right: 125px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-right-e {
+  position: absolute;
+  top: 5px;
+  right: 155px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-left {
+  position: absolute;
+  top: 5px;
+  left: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-left-a {
+  position: absolute;
+  top: 5px;
+  left: 50px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.game9ja-header-item-left-b {
+  position: absolute;
+  top: 5px;
+  left: 80px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 20, 2017, 3:37:46 PM
+    Author     : Engr Chuks
+*/
+.game9ja-header, .game9ja-light-header, .game9ja-search-header, .game9ja-search-view-header {
+  position: relative;
+  top: 0;
+  left: 0;
+  margin: 0;
   width: 100%;
   height: 50px;
   background: #333;

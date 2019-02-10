@@ -53,7 +53,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({//TESTING!!!
             url: "game-view-sd.html",
             effect: "slideleft",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameView.Content,
             data: {
                 game: "name of game e.g chess , draughts etc",
@@ -93,7 +93,7 @@ Main.on("pagecreate", function (arg) {
         Main.page.show({//TESTING!!!
             url: "game-watch-sd.html",
             effect: "slideleft",
-            duration: 500,
+            duration: 300,
             onBeforeShow: Ns.GameWatch.Content,
             data: {
                 game: "name of game e.g chess , draughts etc",

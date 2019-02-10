@@ -17,8 +17,8 @@ Main.on("pagecreate", function (arg) {
 
         Main.page.show({
             url: "game-home.html",
-            effect: "slideleft",
-            duration: 500,
+            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'chess'
         });
@@ -28,8 +28,8 @@ Main.on("pagecreate", function (arg) {
     $('#game-select-draughts').on('click', function () {
         Main.page.show({
             url: "game-home.html",
-            effect: "slideleft",
-            duration: 500,
+            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'draughts'
         });
@@ -38,8 +38,8 @@ Main.on("pagecreate", function (arg) {
     $('#game-select-ludo').on('click', function () {
         Main.page.show({
             url: "game-home.html",
-            effect: "slideleft",
-            duration: 500,
+            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'ludo'
         });
@@ -48,8 +48,8 @@ Main.on("pagecreate", function (arg) {
     $('#game-select-solitaire').on('click', function () {
         Main.page.show({
             url: "game-home.html",
-            effect: "slideleft",
-            duration: 500,
+            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'solitaire'
         });
@@ -58,8 +58,8 @@ Main.on("pagecreate", function (arg) {
     $('#game-select-whot').on('click', function () {
         Main.page.show({
             url: "game-home.html",
-            effect: "slideleft",
-            duration: 500,
+            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
             onBeforeShow: Ns.GameHome.Content,
             data: 'whot'
         });

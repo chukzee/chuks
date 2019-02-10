@@ -1,0 +1,45 @@
+
+
+.game9ja-choose-icon{
+    >:nth-child(1){
+        display: inline-block;
+        width: 100px; 
+        height: 100%;
+        >:nth-child(1){
+            position: absolute;
+            top: 0;
+            width: 100%;
+            padding-top: 10px;
+        }
+    }
+    >:nth-child(2){
+        display: inline-block;
+        width: 40px; 
+        height: 100%;
+        >:nth-child(1){//custom file chooser component
+            position: absolute;
+            top: 0;
+            width: 40px;
+            text-align: center;
+            padding-top: 5px;
+            font-size: 30px; 
+            color: #006633; 
+            cursor: pointer;
+        }
+        >:nth-child(2){//hide the file chooser -  we will click it via our custom file chooser component
+            display: none;
+        }
+    }
+    
+    >:nth-child(3){
+        display: inline-block;
+        width: 50px;
+        height: 100%;
+        >:nth-child(1){
+            position: absolute;
+            top: 0; 
+            width: 40px;
+        }
+    }
+    
+}

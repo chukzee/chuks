@@ -10,6 +10,10 @@ class WebApplication {
         this.data = {};
         this.success = false;
     }
+    
+    get files(){
+        return this._files;
+    }
 
     send(event_name, _data, to_user_id, acknowledge_delivery, message_ttl_in_seconds) {
         if (Array.isArray(to_user_id)) {
@@ -152,7 +156,7 @@ class WebApplication {
                     console.log(e);
                 }
 
-                console.log('setTimeout ', try_count);
+                //console.log('setTimeout ', try_count);
 
                 setTimeout(run, wait_mills);
             }
