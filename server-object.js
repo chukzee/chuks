@@ -7,6 +7,8 @@ var game = require('./app/game/game');
 var shortid = require('shortid');
 var moment = require('moment');
 var crypto = require('crypto');
+var request = require('request-promise-native');
+var fs = require('fs');
 var execSync = require('child_process').execSync;
 var initial_unique;
 var unique_count = 0;
@@ -15,18 +17,18 @@ class ServerObject {
 
     constructor(db, redis, evt, config, appLoader) {
         this._db = db;
-        
+
         //console.log('this.KICKOFF_TIME_REMINDER', this.KICKOFF_TIME_REMINDER);
-        
+
         this._config = config;
-        
+
         this._redis = redis;
         this._game = game;
-        
-        
+
+
         mgcol = mgcol.init(this);
         this._col = mgcol.geCollections();
-        
+
         //for every startup a unique number is initialized
         initial_unique = crypto.randomBytes(48)//secure random number
                 .toString('base64')//to base64
@@ -55,10 +57,10 @@ class ServerObject {
         } else if (process.platform.startsWith('mac')) {
             this._machine_id = getMachineID('/usr/sbin/system_profiler SPHardwareDataType', 'Serial Number:');
         }
-        
-        if(!this._machine_id){
+
+        if (!this._machine_id) {
             console.warn('WARNING!!! Could not get the server machine id! This should not happen.');
-        }else{
+        } else {
             console.log(`Server Machine ID: ${this._machine_id}`);
         }
 
@@ -94,6 +96,17 @@ class ServerObject {
 
 
     }
+
+    async resizeImage(obj) {
+        var formData = {
+            type: obj.type,//whether user, group or tournament
+            id: obj.id, //username, group name or tournament name
+            image_file: fs.createReadStream(obj.filename)
+        };
+        var url = `http://${this.config.IMAGE_SERVICE_HOST}:${this.config.IMAGE_SERVICE_PORT}`;
+        return await request.post({url:url, formData: formData});
+    }
+
     /**
      * Get the io socket ids of this user. If a callback is provided
      * the method is asynchronous but if no callback then the method
@@ -225,43 +238,43 @@ class ServerObject {
     get MATCH_SCHEDULE_OFFSET() {//allowable match schedule offset from current time in ms
         return 900000; //900000 ms is 15 mins
     }
-    
-    get MIN_TOURNAMENT_LIST(){//min number of tournaments to return otherwise random search will be made to complete the minimum numbers
+
+    get MIN_TOURNAMENT_LIST() {//min number of tournaments to return otherwise random search will be made to complete the minimum numbers
         return 50;
     }
-    
-    get WIN_POINT(){
+
+    get WIN_POINT() {
         return 3;
     }
-    
-    get DRAW_POINT(){
+
+    get DRAW_POINT() {
         return 1;
     }
-    
-    get MAX_RATING(){
+
+    get MAX_RATING() {
         return 5; //5 starS e.g *****
     }
-    
-    get MIN_RATING(){
+
+    get MIN_RATING() {
         return 1; //1 star e.g *
     }
-    
-    get DEFAULT_RATING(){
+
+    get DEFAULT_RATING() {
         return 2.5; //half of MAX_RATING
     }
-    
-    get MT_SCORE_TOURNAMENT(){//Match importance score for tournament match - used for ranking players
+
+    get MT_SCORE_TOURNAMENT() {//Match importance score for tournament match - used for ranking players
         return 4;
     }
-    
-    get MT_SCORE_GROUP(){//Match importance score for group match - used for ranking players
+
+    get MT_SCORE_GROUP() {//Match importance score for group match - used for ranking players
         return 2.5;
     }
 
-    get MT_SCORE_CONTACT(){//Match importance score for contact match - used for ranking players
+    get MT_SCORE_CONTACT() {//Match importance score for contact match - used for ranking players
         return 2.5;
     }
-    
+
     get task() {
         return this._task;
     }

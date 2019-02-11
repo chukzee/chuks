@@ -159,14 +159,15 @@ class Group extends WebApplication {
             }
 
             var authorization_token = this.sObj.UniqueNumber;
-
+        
             var data = {
                 group_name: group_name,
                 authorization_token: authorization_token,
                 admin_user_id: from_user_id,
                 requested_user_id: to_user_id,
                 status_message: group.status_message,
-                photo_url: group.photo_url,
+                small_photo_url: group.small_photo_url,
+                large_photo_url: group.large_photo_url,
                 created_by: group.created_by,
                 notification_type: 'group_join_request',
                 notification_time: new Date()
@@ -174,7 +175,6 @@ class Group extends WebApplication {
 
             var req_col = this.sObj.db.collection(this.sObj.col.group_join_requests);
             await req_col.insertOne(data); //await the asynchronous process
-
 
             this.send(this.evt.group_join_request, data, to_user_id, true);
 
@@ -501,7 +501,7 @@ class Group extends WebApplication {
 
     }
 
-    async createGroup(user_id, group_name, status_message, photo_url) {
+    async createGroup(user_id, group_name, status_message) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -509,7 +509,24 @@ class Group extends WebApplication {
             user_id = arguments[0].user_id;
             group_name = arguments[0].group_name;
             status_message = arguments[0].status_message;
-            photo_url = arguments[0].photo_url;
+        }
+
+        try {
+
+            var rs = await this.sObj.resizeImage({
+                id: group_name,
+                type: 'group',
+                filename: this.files.group_icon
+            });
+
+            if (!rs.success) {
+                this.error('Something is not right!');
+                return;
+            }
+        } catch (e) {
+            console.log(e);
+            this.error('Something went wrong!');
+            return;
         }
 
         var c = this.sObj.db.collection(this.sObj.col.groups);
@@ -517,7 +534,8 @@ class Group extends WebApplication {
         var group = {
             name: group_name,
             status_message: status_message,
-            photo_url: photo_url,
+            small_photo_url: rs.small_image_path,
+            large_photo_url: rs.large_image_path,
             created_by: user_id,
             date_created: member.date_joined ? member.date_joined : new Date(),
             members: []
@@ -542,7 +560,7 @@ class Group extends WebApplication {
         }
 
         try {
-            await this._addToGroup(user_id, group_name, true); // add the member to the group and other neccessary things
+          group =   await this._addToGroup(user_id, group_name, true); // add the member to the group and other neccessary things
         } catch (e) {
 
             console.log(e);//DO NOT DO THIS IN PRODUCTION
@@ -551,17 +569,34 @@ class Group extends WebApplication {
 
         }
 
-        return 'Created successfully.';
+        return group;
     }
 
-    async editGroup(user_id, group_name, status_message, photo_url) {
+    async editGroup(user_id, group_name, status_message) {
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             group_name = arguments[0].group_name;
             status_message = arguments[0].status_message;
-            photo_url = arguments[0].photo_url;
+        }
+
+        try {
+
+            var rs = await this.sObj.resizeImage({
+                id: group_name,
+                type: 'group',
+                filename: this.files.group_icon
+            });
+
+            if (!rs.success) {
+                this.error('Something is not right!');
+                return;
+            }
+        } catch (e) {
+            console.log(e);
+            this.error('Something went wrong!');
+            return;
         }
 
         //first check if the user is authorize to edit the group
@@ -596,20 +631,25 @@ class Group extends WebApplication {
             setObj.status_message = status_message;
         }
 
-        if (photo_url) {
-            setObj.photo_url = photo_url;
-        }
-
+         setObj.small_photo_url = rs.small_image_path;
+         setObj.large_photo_url = rs.large_image_path;
+        
         var c = this.sObj.db.collection(this.sObj.col.groups);
         try {
-            await c.updateOne({name: group_name}, {$set: setObj}, {w: 'majority'});
+            var r = await c.findOneAndUpdate({name: group_name}, {$set: setObj},  {
+                        projection: {_id: 0},
+                        returnOriginal: false, //return the updated document
+                        w: 'majority'
+                    });
         } catch (e) {
             console.log(e);
             this.error('Could not edit group.');
             return this;
         }
-
-        return true;//a default success message will be sent
+        
+        group = r.value;
+        
+        return group;
     }
 
     async makeAdmin(user_id, new_admin_user_id, group_name) {

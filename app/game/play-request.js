@@ -200,7 +200,7 @@ class PlayRequest extends WebApplication {
 
             var game_id = this.sObj.UniqueNumber; //assign unique number to the game id
 
-            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
             var players = await user.getInfoList(players_ids, required_fields);
             

@@ -124,7 +124,11 @@ class GameServer {
                 rcallHandler.replyError();
                 return;
             }
-            var rcall_data = fields[0];
+            var rcall_data;
+            for(var n in fields){
+                var rcall_data = fields[n];
+                break;//break since we know it is only one field which contain the rcall data (json stringified);
+            }
             rcallHandler.processInputWithUpload(rcall_data, files, res);
         });
     }

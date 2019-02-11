@@ -16,6 +16,7 @@ class ImageService {
         this.cpus = require('os').cpus();
         this.fork = require('child_process').fork;
 
+        this.fs = require('fs');
         this.formidable = require('formidable');
         this.express = require('express');
         this.app = this.express();
@@ -31,20 +32,20 @@ class ImageService {
         this.httpServer;
         this.imageResizers = [];
         this.rIndex = -1;
-        
+
         this.init();
     }
     async init() {
 
         console.log('cpus count', this.cpus.length);
-        
+
         for (var i = 0; i < this.cpus.length; i++) {
             this.imageResizers[i] = this.fork('./lib_image/image-resizer.js');
             this.imageResizers[i].on('message', this.onImageResizerMessage.bind(this));
-            
+
             this.imageResizers[i].send('start');//testing!!!
         }
-        
+
         this.app.set('appSecret', this.config.jwtImageServiceSecret); // secret gotten from the config file
         this.app.use(this.onRequestEntry.bind(this));//application level middleware
         this.app.use(this.express.static(__dirname + '/..')); //define the root folder to my web resources e.g javascript files        
@@ -57,30 +58,47 @@ class ImageService {
 
         this.httpServer.listen(this.config.IMAGE_SERVICE_PORT, this.config.IMAGE_SERVICE_HOST, this.onListenHttp.bind(this));//listen for http connections
 
-            // parse a file upload
-    var form = new formidable.IncomingForm();
- 
-    form.parse(req, function(err, fields, files) {
-      res.writeHead(200, {'content-type': 'text/plain'});
-      res.write('received upload:\n\n');
-      res.end();
-    });
+
+        this.app.route('/image_resize')
+                .post(this.imageResizeRequest.bind(this));
+
+
     }
-    
-    nextResizer(){
+
+    imageResizeRequest(req, res) {
+        var form = new this.formidable.IncomingForm();
+
+        form.parse(req, (err, fields, files) => {
+            var result = {};
+            if (err) {
+                result.success = false;
+            } else {
+                result.success = true;
+                result.small_image_path = `/images/small/'${fields.type}/${fields.id}.png`;
+                result.large_image_path = `/images/large/'${fields.type}/${fields.id}.png`;
+            }
+            
+            //note -  after writing to the file then send the response
+            //res.send(JSON.stringify(result));
+            
+            //this.nextResizer().send(result);
+        });
+    }
+
+    nextResizer() {
         this.rIndex++;
-        if(this.rIndex >= this.cpus.length){
+        if (this.rIndex >= this.cpus.length) {
             this.rIndex = 0;
         }
         return this.imageResizers[this.rIndex];
     }
-    
-    onImageResizerMessage(msg){
+
+    onImageResizerMessage(msg) {
         console.log(`Msg to master ${msg}`);//testing!!!
-        
+
         this.nextResizer().send(this.rIndex);//testing!!!
     }
-    
+
     redirectToHttps(req, res) {
         //var req_host = req.headers['host'];//no need anyway
         res.writeHead(301, {"Location": "https://" + this.config.IMAGE_SERVICE_HOST + req.url});

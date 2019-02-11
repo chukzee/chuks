@@ -235,7 +235,7 @@ class Contact extends WebApplication {
                 return [];
             }
             var user = await new User(this.sObj, this.util);
-            var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
+            var required_fields = ['first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
             var list = user.getInfoList(doc.contacts, required_fields);
             if (list.lastError) {
                 return this.error('Could not get users contact info');

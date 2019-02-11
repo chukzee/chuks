@@ -510,7 +510,7 @@ class Tournament extends WebApplication {
         var user = new User(this.sObj, this.util, this.evt);
 
         //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var standings = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
@@ -834,7 +834,7 @@ class Tournament extends WebApplication {
         var user = new User(this.sObj, this.util, this.evt);
 
         //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
-        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
@@ -1124,7 +1124,7 @@ class Tournament extends WebApplication {
             }
         }
 
-        var required_fields = ['user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['user_id', 'rating', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var players = await user.getInfoList(players_ids, required_fields);
 
@@ -2112,10 +2112,9 @@ class Tournament extends WebApplication {
      * @param {type} type
      * @param {type} sets_count
      * @param {type} status_message
-     * @param {type} photo_url
      * @returns {Tournament@call;error|String}
      */
-    async createTournament(user_id, tournament_name, game, variant, type, sets_count, status_message, photo_url) {
+    async createTournament(user_id, tournament_name, game, variant, type, sets_count, status_message) {
 
         //where one object is passed a paramenter then get the needed
         //properties from the object
@@ -2127,9 +2126,26 @@ class Tournament extends WebApplication {
             type = arguments[0].type;
             sets_count = arguments[0].sets_count;
             status_message = arguments[0].status_message;
-            photo_url = arguments[0].photo_url;
         }
 
+
+        try {
+
+            var rs = await this.sObj.resizeImage({
+                id: tournament_name,
+                type: 'tournament',
+                filename: this.files.tournament_icon
+            });
+
+            if (!rs.success) {
+                this.error('Something is not right!');
+                return;
+            }
+        } catch (e) {
+            console.log(e);
+            this.error('Something went wrong!');
+            return;
+        }
 
         if (type !== this.sObj.ROUND_ROBIN && type !== this.sObj.SINGLE_ELIMINATION) {
             return this.error(`Tournament type must be ${this.sObj.ROUND_ROBIN} or ${this.sObj.SINGLE_ELIMINATION}.`);
@@ -2175,7 +2191,7 @@ class Tournament extends WebApplication {
             }
 
             //rating is not included because it changes
-            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+            var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
             var user = new User(this.sObj, this.util, this.evt);
             var officialInfo = await user.getInfo(user_id, required_fields);
 
@@ -2186,7 +2202,7 @@ class Tournament extends WebApplication {
                 return this.error('Unknown user.');
             }
 
-            var insObj = {
+            var tournObj = {
                 name: tournament_name,
                 game: game,
                 created_by: officialInfo,
@@ -2194,18 +2210,19 @@ class Tournament extends WebApplication {
                 type: type, //round-robin and single-elimination 
                 sets_count: sets_count, // number of times two player will play each other before a winner is determined - max is 5
                 status_message: status_message,
-                photo_url: photo_url,
+                small_photo_url: rs.small_image_path,
+                large_photo_url: rs.large_image_path,
                 officials: [officialInfo], // automatic official
                 registered_players: [],
                 seasons: []
             };
 
-            var r = await c.insertOne(insObj);
+            var r = await c.insertOne(tournObj);
             if (r.result.n === 1) {
-                return 'Tournament created successfully!';
+                return tournObj;
             } else if (r.result.n > 1) {
                 console.log('This should not happen! inserting more than one specified document when creating tournament!');
-                return 'Tournament created!';
+                return tournObj;
             } else {
                 return this.error('Tournament was not creadted!');
             }
@@ -2216,13 +2233,76 @@ class Tournament extends WebApplication {
 
     }
 
+    async editTournament(user_id, tournament_name) {
+        //where one object is passed a paramenter then get the needed
+        //properties from the object
+        if (arguments.length === 1) {
+            user_id = arguments[0].user_id;
+            tournament_name = arguments[0].tournament_name;
+        }
+
+        try {
+
+            var rs = await this.sObj.resizeImage({
+                id: tournament_name,
+                type: 'tournament',
+                filename: this.files.tournament_icon
+            });
+
+            if (!rs.success) {
+                this.error('Something is not right!');
+                return;
+            }
+        } catch (e) {
+            console.log(e);
+            this.error('Something went wrong!');
+            return;
+        }
+
+        //first check if the user is authorize to edit the tournament
+
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        var tourn = await c.findOne(
+                {
+                    name: tournament_name
+                });
+
+
+
+        if (!this._isTournamentOfficial(tourn, user_id)) {
+            return this.error('Not authorized!');
+        }
+
+        var setObj = {};
+
+         setObj.small_photo_url = rs.small_image_path;
+         setObj.large_photo_url = rs.large_image_path;
+        
+        var c = this.sObj.db.collection(this.sObj.col.tournaments);
+        try {
+            var r = await c.findOneAndUpdate({name: tournament_name}, {$set: setObj}, {
+                        projection: {_id: 0},
+                        returnOriginal: false, //return the updated document
+                        w: 'majority'
+                    });
+        } catch (e) {
+            console.log(e);
+            this.error('Could not edit tournament.');
+            return this;
+        }
+        
+        tourn  = r.value;
+
+        return tourn;
+    }
+
     async setGameSetsCount(user_id, tournament_name, sets_count) {
         //where one object is passed a paramenter then get the needed
         //properties from the object
         if (arguments.length === 1) {
             user_id = arguments[0].user_id;
             tournament_name = arguments[0].tournament_name;
-            sets_count = arguments[0].photo_url;
+            sets_count = arguments[0].sets_count;
         }
 
         if (!isFinite(sets_count) || sets_count < 1) {
@@ -2296,129 +2376,6 @@ class Tournament extends WebApplication {
 
     }
 
-    async setIcon(user_id, tournament_name, photo_url) {
-        //where one object is passed a paramenter then get the needed
-        //properties from the object
-        if (arguments.length === 1) {
-            user_id = arguments[0].user_id;
-            tournament_name = arguments[0].tournament_name;
-            photo_url = arguments[0].photo_url;
-        }
-
-        //first check if the user is authorize to edit the tournament
-        try {
-
-
-            //at this point the user is authorized
-
-            if (!photo_url) {
-                return this.error('No icon specied!');
-            }
-
-
-            var c = this.sObj.db.collection(this.sObj.col.tournaments);
-
-            var tourn = await c.findOne({name: tournament_name});
-
-            if (!tourn) {
-                return this.error(`Tournament does not exist - ${tournament_name}`);
-            }
-
-            if (!this._isTournamentOfficial(tourn, user_id)) {
-                return this.error('Not authorized!');
-            }
-
-            await c.updateOne(
-                    {name: tournament_name},
-                    {
-                        $set: {photo_url: photo_url}
-                    });
-
-        } catch (e) {
-
-            console.log(e);
-
-            return this.error('Could not update tournament icon');
-        }
-
-        //return the newly modified tournament
-        var c = this.sObj.db.collection(this.sObj.col.tournaments);
-        var tourn = await c.findOne({name: tournament_name});
-        if (!tourn) {
-            return this.error(`Tournament does not exist - ${tournament_name}`);
-        }
-
-        return {
-            tournament: tourn,
-            msg: "Tournament icon updated successfully"
-        };
-
-    }
-
-    async setStatus(user_id, tournament_name, status_message, photo_url) {
-        //where one object is passed a paramenter then get the needed
-        //properties from the object
-        if (arguments.length === 1) {
-            user_id = arguments[0].user_id;
-            tournament_name = arguments[0].tournament_name;
-            status_message = arguments[0].status_message;
-            photo_url = arguments[0].photo_url;
-        }
-
-        //first check if the user is authorize to edit the tournament
-        try {
-
-            //at this point the user is authorized
-
-            var setObj = {};
-            if (status_message) {
-                setObj.status_message = status_message;
-            }
-
-            if (photo_url) {
-                setObj.photo_url = photo_url;
-            }
-
-
-            var c = this.sObj.db.collection(this.sObj.col.tournaments);
-
-            var tourn = await c.findOne({name: tournament_name});
-
-            if (!tourn) {
-                return this.error(`Tournament does not exist - ${tournament_name}`);
-            }
-
-            if (!this._isTournamentOfficial(tourn, user_id)) {
-                return this.error('Not authorized!');
-            }
-
-            await c.updateOne(
-                    {name: tournament_name},
-                    {
-                        $set: setObj
-                    });
-
-        } catch (e) {
-
-            console.log(e);
-
-            return this.error('Could not set tournament status');
-        }
-
-        //return the newly modified tournament
-        var c = this.sObj.db.collection(this.sObj.col.tournaments);
-        var tourn = await c.findOne({name: tournament_name});
-        if (!tourn) {
-            return this.error(`Tournament does not exist - ${tournament_name}`);
-        }
-
-        return {
-            tournament: tourn,
-            msg: "Tournament status updated successfully"
-        };
-
-    }
-
     async addOfficial(user_id, tournament_name, new_official_user_id) {
 
         //where one object is passed a paramenter then get the needed
@@ -2467,7 +2424,7 @@ class Tournament extends WebApplication {
         //at this point the user is authorized
 
         //rating is not included because it changes
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var officialInfo = await user.getInfo(new_official_user_id, required_fields);
 
@@ -2628,7 +2585,7 @@ class Tournament extends WebApplication {
         }
 
         //rating is not included because is changes
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var user = new User(this.sObj, this.util, this.evt);
         var playerInfo = await user.getInfo(player_user_id, required_fields);
 

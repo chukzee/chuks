@@ -28,7 +28,7 @@ class Spectator extends WebApplication {
 
         try {
 
-            var required_fields = ['first_name', 'last_name', 'email', 'photo_url'];
+            var required_fields = ['first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
             var user = await new User(this.sObj, this.util, this.evt).getInfo(user_id, required_fields);
             if (!user) {
                 return this.error('Unknown user');
@@ -62,11 +62,11 @@ class Spectator extends WebApplication {
                     first_name: user.first_name,
                     last_name: user.last_name,
                     full_name: user.full_name,
-                    photo_url: user.photo_url,
+                    small_photo_url: user.small_photo_url,
+                    large_photo_url: user.large_photo_url,
                     comment_count: 0
                 });
             }
-
 
 
         } catch (e) {

@@ -496,7 +496,7 @@ class Match extends WebApplication {
                     }
                     var user = new User(me.sObj, me.util, me.evt);
                     //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
-                    var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
+                    var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
                     var players = await user.getInfoList(players_ids, required_fields);
 
                     //check if the player info list is complete - ie match  the number requested for
@@ -578,7 +578,7 @@ class Match extends WebApplication {
         }
 
         //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
-        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match  the number requested for
@@ -699,7 +699,7 @@ class Match extends WebApplication {
         }
 
         //include  contacts and groups_belong in the required_fields - important! see their use below for broadcasting to related users
-        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['contacts', 'groups_belong', 'user_id', 'rating', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var players = await user.getInfoList(players_ids, required_fields);
 
         //check if the player info list is complete - ie match the numbers requested for

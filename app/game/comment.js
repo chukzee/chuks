@@ -19,7 +19,7 @@ class Comment extends   WebApplication {
         }
 
         var user = new User(this.sObj, this.util);
-        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'photo_url'];
+        var required_fields = ['user_id', 'first_name', 'last_name', 'email', 'small_photo_url', 'large_photo_url'];
         var users = await user.getInfoList(user_ids, required_fields);
         if(users.lastError){
             return this.error(users.lastError);
