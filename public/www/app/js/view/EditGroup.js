@@ -48,6 +48,10 @@ Ns.view.EditGroup = {
                 .get(function (group) {
                     Ns.view.Group.save(group);
                     Main.toast.show('Edited successfully');
+                    Ns.GameHome.back({
+                        data: group,
+                        onShow: Ns.GameGroup.Content
+                    });
                 })
                 .error(function (err, err_code, connect_err) {
                     Main.toast.show(err);

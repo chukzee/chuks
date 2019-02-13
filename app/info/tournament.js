@@ -2074,8 +2074,8 @@ class Tournament extends WebApplication {
 
                     match.reminder_time = new Date();
                     notification_type: 'upcoming_tournament_match',
-                    match.notification_time = match.reminder_time;//same
-                    
+                            match.notification_time = match.reminder_time;//same
+
                     //store the upcoming match
                     var ccm = this.sObj.db.collection(this.sObj.col.upcoming_matches);
                     ccm.insertOne(match)
@@ -2084,7 +2084,7 @@ class Tournament extends WebApplication {
                             })
                             .catch(function (err) {
                                 console.log(err); //DO NOT DO THIS IN PRODUCTION. INSTEAD LOG TO ANOTHER PROCCESS
-                            });                    
+                            });
 
                     //notify the players of their upcoming match
                     var players_ids = [];
@@ -2126,25 +2126,6 @@ class Tournament extends WebApplication {
             type = arguments[0].type;
             sets_count = arguments[0].sets_count;
             status_message = arguments[0].status_message;
-        }
-
-
-        try {
-
-            var rs = await this.sObj.resizeImage({
-                id: tournament_name,
-                type: 'tournament',
-                filename: this.files.tournament_icon
-            });
-
-            if (!rs.success) {
-                this.error('Something is not right!');
-                return;
-            }
-        } catch (e) {
-            console.log(e);
-            this.error('Something went wrong!');
-            return;
         }
 
         if (type !== this.sObj.ROUND_ROBIN && type !== this.sObj.SINGLE_ELIMINATION) {
@@ -2202,6 +2183,23 @@ class Tournament extends WebApplication {
                 return this.error('Unknown user.');
             }
 
+
+            try {
+                if (this.files && this.files.tournament_icon) {
+
+                    //send to imageservice to resize the icon image
+                    var rs = await this.sObj.resizeImage({
+                        id: tournament_name,
+                        type: 'tournament',
+                        filename: this.files.tournament_icon.path
+                    });
+                }
+            } catch (e) {
+                console.log(e);
+                return this.error('Something went wrong!');
+            }
+
+
             var tournObj = {
                 name: tournament_name,
                 game: game,
@@ -2210,12 +2208,16 @@ class Tournament extends WebApplication {
                 type: type, //round-robin and single-elimination 
                 sets_count: sets_count, // number of times two player will play each other before a winner is determined - max is 5
                 status_message: status_message,
-                small_photo_url: rs.small_image_path,
-                large_photo_url: rs.large_image_path,
                 officials: [officialInfo], // automatic official
                 registered_players: [],
                 seasons: []
             };
+
+            if (rs) {
+                tournObj.small_photo_url = rs.small_image_path;
+                tournObj.large_photo_url = rs.large_image_path;
+            }
+
 
             var r = await c.insertOne(tournObj);
             if (r.result.n === 1) {
@@ -2241,24 +2243,6 @@ class Tournament extends WebApplication {
             tournament_name = arguments[0].tournament_name;
         }
 
-        try {
-
-            var rs = await this.sObj.resizeImage({
-                id: tournament_name,
-                type: 'tournament',
-                filename: this.files.tournament_icon
-            });
-
-            if (!rs.success) {
-                this.error('Something is not right!');
-                return;
-            }
-        } catch (e) {
-            console.log(e);
-            this.error('Something went wrong!');
-            return;
-        }
-
         //first check if the user is authorize to edit the tournament
 
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
@@ -2268,30 +2252,46 @@ class Tournament extends WebApplication {
                 });
 
 
-
         if (!this._isTournamentOfficial(tourn, user_id)) {
             return this.error('Not authorized!');
         }
 
+
+        try {
+            if (this.files && this.files.tournament_icon) {
+
+                //send to imageservice to resize the icon image
+                var rs = await this.sObj.resizeImage({
+                    id: tournament_name,
+                    type: 'tournament',
+                    filename: this.files.tournament_icon.path
+                });
+            }
+        } catch (e) {
+            console.log(e);
+            return this.error('Something went wrong!');
+        }
+
         var setObj = {};
 
-         setObj.small_photo_url = rs.small_image_path;
-         setObj.large_photo_url = rs.large_image_path;
-        
+        if (rs) {
+            setObj.small_photo_url = rs.small_image_path;
+            setObj.large_photo_url = rs.large_image_path;
+        }
+
         var c = this.sObj.db.collection(this.sObj.col.tournaments);
         try {
             var r = await c.findOneAndUpdate({name: tournament_name}, {$set: setObj}, {
-                        projection: {_id: 0},
-                        returnOriginal: false, //return the updated document
-                        w: 'majority'
-                    });
+                projection: {_id: 0},
+                returnOriginal: false, //return the updated document
+                w: 'majority'
+            });
         } catch (e) {
             console.log(e);
-            this.error('Could not edit tournament.');
-            return this;
+            return this.error('Could not edit tournament.');
         }
-        
-        tourn  = r.value;
+
+        tourn = r.value;
 
         return tourn;
     }

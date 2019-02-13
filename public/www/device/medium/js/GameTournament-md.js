@@ -8,6 +8,8 @@ Ns.GameTournament = {
 
     Content: function (tournament) {
         Ns.view.Tournament.content(tournament);
+        
+        $('#tournament-details-back-btn').off('click');
         $('#tournament-details-back-btn').on('click', function () {
 
             Main.card.back('#home-main', function () {

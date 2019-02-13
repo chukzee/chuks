@@ -1183,24 +1183,25 @@ var Main = {};
                                             if (!Main.util.isArray(file_inputs)
                                                     && !(file_inputs instanceof window.NodeList)) {
                                                 file_inputs = [file_inputs];
-                                            }
+                                            }//C:\Users\HP-PC\Documents\NetBeansProjects\Game9ja\test\test-copy-file.js
                                             //verify if the param is an array of input file elements
                                             for (var i = 0; i < file_inputs.length; i++) {
                                                 var is_input_element = file_inputs[i] instanceof window.HTMLInputElement;
                                                 if (!is_input_element
                                                         || (is_input_element && file_inputs[i].type !== 'file')) {
-                                                    throw Error('invalid rcall attachements at index ' + i + ' - must be input file element but found ', file_inputs[i]);
+                                                    console.error('invalid rcall attachements at index ' + i + ' - must be input file element but found ', file_inputs[i]);
+                                                    throw Error('invalid rcall attachements at index ' + i + ' - must be input file element');
                                                 }
-                                                
-                                                if(!file_inputs[i].name){
-                                                    throw Error('invalid rcall attachements at index ' + i + ' - input file element must have a name attribute a value');                                                    
+
+                                                if (!file_inputs[i].name) {
+                                                    throw Error('invalid rcall attachements at index ' + i + ' - input file element must have a name attribute a value');
                                                 }
-                                                
-                                                if(file_inputs[i].name === RCALL_MULTIPART_REQUEST_FIELD_NAME){
-                                                    throw Error('invalid rcall attachements at index ' + i + ' - input file element must not be given a name "'+RCALL_MULTIPART_REQUEST_FIELD_NAME+'", which is used internally by rcall.');                                                                                                        
+
+                                                if (file_inputs[i].name === RCALL_MULTIPART_REQUEST_FIELD_NAME) {
+                                                    throw Error('invalid rcall attachements at index ' + i + ' - input file element must not be given a name "' + RCALL_MULTIPART_REQUEST_FIELD_NAME + '", which is used internally by rcall.');
                                                 }
-                                                
-                                                
+
+
                                             }
 
                                             this._attach = file_inputs;
@@ -1295,11 +1296,11 @@ var Main = {};
                                                     } else {
                                                         err = response.data;
                                                         var err_code = response.err_code;
-                                                        if(is_iframe_response && typeof response.success === 'undefined'){
+                                                        if (is_iframe_response && typeof response.success === 'undefined') {
                                                             err = response;//the server most likely sent response message describing the http status error e.g 404
                                                             err_code = null;
-                                                        }                                                        
-                                                        
+                                                        }
+
                                                         var connect_err = response.connect_err;
 
                                                         //new start
@@ -1530,27 +1531,27 @@ var Main = {};
                         timeout = r.timeout,
                         callback = r.callback;
 
-                var param = JSON.stringify({action: 'remote_call', data: objArr});        
+                var param = JSON.stringify({action: 'remote_call', data: objArr});
 
-                if(attach){//for the case with file attachment use iframe ajax for upload
+                if (attach) {//for the case with file attachment use iframe ajax for upload
                     //we just need to convert to array because we want to attach another field to hold other rcall request
                     var fields = [];
                     var otherReqField = document.createElement('input');
-                    
+
                     otherReqField.setAttribute('type', 'text');
                     otherReqField.setAttribute('name', RCALL_MULTIPART_REQUEST_FIELD_NAME);
                     otherReqField.value = param;
-                    
+
                     fields.push(otherReqField);
-                    if(attach instanceof window.NodeList || Main.util.isArray(attach)){
-                        for(var i=0; i< attach.length; i++){
+                    if (attach instanceof window.NodeList || Main.util.isArray(attach)) {
+                        for (var i = 0; i < attach.length; i++) {
                             fields.push(attach[i]);
                         }
                     }
-                    
+
                     Main.iframeAjax.send(fields, 'rcall_with_upload', successFn, errorFn);
-                
-                }else if (rio.checkConnect()) {
+
+                } else if (rio.checkConnect()) {
                     rio.send(objArr, successFn, errorFn);
                 } else {
                     var data = {
@@ -1592,7 +1593,7 @@ var Main = {};
                     response.data = statusText;
                     response.err_code = status;
                     response.connect_err = connect_err;
-                    
+
                     var is_iframe_response = status === null;
                     callback(response, is_iframe_response, bind);
                 }
@@ -2181,7 +2182,7 @@ var Main = {};
         };
 
 
-        this.back = function () {
+        this.back = function (obj) {
             if (transitionInProgress) {
                 console.warn("Action ignored! Page transition in progress.");
                 return false; //unsuccesful becasue page is in transition
@@ -2205,8 +2206,15 @@ var Main = {};
                     }
                 }
                 var toPg = pages[pages.length - 2];
-                showPg(toPg, lastPage.transition, false, pgGoOut);
+                var pgShowObj;
+                if (typeof obj === 'object') {
+                    toPg.data = obj.data;
+                    pgShowObj = _pShowFn(obj);
+                }
+                
+                showPg(toPg, lastPage.transition, false, pgGoOut, pgShowObj);
                 pages.splice(last_index, 1);//remove the last page
+
             }
 
             return true;//important!
@@ -5229,7 +5237,11 @@ var Main = {};
         }
 
         function finishDragTab(evt) {
-
+            
+            if(typeof tab_touch_end_x === 'undefined'){
+                return;
+            }
+            
             var change_x = tab_touch_start_x - tab_touch_end_x;
             var change_y = tab_touch_start_y - tab_touch_end_y;
 

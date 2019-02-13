@@ -1,4 +1,6 @@
 
+/* global Promise */
+
 'use strict';
 
 class ImageService {
@@ -17,6 +19,7 @@ class ImageService {
         this.fork = require('child_process').fork;
 
         this.fs = require('fs');
+        this.mkdirp = require('mkdirp');
         this.formidable = require('formidable');
         this.express = require('express');
         this.app = this.express();
@@ -37,51 +40,109 @@ class ImageService {
     }
     async init() {
 
+        this.mkdirp.sync(this.config.SMALL_IMAGE_DIR);
+        this.mkdirp.sync(this.config.LARGE_IMAGE_DIR);
+        this.mkdirp.sync(this.config.TEMP_DIR);
+        
         console.log('cpus count', this.cpus.length);
 
         for (var i = 0; i < this.cpus.length; i++) {
             this.imageResizers[i] = this.fork('./lib_image/image-resizer.js');
             this.imageResizers[i].on('message', this.onImageResizerMessage.bind(this));
-
-            this.imageResizers[i].send('start');//testing!!!
         }
 
         this.app.set('appSecret', this.config.jwtImageServiceSecret); // secret gotten from the config file
         this.app.use(this.onRequestEntry.bind(this));//application level middleware
-        this.app.use(this.express.static(__dirname + '/..')); //define the root folder to my web resources e.g javascript files        
         this.app.use(this.helmet());//secure the server app from attackers - Important!
-        this.app.use(this.bodyParser.json());// to support JSON-encoded bodies
-        this.app.use(this.bodyParser.urlencoded({extended: true}));// to support URL-encoded bodies   
-        this.httpServer = this.http.createServer(this.app);//NEW - we now use reverse proxy server - ngnix
-        //this.httpServer = http.createServer(this.redirectToHttps.bind(this));//create http server to redirect to https
-        //this.secureHttpServer.listen(config.HTTPS_PORT, config.HOST, this.onListenHttps.bind(this));//listen for https connections        
+        this.httpServer = this.http.createServer(this.app);
+
+        this.httpServer.keepAliveTimeout = 0;//we need forever keep alive so disable the keep alive timeout by setting a value of zero!
+
+        this.httpServer.on('connection', function (sock) {
+            sock.setKeepAlive(true);
+
+            /*sock.on('close', function(){
+             console.log('sock close');
+             });*/
+
+        });
 
         this.httpServer.listen(this.config.IMAGE_SERVICE_PORT, this.config.IMAGE_SERVICE_HOST, this.onListenHttp.bind(this));//listen for http connections
-
 
         this.app.route('/image_resize')
                 .post(this.imageResizeRequest.bind(this));
 
 
+        this.app.route('/test')
+                .get(function (req, res) {
+                    console.log('sock');
+                    res.send('see am here');
+                    res.end();
+                });
+
+    }
+
+    promiseCopyFile(from, to) {
+        return new Promise((resolve, reject) => {
+            this.fs.copyFile(from, to, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+    }
+
+    promiseRenameFile(from, to) {
+        return new Promise((resolve, reject) => {
+            this.fs.rename(from, to, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
     }
 
     imageResizeRequest(req, res) {
         var form = new this.formidable.IncomingForm();
-
+        form.uploadDir = this.config.TEMP_DIR;
         form.parse(req, (err, fields, files) => {
             var result = {};
+            result.success = false;
             if (err) {
-                result.success = false;
-            } else {
+                return res.send(JSON.stringify(result));
+            }
+
+            if (fields.ping) {
                 result.success = true;
-                result.small_image_path = `/images/small/'${fields.type}/${fields.id}.png`;
-                result.large_image_path = `/images/large/'${fields.type}/${fields.id}.png`;
+                return res.send(JSON.stringify(result));
             }
             
-            //note -  after writing to the file then send the response
-            //res.send(JSON.stringify(result));
-            
-            //this.nextResizer().send(result);
+            var relative_small_image_path = `/${fields.type}/${fields.id}${this.config.IMAGE_TYPE}`;
+            var relative_large_image_path = `/${fields.type}/${fields.id}${this.config.IMAGE_TYPE}`;
+
+            var absolute_small_image_path = `${this.config.SMALL_IMAGE_DIR}${relative_small_image_path}`;
+            var absolute_large_image_path = `${this.config.LARGE_IMAGE_DIR}${relative_large_image_path}`;
+
+            var from_tmp = files.image_file.path;
+
+            this.promiseCopyFile(from_tmp, absolute_large_image_path)
+                    .then(() => {
+                        return this.promiseRenameFile(from_tmp, absolute_small_image_path);
+                    })
+                    .then(() => {
+                        result.success = true;
+                        result.small_image_path = relative_small_image_path;
+                        result.large_image_path = relative_large_image_path;
+                        this.nextResizer().send(result);
+                        res.send(JSON.stringify(result));
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        return res.send(JSON.stringify(result));
+                    });
+
         });
     }
 
@@ -94,9 +155,7 @@ class ImageService {
     }
 
     onImageResizerMessage(msg) {
-        console.log(`Msg to master ${msg}`);//testing!!!
 
-        this.nextResizer().send(this.rIndex);//testing!!!
     }
 
     redirectToHttps(req, res) {

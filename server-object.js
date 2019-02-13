@@ -8,6 +8,7 @@ var shortid = require('shortid');
 var moment = require('moment');
 var crypto = require('crypto');
 var request = require('request-promise-native');
+var http = require('http');
 var fs = require('fs');
 var execSync = require('child_process').execSync;
 var initial_unique;
@@ -97,14 +98,45 @@ class ServerObject {
 
     }
 
+    async pingImageService(){
+        return await this.resizeImage({ping: 'true'});//true must be a string not boolean otherwise is will throw this error - TypeError: First argument must be a String or Buffer
+    }
+
     async resizeImage(obj) {
-        var formData = {
-            type: obj.type,//whether user, group or tournament
-            id: obj.id, //username, group name or tournament name
-            image_file: fs.createReadStream(obj.filename)
+        var formData = {};
+        
+        if(obj.ping){
+            formData.ping = obj.ping;//check if this server is connected to the image service - we use it to ensure the image service is running before this server is fullly started
+        }else{
+            formData.id= obj.id; //username, group name or tournament name
+            formData.type= obj.type;//whether user, group or tournament
+            formData.image_file= fs.createReadStream(obj.filename);
+        }
+        var path = '/image_resize';
+        var url = `${this.config.IMAGE_SERVICE_PROTOCOL}://${this.config.IMAGE_SERVICE_HOST}:${this.config.IMAGE_SERVICE_PORT}${path}`;
+        
+        var agent = new http.Agent({
+                keepAlive: true,
+                maxSockets: 1
+            });
+            
+        var options ={
+            url: url,
+            agent : agent,
+            formData: formData
         };
-        var url = `http://${this.config.IMAGE_SERVICE_HOST}:${this.config.IMAGE_SERVICE_PORT}`;
-        return await request.post({url:url, formData: formData});
+        
+        var result =  await request.post(options);
+        try {
+            result = JSON.parse(result);
+        } catch (e) {
+            //do nothing -  we always expect stringigfied json except the was an error in the remote end
+        }
+
+        if(!result.success){
+            throw Error('An error occured in the image resizer service!');
+        }
+        return result;
     }
 
     /**

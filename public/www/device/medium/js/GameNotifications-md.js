@@ -14,6 +14,8 @@ Ns.GameNotifications = {
             }
         });
         Ns.view.Notifications.content(data);
+        
+        $('#game-notifications-back-btn').off('click');
         $('#game-notifications-back-btn').on('click', function () {
             
             Main.card.back('#home-main', function () {

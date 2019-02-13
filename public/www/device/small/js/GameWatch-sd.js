@@ -79,6 +79,7 @@ Ns.GameWatch = {
         }
 
 
+        $('#game-watch-back-btn').off('click');
         $('#game-watch-back-btn').on('click', function () {
             Main.page.back();
         });

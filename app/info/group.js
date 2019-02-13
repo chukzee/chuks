@@ -159,7 +159,7 @@ class Group extends WebApplication {
             }
 
             var authorization_token = this.sObj.UniqueNumber;
-        
+
             var data = {
                 group_name: group_name,
                 authorization_token: authorization_token,
@@ -511,22 +511,31 @@ class Group extends WebApplication {
             status_message = arguments[0].status_message;
         }
 
+        if (!group_name) {
+            return this.error('Empty group name');
+        }
+
+        if (typeof group_name !== 'string') {
+            return this.error('Invalid tournament name.');
+        }
+
+        if (!status_message) {
+            status_message = '';
+        }
+
         try {
+            if (this.files && this.files.group_icon) {
 
-            var rs = await this.sObj.resizeImage({
-                id: group_name,
-                type: 'group',
-                filename: this.files.group_icon
-            });
-
-            if (!rs.success) {
-                this.error('Something is not right!');
-                return;
+                //send to imageservice to resize the icon image
+                var rs = await this.sObj.resizeImage({
+                    id: group_name,
+                    type: 'group',
+                    filename: this.files.group_icon.path
+                });
             }
         } catch (e) {
             console.log(e);
-            this.error('Something went wrong!');
-            return;
+            return this.error('Something went wrong!');
         }
 
         var c = this.sObj.db.collection(this.sObj.col.groups);
@@ -534,12 +543,15 @@ class Group extends WebApplication {
         var group = {
             name: group_name,
             status_message: status_message,
-            small_photo_url: rs.small_image_path,
-            large_photo_url: rs.large_image_path,
             created_by: user_id,
             date_created: member.date_joined ? member.date_joined : new Date(),
             members: []
         };
+        
+        if (rs) {
+            group.small_photo_url = rs.small_image_path;
+            group.large_photo_url = rs.large_image_path;
+        }
 
         try {
             await c.insertOne(group, {w: 'majority'});//create the group
@@ -560,13 +572,10 @@ class Group extends WebApplication {
         }
 
         try {
-          group =   await this._addToGroup(user_id, group_name, true); // add the member to the group and other neccessary things
+            group = await this._addToGroup(user_id, group_name, true); // add the member to the group and other neccessary things
         } catch (e) {
-
             console.log(e);//DO NOT DO THIS IN PRODUCTION
-
             return this.error('Could not perform operaton!');
-
         }
 
         return group;
@@ -581,22 +590,8 @@ class Group extends WebApplication {
             status_message = arguments[0].status_message;
         }
 
-        try {
-
-            var rs = await this.sObj.resizeImage({
-                id: group_name,
-                type: 'group',
-                filename: this.files.group_icon
-            });
-
-            if (!rs.success) {
-                this.error('Something is not right!');
-                return;
-            }
-        } catch (e) {
-            console.log(e);
-            this.error('Something went wrong!');
-            return;
+        if (!status_message) {
+            return this.error('Empty group description');
         }
 
         //first check if the user is authorize to edit the group
@@ -610,45 +605,62 @@ class Group extends WebApplication {
 
 
         if (!group) {
-            return 'Not a memer or group!';
+            return this.error('Not a memer or group!');
         }
 
         if (Array.isArray(group.members)) {
             for (var i = 0; i < group.members.length; i++) {
                 if (group.members[i].user_id === user_id) {
                     if (!group.members[i].is_admin) {
-                        return 'Not authorized';
+                        return this.error('Not authorized');
                     }
                     break;
                 }
             }
         } else {
-            return 'No member!';
+            return this.error('No member!');
         }
+
+        try {
+            if (this.files && this.files.group_icon) {
+
+                //send to imageservice to resize the icon image
+                var rs = await this.sObj.resizeImage({
+                    id: group_name,
+                    type: 'group',
+                    filename: this.files.group_icon.path
+                });
+            }
+        } catch (e) {
+            console.log(e);
+            return this.error('Something went wrong!');
+        }
+
 
         var setObj = {};
         if (status_message) {
             setObj.status_message = status_message;
         }
 
-         setObj.small_photo_url = rs.small_image_path;
-         setObj.large_photo_url = rs.large_image_path;
+        if (rs) {
+            setObj.small_photo_url = rs.small_image_path;
+            setObj.large_photo_url = rs.large_image_path;
+        }
         
         var c = this.sObj.db.collection(this.sObj.col.groups);
         try {
-            var r = await c.findOneAndUpdate({name: group_name}, {$set: setObj},  {
-                        projection: {_id: 0},
-                        returnOriginal: false, //return the updated document
-                        w: 'majority'
-                    });
+            var r = await c.findOneAndUpdate({name: group_name}, {$set: setObj}, {
+                projection: {_id: 0},
+                returnOriginal: false, //return the updated document
+                w: 'majority'
+            });
         } catch (e) {
             console.log(e);
-            this.error('Could not edit group.');
-            return this;
+            return this.error('Could not edit group.');
         }
-        
+
         group = r.value;
-        
+
         return group;
     }
 

@@ -5,6 +5,16 @@ class GameServer {
 
     constructor() {
 
+        this.db;
+        this.redis;
+        this.sObj;
+        this.httpServer;
+
+        this.init();
+    }
+
+    require() {
+
         /*this.fs = require('fs');
          this.options = {
          //pfx: fs.readFileSync('security/trade.flexc.ca.pfx'),
@@ -33,65 +43,78 @@ class GameServer {
         this.util = require('./util/util');
         this.ServerObject = require('./server-object');
         this.evt = require('./app/evt');
-        this.db;
-        this.redis;
-        this.sObj;
-        this.httpServer;
-
-
-        this.init();
     }
+
     async init() {
 
-        var mongo_url = 'mongodb://' + this.config.MONGO_HOST + ':' + this.config.MONGO_PORT + '/' + this.config.MONGO_DB_NAME;
         try {
+
+            this.require();
+
+            console.log('Connecting to mongo server...');
+
+            var mongo_url = 'mongodb://' + this.config.MONGO_HOST + ':' + this.config.MONGO_PORT + '/' + this.config.MONGO_DB_NAME;
+
             this.db = await this.mongo.connect(mongo_url, {
                 poolSize: 50
                         //,ssl: true //TODO
                         //and many more options TODO - see doc at http://mongodb.github.io/node-mongodb-native/2.2/reference/connecting/connection-settings/
             });
-            console.log('Connected to mongo server at : ' + mongo_url);
+
+            console.log('Connected to mongo server at:', mongo_url);
+
+            console.log('Connecting to redis server...');
+
+            this.redis = new this.Redis();
+
+            console.log('Connected to redis server at:', `${this.redis.options.host}:${this.redis.options.port}`);
+
+            this.app.set('appSecret', this.config.jwtSecret); // secret gotten from the config file
+            this.app.use(this.onRequestEntry.bind(this));//application level middleware
+            this.app.use(this.express.static(__dirname + '/..')); //define the root folder to my web resources e.g javascript files        
+            this.app.use(this.helmet());//secure the server app from attackers - Important!
+            this.app.use(this.bodyParser.json());// to support JSON-encoded bodies
+            this.app.use(this.bodyParser.urlencoded({extended: true}));// to support URL-encoded bodies   
+            this.app.use('/access', this.accRoute); //set this router base url
+            this.accRoute.use(this.accessRouteRequest.bind(this));
+            //line below may be commented out since we now use reverse proxy - ngnix
+            this.app.get('/*', this.serveFile.bind(this));//route for web client resources to server web pages
+            this.sObj = new this.ServerObject(this.db, this.redis, this.evt, this.config, this.appLoader);
+            //initilize here! - For a reason I do not understand the express app object does not use the body parse if this initialization is done outside this async init method- the request body is undefined.But if this init method is not declared async it works normal.  Shocking... anyway!
+
+            console.log('Connecting to image service...');
+
+            await this.sObj.pingImageService();//checking if the imageservice is up and running
+
+            console.log('Connected to image service at:', `${this.config.IMAGE_SERVICE_PROTOCOL}://${this.config.IMAGE_SERVICE_HOST}:${this.config.IMAGE_SERVICE_PORT}`);
+
+            this.httpServer = this.http.createServer(this.app);//NEW - we now use reverse proxy server - ngnix
+            //this.httpServer = this.http.createServer(this.redirectToHttps.bind(this));//create http server to redirect to https
+            //this.secureHttpServer.listen(config.HTTPS_PORT, config.HOST, this.onListenHttps.bind(this));//listen for https connections        
+
+            this.httpServer.listen(this.config.HTTP_PORT, this.config.HOST, this.onListenHttp.bind(this));//listen for http connections
+
+            this.RealtimeSession(this.httpServer, this.appLoader, this.sObj, this.util, this.evt);
+
+            this.app.route('/rcall')
+                    .post(this.rcallRequest.bind(this));
+
+
+            this.app.route('/rcall_with_upload')
+                    .post(this.rcallWithUploadRequest.bind(this));
+
+
+            this.app.route('/test')
+                    .post(function (req, res) {
+                        res.send('the result');
+                    }.bind(this));
+
         } catch (e) {
-            console.error(e);
+            console.log(e);
+            console.log("--------------------");
             console.log("Server cannot start!");
             process.exit(1);
         }
-
-        this.redis = new this.Redis();
-
-        this.app.set('appSecret', this.config.jwtSecret); // secret gotten from the config file
-        this.app.use(this.onRequestEntry.bind(this));//application level middleware
-        this.app.use(this.express.static(__dirname + '/..')); //define the root folder to my web resources e.g javascript files        
-        this.app.use(this.helmet());//secure the server app from attackers - Important!
-        this.app.use(this.bodyParser.json());// to support JSON-encoded bodies
-        this.app.use(this.bodyParser.urlencoded({extended: true}));// to support URL-encoded bodies   
-        this.app.use('/access', this.accRoute); //set this router base url
-        this.accRoute.use(this.accessRouteRequest.bind(this));
-        //line below may be commented out since we now use reverse proxy - ngnix
-        this.app.get('/*', this.serveFile.bind(this));//route for web client resources to server web pages
-        this.httpServer = this.http.createServer(this.app);//NEW - we now use reverse proxy server - ngnix
-        //this.httpServer = http.createServer(this.redirectToHttps.bind(this));//create http server to redirect to https
-        //this.secureHttpServer.listen(config.HTTPS_PORT, config.HOST, this.onListenHttps.bind(this));//listen for https connections        
-
-        this.httpServer.listen(this.config.HTTP_PORT, this.config.HOST, this.onListenHttp.bind(this));//listen for http connections
-
-        this.sObj = new this.ServerObject(this.db, this.redis, this.evt, this.config, this.appLoader);
-        //initilize here! - For a reason I do not understand the express app object does not use the body parse if this initialization is done outside this async init method- the request body is undefined.But if this init method is not declared async it works normal.  Shocking... anyway!
-
-        this.RealtimeSession(this.httpServer, this.appLoader, this.sObj, this.util, this.evt);
-
-        this.app.route('/rcall')
-                .post(this.rcallRequest.bind(this));
-
-
-        this.app.route('/rcall_with_upload')
-                .post(this.rcallWithUploadRequest.bind(this));
-
-
-        this.app.route('/test')
-                .post(function (req, res) {
-                    res.send('the result');
-                }.bind(this));
 
     }
 
@@ -120,12 +143,12 @@ class GameServer {
 
         form.parse(req, (err, fields, files) => {
             var rcallHandler = new this.RCallHandler(this.sObj, this.util, this.appLoader, this.evt);//Yes, create new rcall object for each request to avoid reference issue
-            if(err){
+            if (err) {
                 rcallHandler.replyError();
                 return;
             }
             var rcall_data;
-            for(var n in fields){
+            for (var n in fields) {
                 var rcall_data = fields[n];
                 break;//break since we know it is only one field which contain the rcall data (json stringified);
             }

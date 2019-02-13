@@ -13,6 +13,15 @@ Ns.GameHome = {
     GAME_WATCH_HTML: 'game-watch-ld.html',
     GAME_WAIT_HTML: 'wait-player-ld.html',
 
+
+    back: function (obj) {
+        if(!obj.container){
+            obj.container = '#home-main';
+        }
+        
+        Main.card.back(obj);
+    },
+    
     showGameView: function (match) {
 
         Ns.Match.currentUserMatch = match;

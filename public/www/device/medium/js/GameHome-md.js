@@ -13,6 +13,16 @@ Ns.GameHome = {
     GAME_WATCH_HTML: 'game-watch-md.html',
     GAME_WAIT_HTML: 'wait-player-md.html',
     isCurrentViewGamePane: false,
+
+
+    back: function (obj) {
+        if(!obj.container){
+            obj.container = '#home-main';
+        }
+        
+        Main.card.back(obj);
+    },
+    
     
     isLandscape: function () {
         return window.screen.width > window.screen.height;

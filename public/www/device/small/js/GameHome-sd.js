@@ -11,26 +11,38 @@ Ns.GameHome = {
     GAME_WATCH_HTML: 'game-watch.html',
     GAME_WAIT_HTML: 'wait-player.html',
 
+    back: function (obj) {
+
+        if (obj) {
+            var o = {};
+            o.onBeforeShow = obj.onBeforeShow || obj.onShow;
+            o.data = obj.data;
+            Main.page.back(o);
+        } else {
+            Main.page.back();
+        }
+    },
+
     Content: function (selected_game) {
         Ns.ui.UI.init(selected_game);
     },
     showGameView: function (match) {
-        
+
         Ns.Match.currentUserMatch = match;
-        
+
         Main.page.show({
             url: Ns.GameHome.GAME_VIEW_HTML,
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameView.Content,
             data: match});
 
     },
     showGameViewB: function (match) {
-        
+
         Main.page.show({
             url: Ns.GameHome.GAME_VIEW_B_HTML,
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameViewB.Content,
             onShow: function () {
@@ -39,7 +51,7 @@ Ns.GameHome = {
             },
             data: match
         });
-        
+
         //show a dialog to display startup settings
         Main.dialog.show({
             title: "Play Robot", //TODO - display a robot like photo alongside the title
@@ -71,17 +83,17 @@ Ns.GameHome = {
     showGameWatch: function (match) {
         Main.page.show({
             url: Ns.GameHome.GAME_WATCH_HTML,
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameWatch.Content,
             data: match
         });
     },
     showBluetoothGame: function (data) {
-        
+
         Main.page.show({
             url: Ns.GameHome.GAME_VIEW_B_HTML,
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameViewB.Content,
             onShow: function () {
@@ -138,9 +150,9 @@ Ns.GameHome = {
 
         Main.page.show({
             url: 'tournament-details.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
-            onBeforeShow:  Ns.GameTournament.Content,
+            onBeforeShow: Ns.GameTournament.Content,
             data: tournament
         });
     },
@@ -148,9 +160,9 @@ Ns.GameHome = {
 
         Main.page.show({
             url: 'group-details.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
-            onBeforeShow:  Ns.GameGroup.Content,
+            onBeforeShow: Ns.GameGroup.Content,
             data: group
         });
     },
@@ -158,7 +170,7 @@ Ns.GameHome = {
 
         Main.page.show({
             url: 'notifications.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameNotifications.Content,
             data: data
@@ -171,60 +183,60 @@ Ns.GameHome = {
 
         Main.page.show({
             url: 'game-contacts.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameContacts.Content,
             data: data
         });
     },
     showContactChat: function (contact) {
-        
-         Main.page.show({
+
+        Main.page.show({
             url: 'contact-chat-view.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameContactChat.Content,
             data: contact
         });
-        
+
     },
     showGroupChat: function (group) {
-        
-         Main.page.show({
+
+        Main.page.show({
             url: 'group-chat-view.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameGroupChat.Content,
             data: group
         });
-        
+
     },
     showTournamentGeneralChat: function (tournament) {
-        
-         Main.page.show({
+
+        Main.page.show({
             url: 'tournament-general-chat-view.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameTournamentGeneralChat.Content,
             data: tournament
-        });     
+        });
     },
     showTournamentInhouseChat: function (tournament) {
-        
-         Main.page.show({
+
+        Main.page.show({
             url: 'tournament-inhouse-chat-view.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameTournamentInhouseChat.Content,
             data: tournament
-        });    
+        });
     },
-    
+
     showCreateGroup: function (data) {
 
         Main.page.show({
             url: 'create-group.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameCreateGroup.Content,
             data: data
@@ -235,44 +247,43 @@ Ns.GameHome = {
 
         Main.page.show({
             url: 'create-tournament.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameCreateTournament.Content,
             data: data
         });
 
     },
-    
-    
+
     showEditGroup: function (data) {
 
         Main.page.show({
             url: 'edit-group.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameEditGroup.Content,
             data: data
         });
 
     },
-    
+
     showEditTournament: function (data) {
 
         Main.page.show({
             url: 'edit-tournament.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameEditTournament.Content,
             data: data
         });
 
     },
-        
+
     showUserProfile: function (user) {
 
         Main.page.show({
             url: 'user-profile.html',
-            effect: "fade",//we will now use fade since slide effect has performace issue for large page content
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameUserProfile.Content,
             data: user

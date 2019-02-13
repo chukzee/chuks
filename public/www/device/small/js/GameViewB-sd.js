@@ -73,7 +73,8 @@ Ns.GameViewB = {
             Ns.ui.GamePanel.showGameB(data, 'game-view-b-main-board');
         }
 
-
+        
+        $('#game-view-b-back-btn').off('click');
         $('#game-view-b-back-btn').on('click', function () {
             Main.page.back();
         });

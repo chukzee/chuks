@@ -55,9 +55,9 @@ Main.on("pagecreate", function (arg) {
     });
 
     /*
+     <input type="file" id="create-tournament-icon-file" name="group_icon"/>
+     <button id="btn-edit-tournament" style="margin: 5px;">Edit tournament</button>
      <button id="btn-create-tournament" style="margin: 5px;">Create tournament</button>
-     <button id="btn-set-icon" style="margin: 5px;">Set icon</button>
-     <button id="btn-set-status" style="margin: 5px;">Set status</button>
      <button id="btn-set-game-sets-count" style="margin: 5px;">Set game sets count</button>
      <button id="btn-add-official" style="margin: 5px;">Add official</button>
      <button id="btn-remove-official" style="margin: 5px;">Remove official</button>
@@ -90,9 +90,31 @@ Main.on("pagecreate", function (arg) {
         var type = prompt('tournament_type', '');
         var sets_count = prompt('sets_count', '');
         var status_message = prompt('status_message', '');
-        var photo_url = prompt('photo_url', '');
 
-        Main.ro.tourn.createTournament(user_id, tournament_name, game, variant, type, sets_count ,status_message, photo_url)
+        var file_input = document.getElementById('create-tournament-icon-file');
+        
+        Main.ro.tourn.createTournament(user_id, tournament_name, game, variant, type, sets_count ,status_message)
+                .attach([file_input])
+                .get(function (data) {
+                    //alert(data);
+                    console.log(data);
+                })
+                .error(function (err) {
+                    //alert(err);
+                    console.log(err);
+                });
+
+    });
+
+    $('#btn-edit-tournament').on('click', function () {
+
+        var user_id = prompt('user_id', '');
+        var tournament_name = prompt('tournament_name', '');
+
+        var file_input = document.getElementById('create-tournament-icon-file');
+        
+        Main.ro.tourn.createTournament(user_id, tournament_name)
+                .attach([file_input])
                 .get(function (data) {
                     //alert(data);
                     console.log(data);
@@ -111,43 +133,6 @@ Main.on("pagecreate", function (arg) {
         var sets_count = prompt('sets_count', '');
 
         Main.ro.tourn.setGameSetsCount(user_id, tournament_name, sets_count)
-                .get(function (data) {
-                    //alert(data);
-                    console.log(data);
-                })
-                .error(function (err) {
-                    //alert(err);
-                    console.log(err);
-                });
-
-    });
-
-    $('#btn-set-icon').on('click', function () {
-
-        var user_id = prompt('user_id', '');
-        var tournament_name = prompt('tournament_name', '');
-        var photo_url = prompt('photo_url', '');
-
-        Main.ro.tourn.setIcon(user_id, tournament_name, photo_url)
-                .get(function (data) {
-                    //alert(data);
-                    console.log(data);
-                })
-                .error(function (err) {
-                    //alert(err);
-                    console.log(err);
-                });
-
-    });
-
-    $('#btn-set-status').on('click', function () {
-
-        var user_id = prompt('user_id', '');
-        var tournament_name = prompt('tournament_name', '');
-        var status_message = prompt('status_message', '');
-        var photo_url = prompt('photo_url', '');
-
-        Main.ro.tourn.setStatus(user_id, tournament_name, status_message, photo_url)
                 .get(function (data) {
                     //alert(data);
                     console.log(data);

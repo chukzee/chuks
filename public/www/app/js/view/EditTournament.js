@@ -52,6 +52,10 @@ Ns.view.EditTournament = {
                 .get(function (tournament) {
                     Ns.view.Tournament.save(tournament);
                     Main.toast.show('Edited successfully');
+                    Ns.GameHome.back({
+                        data: tournament,
+                        onShow: Ns.GameTournament.Content
+                    });
                 })
                 .error(function (err, err_code, connect_err) {
                     Main.toast.show(err);

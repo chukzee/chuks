@@ -3,11 +3,13 @@
 /* global Main, Ns */
 
 
-Ns.GameTournamentGeneralChat = {
+Ns.GameTournamentInhouseChat = {
 
     Content: function (data) {
-        Ns.msg.TournamentGeneralChat.content(data);
-        $('#tournament-general-chat-view-back-btn').on('click', function () {
+        Ns.msg.TournamentInhouseChat.content(data);
+        
+        $('#tournament-inhouse-chat-view-back-btn').off('click');
+        $('#tournament-inhouse-chat-view-back-btn').on('click', function () {
             
             Main.card.back('#home-main', function () {
 
