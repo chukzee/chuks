@@ -4,16 +4,16 @@ var config = require('../../config');
 var sharp = require('sharp');
 
 
-function resizeImage(max_size, path) {
-    sharp(path)
-            .metadata()
+function resizeImage(max_size, input_path, output_path) {
+    var sp = sharp(input_path);
+    sp.metadata()
             .then(info => {
                 var size = info.width < info.height ? info.width : info.height;
                 var size = size < max_size ? size : max_size;
-                return sharp
-                        .resize(max_size)
+                return sp
+                        .resize(size)
                         .png()
-                        .toFile(path);
+                        .toFile(output_path);
             })
             .then(data => {
                 //do nothing for now
@@ -22,15 +22,12 @@ function resizeImage(max_size, path) {
 }
 
 process.on('message', (msg) => {
-    try {
 
-        var obj = JSON.parse(msg);
+    console.log('msg.input_file_path', msg.input_file_path);
+    console.log('msg.absolute_small_image_path', msg.absolute_small_image_path);
+    console.log('msg.absolute_large_image_path', msg.absolute_large_image_path);
 
-        resizeImage(config.SMALL_IMAGE_SIZE, obj.small_image_path);
-        resizeImage(config.LARGE_IMAGE_SIZE, obj.large_image_path);
-    } catch (e) {
-        console.log(e);
-    }
-
+    resizeImage(config.SMALL_IMAGE_SIZE, msg.input_file_path, msg.absolute_small_image_path);
+    resizeImage(config.LARGE_IMAGE_SIZE, msg.input_file_path, msg.absolute_large_image_path);
 
 });

@@ -39,7 +39,7 @@ Ns.msg.GameComment = {
         msg._code = this.getCode();
     },
         
-    getSaveKeyPrefix(){
+    getSaveKeyPrefix: function () {
         return 'save_msg_game_comment';
     },
     

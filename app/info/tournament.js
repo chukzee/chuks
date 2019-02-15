@@ -2251,6 +2251,9 @@ class Tournament extends WebApplication {
                     name: tournament_name
                 });
 
+        if(!tourn){
+            return this.error(`Tournament not found - ${tournament_name}`);
+        }        
 
         if (!this._isTournamentOfficial(tourn, user_id)) {
             return this.error('Not authorized!');
@@ -2818,7 +2821,7 @@ class Tournament extends WebApplication {
         var tourn = await c.findOne({name: tournament_name}, {_id: 0});
 
         if (!tourn) {
-            return this.error('Tournament not found - ' + tournament_name);
+            return this.error(`Tournament not found -  ${tournament_name}`);
         }
 
         return tourn;

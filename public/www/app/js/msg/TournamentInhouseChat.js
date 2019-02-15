@@ -46,7 +46,7 @@ Ns.msg.TournamentInhouseChat = {
         msg._code = this.getCode();
     },
         
-    getSaveKeyPrefix(){
+    getSaveKeyPrefix: function () {
         return 'save_msg_tournament_inhouse_chat';
     },
     

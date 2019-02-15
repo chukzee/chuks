@@ -46,7 +46,7 @@ Ns.msg.TournamentGeneralChat = {
         msg._code = this.getCode();
     },
          
-    getSaveKeyPrefix(){
+    getSaveKeyPrefix: function () {
         return 'save_msg_tournament_general_chat';
     },
     

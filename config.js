@@ -9,29 +9,41 @@ try {
     var stats = fs.statSync(web_root);
 
     if (!stats.isDirectory()) {
-        throw Error('Web root is not a directory: '+ web_root);
+        throw Error('Web root is not a directory: ' + web_root);
     }
 } catch (e) {
-    console.log('Web root does not exist: '+ web_root);
+    console.log('Web root does not exist: ' + web_root);
     throw Error(e);
 }
 
+var small_image_dir = '/uploads/images/small';
+var large_image_dir = '/uploads/images/large';
 
 module.exports = {
 
     WEB_ROOT: web_root,
 
-    SMALL_IMAGE_DIR: web_root + '/uploads/images/small',
+    SMALL_IMAGE_DIR: small_image_dir,
 
-    LARGE_IMAGE_DIR: web_root + '/uploads/images/large',
+    USER_SMALL_IMAGE_DIR: small_image_dir + '/user',
+
+    GROUP_SMALL_IMAGE_DIR: small_image_dir + '/group',
+
+    TOURNAMENT_SMALL_IMAGE_DIR: small_image_dir + '/tournament',
+
+    LARGE_IMAGE_DIR: large_image_dir,
+
+    USER_LARGE_IMAGE_DIR: large_image_dir + '/user',
+
+    GROUP_LARGE_IMAGE_DIR: large_image_dir + '/group',
+
+    TOURNAMENT_LARGE_IMAGE_DIR: large_image_dir + '/tournament',
 
     IMAGE_TYPE: '.png',
 
     SMALL_IMAGE_SIZE: 60,
 
     LARGE_IMAGE_SIZE: 800,
-    
-    TEMP_DIR : web_root + '/temp',
 
     /**
      * Server https port used in production

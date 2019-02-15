@@ -39,7 +39,7 @@ Ns.msg.GameChat = {
         msg._code = this.getCode();
     },
 
-    getSaveKeyPrefix() {
+    getSaveKeyPrefix: function () {
         return 'save_msg_game_chat';
     },
 

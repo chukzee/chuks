@@ -45,7 +45,7 @@ Ns.msg.GroupChat = {
         msg._code = this.getCode();
     },
 
-    getSaveKeyPrefix() {
+    getSaveKeyPrefix: function () {
         return 'save_msg_group_chat';
     },
 

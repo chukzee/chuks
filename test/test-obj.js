@@ -1,28 +1,25 @@
 
-
-var a = {
-    a:null,
-    fn:function(){
-        this.a = {n: 'a5'};
+function endsWith(str, search) {
+    var s_len = search.length;
+    if (s_len > str.length  || s_len === 0) {
+        return false;
     }
-};
+    var start = str.length - s_len;
 
-var b={};
+    for (var i = start, n = 0; i < str.length; i++, n++) {
+        if (str.charAt(i) !== search.charAt(n)) {
+            return false;
+        }
+    }
+    return true;
+}
 
-var c = {};
+function startsWith(str, search) {
+    if (search.length === 0) {
+        return false;
+    }
+    return str.indexOf(search) === 0;
+}
 
-
-
-b.a = a.a;
-b.fn = a.fn;
-
-c.a = a.a;
-c.fn = a.fn;
-
-a.fn();
-c.a = {n: 1};
-
-
-console.log(a.a);
-console.log(b.a);
-console.log(c.a);
+console.log(endsWith('123456', '56'));
+console.log(startsWith('123456', '1'));

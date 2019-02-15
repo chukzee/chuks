@@ -113,7 +113,7 @@ Main.on("pagecreate", function (arg) {
 
         var file_input = document.getElementById('create-tournament-icon-file');
         
-        Main.ro.tourn.createTournament(user_id, tournament_name)
+        Main.ro.tourn.editTournament(user_id, tournament_name)
                 .attach([file_input])
                 .get(function (data) {
                     //alert(data);

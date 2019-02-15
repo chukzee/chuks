@@ -38,7 +38,8 @@ var Main = {};
 
             //check if last error is due to failure to load the default image.
             //we will terminate the process if the default image was not found
-            if (evt.target.src.endsWith('/' + available)) {
+            
+            if (Main.util.endsWith(evt.target.src, '/' + available)) {    
                 evt.target.error = null; // terminate the process
                 console.warn('Could not load the default profile photo! Probably not found.');
                 return;//leave
@@ -695,6 +696,28 @@ var Main = {};
             return a && a.constructor === Array;
         },
 
+        endsWith: function (str, search) {
+            var s_len = search.length;
+            if (s_len > str.length || s_len === 0) {
+                return false;
+            }
+            var start = str.length - s_len;
+
+            for (var i = start, n = 0; i < str.length; i++, n++) {
+                if (str.charAt(i) !== search.charAt(n)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        startsWith: function (str, search) {
+            if (search.length === 0) {
+                return false;
+            }
+            return str.indexOf(search) === 0;
+        },
+
         replaceAll: function (str, regex, subStr) {
             var s = new String(str);
             var sr;
@@ -1227,7 +1250,7 @@ var Main = {};
                                     }
 
                                     objInst[variable][method] = remoteMethod.bind({
-                                        class: rem_classs,
+                                        'class': rem_classs,
                                         method: method,
                                         promiseFn: promiseFn
                                     });
@@ -1236,7 +1259,7 @@ var Main = {};
 
                                     function remoteMethod() {
 
-                                        var className = this.class;
+                                        var className = this['class'];
                                         var method = this.method;
                                         var promise = this.promiseFn();
                                         var argu = arguments;
@@ -1269,7 +1292,7 @@ var Main = {};
                                             }
 
                                             var objParam = {
-                                                class: className,
+                                                'class': className,
                                                 method: method,
                                                 param: argu,
                                                 bind: bind,
@@ -1450,7 +1473,7 @@ var Main = {};
 
                 var obj = {};
                 var callback = fnStart ? argu[0] : argu[argu.length];
-                obj.class = argu[fnStart];
+                obj['class'] = argu[fnStart];
                 obj.method = argu[fnStart + 1];
                 obj.param = [];
                 for (var i = argStart; i < argu.length - 1; i++) {
@@ -1475,7 +1498,7 @@ var Main = {};
                     }
 
 
-                    if (obj.class && typeof obj.class !== "string") {
+                    if (obj['class'] && typeof obj['class'] !== "string") {
                         console.warn("RCall class invalid - must be a string type if provided.");
                         return;
                     }
@@ -1492,20 +1515,20 @@ var Main = {};
 
                     obj.method = Main.util.replaceAll(obj.method, ".", "/");
 
-                    if (!obj.class) {
+                    if (!obj['class']) {
                         if (obj.method.indexOf("/") < 0) {
                             console.warn("RCall method invalid - must carry the qualified class name if class is not explicitly defined. e.g authos.EnglishBook.getCount");
                             return;
                         } else {
                             var index = obj.method.lastIndexOf("/");
-                            obj.class = obj.method.substring(0, index + 1);
+                            obj['class'] = obj.method.substring(0, index + 1);
                             obj.method = obj.method.substring(index + 1);
                         }
                     }
 
                     var o = {};
 
-                    o.class = obj.class;
+                    o['class'] = obj['class'];
                     o.method = obj.method;
 
                     var argu = [];
@@ -2211,7 +2234,7 @@ var Main = {};
                     toPg.data = obj.data;
                     pgShowObj = _pShowFn(obj);
                 }
-                
+
                 showPg(toPg, lastPage.transition, false, pgGoOut, pgShowObj);
                 pages.splice(last_index, 1);//remove the last page
 
@@ -5237,11 +5260,11 @@ var Main = {};
         }
 
         function finishDragTab(evt) {
-            
-            if(typeof tab_touch_end_x === 'undefined'){
+
+            if (typeof tab_touch_end_x === 'undefined') {
                 return;
             }
-            
+
             var change_x = tab_touch_start_x - tab_touch_end_x;
             var change_y = tab_touch_start_y - tab_touch_end_y;
 

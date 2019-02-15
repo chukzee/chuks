@@ -47,7 +47,7 @@ Ns.msg.ContactChat = {
         msg._code = this.getCode();
     },
 
-    getSaveKeyPrefix() {
+    getSaveKeyPrefix: function () {
         return 'save_msg_contact_chat';
     },
 

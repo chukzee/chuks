@@ -38,7 +38,11 @@ class RCallHandler {
             obj.error = err;
         }
         if (this.res) {
-            return this.res.json(obj);
+            
+            //return this.res.json(obj);//@deprecated -  since we also use iframe ajax, setting content-type of application/json will cause inconsistent behaviour accross different browsers.
+            
+            var str_obj = JSON.stringify(obj);
+            return this.res.send(str_obj);//this is now our preferred content-type since sending with res.json() causes inconsistent behaviour accross different browser when using iframe ajax
         }
         if (typeof this.done === 'function') {
             this.done(obj);

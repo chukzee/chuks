@@ -433,7 +433,7 @@ class Group extends WebApplication {
                     }
 
                     for (var i = 0; i < user_ids.length; i++) {
-                        memberObjs[i] = me._groupMemberObj(user_ids, is_admin, false);
+                        memberObjs[i] = me._groupMemberObj(user_ids[i], is_admin, false);
                     }
 
                     //we will commit the update if all 
@@ -480,7 +480,7 @@ class Group extends WebApplication {
                     for (var i = 0; i < memberObjs.length; i++) {
                         memberObjs[i].committed = true;
                     }
-                    return group_col.findAndUpdateOne({name: group_name}, {$set: {members: group_members}},
+                    return group_col.findOneAndUpdate({name: group_name}, {$set: {members: group_members}},
                             {
                                 projection: {_id: 0},
                                 returnOriginal: false, //return the updated document
@@ -547,7 +547,7 @@ class Group extends WebApplication {
             date_created: member.date_joined ? member.date_joined : new Date(),
             members: []
         };
-        
+
         if (rs) {
             group.small_photo_url = rs.small_image_path;
             group.large_photo_url = rs.large_image_path;
@@ -574,7 +574,20 @@ class Group extends WebApplication {
         try {
             group = await this._addToGroup(user_id, group_name, true); // add the member to the group and other neccessary things
         } catch (e) {
+
+            //Now attempt to delete the group since it was not properly created
+
+            c.deleteOne({name: group_name}, {w: 'majority'})
+                    .then(function (r) {
+                        //ok good
+                    })
+                    .catch(function (err) {
+                        console.log(`ATTENTION!!! failed to delete group with name '${group_name}' which was not properly created. This need urgent attention and should be deleted manually.`);
+                        console.log(err);
+                    });
+
             console.log(e);//DO NOT DO THIS IN PRODUCTION
+
             return this.error('Could not perform operaton!');
         }
 
@@ -605,17 +618,22 @@ class Group extends WebApplication {
 
 
         if (!group) {
-            return this.error('Not a memer or group!');
+            return this.error(`Group not found - ${group_name}`);
         }
 
         if (Array.isArray(group.members)) {
+            var foundMember;
             for (var i = 0; i < group.members.length; i++) {
                 if (group.members[i].user_id === user_id) {
+                    foundMember = group.members[i];
                     if (!group.members[i].is_admin) {
-                        return this.error('Not authorized');
+                        return this.error('Not authorized!');
                     }
                     break;
                 }
+            }
+            if(!foundMember){
+                return this.error(`Not a group member - ${user_id}`);
             }
         } else {
             return this.error('No member!');
@@ -646,7 +664,7 @@ class Group extends WebApplication {
             setObj.small_photo_url = rs.small_image_path;
             setObj.large_photo_url = rs.large_image_path;
         }
-        
+
         var c = this.sObj.db.collection(this.sObj.col.groups);
         try {
             var r = await c.findOneAndUpdate({name: group_name}, {$set: setObj}, {
@@ -1107,7 +1125,7 @@ class Group extends WebApplication {
         var users_list = await new User(this.sObj, this.util).getInfoList(members_ids);
         //we expect an array of user info
         if (!Array.isArray(users_list) || users_list.length === 0) {
-            this.error('Could not get groups info');
+            this.error('Could not get users info');
             return;
         }
 

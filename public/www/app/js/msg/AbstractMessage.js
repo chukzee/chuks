@@ -878,7 +878,7 @@ Ns.msg.AbstractMessage = {
      * Overridden by subclass
      * @returns {undefined}
      */
-    getSaveKeyPrefix() {
+    getSaveKeyPrefix: function () {
     },
 
     /**

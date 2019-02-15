@@ -40,11 +40,15 @@ class ImageService {
     }
     async init() {
 
-        this.mkdirp.sync(this.config.SMALL_IMAGE_DIR);
-        this.mkdirp.sync(this.config.LARGE_IMAGE_DIR);
-        this.mkdirp.sync(this.config.TEMP_DIR);
-        
-        console.log('cpus count', this.cpus.length);
+        this.mkdirp.sync(this.config.WEB_ROOT + this.config.GROUP_SMALL_IMAGE_DIR);
+        this.mkdirp.sync(this.config.WEB_ROOT + this.config.TOURNAMENT_SMALL_IMAGE_DIR);
+        this.mkdirp.sync(this.config.WEB_ROOT + this.config.USER_SMALL_IMAGE_DIR);
+
+        this.mkdirp.sync(this.config.WEB_ROOT + this.config.GROUP_LARGE_IMAGE_DIR);
+        this.mkdirp.sync(this.config.WEB_ROOT + this.config.TOURNAMENT_LARGE_IMAGE_DIR);
+        this.mkdirp.sync(this.config.WEB_ROOT + this.config.USER_LARGE_IMAGE_DIR);
+
+        //console.log('cpus count', this.cpus.length);
 
         for (var i = 0; i < this.cpus.length; i++) {
             this.imageResizers[i] = this.fork('./lib_image/image-resizer.js');
@@ -106,7 +110,7 @@ class ImageService {
 
     imageResizeRequest(req, res) {
         var form = new this.formidable.IncomingForm();
-        form.uploadDir = this.config.TEMP_DIR;
+
         form.parse(req, (err, fields, files) => {
             var result = {};
             result.success = false;
@@ -118,24 +122,55 @@ class ImageService {
                 result.success = true;
                 return res.send(JSON.stringify(result));
             }
-            
-            var relative_small_image_path = `/${fields.type}/${fields.id}${this.config.IMAGE_TYPE}`;
-            var relative_large_image_path = `/${fields.type}/${fields.id}${this.config.IMAGE_TYPE}`;
 
-            var absolute_small_image_path = `${this.config.SMALL_IMAGE_DIR}${relative_small_image_path}`;
-            var absolute_large_image_path = `${this.config.LARGE_IMAGE_DIR}${relative_large_image_path}`;
+            var relative_small_image_path;
+            var relative_large_image_path;
 
+            var file_name = `${fields.id}${this.config.IMAGE_TYPE}`;
+
+            switch (fields.type) {
+                case 'user':
+                    {
+                        relative_small_image_path = `${this.config.USER_SMALL_IMAGE_DIR}/${file_name}`;
+                        relative_large_image_path = `${this.config.USER_LARGE_IMAGE_DIR}/${file_name}`;
+                    }
+                    break;
+                case 'group':
+                    {
+                        relative_small_image_path = `${this.config.GROUP_SMALL_IMAGE_DIR}/${file_name}`;
+                        relative_large_image_path = `${this.config.GROUP_LARGE_IMAGE_DIR}/${file_name}`;
+                    }
+                    break;
+                case 'tournament':
+                    {
+                        relative_small_image_path = `${this.config.TOURNAMENT_SMALL_IMAGE_DIR}/${file_name}`;
+                        relative_large_image_path = `${this.config.TOURNAMENT_LARGE_IMAGE_DIR}/${file_name}`;
+                    }
+                    break;
+                default:
+                {
+                    return res.send(JSON.stringify(result));
+                }
+
+            }
             var from_tmp = files.image_file.path;
 
-            this.promiseCopyFile(from_tmp, absolute_large_image_path)
+            var imgPaths = {};
+            imgPaths.input_file_path = from_tmp;
+            imgPaths.absolute_small_image_path = `${this.config.WEB_ROOT}${relative_small_image_path}`;
+            imgPaths.absolute_large_image_path = `${this.config.WEB_ROOT}${relative_large_image_path}`;
+
+
+            this.promiseCopyFile(from_tmp, imgPaths.absolute_large_image_path)
                     .then(() => {
-                        return this.promiseRenameFile(from_tmp, absolute_small_image_path);
+                        return this.promiseCopyFile(from_tmp, imgPaths.absolute_small_image_path);
                     })
                     .then(() => {
+
                         result.success = true;
                         result.small_image_path = relative_small_image_path;
                         result.large_image_path = relative_large_image_path;
-                        this.nextResizer().send(result);
+                        this.nextResizer().send(imgPaths);
                         res.send(JSON.stringify(result));
                     })
                     .catch(err => {
