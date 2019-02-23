@@ -82,7 +82,7 @@ Ns.GameEventsController = {
     },
 
     _makeMove: function (user_id, notation, match) {
-        this._getGameObject(match.game_name).remoteMakeMove(user_id, notation, match);
+        this._getGameObject(match.game_name).remoteMakeMove(notation, match);
     },
 
     /**

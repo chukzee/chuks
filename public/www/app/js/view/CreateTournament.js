@@ -62,7 +62,17 @@ Ns.view.CreateTournament = {
         Main.ro.tourn.createTournament(user_id, tournament_name, game, variant, type, sets_count, desc)
                 .attach([photo_file_input])
                 .get(function (tournament) {
-                    Ns.GameHome.showTournamentDetails(tournament);
+                    //tournaments_belong
+                    
+                     if(!Ns.view.UserProfile.appUser.tournaments_belong){
+                        Ns.view.UserProfile.appUser.tournaments_belong = []; 
+                     }
+                    
+                    if(Ns.view.UserProfile.appUser.tournaments_belong.indexOf(tournament.name) === -1){
+                       Ns.view.UserProfile.appUser.tournaments_belong.push(tournament.name); //added to tournaments belong
+                    }
+                    
+                    Ns.GameHome.removeAndShowTournamentDetails(tournament);
                 })
                 .error(function (err, err_code, connect_err) {
                     Main.toast.show(err);

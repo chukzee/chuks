@@ -39,13 +39,6 @@ Ns.view.Tournament = {
 
         Main.rcall.live(obj);
 
-
-
-        Main.eventio.on('season_start', this.onSeasonStart);
-        Main.eventio.on('season_cancel', this.onSeasonCancel);
-        Main.eventio.on('season_delete', this.onSeasonDelete);
-        Main.eventio.on('season_end', this.onSeasonEnd);
-
     },
 
     content: function (tournament) {
@@ -112,7 +105,7 @@ Ns.view.Tournament = {
 
             var current_season = tournament.seasons[season_index];
 
-            document.getElementById("tournament-details-photo-url").src = tournament.photo_url;
+            document.getElementById("tournament-details-photo-url").src = tournament.large_photo_url;
             document.getElementById("tournament-details-tournament-name").innerHTML = tournament.name;
             document.getElementById("tournament-details-tournament-rating").innerHTML = tournament.rating ? tournament.rating : Ns.view.Tournament.DEFAULT_RATING;
             document.getElementById("tournament-details-created-by").innerHTML = tournament.created_by.full_name;
@@ -325,13 +318,15 @@ Ns.view.Tournament = {
             }
 
             document.getElementById("tournament-details-season-number").innerHTML = season ? season.sn : '';
-            document.getElementById("tournament-details-season-date").innerHTML = season.start_time;
+            document.getElementById("tournament-details-season-date").innerHTML = season ? season.start_time : '';
 
-            document.getElementById("tournament-details-season-players-count").innerHTML = season.slots.length > 0
-                    ? season.slots.length + ' Players'
-                    : season.slots.length + ' Player';
+            document.getElementById("tournament-details-season-players-count").innerHTML = season ?
+                    (season.slots.length > 0
+                            ? season.slots.length + ' Players'
+                            : season.slots.length + ' Player')
+                    : 'No Player';
 
-            round_index = displayFixturesAtRound(season.rounds);
+            round_index = displayFixturesAtRound(season ? season.rounds: []);
 
 
             if (round_index === 0) {
@@ -339,7 +334,7 @@ Ns.view.Tournament = {
                 $('#tournament-details-stage-previous').addClass('game9ja-disabled');
             }
 
-            if (round_index === season.rounds.length - 1) {
+            if (season && round_index === season.rounds.length - 1) {
                 //disable the 'next' button
                 $('#tournament-details-stage-next').addClass('game9ja-disabled');
             }
@@ -375,7 +370,7 @@ Ns.view.Tournament = {
                 rd = rounds[round_index];
             }
 
-            document.getElementById("tournament-details-stage").innerHTML = rd.stage;
+            document.getElementById("tournament-details-stage").innerHTML = rd? rd.stage : '';
 
             var container = '#tournament-details-match-fixtures';
 
@@ -775,7 +770,7 @@ Ns.view.Tournament = {
                     slot_num_td.innerHTML = slot_number;
 
                     if (player) {
-                        photo_td_img.src = player.photo_url;
+                        photo_td_img.src = player.small_photo_url;
                         full_name_td.innerHTML = player.full_name;
                     }
 
@@ -810,7 +805,7 @@ Ns.view.Tournament = {
                 width: window.innerWidth * 0.8,
                 onRender: function (tpl_var, data) {
                     if (tpl_var === 'data_a') {
-                        return data.photo_url;
+                        return data.small_photo_url;
                     }
                     if (tpl_var === 'data_b') {
                         return data.full_name;
@@ -830,7 +825,7 @@ Ns.view.Tournament = {
                                 Ns.view.Tournament.update(data.tournament);
                                 var player = findRegisteredPlayerById(player_id);
                                 if (player) {
-                                    me.photo_td_img.src = player.photo_url;
+                                    me.photo_td_img.src = player.small_photo_url;
                                     me.full_name_td.innerHTML = player.full_name;
                                 }
 
@@ -1115,7 +1110,7 @@ Ns.view.Tournament = {
     },
 
     save: function (tourns) {
-        
+
         var list = Ns.view.Tournament.tournamentList;
 
         if (tourns) {
@@ -1130,7 +1125,7 @@ Ns.view.Tournament = {
                 }
             }
         }
-        
+
         if (Main.util.isArray(list)) {
             window.localStorage.setItem(Ns.Const.TOURNAMENT_LIST_KEY, JSON.stringify(list));
         }
@@ -1251,22 +1246,6 @@ Ns.view.Tournament = {
                     });
         });
     },
-
-    onSeasonStart: function (obj) {
-
-    },
-
-    onSeasonCancel: function (obj) {
-
-    },
-
-    onSeasonDelete: function (obj) {
-
-    },
-
-    onSeasonEnd: function (obj) {
-
-    }
 
     //more goes below
 };

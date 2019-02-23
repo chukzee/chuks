@@ -107,7 +107,7 @@ Ns.view.Contacts = {
      
      return '<ul ' + onclick_action + ' class="game9ja-user-show-list">'
      
-     + '  <li><img name="user_photo"  src="' + contactObj.photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>'
+     + '  <li><img name="user_photo"  src="' + contactObj.small_photo_url + '" onerror="Main.helper.loadDefaultProfilePhoto(event)"  alt=" "/></li>'
      + '   <li>'
      + '       ' + contactObj.full_name
      + '   </li>'

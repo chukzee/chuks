@@ -24,6 +24,28 @@ Ns.game.two.Draughts2D = {
         
     },
 
+    getGameEngineWorkerJs: function () {
+        return 'resources/game_engines/draftgame.js';
+    },
+
+    getGameEngineWorkerJsAsm: function () {
+        return 'resources/game_engines/draftgame.js';
+    },
+
+    getBestMoveFromGameEngineOutput: function (output) {
+        var arr = output.split(' ');
+        for(var i=0; i < arr.length; i++){
+            if(arr[i]=== ''){//just in case there was multiple space delimiter in the output - though we expect single space delimiter
+                arr.splice(i, 1);
+                i--;
+            }
+        }
+        if(arr[0] === 'bestmove' && arr[1]){
+            return arr[1];
+        }
+        
+    },
+    
     checkGameOver: function () {
         //first check the match status field because in the case of draw offer
         //the internal game cannot tell if there was a draw offer

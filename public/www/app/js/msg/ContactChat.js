@@ -59,7 +59,7 @@ Ns.msg.ContactChat = {
     initContent: function (contact) {
         this.contact = contact;
 
-        document.getElementById('contact-chat-view-photo').src = contact.photo_url;
+        document.getElementById('contact-chat-view-photo').src = contact.small_photo_url;
         document.getElementById('contact-chat-view-full-name').innerHTML = contact.full_name;
     },
     getViewID: function () {

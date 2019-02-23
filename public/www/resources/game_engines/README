@@ -1,0 +1,10 @@
+
+javascript files are put in the folder 'resources/*' so that they can
+be picked up by the build tool even if the files are
+not explicitly specified in the include.json config file.
+
+e.g stockifish.js (chess engine) need not be loaded upon initialisation of the application
+since it is expected to run as worker that is why we put in the folder
+
+
+

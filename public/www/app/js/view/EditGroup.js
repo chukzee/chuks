@@ -19,10 +19,10 @@ Ns.view.EditGroup = {
     content: function (group) {
 
         document.getElementById("edit-group-description").innerHTML = group.status_message;
-        document.getElementById("edit-group-photo-file").src = group.photo_url;
+        document.getElementById("edit-group-photo-file").src = group.small_photo_url;
 
         Main.click('edit-group-select-photo', this._onClickSelectPhoto.bind(this));
-        Main.click('edit-group-btn', this._onClickCreate.bind(this));
+        Main.click('edit-group-btn', group, this._onClickCreate.bind(this));
         Main.dom.addListener('edit-group-photo-file', 'change', this._onChangePhotoFile.bind(this));
     },
 
@@ -36,14 +36,14 @@ Ns.view.EditGroup = {
         document.getElementById('edit-group-photo-file').click();
     },
 
-    _onClickCreate: function () {
+    _onClickCreate: function (evt, group) {
 
         var user_id = Ns.view.UserProfile.appUser.user_id;
         var desc = document.getElementById('edit-group-description').value;
 
         var photo_file_input = document.getElementById('edit-group-photo-file');
 
-        Main.ro.group.editGroup(user_id, desc)
+        Main.ro.group.editGroup(user_id, group.name, desc)
                 .attach([photo_file_input])
                 .get(function (group) {
                     Ns.view.Group.save(group);

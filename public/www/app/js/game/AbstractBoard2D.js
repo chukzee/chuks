@@ -88,6 +88,8 @@ Ns.game.AbstractBoard2D = {
         this.isCaptureAnim = false;
         this.isPieceAnim = false;
 
+        this.stopGameEngineWorker();//stop previous running game engine since the game may be different e.g changing from chess to draughts
+
         if (config.variant) {
             var vrnt = this.getVariant(config.variant);
             var board_size = vrnt.size;
@@ -377,6 +379,24 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
+    getBestMoveFromGameEngineOutput: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    /**
+     * @returns {unresolved}
+     */
+    getGameEngineWorkerJs: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    /**
+     * @returns {unresolved}
+     */
+    getGameEngineWorkerJsAsm: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
     /**
      * The method is used to verify if the game view should be modified so as not
      * to corrupt the view with data of other games as the user moves (changes) from one view
@@ -568,7 +588,7 @@ Ns.game.AbstractBoard2D = {
 
     },
 
-    remoteMakeMove: function (user_id, notation, match) {
+    remoteMakeMove: function (notation, match) {
 
         if (!this.checkAccess(match)) {
             return;
@@ -737,10 +757,12 @@ Ns.game.AbstractBoard2D = {
             text: 'Sending..'
         });
 
-        if (this.config.network === 'internet') {
+        if (this.config.communication === 'internet') {
             promise = this._internetSendMove(move_notation, game_position, this.isGameOver, winner_user_id, bindFn);
-        } else if (this.config.network === 'bluetooth') {
+        } else if (this.config.communication === 'bluetooth') {
             promise = this._bluetoothSendMove(move_notation, game_position, this.isGameOver, winner_user_id, bindFn);
+        } else if (this.config.communication === 'worker') {
+            promise = this._workerSendMove(move_notation, game_position, this.isGameOver, winner_user_id, bindFn);
         }
 
 
@@ -841,6 +863,75 @@ Ns.game.AbstractBoard2D = {
         //TODO - return a promise of get and error functions like rcall
 
         //REMIND - the err function of promise return must contain all argument type as in rcall - err, err_code, connect_err
+    },
+
+    _workerSendMove: function (move_notation, game_position, is_game_over, winner_user_id, bindFn) {
+
+        if (typeof window.Worker === 'undefined') {
+            return;
+        }
+
+
+
+        //return a promise of get and error functions like rcall
+
+        //REMIND - the err function of promise return must contain all argument type as in rcall - err, err_code, connect_err
+
+        return this.engineWorker().send(game_position);
+    },
+
+    stopGameEngineWorker: function () {
+        if (this._gameEngineWorker) {
+            this._gameEngineWorker.terminate();
+            this._gameEngineWorker = undefined;//so we can reuse it!
+        }
+    },
+
+    engineWorker: function () {
+
+        if (this._workerPromise) {
+            return this._workerPromise;
+        }
+        var match = this.config.match;
+        if (Main.util.isWebAssemblySupported()) {
+            this._gameEngineWorker = new Worker(this.getGameEngineWorkerJs());
+        } else {
+            this._gameEngineWorker = new Worker(this.getGameEngineWorkerJsAsm());
+        }
+
+        this._workerPromise = handler();
+        var me = this;
+        function handler() {
+
+            this.send = function (game_position) {
+
+                this._getFn;
+                this._errorFn;
+
+                me._gameEngineWorker.postMessage('position ' + game_position);
+                me._gameEngineWorker.postMessage('go movetime 20');
+                var meSnd = this;
+                me._gameEngineWorker.onmessage = function (evt) {
+
+                    var best_move = me.getBestMoveFromGameEngineOutput(evt.data);
+                    if (best_move) {
+                        meSnd._getFn(best_move);
+                        me.remoteMakeMove(best_move, match);
+                    }
+                };
+
+                this.get = function (fn) {
+                    this._getFn = fn;
+                };
+
+                this.error = function (fn) {
+                    this._errorFn = fn;
+                };
+            };
+            return this;
+        }
+
+        return this._workerPromise;
     },
 
     arrangeBoard: function (container, piece_theme) {

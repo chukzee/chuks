@@ -57,7 +57,7 @@ Ns.msg.TournamentGeneralChat = {
      */
     initContent:function(tournament){
         this.tournament = tournament;
-        document.getElementById('tournament-general-chat-view-photo').src = tournament.photo_url;
+        document.getElementById('tournament-general-chat-view-photo').src = tournament.small_photo_url;
         document.getElementById('tournament-general-chat-view-name').innerHTML = tournament.name;
     },
     getViewID: function(){

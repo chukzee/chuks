@@ -179,6 +179,23 @@ class ServerObject {
         }
     }
 
+    /**
+     * @deprecated since we now use GraphicMagick which supports
+     * visually all known image formats. So no need to check for supported formats
+     * 
+     * @param {type} format
+     * @returns {Boolean}
+     */
+    isSupportedImageFormat(format){
+        /*var fmt = format.toUpperCase();
+        var prefix = 'IMAGE/';
+        if(fmt.startsWith(prefix)){
+            fmt = fmt.substring(prefix.length);
+        }
+        return this.config.SUPPORTED_IMAGE_FORMATS.indexOf(fmt) > -1;*/
+        return true;
+    }
+
     get machineId() {
         return this._machine_id;
     }

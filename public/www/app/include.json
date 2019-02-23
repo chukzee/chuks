@@ -43,7 +43,7 @@
             "cordova.js",
             "lib/three.min.js",
             "lib/chess.min.js",
-            "lib/draftgame.js",
+            "resources/game_engines/draftgame.js",//we also use it worker for draughts engine
             "lib/socket.io.js",
             "lib/jquery-1.10.2.min.js",
             //"lib/bootstrap.min.js",// // @Deprecated - does not integrate well with game9ja css design 
@@ -134,10 +134,13 @@
             "Stats.js",
             "Options.js",
             "Util.js",
+            "Robot.js",
             "Spectators.js",
             "Bluetooth.js",
             "Match.js",
             "GameEventsController.js",
+            "GroupEventsController.js",
+            "TournamentEventsController.js",
             "PlayRequest.js",
             "msg/AbstractChat.js",
             "msg/AbstractPeerToPeerChat.js",

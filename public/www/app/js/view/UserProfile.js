@@ -167,7 +167,7 @@ Ns.view.UserProfile = {
                 return;
             }
 
-            document.getElementById("user-profile-photo-url").src = user.photo_url;
+            document.getElementById("user-profile-photo-url").src = user.large_photo_url;
             document.getElementById("user-profile-full-name").innerHTML = user.full_name;
             document.getElementById("user-profile-status-message").innerHTML = user.status_message;
             document.getElementById("user-profile-phone-no").innerHTML = user.user_id;

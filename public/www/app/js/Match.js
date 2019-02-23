@@ -23,7 +23,7 @@ Ns.Match = {
     },
 
     constructor: function () {
-        
+
         var obj = {
             match: 'game/Match'
                     //more may go below
@@ -32,6 +32,56 @@ Ns.Match = {
         Main.rcall.live(obj);
 
 
+    },
+
+    newBluetoothMatchObject: function (whitePlayer, blackPlayer) {
+        var m = Ns.Match.defualtMatchObject();
+        m.bluetooth = true;
+        m.start_time = new Date().getTime();
+        m.current_set = 1;
+        m.players[0] = whitePlayer;
+        m.players[1] = blackPlayer;
+
+        return m;
+    },
+
+    newRobotMatchObject: function (is_robot_white) {
+        var m = Ns.Match.defualtMatchObject();
+        m.robot = true;
+        m.start_time = new Date().getTime();
+        m.current_set = 1;
+        if (is_robot_white) {
+            m.players[0].full_name = 'Robot';
+            m.players[1] = Ns.view.UserProfile.appUser;
+        } else {
+            m.players[0] = Ns.view.UserProfile.appUser;
+            m.players[1].full_name = 'Robot';
+        }
+
+        return m;
+    },
+
+    defualtMatchObject: function () {
+        return {
+            robot: false,
+            bluetooth: false,
+            competition_rating: null,
+            current_set: 0,
+            end_time: null,
+            game_id: null,
+            game_name: null,
+            game_position: null,
+            group_name: null,
+            move_counter: 0,
+            players: [{}, {}],
+            rules: {},
+            scores: [0, 0],
+            sets: [],
+            start_time: null,
+            status: "",
+            tournament_name: "",
+            turn_player_id: null
+        };
     },
 
     getMatch: function (game_id, callback) {
@@ -312,15 +362,13 @@ Ns.Match = {
 
 
             document.getElementById('home-group-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
-            document.getElementById('home-group-pic').src = group.photo_url;
+            document.getElementById('home-group-pic').src = group.small_photo_url;
             document.getElementById('home-group-name').innerHTML = group.name;
             document.getElementById('home-group-status-message').innerHTML = group.status_message;
-            var num = Ns.view.UserProfile.appUser.groups_belong.indexOf(group.name) + 1;
-            if (num > 0) {
-                document.getElementById('home-group-page-number').innerHTML = num + " of " + Ns.view.UserProfile.appUser.groups_belong.length;
-            } else {
-                document.getElementById('home-group-page-number').innerHTML = '---';
-            }
+            Ns.ui.UI.groupPageCounter(group);
+
+
+
 
             Ns.Match.refreshMyGroupsMatchList(group.name);
         }
@@ -413,7 +461,7 @@ Ns.Match = {
 
             //display tournament header info
             document.getElementById('home-tournament-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
-            document.getElementById('home-tournament-pic').src = tournament.photo_url;
+            document.getElementById('home-tournament-pic').src = tournament.small_photo_url;
             document.getElementById('home-tournament-name').innerHTML = tournament.name;
             if (tournament.seasons.length > 0) {
                 var season = tournament.seasons[tournament.seasons.length - 1];//current season
@@ -476,7 +524,7 @@ Ns.Match = {
     },
 
     _doUpdateMatchList: function (key, listview, match) {
-        if(!listview){
+        if (!listview) {
             return;
         }
         var matches = window.localStorage.getItem(key);

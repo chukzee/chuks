@@ -211,7 +211,8 @@ and open the template in the editor.
           font-size: 24px; }
         .game9ja-tournament-details > :nth-child(4) > :nth-child(1) > :nth-child(1) > :nth-child(2) {
           font-size: 11px;
-          margin-left: 30px; }
+          margin-left: 30px;
+          display: inline-block; }
       .game9ja-tournament-details > :nth-child(4) > :nth-child(1) > :nth-child(2) {
         position: absolute;
         bottom: 2px;

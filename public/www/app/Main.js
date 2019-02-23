@@ -38,8 +38,8 @@ var Main = {};
 
             //check if last error is due to failure to load the default image.
             //we will terminate the process if the default image was not found
-            
-            if (Main.util.endsWith(evt.target.src, '/' + available)) {    
+
+            if (evt.target.src.endsWith('/' + available)) {
                 evt.target.error = null; // terminate the process
                 console.warn('Could not load the default profile photo! Probably not found.');
                 return;//leave
@@ -98,6 +98,141 @@ var Main = {};
                 return fBound;
             };
         }
+
+        //polyfill String.prototype.endsWith()
+        if (!String.prototype.endsWith) {
+            String.prototype.endsWith = function (search, this_len) {
+                if (this_len === undefined || this_len > this.length) {
+                    this_len = this.length;
+                }
+                return this.substring(this_len - search.length, this_len) === search;
+            };
+        }
+
+        //polyfill String.prototype.startsWith()
+        if (!String.prototype.startsWith) {
+            Object.defineProperty(String.prototype, 'startsWith', {
+                value: function (search, pos) {
+                    pos = !pos || pos < 0 ? 0 : +pos;
+                    return this.substring(pos, pos + search.length) === search;
+                }
+            });
+        }
+
+        //polyfill Array.prototype.find()
+        // https://tc39.github.io/ecma262/#sec-array.prototype.find
+        if (!Array.prototype.find) {
+            Object.defineProperty(Array.prototype, 'find', {
+                value: function (predicate) {
+                    // 1. Let O be ? ToObject(this value).
+                    if (this == null) {
+                        throw new TypeError('"this" is null or not defined');
+                    }
+
+                    var o = Object(this);
+
+                    // 2. Let len be ? ToLength(? Get(O, "length")).
+                    var len = o.length >>> 0;
+
+                    // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                    if (typeof predicate !== 'function') {
+                        throw new TypeError('predicate must be a function');
+                    }
+
+                    // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                    var thisArg = arguments[1];
+
+                    // 5. Let k be 0.
+                    var k = 0;
+
+                    // 6. Repeat, while k < len
+                    while (k < len) {
+                        // a. Let Pk be ! ToString(k).
+                        // b. Let kValue be ? Get(O, Pk).
+                        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                        // d. If testResult is true, return kValue.
+                        var kValue = o[k];
+                        if (predicate.call(thisArg, kValue, k, o)) {
+                            return kValue;
+                        }
+                        // e. Increase k by 1.
+                        k++;
+                    }
+
+                    // 7. Return undefined.
+                    return undefined;
+                },
+                configurable: true,
+                writable: true
+            });
+        }
+
+        //polyfill Array.prototype.findIndex()
+        // https://tc39.github.io/ecma262/#sec-array.prototype.findindex
+        if (!Array.prototype.findIndex) {
+            Object.defineProperty(Array.prototype, 'findIndex', {
+                value: function (predicate) {
+                    // 1. Let O be ? ToObject(this value).
+                    if (this == null) {
+                        throw new TypeError('"this" is null or not defined');
+                    }
+
+                    var o = Object(this);
+
+                    // 2. Let len be ? ToLength(? Get(O, "length")).
+                    var len = o.length >>> 0;
+
+                    // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                    if (typeof predicate !== 'function') {
+                        throw new TypeError('predicate must be a function');
+                    }
+
+                    // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                    var thisArg = arguments[1];
+
+                    // 5. Let k be 0.
+                    var k = 0;
+
+                    // 6. Repeat, while k < len
+                    while (k < len) {
+                        // a. Let Pk be ! ToString(k).
+                        // b. Let kValue be ? Get(O, Pk).
+                        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                        // d. If testResult is true, return k.
+                        var kValue = o[k];
+                        if (predicate.call(thisArg, kValue, k, o)) {
+                            return k;
+                        }
+                        // e. Increase k by 1.
+                        k++;
+                    }
+
+                    // 7. Return -1.
+                    return -1;
+                },
+                configurable: true,
+                writable: true
+            });
+        }
+
+        //polyfill the remove() method in Internet Explorer 9 and higher 
+        // from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
+        (function (arr) {
+            arr.forEach(function (item) {
+                if (item.hasOwnProperty('remove')) {
+                    return;
+                }
+                Object.defineProperty(item, 'remove', {
+                    configurable: true,
+                    enumerable: true,
+                    writable: true,
+                    value: function remove() {
+                        if (this.parentNode !== null)
+                            this.parentNode.removeChild(this);
+                    }
+                });
+            });
+        })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 
         //more polyfill may go below 
 
@@ -618,11 +753,27 @@ var Main = {};
         isXLarge: function () {
             return window.innerWidth > 800; //important! checking current width of  screen 
         },
+
+        isPortriat: function () {
+            return window.screen.height > window.screen.width;
+        },
+
+        isLandscape: function () {
+            return window.screen.height < window.screen.width;
+        },
+
         getPortriatInnerWidth: function () {
             return window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
         },
         getPortriatInnerHeight: function () {
             return window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth;
+        },
+
+        getLandscapeInnerWidth: function () {
+            return Main.device.getPortriatInnerHeight();
+        },
+        getLandscapeInnerHeight: function () {
+            return Main.device.getPortriatInnerWidth();
         },
         getPortriatWidth: function () {
             return portriat_width;
@@ -686,12 +837,41 @@ var Main = {};
 
     Main.util = {
 
+        isWebAssemblySupported: function () {
+
+            var is_supported = null;//initial
+
+            return function () {
+
+                if (is_supported !== null) {
+                    return is_supported;//return the saved answser
+                }
+
+                is_supported = false;
+                try {
+                    if (typeof window.WebAssembly === 'object'
+                            && typeof window.WebAssembly.instantiate === 'function') {
+                        var module = new window.WebAssembly.Module(window.Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+                        if (module instanceof window.WebAssembly.Module) {
+                            var instance = new window.WebAssembly.Instance(module);
+                            is_supported = instance instanceof window.WebAssembly.Instance;
+                        }
+                    }
+                } catch (e) {
+                    //we are not interested
+                }
+                return is_supported;
+            };
+        }(),
+
         isFunc: function (fn) {
             return typeof fn === "function";
         },
+
         isString: function (str) {
             return typeof str === "string";
         },
+
         isArray: function (a) {
             return a && a.constructor === Array;
         },
@@ -740,6 +920,7 @@ var Main = {};
                 return str.toUpperCase(); // to sentence case
             }
         },
+
         serilaNo: function () {
             var serial = 0;
             return function () {
@@ -1250,7 +1431,7 @@ var Main = {};
                                     }
 
                                     objInst[variable][method] = remoteMethod.bind({
-                                        'class': rem_classs,
+                                        class: rem_classs,
                                         method: method,
                                         promiseFn: promiseFn
                                     });
@@ -1259,7 +1440,7 @@ var Main = {};
 
                                     function remoteMethod() {
 
-                                        var className = this['class'];
+                                        var className = this.class;
                                         var method = this.method;
                                         var promise = this.promiseFn();
                                         var argu = arguments;
@@ -1292,7 +1473,7 @@ var Main = {};
                                             }
 
                                             var objParam = {
-                                                'class': className,
+                                                class: className,
                                                 method: method,
                                                 param: argu,
                                                 bind: bind,
@@ -1473,7 +1654,7 @@ var Main = {};
 
                 var obj = {};
                 var callback = fnStart ? argu[0] : argu[argu.length];
-                obj['class'] = argu[fnStart];
+                obj.class = argu[fnStart];
                 obj.method = argu[fnStart + 1];
                 obj.param = [];
                 for (var i = argStart; i < argu.length - 1; i++) {
@@ -1498,7 +1679,7 @@ var Main = {};
                     }
 
 
-                    if (obj['class'] && typeof obj['class'] !== "string") {
+                    if (obj.class && typeof obj.class !== "string") {
                         console.warn("RCall class invalid - must be a string type if provided.");
                         return;
                     }
@@ -1515,20 +1696,20 @@ var Main = {};
 
                     obj.method = Main.util.replaceAll(obj.method, ".", "/");
 
-                    if (!obj['class']) {
+                    if (!obj.class) {
                         if (obj.method.indexOf("/") < 0) {
                             console.warn("RCall method invalid - must carry the qualified class name if class is not explicitly defined. e.g authos.EnglishBook.getCount");
                             return;
                         } else {
                             var index = obj.method.lastIndexOf("/");
-                            obj['class'] = obj.method.substring(0, index + 1);
+                            obj.class = obj.method.substring(0, index + 1);
                             obj.method = obj.method.substring(index + 1);
                         }
                     }
 
                     var o = {};
 
-                    o['class'] = obj['class'];
+                    o.class = obj.class;
                     o.method = obj.method;
 
                     var argu = [];
@@ -2004,6 +2185,10 @@ var Main = {};
                     console.warn(e);
                 }
             }
+
+            if (pgShowObj && pgShowObj.finishPg) {
+                pgShowObj.finishPg();
+            }
         }
 
         function refactorBody(container, selector) {
@@ -2243,7 +2428,48 @@ var Main = {};
             return true;//important!
         };
 
+        /*
+         * Removes the current page and show a new page
+         * @param {type} obj
+         * @returns {undefined|Boolean}
+         */
+        this.removeAndShow = function (obj) {
+            show0(obj, afterPageShow);
+
+            function afterPageShow() {
+                if (pages.length < 2) {//there must be at least two page for us to be able to remove the 2nd to last one
+                    return;
+                }
+
+                //At this point the is at least 2 pages
+
+                //Remove the 2nd to last page from the page array collection
+                var _prev_index = pages.length - 2; // we need the 2nd to last index
+                pages.splice(_prev_index, 1);
+
+                //remove the 2nd to last page from the DOM
+                var children = $('body').children();
+                var count = 0;//counting from the back (last page)
+                for (var i = children.length - 1; i > -1; i--) {
+                    if (children[i].nodeName === 'SCRIPT') {
+                        continue;
+                    }
+                    if ($(children[i]).attr('data-app-content') === 'page') {
+                        count++;
+                        if (count === 2) {//2nd to the last page
+                            children[i].remove();
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+
         this.show = function (obj) {
+            return show0(obj);//important!
+        };
+
+        show0 = function (obj, finishPg) {
             if (transitionInProgress) {
                 console.warn("Action ignored! Page transition in progress.");
                 return false; //unsuccesful becasue page is in transition
@@ -2257,7 +2483,7 @@ var Main = {};
             }
 
 
-            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj), (obj.hasBackAction !== false));
+            load(obj.url, transit, !(obj.forward === false), obj.data, _pShowFn(obj, finishPg), (obj.hasBackAction !== false));
             return true;//important!
         };
 
@@ -2270,10 +2496,11 @@ var Main = {};
             return '';
         };
 
-        var _pShowFn = function (obj) {
+        var _pShowFn = function (obj, finishPg) {
             return {
                 onShow: obj && obj.onShow ? obj.onShow : null,
-                onBeforeShow: obj && obj.onBeforeShow ? obj.onBeforeShow : null
+                onBeforeShow: obj && obj.onBeforeShow ? obj.onBeforeShow : null,
+                finishPg: finishPg
             };
         };
 
@@ -3074,7 +3301,7 @@ var Main = {};
 
         }
 
-        this.to = function (obj) {
+        to0 = function (obj, finishCallback) {
             var cid;
             if (!obj.url) {
                 console.warn('invalid card url - ', obj.url);
@@ -3182,6 +3409,9 @@ var Main = {};
                     }
                     createCardBackAction();
                 }
+                if (finishCallback) {
+                    finishCallback();
+                }
                 function createCardBackAction() {
                     if (!isNestedCard) {
                         //we will not create back action for nested cards because of
@@ -3196,6 +3426,10 @@ var Main = {};
 
             });
 
+        };
+
+        this.to = function (obj) {
+            to0(obj);
         };
 
         this.back = function (arg0, arg1) {
@@ -3262,7 +3496,7 @@ var Main = {};
             var len = last_content.length;
             var rem_chidren = [];
             for (var i = 0; i < len; i++) {
-                var rem_child = prev.content.removeChild(last_content[0]);//removing the first
+                var rem_child = prev.content.removeChild(last_content[0]);//removing the first as the number of children reduces to zero
 
                 if (!rem_child.style.visibility) {//only consider elements with no visibility property set.
                     //Brilliant technique by hidding the element to prevent the child 
@@ -3299,6 +3533,43 @@ var Main = {};
 
             if (Main.util.isFunc(out_card.obj.onHide)) {
                 out_card.obj.onHide(out_card.obj.data);
+            }
+
+        };
+
+        this.removeTo = function (obj) {
+            var container = obj.container;
+            var cid;
+
+            if (Main.util.isString(container)) {
+                cid = container.charAt(0) === '#' ? container.substring(1) : container;
+            } else {
+                cid = $(container).id();
+            }
+
+            var cont = document.getElementById(cid);
+            if (!cont) {
+                console.warn('unknown  card container id - ', cid);
+                return;
+            }
+
+            to0(obj, afterCardShow);
+
+            function afterCardShow() {
+                var cds = cards[cid];
+
+                if (!Main.util.isArray(cds)
+                        || !cds.length //important - must check if it is array 
+                        || cds.length < 2) {
+                    return; // already at the begining
+                }
+
+                //At this point there is aleast two cards on the container.
+
+                //remove the 2nd to the last card from the card object collection
+                var prev_index = cds.length - 2; //we need the 2nd to the last index
+                cds.splice(prev_index, 1);
+
             }
 
         };
@@ -3678,7 +3949,7 @@ var Main = {};
             var callbackWrapFn;
             if (Main.util.isFunc(callback)) {
                 callbackWrapFn = function (evt) {
-                    callback(evt, data);
+                    return callback(evt, data);
                 };
                 fns.push(callback);
                 bind_fns.push(callbackWrapFn);
@@ -3923,10 +4194,9 @@ var Main = {};
                     getDialogBodyEl = param.getDialogBodyEl,
                     getDialogFooterEL = param.getDialogFooterEL,
                     dialogButtonsCreate = param.dialogButtonsCreate,
-                    clearSavedlayouts = param.clearSavedlayouts,
-                    resizeListenBind = param.resizeListenBind,
-                    setVisible = param.setVisible;
-            touchCloseFn = param.touchCloseFn,
+                    resizeListenDlgBind = param.resizeListenDlgBind,
+                    setVisible = param.setVisible,
+                    touchCloseFn = param.touchCloseFn,
                     deviceBackHideFunc = param.deviceBackHideFunc,
                     btns = param.btns;
 
@@ -4034,8 +4304,7 @@ var Main = {};
             };
 
             this.layout = function () {
-                clearSavedlayouts();
-                resizeListenBind();
+                resizeListenDlgBind.call(obj, dlg_cmp);
             };
 
             this.getContentElement = function () {
@@ -4079,7 +4348,7 @@ var Main = {};
             function destroy() {
                 if (dlg_cmp) {
                     dlg_cmp.parentNode.removeChild(dlg_cmp);
-                    Main.dom.removeListener(window, 'resize', resizeListenBind, false);
+                    Main.dom.removeListener(window, 'resize', resizeListenDlgBind, false);
                     Main.dom.removeListener(document.body, 'touchstart', touchCloseFn, false);
                     dlg_cmp = null;
                 }
@@ -4091,55 +4360,58 @@ var Main = {};
 
         }
 
+        function resizeListenDlg(dlgCmp) {
+            var dlgEls = {
+                header_els: [],
+                body_els: [],
+                footer_els: []
+            };
 
-        /**
-         * Creates and  shows a dialog.
-         * 
-         * Usage
-         * <br>
-         * <br>
-         * obj = { <br>
-         *       container[opt] : ....,//container to center the dialog on<br>
-         *       width [opt] : ...., //width of the dialog in pixel - px <br>
-         *       maxWidth [opt] : ...., //max. width of the dialog in pixel - px <br>
-         *       height [opt] : ...., //height of the dialog body (not the dialog in this case) in pixel - px <br>
-         *       maxHeight [opt] : ...., //max height of the dialog body (not the dialog in this case) in pixel - px <br>
-         *       title [opt] : .....,//title of the dialog<br>
-         *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
-         *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
-         *       action [opt] : .....,//called when any buttons created in the footer is cliced<br>
-         *       content [opt] : .....,//cotent of the dialog body<br>
-         *       iconCls [opt] : .....,//icon class to show - used typically by alert and confirm dialog<br>
-         *       fade | fadein | fadeIn [opt] : .....,//whether to use fade transition<br>
-         *       closeButton [opt] : .....,//whether to display close button<br>
-         *       touchOutClose [opt] : .....,//whether to close the dialog if user touch outside it on mobile device <br>
-         *       onShow [opt] : .....,//called when the dialog is shown<br>
-         *       onHide [opt] : .....,//called when the dilog is closed and destroyed<br>
-         * }<br>
-         * <br>
-         * where '|' means 'or the property that follows'. <br>
-         *      '....' means value<br>
-         *       [opt] means optional property<br>
-         *      <br>
-         * Usage in action and onShow callback function.<br>
-         * 
-         * The follow method can be called in the action and onShow callback function <br>
-         * <br>
-         * this.hide() --- hides and destroys the dialog
-         * this.close() --- closes and destroys the dialog - same as this.hide()
-         * <br>
-         * @param {type} obj
-         * @returns {undefined}
-         */
-        this.show = function (obj) {
+            var header = $(dlgCmp).find('.game9ja-dialog-header')[0];
+            var body = $(dlgCmp).find('.game9ja-dialog-body')[0];
+            var footer = $(dlgCmp).find('.game9ja-dialog-footer')[0];
 
+            if (header) {
+                var hc = header.childNodes;
+                var len = hc.length;
+                for (var i = 0; i < len; i++) {
+                    var child = header.removeChild(hc[0]);//picking the first as the children count reduce to zero
+                    dlgEls.header_els.push(child);
+                }
+            }
+
+            if (body) {
+                var bc = body.childNodes;
+                var len = bc.length;
+                for (var i = 0; i < len; i++) {
+                    var child = body.removeChild(bc[0]);//picking the first as the children count reduce to zero
+                    dlgEls.body_els.push(child);
+                }
+            }
+
+            if (footer) {
+                var fc = footer.childNodes;
+                var len = fc.length;
+                for (var i = 0; i < len; i++) {
+                    var child = footer.removeChild(fc[0]);//picking the first as the children count reduce to zero
+                    dlgEls.footer_els.push(child);
+                }
+            }
+
+            //show0.call(this, dlgEls);
+
+        }
+
+        function dlgStyle() {
+
+        }
+
+        function show0(dlgEls) {
+            var obj = this;
             if (obj.buttons && !Main.util.isArray(obj.buttons)) {//yes because button can be absence. so check if present and it is also an array
                 console.warn('Dialog buttons must be array of button texts if provided!');
                 return;
             }
-
-            //TODO: lock orientation here to the current orientation - to avoid resize problems of the dialog- just a form of workaround
-            //TODO : Unlock the orientation when the dialog is hidden and destroyed - see destroy() method
 
 
             var base = document.createElement('div');
@@ -4176,8 +4448,6 @@ var Main = {};
 
             var footer_el = document.createElement('div');
             footer_el.className = 'game9ja-dialog-footer';
-            //var title_html = '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + obj.title + '</div>';//old
-            //header_el.innerHTML = title_html;//old
 
             var titleHtml = function (title) {//new
                 title = title ? title : '';
@@ -4197,7 +4467,6 @@ var Main = {};
             }
 
             var content_el = document.createElement('div');
-            //content_el.innerHTML = obj.content;//old
 
             var setBodyContent = function (content) {//new
                 content = content ? content : '';
@@ -4244,13 +4513,7 @@ var Main = {};
                 }
             }
 
-            //header_el.innerHTML = title_html;//old
             header_el.innerHTML = titleHtml(obj.title);//new
-
-            var pad_factor = 0.8;
-
-            //base.style.maxWidth = (pad_factor * 100) + '%'; //old
-            //base.style.maxHeight = (pad_factor * 100) + '%';//old
 
             if (obj.maxWidth) {//new
                 var max_width = new String(obj.maxWidth).replace('px', '') - 0;//implicitly convert to numeric
@@ -4306,21 +4569,15 @@ var Main = {};
             }
 
             base.style.opacity = 0;
+            function addTouchCloseListener() {
 
-            if (obj.touchOutClose === true) {
-                Main.dom.addListener(document.body, 'touchstart', touchCloseFunc, false);
+                if (obj.touchOutClose === true) {
+                    Main.dom.addListener(outsideDialog, 'click', touchCloseFunc, false);//we now use 'click' instead of 'touchstart' event because the touchstart event cause undesirable event propagation.
+                }
             }
 
-            var lytObj = {//used to  save layout value
-                layouts: {},
-                LYT_MAX: 20 //max. layout objects to save 
-            };
 
-            function clearSavedlayouts() {
-                lytObj.layouts = {};
-            }
-
-            var resizeListenBind = resizeListen.bind(lytObj);
+            var resizeListenDlgBind = resizeListenDlg.bind(obj, dlg_cmp);
 
             var obj_param = {
                 obj: obj,
@@ -4331,9 +4588,8 @@ var Main = {};
                 getDialogBodyEl: getDialogBodyEl,
                 getDialogFooterEL: getDialogFooterEL,
                 dialogButtonsCreate: dialogButtonsCreate,
-                resizeListenBind: resizeListenBind,
+                resizeListenDlgBind: resizeListenDlgBind,
                 setVisible: setVisible,
-                clearSavedlayouts: clearSavedlayouts,
                 touchCloseFunc: touchCloseFunc,
                 deviceBackHideFunc: deviceBackHideFunc,
                 btns: []
@@ -4370,75 +4626,36 @@ var Main = {};
                 base.appendChild(footer_el);
             }
 
-            /*
-             objThis.setButtonText = function (index, text) {
-             if (el_btns[index]) {
-             el_btns[index].value = text;
-             }
-             
-             };*/
+            dlgStyle.call(obj);
 
-            var container;
-            if (Main.util.isString(obj.container)) {
-                var container_id = obj.container.charAt(0) === '#' ? obj.container.substring(1) : obj.container;
-                container = document.getElementById(container_id);
-            } else if (obj.container) {
-                container = obj.container;
-            } else {
-                container = document.body;
-            }
-            var cb = container.getBoundingClientRect();
-            var bound = base.getBoundingClientRect();
+            Main.dom.addListener(window, 'resize', resizeListenDlgBind, false);
 
-            if (bound.width > cb.width) {//adjust this abnormality!
-                base.style.width = (cb.width * pad_factor) + 'px';
-                cb = container.getBoundingClientRect();
-                bound = base.getBoundingClientRect();
-            }
-
-            var compXY = computeXY(cb, bound);
-
-            base.style.left = compXY.x + 'px';
-            base.style.top = compXY.y + 'px';
-
-            lytObj.layouts[lytKey(cb)] = {
-                baseLeft: compXY.x,
-                baseTop: compXY.y,
-                baseWidth: bound.width,
-                baseHeight: bound.height,
-                containerLeft: cb.left,
-                containerTop: cb.top,
-                containerWidth: cb.width,
-                containerHeight: cb.height,
-                winWidth: window.innerWidth,
-                winHeight: window.innerHeight
-            };
-
-            Main.dom.addListener(window, 'resize', resizeListenBind, false);
-
-
-            if (obj.fade || obj.fadeIn || obj.fadeIn) {
-                Main.anim.to(base, 300, {opacity: initialOpacity}, function () {
+            if (!dlgEls) {
+                if (obj.fade || obj.fadeIn || obj.fadeIn) {
+                    Main.anim.to(base, 300, {opacity: initialOpacity}, function () {
+                        if (Main.util.isFunc(obj.onShow)) {
+                            try {
+                                obj.onShow.call(objThis);
+                            } catch (e) {
+                                console.warn(e);
+                            }
+                        }
+                        addTouchCloseListener();
+                        Main.device.addBackAction(deviceBackHideFunc);
+                    });
+                } else {
+                    base.style.opacity = initialOpacity;
                     if (Main.util.isFunc(obj.onShow)) {
                         try {
                             obj.onShow.call(objThis);
                         } catch (e) {
                             console.warn(e);
                         }
-                    }
-                    Main.device.addBackAction(deviceBackHideFunc);
-                });
-            } else {
-                base.style.opacity = initialOpacity;
-                if (Main.util.isFunc(obj.onShow)) {
-                    try {
-                        obj.onShow.call(objThis);
-                    } catch (e) {
-                        console.warn(e);
-                    }
 
+                    }
+                    addTouchCloseListener();
+                    Main.device.addBackAction(deviceBackHideFunc);
                 }
-                Main.device.addBackAction(deviceBackHideFunc);
             }
 
 
@@ -4461,6 +4678,7 @@ var Main = {};
             }
 
             function touchCloseFunc(evt) {
+
                 var parent = evt.target;
                 var touch_outside = true;
                 while (parent && parent !== document.body) {
@@ -4478,224 +4696,60 @@ var Main = {};
                 }
             }
 
-            function lytKey(cb) {
-                return cb.left + "_"
-                        + cb.top + "_"
-                        + cb.width + "_"
-                        + cb.height + "_"
-                        + window.innerWidth + "_"
-                        + window.innerHeight;
-            }
-
-            function useKnownLayoutFigs(cb) {
-                var lyt_key = lytKey(cb);
-                var found_lyt = null;
-                for (var key in this.layouts) {
-                    var lyt = this.layouts[key];
-
-                    if (lyt.containerLeft
-                            && lyt.containerTop
-                            && lyt.containerWidth
-                            && lyt.containerHeight
-                            && lyt.containerLeft === cb.left
-                            && lyt.containerTop === cb.top
-                            && lyt.containerWidth === cb.width
-                            && lyt.containerHeight === cb.height) {
-                        found_lyt = lyt;
-                        break;
-                    }
-                }
-
-                if (!found_lyt && this.layouts[lyt_key]) {
-                    found_lyt = this.layouts[lyt_key];
-                }
-
-                if (!found_lyt) {
-                    return;
-                }
-
-                //at this point we have found a layout settings to use
-                base.style.left = found_lyt.baseLeft + 'px';
-                base.style.top = found_lyt.baseTop + 'px';
-                base.style.height = found_lyt.baseHeight + 'px';
-                base.style.width = found_lyt.baseWidth + 'px';
+        }
 
 
-                var ft_bound = footer_el.getBoundingClientRect();
-                var hd_bound = header_el.getBoundingClientRect();
-                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
-                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
-                var hd_tp = hd_bound && hd_bound.top ? hd_bound.top : 0;
 
-                var extra = hd_tp - found_lyt.baseTop;
-
-                var bd_h = found_lyt.baseHeight - hd_h - ft_h - extra;
-
-                body_el.style.height = bd_h + 'px';
-                body_el.style.width = found_lyt.baseWidth + 'px';
-
-                return true;
-            }
-
-            function resizeListen() {
-
-                var cb = container.getBoundingClientRect();
-                var bound = base.getBoundingClientRect();
-
-                var prev_win_height = window.innerHeight;
-                var prev_win_width = window.innerWidth;
-
-                if (useKnownLayoutFigs.call(this, cb)) {
-                    return;
-                }
-
-                //console.log('cb.width = ', cb.width, ' ----  ', 'cb.height = ', cb.height);
-                //console.log('bound.width = ', bound.width, ' ----  ', 'bound.height = ', bound.height);
-
-
-                var base_new_width = 0;
-                var base_new_height = 0;
-                if (bound.width && cb.width && bound.width > cb.width * pad_factor) {
-
-                    base_new_width = pad_factor * cb.width;
-                    base.style.width = base_new_width + 'px';
-
-                    //console.log('base.style.width = ', base_new_width + 'px');
-
-
-                }
-                if (!base_new_width && bound.width && bound.width > window.innerWidth * pad_factor) {
-
-                    base_new_width = pad_factor * window.innerWidth;
-                    base.style.width = base_new_width + 'px';
-
-                    //console.log('consider window.innerWidth -> base.style.width = ', base_new_width + 'px');
-
-
-                }
-                if (bound.height && cb.height && bound.height > cb.height * pad_factor) {
-
-                    base_new_height = pad_factor * cb.height;
-                    base.style.height = base_new_height + 'px';
-
-                    //console.log('base.style.height = ', base_new_height + 'px');
-
-                }
-                if (!base_new_height && bound.height && bound.height > window.innerHeight * pad_factor) {
-
-                    base_new_height = pad_factor * window.innerHeight;
-                    base.style.height = base_new_height + 'px';
-
-                    //console.log('consider window.innerHeight -> base.style.height = ', base_new_height + 'px');
-
-                }
-
-
-                var ft_bound = footer_el.getBoundingClientRect();
-                var hd_bound = header_el.getBoundingClientRect();
-                var ft_h = ft_bound && ft_bound.height ? ft_bound.height : 0;
-                var hd_h = hd_bound && hd_bound.height ? hd_bound.height : 0;
-                var hd_tp = hd_bound && hd_bound.top ? hd_bound.top : 0;
-
-                var extra = hd_tp - bound.top;
-
-                var base_h = base_new_height || base.getBoundingClientRect().height;
-                var base_w = base_new_width || base.getBoundingClientRect().width;
-
-                var bd_h = base_h - hd_h - ft_h - extra;
-                body_el.style.height = bd_h + 'px';
-                body_el.style.width = base_w + 'px';
-
-                //console.log('ft_h = ', ft_h);
-                //console.log('hd_h = ', hd_h);
-                //console.log('base_h = ', base_h);
-                //console.log('bd_h = ', bd_h);
-
-                //console.log('body_el.style.width = ', base_w + 'px', ' ----  ', 'body_el.style.height = ', bd_h);
-
-                var compXY = computeXY(cb, bound);
-                base.style.left = compXY.x + 'px';
-                base.style.top = compXY.y + 'px';
-
-                //check if the widow size still change before execution got here
-                if (prev_win_height !== window.innerHeight
-                        || prev_win_width !== window.innerWidth) {
-                    //the window size changed before execution got here so check if
-                    //we have the layout already stored
-                    if (useKnownLayoutFigs.call(this, cb)) {
-                        return;
-                    }
-                }
-
-                //save layout figures
-                if (Object.getOwnPropertyNames(this.layouts).length <= this.LYT_MAX) {
-
-                    this.layouts[lytKey(cb)] = {
-                        baseLeft: compXY.x,
-                        baseTop: compXY.y,
-                        baseWidth: base_w,
-                        baseHeight: base_h,
-                        containerLeft: cb.left,
-                        containerTop: cb.top,
-                        containerWidth: cb.width,
-                        containerHeight: cb.height,
-                        winWidth: window.innerWidth,
-                        winHeight: window.innerHeight
-                    };
-                }
-
-            }
-
-
-            function computeXY(cb, bound) {
-
-                var x, y;
-                if (bound.top >= 0
-                        && bound.top <= window.innerHeight
-                        && bound.left >= 0
-                        && bound.left <= window.innerWidth
-                        && bound.height) {//inside the window view port
-                    var cb_h = cb.height;
-                    var cb_w = cb.width;
-                    if (cb_h === 0) {
-                        cb_h = window.innerHeight;
-                    }
-
-                    if (cb_w === 0) {
-                        cb_w = window.innerWidth;
-                    }
-                    var b_w = bound.width;
-                    var b_h = bound.height;
-
-                    x = cb.left + (cb_w - b_w) / 2;
-                    y = cb.top + (cb_h - b_h) / 2;
-                    if (b_w > cb_w) {
-                        x = 0.1 * cb_w;
-                    }
-                    if (b_h > cb_h) {
-                        y = 0.1 * cb_h;
-                    }
-
-                } else {
-                    var bw = 200;
-                    x = (window.innerWidth - bw) / 2;
-                    y = (window.innerHeight - bw) / 2;
-                    if (x <= 0) {
-                        x = 40;
-                    }
-                    if (y <= 0) {
-                        y = 40;
-                    }
-                }
-                return {x: x, y: y};
-            }
+        /**
+         * Creates and  shows a dialog.
+         * 
+         * Usage
+         * <br>
+         * <br>
+         * obj = { <br>
+         *       container[opt] : ....,//container to center the dialog on<br>
+         *       width [opt] : ...., //width of the dialog in pixel - px <br>
+         *       maxWidth [opt] : ...., //max. width of the dialog in pixel - px <br>
+         *       height [opt] : ...., //height of the dialog body (not the dialog in this case) in pixel - px <br>
+         *       maxHeight [opt] : ...., //max height of the dialog body (not the dialog in this case) in pixel - px <br>
+         *       title [opt] : .....,//title of the dialog<br>
+         *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
+         *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
+         *       action [opt] : .....,//called when any buttons created in the footer is cliced<br>
+         *       content [opt] : .....,//cotent of the dialog body<br>
+         *       iconCls [opt] : .....,//icon class to show - used typically by alert and confirm dialog<br>
+         *       fade | fadein | fadeIn [opt] : .....,//whether to use fade transition<br>
+         *       closeButton [opt] : .....,//whether to display close button<br>
+         *       touchOutClose [opt] : .....,//whether to close the dialog if user touch outside it on mobile device <br>
+         *       onShow [opt] : .....,//called when the dialog is shown<br>
+         *       onHide [opt] : .....,//called when the dilog is closed and destroyed<br>
+         * }<br>
+         * <br>
+         * where '|' means 'or the property that follows'. <br>
+         *      '....' means value<br>
+         *       [opt] means optional property<br>
+         *      <br>
+         * Usage in action and onShow callback function.<br>
+         * 
+         * The follow method can be called in the action and onShow callback function <br>
+         * <br>
+         * this.hide() --- hides and destroys the dialog
+         * this.close() --- closes and destroys the dialog - same as this.hide()
+         * <br>
+         * @param {type} obj
+         * @returns {undefined}
+         */
+        this.show = function (obj) {
+            show0.call(obj);
         };
+
     }
 
     function Menu() {
         var defaultWidth = 150;
         var menuHeaderHeight = 30; //must not change -  used in css
         var menuCmp;
+        var menuOuter;
         var menuBtn;
         var resizeListenMnuBind;
         var deviceBackHideFns = []; //store hides function to be removed by back actions when menu is destroyed 
@@ -4716,6 +4770,9 @@ var Main = {};
                     click_outside = false;
                     break;
                 }
+                if (parent === menuOuter) {
+                    break;
+                }
                 parent = parent.parentNode;
             }
 
@@ -4725,47 +4782,53 @@ var Main = {};
         }
 
         function resizeListenMnu(evt) {
+            var mnuEls = {
+                header_els: [],
+                body_els: [],
+                footer_els: []
+            };
 
-            //alert('resizeListenMnu');
+            var header = menuCmp.find('.game9ja-menu-header')[0];
+            var body = menuCmp.find('.game9ja-menu-body')[0];
+            var footer = menuCmp.find('.game9ja-menu-footer')[0];
 
-            if (!menuCmp) {
-                return;
-            }
-            var styleObj = mnuStyle.call(this);
-            if (!styleObj) {
-                destroy();
-                return;
-            }
-            //menuCmp[0].style = styleObj.main_style;
-            menuCmp[0].style.top = styleObj.top + 'px';
-            menuCmp[0].style.left = styleObj.left + 'px';
-            if (styleObj.main_height) {
-                menuCmp[0].style.height = styleObj.main_height + 'px';
-            }
-
-
-            //alert('top = ' + styleObj.top + '   left = ' + styleObj.left + '   main_height = ' + styleObj.main_height);
-
-            var elb = menuCmp[0].getElementsByClassName("game9ja-menu-body");
-            if (elb.length > 0) {
-                //elb[0].style = styleObj.body_style;
-                if (styleObj.body_height) {
-                    elb[0].style.height = styleObj.body_height + 'px';
+            if (header) {
+                var hc = header.childNodes;
+                var len = hc.length;
+                for (var i = 0; i < len; i++) {
+                    var child = header.removeChild(hc[0]);//picking the first as the children count reduce to zero
+                    mnuEls.header_els.push(child);
                 }
-                if (styleObj.body_max_height) {
-                    elb[0].style.maxHeight = styleObj.body_max_height + 'px';
-                }
-
-                //alert('body_height ' + styleObj.body_height);
-
             }
+
+            if (body) {
+                var bc = body.childNodes;
+                var len = bc.length;
+                for (var i = 0; i < len; i++) {
+                    var child = body.removeChild(bc[0]);//picking the first as the children count reduce to zero
+                    mnuEls.body_els.push(child);
+                }
+            }
+
+            if (footer) {
+                var fc = footer.childNodes;
+                var len = fc.length;
+                for (var i = 0; i < len; i++) {
+                    var child = footer.removeChild(fc[0]);//picking the first as the children count reduce to zero
+                    mnuEls.footer_els.push(child);
+                }
+            }
+
+            create0.call(this, mnuEls);
 
 
         }
 
         function destroy() {
-            if (menuCmp) {
-                menuCmp.remove();
+
+            if (menuOuter) {
+                menuOuter.parentNode.removeChild(menuOuter);
+                menuOuter = null;
                 menuCmp = null;
                 Main.dom.removeListener(document.body, 'click', onClickOutsideHide, false);
                 Main.dom.removeListener(window, 'resize', resizeListenMnuBind, false);
@@ -4876,6 +4939,10 @@ var Main = {};
                 normalizeBodyHeight(menuCmp);
             };
 
+            this.layout = function () {
+                resizeListenMnuBind();
+            };
+
             function normalizeBodyHeight(menu) {
                 var children = menuCmp.children();
                 var h = menu[0].clientHeight;
@@ -4916,7 +4983,137 @@ var Main = {};
             return e;
         }
 
-        function mnuStyle() {
+        function create0(mnuEls) {
+            //first destroy previous menu shown - there cannot be more than
+            //one menu at a time.
+            destroy();
+
+            //alert('styleObj.main_style ' + styleObj.main_style);
+            //alert('styleObj.body_style ' + styleObj.body_style);
+
+            menuCmp = $('<div class="game9ja-menu"></div>');
+
+            var mnuBody;
+            if (mnuEls) {
+                restoreHeader.call(this, mnuEls.header_els);
+                mnuBody = restoreBody.call(this, mnuEls.body_els);
+                restoreFooter.call(this, mnuEls.footer_els);
+            } else {
+                addHeader.call(this);
+                mnuBody = addBody.call(this);
+                addFooter.call(this);
+            }
+
+            function restoreHeader(els) {
+                if (els && els.length > 0) {
+                    menuCmp.append('<div class="game9ja-menu-header"></div>');
+                    var mnuHeader = menuCmp.find('.game9ja-menu-header');
+                    for (var i = 0; i < els.length; i++) {
+                        mnuHeader.append(els[i]);
+                    }
+                }
+            }
+
+            function restoreBody(els) {
+                if (els && els.length > 0) {
+                    menuCmp.append('<div class="game9ja-menu-body"></div>');//body
+                    var mnuBody = menuCmp.find('.game9ja-menu-body');
+                    for (var i = 0; i < els.length; i++) {
+                        mnuBody.append(els[i]);
+                    }
+                }
+                return mnuBody;
+            }
+
+            function restoreFooter(els) {
+                if (els && els.length > 0) {
+                    menuCmp.append('<div class="game9ja-menu-footer"></div>');
+                    var mnuFooter = menuCmp.find('.game9ja-menu-footer');
+                    for (var i = 0; i < els.length; i++) {
+                        mnuFooter.append(els[i]);
+                    }
+                }
+            }
+
+            function addHeader() {
+                if (this.header) {
+                    menuCmp.append('<div class="game9ja-menu-header"></div>');
+                    var mnuHeader = menuCmp.find('.game9ja-menu-header');
+                    mnuHeader.append(this.header);
+                }
+            }
+
+            function addBody() {
+                menuCmp.append('<div class="game9ja-menu-body"></div>');//body
+                var mnuBody = menuCmp.find('.game9ja-menu-body');
+                var els = [];
+                var mnu_items = this.items;
+                if (Main.util.isFunc(mnu_items)) {
+                    mnu_items = mnu_items();
+                }
+
+                if (!Main.util.isArray(mnu_items)) {//convert to array which is what is expected
+                    mnu_items = [mnu_items];
+                }
+
+                for (var i = 0; i < mnu_items.length; i++) {
+                    var t = mnu_items[i];
+                    if (typeof t !== 'undefined' && t !== null) {
+                        var e = createMenuItem(this, menuThis, menuCmp, mnuBody, t);
+                        els.push(e);
+                    }
+                }
+
+                var children = $(menuCmp).children();
+                var last = children[children.length - 1];
+                $(last).append(els);
+
+                return mnuBody;
+            }
+
+            function addFooter() {
+                if (this.footer) {
+                    menuCmp.append('<div class="game9ja-menu-footer"></div>');
+                    var mnuFooter = menuCmp.find('.game9ja-menu-footer');
+                    mnuFooter.append(this.footer);
+                }
+            }
+
+            menuOuter = document.createElement('div');
+            menuOuter.style.position = 'absolute';
+            menuOuter.style.top = '0';
+            menuOuter.style.width = '100%';
+            menuOuter.style.height = '100%';
+
+            $(menuOuter).append(menuCmp);
+
+            $('body').append(menuOuter);
+
+
+            mnuStyle.call(this, menuCmp, mnuBody);
+
+
+            Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
+
+            resizeListenMnuBind = resizeListenMnu.bind(this);
+
+            Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
+
+
+            var mnuThis = menuThis(this, menuCmp, mnuBody);
+
+            if (!deviceBackHideFns) {
+                deviceBackHideFns = [];
+            }
+
+            deviceBackHideFns.push(mnuThis.hide);
+
+            Main.device.addBackAction(mnuThis.hide);
+
+            return mnuThis;
+        }
+
+        function mnuStyle(mnuCmp, mnuBody) {
             menuBtn = this.target;
             if (Main.util.isString(this.target)) {
                 menuBtn = menuBtn.charAt(0) === '#' ? menuBtn.substring(1) : menuBtn;
@@ -4946,47 +5143,68 @@ var Main = {};
             if (x + mnu_width + padding > body_bound.width) {
                 x = bound.left - mnu_width + bound.width; // align the right edge of the menu with the right edge of the target
             }
-            if (this._heightRatio) {
-                this.height = this._heightRatio * window.innerHeight; // restore the height base on orientation
-            }
+
             this.height = this.height ? new String(this.height).replace('px', '') : null;
+            this.height -= 0;//implicitly convent to numeric
+            var screen_inner_height;
+            if (Main.device.isPortriat()) {
+                screen_inner_height = Main.device.getPortriatInnerHeight();
+            } else {
+                screen_inner_height = Main.device.getLandscapeInnerHeight();
+            }
 
-            var max_height = Main.device.getPortriatInnerWidth() - 20; // minus some pixels
 
-            //NOTE isNaN(null) == isNaN(0)
+            var mnu_bound = mnuCmp[0].getBoundingClientRect();
+
+            var max_height = screen_inner_height - 60; // minus some pixels
+
+
+            if (mnu_bound.height > 0 && max_height > mnu_bound.height) {
+                if (!this.height) {
+                    max_height = mnu_bound.height;
+                }
+            }
+
+            var mnu_height;
+            var body_height = this.height;
+            var max_body_height = max_height;
+            if (this.height && this.height < max_height) {
+                mnu_height = this.height;
+                if (this.header && this.footer) {
+                    body_height = this.height - 2 * menuHeaderHeight;
+                } else if (this.header || this.footer) {
+                    body_height = this.height - menuHeaderHeight;
+                }
+            } else {
+                mnu_height = max_height;
+                if (this.header && this.footer) {
+                    max_body_height = max_height - 2 * menuHeaderHeight;
+                } else if (this.header || this.footer) {
+                    max_body_height = max_height - menuHeaderHeight;
+                }
+            }
+
+
+            var body_height_style = body_height ?
+                    "height: " + body_height + "px; max-height: " + max_body_height + "px;"
+                    : "max-height: " + max_body_height + "px;";
+
+
+            if (mnu_height + y > screen_inner_height) {
+                y = (screen_inner_height - mnu_height) / 2; //place in center of screen vertically
+                y = Math.floor(y);
+            }
 
             var style = 'position: absolute; '
                     + ' top : ' + y + 'px; '
                     + ' left: ' + x + 'px; '
                     + ' width: ' + mnu_width + 'px; '
-                    + (!isNaN(this.height) && this.height ? 'height: ' + this.height + 'px;' : '');
+                    + ' height: ' + mnu_height + 'px;';
 
-            var main_height = this.height;
 
-            var body_height_style = this.height;
-            if (this.height) {
-                if (this.header && this.footer) {
-                    body_height_style = this.height - 2 * menuHeaderHeight;
-                } else if (this.header || this.footer) {
-                    body_height_style = this.height - menuHeaderHeight;
-                }
-            }
+            mnuCmp[0].style = style;
+            mnuBody[0].style = body_height_style;
 
-            var body_height = body_height_style;
-
-            body_height_style = body_height_style ?
-                    "height: " + body_height_style + "px; max-height: " + max_height + "px;"
-                    : "max-height: " + max_height + "px;";
-
-            return {
-                top: y,
-                left: x,
-                main_height: main_height,
-                body_height: body_height,
-                body_max_height: max_height,
-                main_style: style,
-                body_style: body_height_style
-            };
         }
 
         /**
@@ -5034,84 +5252,20 @@ var Main = {};
             $(obj.target).off('click');
             $(obj.target).on('click', onTargetClick.bind(obj));
 
-            if (obj.height) {
-                //set a private field for adjusting height when orientation change to avoid improper height
-                obj._heightRatio = obj.height / window.innerHeight; //save the height ratio for proper height setting based on device orientaion
-            }
-
-            function onTargetClick(evt) {
-                //first destroy previous menu shown - there cannot be more than
-                //one menu at a time.
-                destroy();
-
-                var styleObj = mnuStyle.call(this);
-
-                if (!styleObj) {
-                    return;
-                }
-
-                //alert('styleObj.main_style ' + styleObj.main_style);
-                //alert('styleObj.body_style ' + styleObj.body_style);
-
-                menuCmp = $('<div class="game9ja-menu" style = "' + styleObj.main_style + '" ></div>');
-
-                if (this.header) {
-                    menuCmp.append('<div class="game9ja-menu-header">' + this.header + '</div>');
-                }
-
-                menuCmp.append('<div class="game9ja-menu-body" style="' + styleObj.body_style + '"></div>');
-
-                var mnuBody = menuCmp.find('.game9ja-menu-body');
-                var els = [];
-                var mnu_items = this.items;
-                if (Main.util.isFunc(mnu_items)) {
-                    mnu_items = mnu_items();
-                }
-
-                if (!Main.util.isArray(mnu_items)) {//convert to array which is what is expected
-                    mnu_items = [mnu_items];
-                }
-
-                for (var i = 0; i < mnu_items.length; i++) {
-                    var t = mnu_items[i];
-                    if (typeof t !== 'undefined' && t !== null) {
-                        var e = createMenuItem(this, menuThis, menuCmp, mnuBody, t);
-                        els.push(e);
-                    }
-                }
-
-                var children = $(menuCmp).children();
-                var last = children[children.length - 1];
-                $(last).append(els);
-
-                if (this.footer) {
-                    menuCmp.append('<div class="game9ja-menu-footer">' + this.footer + '</div>');
-                }
-
-                $('body').append(menuCmp);
-
-                Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
-
-                resizeListenMnuBind = resizeListenMnu.bind(this);
-
-                Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
+            /*if (obj.height) {
+             //set a private field for adjusting height when orientation change to avoid improper height
+             obj._heightRatio = obj.height / window.innerHeight; //save the height ratio for proper height setting based on device orientation
+             }*/
 
 
-                var mnuThis = menuThis(this, menuCmp, mnuBody);
+            function onTargetClick() {
+                var mnuThis = create0.call(this);
                 if (Main.util.isFunc(this.onShow)) {
                     this.onShow.call(mnuThis);
                 }
 
-                if (!deviceBackHideFns) {
-                    deviceBackHideFns = [];
-                }
-
-                deviceBackHideFns.push(mnuThis.hide);
-
-                Main.device.addBackAction(mnuThis.hide);
-
-
             }
+
         };
     }
 
@@ -5209,10 +5363,10 @@ var Main = {};
             right: swipeTabBody.bind({direction: -1})
         });
 
-        var tab_touch_start_x;
-        var tab_touch_start_y;
-        var tab_touch_end_x;
-        var tab_touch_end_y;
+        var tab_touch_start_x = null;
+        var tab_touch_start_y = null;
+        var tab_touch_end_x = null;
+        var tab_touch_end_y = null;
 
         var dragObj = {
             buttons: btns,
@@ -5261,12 +5415,19 @@ var Main = {};
 
         function finishDragTab(evt) {
 
-            if (typeof tab_touch_end_x === 'undefined') {
+            if (typeof tab_touch_end_x === 'undefined' || tab_touch_end_x === null) {
                 return;
             }
 
             var change_x = tab_touch_start_x - tab_touch_end_x;
             var change_y = tab_touch_start_y - tab_touch_end_y;
+
+
+            //initialize - important!
+            tab_touch_start_x = null;
+            tab_touch_start_y = null;
+            tab_touch_end_x = null;
+            tab_touch_end_y = null;
 
             var tab_cont = getTabDragged.call(this, evt);
             if (!tab_cont) {

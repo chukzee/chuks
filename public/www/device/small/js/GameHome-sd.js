@@ -23,6 +23,30 @@ Ns.GameHome = {
         }
     },
 
+
+    removeAndShowGroupDetails: function (group) {     
+        
+        Main.page.removeAndShow({
+            url: 'group-details.html',
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
+            onBeforeShow: Ns.GameGroup.Content,
+            data: group
+        });
+    },
+    
+    removeAndShowTournamentDetails: function (tournament) {
+        
+        Main.page.removeAndShow({
+            url: 'tournament-details.html',
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
+            duration: 300,
+            onBeforeShow: Ns.GameTournament.Content,
+            data: tournament
+        });
+    },
+    
+
     Content: function (selected_game) {
         Ns.ui.UI.init(selected_game);
     },
@@ -51,33 +75,6 @@ Ns.GameHome = {
             },
             data: match
         });
-
-        //show a dialog to display startup settings
-        Main.dialog.show({
-            title: "Play Robot", //TODO - display a robot like photo alongside the title
-            content: Ns.ui.UI.gameSettings(match.game_name),
-            fade: true,
-            buttons: ['CANCEL', 'PLAY'],
-            closeButton: false,
-            modal: true,
-            action: function (btn, value) {
-                if (value === 'CANCEL') {
-                    if (Main.page.getUrl() === Ns.GameHome.GAME_VIEW_B_HTML) {
-                        if (Main.page.back()) {//making sure the page is not in transition
-                            this.hide();
-                        }
-                    } else {
-                        this.hide();
-                        ;
-                    }
-                } else {//Play clicked
-                    this.hide();
-                }
-
-            }
-        });
-
-
 
     },
     showGameWatch: function (match) {

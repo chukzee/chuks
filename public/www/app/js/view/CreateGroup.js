@@ -44,7 +44,19 @@ Ns.view.CreateGroup = {
         Main.ro.group.createGroup(user_id, group_name, desc)
                 .attach([photo_file_input])
                 .get(function (group) {
-                    Ns.GameHome.showGroupDetails(group);
+
+                    if (!Ns.view.UserProfile.appUser.groups_belong) {
+                        Ns.view.UserProfile.appUser.groups_belong = [];
+                    }
+
+                    if (Ns.view.UserProfile.appUser.groups_belong.indexOf(group.name) === -1) {
+                        Ns.view.UserProfile.appUser.groups_belong.push(group.name); //added to group belong
+                    }
+
+                    Ns.ui.UI.groupPageCounter(group);
+
+                    Ns.GameHome.removeAndShowGroupDetails(group);
+                    
                 })
                 .error(function (err, err_code, connect_err) {
                     Main.toast.show(err);

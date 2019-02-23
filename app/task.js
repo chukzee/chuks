@@ -25,16 +25,16 @@ class Task {
 
     /**
      * Executes a task periodically. The task is persistent in the sense that
-     * even if the server goes off, the task is remembered the moment the server come back and
+     * even if the server goes off, the task is remembered the moment the server comes back and
      * continues in the exact expected occurrence.
      * 
      * valid arguments signatures are:
-     * -One argument - expects and object.
+     * -One argument - expects an object.
      * -Two or more argument.
      * 
      * the singnature of object paramenter is:
      * var obj = {
-     *      classMethod: classMethod, // the callee method - must be a string represent the mehod to call one of the method of the class in the app folder e.g game/Match/start.
+     *      classMethod: classMethod, // the callee method - must be a string representing the mehod to call one of the methods of the class in the app folder e.g game/Match/start.
      *      delay: delay, // initial delay
      *      interval: interval,
      *      times: times,
@@ -110,12 +110,12 @@ class Task {
      * continues in the exact expected occurrence.
      * 
      * valid arguments signatures are:
-     * -One argument - expects and object.
+     * -One argument - expects an object.
      * -Two or more argument.
      * 
      * the singnature of object paramenter is:
      * var obj = {
-     *      classMethod: classMethod, // the callee method - must be a string represent the mehod to call one of the method of the class in the app folder e.g game/Match/start.
+     *      classMethod: classMethod, // the callee method - must be a string representing the mehod to call one of the methods of the class in the app folder e.g game/Match/start.
      *      delay: delay, // initial delay
      *      param: param
      *  };
@@ -257,7 +257,7 @@ class Task {
             
             //just collect the runable tasks - do not run immediately
             //to avoid event loop blocking interference I observed when
-            // reading from the command line which affect the timer result
+            // reading from the command line which affected the timer result
             //ie unexpected trigger intervals.
             
             runables.push(arr[i]);//importnat! safer this way.
@@ -292,7 +292,7 @@ class Task {
 
             //set the new intial delay 
             var diff = new Date(obj.startTime).getTime() - new Date().getTime();
-            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logic point                
+            if (diff < 0) {//some time is already lost - the best we can do is to continue from a logical point                
                 var mod = (-diff) % obj.interval;
                 obj.delay = obj.interval - mod;
             } else {
@@ -351,7 +351,7 @@ class Task {
                 str = ',\n' + str + '\n]';
             }
 
-            var buffer = new Buffer(str);//must be a buffer otherwise nodejs will refuse to position it as will expect. they will set the offset to zero and the positon to offset which is zero.What!
+            var buffer = new Buffer(str);//must be a buffer otherwise nodejs will refuse to position it as we expect. They will set the offset to zero and the positon to offset which is zero. What!!!
 
             fs.write(me.fd, buffer, 0, buffer.length, size, function (err, writtenSize, wrttenData) {
                 if (err) {

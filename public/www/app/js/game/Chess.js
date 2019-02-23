@@ -8,6 +8,14 @@ Ns.game.Chess = {
     constructor: function () {
 
     },
+    
+    engine: function(){
+        if(!window.Worker){
+            return;
+        }
+        
+        
+    },
 
     load: function (obj) {
 

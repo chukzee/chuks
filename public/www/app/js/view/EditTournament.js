@@ -16,18 +16,18 @@ Ns.view.EditTournament = {
         Main.rcall.live(obj);
     },
     content: function (tournament) {
-        
-                
-        document.getElementById('edit-tournament-photo-file').src = tournament.photo_url;
-        
-        if(Ns.ui.UI.selectedGame === 'chess'){
-             document.getElementById('edit-tournament-view-title').innerHTML = 'Edit Chess Tournament';
-        }else if(Ns.ui.UI.selectedGame === 'draughts'){
-             document.getElementById('edit-tournament-view-title').innerHTML = 'Edit Draughts Tournament';
+
+
+        document.getElementById('edit-tournament-photo-file').src = tournament.small_photo_url;
+
+        if (Ns.ui.UI.selectedGame === 'chess') {
+            document.getElementById('edit-tournament-view-title').innerHTML = 'Edit Chess Tournament';
+        } else if (Ns.ui.UI.selectedGame === 'draughts') {
+            document.getElementById('edit-tournament-view-title').innerHTML = 'Edit Draughts Tournament';
         }
 
         Main.click('edit-tournament-select-photo', this._onClickSelectPhoto.bind(this));
-        Main.click('edit-tournament-btn', this._onClickEdit.bind(this));
+        Main.click('edit-tournament-btn', tournament, this._onClickEdit.bind(this));
         Main.dom.addListener('edit-tournament-photo-file', 'change', this._onChangePhotoFile.bind(this));
     },
 
@@ -41,13 +41,13 @@ Ns.view.EditTournament = {
         document.getElementById('edit-tournament-photo-file').click();
     },
 
-    _onClickEdit: function () {
-        
+    _onClickEdit: function (evt, tournament) {
+
         var user_id = Ns.view.UserProfile.appUser.user_id;
-        
+
         var photo_file_input = document.getElementById('edit-tournament-photo-file');
-        
-        Main.ro.tourn.editTournament(user_id)
+
+        Main.ro.tourn.editTournament(user_id, tournament.name)
                 .attach([photo_file_input])
                 .get(function (tournament) {
                     Ns.view.Tournament.save(tournament);

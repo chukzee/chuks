@@ -158,7 +158,7 @@ Ns.view.Performance = {
                     player = tournament.registered_players[k];
                     if (player.user_id === standings[i].user_id) {
                         full_name = player.full_name;
-                        photo_url = player.photo_url;
+                        photo_url = player.small_photo_url;
                         break;
                     }
                 }

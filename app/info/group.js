@@ -632,7 +632,7 @@ class Group extends WebApplication {
                     break;
                 }
             }
-            if(!foundMember){
+            if (!foundMember) {
                 return this.error(`Not a group member - ${user_id}`);
             }
         } else {
@@ -661,8 +661,9 @@ class Group extends WebApplication {
         }
 
         if (rs) {
-            setObj.small_photo_url = rs.small_image_path;
-            setObj.large_photo_url = rs.large_image_path;
+            var tm = new Date().getTime();
+            setObj.small_photo_url = rs.small_image_path + '?' + tm;//force refresh by appending the new time query string
+            setObj.large_photo_url = rs.large_image_path + '?' + tm;//force refresh by appending the new time query string
         }
 
         var c = this.sObj.db.collection(this.sObj.col.groups);
@@ -678,6 +679,20 @@ class Group extends WebApplication {
         }
 
         group = r.value;
+
+        var groups = await  this._normalizeGroupsInfo(group);
+        if (this.lastError) {
+            return this.error(this.lastError);
+        }
+
+        group = groups[0];//we know it is only one group
+        
+        var member_user_ids = [];
+        for(var i=0; i< group.members.length; i++){
+            member_user_ids.push(group.members[i].user_id);
+        }
+        //broadcast to all group members
+        this.broadcast(this.evt.group_edited, group, member_user_ids);
 
         return group;
     }
@@ -709,7 +724,6 @@ class Group extends WebApplication {
             var admin = await c.findOne(adminQuery, {_id: 0});
 
 
-
             if (!admin) {
                 return this.error("Not authorized to make another user an admin.");
             }
@@ -733,7 +747,7 @@ class Group extends WebApplication {
                 }
                 if (group.members[i].user_id === new_admin_user_id) {
                     if (group.members[i].is_admin) {
-                        return this.error("member is already an admin");
+                        return this.error("Member is already an admin");
                     }
                     group.members[i].is_admin = true;
                     found_member = group.members[i];
@@ -746,7 +760,7 @@ class Group extends WebApplication {
 
             await c.updateOne({name: group_name}, {$set: {members: group.members}});
 
-            console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
+            //console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
 
             if (group.members.length === 0) {
                 return this.error('No member');
@@ -773,26 +787,26 @@ class Group extends WebApplication {
             //first check if the user is an admin
             var group = await c.findOne({name: group_name}, {_id: 0});
             if (!group) {
-                return 'Not a group';
+                return this.error('Not a group');
             }
             for (var i = 0; i < group.members.length; i++) {
                 if (group.members[i].committed
                         && group.members[i].user_id === user_id
                         && !group.members[i].is_admin) {
-                    return "Not authorized to make another user an admin.";
+                    return this.error("Not authorized to make another user an admin.");
                 }
             }
 
             //also the creator of the group cannot be demoted
             if (group.created_by === demoted_admin_user_id) {
-                return "Cannot demote the group creator!";
+                return this.error("Cannot demote the group creator!");
             }
 
 
             var group = await c.findOne({name: group_name}, {_id: 0});
 
             if (!group) {
-                return 'Not a group';
+                return this.error('Not a group');
             }
 
             if (!Array.isArray(group.members)) {
@@ -809,7 +823,7 @@ class Group extends WebApplication {
                 }
                 if (group.members[i].user_id === demoted_admin_user_id) {
                     if (!group.members[i].is_admin) {
-                        return "member was not an admin!";
+                        return this.error("Member is not an admin!");
                     }
                     group.members[i].is_admin = false;
                     found_member = group.members[i];
@@ -817,18 +831,18 @@ class Group extends WebApplication {
             }
 
             if (!found_member) {
-                return `Admin member not found - ${demoted_admin_user_id}`;
+                return this.error(`Admin member not found - ${demoted_admin_user_id}`);
             }
 
             await c.updateOne({name: group_name}, {$set: {members: group.members}});
 
-            console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
+            //console.log(await c.findOne({name: group_name}, {_id: 0}));//TESTING!!!
 
             if (group.members.length === 0) {
-                return 'No member';
+                return this.error('No member');
             }
 
-            return "removed admin role succesfully.";
+            return "Removed admin role succesfully.";
 
         } catch (e) {
             console.log(e);
@@ -914,7 +928,7 @@ class Group extends WebApplication {
                     exitedMemberObj.exit_by = exit_by;
                     exitedMemberObj.exit_date = new Date();
 
-                    console.log('group.exited_members', group.exited_members);
+                    //console.log('group.exited_members', group.exited_members);
 
                     group.exited_members.push(exitedMemberObj);
                     //but first remove the group name from the 'groups_belong' field 

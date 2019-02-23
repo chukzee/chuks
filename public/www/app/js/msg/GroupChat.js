@@ -56,7 +56,7 @@ Ns.msg.GroupChat = {
      */
     initContent: function (group) {
         this.group = group;
-        document.getElementById('group-chat-view-photo').src = group.photo_url;
+        document.getElementById('group-chat-view-photo').src = group.small_photo_url;
         document.getElementById('group-chat-view-name').innerHTML = group.name;
         document.getElementById('group-chat-view-status').innerHTML = group.status_message;
     },

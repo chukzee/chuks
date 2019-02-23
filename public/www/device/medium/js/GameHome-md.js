@@ -23,6 +23,27 @@ Ns.GameHome = {
         Main.card.back(obj);
     },
     
+    removeAndShowGroupDetails: function (group) {
+        
+        Main.card.removeTo({
+            container: '#home-main',
+            url: 'group-details.html',
+            fade: true,
+            data: group,
+            onShow: Ns.GameGroup.Content
+        });
+    },
+    
+    removeAndShowTournamentDetails: function (tournament) {
+        
+        Main.card.removeTo({
+            container: '#home-main',
+            url: 'tournament-details.html',
+            fade: true,
+            data: tournament,
+            onShow: Ns.GameTournament.Content
+        });
+    },
     
     isLandscape: function () {
         return window.screen.width > window.screen.height;
@@ -78,21 +99,6 @@ Ns.GameHome = {
         }
     },
     showGameViewB: function (match) {
-        //show a dialog to display startup settings
-        Main.dialog.show({
-            title: "Play Robot", //TODO - display a robot like photo alongside the title
-            content: Ns.ui.UI.gameSettings(match.game_name),
-            fade: true,
-            buttons: ['CANCEL', 'PLAY'],
-            closeButton: false,
-            modal: true,
-            action: function (btn, value) {
-                if (value === 'CANCEL') {
-                    Ns.GameHome.home();
-                }
-                this.hide();
-            }
-        });
 
         Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;

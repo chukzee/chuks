@@ -152,10 +152,9 @@ Ns.ui.Photo = {
 
     },
 
-    _expandPhotoSize: function (data) {
-        var img_el = data;
-        var photo_url = data;
-        img_el.src = photo_url + '?size=large'; //get the large size
+    _expandPhotoSize: function (param) {
+        var img_el = param.data.el;
+        img_el.src = param.data.large_photo_url; //get the large size
 
         var container = img_el.parentNode;
 

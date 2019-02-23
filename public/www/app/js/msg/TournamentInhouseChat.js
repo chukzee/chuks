@@ -57,7 +57,7 @@ Ns.msg.TournamentInhouseChat = {
      */
     initContent:function(tournament){
         this.tournament = tournament;
-        document.getElementById('tournament-inhouse-chat-view-photo').src = tournament.photo_url;
+        document.getElementById('tournament-inhouse-chat-view-photo').src = tournament.small_photo_url;
         document.getElementById('tournament-inhouse-chat-view-name').innerHTML = tournament.name;
     },
     getViewID: function(){

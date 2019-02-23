@@ -37,7 +37,7 @@ Ns.Spectators = {
             onRender: function (tpl_var, data) {
 
                 if (tpl_var === 'data_a') {
-                    return data.photo_url;
+                    return data.small_photo_url;
                 }
 
                 if (tpl_var === 'data_b') {

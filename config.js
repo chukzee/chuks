@@ -39,7 +39,9 @@ module.exports = {
 
     TOURNAMENT_LARGE_IMAGE_DIR: large_image_dir + '/tournament',
 
-    IMAGE_TYPE: '.png',
+    IMAGE_EXTENTION: '.png',
+
+    IMAGE_FORMAT: 'png',
 
     SMALL_IMAGE_SIZE: 60,
 

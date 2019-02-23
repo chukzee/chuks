@@ -126,7 +126,7 @@ class ImageService {
             var relative_small_image_path;
             var relative_large_image_path;
 
-            var file_name = `${fields.id}${this.config.IMAGE_TYPE}`;
+            var file_name = `${fields.id}${this.config.IMAGE_EXTENTION}`;
 
             switch (fields.type) {
                 case 'user':

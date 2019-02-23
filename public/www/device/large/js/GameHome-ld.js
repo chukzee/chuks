@@ -6,53 +6,60 @@
 
 
 Ns.GameHome = {
-    
+
     GAME_LOGIN_HTML: 'game-login-ld.html',
     GAME_VIEW_HTML: 'game-view-ld.html',
     GAME_VIEW_B_HTML: 'game-view-b-ld.html',
     GAME_WATCH_HTML: 'game-watch-ld.html',
     GAME_WAIT_HTML: 'wait-player-ld.html',
 
-
     back: function (obj) {
-        if(!obj.container){
+        if (!obj.container) {
             obj.container = '#home-main';
         }
-        
+
         Main.card.back(obj);
+    },
+
+    removeAndShowGroupDetails: function (group) {
+        
+        Main.card.removeTo({
+            container: '#home-main',
+            url: 'group-details.html',
+            fade: true,
+            data: group,
+            onShow: Ns.GameGroup.Content
+        });
+    },
+    
+    removeAndShowTournamentDetails: function (tournament) {
+        
+        Main.card.removeTo({
+            container: '#home-main',
+            url: 'tournament-details.html',
+            fade: true,
+            data: tournament,
+            onShow: Ns.GameTournament.Content
+        });
     },
     
     showGameView: function (match) {
 
         Ns.Match.currentUserMatch = match;
-        
+
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         Ns.GameView.Content(match);
 
 
     },
     showGameViewB: function (match) {
-        //show a dialog to display startup settings
-        Main.dialog.show({
-            title: "Play Robot", //TODO - display a robot like photo alongside the title
-            content: Ns.ui.UI.gameSettings(match.game_name),
-            fade: true,
-            buttons: ['CANCEL', 'PLAY'],
-            closeButton: false,
-            modal: true,
-            action: function (btn, value) {
-                if (value === 'PLAY') {
-                    
-                    document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
-                    //hide uneccessary component
-                    document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
-                    
-                    Ns.GameViewB.Content(match);
-                }
-                this.hide();
-            }
-        });
+        document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
+
+        //hide uneccessary component
+        document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
+
+        Ns.GameViewB.Content(match);
     },
     showGameWatch: function (match) {
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameWatchHtml;
@@ -112,7 +119,7 @@ Ns.GameHome = {
         Main.dialog.show({
             title: "Play via bluetooth",
             content: '<div id="' + container_id + '"></div>',
-            width: width < 300 ? 300 : width ,
+            width: width < 300 ? 300 : width,
             height: window.screen.height * 0.5,
             fade: true,
             closeButton: false,
@@ -133,14 +140,14 @@ Ns.GameHome = {
                     container: container_id,
                     onReady: function (data) {
                         //do some final setup on the game panel
-                        
+
                         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewBHtml;
 
                         //show bluetooth icon
                         document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
-                        
+
                         Ns.GameViewB.Content(data);
-                        
+
                         me.hide(); //call to close the dialog
                     }
                 });
@@ -152,22 +159,22 @@ Ns.GameHome = {
 
     },
     showTournamentDetails: function (tournament) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'tournament-details.html',
-            fade:true,
-            data : tournament,
+            url: 'tournament-details.html',
+            fade: true,
+            data: tournament,
             onShow: Ns.GameTournament.Content
-        });        
+        });
     },
     showGroupDetails: function (group) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'group-details.html',
-            fade:true,
-            data : group,
+            url: 'group-details.html',
+            fade: true,
+            data: group,
             onShow: Ns.GameGroup.Content
         });
 
@@ -176,9 +183,9 @@ Ns.GameHome = {
 
         Main.card.to({
             container: '#home-main',
-            url:'notifications.html',
-            fade:true,            
-            data : Ns.ui.UI.selectedGame,
+            url: 'notifications.html',
+            fade: true,
+            data: Ns.ui.UI.selectedGame,
             onShow: Ns.GameNotifications.Content
         });
 
@@ -187,61 +194,61 @@ Ns.GameHome = {
 
     },
     showContacts: function () {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'game-contacts.html',
-            fade:true,
-            data : Ns.ui.UI.selectedGame,
+            url: 'game-contacts.html',
+            fade: true,
+            data: Ns.ui.UI.selectedGame,
             onShow: Ns.GameContacts.Content
         });
-        
+
     },
     showContactChat: function (contact) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'contact-chat-view.html',
-            fade:true,
-            data : contact,
+            url: 'contact-chat-view.html',
+            fade: true,
+            data: contact,
             onShow: Ns.GameContactChat.Content
         });
-        
+
     },
     showGroupChat: function (group) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'group-chat-view.html',
-            fade:true,
-            data : group,
+            url: 'group-chat-view.html',
+            fade: true,
+            data: group,
             onShow: Ns.GameGroupChat.Content
         });
-        
+
     },
     showTournamentGeneralChat: function (tournament) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'tournament-general-chat-view.html',
-            fade:true,
-            data : tournament,
+            url: 'tournament-general-chat-view.html',
+            fade: true,
+            data: tournament,
             onShow: Ns.GameTournamentGeneralChat.Content
         });
-        
+
     },
     showTournamentInhouseChat: function (tournament) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'tournament-inhouse-chat-view.html',
-            fade:true,
-            data : tournament,
+            url: 'tournament-inhouse-chat-view.html',
+            fade: true,
+            data: tournament,
             onShow: Ns.GameTournamentInhouseChat.Content
         });
-        
+
     },
-    
+
     showCreateGroup: function (data) {
 
         Main.card.to({
@@ -254,7 +261,7 @@ Ns.GameHome = {
 
 
     },
-    
+
     showCreateTournament: function (data) {
 
         Main.card.to({
@@ -266,7 +273,7 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showEditGroup: function (data) {
 
         Main.card.to({
@@ -278,9 +285,9 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showEditTournament: function (data) {
-        
+
         Main.card.to({
             container: '#home-main',
             url: 'edit-tournament.html',
@@ -290,13 +297,13 @@ Ns.GameHome = {
         });
 
     },
-        
+
     showUserProfile: function (user) {
         Main.card.to({
             container: '#home-main',
-            url:'user-profile.html',
-            fade:true,
-            data : user,
+            url: 'user-profile.html',
+            fade: true,
+            data: user,
             onShow: Ns.GameUserProfile.Content
         });
     },

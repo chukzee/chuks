@@ -17,8 +17,25 @@ Ns.ui.GamePanel = {
     },
 
     showGameB: function (match, container, flip) {
+        if(match.robot === true){
+            Ns.ui.GamePanel.showGameRobot(match, container, flip);
+        }else{
+            Ns.ui.GamePanel.showGameBluetooth(match, container, flip);
+        }
+    },
+
+    showGameBluetooth: function (match, container, flip) {
         Ns.ui.GamePanel.loadGame({
-            network: 'bluetooth',
+            communication: 'bluetooth',
+            match: match,
+            container: container,
+            flip: flip,
+        });
+    },
+
+    showGameRobot: function (match, container, flip) {
+        Ns.ui.GamePanel.loadGame({
+            communication: 'worker',//web worker
             match: match,
             container: container,
             flip: flip,
@@ -27,7 +44,7 @@ Ns.ui.GamePanel = {
 
     showGame: function (match, container, flip) {
         Ns.ui.GamePanel.loadGame({
-            network: 'internet',
+            communication: 'internet',
             match: match,
             container: container,
             flip: flip,
@@ -336,12 +353,12 @@ Ns.ui.GamePanel = {
 
         Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn, checkPanelSizeFn);
 
-        document.getElementById('game-view-white-pic').src = match.players[0].photo_url;
+        document.getElementById('game-view-white-pic').src = match.players[0].small_photo_url;
 
         $('#game-view-white-name').html(match.players[0].full_name);
         $('#game-view-black-name').html(match.players[1].full_name);
 
-        document.getElementById('game-view-black-pic').src = match.players[1].photo_url;
+        document.getElementById('game-view-black-pic').src = match.players[1].small_photo_url;
         $('#game-view-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-view-game-status').html(match.status);
 
@@ -420,12 +437,12 @@ Ns.ui.GamePanel = {
 
         Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn, checkPanelSizeFn);
 
-        document.getElementById('game-view-b-black-pic').src = match.players[0].photo_url;
+        document.getElementById('game-view-b-black-pic').src = match.players[0].small_photo_url;
 
         $('#game-view-b-white-name').html(match.players[0].full_name);
         $('#game-view-b-black-name').html(match.players[1].full_name);
 
-        document.getElementById('game-view-b-black-pic').src = match.players[1].photo_url;
+        document.getElementById('game-view-b-black-pic').src = match.players[1].small_photo_url;
         $('#game-view-b-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-view-b-game-status').html(match.status);
 
@@ -510,13 +527,13 @@ Ns.ui.GamePanel = {
         $('#game-watch-white-countdown').html(match.players[0].countdown);
         $('#game-watch-white-wdl').html(white_wdl);
 
-        document.getElementById('game-watch-white-profile-pic').src = match.players[0].photo_url;
+        document.getElementById('game-watch-white-profile-pic').src = match.players[0].small_photo_url;
 
         $('#game-watch-black-name').html(match.players[1].full_name);
         $('#game-watch-black-countdown').html(match.players[1].countdown);
         $('#game-watch-black-wdl').html(black_wdl);
 
-        document.getElementById('game-watch-black-profile-pic').src = match.players[1].photo_url;
+        document.getElementById('game-watch-black-profile-pic').src = match.players[1].small_photo_url;
 
         $('#game-watch-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-watch-game-status').html(match.status);
@@ -572,7 +589,7 @@ Ns.ui.GamePanel = {
                 first_match_data = match_data;
             }
 
-            //making sure all three game panel type are ready
+            //making sure all three game panel views are ready
             if (!Ns.ui.UI.gameViewHtml
                     || !Ns.ui.UI.gameViewBHtml
                     || !Ns.ui.UI.gameWatchHtml) {
@@ -581,7 +598,11 @@ Ns.ui.GamePanel = {
 
 
             var gamePanel = document.getElementById("home-game-panel");
-            if (Ns.Match.hasMatchData) {
+            
+            //show robot match
+            Ns.Robot.showGame();
+            
+            /*if (Ns.Match.hasMatchData) {
                 var user = Ns.view.UserProfile.appUser;
                 if (first_match_data.players[0].user_id === user.id
                         || first_match_data.players[1].user_id === user.id) {
@@ -602,7 +623,7 @@ Ns.ui.GamePanel = {
                 gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml; //default - until match data is available
 
                 //TODO - Show default message of say Not Match in the center of the game panel - with beautiful print
-            }
+            }*/
 
         });
 

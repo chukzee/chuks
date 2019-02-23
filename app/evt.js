@@ -118,6 +118,33 @@ class Evt{
         return 'chat_msg_status';
     }
     
+    get group_edited(){
+        return 'group_edited';
+    }
+    
+    get tournament_edited(){
+        return 'tournament_edited';
+    }
+    
+    get tournament_registered_player_removed(){
+        return 'tournament_registered_player_removed';
+    }
+    
+    get tournament_bulk_players_registered(){
+        return 'tournament_bulk_players_registered';
+    }
+    
+    get tournament_player_registered(){
+        return 'tournament_player_registered';
+    }
+    
+    get tournament_official_removed(){
+        return 'tournament_official_removed';
+    }
+    
+    get tournament_official_added(){
+        return 'tournament_official_added';
+    }
 }
 
 var evt = new Evt();

@@ -21,7 +21,7 @@ and open the template in the editor.
                     <div>Chuks Aimele</div> 
                     <img src="images/white_player.jpg" alt=""/>
                     <div>1 - 0</div>
-                    <div>Live</div>
+                    <div></div>
                     
                     <img src="images/black_player.jpg" alt=""/>
                     <div>Onome Okori </div>
@@ -38,17 +38,17 @@ and open the template in the editor.
                         <!--some upper display e.g time countdown and online status-->
                         <!--note when countdown starts it means the move is delivered to the opponent
                         and when it stop it means the opponent has played or the countdown is over i.e timeout-->
-                        <div>05:34</div> <!--countdown-->
-                        <div>thinking...</div> <!--feedback e.g making move... , thinking...-->
-                        <div>W 3, L 2, D 3 </div> <!--win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                        <div id="game-view-b-white-wdl">W 2, L 3, D 3</div> <!-- W 2, L 3, D 3  - win loss draw - this is for the current set e.g first 10, first 5 as called in nigeria-->
+                        <div id="game-view-b-feedback">thinking...</div> <!--feedback e.g making move... , thinking...-->
+                        <div id="game-view-b-black-wdl">W 3, L 2, D 3</div> <!-- W 3, L 2, D 3 - win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
                     </div>
                     <div style="background-color: blue;"><!--sizing and positioning using javascript-->
                         <!--the game board-->
                     </div>
                     <div style="background-color: green;"><!--sizing and positioning using javascript-->
                         <!--some lower display e.g time countdown -->
-                        <div>03:25</div> <!--countdown-->
-                        <div>W 2, L 3, D 3 </div> <!--win loss draw - this is for the current set e.g first 10 first 5 as called in nigeria-->
+                        <div id="game-view-b-white-countdown">03:25</div> <!-- 03:25 countdown-->
+                        <div id="game-view-b-black-countdown">05:25</div> <!--countdown-->
                     </div>
                 </div>
                 <div id="game9ja-game-view-b-right-content">

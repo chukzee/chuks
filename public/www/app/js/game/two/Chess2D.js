@@ -13,11 +13,33 @@ Ns.game.two.Chess2D = {
         };
 
         Main.rcall.live(obj);
-                
+
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE, this.onOptionPieceChange.bind(this));
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE, this.onOptionBoardTopChange.bind(this));
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE, this.onOptionSoundChange.bind(this));
-        
+
+    },
+
+    getGameEngineWorkerJs: function () {
+        return 'resources/game_engines/stockfish.js';
+    },
+
+    getGameEngineWorkerJsAsm: function () {
+        return 'resources/game_engines/stockfish.asm.js';
+    },
+
+    getBestMoveFromGameEngineOutput: function (output) {
+        var arr = output.split(' ');
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === '') {//just in case there was multiple space delimiter in the output - though we expect single space delimiter
+                arr.splice(i, 1);
+                i--;
+            }
+        }
+        if (arr[0] === 'bestmove' && arr[1]) {
+            return arr[1];
+        }
+
     },
 
     checkGameOver: function () {
@@ -58,7 +80,7 @@ Ns.game.two.Chess2D = {
      */
     getWinnerSide: function () {
         var chatemate = this.internalGame.in_checkmate();
-        return this._winnerSide(chatemate);         
+        return this._winnerSide(chatemate);
     },
 
     _winnerSide: function (chatemate) {
@@ -76,7 +98,7 @@ Ns.game.two.Chess2D = {
     getBoardThemeUrl: function () {
         return Ns.Options.getChessBoardThemeUrl();
     },
-    
+
     getPieceTheme: function () {
         return Ns.Options.get2DChessPieceTheme();
     },

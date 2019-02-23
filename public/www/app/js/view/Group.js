@@ -29,7 +29,7 @@ Ns.view.Group = {
             group: 'info/Group'
         };
         Main.rcall.live(obj);
-        Main.eventio.on('group_join_request', this.onGroupJionRequest);
+        
     },
     content: function (group) {
 
@@ -72,7 +72,9 @@ Ns.view.Group = {
             if (!group) {
                 return;
             }
-
+            
+            group.admins = group.admins || [];
+            
             var created_by_user;
             for (var i = 0; i < group.admins.length; i++) {
                 if (group.admins[i].user_id === group.created_by) {
@@ -82,7 +84,7 @@ Ns.view.Group = {
             }
 
             document.getElementById("group-details-group-name").innerHTML = group.name;
-            document.getElementById("group-details-photo-url").src = group.photo_url;
+            document.getElementById("group-details-photo-url").src = group.large_photo_url;
             document.getElementById("group-details-status-message").innerHTML = group.status_message;
             document.getElementById("group-details-created-by").innerHTML = created_by_user ? created_by_user.full_name : group.created_by;
             document.getElementById("group-details-date-created").innerHTML = Ns.Util.formatDate(group.date_created);
@@ -502,8 +504,5 @@ Ns.view.Group = {
         alert('onClickExitGroup');
     },
 
-    onGroupJionRequest: function (obj) {
-        console.log(obj);
-    }
 //more goes below
 };

@@ -37,9 +37,8 @@ Ns.ui.UI = {
             width: 220,
             target: "#home-menu",
             items: [
-                'My game',
-                'Notifications', //all forms of notifications e.g play request notifications , group join requests sent by group admin, tournament game reminder e.tc. This shows a list view of mixed items. ie list items of different type of request.
                 'Play robot',
+                'Notifications', //all forms of notifications e.g play request notifications , group join requests sent by group admin, tournament game reminder e.tc. This shows a list view of mixed items. ie list items of different type of request.
                 'Bluetooth game',
                 'Invite players',
                 'Contacts',
@@ -66,7 +65,7 @@ Ns.ui.UI = {
             Ns.view.Group.getGroupsInfo(user, function (groups) {
                 var arr = [];
                 for (var n in groups) {
-                    arr.push('<img onerror="Main.helper.loadDefaultGroupPhoto(event)" src = "' + groups[n].photo_url + '" style="width:30px; height:30px;" /><span>' + groups[n].name + '</span>');
+                    arr.push('<img onerror="Main.helper.loadDefaultGroupPhoto(event)" src = "' + groups[n].small_photo_url + '" style="width:30px; height:30px;" /><span>' + groups[n].name + '</span>');
                 }
                 if (Main.util.isFunc(callback)) {
                     callback(arr);
@@ -91,6 +90,7 @@ Ns.ui.UI = {
                 var me = this;
                 groupItems(Ns.view.UserProfile.appUser, function (items_arr) {
                     me.setItems(items_arr);
+                    me.layout();
                 });
             }
         });
@@ -280,6 +280,23 @@ Ns.ui.UI = {
 
     },
 
+    groupPageCounter: function (group) {
+        var el = document.getElementById('home-group-page-number');
+        if(!el){//possible
+            return;
+        }
+        var num = Ns.view.UserProfile.appUser.groups_belong.indexOf(group.name) + 1;
+        if (num > 0) {
+            el.innerHTML = num + " of " + Ns.view.UserProfile.appUser.groups_belong.length;
+        } else {
+            el.innerHTML = '---';
+        }
+    },
+
+    tournamentPageCounter: function () {
+
+    },
+
     getView: function (file, callback) {
         if (!Ns.ui._views_list) {
             Ns.ui._views_list = {};
@@ -287,7 +304,7 @@ Ns.ui.UI = {
         if (Ns.ui._views_list[file]) {
             return callback(null, Ns.ui._views_list[file]);// node style
         }
-        
+
         Main.ajax.get(Main.intentUrl(file),
                 function (html) {
                     Ns.ui._views_list[file] = html;
@@ -301,48 +318,11 @@ Ns.ui.UI = {
     showByMenuItem: function (item) {
 
         switch (item) {
-            case 'My game':
-                var m = Ns.Match.currentUserMatch;
-                if (m && (m.game_status.toLowercase() !== 'end' && m.game_status.toLowercase() !== 'finish')) {
-                    Ns.GameHome.showGameView(m);
-                } else {
-                    var Notifications = 'Notifications';
-                    var Invite_Players = 'Invite Players';
-                    Main.confirm(function (option) {
-                        if (option === Notifications) {
-                            Ns.GameHome.showNotifications();
-                        } else if (option === Invite_Players) {
-                            Ns.GameHome.showInvitePlayers();
-                        }
-                    }, 'You do not have any active game session!'
-                            , 'NO ACTIVE GAME'
-                            , [Notifications, Invite_Players]);
-
-                }
+            case 'Play robot':
+                Ns.Robot.showGame();
                 break;
             case 'Notifications':
                 Ns.GameHome.showNotifications();
-                break;
-            case 'Play robot':
-                var m = Ns.Match.currentRobotMatch;
-
-                Ns.GameHome.showGameViewB({robot: true, game_name: Ns.ui.UI.selectedGame});//TESTING - TO BE REMOVE
-                return;//TESTING - TO BE REMOVE
-
-                if (m && (m.game_status.toLowercase() !== 'live')) {
-                    Ns.GameHome.showGameViewB({robot: true, game_name: Ns.ui.UI.selectedGame});
-                } else {
-                    var Back_to_My_Game = 'Back to My Game';
-                    Main.confirm(function (option) {
-                        if (option === 'BACK TO MY GAME') {
-                            Ns.GameHome.showGameView(m);
-                        }
-                    }, 'Sorry! You currently have a live game session!<br/> You cannot have more than one live game session running at the same time.'
-                            , 'NOT ALLOWED'
-                            , ['CANCEL', Back_to_My_Game], false);
-
-
-                }
                 break;
             case 'Bluetooth game':
                 Ns.GameHome.showBluetoothGame();
