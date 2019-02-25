@@ -48,14 +48,20 @@ Ns.Match = {
     newRobotMatchObject: function (is_robot_white) {
         var m = Ns.Match.defualtMatchObject();
         m.robot = true;
+        m.game_name = Ns.ui.UI.selectedGame;
         m.start_time = new Date().getTime();
         m.current_set = 1;
+        var user = Ns.view.UserProfile.appUser;
         if (is_robot_white) {
             m.players[0].full_name = 'Robot';
-            m.players[1] = Ns.view.UserProfile.appUser;
+            m.players[1] = user;
+            m.wdl.white.player_id = '';//robot
+            m.wdl.black.player_id = user.user_id;
         } else {
-            m.players[0] = Ns.view.UserProfile.appUser;
+            m.players[0] = user;
             m.players[1].full_name = 'Robot';
+            m.wdl.white.player_id = user.user_id;
+            m.wdl.black.player_id = '';//robot
         }
 
         return m;
@@ -77,11 +83,48 @@ Ns.Match = {
             rules: {},
             scores: [0, 0],
             sets: [],
+            wdl: Ns.Match.defaultWDL(),
             start_time: null,
             status: "",
             tournament_name: "",
             turn_player_id: null
         };
+    },
+
+    defaultWDL: function(){
+        return  {//default
+
+                white: {//white
+                    player_id: null,
+                    specific: {
+                        wdl: 'W 0 D 0 L 0',
+                        wins: 0,
+                        draws: 0,
+                        losses: 0
+                    },
+                    overall: {
+                        wdl: 'W 0 D 0 L 0',
+                        wins: 0,
+                        draws: 0,
+                        losses: 0
+                    }
+                },
+                black: {//black
+                    player_id: null,
+                    specific: {
+                        wdl: 'W 0 D 0 L 0',
+                        wins: 0,
+                        draws: 0,
+                        losses: 0
+                    },
+                    overall: {
+                        wdl: 'W 0 D 0 L 0',
+                        wins: 0,
+                        draws: 0,
+                        losses: 0
+                    }
+                }
+            };
     },
 
     getMatch: function (game_id, callback) {

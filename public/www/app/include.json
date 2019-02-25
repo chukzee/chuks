@@ -89,6 +89,7 @@
             "chat.css", 
             "comment.css", 
             "game-view-right-panel.css", 
+            "game-view-b-right-panel.css",
             "game-watch-right-panel.css", 
             "game-view.css",
             "game-view-b.css",

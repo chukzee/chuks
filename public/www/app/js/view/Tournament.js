@@ -712,9 +712,10 @@ Ns.view.Tournament = {
         };
 
         Main.dialog.show({
+            visible: false,//first hide it - we will manually show it only when the dialog and it content is fully rendered by call setVisible to avoid an annoying visual issue
             title: 'Slots',
             //content: html,
-            width: window.innerWidth * 0.8,
+            widthScreenRatio:  0.8,
             maxWidth: 400,
             maxHeight: 600,
             fade: true,
@@ -784,6 +785,13 @@ Ns.view.Tournament = {
 
                 dlg_body.appendChild(table);
                 this.layout();
+                
+                //now reveal the dialog after all is set and ok
+                this.setVisible({
+                    value : true,
+                    duration: 300
+                });
+                
             }
         });
 

@@ -32,19 +32,19 @@ Ns.Stats = {
                     return wdl.white.specific.wins;
                 }
                 if (tpl_var === 'specific_white_draws') {
-                    return wdl.white.specific.wins;
+                    return wdl.white.specific.draws;
                 }
                 if (tpl_var === 'specific_white_losses') {
-                    return wdl.white.specific.wins;
+                    return wdl.white.specific.losses;
                 }
                 if (tpl_var === 'overall_white_wins') {
                     return wdl.white.overall.wins;
                 }
                 if (tpl_var === 'overall_white_draws') {
-                    return wdl.white.overall.wins;
+                    return wdl.white.overall.draws;
                 }
                 if (tpl_var === 'overall_white_losses') {
-                    return wdl.white.overall.wins;
+                    return wdl.white.overall.losses;
                 }
 
                 //black
@@ -52,19 +52,19 @@ Ns.Stats = {
                     return wdl.black.specific.wins;
                 }
                 if (tpl_var === 'specific_black_draws') {
-                    return wdl.black.specific.wins;
+                    return wdl.black.specific.draws;
                 }
                 if (tpl_var === 'specific_black_losses') {
-                    return wdl.black.specific.wins;
+                    return wdl.black.specific.losses;
                 }
                 if (tpl_var === 'overall_black_wins') {
                     return wdl.black.overall.wins;
                 }
                 if (tpl_var === 'overall_black_draws') {
-                    return wdl.black.overall.wins;
+                    return wdl.black.overall.draws;
                 }
                 if (tpl_var === 'overall_black_losses') {
-                    return wdl.black.overall.wins;
+                    return wdl.black.overall.losses;
                 }
 
 

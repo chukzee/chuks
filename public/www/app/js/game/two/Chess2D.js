@@ -51,9 +51,9 @@ Ns.game.two.Chess2D = {
         var match = this.config.match;
 
         var messgage = '';
-        if (this.internalGame.in_insufficient_material()) {
+        if (this.internalGame.insufficient_material()) {
             messgage = 'Draw by insufficient material!';
-        } else if (this.internalGame.in_threefold_repitition()) { // depends on the rule i think
+        } else if (this.internalGame.in_threefold_repetition()) { // depends on the rule i think
             messgage = 'Draw by threefold repitition!';
         } else if (this.internalGame.in_stalemate()) {
             messgage = 'Draw by stalemate!';
@@ -72,6 +72,7 @@ Ns.game.two.Chess2D = {
             }
         }
 
+        return messgage;
     },
 
     /**
@@ -161,16 +162,39 @@ Ns.game.two.Chess2D = {
     },
 
     notationToPath: function (notation) {
-        var arr;
-        if (notation.indexOf('-') > -1) {
-            arr = notation.split('-');
-        } else {
-            arr = notation.split('x');
+        var moveObj = {from: null,
+            to: null,
+            promotion: null,
+            is_capture: false,
+            castle: null //k for king side and q for queen side castle
+        };
+        if (notation === '0-0' || notation === 'O-O') {
+            moveObj.castle = 'k';//kingside or short castling
+        } else if (notation === '0-0-0' || notation === 'O-O-O') {
+            moveObj.castle = 'q';//queenside or long castling
+        }  else if (notation.indexOf('-') > -1) {//e.g e2-e4 or e7-e8Q (queen promotion) 
+            moveObj.from = notation.substring(0, 2);
+            moveObj.to = notation.substring(3, 5);
+            moveObj.promotion = notation.substring(5, notation.length);
+        } else if (notation.indexOf('x') > -1) {//e.g e2xe4 or e7xe8Q (capture with queen promotion)
+            moveObj.from = notation.substring(0, 2);
+            moveObj.to = notation.substring(3, 5);
+            moveObj.promotion = notation.substring(5, notation.length);
+            moveObj.is_capture = true;
+        } else {//eg. e2e4 or e7e8Q (queen promotion) - no move notation seperator
+            moveObj.from = notation.substring(0, 2);
+            moveObj.to = notation.substring(2, 4);
+            moveObj.promotion = notation.substring(4, notation.length);
         }
-        return {from: arr[0], to: arr[1]};
+
+        if (moveObj.promotion && moveObj.promotion.startsWith('=')) {//e.g e7e8=Q, e7-e8=Q, e7xe8=Q
+            moveObj.promotion = moveObj.promotion.substring(1);
+        }
+
+        return moveObj;
     },
 
-    makeMove: function (from, to) {
+    makeMove: function (from, to, promotion, castle) {
 
         var resObj = {
             done: false,

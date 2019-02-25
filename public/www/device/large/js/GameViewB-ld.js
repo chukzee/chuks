@@ -103,7 +103,7 @@ Ns.GameViewB = {
 
         function checkPanelSize() {
             //right panel
-
+            
             if (Main.device.isXLarge()) {
 
                 this.element.style.width = '60%';
@@ -111,6 +111,7 @@ Ns.GameViewB = {
                 rhs_el.style.width = '40%';
                 rhs_el.style.right = '0%';//always visible
                 rhs_el.style.display = 'block';//always visible
+                                
             } else {
 
                 this.element.style.width = '100%';

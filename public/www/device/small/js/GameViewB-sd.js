@@ -10,7 +10,7 @@ Ns.GameViewB = {
     afterRightContentHide: function () {
         if (Ns.GameViewB.rightPanelTitleComp) {
             Ns.GameViewB.rightPanelTitleComp.innerHTML = '';
-            document.getElementById('game-view-right-b-content').outerHTML = Ns.GameViewB.rightPanelHTML;
+            document.getElementById('game-view-b-right-content').outerHTML = Ns.GameViewB.rightPanelHTML;
             Ns.ui.GamePanel.rightContentName = '';
         }
     },

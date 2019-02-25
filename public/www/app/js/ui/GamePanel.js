@@ -17,9 +17,9 @@ Ns.ui.GamePanel = {
     },
 
     showGameB: function (match, container, flip) {
-        if(match.robot === true){
+        if (match.robot === true) {
             Ns.ui.GamePanel.showGameRobot(match, container, flip);
-        }else{
+        } else {
             Ns.ui.GamePanel.showGameBluetooth(match, container, flip);
         }
     },
@@ -35,7 +35,7 @@ Ns.ui.GamePanel = {
 
     showGameRobot: function (match, container, flip) {
         Ns.ui.GamePanel.loadGame({
-            communication: 'worker',//web worker
+            communication: 'worker', //web worker
             match: match,
             container: container,
             flip: flip,
@@ -392,7 +392,7 @@ Ns.ui.GamePanel = {
         }
 
         if (Main.device.isXLarge()) {
-            Ns.GameView.showRightContent(Ns.ui.GamePanel.matchData, titleChat, Ns.msg.GameChat.content.bind(Ns.msg.GameChat, Ns.ui.GamePanel.matchData, id_obj));
+            me._showChats(Ns.GameView, id_obj);
         }
 
         $('#game-view-footer-chat').on('click', function () {
@@ -473,6 +473,10 @@ Ns.ui.GamePanel = {
             $('#game-view-b-white-countdown').html(match.players[0].countdown);
             $('#game-view-b-white-wdl').html(white_wdl);
 
+        }
+
+        if (Main.device.isXLarge()) {
+            me._showOptions(Ns.GameViewB, id_obj);
         }
 
         $('#game-view-b-bluetooth-icon').on('click', function () {
@@ -598,32 +602,32 @@ Ns.ui.GamePanel = {
 
 
             var gamePanel = document.getElementById("home-game-panel");
-            
+
             //show robot match
             Ns.Robot.showGame();
-            
+
             /*if (Ns.Match.hasMatchData) {
-                var user = Ns.view.UserProfile.appUser;
-                if (first_match_data.players[0].user_id === user.id
-                        || first_match_data.players[1].user_id === user.id) {
-                    //show the current app user game
-                    gamePanel.innerHTML = Ns.ui.UI.gameViewHtml;
-                    Ns.ui.GamePanel.matchData = first_match_data;
-                    Ns.GameView.Content(first_match_data);
-
-                } else {
-                    //watch other players live
-                    gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml;
-                    Ns.ui.GamePanel.matchData = match_data;
-                    Ns.GameWatch.Content(match_data);
-                }
-                isGamePanelInit = true;
-
-            } else if (!isGamePanelInit) {
-                gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml; //default - until match data is available
-
-                //TODO - Show default message of say Not Match in the center of the game panel - with beautiful print
-            }*/
+             var user = Ns.view.UserProfile.appUser;
+             if (first_match_data.players[0].user_id === user.id
+             || first_match_data.players[1].user_id === user.id) {
+             //show the current app user game
+             gamePanel.innerHTML = Ns.ui.UI.gameViewHtml;
+             Ns.ui.GamePanel.matchData = first_match_data;
+             Ns.GameView.Content(first_match_data);
+             
+             } else {
+             //watch other players live
+             gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml;
+             Ns.ui.GamePanel.matchData = match_data;
+             Ns.GameWatch.Content(match_data);
+             }
+             isGamePanelInit = true;
+             
+             } else if (!isGamePanelInit) {
+             gamePanel.innerHTML = Ns.ui.UI.gameWatchHtml; //default - until match data is available
+             
+             //TODO - Show default message of say Not Match in the center of the game panel - with beautiful print
+             }*/
 
         });
 

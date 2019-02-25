@@ -3,10 +3,11 @@
 
 Ns.Robot = {
 
-    currentMatch: null,
+    matchOfGame: {},
 
     showGame: function () {
-        if (!Ns.Robot.currentMatch) {
+        var game = Ns.ui.UI.selectedGame;
+        if (!Ns.Robot.matchOfGame[game]) {
             var match;
             try {
                 var str = window.localStorage.getItem(Ns.Const.ROBOT_MATCH_KEY);
@@ -19,22 +20,24 @@ Ns.Robot = {
                 //but after the first move the user can no longer switch.
                 match = Ns.Match.newRobotMatchObject(false);
             }
-            Ns.Robot.currentMatch = match;
+            Ns.Robot.matchOfGame[game] = match;
         }
 
         //show the match
-        Ns.GameHome.showGameViewB(Ns.Robot.currentMatch);
+        Ns.GameHome.showGameViewB(Ns.Robot.matchOfGame[game]);
     },
     cancelGame: function () {
-        Ns.Robot.currentMatch = null;
+        var game = Ns.ui.UI.selectedGame;
+        delete Ns.Robot.matchOfGame[game];
         window.localStorage.setItem(Ns.Const.ROBOT_MATCH_KEY, '');
     },
 
     save: function (match) {
+        var game = Ns.ui.UI.selectedGame;
         if (match && match.robot === true) {
-            Ns.Robot.currentMatch = match;
+            Ns.Robot.matchOfGame[game] = match;
         }
-        window.localStorage.setItem(Ns.Const.ROBOT_MATCH_KEY, JSON.stringify(Ns.Robot.currentMatch));
+        window.localStorage.setItem(Ns.Const.ROBOT_MATCH_KEY, JSON.stringify(Ns.Robot.matchOfGame[game]));
     }
 
 };

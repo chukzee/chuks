@@ -4184,22 +4184,26 @@ var Main = {};
 
     function Dialog() {
 
-        function diagThis(param) {
+        function DlgThis(param) {
 
-            var obj = param.obj,
-                    dlg_cmp = param.dlg_cmp,
-                    setHeaderTitle = param.setHeaderTitle,
-                    setBodyContent = param.setBodyContent,
-                    getDialogContentEl = param.getDialogContentEl,
-                    getDialogBodyEl = param.getDialogBodyEl,
-                    getDialogFooterEL = param.getDialogFooterEL,
-                    dialogButtonsCreate = param.dialogButtonsCreate,
-                    resizeListenDlgBind = param.resizeListenDlgBind,
-                    setVisible = param.setVisible,
-                    touchCloseFn = param.touchCloseFn,
-                    deviceBackHideFunc = param.deviceBackHideFunc,
-                    btns = param.btns;
-
+            var obj, dlg_cmp, setHeaderTitle, setBodyContent, getDialogContentEl, getDialogBodyEl,
+                    getDialogFooterEL, dialogButtonsCreate, resizeListenDlgBind,
+                    setVisible, touchCloseFn, deviceBackHideFunc, btns;
+            this.init = function () {
+                obj = param.obj;
+                dlg_cmp = param.dlg_cmp;
+                setHeaderTitle = param.setHeaderTitle;
+                setBodyContent = param.setBodyContent;
+                getDialogContentEl = param.getDialogContentEl;
+                getDialogBodyEl = param.getDialogBodyEl;
+                getDialogFooterEL = param.getDialogFooterEL;
+                dialogButtonsCreate = param.dialogButtonsCreate;
+                resizeListenDlgBind = param.resizeListenDlgBind;
+                setVisible = param.setVisible;
+                touchCloseFn = param.touchCloseFn;
+                deviceBackHideFunc = param.deviceBackHideFunc;
+                btns = param.btns;
+            };
             this.setButtonText = function (index, text) {
                 if (btns[index]) {
                     btns[index].value = text;
@@ -4332,7 +4336,11 @@ var Main = {};
             this.close = function () {//similar to hide - since by our design, calling hide destroys the dialog.
                 this.hide();
             };
-            this.hide = function () {
+            this.hide = function (o) {
+                if (typeof o === 'object' && o.destroyOnResize === true) {
+                    destroy();
+                    return;
+                }
 
                 if (obj.fade || obj.fadeIn || obj.fadeIn) {
                     Main.anim.to(dlg_cmp, 300, {opacity: 0}, destroy);
@@ -4360,140 +4368,32 @@ var Main = {};
 
         }
 
-        function resizeListenDlg(dlgCmp) {
-            var dlgEls = {
-                header_els: [],
-                body_els: [],
-                footer_els: []
-            };
+        function resizeListenDlg(dlgBase, header, body, footer) {
 
-            var header = $(dlgCmp).find('.game9ja-dialog-header')[0];
-            var body = $(dlgCmp).find('.game9ja-dialog-body')[0];
-            var footer = $(dlgCmp).find('.game9ja-dialog-footer')[0];
-
+            if (dlgBase) {
+                dlgBase.style = 'opacity: 0';
+            }
             if (header) {
-                var hc = header.childNodes;
-                var len = hc.length;
-                for (var i = 0; i < len; i++) {
-                    var child = header.removeChild(hc[0]);//picking the first as the children count reduce to zero
-                    dlgEls.header_els.push(child);
-                }
+                header.style = '';
             }
-
             if (body) {
-                var bc = body.childNodes;
-                var len = bc.length;
-                for (var i = 0; i < len; i++) {
-                    var child = body.removeChild(bc[0]);//picking the first as the children count reduce to zero
-                    dlgEls.body_els.push(child);
-                }
+                body.style = '';
             }
-
             if (footer) {
-                var fc = footer.childNodes;
-                var len = fc.length;
-                for (var i = 0; i < len; i++) {
-                    var child = footer.removeChild(fc[0]);//picking the first as the children count reduce to zero
-                    dlgEls.footer_els.push(child);
-                }
+                footer.style = '';
             }
 
-            //show0.call(this, dlgEls);
-
+            dlgStyle.call(this, dlgBase, header, body, footer);
+            
+            dlgBase.style.opacity = 1;
         }
 
-        function dlgStyle() {
+        function dlgStyle(base, header_el, body_el, footer_el) {
 
-        }
-
-        function show0(dlgEls) {
             var obj = this;
-            if (obj.buttons && !Main.util.isArray(obj.buttons)) {//yes because button can be absence. so check if present and it is also an array
-                console.warn('Dialog buttons must be array of button texts if provided!');
-                return;
-            }
 
-
-            var base = document.createElement('div');
-            var initialOpacity = 1;
-            if (obj.visible === false) {
-                base.style.opacity = 0;
-                initialOpacity = 0;
-            }
-
-
-            var setVisible = function (b, trans_duration) {//new
-                if (b === true) {
-                    if (trans_duration > 0) {
-                        Main.anim.to(base, trans_duration, {opacity: 1});
-                    } else {
-                        base.style.opacity = 1;
-                    }
-                } else if (b === false) {
-                    if (trans_duration > 0) {
-                        Main.anim.to(base, trans_duration, {opacity: 0});
-                    } else {
-                        base.style.opacity = 0;
-                    }
-                }
-            };
-
-            base.className = 'game9ja-dialog';
-
-            var header_el = document.createElement('div');
-            header_el.className = 'game9ja-dialog-header';
-
-            var body_el = document.createElement('div');
-            body_el.className = 'game9ja-dialog-body';
-
-            var footer_el = document.createElement('div');
-            footer_el.className = 'game9ja-dialog-footer';
-
-            var titleHtml = function (title) {//new
-                title = title ? title : '';
-                return '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + title + '</div>';
-            };
-
-            var setHeaderTitle = function (title) {//new 
-                header_el.innerHTML = titleHtml(title);
-            };
-
-            setHeaderTitle(obj.title);//new
-
-            if (obj.iconCls) {
-                var icon_el = document.createElement('span');
-                icon_el.className = obj.iconCls;
-                body_el.appendChild(icon_el);
-            }
-
-            var content_el = document.createElement('div');
-
-            var setBodyContent = function (content) {//new
-                content = content ? content : '';
-                if (Main.util.isString(content)) {
-                    content_el.innerHTML = content;
-                } else {
-                    content_el.appendChild(content);
-                }
-            };
-
-            setBodyContent(obj.content);//new - aviod show undefined or null
-
-            content_el.style.width = '100%';
-
-            body_el.appendChild(content_el);
-
-            var getDialogContentEl = function () {
-                return content_el;
-            };
-
-            var getDialogBodyEl = function () {
-                return body_el;
-            };
-
-            var getDialogFooterEL = function () {
-                return footer_el;
-            };
+            var max_width = window.innerWidth * 0.8;
+            var max_height = window.innerHeight * 0.8;
 
             if (obj.width) {
                 var width = new String(obj.width).replace('px', '') - 0;//implicitly convert to numeric
@@ -4502,6 +4402,26 @@ var Main = {};
                 } else {
                     console.warn('dialog width invalid - ', obj.width);
                 }
+            }
+
+            if (obj.widthScreenRatio) {
+                var w_r = obj.widthScreenRatio;
+                ;
+                if (w_r > 1) {
+                    w_r = 1;
+                }
+                var width = window.innerWidth * w_r;
+                if (!isNaN(width)) {
+                    base.style.width = width + 'px';//width of the dialog
+                } else {
+                    console.warn('dialog width invalid - ', obj.widthScreenRatio);
+                }
+            }
+
+            var base_width;
+            var base_bound = base.getBoundingClientRect();
+            if (base_bound) {
+                base_width = base_bound.width > max_width ? max_width : base_bound.width;
             }
 
             if (obj.height) {
@@ -4513,30 +4433,105 @@ var Main = {};
                 }
             }
 
-            header_el.innerHTML = titleHtml(obj.title);//new
+            if (obj.heightScreenRatio) {
+                var h_r = obj.heightScreenRatio;
+                ;
+                if (h_r > 1) {
+                    h_r = 1;
+                }
+                var height = window.innerHeight * h_r;
+                if (!isNaN(height)) {
+                    body_el.style.height = height + 'px';//the height of the body - not the dialog in this case
+                } else {
+                    console.warn('dialog height screen ration invalid - ', obj.heightScreenRatio);
+                }
+            }
 
             if (obj.maxWidth) {//new
-                var max_width = new String(obj.maxWidth).replace('px', '') - 0;//implicitly convert to numeric
-                if (!isNaN(max_width)) {
-                    base.style.maxWidth = max_width + 'px';//max width of the dialog
+                var max_w = new String(obj.maxWidth).replace('px', '') - 0;//implicitly convert to numeric
+                if (!isNaN(max_w)) {
+                    max_w = max_w > max_width ? max_width : max_w;
+                    base.style.maxWidth = max_w + 'px';//max width of the dialog
                 } else {
                     console.warn('dialog maxWidth invalid - ', obj.maxWidth);
                 }
             }
 
             if (obj.maxHeight) {//new
-                var max_height = new String(obj.maxHeight).replace('px', '') - 0; //implicitly convert to numeric
-                if (!isNaN(max_height)) {
-                    body_el.style.maxHeight = max_height + 'px';//the max height of the body - not the dialog in this case
+                var max_h = new String(obj.maxHeight).replace('px', '') - 0; //implicitly convert to numeric
+                if (!isNaN(max_h)) {
+                    max_h = max_h > max_height ? max_height : max_h;
+                    body_el.style.maxHeight = max_h + 'px';//the max height of the body - not the dialog in this case
                 } else {
                     console.warn('dialog maxHeight invalid - ', obj.maxHeight);
                 }
             }
-
-            if (obj.headless === true || obj.hasHeader === false) {//new
-                header_el.style.height = '0px';//important! to hide the header. we avoided using 'display:none' property to perhaps avoid null from being returned from getBoundingClientRect
-                //header_el.style.display = 'none';//commented out because we do not know if it will cause null to be return from getBoundingClientRect
+            var b_bound = body_el.getBoundingClientRect();//recall to get the latest information 
+            var b_h = 0;
+            if (b_bound) {
+                b_h = b_bound.height;
             }
+
+            base.style.width = base_width + 'px';
+
+            base_bound = base.getBoundingClientRect();//get the new base bound since we just modified the width and the overall dimension might have change - e.g the height may certainly change
+
+            var base_height = base_bound.height;
+            base_width = base_bound.width;
+
+            for (var i = 0; i < 3; i++) {//run 3 times so that be can get base_h <= max_height
+                if (base_height > max_height) {
+                    var diff = base_height - max_height;
+                    b_h -= diff;
+                    body_el.style.maxHeight = b_h + 'px';
+                    base_height -= diff;//same should happen to the base height
+                    base_bound = base.getBoundingClientRect();
+                    base_height = base_bound.height;
+                    base_width = base_bound.width;
+                    if (base_height <= max_height) {
+                        break;
+                    }
+                }
+            }
+
+            var x = Math.floor((window.innerWidth - base_width) / 2);
+            var y = Math.floor((window.innerHeight - base_height) / 2);
+
+            base.style.position = 'absolute';
+            base.style.top = y + 'px';
+            base.style.left = x + 'px';
+
+        }
+
+        function show0() {
+            var obj = this;
+            if (obj.buttons && !Main.util.isArray(obj.buttons)) {//yes because button can be absence. so check if present and it is also an array
+                console.warn('Dialog buttons must be array of button texts if provided!');
+                return;
+            }
+
+            var base = document.createElement('div');
+            var initialOpacity = 1;
+            if (obj.visible === false) {
+                base.style.opacity = 0;
+                initialOpacity = 0;
+            }
+
+            base.className = 'game9ja-dialog';
+            var body_el, header_el, footer_el;
+
+            if (obj.headless !== true && obj.hasHeader !== false) {
+                header_el = document.createElement('div');
+                header_el.className = 'game9ja-dialog-header';
+                addHeader();
+            }
+
+            body_el = document.createElement('div');
+            body_el.className = 'game9ja-dialog-body';
+
+            var content_el = document.createElement('div');
+
+            addBody();
 
             base.appendChild(header_el);
             base.appendChild(body_el);
@@ -4562,22 +4557,12 @@ var Main = {};
                 dlg_cmp = outer;
                 outsideDialog = outer;
             } else {
-
                 document.body.appendChild(base);
                 dlg_cmp = base;
                 outsideDialog = document.body;
             }
 
             base.style.opacity = 0;
-            function addTouchCloseListener() {
-
-                if (obj.touchOutClose === true) {
-                    Main.dom.addListener(outsideDialog, 'click', touchCloseFunc, false);//we now use 'click' instead of 'touchstart' event because the touchstart event cause undesirable event propagation.
-                }
-            }
-
-
-            var resizeListenDlgBind = resizeListenDlg.bind(obj, dlg_cmp);
 
             var obj_param = {
                 obj: obj,
@@ -4588,97 +4573,188 @@ var Main = {};
                 getDialogBodyEl: getDialogBodyEl,
                 getDialogFooterEL: getDialogFooterEL,
                 dialogButtonsCreate: dialogButtonsCreate,
-                resizeListenDlgBind: resizeListenDlgBind,
                 setVisible: setVisible,
                 touchCloseFunc: touchCloseFunc,
                 deviceBackHideFunc: deviceBackHideFunc,
                 btns: []
             };
 
-            var objThis = new diagThis(obj_param);
+            var dlgThis = new DlgThis(obj_param);
 
-            function deviceBackHideFunc() {
-                return objThis.hide();
+            var resizeListenDlgBind = resizeListenDlg.bind(obj, base, header_el, body_el, footer_el);
+
+            obj_param.resizeListenDlgBind = resizeListenDlgBind;
+
+            dlgThis.init();
+
+            addCloseButton();
+
+            if (Main.util.isArray(obj.buttons) && obj.buttons.length > 0) {
+
+                footer_el = document.createElement('div');
+                footer_el.className = 'game9ja-dialog-footer';
+
+                addFooter(obj.buttons);
+
             }
 
-            if (obj.closeButton !== false) {
-                var close_el = document.createElement('span');
-                close_el.className = 'fa fa-close';
-                close_el.style.position = 'absolute';
-                close_el.style.right = '2px';
-                close_el.style.top = '2px';
-                close_el.style.width = '20px';
-                close_el.style.height = '20px';
-                base.appendChild(close_el);
-                Main.dom.addListener(close_el, 'click', objThis.hide, false);
-            }
-
-            var btnListenerFn = function (evt) {
-                if (evt.target.type === 'button') {
-                    if (Main.util.isFunc(obj.action)) {
-                        obj.action.call(objThis, evt.target, evt.target.value);
-                    }
-                }
-            };
-
-            if (obj.buttons) {//if present                
-                dialogButtonsCreate(obj.buttons);
-                base.appendChild(footer_el);
-            }
-
-            dlgStyle.call(obj);
+            dlgStyle.call(obj, base, header_el, body_el, footer_el);
 
             Main.dom.addListener(window, 'resize', resizeListenDlgBind, false);
 
-            if (!dlgEls) {
-                if (obj.fade || obj.fadeIn || obj.fadeIn) {
-                    Main.anim.to(base, 300, {opacity: initialOpacity}, function () {
-                        if (Main.util.isFunc(obj.onShow)) {
-                            try {
-                                obj.onShow.call(objThis);
-                            } catch (e) {
-                                console.warn(e);
-                            }
-                        }
-                        addTouchCloseListener();
-                        Main.device.addBackAction(deviceBackHideFunc);
-                    });
-                } else {
-                    base.style.opacity = initialOpacity;
+
+            if (obj.fade || obj.fadeIn || obj.fadeIn) {
+                Main.anim.to(base, 300, {opacity: initialOpacity}, function () {
                     if (Main.util.isFunc(obj.onShow)) {
                         try {
-                            obj.onShow.call(objThis);
+                            obj.onShow.call(dlgThis);
                         } catch (e) {
                             console.warn(e);
                         }
-
                     }
                     addTouchCloseListener();
                     Main.device.addBackAction(deviceBackHideFunc);
+                });
+            } else {
+                base.style.opacity = initialOpacity;
+                if (Main.util.isFunc(obj.onShow)) {
+                    try {
+                        obj.onShow.call(dlgThis);
+                    } catch (e) {
+                        console.warn(e);
+                    }
+
                 }
+                addTouchCloseListener();
+                Main.device.addBackAction(deviceBackHideFunc);
             }
 
 
-            function dialogButtonsCreate(buttons) {
+            function addHeader() {
+                setHeaderTitle(obj.title);//new
+            }
 
-                obj_param.btns.splice(0, obj_param.btns.length);//clear - new
-                footer_el.innerHTML = ''; //new
+            function addBody() {
+                if (obj.iconCls) {
+                    var icon_el = document.createElement('span');
+                    icon_el.className = obj.iconCls;
+                    body_el.appendChild(icon_el);
+                }
+                setBodyContent(obj.content);//new - aviod show undefined or null
+                content_el.style.width = '100%';
+                body_el.appendChild(content_el);
+            }
 
-                for (var i = buttons.length - 1; i > -1; i--) {
-                    var btn = document.createElement('input');
-                    btn.type = 'button';
-                    btn.value = buttons[i];
-                    footer_el.appendChild(btn);
-
-                    obj_param.btns.push(btn);
+            function addFooter(buttons) {
+                if (!buttons) {//if present 
+                    return;
                 }
 
+                footerAdder(function () {
+                    for (var i = buttons.length - 1; i > -1; i--) {
+                        var btn = document.createElement('input');
+                        btn.type = 'button';
+                        btn.value = buttons[i];
+                        footer_el.appendChild(btn);
+                        obj_param.btns.push(btn);
+                    }
+                });
+
+            }
+
+            function footerAdder(forloop) {
+                obj_param.btns.splice(0, obj_param.btns.length);//clear - new
+                footer_el.innerHTML = ''; //new
+                forloop();
+                base.appendChild(footer_el);
                 Main.dom.removeListener(footer_el, 'click', btnListenerFn, false);
                 Main.dom.addListener(footer_el, 'click', btnListenerFn, false);
             }
 
-            function touchCloseFunc(evt) {
+            function dialogButtonsCreate(buttons) {
+                addFooter(buttons);
+            }
 
+            function setBodyContent(content) {//new
+                content = content ? content : '';
+                if (Main.util.isString(content)) {
+                    content_el.innerHTML = content;
+                } else {
+                    content_el.appendChild(content);
+                }
+            }
+
+            function titleHtml(title) {//new
+                title = title ? title : '';
+                return '<div style= "width: 80%; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">' + title + '</div>';
+            }
+
+            function setHeaderTitle(title) {//new 
+                header_el.innerHTML = titleHtml(title);
+            }
+
+            function addCloseButton() {
+                if (obj.closeButton !== false) {
+                    var close_el = document.createElement('span');
+                    close_el.className = 'fa fa-close';
+                    close_el.style.position = 'absolute';
+                    close_el.style.right = '2px';
+                    close_el.style.top = '2px';
+                    close_el.style.width = '20px';
+                    close_el.style.height = '20px';
+                    base.appendChild(close_el);
+                    Main.dom.addListener(close_el, 'click', dlgThis.hide, false);
+                }
+            }
+
+            function getDialogContentEl() {
+                return content_el;
+            }
+
+            function getDialogBodyEl() {
+                return body_el;
+            }
+
+            function getDialogFooterEL() {
+                return footer_el;
+            }
+
+            function setVisible(b, trans_duration) {//new
+                if (b === true) {
+                    if (trans_duration > 0) {
+                        Main.anim.to(base, trans_duration, {opacity: 1});
+                    } else {
+                        base.style.opacity = 1;
+                    }
+                } else if (b === false) {
+                    if (trans_duration > 0) {
+                        Main.anim.to(base, trans_duration, {opacity: 0});
+                    } else {
+                        base.style.opacity = 0;
+                    }
+                }
+            }
+            ;
+
+            function btnListenerFn(evt) {
+                if (evt.target.type === 'button') {
+                    if (Main.util.isFunc(obj.action)) {
+                        obj.action.call(dlgThis, evt.target, evt.target.value);
+                    }
+                }
+            }
+
+            function addTouchCloseListener() {
+                if (obj.touchOutClose === true) {
+                    Main.dom.addListener(outsideDialog, 'click', touchCloseFunc, false);//we now use 'click' instead of 'touchstart' event because the touchstart event cause undesirable event propagation.
+                }
+            }
+
+            function deviceBackHideFunc() {
+                return dlgThis.hide();
+            }
+
+            function touchCloseFunc(evt) {
                 var parent = evt.target;
                 var touch_outside = true;
                 while (parent && parent !== document.body) {
@@ -4692,7 +4768,7 @@ var Main = {};
                     parent = parent.parentNode;
                 }
                 if (touch_outside) {
-                    objThis.hide();
+                    dlgThis.hide();
                 }
             }
 
@@ -4715,7 +4791,7 @@ var Main = {};
          *       title [opt] : .....,//title of the dialog<br>
          *       buttons [opt] : .....,//array of button text to show in the dialog footer<br>
          *       modal [opt] : .....,//whether to make the dialog modal - defaults to true<br>
-         *       action [opt] : .....,//called when any buttons created in the footer is cliced<br>
+         *       action [opt] : .....,//called when any buttons created in the footer is clicked<br>
          *       content [opt] : .....,//cotent of the dialog body<br>
          *       iconCls [opt] : .....,//icon class to show - used typically by alert and confirm dialog<br>
          *       fade | fadein | fadeIn [opt] : .....,//whether to use fade transition<br>
@@ -4781,47 +4857,13 @@ var Main = {};
             }
         }
 
-        function resizeListenMnu(evt) {
-            var mnuEls = {
-                header_els: [],
-                body_els: [],
-                footer_els: []
-            };
+        function resizeListenMnu(menuCmp, mnuBody) {
 
-            var header = menuCmp.find('.game9ja-menu-header')[0];
-            var body = menuCmp.find('.game9ja-menu-body')[0];
-            var footer = menuCmp.find('.game9ja-menu-footer')[0];
-
-            if (header) {
-                var hc = header.childNodes;
-                var len = hc.length;
-                for (var i = 0; i < len; i++) {
-                    var child = header.removeChild(hc[0]);//picking the first as the children count reduce to zero
-                    mnuEls.header_els.push(child);
-                }
-            }
-
-            if (body) {
-                var bc = body.childNodes;
-                var len = bc.length;
-                for (var i = 0; i < len; i++) {
-                    var child = body.removeChild(bc[0]);//picking the first as the children count reduce to zero
-                    mnuEls.body_els.push(child);
-                }
-            }
-
-            if (footer) {
-                var fc = footer.childNodes;
-                var len = fc.length;
-                for (var i = 0; i < len; i++) {
-                    var child = footer.removeChild(fc[0]);//picking the first as the children count reduce to zero
-                    mnuEls.footer_els.push(child);
-                }
-            }
-
-            create0.call(this, mnuEls);
-
-
+            menuCmp[0].style = 'opacity: 0';
+            mnuBody[0].style = '';
+            
+            mnuStyle.call(this, menuCmp, mnuBody);
+            menuCmp[0].style.opacity = 1;
         }
 
         function destroy() {
@@ -4983,7 +5025,7 @@ var Main = {};
             return e;
         }
 
-        function create0(mnuEls) {
+        function create0() {
             //first destroy previous menu shown - there cannot be more than
             //one menu at a time.
             destroy();
@@ -4994,46 +5036,10 @@ var Main = {};
             menuCmp = $('<div class="game9ja-menu"></div>');
 
             var mnuBody;
-            if (mnuEls) {
-                restoreHeader.call(this, mnuEls.header_els);
-                mnuBody = restoreBody.call(this, mnuEls.body_els);
-                restoreFooter.call(this, mnuEls.footer_els);
-            } else {
-                addHeader.call(this);
-                mnuBody = addBody.call(this);
-                addFooter.call(this);
-            }
 
-            function restoreHeader(els) {
-                if (els && els.length > 0) {
-                    menuCmp.append('<div class="game9ja-menu-header"></div>');
-                    var mnuHeader = menuCmp.find('.game9ja-menu-header');
-                    for (var i = 0; i < els.length; i++) {
-                        mnuHeader.append(els[i]);
-                    }
-                }
-            }
-
-            function restoreBody(els) {
-                if (els && els.length > 0) {
-                    menuCmp.append('<div class="game9ja-menu-body"></div>');//body
-                    var mnuBody = menuCmp.find('.game9ja-menu-body');
-                    for (var i = 0; i < els.length; i++) {
-                        mnuBody.append(els[i]);
-                    }
-                }
-                return mnuBody;
-            }
-
-            function restoreFooter(els) {
-                if (els && els.length > 0) {
-                    menuCmp.append('<div class="game9ja-menu-footer"></div>');
-                    var mnuFooter = menuCmp.find('.game9ja-menu-footer');
-                    for (var i = 0; i < els.length; i++) {
-                        mnuFooter.append(els[i]);
-                    }
-                }
-            }
+            addHeader.call(this);
+            mnuBody = addBody.call(this);
+            addFooter.call(this);
 
             function addHeader() {
                 if (this.header) {
@@ -5089,16 +5095,13 @@ var Main = {};
 
             $('body').append(menuOuter);
 
-
             mnuStyle.call(this, menuCmp, mnuBody);
-
 
             Main.dom.addListener(document.body, 'click', onClickOutsideHide, false);
 
-            resizeListenMnuBind = resizeListenMnu.bind(this);
+            resizeListenMnuBind = resizeListenMnu.bind(this, menuCmp, mnuBody);
 
             Main.dom.addListener(window, 'resize', resizeListenMnuBind, false);
-
 
             var mnuThis = menuThis(this, menuCmp, mnuBody);
 
@@ -5109,8 +5112,11 @@ var Main = {};
             deviceBackHideFns.push(mnuThis.hide);
 
             Main.device.addBackAction(mnuThis.hide);
+            
+            if (Main.util.isFunc(this.onShow)) {
+                this.onShow.call(mnuThis);
+            }
 
-            return mnuThis;
         }
 
         function mnuStyle(mnuCmp, mnuBody) {
@@ -5146,18 +5152,11 @@ var Main = {};
 
             this.height = this.height ? new String(this.height).replace('px', '') : null;
             this.height -= 0;//implicitly convent to numeric
-            var screen_inner_height;
-            if (Main.device.isPortriat()) {
-                screen_inner_height = Main.device.getPortriatInnerHeight();
-            } else {
-                screen_inner_height = Main.device.getLandscapeInnerHeight();
-            }
-
+            var screen_inner_height = window.innerHeight;
 
             var mnu_bound = mnuCmp[0].getBoundingClientRect();
 
             var max_height = screen_inner_height - 60; // minus some pixels
-
 
             if (mnu_bound.height > 0 && max_height > mnu_bound.height) {
                 if (!this.height) {
@@ -5259,11 +5258,7 @@ var Main = {};
 
 
             function onTargetClick() {
-                var mnuThis = create0.call(this);
-                if (Main.util.isFunc(this.onShow)) {
-                    this.onShow.call(mnuThis);
-                }
-
+                create0.call(this);
             }
 
         };

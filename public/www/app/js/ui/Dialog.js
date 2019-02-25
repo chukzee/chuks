@@ -8,9 +8,15 @@ Ns.ui.Dialog = {
         var contacts = Ns.view.Contacts.contactList;
         obj.items = contacts;
         obj.url = 'simple-list-c-tpl.html';
-        if(!obj.width){
+        /*@deprecated - use obj.widthScreenRatio instead so the width resized will be proper on both orientations
+         * if(!obj.width){
             obj.width = window.innerWidth * 0.8;
+        }*/
+        
+        if(!obj.widthScreenRatio){//new - better this way
+            obj.widthScreenRatio =  0.8;
         }
+        
         if(!obj.onRender){
             obj.onRender = function(tpl_var, data){
                 if(tpl_var === 'data_a'){
@@ -50,7 +56,9 @@ Ns.ui.Dialog = {
             title: obj.title ? obj.title : '',
             //content: '<div id="' + container_id + '"></div>',
             width: obj.width,
+            widthScreenRatio: obj.widthScreenRatio,
             height: obj.height,
+            heightScreenRatio: obj.heightScreenRatio,
             maxWidth: obj.maxWidth || 400,
             maxHeight: obj.maxHeight || 600,
             //fade: true,//we do not need this property since the dialog will not be visible immediately until we are ready to call setVisible - so skip this fade transition an call onShow function immediately

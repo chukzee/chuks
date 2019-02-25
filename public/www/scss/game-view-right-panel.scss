@@ -17,6 +17,7 @@ and open the template in the editor.
     top: 0;
     left: 0;
     color : $header_text_color;
+    background: white;
 
     > :nth-child(1){/*panel header*/
         background: $small_header_bg;

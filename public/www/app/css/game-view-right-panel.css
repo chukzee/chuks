@@ -45,7 +45,8 @@ and open the template in the editor.
   position: absolute;
   top: 0;
   left: 0;
-  color: #eee; }
+  color: #eee;
+  background: white; }
   .game9ja-game-view-right-panel > :nth-child(1) {
     /*panel header*/
     background: #333;

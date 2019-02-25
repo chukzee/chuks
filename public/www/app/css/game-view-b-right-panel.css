@@ -39,7 +39,7 @@ and open the template in the editor.
   background: #222;
   color: #eee; }
 
-.game9ja-game-watch-right-panel {
+.game9ja-game-view-b-right-panel {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -47,7 +47,7 @@ and open the template in the editor.
   left: 0;
   color: #eee;
   background: white; }
-  .game9ja-game-watch-right-panel > :nth-child(1) {
+  .game9ja-game-view-b-right-panel > :nth-child(1) {
     /*panel header*/
     background: #333;
     width: 100%;
@@ -56,24 +56,24 @@ and open the template in the editor.
     top: 0;
     left: 0;
     padding: 5px;
-    box-sizing: border-box;
-    font-size: 18px; }
-    .game9ja-game-watch-right-panel > :nth-child(1) > :nth-child(1) {
+    box-sizing: border-box; }
+    .game9ja-game-view-b-right-panel > :nth-child(1) > :nth-child(1) {
       /*right panel header title*/
       font-size: 18px; }
-    .game9ja-game-watch-right-panel > :nth-child(1) > :nth-child(2) {
+    .game9ja-game-view-b-right-panel > :nth-child(1) > :nth-child(2) {
       /*right panel close btn icon*/
       position: absolute;
       top: 5px;
       right: 15px;
       cursor: pointer; }
-  .game9ja-game-watch-right-panel > :nth-child(2) {
+  .game9ja-game-view-b-right-panel > :nth-child(2) {
     /*body of the right panel*/
     width: 100%;
     position: absolute;
     top: 35px;
     bottom: 0;
     left: 0;
-    background-color: #fff; }
+    background-color: #fff;
+    overflow: auto; }
 
-/*# sourceMappingURL=game-watch-right-panel.css.map */
+/*# sourceMappingURL=game-view-b-right-panel.css.map */

@@ -242,7 +242,7 @@ Ns.game.AbstractBoard2D = {
         gm_el.style.color = 'red';
 
         var msg_el = document.createElement('div');
-        msg_el.innerHTML = 'Draw by threefold repitition';//this.getGameOverMessage();
+        msg_el.innerHTML = this.getGameOverMessage();
         msg_el.style.fontSize = '16px';
         msg_el.style.color = '#eee';
 
@@ -352,9 +352,11 @@ Ns.game.AbstractBoard2D = {
 
     showGameOver: function (match) {
         var me = this;
+        me.clearFeedback();
         var game_over_el = this.getGameOverEl(match);
         this.boardContainer.appendChild(game_over_el);
         game_over_el.style.top = '10%';
+        
         Main.anim.to(game_over_el, 300, {top: '20%'}, function () {
             var gel = this;
             window.setTimeout(function (el) {
@@ -364,9 +366,9 @@ Ns.game.AbstractBoard2D = {
                     console.log(e);
                 }
 
-                me.reloadGame(match);
+                me.restartGame(match);
 
-            }, this.GAME_OVER_ALERT_DURATION, gel);
+            }, me.GAME_OVER_ALERT_DURATION, gel);
 
         }.bind(game_over_el));
     },
@@ -434,6 +436,10 @@ Ns.game.AbstractBoard2D = {
                 container: 'game-view-feedback',
                 text: ''
             });
+            this.feedbackEl({
+                container: 'game-view-b-feedback',
+                text: ''
+            });
         } else {//watch game view
             this.feedbackEl({
                 container: 'game-watch-white-feedback',
@@ -454,10 +460,18 @@ Ns.game.AbstractBoard2D = {
         }
 
         if (this.config.white === true || this.config.white === false) {//must be true of false - own game view
+
+            this.feedbackEl({
+                container: 'game-view-b-feedback',
+                text: this.isWhiteTurn() === this.config.white ? "Your turn!" : "Opponent's turn!"
+            });
+
             this.feedbackEl({
                 container: 'game-view-feedback',
                 text: this.isWhiteTurn() === this.config.white ? "Your turn!" : "Opponent's turn!"
             });
+
+
         } else {//watch game view
             this.feedbackEl({
                 container: 'game-watch-feedback',
@@ -474,10 +488,17 @@ Ns.game.AbstractBoard2D = {
         }
 
         if (this.config.white === true || this.config.white === false) {//must be true of false - own game view
+
+            this.feedbackEl({
+                container: 'game-view-b-feedback',
+                text: 'GAME OVER! ' + this.getGameOverMessage()
+            });
+
             this.feedbackEl({
                 container: 'game-view-feedback',
                 text: 'GAME OVER! ' + this.getGameOverMessage()
             });
+
         } else {//watch game view
             this.feedbackEl({
                 container: 'game-watch-feedback',
@@ -511,9 +532,16 @@ Ns.game.AbstractBoard2D = {
 
         if (this.config.white === true || this.config.white === false) {//must be true of false
             this.feedbackEl({
+                container: 'game-view-b-feedback',
+                text: 'Thinking...'
+            });
+
+            this.feedbackEl({
                 container: 'game-view-feedback',
                 text: 'Thinking...'
             });
+
+
         } else {//watch game view
             var is_white = prop.user_id === match.players[0].user_id;
             this.feedbackEl({
@@ -588,6 +616,13 @@ Ns.game.AbstractBoard2D = {
 
     },
 
+    getMoveSearcTime: function () {
+
+        //TODO - The search time will depen on game difficulty level
+
+        return 5000;
+    },
+
     remoteMakeMove: function (notation, match) {
 
         if (!this.checkAccess(match)) {
@@ -611,7 +646,10 @@ Ns.game.AbstractBoard2D = {
         function doRemoteMove(from, to, index) {
 
             var moveResult = me.makeMove(from, to);
+
             try {
+
+                me.validateMoveResult(moveResult);
 
                 me.markCapturedPiece(moveResult);
 
@@ -628,13 +666,13 @@ Ns.game.AbstractBoard2D = {
                     from_num = me.flipSquare(from_num);
                 }
 
-                me.movePiece(from_num, to_num, moveResult.capture, function () {
+                me.movePiece(from_num, to_num, moveResult.capture, function (match) {
 
                     me.isGameOver = me.checkGameOver();
 
                     var move_result = this;
 
-                    me.afterMoveComplete(move_result);
+                    me.afterMoveComplete(match, move_result);
 
                     if (move_result.done || move_result.error) {
                         return;
@@ -646,7 +684,7 @@ Ns.game.AbstractBoard2D = {
                     }
 
                     doRemoteMove.call(me, path.from, to_sq, index);
-                }.bind(moveResult));
+                }.bind(moveResult, match));
 
 
             } catch (e) {
@@ -654,6 +692,9 @@ Ns.game.AbstractBoard2D = {
             }
 
             if (moveResult.done || moveResult.error) {
+
+                me.updateRobotMatch(match, moveResult);
+
                 if (moveResult.board_position === match.game_position) {
                     me.setMatch(match);
                     me.displayTurn(match);
@@ -677,6 +718,11 @@ Ns.game.AbstractBoard2D = {
 
     },
 
+    restartGame: function (match, toast_text) {
+        match.game_position = null;
+        this.reloadGame(match, toast_text);
+    },
+
     reloadGame: function (match, toast_text) {
 
         if (!this.checkAccess(match)) {
@@ -697,6 +743,16 @@ Ns.game.AbstractBoard2D = {
         }
 
         return true;
+    },
+
+    updateRobotMatch: function (match, moveResult) {
+        if (match.robot === true) {
+            //since the robot is played locally just update
+            //the match object game position and move counter
+            match.game_position = moveResult.board_position;
+            match.move_counter++;
+            this.setMatch(match);
+        }
     },
 
     setMatch: function (match) {
@@ -786,6 +842,18 @@ Ns.game.AbstractBoard2D = {
 
         };
 
+        if (!promise.timeout) {
+            promise.timeout = function () {
+                return this;
+            };//just to prevent the robot promise from causing TypeError below
+        }
+
+        if (!promise.retry) {
+            promise.retry = function () {
+                return this;
+            };//just to prevent the robot promise from causing TypeError below
+        }
+
         promise.timeout(Ns.Const.SEND_MOVE_TIMEOUT)
                 .retry(function (sec_remaining) {//retry on connection failure
                     var matchObj = this;
@@ -806,9 +874,15 @@ Ns.game.AbstractBoard2D = {
             }
 
             me.feedbackEl({
+                container: 'game-view-b-feedback',
+                text: "Opponent's turn"
+            });
+
+            me.feedbackEl({
                 container: 'game-view-feedback',
                 text: "Opponent's turn"
             });
+
 
         }).error(function (err, err_code, connect_err) {
 
@@ -871,13 +945,11 @@ Ns.game.AbstractBoard2D = {
             return;
         }
 
-
-
         //return a promise of get and error functions like rcall
 
         //REMIND - the err function of promise return must contain all argument type as in rcall - err, err_code, connect_err
 
-        return this.engineWorker().send(game_position);
+        return this.engineWorker().send(game_position, bindFn);
     },
 
     stopGameEngineWorker: function () {
@@ -903,30 +975,38 @@ Ns.game.AbstractBoard2D = {
         var me = this;
         function handler() {
 
-            this.send = function (game_position) {
+            this.send = function (game_position, bindFn) {
 
                 this._getFn;
                 this._errorFn;
 
-                me._gameEngineWorker.postMessage('position ' + game_position);
-                me._gameEngineWorker.postMessage('go movetime 20');
+                me._gameEngineWorker.postMessage('position fen ' + game_position);
+                me._gameEngineWorker.postMessage('go movetime ' + me.getMoveSearcTime());
                 var meSnd = this;
+                me.displayThinking(match);
                 me._gameEngineWorker.onmessage = function (evt) {
 
                     var best_move = me.getBestMoveFromGameEngineOutput(evt.data);
                     if (best_move) {
-                        meSnd._getFn(best_move);
+                        var bind = bindFn();
+
                         me.remoteMakeMove(best_move, match);
+
+                        meSnd._getFn.call(bind, best_move);
+
                     }
                 };
 
                 this.get = function (fn) {
                     this._getFn = fn;
+                    return this;
                 };
 
                 this.error = function (fn) {
                     this._errorFn = fn;
+                    return this;
                 };
+                return this;
             };
             return this;
         }
@@ -1355,10 +1435,10 @@ Ns.game.AbstractBoard2D = {
         }
     },
 
-    afterMoveComplete: function (moveResult) {
+    afterMoveComplete: function (match, moveResult) {
         var me = this;
         if (moveResult.done && this.isGameOver) {
-            me.showGameOver();
+            me.showGameOver(match);
         }
 
         if (moveResult.done || moveResult.error) {
@@ -1371,6 +1451,22 @@ Ns.game.AbstractBoard2D = {
                     me.highlightSquare(el_list[i], '');//remove the highlight
                 }
             }, 300, this, capSqLst);
+        }
+    },
+
+    validateMoveResult: function (moveResult) {
+        if (!('done' in moveResult)) {
+            throw Error('Move result returned by subcalss must contain the field, "done"');
+        } else if (!('hasMore' in moveResult)) {
+            throw Error('Move result returned by subcalss must contain the field, "hasMore"');
+        } else if (!('error' in moveResult)) {
+            throw Error('Move result returned by subcalss must contain the field, "error"');
+        } else if (!('capture' in moveResult)) {
+            throw Error('Move result returned by subcalss must contain the field, "capture"');
+        } else if (!('notation' in moveResult)) {
+            throw Error('Move result returned by subcalss must contain the field, "notation"');
+        } else if (!('board_position' in moveResult)) {
+            throw Error('Move result returned by subcalss must contain the field, "board_position"');
         }
     },
 
@@ -1426,22 +1522,11 @@ Ns.game.AbstractBoard2D = {
 
                 //validate the move result returned by the subclass.
                 //the result must contain neccessary fields
-                if (!('done' in moveResult)) {
-                    throw Error('Move result returned by subcalss must contain the field, "done"');
-                } else if (!('hasMore' in moveResult)) {
-                    throw Error('Move result returned by subcalss must contain the field, "hasMore"');
-                } else if (!('error' in moveResult)) {
-                    throw Error('Move result returned by subcalss must contain the field, "error"');
-                } else if (!('capture' in moveResult)) {
-                    throw Error('Move result returned by subcalss must contain the field, "capture"');
-                } else if (!('notation' in moveResult)) {
-                    throw Error('Move result returned by subcalss must contain the field, "notation"');
-                } else if (!('board_position' in moveResult)) {
-                    throw Error('Move result returned by subcalss must contain the field, "board_position"');
-                }
-
+                this.validateMoveResult(moveResult);
 
                 this.isGameOver = this.checkGameOver();
+
+                this.updateRobotMatch(this.config.match, moveResult);
 
                 if (moveResult.done
                         && moveResult.notation
@@ -1454,7 +1539,7 @@ Ns.game.AbstractBoard2D = {
 
                 this.markCapturedPiece(moveResult);
 
-                var bndMoveAnimComplete = moveAnimComplete.bind(moveResult);
+                var bndMoveAnimComplete = moveAnimComplete.bind(moveResult, this.config.match);
 
                 if (moveResult.error) {
 
@@ -1468,10 +1553,10 @@ Ns.game.AbstractBoard2D = {
                     this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture, bndMoveAnimComplete);
                 }
 
-                function moveAnimComplete() {
+                function moveAnimComplete(match) {
                     var move_result = this;
                     //nullify the picked square if move is completed or a move error occur                
-                    me.afterMoveComplete(move_result);
+                    me.afterMoveComplete(match, move_result);
                 }
 
 
@@ -1500,10 +1585,10 @@ Ns.game.AbstractBoard2D = {
             console.log('No piece on internal board square -', sqn);
             return;
         }
-        var side1 = this.isWhite(pce);
-        var side2 = this.userSide === 'w';
+        var turn = this.isWhiteTurn();
+        var side = this.userSide === 'w';
         if ((pce
-                && side1 === side2)
+                && turn === side)
                 || this.config.isTesting
                 ) {
             this.pickedSquare = this.squareList[sq];

@@ -17,7 +17,7 @@ Main.test ={
 
 Main.on("pagecreate", function (arg) {
     
-    
+    $('#test-dialog').off('click');
     $('#test-dialog').on('click', function () {
        //Main.alert("This is title This is title This is title This is title", "This is title", Main.const.INFO);
         Main.dialog.show({
@@ -26,7 +26,7 @@ Main.on("pagecreate", function (arg) {
            content:"This is title This is title This is title This is title", 
            fade: true,
            buttons:['Cancel','No','Yes'],
-           modal:false,
+           //modal:false,
            touchOutClose : true,
            action:function(btn, value){
                alert(btn);
@@ -48,6 +48,7 @@ Main.on("pagecreate", function (arg) {
        */
     });
     
+    $('#test-game-view').off('click');
     $('#test-game-view').on('click', function () {
 
         Main.page.show({//TESTING!!!
@@ -81,6 +82,7 @@ Main.on("pagecreate", function (arg) {
     });
 
 
+    $('#test-game-watch').off('click');
     $('#test-game-watch').on('click', function () {
 
         //fake login
@@ -121,6 +123,7 @@ Main.on("pagecreate", function (arg) {
     });
 
 
+    $('#test-busy-indicator').off('click');
     $('#test-busy-indicator').on('click', function () {
         Main.busy.show({
             el: document.body,
@@ -135,6 +138,8 @@ Main.on("pagecreate", function (arg) {
         }, 20000);
     });
 
+    
+    $('#test-fullscreen').off('click');
     $('#test-fullscreen').on('click', function () {
 
         Main.fullscreen.show({

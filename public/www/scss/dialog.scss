@@ -11,28 +11,31 @@ and open the template in the editor.
 @import "base-var.scss";
 
 $heading_color : #ddd;
-$height : 30px;//must be 30px - please do not change! 30px is used in Main.js for normalization.
 $line_color : #ccc;
 
 .game9ja-dialog{
+
     position: absolute;    
     width : auto;
+    height: auto;
     max-height : 100%;
     color : #222;
     background: white;
     //border : 1px $line_color solid;
     border-top : 5px #444 solid;
-    @include border-radius(4px);
+    @include border-radius(5px);
     @include box-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+    overflow: hidden;
 
     > .game9ja-dialog-header{
+        //background: yellow;
         position: relative;
+        top: 0;
+        left: 0;
         width: 100%;
         padding : $base_padding;
         text-align: left;        
         border-bottom : 0.8px $line_color solid;
-
-        height: $height;
         @include box-sizing(border-box);
         font-weight: 500;
         overflow: hidden;
@@ -41,8 +44,11 @@ $line_color : #ccc;
     }
 
     > .game9ja-dialog-body{
+        //background: green;
         position: relative;
-        width: 100%;        
+        top: 0;
+        left: 0;
+        width: 100%;    
         overflow: auto;
         padding : $base_padding;
         @include box-sizing(border-box);
@@ -58,8 +64,13 @@ $line_color : #ccc;
     }
 
     > .game9ja-dialog-footer{
+
+        //background: blue;
+
         position: relative;
-        height: $height;
+        top: 0;
+        left: 0;
+        display: inline-block;
         width: 100%;
         padding : $base_padding;
         clear: both;
