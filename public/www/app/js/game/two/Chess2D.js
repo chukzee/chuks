@@ -109,6 +109,39 @@ Ns.game.two.Chess2D = {
         pceEl.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pceEl.dataset.color + type + '.png';
     },
 
+    promotePiece: function (pieceElement, promotion) {
+        var color = pieceElement.dataset.color;
+        var piece_theme = this.getPieceTheme();
+
+        switch (promotion) {
+
+            case'q':
+            {
+                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.dataset.name = 'queen';
+                break;
+            }
+            case'r':
+            {
+                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.dataset.name = 'rook';
+                break;
+            }
+            case'n':
+            {
+                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.dataset.name = 'knight';
+                break;
+            }
+            case'b':
+            {
+                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.dataset.name = 'bishop';
+                break;
+            }
+        }
+    },
+
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('img');
         pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
@@ -149,6 +182,68 @@ Ns.game.two.Chess2D = {
 
         return pieceElement;
     },
+
+    needPromotion: function (from, to) {
+        var ibPce = this.getInternalPiece(from);
+        if (!ibPce) {
+            return;
+        }
+
+        if (ibPce.type !== 'p') {
+            return;
+        }
+
+        //At this point the piece is a pawn
+
+        if (this.isWhiteTurn() && to.charAt(1) === '8') {
+            return true;
+        }
+
+        if (!this.isWhiteTurn() && to.charAt(1) === '1') {
+            return true;
+        }
+
+    },
+
+    showPomotionDialog: function (from, to, callback) {
+
+        if (!this.needPromotion(from, to)) {
+            callback();
+            return;
+        }
+
+        //At this piont the pawn must be promoted
+
+        Ns.ui.Dialog.selectList({
+            title: 'Promote Pawn',
+            url: 'simple-list-a-tpl.html',
+            multiSelect: false,
+            items: ['Queen', 'Knight', 'Bishop', 'Rook'],
+            width: 200,
+            maxWidth: window.innerWidth * 0.8,
+            onRender: function (tpl_var, data) {
+                if (tpl_var === 'data') {
+                    return data;
+                }
+            },
+            onSelect: function (item) {
+                item = item.toLowerCase();
+                var promotion;
+                if (item === 'queen') {
+                    promotion = 'q';
+                } else if (item === 'knight') {
+                    promotion = 'n';//it is 'n' and not 'k'
+                } else if (item === 'bishop') {
+                    promotion = 'b';
+                } else if (item === 'rook') {
+                    promotion = 'r';
+                }
+                callback(promotion);
+            }
+        });
+
+    },
+
     pieceSquarRatio: function () {
         return 0.8;
     },
@@ -161,40 +256,71 @@ Ns.game.two.Chess2D = {
         return pce.color === 'w';
     },
 
-    notationToPath: function (notation) {
+    notationToPath: function (notation, turn) {
         var moveObj = {from: null,
             to: null,
             promotion: null,
             is_capture: false,
-            castle: null //k for king side and q for queen side castle
+            castle: null, //k for king side and q for queen side castle
+            enpassant: null
         };
         if (notation === '0-0' || notation === 'O-O') {
-            moveObj.castle = 'k';//kingside or short castling
+            moveObj.castle = 'k';//kingside or short castling        
+            var castleMoveObj = this.castleMoveObject(moveObj.castle, turn);
+            moveObj.from = castleMoveObj.king_from;
+            moveObj.to = castleMoveObj.king_to;
         } else if (notation === '0-0-0' || notation === 'O-O-O') {
             moveObj.castle = 'q';//queenside or long castling
-        }  else if (notation.indexOf('-') > -1) {//e.g e2-e4 or e7-e8Q (queen promotion) 
-            moveObj.from = notation.substring(0, 2);
-            moveObj.to = notation.substring(3, 5);
-            moveObj.promotion = notation.substring(5, notation.length);
-        } else if (notation.indexOf('x') > -1) {//e.g e2xe4 or e7xe8Q (capture with queen promotion)
-            moveObj.from = notation.substring(0, 2);
-            moveObj.to = notation.substring(3, 5);
-            moveObj.promotion = notation.substring(5, notation.length);
-            moveObj.is_capture = true;
-        } else {//eg. e2e4 or e7e8Q (queen promotion) - no move notation seperator
+            var castleMoveObj = this.castleMoveObject(moveObj.castle, turn);
+            moveObj.from = castleMoveObj.king_from;
+            moveObj.to = castleMoveObj.king_to;
+        } else {
+            if (notation.indexOf('x') > -1) {
+                moveObj.is_capture = true;
+            }
+            notation = notation.replace('x', '');//e2xe4 to e2e4 (we already know it is capture move above)
+            notation = notation.replace('-', '');//e2-e4 -> e2e4
+            notation = notation.replace(' ', '');//e2 e4 -> e2e4
+
             moveObj.from = notation.substring(0, 2);
             moveObj.to = notation.substring(2, 4);
-            moveObj.promotion = notation.substring(4, notation.length);
-        }
 
-        if (moveObj.promotion && moveObj.promotion.startsWith('=')) {//e.g e7e8=Q, e7-e8=Q, e7xe8=Q
-            moveObj.promotion = moveObj.promotion.substring(1);
+            var extra = notation.substring(4, notation.length);
+            if (extra) {
+                if (extra.indexOf('.') > -1) {//found e.p or the likes (may be)
+                    moveObj.enpassant = true;
+                } else {
+                    extra = extra.toLowerCase();
+                    moveObj.promotion = extra;
+                    if (extra.startsWith('=')) {//e.g e7e8=Q, e7-e8=Q, e7xe8=Q
+                        moveObj.promotion = extra.substring(1);
+                    }
+                }
+            }
+
         }
 
         return moveObj;
     },
 
-    makeMove: function (from, to, promotion, castle) {
+    makeMove: function (param) {
+
+        var to, from, promotion, castleMoveObj, enpassant;
+
+        if (typeof param === 'object') {
+            to = param.to;
+            from = param.from;
+            promotion = param.promotion;
+            enpassant = param.enpassant;
+        } else if (typeof param === 'string') {
+            param = this.notationToPath(param);
+            to = param.to;
+            from = param.from;
+            promotion = param.promotion;
+            enpassant = param.enpassant;
+        } else {
+            throw Error('invalid move parameter type - expect object or string');
+        }
 
         var resObj = {
             done: false,
@@ -210,20 +336,43 @@ Ns.game.two.Chess2D = {
             return resObj;
         }
 
-        var obj = {
+        var move_param = {
             from: from,
-            to: to//,
-                    //promotion : TODO - see chessjs doc LATER for how to use this field 
+            to: to
         };
 
-        var result = this.internalGame.move(obj, {sloppy: true});
+        if (promotion) {
+            move_param.promotion = promotion;
+        }
+
+        var turn = this.isWhiteTurn();
+
+        var result = this.internalGame.move(move_param, {sloppy: true});
         var cap;
-        if (result && result.captured) {
-            if (result.flags === 'e') {//en passant capture
-                cap = this.enpassantCapturSquare(from, to);
-            } else {
-                cap = result.to;
+        var promo;
+        var castleMoveObj;
+        if (result) {
+            if (result.captured) {
+                if (result.flags === 'e') {//en passant capture
+                    cap = this.enpassantCapturSquare(from, to);
+                } else {
+                    cap = result.to;
+                }
             }
+
+            if (result.promotion) {
+                promo = result.promotion;
+            }
+
+            if (result.flags === 'k' || result.flags === 'q') {
+                castleMoveObj = this.castleMoveObject(result.flags, turn);
+                resObj.from = castleMoveObj.king_from;
+                resObj.to = castleMoveObj.king_to;
+                resObj.another = {};
+                resObj.another.from = castleMoveObj.rook_from;
+                resObj.another.to = castleMoveObj.rook_to;
+            }
+
         }
 
         console.log(result);
@@ -242,6 +391,7 @@ Ns.game.two.Chess2D = {
         resObj.board_position = this.internalGame.fen();
         resObj.done = result ? true : false;
         resObj.capture = cap;
+        resObj.promotion = promo;
         resObj.error = err_msg;
 
         return resObj;
@@ -257,7 +407,45 @@ Ns.game.two.Chess2D = {
     enpassantCapturSquare: function (from, to) {
         var to_col = to.charAt(0);
         var from_rank = from.charAt(1);
-        var en_pass_cap_sq = to_col + from_rank;
-        return en_pass_cap_sq;
+        var enpassant_cap_sq = to_col + from_rank;
+        return enpassant_cap_sq;
+    },
+
+    castleMoveObject: function (castle_flag, white_turn) {
+        var cObj = {
+            king_from: null,
+            king_to: null,
+            rook_from: null,
+            rook_to: null
+        };
+
+        if (white_turn) {//1st rank
+            if (castle_flag === 'k') {//kingside (short) castling
+                cObj.king_from = 'e1';
+                cObj.king_to = 'g1';
+                cObj.rook_from = 'h1';
+                cObj.rook_to = 'f1';
+            } else {// === 'q' -> queenside (long) castling
+                cObj.king_from = 'e1';
+                cObj.king_to = 'c1';
+                cObj.rook_from = 'a1';
+                cObj.rook_to = 'd1';
+            }
+        } else {//8th rank
+            if (castle_flag === 'k') {//kingside (short) castling
+                cObj.king_from = 'e8';
+                cObj.king_to = 'g8';
+                cObj.rook_from = 'h8';
+                cObj.rook_to = 'f8';
+            } else {// === 'q' -> queenside (long) castling
+                cObj.king_from = 'e8';
+                cObj.king_to = 'c8';
+                cObj.rook_from = 'a8';
+                cObj.rook_to = 'd8';
+            }
+        }
+
+        return cObj;
     }
+
 };

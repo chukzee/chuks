@@ -31,29 +31,5 @@
         "startTime": 1519903910000,
         "repeat": false,
         "count_run": 0
-    },
-{
-    "delay": 300000,
-    "classMethod": "game/PlayRequest/_expire",
-    "param": [
-        "1_ID_0WLXmYhDh5_UupPjxBrkuW-6SZ278qULh2TjLRdO8qVWOgykPx_tccDMo4gjW551"
-    ],
-    "taskId": "2_ID_0WLXmYhDh5_UupPjxBrkuW-6SZ278qULh2TjLRdO8qVWOgykPx_tccDMo4gjW551",
-    "machineId": "J2140054EALKBA",
-    "startTime": 1551043975152,
-    "repeat": false,
-    "count_run": 0
-},
-{
-    "delay": 300000,
-    "classMethod": "game/PlayRequest/_expire",
-    "param": [
-        "4_ID_0WLXmYhDh5_UupPjxBrkuW-6SZ278qULh2TjLRdO8qVWOgykPx_tccDMo4gjW551"
-    ],
-    "taskId": "5_ID_0WLXmYhDh5_UupPjxBrkuW-6SZ278qULh2TjLRdO8qVWOgykPx_tccDMo4gjW551",
-    "machineId": "J2140054EALKBA",
-    "startTime": 1551044011567,
-    "repeat": false,
-    "count_run": 0
-}
+    }
 ]

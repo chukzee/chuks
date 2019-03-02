@@ -116,7 +116,19 @@ and open the template in the editor.
                     three: {}
                 },
                 Options:{
-                    isDragPiece: true
+                    isDragPiece: true,
+                    get2DChessPieceTheme:function(){
+                        return 'alpha';
+                    },
+                    get2DDraughtsPieceTheme:function(){
+                        return '';
+                    },
+                    getChessBoardThemeUrl: function(){
+                        return "../resources/games/chess/board/themes/wooddark/60.png";
+                    },
+                    getDraughtsBoardThemeUrl: function(){
+                        return '';
+                    }
                 }
             };
 
@@ -124,7 +136,7 @@ and open the template in the editor.
             function showChess(parameters) {
                 var obj = {
                     //flip: true, //used in watched games only. whether the board should face black to white direction. ie black is below and white above
-                    white: false, //whether the user is white or black. For watched games this field in absent
+                    white: true, //whether the user is white or black. For watched games this field in absent
                     container: 'board_container',
                     boardTheme:'wooddark',
                     pieceTheme: 'alpha',

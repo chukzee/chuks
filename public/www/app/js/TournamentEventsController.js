@@ -1,7 +1,7 @@
 
 /* global Ns, Main */
 
-Ns.GameEventsController = {
+Ns.TournamentEventsController = {
 
     constructor: function () {
 

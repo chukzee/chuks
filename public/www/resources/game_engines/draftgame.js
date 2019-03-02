@@ -1368,10 +1368,13 @@ function draughtsFn(variant) {
         this.board[to].piece.sqLoc = to;
 
         //promote piece if necessary
+        var promotion = false;
         if (to < this.SIZE && !pce.white) {//is black and on king row in the white end
             pce.crowned = true;//crown the piece
+            promotion = true;
         } else if (to >= this.SQ_COUNT - this.SIZE && pce.white) {//is white and on king row in the black end - note that we know the piece is not OFF_BOARD at this piont. so the test is not buggy
             pce.crowned = true;//crown the piece
+            promotion = true;
         }
 
         if (result) {
@@ -1397,6 +1400,7 @@ function draughtsFn(variant) {
                 to: to_san,
                 notation: move_notation,
                 capture: capture,
+                promotion: promotion,
                 board_position: this.toFEN.call(this)
             };
 

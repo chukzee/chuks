@@ -73,8 +73,10 @@ Ns.GameEventsController = {
         }
     },
 
-    _setGameMatch: function (match) {
-        this._getGameObject(match.game_name).setMatch(match);
+    _updateAfterMoveSent: function (match) {
+        var gameObj = this._getGameObject(match.game_name);
+        gameObj.setMatch(match);
+        gameObj.displayTurn(match);
     },
 
     _loadGameByMatch: function (match, toast_text) {
@@ -227,7 +229,7 @@ Ns.GameEventsController = {
         var match = obj.data.match;
 
         Ns.Match.updateMatchList(match);
-        this._setGameMatch(match);
+        this._updateAfterMoveSent(match);
     },
 
     onThinking: function (obj) {

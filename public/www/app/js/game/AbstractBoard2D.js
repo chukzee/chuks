@@ -338,7 +338,7 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
-    notationToPath: function (notation) {
+    notationToPath: function (notation, turn) {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
@@ -356,7 +356,7 @@ Ns.game.AbstractBoard2D = {
         var game_over_el = this.getGameOverEl(match);
         this.boardContainer.appendChild(game_over_el);
         game_over_el.style.top = '10%';
-        
+
         Main.anim.to(game_over_el, 300, {top: '20%'}, function () {
             var gel = this;
             window.setTimeout(function (el) {
@@ -399,6 +399,17 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
+    /**
+     * @returns {unresolved}
+     */
+    promotePiece: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+    
+    showPomotionDialogfunction () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+    
     /**
      * The method is used to verify if the game view should be modified so as not
      * to corrupt the view with data of other games as the user moves (changes) from one view
@@ -631,7 +642,7 @@ Ns.game.AbstractBoard2D = {
 
         this.clearFeedback();
 
-        var path = this.notationToPath(notation);
+        var path = this.notationToPath(notation, this.isWhiteTurn());
 
         var me = this;
         var _to = path.to;
@@ -644,8 +655,8 @@ Ns.game.AbstractBoard2D = {
         doRemoteMove.call(me, path.from, _to, index);
 
         function doRemoteMove(from, to, index) {
-
-            var moveResult = me.makeMove(from, to);
+            var move = {from: from, to: to};//TODO - use pramerter 'notation' above for chess and convert the 'to' and 'from' to notation for draughts
+            var moveResult = me.makeMove(move);
 
             try {
 
@@ -660,13 +671,29 @@ Ns.game.AbstractBoard2D = {
 
                 var to_num = me.toNumericSq(to);
                 var from_num = me.toNumericSq(pce_from);
+                var to_num2, from_num2;
+                if (moveResult.another) {//castle
+                    to_num2 = me.toNumericSq(moveResult.another.to);
+                    from_num2 = me.toNumericSq(moveResult.another.from);
+                }
 
                 if (me.isBoardFlip) {
                     to_num = me.flipSquare(to_num);
                     from_num = me.flipSquare(from_num);
+                    to_num2 = me.flipSquare(to_num2);
+                    from_num2 = me.flipSquare(from_num2);
                 }
 
-                me.movePiece(from_num, to_num, moveResult.capture, function (match) {
+                me.movePiece({
+                    from: from_num,
+                    to: to_num,
+                    another: moveResult.another ? {from: from_num2, to: to_num2} : null,
+                    promotion: moveResult.promotion,
+                    capture: moveResult.capture,
+                    callback: moveCallback.bind(moveResult, match)
+                });
+
+                function moveCallback(match) {
 
                     me.isGameOver = me.checkGameOver();
 
@@ -684,8 +711,7 @@ Ns.game.AbstractBoard2D = {
                     }
 
                     doRemoteMove.call(me, path.from, to_sq, index);
-                }.bind(moveResult, match));
-
+                }
 
             } catch (e) {
                 console.log(e);
@@ -714,12 +740,14 @@ Ns.game.AbstractBoard2D = {
 
         }
 
-
-
     },
 
     restartGame: function (match, toast_text) {
         match.game_position = null;
+        
+        delete match._unsentMove;
+        delete match._unsentGamePosition;
+        
         this.reloadGame(match, toast_text);
     },
 
@@ -746,7 +774,7 @@ Ns.game.AbstractBoard2D = {
     },
 
     updateRobotMatch: function (match, moveResult) {
-        if (match.robot === true) {
+        if (match && match.robot === true) {
             //since the robot is played locally just update
             //the match object game position and move counter
             match.game_position = moveResult.board_position;
@@ -788,7 +816,23 @@ Ns.game.AbstractBoard2D = {
     },
 
     sendGameMove: function (move_notation, game_position) {
-        var me = this;
+
+        this.feedbackEl({
+            container: 'game-view-feedback',
+            text: 'Sending...'
+        });
+
+        if (this.config.communication === 'internet') {
+            this._internetSendMove(move_notation, game_position);
+        } else if (this.config.communication === 'bluetooth') {
+            this._bluetoothSendMove(move_notation, game_position);
+        } else if (this.config.communication === 'worker') {
+            this._workerSendMove(move_notation, game_position);
+        }
+
+    },
+
+    _internetSendMove: function (move_notation, game_position) {
 
         this.config.match._unsentMove = move_notation;
         this.config.match._unsentGamePosition = game_position;
@@ -807,20 +851,26 @@ Ns.game.AbstractBoard2D = {
             }
         }
 
-        var promise;
-        this.feedbackEl({
-            container: 'game-view-feedback',
-            text: 'Sending..'
-        });
+        var me = this;
 
-        if (this.config.communication === 'internet') {
-            promise = this._internetSendMove(move_notation, game_position, this.isGameOver, winner_user_id, bindFn);
-        } else if (this.config.communication === 'bluetooth') {
-            promise = this._bluetoothSendMove(move_notation, game_position, this.isGameOver, winner_user_id, bindFn);
-        } else if (this.config.communication === 'worker') {
-            promise = this._workerSendMove(move_notation, game_position, this.isGameOver, winner_user_id, bindFn);
-        }
+        var user_id = Ns.view.UserProfile.appUser.user_id;
+        var player_id_1 = this.config.match.players[0].user_id;
+        var player_id_2 = this.config.match.players[1].user_id;
+        var opponent_id = player_id_1 !== user_id ? player_id_1 : player_id_2;
 
+        var data = {
+            user_id: user_id,
+            opponent_ids: opponent_id, //opponent(s) - can be array of opponents ids or a single string of opponent id
+            next_turn_player_user_id: opponent_id, //next turn player id
+            game_name: this.config.match.game_name,
+            game_id: this.config.match.game_id,
+            current_set: this.config.match.current_set,
+            move_counter: this.config.match.move_counter,
+            notation: move_notation,
+            game_position: game_position,
+            is_game_over: this.isGameOver,
+            winner_user_id: winner_user_id
+        };
 
         function bindFn() {
             return me.config.match;
@@ -842,19 +892,8 @@ Ns.game.AbstractBoard2D = {
 
         };
 
-        if (!promise.timeout) {
-            promise.timeout = function () {
-                return this;
-            };//just to prevent the robot promise from causing TypeError below
-        }
-
-        if (!promise.retry) {
-            promise.retry = function () {
-                return this;
-            };//just to prevent the robot promise from causing TypeError below
-        }
-
-        promise.timeout(Ns.Const.SEND_MOVE_TIMEOUT)
+        Main.ro.match.sendMove(data, bindFn)
+                .timeout(Ns.Const.SEND_MOVE_TIMEOUT)
                 .retry(function (sec_remaining) {//retry on connection failure
                     var matchObj = this;
                     if (!me.checkAccess(matchObj)) {//the view has changed
@@ -864,106 +903,53 @@ Ns.game.AbstractBoard2D = {
                     Main.countdown.stop(me.moveResendCountdownFn);
                     Main.countdown.start(me.moveResendCountdownFn, sec_remaining);
 
-                }).get(function (res) {
+                })
+                .get(function (res) {
 
-            is_sent = true;
+                    is_sent = true;
 
-            var matchObj = this;
-            if (!me.checkAccess(matchObj)) {//the view has changed
-                return;
-            }
-
-            me.feedbackEl({
-                container: 'game-view-b-feedback',
-                text: "Opponent's turn"
-            });
-
-            me.feedbackEl({
-                container: 'game-view-feedback',
-                text: "Opponent's turn"
-            });
+                    var matchObj = this;
+                    if (!me.checkAccess(matchObj)) {//the view has changed
+                        return;
+                    }
 
 
-        }).error(function (err, err_code, connect_err) {
+                })
+                .error(function (err, err_code, connect_err) {
 
-            console.log(err);
+                    console.log(err);
 
-            Main.toast.show(err);
+                    Main.toast.show(err);
 
-            var matchObj = this;
-            if (!me.checkAccess(matchObj)) {//the view has changed
-                return;//so leave
-            }
+                    var matchObj = this;
+                    if (!me.checkAccess(matchObj)) {//the view has changed
+                        return;//so leave
+                    }
 
-            if (!connect_err) { //if not a connection problem
-                me.reloadGame(me.config.match);
-                return;
-            }
+                    if (!connect_err) { //if not a connection problem
+                        me.reloadGame(me.config.match);
+                        return;
+                    }
 
 
-        });
+                });
 
 
     },
 
-    _internetSendMove: function (move_notation, game_position, is_game_over, winner_user_id, bindFn) {
-
-        var user_id = Ns.view.UserProfile.appUser.user_id;
-        var player_id_1 = this.config.match.players[0].user_id;
-        var player_id_2 = this.config.match.players[1].user_id;
-        var opponent_id = player_id_1 !== user_id ? player_id_1 : player_id_2;
-
-        var data = {
-            user_id: user_id,
-            opponent_ids: opponent_id, //opponent(s) - can be array of opponents ids or a single string of opponent id
-            next_turn_player_user_id: opponent_id, //next turn player id
-            game_name: this.config.match.game_name,
-            game_id: this.config.match.game_id,
-            current_set: this.config.match.current_set,
-            move_counter: this.config.match.move_counter,
-            notation: move_notation,
-            game_position: game_position,
-            is_game_over: is_game_over,
-            winner_user_id: winner_user_id
-        };
-
-        return Main.ro.match.sendMove(data, bindFn);
-    },
-
-    _bluetoothSendMove: function (move_notation, game_position, is_game_over, winner_user_id, bindFn) {
+    _bluetoothSendMove: function (move_notation, game_position, is_game_over, winner_user_id) {
 
         console.log('TODO _bluetoothSendMove - send move via bluetooth');
 
-        //TODO - return a promise of get and error functions like rcall
 
-        //REMIND - the err function of promise return must contain all argument type as in rcall - err, err_code, connect_err
     },
 
-    _workerSendMove: function (move_notation, game_position, is_game_over, winner_user_id, bindFn) {
+    _workerSendMove: function (move_notation, game_position, is_game_over, winner_user_id) {
 
         if (typeof window.Worker === 'undefined') {
             return;
         }
 
-        //return a promise of get and error functions like rcall
-
-        //REMIND - the err function of promise return must contain all argument type as in rcall - err, err_code, connect_err
-
-        return this.engineWorker().send(game_position, bindFn);
-    },
-
-    stopGameEngineWorker: function () {
-        if (this._gameEngineWorker) {
-            this._gameEngineWorker.terminate();
-            this._gameEngineWorker = undefined;//so we can reuse it!
-        }
-    },
-
-    engineWorker: function () {
-
-        if (this._workerPromise) {
-            return this._workerPromise;
-        }
         var match = this.config.match;
         if (Main.util.isWebAssemblySupported()) {
             this._gameEngineWorker = new Worker(this.getGameEngineWorkerJs());
@@ -971,47 +957,37 @@ Ns.game.AbstractBoard2D = {
             this._gameEngineWorker = new Worker(this.getGameEngineWorkerJsAsm());
         }
 
-        this._workerPromise = handler();
+
+        this._gameEngineWorker.postMessage('position fen ' + game_position);
+        this._gameEngineWorker.postMessage('go movetime ' + this.getMoveSearcTime());
+        this.displayThinking(match);
         var me = this;
-        function handler() {
+        this._gameEngineWorker.onmessage = onWorkerMessage.bind(this.config.match);
 
-            this.send = function (game_position, bindFn) {
+        function onWorkerMessage(evt) {
 
-                this._getFn;
-                this._errorFn;
+            var best_move = me.getBestMoveFromGameEngineOutput(evt.data);
+            if (!best_move) {
+                return;
+            }
 
-                me._gameEngineWorker.postMessage('position fen ' + game_position);
-                me._gameEngineWorker.postMessage('go movetime ' + me.getMoveSearcTime());
-                var meSnd = this;
-                me.displayThinking(match);
-                me._gameEngineWorker.onmessage = function (evt) {
+            var matchObj = this;
+            if (!me.checkAccess(matchObj)) {//the view has changed
+                return;
+            }
 
-                    var best_move = me.getBestMoveFromGameEngineOutput(evt.data);
-                    if (best_move) {
-                        var bind = bindFn();
 
-                        me.remoteMakeMove(best_move, match);
+            me.remoteMakeMove(best_move, matchObj);
 
-                        meSnd._getFn.call(bind, best_move);
-
-                    }
-                };
-
-                this.get = function (fn) {
-                    this._getFn = fn;
-                    return this;
-                };
-
-                this.error = function (fn) {
-                    this._errorFn = fn;
-                    return this;
-                };
-                return this;
-            };
-            return this;
         }
 
-        return this._workerPromise;
+    },
+
+    stopGameEngineWorker: function () {
+        if (this._gameEngineWorker) {
+            this._gameEngineWorker.terminate();
+            this._gameEngineWorker = undefined;//so we can reuse it!
+        }
     },
 
     arrangeBoard: function (container, piece_theme) {
@@ -1035,8 +1011,8 @@ Ns.game.AbstractBoard2D = {
             var sq = i;
 
             var sqn = this.toSquareNotation(sq);
-            var pce = this.getInternalPiece(sqn);
-            if (!pce) {
+            var ibPce = this.getInternalPiece(sqn);
+            if (!ibPce) {
                 continue;
             }
 
@@ -1047,7 +1023,7 @@ Ns.game.AbstractBoard2D = {
 
             //create piece element
 
-            var pe = this.createPieceElement(pce, piece_theme);
+            var pe = this.createPieceElement(ibPce, piece_theme);
 
             pe.dataset.type = "piece";
             pe.style.width = pw + 'px';
@@ -1065,7 +1041,8 @@ Ns.game.AbstractBoard2D = {
 
             container.appendChild(pe);
 
-            console.log(pce);
+            console.log(ibPce);
+            //console.log(pe.getBoundingClientRect());
         }
 
     },
@@ -1241,12 +1218,18 @@ Ns.game.AbstractBoard2D = {
         return col + row;
     },
 
-    movePiece: function (from, to, capture, callback) {
-        var target;
-        if (typeof from === 'object'
-                && typeof from !== 'number'
-                && typeof from !== 'string') {
-            target = from; //element
+    movePiece: function (mObj) {
+        var target = mObj.pce,
+                from = mObj.from,
+                to = mObj.to,
+                another = mObj.another, //in the castle of castle, holds the rook 'from' and 'to'
+                capture = mObj.capture,
+                promotion = mObj.promotion,
+                callback = mObj.callback;
+
+
+        if (another) {
+            window.setTimeout(this.movePiece.bind(this), 0, another);
         }
 
         if (!target) {
@@ -1298,6 +1281,9 @@ Ns.game.AbstractBoard2D = {
             target.style.top = py + 'px';
             target.style.left = px + 'px';
             target.style.zIndex = null;
+            if (promotion) {
+                me.promotePiece(target, promotion);
+            }
             if (Main.util.isFunc(callback)) {
                 callback();
             }
@@ -1454,6 +1440,109 @@ Ns.game.AbstractBoard2D = {
         }
     },
 
+    _doMakeMove: function(picked_from_sq, picked_to_sq, from_pos, to_pos, promotion){
+        var me = this;
+        // NOTE it is valid for 'from square' to be equal to 'to square'
+        //especially in the game of draughts in a roundabout trip capture
+        //move where the jumping piece eventaully returns to its original 
+        //square. So it is upto the subsclass to check for where 'from square'
+        //ie equal to 'to square' where necessary  an code accordingly
+
+        var moveResult = this.makeMove({from: from_pos, to: to_pos, promotion: promotion});
+
+        //validate the move result returned by the subclass.
+        //the result must contain neccessary fields
+        this.validateMoveResult(moveResult);
+
+        this.isGameOver = this.checkGameOver();
+
+        this.updateRobotMatch(this.config.match, moveResult);
+
+        if (moveResult.done
+                && moveResult.notation
+                && !moveResult.error
+                && !this.config.isTesting) {
+
+            this.sendGameMove(moveResult.notation, moveResult.board_position);
+        }
+
+
+        this.markCapturedPiece(moveResult);
+
+        var bndMoveAnimComplete = moveAnimComplete.bind(moveResult, this.config.match);
+
+        var to_num2, from_num2;
+        if (moveResult.another) {//castle
+            to_num2 = this.toNumericSq(moveResult.another.to);
+            from_num2 = this.toNumericSq(moveResult.another.from);
+
+            if (this.isBoardFlip) {
+                to_num2 = this.flipSquare(to_num2);
+                from_num2 = this.flipSquare(from_num2);
+            }
+        }
+
+
+        if (moveResult.error) {
+
+            Main.toast.show(moveResult.error);
+
+            console.log('move error:', moveResult.error);
+
+            //animate the piece by to the original position
+            this.movePiece({
+                pce: this.pickedPiece,//can become null if orientation change so 'from' field can be used to obtain the picked piece
+                from: picked_from_sq,//this can be used to obatin the picked piece if orientation change and the board is refreshed
+                to: picked_from_sq,//Yes! return back
+                capture: null,
+                promotion: moveResult.promotion,
+                callback: bndMoveAnimComplete
+            });
+            //this.movePiece(this.pickedPiece, pk_sq, null, bndMoveAnimComplete);
+        } else {
+            this.movePiece({
+                pce: this.pickedPiece,//can become null if orientation change so 'from' field can be used to obtain the picked piece
+                from: picked_from_sq,//this can be used to obatin the picked piece if orientation change and the board is refreshed
+                to: picked_to_sq,
+                another: moveResult.another ? {from: from_num2, to: to_num2} : null,
+                capture: moveResult.capture,
+                promotion: moveResult.promotion,
+                callback: bndMoveAnimComplete
+            });
+            //this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture, bndMoveAnimComplete);
+        }
+
+        function moveAnimComplete(match) {
+            var move_result = this;
+            //nullify the picked square if move is completed or a move error occur                
+            me.afterMoveComplete(match, move_result);
+        }
+
+    },
+
+    playPiece: function () {
+        var me = this;
+        var picked_from_sq = this.pickedSquare.dataset.square;
+        var picked_to_sq = this.boardSq;
+        var from = this.toSquareNotation(picked_from_sq);
+        var to = this.toSquareNotation(picked_to_sq);
+        var from_pos = from, to_pos = to;
+
+        if (this.isBoardFlip) {
+            from_pos = this.flipSquare(picked_from_sq);
+            from_pos = this.toSquareNotation(from_pos);
+
+            to_pos = this.flipSquare(this.boardSq);
+            to_pos = this.toSquareNotation(to_pos);
+        }
+        
+        this.showPomotionDialog(from_pos, to_pos, function(promotion){
+            me._doMakeMove(picked_from_sq, picked_to_sq, from_pos, to_pos, promotion);
+        });
+        
+        
+    },
+
     validateMoveResult: function (moveResult) {
         if (!('done' in moveResult)) {
             throw Error('Move result returned by subcalss must contain the field, "done"');
@@ -1499,67 +1588,7 @@ Ns.game.AbstractBoard2D = {
             }
 
             if (this.pickedPiece) {
-                var pk_sq = this.pickedSquare.dataset.square;
-                var from = this.toSquareNotation(pk_sq);
-                var to = this.toSquareNotation(this.boardSq);
-                var from_pos = from, to_pos = to;
-
-                if (this.isBoardFlip) {
-                    from_pos = this.flipSquare(pk_sq);
-                    from_pos = this.toSquareNotation(from_pos);
-
-                    to_pos = this.flipSquare(this.boardSq);
-                    to_pos = this.toSquareNotation(to_pos);
-                }
-
-                // NOTE it is valid for 'from square' to be equal to 'to square'
-                //especially in the game of draughts in a roundabout trip capture
-                //move where the jumping piece eventaully returns to its original 
-                //square. So it is upto the subsclass to check for where 'from square'
-                //ie equal to 'to square' where necessary  an code accordingly
-
-                var moveResult = this.makeMove(from_pos, to_pos);
-
-                //validate the move result returned by the subclass.
-                //the result must contain neccessary fields
-                this.validateMoveResult(moveResult);
-
-                this.isGameOver = this.checkGameOver();
-
-                this.updateRobotMatch(this.config.match, moveResult);
-
-                if (moveResult.done
-                        && moveResult.notation
-                        && !moveResult.error
-                        && !this.config.isTesting) {
-
-                    this.sendGameMove(moveResult.notation, moveResult.board_position);
-                }
-
-
-                this.markCapturedPiece(moveResult);
-
-                var bndMoveAnimComplete = moveAnimComplete.bind(moveResult, this.config.match);
-
-                if (moveResult.error) {
-
-                    Main.toast.show(moveResult.error);
-
-                    console.log('move error:', moveResult.error);
-
-                    //animate the piece by to the original position
-                    this.movePiece(this.pickedPiece, pk_sq, null, bndMoveAnimComplete);
-                } else {
-                    this.movePiece(this.pickedPiece, this.boardSq, moveResult.capture, bndMoveAnimComplete);
-                }
-
-                function moveAnimComplete(match) {
-                    var move_result = this;
-                    //nullify the picked square if move is completed or a move error occur                
-                    me.afterMoveComplete(match, move_result);
-                }
-
-
+                this.playPiece();
             }
 
             return;
@@ -1580,14 +1609,14 @@ Ns.game.AbstractBoard2D = {
 
         var sqn = this.toSquareNotation(sq_pos);
 
-        var pce = this.getInternalPiece(sqn);
-        if (!pce) {
+        var ibPce = this.getInternalPiece(sqn);
+        if (!ibPce) {
             console.log('No piece on internal board square -', sqn);
             return;
         }
         var turn = this.isWhiteTurn();
         var side = this.userSide === 'w';
-        if ((pce
+        if ((ibPce
                 && turn === side)
                 || this.config.isTesting
                 ) {

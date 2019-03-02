@@ -17,11 +17,11 @@ Ns.game.two.Draughts2D = {
         };
 
         Main.rcall.live(obj);
-                
+
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE, this.onOptionPieceChange.bind(this));
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE, this.onOptionBoardTopChange.bind(this));
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE, this.onOptionSoundChange.bind(this));
-        
+
     },
 
     getGameEngineWorkerJs: function () {
@@ -34,18 +34,18 @@ Ns.game.two.Draughts2D = {
 
     getBestMoveFromGameEngineOutput: function (output) {
         var arr = output.split(' ');
-        for(var i=0; i < arr.length; i++){
-            if(arr[i]=== ''){//just in case there was multiple space delimiter in the output - though we expect single space delimiter
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === '') {//just in case there was multiple space delimiter in the output - though we expect single space delimiter
                 arr.splice(i, 1);
                 i--;
             }
         }
-        if(arr[0] === 'bestmove' && arr[1]){
+        if (arr[0] === 'bestmove' && arr[1]) {
             return arr[1];
         }
-        
+
     },
-    
+
     checkGameOver: function () {
         //first check the match status field because in the case of draw offer
         //the internal game cannot tell if there was a draw offer
@@ -90,7 +90,7 @@ Ns.game.two.Draughts2D = {
 
         return messgage;
     },
-    
+
     /**
      * must return 'w' for white and 'b' for black
      * @returns {unresolved}
@@ -112,20 +112,44 @@ Ns.game.two.Draughts2D = {
     },
 
     setPieceAppearance: function (pceEl, piece_theme) {
-        
+
+    },
+
+    crownPieceElement: function (pieceElement) {
+
+        //TODO display crown on the piece
+        var crownEl = document.createElement('span');
+        crownEl.className = "fa fa-crown";
+        crownEl.style.fontSize = '11px';
+        crownEl.style.color = '#ccc';
+        crownEl.style.textAlign = 'center';
+        crownEl.style.width = '100%';
+        crownEl.style.height = '100%';
+
+        pieceElement.appendChild(crownEl);
+    },
+
+    promotePiece: function (pieceElement, promotion) {
+        pieceElement.dataset.crowned = true;
+        this.crownPieceElement(pieceElement);
+    },
+
+    showPomotionDialogfunction(from, to, callback) {
+        callback();
     },
 
     createPieceElement: function (pce, piece_theme) {
-        var pe = document.createElement('div');
-        pe.className = pce.white ? 'white-piece-o' : 'black-piece-o';
-        pe.dataset.crowned = pce.crowned;
+        var pieceElement = document.createElement('div');
+        pieceElement.className = pce.white ? 'white-piece-o' : 'black-piece-o';
+        pieceElement.dataset.crowned = pce.crowned ? true : false;//yes - must set to true or false
+
+        this.crownPieceElement(pieceElement);//TESTING!!! TO BE REMOVE ABEG O!!!
 
         if (pce.crowned) {
-            //TODO display crown on the piece
-
+            this.crownPieceElement(pieceElement);
         }
 
-        return pe;
+        return pieceElement;
     },
 
     pieceSquarRatio: function () {
@@ -160,7 +184,19 @@ Ns.game.two.Draughts2D = {
         return {from: from, to: to};
     },
 
-    makeMove: function (from, to) {
+    makeMove: function (param) {
+        var to, from;
+        if (typeof param === 'object') {
+            to = param.to;
+            from = param.from;
+        } else if (typeof param === 'string') {
+            param = this.notationToPath(param);
+            to = param.to;
+            from = param.from;
+        } else {
+            throw Error('invalid move parameter type - expect object or string');
+        }
+
         var caps = this.internalGame.capturableSAN(from);
         var resObj = {
             done: false,
@@ -223,6 +259,7 @@ Ns.game.two.Draughts2D = {
                 resObj.error = result.error;
                 resObj.notation = result.notation;
                 resObj.board_position = result.board_position;
+                resObj.promotion = result.promotion;
             } else if (all_match && this.capturePath.length < match_len) {
                 resObj.done = false;
                 resObj.hasMore = true;
@@ -241,6 +278,7 @@ Ns.game.two.Draughts2D = {
             resObj.error = result.error;
             resObj.notation = result.notation;
             resObj.board_position = result.board_position;
+            resObj.promotion = result.promotion;
         } else {//where to === from
             resObj.done = true;//just drop the piece
         }

@@ -9,16 +9,17 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../app/css/font-awesome-5.7.2.all.min.css" />
         <link rel="stylesheet" href="../app/css/app-main.css" />
         <link rel="stylesheet" href="../app/css/board.css" />
-        <script src="../lib/draftgame.js"></script>
+        <script src="../resources/game_engines/draftgame.js"></script>
         <script src="../lib/jquery-1.10.2.min.js"></script>
         <script src="../lib/tween/TweenMax.min.js"></script>
     </head>
     <body>
         <button onclick="showDraughts()" >Show 2D Draughts board</button>
-        <div id="board_container-outer" style="position: relative; width: 400px; height: 400px; margin:0 auto; background-color: yellow;">
-            <div id="board_container" style="width: 300px; height: 300px; position: absolute; top: 50px; left: 50px;"></div>
+        <div id="board_container-outer" style="position: relative; width: 500px; height: 500px; margin:0 auto; background-color: yellow;">
+            <div id="board_container" style="width: 400px; height: 400px; position: absolute; top: 50px; left: 50px;"></div>
         </div>
 
         <script>
@@ -116,7 +117,19 @@ and open the template in the editor.
                     three: {}
                 },
                 Options:{
-                    isDragPiece: true
+                    isDragPiece: true,
+                    get2DChessPieceTheme:function(){
+                        return 'alpha';
+                    },
+                    get2DDraughtsPieceTheme:function(){
+                        return '';
+                    },
+                    getChessBoardThemeUrl: function(){
+                        return "../resources/games/chess/board/themes/wooddark/60.png";
+                    },
+                    getDraughtsBoardThemeUrl: function(){
+                        return "../resources/games/draughts/board/themes/wooddark/60.png";
+                    }
                 }
                 
             };
