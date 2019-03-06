@@ -1507,8 +1507,7 @@ var Main = {};
 
                                                         var connect_err = response.connect_err;
 
-                                                        //new start
-                                                        if (promise._retry) {
+                                                        if (connect_err && promise._retry) {//handle retry only for connection failures
                                                             if (Main.util.isFunc(promise._retry)) {
                                                                 promise._retry.call(bind, secondsRemainToRetry());
                                                             }
@@ -1517,7 +1516,7 @@ var Main = {};
                                                             addRetry(execObjParam);
                                                             return;
                                                         }
-                                                        //new end
+                                                        
 
                                                         if (Main.util.isFunc(promise._errFn)) {
                                                             promise._errFn.call(bind, err, err_code, connect_err);
@@ -4384,7 +4383,7 @@ var Main = {};
             }
 
             dlgStyle.call(this, dlgBase, header, body, footer);
-            
+
             dlgBase.style.opacity = 1;
         }
 
@@ -4861,7 +4860,7 @@ var Main = {};
 
             menuCmp[0].style = 'opacity: 0';
             mnuBody[0].style = '';
-            
+
             mnuStyle.call(this, menuCmp, mnuBody);
             menuCmp[0].style.opacity = 1;
         }
@@ -5112,7 +5111,7 @@ var Main = {};
             deviceBackHideFns.push(mnuThis.hide);
 
             Main.device.addBackAction(mnuThis.hide);
-            
+
             if (Main.util.isFunc(this.onShow)) {
                 this.onShow.call(mnuThis);
             }

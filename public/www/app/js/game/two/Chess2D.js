@@ -387,7 +387,7 @@ Ns.game.two.Chess2D = {
             }
         }
 
-        resObj.notation = !result ? null : result.from + (cap ? 'x' : '-') + result.to;
+        resObj.notation = !result ? null : result.from + (cap ? 'x' : '-') + result.to + (promo ? promo : '');
         resObj.board_position = this.internalGame.fen();
         resObj.done = result ? true : false;
         resObj.capture = cap;
@@ -404,6 +404,7 @@ Ns.game.two.Chess2D = {
     getBoardClass: function () {
         return 'game9ja-chess-board';
     },
+
     enpassantCapturSquare: function (from, to) {
         var to_col = to.charAt(0);
         var from_rank = from.charAt(1);

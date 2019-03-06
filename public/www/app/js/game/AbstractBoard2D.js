@@ -405,11 +405,11 @@ Ns.game.AbstractBoard2D = {
     promotePiece: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
-    
-    showPomotionDialogfunction () {
+
+    showPomotionDialogfunction() {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
-    
+
     /**
      * The method is used to verify if the game view should be modified so as not
      * to corrupt the view with data of other games as the user moves (changes) from one view
@@ -652,10 +652,10 @@ Ns.game.AbstractBoard2D = {
             _to = path.to[index];
         }
 
-        doRemoteMove.call(me, path.from, _to, index);
+        doRemoteMove.call(me, path.from, _to, path.promotion, index);
 
-        function doRemoteMove(from, to, index) {
-            var move = {from: from, to: to};//TODO - use pramerter 'notation' above for chess and convert the 'to' and 'from' to notation for draughts
+        function doRemoteMove(from, to, promotion, index) {
+            var move = {from: from, to: to, promotion: promotion};
             var moveResult = me.makeMove(move);
 
             try {
@@ -710,7 +710,7 @@ Ns.game.AbstractBoard2D = {
                         to_sq = path.to[index];
                     }
 
-                    doRemoteMove.call(me, path.from, to_sq, index);
+                    doRemoteMove.call(me, path.from, to_sq, path.promotion, index);
                 }
 
             } catch (e) {
@@ -744,10 +744,10 @@ Ns.game.AbstractBoard2D = {
 
     restartGame: function (match, toast_text) {
         match.game_position = null;
-        
+
         delete match._unsentMove;
         delete match._unsentGamePosition;
-        
+
         this.reloadGame(match, toast_text);
     },
 
@@ -1244,9 +1244,10 @@ Ns.game.AbstractBoard2D = {
         if (capture) {
             this.capturePiece(capture);
         }
-
+        var from_pos;
         for (var i = 0; i < this.squarePieces.length; i++) {
             if (target === this.squarePieces[i]) {
+                from_pos = i;
                 this.squarePieces[i] = null; //remove from old location
                 break;
             }
@@ -1254,17 +1255,25 @@ Ns.game.AbstractBoard2D = {
 
         this.squarePieces[to] = target;// new location
 
-        var center = this.squareCenter(to);
-        var py = center.y - this.pieceHeight / 2;
-        var px = center.x - this.pieceWidth / 2;
+        var from_center = this.squareCenter(from_pos);
+        var from_y = from_center.y - this.pieceHeight / 2;
+        var from_x = from_center.x - this.pieceWidth / 2;
+        
+        var to_center = this.squareCenter(to);
+        var to_y = to_center.y - this.pieceHeight / 2;
+        var to_x = to_center.x - this.pieceWidth / 2;
+        
+        var dx = Math.abs(from_x - to_x);
+        var dy = Math.abs(from_y - to_y);
+        
         var prop = {
-            top: py,
-            left: px
+            top: to_y,
+            left: to_x
         };
         var me = this;
 
         target.style.zIndex = 1000; // so as to fly over
-        var dist = Math.sqrt(px * px + py * py);
+        var dist = Math.sqrt(dx * dx + dy * dy);
         var board_width = this.boardContainer.getBoundingClientRect().width;
 
         this.isPieceAnim = true;
@@ -1275,11 +1284,11 @@ Ns.game.AbstractBoard2D = {
 
             //making sure the piece is on the right spot just in
             //case the orientation changes or the board is resized
-            center = me.squareCenter(to);
-            py = center.y - me.pieceHeight / 2;
-            px = center.x - me.pieceWidth / 2;
-            target.style.top = py + 'px';
-            target.style.left = px + 'px';
+            to_center = me.squareCenter(to);
+            to_y = to_center.y - me.pieceHeight / 2;
+            to_x = to_center.x - me.pieceWidth / 2;
+            target.style.top = to_y + 'px';
+            target.style.left = to_x + 'px';
             target.style.zIndex = null;
             if (promotion) {
                 me.promotePiece(target, promotion);
@@ -1380,7 +1389,7 @@ Ns.game.AbstractBoard2D = {
             if (i === 0) {
                 me.isCaptureAnim = true;
             }
-
+            pce.style.zIndex = 1000; // so as to fly over
             Main.anim.to(pce, 1000, {top: dist}, function () {
 
                 me.isCaptureAnim = false;
@@ -1389,7 +1398,7 @@ Ns.game.AbstractBoard2D = {
                 var disappear = {opacity: 0, width: 0, height: 0, top: hd}; //make the piece disappear
 
                 Main.anim.to(pce_el, 1000, disappear, function () {
-                    //do nothing for now atleast
+                    pce_el.style.zIndex = null;
                 });
             }.bind(pce));
         }
@@ -1440,7 +1449,7 @@ Ns.game.AbstractBoard2D = {
         }
     },
 
-    _doMakeMove: function(picked_from_sq, picked_to_sq, from_pos, to_pos, promotion){
+    _doMakeMove: function (picked_from_sq, picked_to_sq, from_pos, to_pos, promotion) {
         var me = this;
         // NOTE it is valid for 'from square' to be equal to 'to square'
         //especially in the game of draughts in a roundabout trip capture
@@ -1491,9 +1500,9 @@ Ns.game.AbstractBoard2D = {
 
             //animate the piece by to the original position
             this.movePiece({
-                pce: this.pickedPiece,//can become null if orientation change so 'from' field can be used to obtain the picked piece
-                from: picked_from_sq,//this can be used to obatin the picked piece if orientation change and the board is refreshed
-                to: picked_from_sq,//Yes! return back
+                pce: this.pickedPiece, //can become null if orientation change so 'from' field can be used to obtain the picked piece
+                from: picked_from_sq, //this can be used to obatin the picked piece if orientation change and the board is refreshed
+                to: picked_from_sq, //Yes! return back
                 capture: null,
                 promotion: moveResult.promotion,
                 callback: bndMoveAnimComplete
@@ -1501,8 +1510,8 @@ Ns.game.AbstractBoard2D = {
             //this.movePiece(this.pickedPiece, pk_sq, null, bndMoveAnimComplete);
         } else {
             this.movePiece({
-                pce: this.pickedPiece,//can become null if orientation change so 'from' field can be used to obtain the picked piece
-                from: picked_from_sq,//this can be used to obatin the picked piece if orientation change and the board is refreshed
+                pce: this.pickedPiece, //can become null if orientation change so 'from' field can be used to obtain the picked piece
+                from: picked_from_sq, //this can be used to obatin the picked piece if orientation change and the board is refreshed
                 to: picked_to_sq,
                 another: moveResult.another ? {from: from_num2, to: to_num2} : null,
                 capture: moveResult.capture,
@@ -1535,12 +1544,12 @@ Ns.game.AbstractBoard2D = {
             to_pos = this.flipSquare(this.boardSq);
             to_pos = this.toSquareNotation(to_pos);
         }
-        
-        this.showPomotionDialog(from_pos, to_pos, function(promotion){
+
+        this.showPomotionDialog(from_pos, to_pos, function (promotion) {
             me._doMakeMove(picked_from_sq, picked_to_sq, from_pos, to_pos, promotion);
         });
-        
-        
+
+
     },
 
     validateMoveResult: function (moveResult) {
