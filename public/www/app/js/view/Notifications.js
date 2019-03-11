@@ -1,5 +1,5 @@
 
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.view.Notifications = {
 
@@ -23,169 +23,175 @@ Ns.view.Notifications = {
 
         var list = Ns.PlayRequest.playRequestList;
         if (list.length === 0) {
-            try {
-                list = window.localStorage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY);
-                list = JSON.parse(list);
-            } catch (e) {
-                console.warn(e);
-            }
-        }
-
-        Ns.PlayRequest.playRequestList = list;
-
-        function addPlayTabNotificationListItem(notifications) {
-
-            Ns.view.Notifications.displayNotificationCount();
-
-            if (notifications.length === 0) {
-                return;
-            }
-
-            //sort by notification time
-            notifications.sort(function (a, b) {
-                return a.notification_time - b.notification_time;
+                localforage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY, function (err, list) {
+                if (err) {
+                    console.log(err);
+                }
+                if (!list) {
+                    list = [];
+                }
+                Ns.PlayRequest.playRequestList = list;
+                content0();
             });
+        }else{
+            content0();
+        }
 
-            for (var i = 0; i < notifications.length; i++) {
-                Ns.view.Notifications.addNotification(notifications[i]);
+        function content0() {
+            
+            function addPlayTabNotificationListItem(notifications) {
+                
+                Ns.view.Notifications.displayNotificationCount();
+                
+                if (notifications.length === 0) {
+                    return;
+                }
+                
+                //sort by notification time
+                notifications.sort(function (a, b) {
+                    return a.notification_time - b.notification_time;
+                });
+                
+                for (var i = 0; i < notifications.length; i++) {
+                    Ns.view.Notifications.addNotification(notifications[i]);
+                }
             }
-        }
-
-        function addChatsTabNotificationListItem(notifications) {
-
-            Ns.view.Notifications.displayNotificationCount();
-
-        }
-
-        function addNewsTabNotificationListItem(notifications) {
-
-            Ns.view.Notifications.displayNotificationCount();
-
-            //TODO
-        }
-
-        Main.rcall.live(function () {
-            var user_id = Ns.view.UserProfile.appUser.user_id;
-            var game_name = Ns.ui.UI.selectedGame;
-            var skip = 0;
-            var limit = Ns.Const.MAX_LIST_SIZE;
-            var play_tab_waiting = 0;
-            var play_tab_notifications = [];
-
-            Main.ro.play_request.get(user_id, game_name, skip, limit)
-                    .before(function () {
-                        play_tab_waiting++;
-                    })
-                    .after(function (data, err) {
-                        play_tab_waiting--;
-                        var play_requests = [];
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                            //just show any available ones
-                            play_requests = Ns.PlayRequest.playRequestList;
-                            if (!Main.util.isArray(play_requests)) {
-                                play_requests = [];
+            
+            function addChatsTabNotificationListItem(notifications) {
+                
+                Ns.view.Notifications.displayNotificationCount();
+                
+            }
+            
+            function addNewsTabNotificationListItem(notifications) {
+                
+                Ns.view.Notifications.displayNotificationCount();
+                
+                //TODO
+            }
+            
+            Main.rcall.live(function () {
+                var user_id = Ns.view.UserProfile.appUser.user_id;
+                var game_name = Ns.ui.UI.selectedGame;
+                var skip = 0;
+                var limit = Ns.Const.MAX_LIST_SIZE;
+                var play_tab_waiting = 0;
+                var play_tab_notifications = [];
+                
+                Main.ro.play_request.get(user_id, game_name, skip, limit)
+                        .before(function () {
+                            play_tab_waiting++;
+                        })
+                        .after(function (data, err) {
+                            play_tab_waiting--;
+                            var play_requests = [];
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                                //just show any available ones
+                                play_requests = Ns.PlayRequest.playRequestList;
+                                if (!Main.util.isArray(play_requests)) {
+                                    play_requests = [];
+                                }
+                            } else {
+                                play_requests = data.play_requests;
+                                Ns.PlayRequest.playRequestList = play_requests;
                             }
-                        } else {
-                            play_requests = data.play_requests;
-                            Ns.PlayRequest.playRequestList = play_requests;
-                        }
-
-                        Ns.view.Notifications.displayReqCountInfo(play_requests.length);
-                        play_tab_notifications = play_tab_notifications.concat(play_requests);
-
-                        if (play_tab_waiting === 0) {
-                            addPlayTabNotificationListItem(play_tab_notifications);
-                        }
-                    });
-
-            Main.ro.tourn.getUpcomingMatches(user_id, game_name, skip, limit)
-                    .before(function () {
-                        play_tab_waiting++;
-                    })
-                    .after(function (data, err) {
-                        play_tab_waiting--;
-                        var upcoming_matches = [];
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                        } else {
-                            upcoming_matches = data.upcoming_matches;
-                        }
-
-                        play_tab_notifications = play_tab_notifications.concat(upcoming_matches);
-
-                        if (play_tab_waiting === 0) {
-                            addPlayTabNotificationListItem(play_tab_notifications);
-                        }
-                    });
-
-
-            Main.ro.group.getGroupJoinRequests(user_id, skip, limit)
-                    .before(function () {
-                        play_tab_waiting++;
-                    })
-                    .after(function (data, err) {
-                        play_tab_waiting--;
-                        var group_join_requests = [];
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                        } else {
-                            group_join_requests = data.group_join_requests;
-                        }
-
-                        play_tab_notifications = play_tab_notifications.concat(group_join_requests);
-
-                        if (play_tab_waiting === 0) {
-                            addPlayTabNotificationListItem(play_tab_notifications);
-                        }
-                    });
-
-
-            var chat_search_obj = {
-                user_id: user_id,
-                period: {month: 1},
-                tournaments: Ns.view.UserProfile.appUser.tournaments_belong,
-                groups: Ns.view.UserProfile.appUser.groups_belong,
-                contacts: Ns.view.UserProfile.appUser.contacts
-            };
-
-            Main.ro.chat.searchChats(chat_search_obj, skip, limit)
-                    .before(function () {
-                    })
-                    .after(function (data, err) {
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                            return;
-                        }
-
-
-                        addChatsTabNotificationListItem(data.chats);
-
-                    });
-
-
-
-            Main.ro.news.get(skip, limit)
-                    .before(function () {
-                    })
-                    .after(function (data, err) {
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                            return;
-                        }
-
-
-                        addNewsTabNotificationListItem(data.news);
-
-                    });
-        });
-
-
+                            
+                            Ns.view.Notifications.displayReqCountInfo(play_requests.length);
+                            play_tab_notifications = play_tab_notifications.concat(play_requests);
+                            
+                            if (play_tab_waiting === 0) {
+                                addPlayTabNotificationListItem(play_tab_notifications);
+                            }
+                        });
+                
+                Main.ro.tourn.getUpcomingMatches(user_id, game_name, skip, limit)
+                        .before(function () {
+                            play_tab_waiting++;
+                        })
+                        .after(function (data, err) {
+                            play_tab_waiting--;
+                            var upcoming_matches = [];
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                            } else {
+                                upcoming_matches = data.upcoming_matches;
+                            }
+                            
+                            play_tab_notifications = play_tab_notifications.concat(upcoming_matches);
+                            
+                            if (play_tab_waiting === 0) {
+                                addPlayTabNotificationListItem(play_tab_notifications);
+                            }
+                        });
+                
+                
+                Main.ro.group.getGroupJoinRequests(user_id, skip, limit)
+                        .before(function () {
+                            play_tab_waiting++;
+                        })
+                        .after(function (data, err) {
+                            play_tab_waiting--;
+                            var group_join_requests = [];
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                            } else {
+                                group_join_requests = data.group_join_requests;
+                            }
+                            
+                            play_tab_notifications = play_tab_notifications.concat(group_join_requests);
+                            
+                            if (play_tab_waiting === 0) {
+                                addPlayTabNotificationListItem(play_tab_notifications);
+                            }
+                        });
+                
+                
+                var chat_search_obj = {
+                    user_id: user_id,
+                    period: {month: 1},
+                    tournaments: Ns.view.UserProfile.appUser.tournaments_belong,
+                    groups: Ns.view.UserProfile.appUser.groups_belong,
+                    contacts: Ns.view.UserProfile.appUser.contacts
+                };
+                
+                Main.ro.chat.searchChats(chat_search_obj, skip, limit)
+                        .before(function () {
+                        })
+                        .after(function (data, err) {
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                                return;
+                            }
+                            
+                            
+                            addChatsTabNotificationListItem(data.chats);
+                            
+                        });
+                
+                
+                
+                Main.ro.news.get(skip, limit)
+                        .before(function () {
+                        })
+                        .after(function (data, err) {
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                                return;
+                            }
+                            
+                            
+                            addNewsTabNotificationListItem(data.news);
+                            
+                        });
+            });
+            
+        }
     },
 
     addNotification: function (notification, use_uiupdater) {

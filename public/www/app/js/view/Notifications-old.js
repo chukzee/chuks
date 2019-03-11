@@ -1,5 +1,5 @@
 
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.view.Notifications = {
 
@@ -21,115 +21,122 @@ Ns.view.Notifications = {
 
         var list = Ns.PlayRequest.playRequestList;
         if (list.length === 0) {
-            try {
-                list = window.localStorage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY);
-                list = JSON.parse(list);
-            } catch (e) {
-                console.warn(e);
-            }
+            localforage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY, function (err, list) {
+                if (err) {
+                    console.log(err);
+                }
+                if (!list) {
+                    list = [];
+                }
+                Ns.PlayRequest.playRequestList = list;
+                content0();
+            });
+        } else {
+            content0();
         }
 
-        Ns.PlayRequest.playRequestList = list;
 
-        function addNotificationListItem(notifications) {
+        function content0() {
 
-            Ns.view.Notifications.displayNotificationInfo(notifications.length);
+            function addNotificationListItem(notifications) {
 
-            if (notifications.length === 0) {
-                return;
+                Ns.view.Notifications.displayNotificationInfo(notifications.length);
+
+                if (notifications.length === 0) {
+                    return;
+                }
+
+                //sort by notification time
+                notifications.sort(function (a, b) {
+                    return a.notification_time - b.notification_time;
+                });
+
+                for (var i = 0; i < notifications.length; i++) {
+                    Ns.view.Notifications.addNotification(notifications[i]);
+                }
             }
 
-            //sort by notification time
-            notifications.sort(function (a, b) {
-                return a.notification_time - b.notification_time;
+            Main.rcall.live(function () {
+                var user_id = Ns.view.UserProfile.appUser.user_id;
+                var game_name = Ns.ui.UI.selectedGame;
+                var skip = 0;
+                var limit = Ns.Const.MAX_LIST_SIZE;
+                var waiting = 0;
+                var notifications = [];
+
+                Main.ro.play_request.get(user_id, game_name, skip, limit)
+                        .before(function () {
+                            waiting++;
+                        })
+                        .after(function (data, err) {
+                            waiting--;
+                            var play_requests = [];
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                                //just show any available ones
+                                play_requests = Ns.PlayRequest.playRequestList;
+                                if (!Main.util.isArray(play_requests)) {
+                                    play_requests = [];
+                                }
+                            } else {
+                                play_requests = data.play_requests;
+                                Ns.PlayRequest.playRequestList = play_requests;
+                            }
+
+                            Ns.view.Notifications.displayReqCountInfo(play_requests.length);
+                            notifications = notifications.concat(play_requests);
+
+                            if (waiting === 0) {
+                                addNotificationListItem(notifications);
+                            }
+                        });
+
+                Main.ro.tourn.getUpcomingMatches(user_id, game_name, skip, limit)
+                        .before(function () {
+                            waiting++;
+                        })
+                        .after(function (data, err) {
+                            waiting--;
+                            var upcoming_matches = [];
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                            } else {
+                                upcoming_matches = data.upcoming_matches;
+                            }
+
+                            notifications = notifications.concat(upcoming_matches);
+
+                            if (waiting === 0) {
+                                addNotificationListItem(notifications);
+                            }
+                        });
+
+
+                Main.ro.group.getGroupJoinRequests(user_id, skip, limit)
+                        .before(function () {
+                            waiting++;
+                        })
+                        .after(function (data, err) {
+                            waiting--;
+                            var group_join_requests = [];
+                            if (err) {
+                                //TODO - display error
+                                console.log(err);
+                            } else {
+                                group_join_requests = data.group_join_requests;
+                            }
+
+                            notifications = notifications.concat(group_join_requests);
+
+                            if (waiting === 0) {
+                                addNotificationListItem(notifications);
+                            }
+                        });
             });
 
-            for (var i = 0; i < notifications.length; i++) {
-                Ns.view.Notifications.addNotification(notifications[i]);
-            }
         }
-
-        Main.rcall.live(function () {
-            var user_id = Ns.view.UserProfile.appUser.user_id;
-            var game_name = Ns.ui.UI.selectedGame;
-            var skip = 0;
-            var limit = Ns.Const.MAX_LIST_SIZE;
-            var waiting = 0;
-            var notifications = [];
-
-            Main.ro.play_request.get(user_id, game_name, skip, limit)
-                    .before(function () {
-                        waiting++;
-                    })
-                    .after(function (data, err) {
-                        waiting--;
-                        var play_requests = [];
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                            //just show any available ones
-                            play_requests = Ns.PlayRequest.playRequestList;
-                            if (!Main.util.isArray(play_requests)) {
-                                play_requests = [];
-                            }
-                        } else {
-                            play_requests = data.play_requests;
-                            Ns.PlayRequest.playRequestList = play_requests;
-                        }
-
-                        Ns.view.Notifications.displayReqCountInfo(play_requests.length);
-                        notifications = notifications.concat(play_requests);
-
-                        if (waiting === 0) {
-                            addNotificationListItem(notifications);
-                        }
-                    });
-
-            Main.ro.tourn.getUpcomingMatches(user_id, game_name, skip, limit)
-                    .before(function () {
-                        waiting++;
-                    })
-                    .after(function (data, err) {
-                        waiting--;
-                        var upcoming_matches = [];
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                        } else {
-                            upcoming_matches = data.upcoming_matches;
-                        }
-
-                        notifications = notifications.concat(upcoming_matches);
-
-                        if (waiting === 0) {
-                            addNotificationListItem(notifications);
-                        }
-                    });
-
-
-            Main.ro.group.getGroupJoinRequests(user_id, skip, limit)
-                    .before(function () {
-                        waiting++;
-                    })
-                    .after(function (data, err) {
-                        waiting--;
-                        var group_join_requests = [];
-                        if (err) {
-                            //TODO - display error
-                            console.log(err);
-                        } else {
-                            group_join_requests = data.group_join_requests;
-                        }
-
-                        notifications = notifications.concat(group_join_requests);
-
-                        if (waiting === 0) {
-                            addNotificationListItem(notifications);
-                        }
-                    });
-        });
-
-
     },
 
     addNotification: function (notification, use_uiupdater) {

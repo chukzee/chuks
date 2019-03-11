@@ -1,6 +1,6 @@
 
 
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 
 Ns.Match = {
@@ -52,16 +52,20 @@ Ns.Match = {
         m.start_time = new Date().getTime();
         m.current_set = 1;
         var user = Ns.view.UserProfile.appUser;
+        var robot_id = Ns.Robot.createID();
+        
         if (is_robot_white) {
+            m.robotSide = true;//white
             m.players[0].full_name = 'Robot';
             m.players[1] = user;
-            m.wdl.white.player_id = '';//robot
+            m.wdl.white.player_id = robot_id;//robot
             m.wdl.black.player_id = user.user_id;
         } else {
+            m.robotSide = false;//black
             m.players[0] = user;
             m.players[1].full_name = 'Robot';
             m.wdl.white.player_id = user.user_id;
-            m.wdl.black.player_id = '';//robot
+            m.wdl.black.player_id = robot_id;//robot
         }
 
         return m;
@@ -91,50 +95,50 @@ Ns.Match = {
         };
     },
 
-    defaultWDL: function(){
+    defaultWDL: function () {
         return  {//default
 
-                white: {//white
-                    player_id: null,
-                    specific: {
-                        wdl: 'W 0 D 0 L 0',
-                        wins: 0,
-                        draws: 0,
-                        losses: 0
-                    },
-                    overall: {
-                        wdl: 'W 0 D 0 L 0',
-                        wins: 0,
-                        draws: 0,
-                        losses: 0
-                    }
+            white: {//white
+                player_id: null,
+                specific: {
+                    wdl: 'W 0 D 0 L 0',
+                    wins: 0,
+                    draws: 0,
+                    losses: 0
                 },
-                black: {//black
-                    player_id: null,
-                    specific: {
-                        wdl: 'W 0 D 0 L 0',
-                        wins: 0,
-                        draws: 0,
-                        losses: 0
-                    },
-                    overall: {
-                        wdl: 'W 0 D 0 L 0',
-                        wins: 0,
-                        draws: 0,
-                        losses: 0
-                    }
+                overall: {
+                    wdl: 'W 0 D 0 L 0',
+                    wins: 0,
+                    draws: 0,
+                    losses: 0
                 }
-            };
+            },
+            black: {//black
+                player_id: null,
+                specific: {
+                    wdl: 'W 0 D 0 L 0',
+                    wins: 0,
+                    draws: 0,
+                    losses: 0
+                },
+                overall: {
+                    wdl: 'W 0 D 0 L 0',
+                    wins: 0,
+                    draws: 0,
+                    losses: 0
+                }
+            }
+        };
     },
 
     getMatch: function (game_id, callback) {
 
         //contact
-        var contact_matches = window.localStorage.getItem(Ns.Match.contactsMatchKey());
-
-        try {
+        localforage.getItem(Ns.Match.contactsMatchKey(), function (err, contact_matches) {
+            if (err) {
+                console.log(err);
+            }
             if (contact_matches) {
-                contact_matches = JSON.parse(contact_matches);
                 for (var i = 0; i < contact_matches.length; i++) {
                     if (contact_matches[i].game_id === game_id) {
                         if (Main.util.isFunc(callback)) {
@@ -144,92 +148,105 @@ Ns.Match = {
                     }
                 }
             }
-        } catch (e) {
-            console.warn(e);
-        }
 
-
-        //group
-        var group_matches = window.localStorage.getItem(Ns.Match.groupMatchKey());
-
-        try {
-            if (group_matches) {
-                group_matches = JSON.parse(group_matches);
-                for (var i = 0; i < group_matches.length; i++) {
-                    if (group_matches[i].game_id === game_id) {
-                        if (Main.util.isFunc(callback)) {
-                            callback(group_matches[i]);
-                            return;
-                        }
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn(e);
-        }
-
-        //tournament
-        var tourn_matches = window.localStorage.getItem(Ns.Match.tournamentMatchKey());
-
-        try {
-            if (tourn_matches) {
-                tourn_matches = JSON.parse(tourn_matches);
-                for (var i = 0; i < tourn_matches.length; i++) {
-                    if (tourn_matches[i].game_id === game_id) {
-                        if (Main.util.isFunc(callback)) {
-                            callback(tourn_matches[i]);
-                            return;
-                        }
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn(e);
-        }
-
-
-        //at this point the match is not found locally so get it remotely
-
-        Main.ro.match.getMatch(game_id)
-                .get(function (data) {
-                    var match = data.match;
-                    if (Main.util.isFunc(callback)) {
-                        callback(match);
-                    }
-
-                    if (!match) {
-                        return;
-                    }
-
-                    if (match.tournament_name) {//tournament match
-
-                        if (tourn_matches
-                                && tourn_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
-                            tourn_matches.push(match);
-                            var key = Ns.Match.tournamentMatchKey();
-                            window.localStorage.setItem(key, JSON.stringify(tourn_matches));
-                        }
-                    } else if (match.group_name) {//group match
-
-                        if (group_matches
-                                && group_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
-                            group_matches.push(match);
-                            var key = Ns.Match.groupMatchKey();
-                            window.localStorage.setItem(key, JSON.stringify(group_matches));
-                        }
-                    } else {//contact match
-
-                        if (contact_matches
-                                && contact_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
-                            contact_matches.push(match);
-                            var key = Ns.Match.contactsMatchKey();
-                            window.localStorage.setItem(key, JSON.stringify(contact_matches));
-                        }
-                    }
-                })
-                .error(function (err) {
+            //group
+            localforage.getItem(Ns.Match.groupMatchKey(), function (err, group_matches) {
+                if (err) {
                     console.log(err);
+                }
+                if (group_matches) {
+                    for (var i = 0; i < group_matches.length; i++) {
+                        if (group_matches[i].game_id === game_id) {
+                            if (Main.util.isFunc(callback)) {
+                                callback(group_matches[i]);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                //tournament
+                localforage.getItem(Ns.Match.tournamentMatchKey(), function (err, tourn_matches) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (tourn_matches) {
+                        for (var i = 0; i < tourn_matches.length; i++) {
+                            if (tourn_matches[i].game_id === game_id) {
+                                if (Main.util.isFunc(callback)) {
+                                    callback(tourn_matches[i]);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    //at this point the match is not found locally so get it remotely
+
+                    Main.ro.match.getMatch(game_id)
+                            .get(function (data) {
+                                var match = data.match;
+                                if (Main.util.isFunc(callback)) {
+                                    callback(match);
+                                }
+
+                                if (!match) {
+                                    return;
+                                }
+
+                                if (match.tournament_name) {//tournament match
+
+                                    if (tourn_matches
+                                            && tourn_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
+                                        tourn_matches.push(match);
+                                        var key = Ns.Match.tournamentMatchKey();
+                                        localforage.setItem(key, tourn_matches, function (err) {
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                        });
+                                    }
+                                } else if (match.group_name) {//group match
+
+                                    if (group_matches
+                                            && group_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
+                                        group_matches.push(match);
+                                        var key = Ns.Match.groupMatchKey();
+                                        localforage.setItem(key, group_matches, function (err) {
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                        });
+                                    }
+                                } else {//contact match
+
+                                    if (contact_matches
+                                            && contact_matches.length < Ns.Const.MAX_LIST_SIZE - 1) {
+                                        contact_matches.push(match);
+                                        var key = Ns.Match.contactsMatchKey();
+                                        localforage.setItem(key, contact_matches, function (err) {
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                        });
+                                    }
+                                }
+                            })
+                            .error(function (err) {
+                                console.log(err);
+                            });
+
+
                 });
+
+
+            });
+
+
+
+
+
+        });
 
     },
 
@@ -309,19 +326,20 @@ Ns.Match = {
 
     contactsMatchList: function () {
 
-        var stored_matches = window.localStorage.getItem(Ns.Match.contactsMatchKey());
+        localforage.getItem(Ns.Match.contactsMatchKey(), function (err, stored_matches) {
 
-        try {
+            if (err) {
+                console.log(err);
+            }
+
             if (stored_matches) {
-                stored_matches = JSON.parse(stored_matches);
                 //show the contacts live match list
                 Ns.Match.liveMatchList('#home-contacts-live-games', stored_matches);
             }
-        } catch (e) {
-            console.warn(e);
-        }
 
-        Ns.Match.refreshMyContactsMatchList();
+            Ns.Match.refreshMyContactsMatchList();
+
+        });
 
     },
 
@@ -354,7 +372,11 @@ Ns.Match = {
 
                             Ns.Match.liveMatchList('#home-contacts-live-games', matches);
                             var key = Ns.Match.contactsMatchKey();
-                            window.localStorage.setItem(key, JSON.stringify(matches));
+                            localforage.setItem(key, matches, function (err) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
 
                         } else {
                             //TODO - display no match found or something similar
@@ -386,34 +408,31 @@ Ns.Match = {
             });
         }
 
-
         function doGroupMatchList(group) {
             if (!group) {
                 return;
             }
-            var stored_matches = window.localStorage.getItem(Ns.Match.groupMatchKey(group.name));
+            localforage.getItem(Ns.Match.groupMatchKey(group.name), function (err, stored_matches) {
 
-            try {
+                if (err) {
+                    console.log(err);
+                }
+
                 if (stored_matches) {
-                    stored_matches = JSON.parse(stored_matches);
                     //show the group live match list
                     Ns.Match.liveMatchList('#home-group-live-games', stored_matches);
                 }
-            } catch (e) {
-                console.warn(e);
-            }
+
+                document.getElementById('home-group-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
+                document.getElementById('home-group-pic').src = group.small_photo_url;
+                document.getElementById('home-group-name').innerHTML = group.name;
+                document.getElementById('home-group-status-message').innerHTML = group.status_message;
+                Ns.ui.UI.groupPageCounter(group);
 
 
-            document.getElementById('home-group-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_GROUP] = group;
-            document.getElementById('home-group-pic').src = group.small_photo_url;
-            document.getElementById('home-group-name').innerHTML = group.name;
-            document.getElementById('home-group-status-message').innerHTML = group.status_message;
-            Ns.ui.UI.groupPageCounter(group);
+                Ns.Match.refreshMyGroupsMatchList(group.name);
+            });
 
-
-
-
-            Ns.Match.refreshMyGroupsMatchList(group.name);
         }
     },
 
@@ -445,7 +464,11 @@ Ns.Match = {
                         if (matches.length) {
                             Ns.Match.liveMatchList('#home-group-live-games', matches);
                             var key = Ns.Match.groupMatchKey(matches[0].group_name);
-                            window.localStorage.setItem(key, JSON.stringify(matches));
+                            localforage.setItem(key, matches, function (err) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
                         } else {
                             //TODO - display no match found or something similar
 
@@ -490,32 +513,32 @@ Ns.Match = {
             if (!tournament) {
                 return;
             }
-            var stored_matches = window.localStorage.getItem(Ns.Match.tournamentMatchKey(tournament.name));
+            localforage.getItem(Ns.Match.tournamentMatchKey(tournament.name), function (err, stored_matches) {
 
-            try {
+                if (err) {
+                    console.log(err);
+                }
+
                 if (stored_matches) {
-                    stored_matches = JSON.parse(stored_matches);
                     //show the tournaments live match list
                     Ns.Match.liveMatchList('#home-tournaments-live-games', stored_matches);
                 }
-            } catch (e) {
-                console.warn(e);
-            }
 
-            //display tournament header info
-            document.getElementById('home-tournament-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
-            document.getElementById('home-tournament-pic').src = tournament.small_photo_url;
-            document.getElementById('home-tournament-name').innerHTML = tournament.name;
-            if (tournament.seasons.length > 0) {
-                var season = tournament.seasons[tournament.seasons.length - 1];//current season
-                var season_str = 'Season ' + season.sn + ': ' + Ns.Util.formatTime(season.start_time);
-                document.getElementById('home-tournament-brief').innerHTML = season_str;
-            } else {
-                document.getElementById('home-tournament-brief').innerHTML = 'No season';
-            }
+                //display tournament header info
+                document.getElementById('home-tournament-header')[Ns.Match._HOME_DOM_EXTRA_HOLD_TOURN] = tournament;
+                document.getElementById('home-tournament-pic').src = tournament.small_photo_url;
+                document.getElementById('home-tournament-name').innerHTML = tournament.name;
+                if (tournament.seasons.length > 0) {
+                    var season = tournament.seasons[tournament.seasons.length - 1];//current season
+                    var season_str = 'Season ' + season.sn + ': ' + Ns.Util.formatTime(season.start_time);
+                    document.getElementById('home-tournament-brief').innerHTML = season_str;
+                } else {
+                    document.getElementById('home-tournament-brief').innerHTML = 'No season';
+                }
 
+                Ns.Match.refreshTournamentsMatchList(tournament);
+            });
 
-            Ns.Match.refreshTournamentsMatchList(tournament);
         }
 
     },
@@ -550,7 +573,11 @@ Ns.Match = {
                         if (matches.length) {
                             Ns.Match.liveMatchList('#home-tournaments-live-games', matches);
                             var key = Ns.Match.tournamentMatchKey(matches[0].tournament_name);
-                            window.localStorage.setItem(key, JSON.stringify(matches));
+                            localforage.setItem(key, matches, function (err) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
                         } else {
                             //TODO - display no match found or something similar
 
@@ -570,35 +597,41 @@ Ns.Match = {
         if (!listview) {
             return;
         }
-        var matches = window.localStorage.getItem(key);
-        try {
-            if (matches) {
-                matches = JSON.parse(matches);
-                //check if the match is stored and replace if found
-                var found = false;
-                for (var i = 0; i < matches.length; i++) {
-                    if (matches[i].game_id === match.game_id) {
-                        matches[i] = match;
-                        listview.replaceItem(match, function (data) {
-                            return data.game_id === match.game_id;
-                        });
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {//not found so added to the top of the array and the listview
-                    matches.unshift(match);//add to top
-                    listview.prependItem(match);//also add to the top of the listview
-                }
-            } else {//new match
-                matches = [];
-                matches.push(match);
-                listview.prependItem(match);//add to the listview
+        localforage.getItem(key, function (err, matches) {
+            if (err) {
+                console.log(err);
             }
-            window.localStorage.setItem(key, JSON.stringify(matches));//save the changes
-        } catch (e) {
-            console.warn(e);
-        }
+            try {
+                if (matches) {
+                    //check if the match is stored and replace if found
+                    var found = false;
+                    for (var i = 0; i < matches.length; i++) {
+                        if (matches[i].game_id === match.game_id) {
+                            matches[i] = match;
+                            listview.replaceItem(match, function (data) {
+                                return data.game_id === match.game_id;
+                            });
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {//not found so added to the top of the array and the listview
+                        matches.unshift(match);//add to top
+                        listview.prependItem(match);//also add to the top of the listview
+                    }
+                } else {//new match
+                    matches = [];
+                    matches.push(match);
+                    listview.prependItem(match);//add to the listview
+                }
+                localforage.setItem(key, matches, function (err) {
+                    console.log(err);
+                });//save the changes
+
+            } catch (e) {
+                console.warn(e);
+            }
+        });
     },
 
     updateMatchList: function (match) {

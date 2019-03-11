@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../lib/localforage.min.js"></script>
+
+    </head>
+    <body>
+        <div id="mydiv"></div>
+
+        <script>
+            console.log(localforage);
+            localforage.setItem('my_test', {a:2, b:3, c: null}, function (err) {
+                console.log('err1', err);
+                localforage.getItem('my_test', function (err, value) {
+                    // if err is non-null, we got an error. otherwise, value is the value
+                    console.log('err2', err);
+                    console.log('value', value);
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -17,6 +17,8 @@ Ns.Const = {
      * @type String
      */
     AUTH_USER_KEY: 'AUTH_USER_KEY',
+    
+    RANKINGS_LIST_KEY: 'RANKINGS_LIST_KEY',
 
     USER_LIST_KEY: 'USER_LIST_KEY',
 

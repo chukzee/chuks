@@ -1,6 +1,6 @@
 
 
-/* global Ns, Main */
+/* global Ns, Main, localforage */
 
 Ns.msg.AbstractMessage = {
     refStateIndex: 0,
@@ -165,9 +165,6 @@ Ns.msg.AbstractMessage = {
     getMsgEmojiTabThreeSelector: function () {
     },
 
-    getMsgStatusIndicatorSelector: function () {
-    },
-
     /**
      * Overridden by subclass
      * @returns {undefined}
@@ -264,7 +261,7 @@ Ns.msg.AbstractMessage = {
         this._isViewReady = false;
         var last_code = this._code;
         this._code = this.getCode();
-        
+
         var isSameView = last_code === this._code;
 
         this.view = document.getElementById(this.getViewID());
@@ -283,26 +280,81 @@ Ns.msg.AbstractMessage = {
             msg_body.innerHTML = ''; //clear the previous messages
         }
 
-        if (!isSameView || (isSameView && this.msgList.length === 0)) {
-            this.msgList = this._localGetMessages();
+        initMsgList.call(me);
+
+        var oldRefState = me.refStateIndex;
+
+        function initMsgList() {
+
+            if (!isSameView || (isSameView && me.msgList.length === 0)) {
+                me._localGetMessages(function (value) {
+
+                    if (oldRefState !== me.refStateIndex) {
+                        value = [];
+                    }
+
+                    if (!value) {
+                        value = [];
+                    }
+                    me.msgList = value;
+                    initRepliedMsgList.call(me);
+                }.bind(me));
+            } else {
+                initRepliedMsgList.call(me);
+            }
         }
 
-        if (!isSameView || (isSameView && this.repliedMsgList.length === 0)) {
-            this.repliedMsgList = this._localGetRepliedMessages();
+        function initRepliedMsgList() {
+
+            if (!isSameView || (isSameView && me.repliedMsgList.length === 0)) {
+                this._localGetRepliedMessages(function (value) {
+
+                    if (oldRefState !== me.refStateIndex) {
+                        value = [];
+                    }
+
+                    if (!value) {
+                        value = [];
+                    }
+                    me.repliedMsgList = value;
+                    initUnSentMessages.call(me);
+                }.bind(me));
+            } else {
+                initUnSentMessages.call(me);
+            }
         }
 
-        if (this.refStateIndex === 1) {//the first time this view is loaded
-            this._unsentMsgList = this._localGetUnsentMessages();
+        function initUnSentMessages() {
+            if (me.refStateIndex === 1) {//the first time this view is loaded
+                me._localGetUnsentMessages(function (value) {
+
+                    if (oldRefState !== me.refStateIndex) {
+                        value = [];
+                    }
+
+                    if (!value) {
+                        value = [];
+                    }
+                    me._unsentMsgList = value;
+                    setMessages.call(me);
+                }.bind(me));
+            } else {
+                setMessages.call(me);
+            }
         }
 
         this._redisplayMsgTimeOnNextDay();
 
-        if (this.msgList.length > 0) {
-            var bndOnMessageAdded = onMessageAdded.bind(data);
-            Main.event.on(Ns.Const.EVT_MESSAGE_ADDED, bndOnMessageAdded);
-            this.set(this.msgList);
-        } else {
-            this._remoteGetMessages.call(this, data);
+        var bndOnMessageAdded = onMessageAdded.bind(data);
+
+        function setMessages() {
+            if (me.msgList.length > 0) {
+
+                Main.event.on(Ns.Const.EVT_MESSAGE_ADDED, bndOnMessageAdded);
+                me.set(me.msgList);
+            } else {
+                me._remoteGetMessages.call(me, data);
+            }
         }
 
         var search_btn = document.getElementById(this.getSearchButtonID());
@@ -320,8 +372,6 @@ Ns.msg.AbstractMessage = {
 
         Main.click(this.view_body, this, this._onClickToSelect);
 
-        var me = this;
-
         function onMessageAdded(msg) {
             var view_data = this;
             var last = me.msgList[me.msgList.length - 1];
@@ -337,7 +387,13 @@ Ns.msg.AbstractMessage = {
         }
 
     },
-
+    onHide: function () {
+        alert('Hahaha!!!');
+      var msg_body = $(this.view_body).find(this.getMsgBodySelector())[0];
+        if (msg_body) {
+            msg_body.innerHTML = ''; //clear the previous messages
+        }  
+    },
     _redisplayMsgTimeOnNextDay: function () {
 
         var date = new Date();
@@ -436,56 +492,69 @@ Ns.msg.AbstractMessage = {
     },
 
     _localSaveMessages: function () {
-        window.localStorage.setItem(this.getSaveKeyPrefix()
+        localforage.setItem(this.getSaveKeyPrefix()
                 + Ns.Util.DELIMITER
                 + this.getCode()
                 + Ns.Util.DELIMITER
-                + this.MSG_SAVE_KEY, JSON.stringify(this.msgList));
+                + this.MSG_SAVE_KEY, this.msgList, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
     },
 
     _localSaveRepliedMessages: function () {
-        window.localStorage.setItem(this.getSaveKeyPrefix()
+        localforage.setItem(this.getSaveKeyPrefix()
                 + Ns.Util.DELIMITER
                 + this.getCode()
                 + Ns.Util.DELIMITER
-                + this.REPLIED_MSG_SAVE_KEY, JSON.stringify(this.repliedMsgList));
+                + this.REPLIED_MSG_SAVE_KEY, this.repliedMsgList, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
     },
 
     _localSaveUnsentMessages: function () {
-        window.localStorage.setItem(this.getSaveKeyPrefix()
+        localforage.setItem(this.getSaveKeyPrefix()
                 + Ns.Util.DELIMITER
                 + this.getCode()
                 + Ns.Util.DELIMITER
-                + this.UNSENT_MSG_SAVE_KEY, JSON.stringify(this._unsentMsgList));
+                + this.UNSENT_MSG_SAVE_KEY, this._unsentMsgList, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
     },
 
-    _localGetMessages: function () {
-        return this._localGet(this.MSG_SAVE_KEY);
+    _localGetMessages: function (callback) {
+        return this._localGet(this.MSG_SAVE_KEY, callback);
     },
 
-    _localGetRepliedMessages: function () {
-        return this._localGet(this.REPLIED_MSG_SAVE_KEY);
+    _localGetRepliedMessages: function (callback) {
+        return this._localGet(this.REPLIED_MSG_SAVE_KEY, callback);
     },
 
-    _localGetUnsentMessages: function () {
-        return this._localGet(this.UNSENT_MSG_SAVE_KEY);
+    _localGetUnsentMessages: function (callback) {
+        return this._localGet(this.UNSENT_MSG_SAVE_KEY, callback);
     },
 
-    _localGet: function (key) {
-        var msgs = [];
-        try {
-            var str = window.localStorage.getItem(this.getSaveKeyPrefix()
-                    + Ns.Util.DELIMITER
-                    + this.getCode()
-                    + Ns.Util.DELIMITER
-                    + key);
-            if (str) {
-                msgs = JSON.parse(str);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-        return msgs;
+    _localGet: function (key, callback) {
+
+        localforage.getItem(this.getSaveKeyPrefix()
+                + Ns.Util.DELIMITER
+                + this.getCode()
+                + Ns.Util.DELIMITER
+                + key, function (err, msgs) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (!msgs) {
+                        return callback([]);
+                    }
+                    callback(msgs);
+                });
+
     },
 
     _itemTargetEl: function (target) {
@@ -1029,7 +1098,7 @@ Ns.msg.AbstractMessage = {
                 Main.click(emoji_tab2_el, eobj, me._onEmojiTabTwoClick.bind(me));
 
                 Main.click(emoji_tab3_el, eobj, me._onEmojiTabThreeClick.bind(me));
-                
+
                 Main.click(emoji_list_el, me._onEmojiListClick.bind(me));
 
                 Main.click(close_emoji, pop_emoji, me.closeEmojis.bind(me));
@@ -1071,7 +1140,7 @@ Ns.msg.AbstractMessage = {
 
         for (var i = 0; i < msgs.length; i++) {
             this.setMsgCode(msgs[i]);
-            
+
             var msg_replied_id = msgs[i].msg_replied_id;
             if (msg_replied_id) {//store the replied message if not already stored
                 var rpl_msg = this.repliedMsgList.find(function (m) {
@@ -1082,7 +1151,7 @@ Ns.msg.AbstractMessage = {
                     rpl_msg = this.msgList.find(function (m) {
                         return msg_replied_id === m.msg_id;
                     });
-                    if(rpl_msg){
+                    if (rpl_msg) {
                         this.repliedMsgList.push(rpl_msg);
                         this._localSaveRepliedMessages();
                     }
@@ -1236,13 +1305,13 @@ Ns.msg.AbstractMessage = {
                 msg_replied_id = rpl_msg.msg_id;
                 this.closeReply(evt, pop_reply);
             }
-            
+
             var pop_emoji = $(me.view_body).find('div[data-pop="emoji"]')[0];
-            
+
             if ($(pop_emoji).is(':visible')) {
                 this.closeEmojis(evt, pop_emoji);
             }
-            
+
             content = txt_input.value; //textarea
             if (content === '') {
                 return; //do nothing
@@ -1757,12 +1826,12 @@ Ns.msg.AbstractMessage = {
         this._fillEmojis(Ns.Emoji.MiscList, eobj.emoji_list_el);
     },
 
-    _onEmojiListClick: function(evt){
+    _onEmojiListClick: function (evt) {
         var target = evt.target;
-        if(target.dataset.content !== "emoji"){
+        if (target.dataset.content !== "emoji") {
             return;
         }
-        
+
         var txt_input = $(this.view_body).find(this.getMsgInputSelector())[0];
         txt_input.value += '' + target.innerHTML;
     },
@@ -1772,11 +1841,11 @@ Ns.msg.AbstractMessage = {
         emoji_list_el.innerHTML = '';
         var html = '';
         for (var i = 0; i < emoji_arr.length; i++) {
-            html +='<span style="margin-right: 10px; cursor: pointer;" data-content="emoji" >'+emoji_arr[i]+'</span>';
+            html += '<span style="margin-right: 10px; cursor: pointer;" data-content="emoji" >' + emoji_arr[i] + '</span>';
         }
-        
+
         emoji_list_el.innerHTML = html;
-        
+
     }
 };
 

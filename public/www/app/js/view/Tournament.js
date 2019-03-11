@@ -1,6 +1,6 @@
 
 
-/* global Ns, Main */
+/* global Ns, Main, localforage */
 
 Ns.view.Tournament = {
 
@@ -23,15 +23,14 @@ Ns.view.Tournament = {
      */
     constructor: function () {
 
-        try {
-            var list = window.localStorage.getItem(Ns.Const.TOURNAMENT_LIST_KEY);
-            list = JSON.parse(list);
+        localforage.getItem(Ns.Const.TOURNAMENT_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
+            }
             if (Main.util.isArray(list)) {
                 Ns.view.Tournament.tournamentList = list;
             }
-        } catch (e) {
-            console.warn(e);
-        }
+        });
 
         var obj = {
             tourn: 'info/Tournament'
@@ -326,7 +325,7 @@ Ns.view.Tournament = {
                             : season.slots.length + ' Player')
                     : 'No Player';
 
-            round_index = displayFixturesAtRound(season ? season.rounds: []);
+            round_index = displayFixturesAtRound(season ? season.rounds : []);
 
 
             if (round_index === 0) {
@@ -370,7 +369,7 @@ Ns.view.Tournament = {
                 rd = rounds[round_index];
             }
 
-            document.getElementById("tournament-details-stage").innerHTML = rd? rd.stage : '';
+            document.getElementById("tournament-details-stage").innerHTML = rd ? rd.stage : '';
 
             var container = '#tournament-details-match-fixtures';
 
@@ -712,10 +711,10 @@ Ns.view.Tournament = {
         };
 
         Main.dialog.show({
-            visible: false,//first hide it - we will manually show it only when the dialog and it content is fully rendered by call setVisible to avoid an annoying visual issue
+            visible: false, //first hide it - we will manually show it only when the dialog and it content is fully rendered by call setVisible to avoid an annoying visual issue
             title: 'Slots',
             //content: html,
-            widthScreenRatio:  0.8,
+            widthScreenRatio: 0.8,
             maxWidth: 400,
             maxHeight: 600,
             fade: true,
@@ -785,13 +784,13 @@ Ns.view.Tournament = {
 
                 dlg_body.appendChild(table);
                 this.layout();
-                
+
                 //now reveal the dialog after all is set and ok
                 this.setVisible({
-                    value : true,
+                    value: true,
                     duration: 300
                 });
-                
+
             }
         });
 
@@ -1135,7 +1134,11 @@ Ns.view.Tournament = {
         }
 
         if (Main.util.isArray(list)) {
-            window.localStorage.setItem(Ns.Const.TOURNAMENT_LIST_KEY, JSON.stringify(list));
+            localforage.setItem(Ns.Const.TOURNAMENT_LIST_KEY, list, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
     },
 

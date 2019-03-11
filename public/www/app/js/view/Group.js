@@ -1,5 +1,5 @@
 
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.view.Group = {
 
@@ -15,21 +15,25 @@ Ns.view.Group = {
      */
     constructor: function () {
 
-        try {
-            var list = window.localStorage.getItem(Ns.Const.GROUP_LIST_KEY);
-            list = JSON.parse(list);
+        localforage.getItem(Ns.Const.GROUP_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
+            }
+
+            if (!list) {
+                list = [];
+            }
+
             if (Main.util.isArray(list)) {
                 Ns.view.Group.groupList = list;
             }
-        } catch (e) {
-            console.warn(e);
-        }
+        });
 
         var obj = {
             group: 'info/Group'
         };
         Main.rcall.live(obj);
-        
+
     },
     content: function (group) {
 
@@ -72,9 +76,9 @@ Ns.view.Group = {
             if (!group) {
                 return;
             }
-            
+
             group.admins = group.admins || [];
-            
+
             var created_by_user;
             for (var i = 0; i < group.admins.length; i++) {
                 if (group.admins[i].user_id === group.created_by) {
@@ -113,7 +117,7 @@ Ns.view.Group = {
             Main.click("group-details-comment", group, Ns.view.Group._onClickGroupChat);
 
 
-            
+
 
             $('#group-details-edit').off('click');
             $('#group-details-edit').on('click', function () {
@@ -415,7 +419,11 @@ Ns.view.Group = {
         }
 
         if (Main.util.isArray(list)) {
-            window.localStorage.setItem(Ns.Const.GROUP_LIST_KEY, JSON.stringify(list));
+            localforage.setItem(Ns.Const.GROUP_LIST_KEY, list, function(err){
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
     },
     getGroupsInfo: function (user, callback) {

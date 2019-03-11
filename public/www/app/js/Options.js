@@ -1,5 +1,5 @@
 
-/* global Ns, Main */
+/* global Ns, Main, localforage */
 
 Ns.Options = {
 
@@ -42,72 +42,102 @@ Ns.Options = {
     },
 
     init: function () {
-
-        this.chessPiece2d = this._localGetOption('chessPiece2d');
-        if (this.chessPiece2d === null) {
-            this.chessPiece2d = this.DEFAULT_CHESS_PIECE_2D;
-        }
-
-        this.chessPiece3d = this._localGetOption('chessPiece3d');
-        if (this.chessPiece3d === null) {
-            this.chessPiece3d = this.DEFAULT_CHESS_PIECE_3D;
-        }
-
-        this.chessBoardTop = this._localGetOption('chessBoardTop');
-        if (this.chessBoardTop === null) {
-            this.chessBoardTop = this.DEFAULT_CHESS_BOARD_TOP;
-        }
-
-        this.chessBoardFrame = this._localGetOption('chessBoardFrame');
-        if (this.chessBoardFrame === null) {
-            this.chessBoardFrame = this.DEFAULT_CHESS_BOARD_FRAME;
-        }
-
-        this.chessBoardFloor = this._localGetOption('chessBoardFloor');
-        if (this.chessBoardFloor === null) {
-            this.chessBoardFloor = this.DEFAULT_CHESS_BOARD_FLOOR;
-        }
-
-        this.draughtsPiece2d = this._localGetOption('draughtsPiece2d');
-        if (this.draughtsPiece2d === null) {
-            this.draughtsPiece2d = this.DEFAULT_DRAUGHTS_PIECE_2D;
-        }
-
-        this.draughtsPiece3d = this._localGetOption('draughtsPiece3d');
-        if (this.draughtsPiece3d === null) {
-            this.draughtsPiece3d = this.DEFAULT_DRAUGHTS_PIECE_3D;
-        }
-
-        this.draughtsBoardTop = this._localGetOption('draughtsBoardTop');
-        if (this.draughtsBoardTop === null) {
-            this.draughtsBoardTop = this.DEFAULT_DRAUGHTS_BOARD_TOP;
-        }
-
-        this.draughtsBoardFrame = this._localGetOption('draughtsBoardFrame');
-        if (this.draughtsBoardFrame === null) {
-            this.draughtsBoardFrame = this.DEFAULT_DRAUGHTS_BOARD_FRAME;
-        }
-
-        this.draughtsBoardFloor = this._localGetOption('draughtsBoardFloor');
-        if (this.draughtsBoardFloor === null) {
-            this.draughtsBoardFloor = this.DEFAULT_DRAUGHTS_BOARD_FLOOR;
-        }
+        
+        var me = this;
+        
+        me._localGetOption('chessPiece2d', function (value) {
+            me.chessPiece2d = value;
+            if (me.chessPiece2d === null) {
+                me.chessPiece2d = me.DEFAULT_CHESS_PIECE_2D;
+            }
+        });
 
 
-        this.isSound = this._localGetOption('isSound');
-        if (this.isSound === null) {
-            this.isSound = this.DEFAUTLT_IS_SOUND;
-        }
+        me._localGetOption('chessPiece3d', function (value) {
+            me.chessPiece3d = value;
+            if (me.chessPiece3d === null) {
+                me.chessPiece3d = me.DEFAULT_CHESS_PIECE_3D;
+            }
+        });
 
-        this.isDragPiece = this._localGetOption('isDragPiece');
-        if (this.isDragPiece === null) {
-            this.isDragPiece = this.DEFAUTLT_IS_DRAG_PIECE;
-        }
+        me._localGetOption('chessBoardTop', function (value) {
+            me.chessBoardTop = value;
+            if (me.chessBoardTop === null) {
+                me.chessBoardTop = me.DEFAULT_CHESS_BOARD_TOP;
+            }
+        });
 
-        this.lightIntensity = this._localGetOption('lightIntensity');
-        if (this.lightIntensity === null) {
-            this.lightIntensity = this.DEFAULT_LIGHT_INTENSITY;
-        }
+        me._localGetOption('chessBoardFrame', function (value) {
+            me.chessBoardFrame = value;
+            if (me.chessBoardFrame === null) {
+                me.chessBoardFrame = me.DEFAULT_CHESS_BOARD_FRAME;
+            }
+        });
+
+        me._localGetOption('chessBoardFloor', function (value) {
+            me.chessBoardFloor = value;
+            if (me.chessBoardFloor === null) {
+                me.chessBoardFloor = me.DEFAULT_CHESS_BOARD_FLOOR;
+            }
+        });
+
+        me._localGetOption('draughtsPiece2d', function (value) {
+            me.draughtsPiece2d = value;
+            if (me.draughtsPiece2d === null) {
+                me.draughtsPiece2d = me.DEFAULT_DRAUGHTS_PIECE_2D;
+            }
+        });
+
+        me._localGetOption('draughtsPiece3d', function (value) {
+            me.draughtsPiece3d = value;
+            if (me.draughtsPiece3d === null) {
+                me.draughtsPiece3d = me.DEFAULT_DRAUGHTS_PIECE_3D;
+            }
+        });
+
+        me._localGetOption('draughtsBoardTop', function (value) {
+            me.draughtsBoardTop = value;
+            if (me.draughtsBoardTop === null) {
+                me.draughtsBoardTop = me.DEFAULT_DRAUGHTS_BOARD_TOP;
+            }
+        });
+
+        me._localGetOption('draughtsBoardFrame', function (value) {
+            me.draughtsBoardFrame = value;
+            if (me.draughtsBoardFrame === null) {
+                me.draughtsBoardFrame = me.DEFAULT_DRAUGHTS_BOARD_FRAME;
+            }
+        });
+
+        me._localGetOption('draughtsBoardFloor', function (value) {
+            me.draughtsBoardFloor = value;
+            if (me.draughtsBoardFloor === null) {
+                me.draughtsBoardFloor = me.DEFAULT_DRAUGHTS_BOARD_FLOOR;
+            }
+
+        });
+
+        me._localGetOption('isSound', function (value) {
+            me.isSound = value;
+            if (me.isSound === null) {
+                me.isSound = me.DEFAUTLT_IS_SOUND;
+            }
+        });
+
+        me._localGetOption('isDragPiece', function (value) {
+            me.isDragPiece = value;
+            if (me.isDragPiece === null) {
+                me.isDragPiece = me.DEFAUTLT_IS_DRAG_PIECE;
+            }
+        });
+
+        me._localGetOption('lightIntensity', function (value) {
+            me.lightIntensity = value;
+            if (me.lightIntensity === null) {
+                me.lightIntensity = me.DEFAULT_LIGHT_INTENSITY;
+            }
+        });
+
 
     },
 
@@ -159,31 +189,38 @@ Ns.Options = {
     },
 
     _localSaveOption: function (prefix, opt) {
-        window.localStorage.setItem(prefix + this.THEME_SAVE_KEY, opt);
+        localforage.setItem(prefix + this.THEME_SAVE_KEY, opt, function (err) {
+            if (err) {
+                console.log(err);
+            }
+        });
     },
 
-    _localGetOption: function (prefix) {
-        try {
-            var opt = window.localStorage.getItem(prefix + this.THEME_SAVE_KEY);
-            if (opt === null) {//yes
-                return null;
-            }
-        } catch (e) {
-            console.log(e);
-        }
+    _localGetOption: function (prefix, callback) {
 
-        if (opt === 'false') {
-            opt = false;
-        } else
-        if (opt === 'true') {
-            opt = true;
-        } else if (opt !== true || opt !== false) {//except true or false
-            var num = opt - 0;//implicitly convert to numeric
-            if (!isNaN(num)) {//is a number
-                opt = num;
+        localforage.getItem(prefix + this.THEME_SAVE_KEY, function (err, opt) {
+            if (err) {
+                console.log(err);
+                return callback(null);
             }
-        }
-        return opt;
+
+            if (opt === null) {//yes
+                return callback(null);
+            }
+
+            if (opt === 'false') {
+                opt = false;
+            } else
+            if (opt === 'true') {
+                opt = true;
+            } else if (opt !== true || opt !== false) {//except true or false
+                var num = opt - 0;//implicitly convert to numeric
+                if (!isNaN(num)) {//is a number
+                    opt = num;
+                }
+            }
+            callback(opt);
+        });
     },
 
     _preSelectHoziListItemTheme: function (theme, container) {
@@ -347,7 +384,7 @@ Ns.Options = {
         var ranage_btn = evt.target;
         this.lightIntensity = ranage_btn.value;
         this._localSaveOption('lightIntensity', this.lightIntensity);
-        
+
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_LIGHT_INTENSITY_CHANGE);
     },
 
@@ -355,7 +392,7 @@ Ns.Options = {
         var check_btn = evt.target;
         this.isSound = check_btn.checked;
         this._localSaveOption('isSound', this.isSound);
-        
+
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE);
     },
 
@@ -363,7 +400,7 @@ Ns.Options = {
         var check_btn = evt.target;
         this.isDragPiece = check_btn.checked;
         this._localSaveOption('isDragPiece', this.isDragPiece);
-        
+
         Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_DRAG_PIECE_CHANGE);
     },
 
@@ -458,7 +495,7 @@ Ns.Options = {
             this._localSaveOption('isSound', this.isSound);
             this._localSaveOption('isDragPiece', this.isDragPiece);
             this._localSaveOption('lightIntensity', this.lightIntensity);
-            
+
             //fire the events
             Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE);
             Main.event.fire(Ns.Const.EVT_GAME_OPTIONS_PIECE_3D_CHANGE);

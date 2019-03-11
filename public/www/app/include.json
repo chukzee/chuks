@@ -43,6 +43,7 @@
             "cordova.js",
             "lib/three.min.js",
             "lib/chess.min.js",
+            "lib/localforage.min.js",            
             "resources/game_engines/draftgame.js",//we also use it worker for draughts engine
             "lib/socket.io.js",
             "lib/jquery-1.10.2.min.js",

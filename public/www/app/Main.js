@@ -14,6 +14,7 @@ var Main = {};
     var appNamespace = "MyApp"; // default namespace
     var _nsObjs = {};
     var _nsFiles = [];
+    var tempClassObjects = {};
     var device_category;
     var portriat_width;
     var portriat_height;
@@ -1516,7 +1517,7 @@ var Main = {};
                                                             addRetry(execObjParam);
                                                             return;
                                                         }
-                                                        
+
 
                                                         if (Main.util.isFunc(promise._errFn)) {
                                                             promise._errFn.call(bind, err, err_code, connect_err);
@@ -1909,6 +1910,8 @@ var Main = {};
 
         var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var _game9ja_Dom_Hold_Has_Back_Action = '_game9ja_Dom_Hold_Has_Back_Action_' + new Date().getTime(); // a unique property to be created in dom element for storing data
+        var _game9ja_Dom_Hold_Page_On_Hide = '_game9ja_Dom_Hold_Page_On_Hide' + new Date().getTime(); // a unique property to be created in dom element for storing data
+
         var currentPage;
 
         function swapShow(pg, transition, forward, pgGoOut, hasBackAction) {
@@ -1927,13 +1930,16 @@ var Main = {};
             for (var i = 0; i < pages.length; i++) {
                 if (pages[i].url === lastPageUrl) {
                     pageOut = pages[i].page;
+                    if (pgGoOut && pages[i].onHide) {
+                        pgGoOut[_game9ja_Dom_Hold_Page_On_Hide] = {data: pages[i].data, onHide: pages[i].onHide};
+                    }
                     break;
                 }
             }
 
             initPageInOut(pageIn, pageOut);
 
-            if (eff === "fadein" || eff === "fadeout") {
+            if (eff === "fade" || eff === "fadein" || eff === "fadeout") {
                 fadePg(pageIn, pageOut, duration, forward, pgGoOut);
             } else if (eff === "slideup" || eff === "slidedown") {
                 slideVertPg(pageIn, pageOut, duration, forward, pgGoOut);
@@ -2110,6 +2116,7 @@ var Main = {};
             pageIn[0].style.overflow = "auto";
 
             var backFn;
+            var oHobj;
 
             if (pgGoOut) {//get the page back function stored in the dom                
                 backFn = pgGoOut[_game9ja_Dom_Hold_PgBack];
@@ -2119,6 +2126,26 @@ var Main = {};
                         backFn = pgGoOut[0][_game9ja_Dom_Hold_PgBack];
                     }
                 }
+
+                oHobj = pgGoOut[_game9ja_Dom_Hold_Page_On_Hide];
+                delete pgGoOut[_game9ja_Dom_Hold_Page_On_Hide];//avoid duplicate call
+                
+                if (!oHobj) {
+                    //then try this
+                    if (pgGoOut[0]) {
+                        oHobj = pgGoOut[0][_game9ja_Dom_Hold_Page_On_Hide];
+                        delete pgGoOut[0][_game9ja_Dom_Hold_Page_On_Hide];//avoid duplicate call
+                    }
+                }
+
+                if (oHobj) {
+                    try {
+                        oHobj.onHide(oHobj.data);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+
                 $(pgGoOut).remove();//now remove
             }
 
@@ -2169,6 +2196,10 @@ var Main = {};
                 } catch (e) {
                     console.warn(e);
                 }
+            }
+
+            if (pgShowObj && pgShowObj.onHide) {
+                p.onHide = pgShowObj.onHide;
             }
 
             //now show
@@ -2499,6 +2530,7 @@ var Main = {};
             return {
                 onShow: obj && obj.onShow ? obj.onShow : null,
                 onBeforeShow: obj && obj.onBeforeShow ? obj.onBeforeShow : null,
+                onHide: obj && obj.onHide ? obj.onHide : null,
                 finishPg: finishPg
             };
         };
@@ -3999,7 +4031,7 @@ var Main = {};
     }
 
     /**
-     * This is use to detect the expected ulr based on the
+     * This is used to detect the expected url based on the
      * suffix of the file name. expected suffixes are:<br>
      * -sd => means it is file from small device 'view' folder<br>
      * -md => means it is file from medium device 'view' folder<br>
@@ -4034,6 +4066,45 @@ var Main = {};
         return path;
     }
 
+    /**
+     * This is used to get the expected class name of javascript file.<br>
+     * -sd => means it is file from small device 'js' folder<br>
+     * -md => means it is file from medium device 'js' folder<br>
+     * -ld => means it is file from large device 'js' folder<br>
+     * 
+     * otherwise it is file from 'app/js' folder
+     * 
+     * @param {type} js_file_name
+     * @returns {undefined}
+     */
+    function jsClassName(js_file_name) {
+
+        var device_size_cat = deviceSizeCategory();
+        var deviceJs = deviceUrl + device_size_cat + '/js/';
+        var appJs = appUrl + 'js/';
+        if (js_file_name.startsWith(deviceJs)) {
+            if (js_file_name.endsWith('-sd.js')
+                    || js_file_name.endsWith('-md.js')
+                    || js_file_name.endsWith('-ld.js')) {
+                js_file_name = js_file_name.substring(deviceJs.length);
+                js_file_name = js_file_name.substring(0, js_file_name.length - 6);
+            } else {
+                throw Error('invalid javascript file name in ' + deviceJs + ' folder - ' + js_file_name);
+            }
+        } else if (js_file_name.startsWith(appJs)) {
+            if (js_file_name.endsWith('.js')) {
+                js_file_name = js_file_name.substring(appJs.length);
+                js_file_name = js_file_name.substring(0, js_file_name.length - 3);
+            } else {
+                throw Error('invalid javascript file name in ' + appJs + ' folder - ' + js_file_name);
+            }
+        }
+
+        var regex = /\//g; //regex to match all back slash
+        var cls_name = appNamespace + '.' + js_file_name.replace(regex, '.');
+
+        return cls_name;
+    }
 
     Main.const = {
         Z_INDEX: 10000,
@@ -5990,6 +6061,7 @@ var Main = {};
                             file: null, //set dynamically
                             type: null, //set dynamically
                             count: 0,
+                            retryCount: 0,
                             isBuild: is_build,
                             total: absolute_styles.length
                                     + app_styles.length
@@ -6136,7 +6208,45 @@ var Main = {};
                 next.loader.apply(null, next.argu);
             }
         }
+        function retryProcess(){
+            
+            if(this.retryCount >= 5){
+                console.error('Could not load resource after maximum retry attempts exceeded - ', this.file);
+                return;
+            }
+            
+            this.retryCount++;
+            
+            console.log(this.retryCount, 'Retry loading :', this.file);
+            
+            this.count--;//force repeat
+            
+            nextProcess.call(this);
+            
+        }
         function onLoadInclude() {
+            
+            if(this.retryCount > 0){
+                console.log('Successfully loaded :', this.file);
+            }
+            
+            this.retryCount = 0;//intialize after any successful loading
+            
+            if (this.type === 'js' && !this.isPathAbsolute) {
+                var cls_name = jsClassName(this.file);
+                var clsObj = classObject(cls_name);
+                if (!clsObj) {
+                    console.warn("Class '" + cls_name + "' not found in '" + this.file + "'. Is this intentional?");
+                }
+                var temClsObj = tempClassObjects[cls_name];
+                if (typeof temClsObj === 'undefined') {
+                    tempClassObjects[cls_name] = {instance: clsObj, className: cls_name, fileName: this.file};
+                } else {
+                    throw Error("Class '" + temClsObj.className + "' in '" + this.file + "' already exists in '" + temClsObj.fileName + "'");
+                }
+
+            }
+
             nextProcess.call(this);
         }
         function onErrorInclude() {
@@ -6153,7 +6263,9 @@ var Main = {};
                 }
             }
 
-            console.warn('Failed to load a required resource : ', this.file);
+            console.log('Failed to load a required resource :', this.file);
+            
+            retryProcess.call(this);
 
         }
         function loadCss(file, track, route, exceptions, is_path_absolute) {
@@ -6186,7 +6298,8 @@ var Main = {};
             track.file = route(file, track.type, track.deviceCategory);
             track.exceptions = exceptions;
             track.routeFn = route;
-
+            track.isPathAbsolute = is_path_absolute;
+                                    
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
@@ -6194,6 +6307,20 @@ var Main = {};
             script.type = "text/javascript";
             script.src = track.file;
             document.head.appendChild(script);
+
+        }
+        function classObject(className) {
+            var sp = className.split('.');
+            var appNs = window;
+            var i;
+            for (i in sp) {
+                var p = sp[i];
+                if (!appNs[p]) {
+                    return;
+                }
+                appNs = appNs[p];
+            }
+            return appNs;
         }
 
         function loadDeviceMain(device_size_cat) {
@@ -6225,26 +6352,23 @@ var Main = {};
                         //initialize namespace related objects by calling their constructors
 
                         var cls_list = {};
-
-                        for (var n in _nsFiles) {
-                            var clazzObj = classObject(_nsFiles[n]);
-
-                            if (!clazzObj) {
-                                continue;
-                            }
-                            var file_name = _nsFiles[n];// + 1 means including the dot after the global name space
-                            var regex = /\//g; //regex to match all back slash
-                            cls_name = appNamespace + '.' + file_name.replace(regex, '.');
-
-                            cls_list[cls_name] = clazzObj;
+                        for (var name in tempClassObjects) {
+                            cls_list[name] = tempClassObjects[name].instance;
                         }
+
+                        tempClassObjects = null; //free memory
 
                         //consider class that extends other class
 
                         for (var name in cls_list) {
 
-                            clsObj = cls_list[name];
-                            superClsObj = cls_list[clsObj.extend];
+                            var clsObj = cls_list[name];
+
+                            if (typeof clsObj === 'undefined') {
+                                continue;
+                            }
+
+                            var superClsObj = cls_list[clsObj.extend];
 
                             if (clsObj.extend
                                     && !superClsObj) {
@@ -6265,19 +6389,6 @@ var Main = {};
                             }
                         }
 
-                        function classObject(classFile) {
-                            var sp = classFile.split('/');
-                            var appNs = window[appNamespace];
-                            var i;
-                            for (i in sp) {
-                                var p = sp[i];
-                                if (!appNs[p]) {
-                                    return;
-                                }
-                                appNs = appNs[p];
-                            }
-                            return appNs;
-                        }
 
                         function doExtend(obj, e, first) {
                             if (!e) {
@@ -6320,59 +6431,59 @@ var Main = {};
 
         }
 
-        /**
-         * Detect the size of device and return
-         * small,  medium or large
-         * @return {undefined}
-         */
-        function deviceSizeCategory() {
-
-            //NOTE: We have deprecated the use of window.screen.height and window.screen.width
-            //rather we resort to the use of window.innerHeight and window.innerWidth.
-            //The reason for the deprecation is the shocking observation that
-            //they report wrong values and are inconsistent with deifferent device webViews and browsers.
-            //The devicePixelRation somewhat affects the values they return.
-            //One shocking and very terrifying observation I had in my Itel phone of 320 x 570 size is that,
-            //while the android browser report the correct sizes (320 x 570) with devicePixelRatio of 1.5,
-            //the webview of the same phone reported  (480 x 855) with same devicePixelRatio of 1.5.
-            //THIS IS ABSOLUTELY SHOCKING AND TERRIFYING. WHAT!!!!!!
-            //even window.outerHeight and window.outerWidth have similar issues so do not
-            //use them. STICK ONLY TO window.innerHeight and window.innerWidth
-
-
-            var size = window.innerWidth > window.innerHeight ?
-                    window.innerWidth
-                    : window.innerHeight;
-
-            //alert('inner width ' + window.innerWidth);
-            //alert('inner height ' + window.innerHeight);
-
-            //alert('outer width ' + window.outerWidth);
-            //alert('outer height ' + window.outerHeight);
-
-            //size = size / window.devicePixelRatio;
-
-            portriat_height = size;
-
-            portriat_width = window.innerWidth < window.innerHeight ?
-                    window.innerWidth
-                    : window.innerHeight;
-
-            //portriat_width = portriat_width / window.devicePixelRatio;
-
-            if (size > 768) {//desktops and laptops
-                device_category = "large";
-            } else if (size <= 768 && size >= 640) {//tablets
-                device_category = "medium";
-            } else {//smart phones
-                device_category = "small";
-            }
-
-            return device_category;
-        }
-
 
     };
+
+    /**
+     * Detect the size of device and return
+     * small,  medium or large
+     * @return {undefined}
+     */
+    function deviceSizeCategory() {
+
+        //NOTE: We have deprecated the use of window.screen.height and window.screen.width
+        //rather we resort to the use of window.innerHeight and window.innerWidth.
+        //The reason for the deprecation is the shocking observation that
+        //they report wrong values and are inconsistent with deifferent device webViews and browsers.
+        //The devicePixelRation somewhat affects the values they return.
+        //One shocking and very terrifying observation I had in my Itel phone of 320 x 570 size is that,
+        //while the android browser report the correct sizes (320 x 570) with devicePixelRatio of 1.5,
+        //the webview of the same phone reported  (480 x 855) with same devicePixelRatio of 1.5.
+        //THIS IS ABSOLUTELY SHOCKING AND TERRIFYING. WHAT!!!!!!
+        //even window.outerHeight and window.outerWidth have similar issues so do not
+        //use them. STICK ONLY TO window.innerHeight and window.innerWidth
+
+
+        var size = window.innerWidth > window.innerHeight ?
+                window.innerWidth
+                : window.innerHeight;
+
+        //alert('inner width ' + window.innerWidth);
+        //alert('inner height ' + window.innerHeight);
+
+        //alert('outer width ' + window.outerWidth);
+        //alert('outer height ' + window.outerHeight);
+
+        //size = size / window.devicePixelRatio;
+
+        portriat_height = size;
+
+        portriat_width = window.innerWidth < window.innerHeight ?
+                window.innerWidth
+                : window.innerHeight;
+
+        //portriat_width = portriat_width / window.devicePixelRatio;
+
+        if (size > 768) {//desktops and laptops
+            device_category = "large";
+        } else if (size <= 768 && size >= 640) {//tablets
+            device_category = "medium";
+        } else {//smart phones
+            device_category = "small";
+        }
+
+        return device_category;
+    }
 
 
     return Main;

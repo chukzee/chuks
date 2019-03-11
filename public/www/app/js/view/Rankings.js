@@ -1,20 +1,19 @@
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.view.Rankings = {
 
     rankingsList: [],
 
     constructor: function () {
-        try {
-            
-            var list = window.localStorage.getItem(Ns.Const.RANKINGS_LIST_KEY);
-            list = JSON.parse(list);
+         
+            localforage.getItem(Ns.Const.RANKINGS_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
+            }
             if (Main.util.isArray(list)) {
                 Ns.view.Rankings.rankingsList = list;
             }
-        } catch (e) {
-            console.warn(e);
-        }
+        });
     },
 
     content: function (data) {
@@ -210,7 +209,11 @@ Ns.view.Rankings = {
         var list = Ns.view.Rankings.rankingsList;
 
         if (Main.util.isArray(list)) {
-            window.localStorage.setItem(Ns.Const.RANKINGS_LIST_KEY, JSON.stringify(list));
+            localforage.setItem(Ns.Const.RANKINGS_LIST_KEY,  list, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
 
     }

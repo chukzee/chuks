@@ -1,5 +1,5 @@
 
-/* global Ns */
+/* global Ns, Main, localforage */
 
 Ns.view.Contacts = {
 
@@ -15,15 +15,18 @@ Ns.view.Contacts = {
      */
     constructor: function () {
 
-        try {
-            var list = window.localStorage.getItem(Ns.Const.CONTACT_LIST_KEY);
-            list = JSON.parse(list);
+        localforage.getItem(Ns.Const.CONTACT_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
+            }
+            if (!list) {
+                list = [];
+            }
+
             if (Main.util.isArray(list)) {
                 Ns.view.Contacts.contactList = list;
             }
-        } catch (e) {
-            console.warn(e);
-        }
+        });
 
         var obj = {
             contact: 'info/Contact'
@@ -33,7 +36,7 @@ Ns.view.Contacts = {
     content: function () {
 
         var contacts = Ns.view.UserProfile.appUser.contacts;
-        if(!contacts){
+        if (!contacts) {
             contacts = [];
         }
         var tempInfos = [];
@@ -163,7 +166,11 @@ Ns.view.Contacts = {
     save: function () {
         var list = Ns.view.Contacts.contactList;
         if (Main.util.isArray(list)) {
-            window.localStorage.setItem(Ns.Const.CONTACT_LIST_KEY, JSON.stringify(list));
+            localforage.setItem(Ns.Const.CONTACT_LIST_KEY, list, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
     }
 };

@@ -146,9 +146,11 @@ Ns.game.AbstractBoard2D = {
 
         this.isGameOver = this.checkGameOver();
         if (this.isGameOver) {
-            this.displayGameOverMessage();
+            this.displayGameOverMessage(this.config.match);
         } else if (this.config.white !== true && this.config.white !== false) {//spectator
             this.spectatorJoin(this.config.match);
+        } else if (this.isRobotTurn(this.config.match)) {
+            this._workerSendMove(this.config.match.game_position);
         }
 
         callback(this); // note for 3D which may be asynchronous this may not be call here but after the async proccess
@@ -462,6 +464,27 @@ Ns.game.AbstractBoard2D = {
                 text: ''
             });
         }
+    },
+
+    isRobotTurn: function (match) {
+
+        if (!this.checkAccess(match)) {
+            return;
+        }
+
+        if (this.isWhiteTurn() === match.robotSide) {
+            return true;
+        }
+
+        if (typeof match.robotSide === 'undefined') {
+            if(match.players[0].full_name === 'Robot' && this.isWhiteTurn()){
+                return true;
+            }
+            if(match.players[1].full_name === 'Robot' && !this.isWhiteTurn()){
+                return true;
+            }
+        }
+
     },
 
     displayTurn: function (match) {
@@ -827,7 +850,7 @@ Ns.game.AbstractBoard2D = {
         } else if (this.config.communication === 'bluetooth') {
             this._bluetoothSendMove(move_notation, game_position);
         } else if (this.config.communication === 'worker') {
-            this._workerSendMove(move_notation, game_position);
+            this._workerSendMove(game_position);
         }
 
     },
@@ -944,7 +967,7 @@ Ns.game.AbstractBoard2D = {
 
     },
 
-    _workerSendMove: function (move_notation, game_position, is_game_over, winner_user_id) {
+    _workerSendMove: function (game_position) {
 
         if (typeof window.Worker === 'undefined') {
             return;
@@ -1258,14 +1281,14 @@ Ns.game.AbstractBoard2D = {
         var from_center = this.squareCenter(from_pos);
         var from_y = from_center.y - this.pieceHeight / 2;
         var from_x = from_center.x - this.pieceWidth / 2;
-        
+
         var to_center = this.squareCenter(to);
         var to_y = to_center.y - this.pieceHeight / 2;
         var to_x = to_center.x - this.pieceWidth / 2;
-        
+
         var dx = Math.abs(from_x - to_x);
         var dy = Math.abs(from_y - to_y);
-        
+
         var prop = {
             top: to_y,
             left: to_x

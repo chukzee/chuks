@@ -211,7 +211,8 @@ Ns.GameHome = {
             url: 'contact-chat-view.html',
             fade: true,
             data: contact,
-            onShow: Ns.GameContactChat.Content
+            onShow: Ns.GameContactChat.Content,
+            onHide: Ns.msg.ContactChat.onHide.bind(Ns.msg.ContactChat)
         });
 
     },
@@ -222,7 +223,8 @@ Ns.GameHome = {
             url: 'group-chat-view.html',
             fade: true,
             data: group,
-            onShow: Ns.GameGroupChat.Content
+            onShow: Ns.GameGroupChat.Content,
+            onHide: Ns.msg.GroupChat.onHide.bind(Ns.msg.GroupChat)
         });
 
     },
@@ -233,7 +235,8 @@ Ns.GameHome = {
             url: 'tournament-general-chat-view.html',
             fade: true,
             data: tournament,
-            onShow: Ns.GameTournamentGeneralChat.Content
+            onShow: Ns.GameTournamentGeneralChat.Content,
+            onHide: Ns.msg.TournamentGeneralChat.onHide.bind(Ns.msg.TournamentGeneralChat)
         });
 
     },
@@ -244,7 +247,8 @@ Ns.GameHome = {
             url: 'tournament-inhouse-chat-view.html',
             fade: true,
             data: tournament,
-            onShow: Ns.GameTournamentInhouseChat.Content
+            onShow: Ns.GameTournamentInhouseChat.Content,
+            onHide: Ns.msg.TournamentInhouseChat.onHide.bind(Ns.msg.TournamentInhouseChat)
         });
 
     },

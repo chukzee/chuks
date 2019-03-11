@@ -1,20 +1,19 @@
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.view.Performance = {
 
     standingsList: [],
 
     constructor: function () {
-        try {
-            
-            var list = window.localStorage.getItem(Ns.Const.PERFORMANCE_STANDINGS_LIST_KEY);
-            list = JSON.parse(list);
+
+        localforage.getItem(Ns.Const.PERFORMANCE_STANDINGS_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
+            }
             if (Main.util.isArray(list)) {
                 Ns.view.Performance.standingsList = list;
             }
-        } catch (e) {
-            console.warn(e);
-        }
+        });
     },
 
     content: function (data) {
@@ -149,7 +148,7 @@ Ns.view.Performance = {
 
             var el = document.getElementById("performance-view-table-body");
             el.innerHTML = '';//clear
-            
+
             for (var i = 0; i < standings.length; i++) {
                 var full_name = '...';
                 var photo_url = '...';
@@ -164,7 +163,7 @@ Ns.view.Performance = {
                 }
                 var rowDiv = document.createElement('div');
                 rowDiv.className = "game9ja-performance-view-body-row";
-                
+
                 var sn_div = document.createElement('div');
                 sn_div.innerHTML = i + 1;
                 rowDiv.appendChild(sn_div);
@@ -238,7 +237,11 @@ Ns.view.Performance = {
         var list = Ns.view.Performance.standingsList;
 
         if (Main.util.isArray(list)) {
-            window.localStorage.setItem(Ns.Const.PERFORMANCE_STANDINGS_LIST_KEY, JSON.stringify(list));
+            localforage.setItem(Ns.Const.PERFORMANCE_STANDINGS_LIST_KEY, list, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
 
     }

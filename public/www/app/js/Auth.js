@@ -1,5 +1,5 @@
 
-/* global Ns, Main */
+/* global Ns, Main, localforage */
 
 Ns.Auth = {
 
@@ -12,47 +12,49 @@ Ns.Auth = {
 
     login: function () {
 
-        try {
-            var user_info_str = window.localStorage.getItem(Ns.Const.AUTH_USER_KEY);
-            var user_info = JSON.parse(user_info_str);
 
-        } catch (e) {
-            console.warn(e);
-        }
+        localforage.getItem(Ns.Const.AUTH_USER_KEY, storageUserInfo);
 
-        if (false) {//ccmment out this 'if' block later later!!!    
-            return;//leave
+        function storageUserInfo(err, user_info) {
+            if (err) {
+                console.log(err);
+            }
+
+            if (false) {//ccmment out this 'if' block later later!!!    
+                return;//leave
+            }
+
+            /*UNCOMMENT THIS 'IF' BLOCK LATER
+             
+             if (user_info && user_info.user_id) {
+             Ns.Auth.isAuth = true;
+             return;//leave
+             }
+             
+             */
+
+            Main.page.show({
+                url: Ns.GameHome.GAME_LOGIN_HTML,
+                effect: "fade",
+                duration: 300,
+                hasBackAction: false, //disable back button action
+                onBeforeShow: onLoginFormShow
+            });
+
         }
-        
-        /*UNCOMMENT THIS 'IF' BLOCK LATER
-         
-         if (user_info && user_info.user_id) {
-            Ns.Auth.isAuth = true;
-            return;//leave
-        }
-        
-         */
-        
-        Main.page.show({
-            url: Ns.GameHome.GAME_LOGIN_HTML,
-            effect: "fade",
-            duration: 300,
-            hasBackAction : false,//disable back button action
-            onBeforeShow: onLoginFormShow
-        });
 
         function onLoginFormShow() {
-            
-                        
+
+
             $('#game-login-btn-login').on('click', function () {
-                
+
                 var errEl = document.getElementById('game-login-error');
                 var uEl = document.getElementById('game-login-user-id');
                 var pEl = document.getElementById('game-login-password');
-                
+
                 var user_id = uEl.value;
                 var password = pEl.value;
-                                
+
                 errEl.innerHTML = '';//clear
                 uEl.value = '';//clear
                 pEl.value = '';//clear
@@ -66,8 +68,13 @@ Ns.Auth = {
                             .get(function (user_info) {
                                 Ns.Auth.isAuth = true;
                                 Ns.view.UserProfile.appUser = user_info;
-                                window.localStorage.setItem(Ns.Const.AUTH_USER_KEY, JSON.stringify(user_info));
-                                Main.page.home();
+                                localforage.setItem(Ns.Const.AUTH_USER_KEY, user_info, function (err) {
+                                    if(err){
+                                        console.log(err);
+                                    }
+                                    Main.page.home();
+                                });
+
                             })
                             .error(function (err) {
                                 errEl.innerHTML = err;

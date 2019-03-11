@@ -1,12 +1,12 @@
 
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.PlayRequest = {
 
     playRequestList: [], //dynamic
 
-    _gmobj : {},
-    
+    _gmobj: {},
+
     constructor: function () {
 
         Main.eventio.on('game_start', this.onGameStart);
@@ -129,8 +129,8 @@ Ns.PlayRequest = {
                     var opponent_busy = document.getElementById('game-wait-player-opponent-busy');
 
                     feedback_msg.innerHTML = 'Contacting player...';
- 
-                   document.getElementById('game-wait-player-own-photo-url').src = app_user.phot_url;
+
+                    document.getElementById('game-wait-player-own-photo-url').src = app_user.phot_url;
                     document.getElementById('game-wait-player-opponent-photo-url').src = opponent.phot_url;
                     document.getElementById('game-wait-player-own-name').innerHTML = app_user.full_name;
                     document.getElementById('game-wait-player-opponent-name').innerHTML = opponent.full_name;
@@ -164,7 +164,7 @@ Ns.PlayRequest = {
 
                                     Main.countdown.start(waitCountdownFn, data.expire_after_secs, 'mm:ss');
 
-                                                                        
+
                                     Ns.PlayRequest._startGameFunc = function (_match) {
                                         match = _match;
                                         if (match.game_id !== play_request_data.game_id) {
@@ -219,36 +219,37 @@ Ns.PlayRequest = {
 
         var play_request = obj.data;
         play_request.time_received = Date.now();
-        try {
-            var list = window.localStorage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY);
-            list = JSON.parse(list);
 
-        } catch (e) {
-            console.warn(e);
-        }
-
-        //each new play request will come first - ie add to the top
-
-        Ns.PlayRequest.playRequestList = [];//first initialize
-        Ns.PlayRequest.playRequestList.push(play_request);//add to top
-
-        if (Main.util.isArray(list)) {
-            var max = Ns.Const.MAX_PLAY_REQUEST_LIST_SIZE;
-            var len = list.length - 1 >= max ? max : list.length - 1;
-            for (var i = 0; i < len; i++) {
-                Ns.PlayRequest.playRequestList.push(list[i]);//add the rest
+        localforage.getItem(Ns.Const.PLAY_REQUEST_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
             }
-        }
-        //save the play request
-        try {
-            window.localStorage.setItem(Ns.Const.PLAY_REQUEST_LIST_KEY, JSON.stringify(Ns.PlayRequest.playRequestList));
-        } catch (e) {
-            //COME BACK FOR CASE WHERE THE STORAGE IS FULL
-        }
 
-        Ns.view.Notifications.displayReqCountInfo(Ns.PlayRequest.playRequestList.length);
+            //each new play request will come first - ie add to the top
 
-        Ns.view.Notifications.addNotification(play_request, true);
+            Ns.PlayRequest.playRequestList = [];//first initialize
+            Ns.PlayRequest.playRequestList.push(play_request);//add to top
+
+            if (Main.util.isArray(list)) {
+                var max = Ns.Const.MAX_PLAY_REQUEST_LIST_SIZE;
+                var len = list.length - 1 >= max ? max : list.length - 1;
+                for (var i = 0; i < len; i++) {
+                    Ns.PlayRequest.playRequestList.push(list[i]);//add the rest
+                }
+            }
+            //save the play request
+
+            localforage.setItem(Ns.Const.PLAY_REQUEST_LIST_KEY, Ns.PlayRequest.playRequestList, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+
+            Ns.view.Notifications.displayReqCountInfo(Ns.PlayRequest.playRequestList.length);
+
+            Ns.view.Notifications.addNotification(play_request, true);
+
+        });
 
     },
     /**

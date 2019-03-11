@@ -1,5 +1,5 @@
 
-/* global Main, Ns */
+/* global Main, Ns, localforage */
 
 Ns.view.UserProfile = {
 
@@ -9,15 +9,14 @@ Ns.view.UserProfile = {
 
     constructor: function () {
 
-        try {
-            var list = window.localStorage.getItem(Ns.Const.USER_LIST_KEY);
-            list = JSON.parse(list);
+        localforage.getItem(Ns.Const.USER_LIST_KEY, function (err, list) {
+            if (err) {
+                console.log(err);
+            }
             if (Main.util.isArray(list)) {
                 Ns.view.UserProfile.userList = list;
             }
-        } catch (e) {
-            console.warn(e);
-        }
+        });
 
         var obj = {
             user: 'info/User',
@@ -182,14 +181,14 @@ Ns.view.UserProfile = {
             //document.getElementById("user-profile-groups-belong").innerHTML = user.blablablah;
             //document.getElementById("user-profile-groups-in-common").innerHTML = user.blablablah;
             //document.getElementById("user-profile-tournaments-belong").innerHTML = user.blablablah;
-            
+
             Main.click("user-profile-comment", user, Ns.view.UserProfile._onClickContactChat);
 
         }
 
     },
 
-    _onClickContactChat: function(evt, contact){
+    _onClickContactChat: function (evt, contact) {
         Ns.GameHome.showContactChat(contact);
     },
 
@@ -258,7 +257,11 @@ Ns.view.UserProfile = {
     save: function () {
         var list = Ns.view.UserProfile.userList;
         if (Main.util.isArray(list)) {
-            window.localStorage.setItem(Ns.Const.USER_LIST_KEY, JSON.stringify(list));
+            localforage.setItem(Ns.Const.USER_LIST_KEY, list, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
         }
     },
 

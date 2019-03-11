@@ -193,10 +193,12 @@ Ns.GameHome = {
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameContactChat.Content,
+            onHide: Ns.msg.ContactChat.onHide.bind(Ns.msg.ContactChat),
             data: contact
         });
 
     },
+    
     showGroupChat: function (group) {
 
         Main.page.show({
@@ -204,10 +206,12 @@ Ns.GameHome = {
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameGroupChat.Content,
+            onHide: Ns.msg.GroupChat.onHide.bind(Ns.msg.GroupChat),
             data: group
         });
 
     },
+    
     showTournamentGeneralChat: function (tournament) {
 
         Main.page.show({
@@ -215,9 +219,11 @@ Ns.GameHome = {
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameTournamentGeneralChat.Content,
+            onHide: Ns.msg.TournamentGeneralChat.onHide.bind(Ns.msg.TournamentGeneralChat),
             data: tournament
         });
     },
+    
     showTournamentInhouseChat: function (tournament) {
 
         Main.page.show({
@@ -225,6 +231,7 @@ Ns.GameHome = {
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
             onBeforeShow: Ns.GameTournamentInhouseChat.Content,
+            onHide: Ns.msg.TournamentInhouseChat.onHide.bind(Ns.msg.TournamentInhouseChat),
             data: tournament
         });
     },
