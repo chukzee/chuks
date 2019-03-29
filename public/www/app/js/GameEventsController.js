@@ -43,48 +43,18 @@ Ns.GameEventsController = {
         this._loadGameByMatch(match, toast_text);
     },
 
-    _getGameObject: function (game_name) {
-
-        switch (game_name) {
-            case 'chess':
-            {
-                return Ns.game.two.Chess2D;
-            }
-            case 'draughts':
-            {
-                return Ns.game.two.Draughts2D;
-            }
-            case 'draft'://OR draft
-            {
-                return Ns.game.two.Draughts2D;
-            }
-            case 'ludo':
-            {
-                return Ns.game.two.Ludo2D;
-            }
-            case 'solitaire':
-            {
-                return Ns.game.two.Solitaire2D;
-            }
-            case 'whot':
-            {
-                return Ns.game.two.Whot2D;
-            }
-        }
-    },
-
     _updateAfterMoveSent: function (match) {
-        var gameObj = this._getGameObject(match.game_name);
+        var gameObj = Ns.Util.getGameObject(match.game_name);
         gameObj.setMatch(match);
         gameObj.displayTurn(match);
     },
 
     _loadGameByMatch: function (match, toast_text) {
-        this._getGameObject(match.game_name).reloadGame(match, toast_text);
+        Ns.Util.getGameObject(match.game_name).reloadGame(match, toast_text);
     },
 
     _makeMove: function (user_id, notation, match) {
-        this._getGameObject(match.game_name).remoteMakeMove(notation, match);
+        Ns.Util.getGameObject(match.game_name).remoteMakeMove(notation, match);
     },
 
     /**
@@ -102,7 +72,7 @@ Ns.GameEventsController = {
      * @returns {undefined}
      */
     _thinking: function (prop) {
-        this._getGameObject(prop.game_name).displayThinking(prop);
+        Ns.Util.getGameObject(prop.game_name).displayThinking(prop);
     },
 
     onNotifyUpComingMatch: function (obj) {
@@ -127,7 +97,7 @@ Ns.GameEventsController = {
         var match = obj.data;
         Ns.Match.updateMatchList(match);
         
-        var gameObj = this._getGameObject(match.game_name);
+        var gameObj = Ns.Util.getGameObject(match.game_name);
         
         if(!gameObj.isShowGameOverAlert()){
             gameObj.reloadGame(match);
@@ -150,7 +120,7 @@ Ns.GameEventsController = {
         var match = obj.data;
         Ns.Match.updateMatchList(match);
         
-        var gameObj = this._getGameObject(match.game_name);
+        var gameObj = Ns.Util.getGameObject(match.game_name);
         
         if(!gameObj.isShowGameOverAlert()){
             gameObj.reloadGame(match);

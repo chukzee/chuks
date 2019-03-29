@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACA,4BAA6B;EAC3B,OAAO,EAAE,OAAO",
+"sources": ["../../scss/app-icons.scss"],
+"names": [],
+"file": "app-icons.css"
+}

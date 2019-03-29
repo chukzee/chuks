@@ -33,7 +33,15 @@ and open the template in the editor.
             font-size: 18px;
         }
 
-        > :nth-child(2){/*right panel close btn icon*/
+        > :nth-child(2){/*right panel pinned btn icon*/
+
+            position: absolute;
+            top: 5px;
+            right: 35px;
+            cursor: pointer;
+        }
+        
+        > :nth-child(3){/*right panel close btn icon*/
 
             position: absolute;
             top: 5px;

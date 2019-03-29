@@ -1907,6 +1907,7 @@ var Main = {};
         var pages = [];
         var effDuration = 0.5;//default effect duration
         var lastPageUrl;
+        var lastPage;
 
         var _game9ja_Dom_Hold_PgBack = '_game9ja_Dom_Hold_PgBack_' + new Date().getTime(); // a unique property to be created in dom element for storing data
         var _game9ja_Dom_Hold_Has_Back_Action = '_game9ja_Dom_Hold_Has_Back_Action_' + new Date().getTime(); // a unique property to be created in dom element for storing data
@@ -1928,7 +1929,7 @@ var Main = {};
             var pageOut;
 
             for (var i = 0; i < pages.length; i++) {
-                if (pages[i].url === lastPageUrl) {
+                if (pages[i] === lastPage) {
                     pageOut = pages[i].page;
                     if (pgGoOut && pages[i].onHide) {
                         pgGoOut[_game9ja_Dom_Hold_Page_On_Hide] = {data: pages[i].data, onHide: pages[i].onHide};
@@ -1937,6 +1938,9 @@ var Main = {};
                 }
             }
 
+            if (pageIn === pageOut) {
+                alert('same page');
+            }
             initPageInOut(pageIn, pageOut);
 
             if (eff === "fade" || eff === "fadein" || eff === "fadeout") {
@@ -1955,7 +1959,8 @@ var Main = {};
                 afterPageChange(forward, pageIn, pgGoOut);
             }
 
-            lastPageUrl = pg.url;
+            lastPage = pg;//new
+            //lastPageUrl = pg.url;//old
 
             currentPage = pageIn;
 
@@ -1998,15 +2003,17 @@ var Main = {};
             var tweenIn = {opacity: jqIn.opacity, onComplete: onCompleteIn};
             var tweenOut = {opacity: jqOut.opacity, onComplete: onCompleteOut};
 
+            var durationOut = 20; //new
+
             if (window.TweenMax) {
                 TweenMax.to(pageIn, duration / 1000, tweenIn);
-                TweenMax.to(pageOut, duration / 1000, tweenOut);
+                TweenMax.to(pageOut, durationOut / 1000, tweenOut);
             } else if (window.TweenLite) {
                 TweenLite.to(pageIn, duration / 1000, tweenIn);
-                TweenLite.to(pageOut, duration / 1000, tweenOut);
+                TweenLite.to(pageOut, durationOut / 1000, tweenOut);
             } else if (window.$) {
                 $(pageIn).animate(jqIn, duration, onCompleteIn);
-                $(pageOut).animate(jqOut, duration, onCompleteOut);
+                $(pageOut).animate(jqOut, durationOut, onCompleteOut);
             } else {
                 transitionInProgress = false;
             }
@@ -2129,7 +2136,7 @@ var Main = {};
 
                 oHobj = pgGoOut[_game9ja_Dom_Hold_Page_On_Hide];
                 delete pgGoOut[_game9ja_Dom_Hold_Page_On_Hide];//avoid duplicate call
-                
+
                 if (!oHobj) {
                     //then try this
                     if (pgGoOut[0]) {
@@ -2170,16 +2177,20 @@ var Main = {};
 
         function showPg(p, transition, forward, pgGoOut, pgShowObj, hasBackAction) {
 
-            if (Main.util.isString(p)) {//is url string
-                for (var i = 0; i < pages.length; i++) {
-                    if (pages[i].url === p) {
-                        p = pages[i];
-                        break;
-                    }
-                }
-            }
+            /*@deprecated
+             * if (Main.util.isString(p)) {//is url string
+             for (var i = 0; i < pages.length; i++) {
+             if (pages[i].url === p) {
+             p = pages[i];
+             break;
+             }
+             }
+             }*/
 
-            if (p.url === lastPageUrl) {
+            /*if (p.url === lastPageUrl) {//old
+             return;//already showing!
+             }*/
+            if (p === lastPage) {//new
                 return;//already showing!
             }
 
@@ -2292,27 +2303,58 @@ var Main = {};
             return cont;
         }
 
+        function addPage(url, response, data, transition) {
+
+            var pg_recv = $("<div></div>").html("<div data-app-content='page'>" + response + "</div>");
+            var title = pg_recv.find('title').html();
+            var pg = refactorBody(pg_recv, "[data-app-content=page]");
+
+            $('body').append(pg);
+
+            pages.push({
+                url: url,
+                response: response,
+                data: data,
+                transition: transition,
+                title: title,
+                page: pg
+            });
+
+            //clear all previous event listeners
+            //$(document).add("*").off();//deprecate - incorrect!
+            var lastPage = pages[pages.length - 1];
+            //call relevant event listeners
+            callListeners(listeners["ready"]);
+            callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, isIndexPage: false, data: lastPage.data});
+
+            return lastPage;
+        }
+
         function load(p, transition, forward, data, pgShowObj, hasBackAction) {
             var url = Main.util.isString(p) ? p : p.url;
 
             for (var pg_index = 0; pg_index < pages.length; pg_index++) {
-                if (pages[pg_index].url === url) {
+                var pg = pages[pg_index];
+                if (pg.url === url) {
+
                     if (pg_index === 0) {
                         //handle home page differently
                         Main.page.home({transition: transition, data: data});
                         return;
                     }
+
                     //Make the page the last page in the list.
                     if (pg_index === pages.length - 1) {
                         //skip the last in the page list -  the last page is already
                         //at the end so no need to make it last.
-                        showPg(url, transition, forward, null, pgShowObj, hasBackAction);
+                        showPg(pg, transition, forward, null, pgShowObj, hasBackAction);
                         return;
                     }
+                    
                     //now make it the last page
-                    var pg = pages[pg_index];
-                    pages.splice(pg_index, 1);
-                    pages.push(pg);
+                    pages.splice(pg_index, 1);//remove from old location
+                    pages.push(pg);//put at the end
+
                     //modify the DOM to send the page to the last
                     var children = $('body').children();
                     var pos = -1;
@@ -2328,11 +2370,12 @@ var Main = {};
                                 //call relevant event listeners
                                 callListeners(listeners["ready"]);
                                 callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, isIndexPage: false, data: lastPage.data});
-                                showPg(url, transition, forward, null, pgShowObj, hasBackAction);
+                                showPg(lastPage, transition, forward, null, pgShowObj, hasBackAction);
                                 break;
                             }
                         }
                     }
+
                     return;
                 }
             }
@@ -2340,39 +2383,20 @@ var Main = {};
             $.get(inUrl, function (response) {
 
                 var found = false;
+                var p;
                 for (var i = 0; i < pages.length; i++) {
                     if (pages[i].url === url) {
+                        p = pages[i];
                         found = true;
                         break;
                     }
                 }
 
                 if (!found) {
-
-                    var pg_recv = $("<div></div>").html("<div data-app-content='page'>" + response + "</div>");
-                    var title = pg_recv.find('title').html();
-                    var pg = refactorBody(pg_recv, "[data-app-content=page]");
-
-                    $('body').append(pg);
-
-                    pages.push({
-                        url: url,
-                        data: data,
-                        transition: transition,
-                        title: title,
-                        page: pg
-                    });
-
-                    //clear all previous event listeners
-                    //$(document).add("*").off();//deprecate - incorrect!
-                    var lastPage = pages[pages.length - 1];
-                    //call relevant event listeners
-                    callListeners(listeners["ready"]);
-                    callListeners(listeners["pagecreate"], {pageUrl: lastPage.url, isIndexPage: false, data: lastPage.data});
-
+                    p = addPage(url, response, data, transition);
                 }
 
-                showPg(url, transition, forward, null, pgShowObj, hasBackAction);
+                showPg(p, transition, forward, null, pgShowObj, hasBackAction);
             }).fail(function () {
                 console.log("could not get resource:", inUrl);
             });
@@ -6208,30 +6232,30 @@ var Main = {};
                 next.loader.apply(null, next.argu);
             }
         }
-        function retryProcess(){
-            
-            if(this.retryCount >= 5){
+        function retryProcess() {
+
+            if (this.retryCount >= 5) {
                 console.error('Could not load resource after maximum retry attempts exceeded - ', this.file);
                 return;
             }
-            
+
             this.retryCount++;
-            
+
             console.log(this.retryCount, 'Retry loading :', this.file);
-            
+
             this.count--;//force repeat
-            
+
             nextProcess.call(this);
-            
+
         }
         function onLoadInclude() {
-            
-            if(this.retryCount > 0){
+
+            if (this.retryCount > 0) {
                 console.log('Successfully loaded :', this.file);
             }
-            
+
             this.retryCount = 0;//intialize after any successful loading
-            
+
             if (this.type === 'js' && !this.isPathAbsolute) {
                 var cls_name = jsClassName(this.file);
                 var clsObj = classObject(cls_name);
@@ -6264,7 +6288,7 @@ var Main = {};
             }
 
             console.log('Failed to load a required resource :', this.file);
-            
+
             retryProcess.call(this);
 
         }
@@ -6299,7 +6323,7 @@ var Main = {};
             track.exceptions = exceptions;
             track.routeFn = route;
             track.isPathAbsolute = is_path_absolute;
-                                    
+
             var script = document.createElement("script");
 
             script.onload = onLoadInclude.bind(track);
@@ -6454,19 +6478,10 @@ var Main = {};
         //use them. STICK ONLY TO window.innerHeight and window.innerWidth
 
 
-        var size = window.innerWidth > window.innerHeight ?
+        portriat_height = window.innerWidth > window.innerHeight ?
                 window.innerWidth
                 : window.innerHeight;
 
-        //alert('inner width ' + window.innerWidth);
-        //alert('inner height ' + window.innerHeight);
-
-        //alert('outer width ' + window.outerWidth);
-        //alert('outer height ' + window.outerHeight);
-
-        //size = size / window.devicePixelRatio;
-
-        portriat_height = size;
 
         portriat_width = window.innerWidth < window.innerHeight ?
                 window.innerWidth
@@ -6474,9 +6489,9 @@ var Main = {};
 
         //portriat_width = portriat_width / window.devicePixelRatio;
 
-        if (size > 768) {//desktops and laptops
+        if (portriat_width >= 800) {//desktops and laptops
             device_category = "large";
-        } else if (size <= 768 && size >= 640) {//tablets
+        } else if (portriat_width < 800 && portriat_width >= 480) {//tablets
             device_category = "medium";
         } else {//smart phones
             device_category = "small";

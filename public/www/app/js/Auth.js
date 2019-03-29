@@ -28,6 +28,7 @@ Ns.Auth = {
              
              if (user_info && user_info.user_id) {
              Ns.Auth.isAuth = true;
+             Ns.Auth.afterAuth();
              return;//leave
              }
              
@@ -69,10 +70,10 @@ Ns.Auth = {
                                 Ns.Auth.isAuth = true;
                                 Ns.view.UserProfile.appUser = user_info;
                                 localforage.setItem(Ns.Const.AUTH_USER_KEY, user_info, function (err) {
-                                    if(err){
+                                    if (err) {
                                         console.log(err);
                                     }
-                                    Main.page.home();
+                                    Ns.Auth.afterAuth();
                                 });
 
                             })
@@ -95,6 +96,10 @@ Ns.Auth = {
         }
 
 
+    },
+
+    afterAuth: function () {
+        Ns.GameHome.show();
     },
 
     onSessionIDRequest: function (evt) {

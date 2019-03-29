@@ -1,10 +1,42 @@
 
+/* global Ns */
+
 Ns.Util = {
     DELIMITER: '\u0000',
     REQUEST_RATE_INTERVAL: 60, //in seconds
     lastContactsMatchRequestTime: 0,
     lastGroupMatchRequestTime: {}, // hold the group name against the  request time
     lastTournamentMatchRequestTime: {}, // hold the tournament name against the  request time        
+
+    getGameObject: function (game_name) {
+
+        switch (game_name) {
+            case 'chess':
+            {
+                return Ns.game.two.Chess2D;
+            }
+            case 'draughts':
+            {
+                return Ns.game.two.Draughts2D;
+            }
+            case 'draft'://OR draft
+            {
+                return Ns.game.two.Draughts2D;
+            }
+            case 'ludo':
+            {
+                return Ns.game.two.Ludo2D;
+            }
+            case 'solitaire':
+            {
+                return Ns.game.two.Solitaire2D;
+            }
+            case 'whot':
+            {
+                return Ns.game.two.Whot2D;
+            }
+        }
+    },
 
     formatTime: function (time, stict_date) {
         var date = new Date(time);

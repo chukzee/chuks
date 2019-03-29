@@ -6,6 +6,7 @@ Ns.game.AbstractBoard2D = {
     refStateIndex: 0, //will be incremented for each reload - a way of detecting view change to prevent asynchronous process corrupting the views
     config: null,
     moveResendCountdownFn: null,
+    gameEngineWorker: null,
     isGameOver: false,
     internalGame: null, // the game engine. e.g chessj.s and my draftgame.js
     userSide: null, //whether 'b' or 'w'. ie black or white. default is null for watched game
@@ -408,7 +409,11 @@ Ns.game.AbstractBoard2D = {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
-    showPomotionDialogfunction() {
+    showPomotionDialog: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    robotSearchMove: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 
@@ -472,15 +477,19 @@ Ns.game.AbstractBoard2D = {
             return;
         }
 
+        if (typeof match === 'undefined') {
+            return;
+        }
+
         if (this.isWhiteTurn() === match.robotSide) {
             return true;
         }
 
         if (typeof match.robotSide === 'undefined') {
-            if(match.players[0].full_name === 'Robot' && this.isWhiteTurn()){
+            if (match.players[0].full_name === 'Robot' && this.isWhiteTurn()) {
                 return true;
             }
-            if(match.players[1].full_name === 'Robot' && !this.isWhiteTurn()){
+            if (match.players[1].full_name === 'Robot' && !this.isWhiteTurn()) {
                 return true;
             }
         }
@@ -648,13 +657,6 @@ Ns.game.AbstractBoard2D = {
         }
 
 
-    },
-
-    getMoveSearcTime: function () {
-
-        //TODO - The search time will depen on game difficulty level
-
-        return 5000;
     },
 
     remoteMakeMove: function (notation, match) {
@@ -974,18 +976,22 @@ Ns.game.AbstractBoard2D = {
         }
 
         var match = this.config.match;
-        if (Main.util.isWebAssemblySupported()) {
-            this._gameEngineWorker = new Worker(this.getGameEngineWorkerJs());
-        } else {
-            this._gameEngineWorker = new Worker(this.getGameEngineWorkerJsAsm());
+
+        if (!this.gameEngineWorker) {
+            if (Main.util.isWebAssemblySupported()) {
+                this.gameEngineWorker = new Worker(this.getGameEngineWorkerJs());
+            } else {
+                this.gameEngineWorker = new Worker(this.getGameEngineWorkerJsAsm());
+            }
         }
 
+        this.robotSearchMove(game_position);
 
-        this._gameEngineWorker.postMessage('position fen ' + game_position);
-        this._gameEngineWorker.postMessage('go movetime ' + this.getMoveSearcTime());
         this.displayThinking(match);
+
         var me = this;
-        this._gameEngineWorker.onmessage = onWorkerMessage.bind(this.config.match);
+        this.gameEngineWorker.onmessage = onWorkerMessage.bind(this.config.match);
+        this.gameEngineWorker.onerror = onWorkerError.bind(this.config.match);
 
         function onWorkerMessage(evt) {
 
@@ -1004,12 +1010,21 @@ Ns.game.AbstractBoard2D = {
 
         }
 
+        function onWorkerError(evt) {
+            var matchObj = this;
+            if (!me.checkAccess(matchObj)) {//the view has changed
+                return;
+            }
+
+            console.error(evt);
+
+        }
     },
 
     stopGameEngineWorker: function () {
-        if (this._gameEngineWorker) {
-            this._gameEngineWorker.terminate();
-            this._gameEngineWorker = undefined;//so we can reuse it!
+        if (this.gameEngineWorker) {
+            this.gameEngineWorker.terminate();
+            this.gameEngineWorker = undefined;//so we can reuse it!
         }
     },
 

@@ -12,6 +12,7 @@ Ns.ui.UI = {
     gameWatchHtml: null, //set dynamically depending on the device category
 
     init: function (selected_game) {
+
         if (selected_game) {
             this.selectedGame = selected_game;
         }
@@ -19,7 +20,6 @@ Ns.ui.UI = {
         //to sentence case e.g chess --> Chess
         var game_name = this.selectedGame.substring(0, 1).toUpperCase()
                 + this.selectedGame.substring(1).toLowerCase();
-
 
         document.getElementById("home-game-name").innerHTML = game_name;
 
@@ -33,10 +33,7 @@ Ns.ui.UI = {
             }
         });
 
-        Main.menu.create({
-            width: 220,
-            target: "#home-menu",
-            items: [
+        var mainMenuItems = [
                 'Play robot',
                 'Notifications', //all forms of notifications e.g play request notifications , group join requests sent by group admin, tournament game reminder e.tc. This shows a list view of mixed items. ie list items of different type of request.
                 'Bluetooth game',
@@ -48,7 +45,19 @@ Ns.ui.UI = {
                 'Select game',
                 'Settings',
                 'Help'
-            ],
+            ];
+            
+        if(this.selectedGame === 'chess'){
+            mainMenuItems.unshift('Change draughts variant');
+            mainMenuItems.unshift('Switch to draughts');
+        }else if(this.selectedGame === 'draughts'){
+            mainMenuItems.unshift('Switch to chess');
+        }    
+
+        Main.menu.create({
+            width: 220,
+            target: "#home-menu",
+            items: mainMenuItems,
             onSelect: function (evt) {
                 var item = this.item;
                 Ns.ui.UI.showByMenuItem(item);
@@ -318,6 +327,15 @@ Ns.ui.UI = {
     showByMenuItem: function (item) {
 
         switch (item) {
+            case 'Switch to chess':
+                Ns.GameHome.switchGame('chess');
+                break;
+            case 'Switch to draughts':
+                Ns.GameHome.switchGame('draughts');
+                break;
+            case 'Change draughts variant':
+                alert('TODO');
+                break;
             case 'Play robot':
                 Ns.Robot.showGame();
                 break;

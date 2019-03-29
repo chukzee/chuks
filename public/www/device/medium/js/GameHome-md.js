@@ -13,18 +13,42 @@ Ns.GameHome = {
     GAME_WATCH_HTML: 'game-watch-md.html',
     GAME_WAIT_HTML: 'wait-player-md.html',
     isCurrentViewGamePane: false,
+    isLayoutHomeListenerAdded: false,
 
+    show: function () {
+
+        Main.page.show({
+            container: '#home-main',
+            url: "game-home-md.html",
+            fade: true,
+            data: Ns.ui.UI.selectedGame,
+            onShow: Ns.GameHome.Content
+        });
+
+    },
+
+    switchGame: function (game) {
+
+        Main.card.removeTo({
+            container: '#home-layout',
+            url: "game-home-md.html",
+            fade: true,
+            data: game,
+            onShow: Ns.GameHome.Content
+        });
+
+    },
 
     back: function (obj) {
-        if(!obj.container){
+        if (!obj.container) {
             obj.container = '#home-main';
         }
-        
+
         Main.card.back(obj);
     },
-    
+
     removeAndShowGroupDetails: function (group) {
-        
+
         Main.card.removeTo({
             container: '#home-main',
             url: 'group-details.html',
@@ -33,9 +57,9 @@ Ns.GameHome = {
             onShow: Ns.GameGroup.Content
         });
     },
-    
+
     removeAndShowTournamentDetails: function (tournament) {
-        
+
         Main.card.removeTo({
             container: '#home-main',
             url: 'tournament-details.html',
@@ -44,7 +68,7 @@ Ns.GameHome = {
             onShow: Ns.GameTournament.Content
         });
     },
-    
+
     isLandscape: function () {
         return window.screen.width > window.screen.height;
     },
@@ -64,7 +88,7 @@ Ns.GameHome = {
                 left_panel.style.display = 'block';
                 left_panel.style.opacity = 0;
                 left_panel.style.width = '100%';
-                Main.anim.to('home-main', 500, {opacity: 1});
+                Main.anim.to('home-main', 300, {opacity: 1});
             } else {
                 left_panel.style.display = 'none';
 
@@ -72,7 +96,7 @@ Ns.GameHome = {
                 right_panel.style.left = 0;
                 right_panel.style.opacity = 0;
                 right_panel.style.width = '100%';
-                Main.anim.to('home-game-panel', 500, {opacity: 1});
+                Main.anim.to('home-game-panel', 300, {opacity: 1});
             }
         } else {
             if (!Ns.GameHome.isCurrentViewGamePanel) {
@@ -88,7 +112,7 @@ Ns.GameHome = {
     showGameView: function (match) {
 
         Ns.Match.currentUserMatch = match;
-        
+
         Ns.GameHome.isCurrentViewGamePanel = true;
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         if (Ns.GameHome.isLandscape()) {
@@ -124,40 +148,45 @@ Ns.GameHome = {
             Ns.GameWatch.Content(match);
         }
     },
+    layoutHome: function () {
+
+        var left_panel = document.getElementById('home-main');
+        var right_panel = document.getElementById('home-game-panel');
+
+        right_panel.style.position = 'absolute';
+        right_panel.style.top = 0;
+        right_panel.style.bottom = 0;
+
+        if (Ns.GameHome.isLandscape()) {//landscape
+            left_panel.style.width = '40%';
+            left_panel.style.display = 'block';
+
+            right_panel.style.width = '60%';
+            right_panel.style.left = left_panel.style.width;
+            right_panel.style.display = 'block';
+
+            Main.event.fire(Ns.Const.EVT_LAYOUT_GAME_PANEL);
+
+        } else {//portrait
+            Ns.GameHome.portraitView(false);
+        }
+    },
+    checkOrientation: function () {
+
+        Ns.GameHome.layoutHome();
+        if (!Ns.GameHome.isLayoutHomeListenerAdded) {
+            Main.dom.addListener(window, 'resize', Ns.GameHome.layoutHome);
+            Ns.GameHome.isLayoutHomeListenerAdded = true;
+        }
+
+    },
+
     Content: function (selected_game) {
 
         Ns.ui.UI.init(selected_game);
 
-        checkOrientation();
+        Ns.GameHome.checkOrientation();
 
-        function checkOrientation() {
-            var left_panel = document.getElementById('home-main');
-            var right_panel = document.getElementById('home-game-panel');
-
-            layoutHome();
-            Main.dom.removeListener(window, 'orientationchange', layoutHome);
-            Main.dom.addListener(window, 'orientationchange', layoutHome);
-
-            function layoutHome() {
-
-
-                right_panel.style.position = 'absolute';
-                right_panel.style.top = 0;
-                right_panel.style.bottom = 0;
-
-                if (Ns.GameHome.isLandscape()) {//landscape
-                    left_panel.style.width = '40%';
-                    left_panel.style.display = 'block';
-
-                    right_panel.style.width = '60%';
-                    right_panel.style.left = left_panel.style.width;
-                    right_panel.style.display = 'block';
-
-                } else {//portrait
-                    Ns.GameHome.portraitView(false);
-                }
-            }
-        }
     },
     showBluetoothGame: function () {
         //show a dialog to display startup settings
@@ -215,7 +244,7 @@ Ns.GameHome = {
             url: 'tournament-details.html',
             fade: true,
             data: tournament,
-            onShow:  Ns.GameTournament.Content
+            onShow: Ns.GameTournament.Content
         });
     },
     showGroupDetails: function (group) {
@@ -252,53 +281,53 @@ Ns.GameHome = {
         });
     },
     showContactChat: function (contact) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'contact-chat-view.html',
-            fade:true,
-            data : contact,
+            url: 'contact-chat-view.html',
+            fade: true,
+            data: contact,
             onShow: Ns.GameContactChat.Content,
             onHide: Ns.msg.ContactChat.onHide.bind(Ns.msg.ContactChat)
         });
-        
+
     },
     showGroupChat: function (group) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'group-chat-view.html',
-            fade:true,
-            data : group,
+            url: 'group-chat-view.html',
+            fade: true,
+            data: group,
             onShow: Ns.GameGroupChat.Content,
             onHide: Ns.msg.GroupChat.onHide.bind(Ns.msg.GroupChat)
         });
-        
+
     },
     showTournamentGeneralChat: function (tournament) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'tournament-general-chat-view.html',
-            fade:true,
-            data : tournament,
+            url: 'tournament-general-chat-view.html',
+            fade: true,
+            data: tournament,
             onShow: Ns.GameTournamentGeneralChat.Content,
             onHide: Ns.msg.TournamentGeneralChat.onHide.bind(Ns.msg.TournamentGeneralChat)
         });
-        
+
     },
 
     showTournamentInhouseChat: function (tournament) {
-        
+
         Main.card.to({
             container: '#home-main',
-            url:'tournament-inhouse-chat-view.html',
-            fade:true,
-            data : tournament,
+            url: 'tournament-inhouse-chat-view.html',
+            fade: true,
+            data: tournament,
             onShow: Ns.GameTournamentInhouseChat.Content,
             onHide: Ns.msg.TournamentInhouseChat.onHide.bind(Ns.msg.TournamentInhouseChat)
         });
-        
+
     },
 
     showCreateGroup: function (data) {
@@ -312,7 +341,7 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showCreateTournament: function (data) {
 
         Main.card.to({
@@ -324,7 +353,7 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showEditGroup: function (data) {
 
         Main.card.to({
@@ -336,9 +365,9 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showEditTournament: function (data) {
-        
+
         Main.card.to({
             container: '#home-main',
             url: 'edit-tournament.html',
@@ -348,7 +377,7 @@ Ns.GameHome = {
         });
 
     },
-        
+
     showUserProfile: function (user) {
 
         Main.card.to({

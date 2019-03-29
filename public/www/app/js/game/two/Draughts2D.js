@@ -24,6 +24,16 @@ Ns.game.two.Draughts2D = {
 
     },
 
+    robotSearchMove: function (game_position) {
+        var obj = {
+            position :game_position,
+            depth: 9
+        };
+        
+        this.gameEngineWorker.postMessage(JSON.stringify(obj));
+
+    },
+
     getGameEngineWorkerJs: function () {
         return 'resources/game_engines/draftgame.js';
     },
@@ -33,7 +43,7 @@ Ns.game.two.Draughts2D = {
     },
 
     getBestMoveFromGameEngineOutput: function (output) {
-        var arr = output.split(' ');
+        /*var arr = output.split(' ');
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] === '') {//just in case there was multiple space delimiter in the output - though we expect single space delimiter
                 arr.splice(i, 1);
@@ -42,14 +52,16 @@ Ns.game.two.Draughts2D = {
         }
         if (arr[0] === 'bestmove' && arr[1]) {
             return arr[1];
-        }
-
+        }*/
+        var best_move = JSON.parse(output);
+        
+        return best_move.notation;
     },
 
     checkGameOver: function () {
         //first check the match status field because in the case of draw offer
         //the internal game cannot tell if there was a draw offer
-        if (this.config.match.status === 'finish') {
+        if (this.config.match && this.config.match.status === 'finish') {
             return true;
         }
         return this.internalGame.isGameOver();
@@ -117,7 +129,6 @@ Ns.game.two.Draughts2D = {
 
     crownPieceElement: function (pieceElement) {
 
-        //TODO display crown on the piece
         var crownEl = document.createElement('span');
         crownEl.className = "fa fa-crown";
         crownEl.style.fontSize = '11px';
@@ -126,27 +137,33 @@ Ns.game.two.Draughts2D = {
         crownEl.style.width = '100%';
         crownEl.style.height = '100%';
 
+        crownEl.dataset.type = pieceElement.dataset.type;
+
         pieceElement.appendChild(crownEl);
     },
 
     promotePiece: function (pieceElement, promotion) {
-        pieceElement.dataset.crowned = true;
+
+        if (pieceElement.dataset.crowned === 'true') { // yes string 'true' since not boolean value in html
+            return;//already crowned
+        }
+
+        pieceElement.dataset.crowned = 'true';
         this.crownPieceElement(pieceElement);
     },
 
-    showPomotionDialogfunction(from, to, callback) {
+    showPomotionDialog: function (from, to, callback) {
         callback();
     },
 
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('div');
         pieceElement.className = pce.white ? 'white-piece-o' : 'black-piece-o';
-        pieceElement.dataset.crowned = pce.crowned ? true : false;//yes - must set to true or false
-
-        this.crownPieceElement(pieceElement);//TESTING!!! TO BE REMOVE ABEG O!!!
 
         if (pce.crowned) {
             this.crownPieceElement(pieceElement);
+        } else {
+            pieceElement.dataset.crowned = 'false';
         }
 
         return pieceElement;

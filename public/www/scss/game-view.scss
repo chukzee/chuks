@@ -28,6 +28,8 @@ $right_panel_width_md : 40%;
 
 $right_panel_width_ld : 30%;
 
+$lp_bg_color: #307e4e;
+
 .game9ja-game-view{
 
     /*background:background;*/
@@ -137,9 +139,9 @@ $right_panel_width_ld : 30%;
             height: 100%;
             max-width: $container_width;
             position: relative;
-            
+
             //background-color: green;
-            
+
             > :nth-child(1){/* holds white player full name*/
                 position: absolute;
                 top: 20px;
@@ -247,7 +249,7 @@ $right_panel_width_ld : 30%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    
+
 
 
     > div{/* holds footer items*/
@@ -310,14 +312,14 @@ $right_panel_width_ld : 30%;
         >:nth-child(1){/*center the upper panel inside the center panel*/
             position: relative;
             margin : 0 auto;
-            //background: red;
-            
+            background-color: $lp_bg_color;
+
             > :nth-child(1){/*the oppontent countdown time in the upper panel*/
                 position: absolute;
                 bottom: 0px;
                 left: $base_padding;
                 font-size: 12px;
-                
+
             }
 
             > :nth-child(2){/*the feedback display in the upper panel*/
@@ -359,8 +361,9 @@ $right_panel_width_ld : 30%;
         >:nth-child(3){/*center the lower panel inside the center panel*/
             position: relative;
             margin : 0 auto;
-            //background: green;
-            
+            background-color: $lp_bg_color;
+
+
             > :nth-child(1){/*the user countdown time in the lower panel*/
                 position: absolute;
                 top: 2px;

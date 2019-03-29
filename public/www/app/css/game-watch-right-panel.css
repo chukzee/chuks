@@ -62,6 +62,12 @@ and open the template in the editor.
       /*right panel header title*/
       font-size: 18px; }
     .game9ja-game-watch-right-panel > :nth-child(1) > :nth-child(2) {
+      /*right panel pinned btn icon*/
+      position: absolute;
+      top: 5px;
+      right: 35px;
+      cursor: pointer; }
+    .game9ja-game-watch-right-panel > :nth-child(1) > :nth-child(3) {
       /*right panel close btn icon*/
       position: absolute;
       top: 5px;

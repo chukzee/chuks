@@ -5,6 +5,7 @@ Ns.ui.GamePanel = {
 
     matchData: null,
     rightContentName: null,
+    isGamePanelSetup: false,
 
     /**
      * this constructor is called once automatically by the framework
@@ -43,12 +44,18 @@ Ns.ui.GamePanel = {
     },
 
     showGame: function (match, container, flip) {
-        Ns.ui.GamePanel.loadGame({
-            communication: 'internet',
-            match: match,
-            container: container,
-            flip: flip,
-        });
+        if (match.robot === true) {
+            Ns.ui.GamePanel.showGameRobot(match, container, flip);
+        } else if (match.bluetooth === true) {
+            Ns.ui.GamePanel.showGameBluetooth(match, container, flip);
+        } else {
+            Ns.ui.GamePanel.loadGame({
+                communication: 'internet',
+                match: match,
+                container: container,
+                flip: flip,
+            });
+        }
     },
 
     loadGame: function (obj) {
@@ -217,127 +224,8 @@ Ns.ui.GamePanel = {
         });
 
     },
-    gameAreaDimension: function (elem) {
 
-        var el = elem ? elem : this.element;
-        var bound = el.getBoundingClientRect();
-        var cmpHeight, cmpWidth;
-        if ('clientHeight' in el) {
-            cmpHeight = el.clientHeight;
-            cmpWidth = el.clientWidth;
-        } else {
-            cmpHeight = bound.height;
-            cmpWidth = bound.width;
-        }
-
-        var size = cmpWidth < cmpHeight ? cmpWidth : cmpHeight;
-
-        //since there is a possibility that the clientWidth or clientHeight 
-        //might be zero we shall wait till the dimension of the element is
-        //ready before trying again
-
-        if (cmpWidth === 0 || cmpHeight === 0) {
-            if (this.elaspeTime >= 5000) {
-                console.warn('Something is wrong with dom element - could not get size of element!');
-                return;
-            }
-            this.elaspeTime += this.interval;
-            window.setTimeout(this.sizingFn.bind(this), this.interval);//wait till the dimension is ready
-            return;
-        }
-
-        console.log('client height gotten after ', this.elaspeTime + ' ms');
-
-        var upper_height = 60;
-        var lower_height = 40;
-        var board_size;
-
-
-        if (size + upper_height + lower_height > el.clientHeight) {
-            board_size = size - upper_height - lower_height;
-            if (el.clientHeight > size) {
-                board_size = el.clientHeight - upper_height - lower_height;
-            }
-        } else {
-            board_size = size;
-        }
-
-        return {board_size: board_size, upper_height: upper_height, lower_height: lower_height};
-    },
-
-    fixSizeConfig: function (match, panel_main, setSizeFn, checkPanelSizeFn) {
-
-        mainResizeListener();
-        sizingMain();
-
-        function doSizing() {
-
-            if (checkPanelSizeFn) {
-                checkPanelSizeFn.bind(this)();
-            }
-
-            var dim = Ns.ui.GamePanel.gameAreaDimension.bind(this)();
-            if (!dim) {
-                return;
-            }
-
-            //console.log(dim);
-
-            //setting the sizes of the panels
-            setSizeFn(match, dim.board_size, dim.upper_height, dim.lower_height);
-
-            if (checkPanelSizeFn) {
-                checkPanelSizeFn.bind(this)();
-            }
-
-        }
-
-
-        function sizingMain(evt) {
-
-            /*Deprecated! - causes so problems of not retrieving the dom sizes. 
-             if (evt && evt.type === "orientationchange") {
-             this.canChangeOrientation = true;
-             } else if (evt && this.canChangeOrientation) {
-             window.removeEventListener('resize', this.funcListener, false);
-             return;
-             }
-             */
-
-
-            var o = {};
-            o.element = panel_main;
-            o.elaspeTime = 0;
-            o.interval = 100;
-            o.sizingFn = doSizing.bind(o);
-
-            o.sizingFn();
-        }
-
-        function mainResizeListener() {
-            if (!window.addEventListener || !window.removeEventListener) {
-                return;
-            }
-
-            var obj = {
-                canChangeOrientation: false
-            };
-
-            var sizingMainFn = sizingMain.bind(obj);
-
-            obj.funcListener = sizingMainFn;
-
-            window.removeEventListener('resize', sizingMainFn, false);
-            window.addEventListener('resize', sizingMainFn, false);
-
-            window.removeEventListener('orientationchange', sizingMainFn, false);
-            window.addEventListener('orientationchange', sizingMainFn, false);
-
-        }
-
-    },
-
-    ownGameView: function (match, panel_main, resizeFn, checkPanelSizeFn) {
+    ownGameView: function (match) {
         var me = this;
 
         var id_obj = {
@@ -350,8 +238,6 @@ Ns.ui.GamePanel = {
         var titleChat = 'Chat';
 
         Ns.ui.GamePanel.matchData = match;
-
-        Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn, checkPanelSizeFn);
 
         document.getElementById('game-view-white-pic').src = match.players[0].small_photo_url;
 
@@ -391,9 +277,9 @@ Ns.ui.GamePanel = {
 
         }
 
-        if (Main.device.isXLarge()) {
-            me._showChats(Ns.GameView, id_obj);
-        }
+        /*if (Main.device.isXLarge()) {
+         me._showChats(Ns.GameView, id_obj);
+         }*/
 
         $('#game-view-footer-chat').on('click', function () {
             me._showChats(Ns.GameView, id_obj, titleChat);
@@ -416,14 +302,12 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-view-main').on('click', function () {
-            if (!Main.device.isXLarge()) {
-                Ns.GameView.hideRightContent();
-            }
+            Ns.GameView.hideRightContent();
         });
 
     },
 
-    ownGameViewB: function (match, panel_main, resizeFn, checkPanelSizeFn) {
+    ownGameViewB: function (match) {
         var me = this;
 
         var id_obj = {
@@ -434,8 +318,6 @@ Ns.ui.GamePanel = {
         };
 
         Ns.ui.GamePanel.matchData = match;
-
-        Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn, checkPanelSizeFn);
 
         document.getElementById('game-view-b-black-pic').src = match.players[0].small_photo_url;
 
@@ -475,9 +357,9 @@ Ns.ui.GamePanel = {
 
         }
 
-        if (Main.device.isXLarge()) {
-            me._showOptions(Ns.GameViewB, id_obj);
-        }
+        /*if (Main.device.isXLarge()) {
+         me._showOptions(Ns.GameViewB, id_obj);
+         }*/
 
         $('#game-view-b-bluetooth-icon').on('click', function () {
             var device_name = 'TODO device name'; //TODO
@@ -493,14 +375,12 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-view-b-main').on('click', function () {
-            if (!Main.device.isXLarge()) {
-                Ns.GameViewB.hideRightContent();
-            }
+            Ns.GameViewB.hideRightContent();
         });
 
     },
 
-    watchGame: function (match, panel_main, resizeFn) {
+    watchGame: function (match) {
         var me = this;
 
         var id_obj = {
@@ -513,9 +393,6 @@ Ns.ui.GamePanel = {
         var titleComment = 'Comments';
 
         Ns.ui.GamePanel.matchData = match;
-
-        Ns.ui.GamePanel.fixSizeConfig(match, panel_main, resizeFn);
-
 
         var white_wdl, black_wdl;
         if (match.wdl) {
@@ -544,9 +421,10 @@ Ns.ui.GamePanel = {
 
         me._createMenu("#game-watch-menu", Ns.GameWatch, id_obj);
 
-        if (Main.device.isXLarge()) {
-            Ns.GameWatch.showRightContent(Ns.ui.GamePanel.matchData, titleComment, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
-        }
+        /*
+         if (Main.device.isXLarge()) {
+         Ns.GameWatch.showRightContent(Ns.ui.GamePanel.matchData, titleComment, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
+         }*/
 
 
         $('#game-watch-comment-icon').on('click', function () {
@@ -554,12 +432,31 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-watch-main').on('click', function () {
-            if (!Main.device.isXLarge()) {
-                Ns.GameWatch.hideRightContent();
-            }
+            Ns.GameWatch.hideRightContent();
         });
 
     },
+
+    gamePanelSetupListener: function (match_data) {
+
+        if (Ns.ui.GamePanel.isGamePanelSetup) {
+            return;
+        }
+
+        //making sure all three game panel views are ready
+        if (!Ns.ui.UI.gameViewHtml
+                || !Ns.ui.UI.gameViewBHtml
+                || !Ns.ui.UI.gameWatchHtml) {
+            return;
+        }
+
+        //show robot match
+        Ns.Robot.showGame();
+
+        Ns.ui.GamePanel.isGamePanelSetup = true;
+
+    },
+
     /**
      * Setup game panel for medium and large device 
      *   
@@ -573,7 +470,7 @@ Ns.ui.GamePanel = {
 
         // at this point it is medium or large device
 
-        var isGamePanelInit;
+        Ns.ui.GamePanel.isGamePanelSetup = false;
 
         getGameWatch(function (html) {
             Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP);
@@ -587,28 +484,9 @@ Ns.ui.GamePanel = {
             Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP);
         });
 
-        var first_match_data;
-        Main.event.on(Ns.Const.EVT_GAME_PANEL_SETUP, function (match_data) {
-            if (!first_match_data) {
-                first_match_data = match_data;
-            }
 
-            //making sure all three game panel views are ready
-            if (!Ns.ui.UI.gameViewHtml
-                    || !Ns.ui.UI.gameViewBHtml
-                    || !Ns.ui.UI.gameWatchHtml) {
-                return;
-            }
-
-
-            var gamePanel = document.getElementById("home-game-panel");
-
-            //show robot match
-            Ns.Robot.showGame();
-            
-
-        });
-
+        Main.event.off(Ns.Const.EVT_GAME_PANEL_SETUP);
+        Main.event.on(Ns.Const.EVT_GAME_PANEL_SETUP, Ns.ui.GamePanel.gamePanelSetupListener);
 
         function getGameView(fn) {
             if (Ns.ui.UI.gameViewHtml) {

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>GameBaba</title>
+    </head>
+
+    <body>
+    <center>
+
+        <h2>Page 0</h2>
+        <button id="btn-page0-back">Back </button>
+        <button id="btn-page0-next">Next >> </button>
+        <div>
+            <h2>GameBaba</h2><!-- use a beautiful stylish font family to display -->
+        </div>
+
+        <div>
+            <ul class="list-group">
+                <li class="list-group-item" id="test-simulate-page"><div><img src="test.png" alt=""/><span>Test Simulate</span></div></li>
+                <li class="list-group-item" id="test-swipe-page"><div><img src="test.png" alt=""/><span>Test Swipe</span></div></li>
+                <li class="list-group-item" id="test-card-page"><div><img src="test.png" alt=""/><span>Test Card</span></div></li>
+                <li class="list-group-item" id="test-dialog"><div><img src="test.png" alt=""/><span>Test Dialog</span></div></li>
+                <li class="list-group-item" id="test-game-watch"><div><img src="test.png" alt=""/><span>Test Game Watch</span></div></li>
+                <li class="list-group-item" id="test-game-view"><div><img src="test.png" alt=""/><span>Test Game View</span></div></li>
+                <li class="list-group-item" id="test-busy-indicator"><div><img src="test.png" alt=""/><span>Test Busy Indicator</span></div></li>
+                <li class="list-group-item" id="test-fullscreen"><div><img src="test.png" alt=""/><span>Test Fullscreen</span></div></li>
+
+                <li class="list-group-item" id="game-select-chess"><div><img src="chess-image.png" alt=""/><span>Chess</span></div></li>
+                <li class="list-group-item" id="game-select-draughts"><div><img src="draughts-image.png"  alt=""/><span>Draughts</span></div></li>
+                <li class="list-group-item" id="game-select-ludo"><div><img src="ludo-image.png"  alt=""/><span>Ludo</span></div></li>
+                <li class="list-group-item" id="game-select-solitaire"><div><img src="solitaire-image.png"  alt=""/><span>Solitaire</span></div></li>
+                <li class="list-group-item" id="game-select-whot"><div><img src="whot-image.png"  alt=""/><span>Whot</span></div></li>
+            </ul>
+
+        </div>
+
+    </center>
+    <div id="test_list" style="padding: 10px; ">
+
+    </div>
+    <script>
+
+        var p = {
+            p1: 'info/GroupInfo',
+            p2: 'info/GroupInfo'
+        };
+
+        Main.rcall.live(p, function () {
+            alert('live');
+            Main.ro.p1.addMember('chuks man')
+                    .get(function (res) {
+                        alert(res.data);
+                        console.log(res.data);
+                    })
+                    .error(function (err) {
+                        alert(err);
+                        console.log('error ', err);
+                    });
+        });
+
+        Main.ready(function () {
+            //alert('already');
+
+            Main.listview.create({
+                container: '#test_list',
+                scrollContainer: document.body.children[document.body.children.length - 1],
+                tplUrl: 'live-game-tpl.html',
+                wrapItem: false,
+                //itemClass: "game9ja-live-games-list",
+                onSelect: function (evt, data) {
+                    alert(data);
+                    console.log(data);
+                },
+                onReady: function () {
+                    for (var i = 0; i < 100; i++) {
+                        var data = {
+                            game_elapse_time: "3" + i + " days",
+                            game_views_count: "2" + i + " view",
+                            game_score: "2-0",
+                            game_status: "Live",
+                            players: [
+                                {
+                                    full_name: "Chuks_" + i + " Alimele_" + i,
+                                    photo_url: "player_chuks_pic_" + i + ".png"
+                                },
+                                {
+                                    full_name: "Peter_" + i + " Okoro_" + i,
+                                    photo_url: "player_peter_pic_" + i + ".png"
+                                }
+                            ]
+                        }
+
+                        //this.prependItem(data);
+                        this.appendItem(data);
+                    }
+                }
+            })
+
+            /* window.setTimeout(function(){
+             alert('scoll into view');
+             document.getElementById('btn-page0-back').scrollIntoView(2);
+             }, 20000);*/
+
+        });
+    </script>
+</body>
+
+</html>

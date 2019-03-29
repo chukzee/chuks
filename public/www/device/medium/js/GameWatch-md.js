@@ -6,101 +6,72 @@ Ns.GameWatch = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
-    rightPanelTitleComp: null,
-    rightPanelHTML: null,
 
-    afterRightContentHide: function () {
-        if (Ns.GameWatch.rightPanelTitleComp) {
-            Ns.GameWatch.rightPanelTitleComp.innerHTML = '';
-            document.getElementById('game-watch-right-content').outerHTML = Ns.GameWatch.rightPanelHTML;
-            Ns.ui.GamePanel.rightContentName = '';
-        }
+    extend: 'Ns.ui.AbstractGameSection',
+
+    constructor: function () {
+        Main.event.on(Ns.Const.EVT_LAYOUT_GAME_PANEL, this.layoutView.bind(this));
     },
-    showRightContent: function (data, title, func) {
 
-        $('#game-watch-right-panel-close').on('click', function () {
-            Ns.GameWatch.hideRightContent();
-        });
-        
-        Main.card.back('game-watch-right-panel-header');//clear any card on the header
-
-        document.getElementById("game-watch-right-panel-body").innerHTML = '';
-
-        Ns.GameWatch.rightPanelTitleComp = document.getElementById("game-watch-right-panel-header-title");
-        Ns.GameWatch.rightPanelTitleComp.innerHTML = title;
-        var el = document.getElementById('game-watch-right-content');
-        var is_visible = $(el).is(':visible');
-
-        el.style.display = 'block';//make visible
-
-        func();
-
-        if (!is_visible) {
-
-            el.style.width = Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
-            el.style.right = "-" + Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
-
-            if (window.screen.height > window.screen.width) {//portrait
-                el.style.width = Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;//we set this width programatically here
-                el.style.right = "-" + Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
-            }
-            //animate the element to right of 0%
-            Main.anim.to('game-watch-right-content', 500, {right: '0%'});
-        }
+    getRightPanelWidth: function () {
+        return window.screen.height > window.screen.width ? this.PORTRAIT_RHS_PANEL_WIDTH : this.LANDSCAPE_RHS_PANEL_WIDTH;
     },
-    hideRightContent: function () {
 
-        var el = document.getElementById('game-watch-right-content');
-        var negative_width = "-100%";//yes must be -100%
 
-        if (el.style.right === '0%') {
-            el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-watch-right-content', 500, {right: negative_width}, Ns.GameWatch.afterRightContentHide);
-        }
+    getRightPanelOffRight: function () {
+        return '-100%';
     },
-    Content: function (data) {
 
-        Ns.ui.GamePanel.rightContentName = '';
-        
-        Ns.GameWatch.rightPanelHTML = document.getElementById('game-watch-right-content').outerHTML;
+    getRightPanelPinnedID: function () {
+        //return nothing
+    },
 
-        var panel_main = document.getElementById('game-watch-main');
-        var board_el = document.getElementById('game-watch-main-board');
-        var upper_el = document.getElementById('game-watch-main-upper');
-        var lower_el = document.getElementById('game-watch-main-lower');
+    getRightPanelCloseID: function () {
+        return 'game-watch-right-panel-close';
+    },
 
-        Ns.ui.GamePanel.watchGame(data, panel_main, resizeMain);
+    getRightPanelHeaderID: function () {
+        return 'game-watch-right-panel-header';
+    },
 
-        function resizeMain(match, board_size, upper_height, lower_height) {
-            board_el.style.width = board_size + 'px';
-            board_el.style.height = board_size + 'px';
+    getRightPanelBodyID: function () {
+        return 'game-watch-right-panel-body';
+    },
 
-            upper_el.style.width = '100%';//board_el.style.width;
-            upper_el.style.height = upper_height + 'px';
+    getRightPanelHeaderTitleID: function () {
+        return 'game-watch-right-panel-header-title';
+    },
 
-            lower_el.style.width = '100%';//board_el.style.width;
-            lower_el.style.height = lower_height + 'px';
+    getRightContentID: function () {
+        return 'game-watch-right-content';
+    },
 
-            //right panel
-            var el = document.getElementById('game-watch-right-content');
+    getMainID: function () {
+        return 'game-watch-main';
+    },
 
-            if (window.screen.width > window.screen.height) {
-                el.style.width = Ns.GameWatch.LANDSCAPE_RHS_PANEL_WIDTH;
-            } else {
-                el.style.width = Ns.GameWatch.PORTRAIT_RHS_PANEL_WIDTH;
-            }
+    getMainBoardID: function () {
+        return 'game-watch-main-board';
+    },
 
+    getMainUpperID: function () {
+        return 'game-watch-main-upper';
+    },
 
-            var flip; //TODO
+    getMainLowerID: function () {
+        return 'game-watch-main-lower';
+    },
 
-            Ns.ui.GamePanel.showGame(data, 'game-watch-main-board', flip);
-        }
+    getBackButtonID: function () {
+        return 'game-watch-back-btn';
+    },
 
+    onClickBackButton: function () {
+        Ns.GameHome.home();
+    },
 
-        $('#game-watch-back-btn').on('click', function () {
-            Ns.GameHome.home();
-        });
-
-    }
+    onViewReady: function (data) {
+        Ns.ui.GamePanel.watchGame(data);
+    },
 
 };

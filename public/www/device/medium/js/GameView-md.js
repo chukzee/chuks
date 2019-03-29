@@ -7,100 +7,71 @@ Ns.GameView = {
 
     LANDSCAPE_RHS_PANEL_WIDTH: '65%',
     PORTRAIT_RHS_PANEL_WIDTH: '75%',
-    rightPanelTitleComp: null,
-    rightPanelHTML: null,
 
-    afterRightContentHide: function () {
-        if (Ns.GameView.rightPanelTitleComp) {
-            Ns.GameView.rightPanelTitleComp.innerHTML = '';
-            document.getElementById('game-view-right-content').outerHTML = Ns.GameView.rightPanelHTML;
-            Ns.ui.GamePanel.rightContentName = '';
-        }
+    extend: 'Ns.ui.AbstractGameSection',
+
+    constructor: function () {
+        Main.event.on(Ns.Const.EVT_LAYOUT_GAME_PANEL, this.layoutView.bind(this));
     },
-    showRightContent: function (data, title, func) {
 
-        $('#game-view-right-panel-close').on('click', function () {
-            Ns.GameView.hideRightContent();
-        });
-        
-        Main.card.back('game-view-right-panel-header');//clear any card on the header
-
-        document.getElementById("game-view-right-panel-body").innerHTML = '';
-
-        Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-right-panel-header-title");
-        Ns.GameView.rightPanelTitleComp.innerHTML = title;
-        var el = document.getElementById('game-view-right-content');
-        var is_visible = $(el).is(':visible');
-
-        el.style.display = 'block';//make visible
-
-        func();
-
-        if (!is_visible) {
-
-            el.style.width = Ns.GameView.LANDSCAPE_RHS_PANEL_WIDTH;//we set this width programatically here
-            el.style.right = "-" + Ns.GameView.LANDSCAPE_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
-
-            if (window.screen.height > window.screen.width) {//portrait
-                el.style.width = Ns.GameView.PORTRAIT_RHS_PANEL_WIDTH;//we set this width programatically here
-                el.style.right = "-" + Ns.GameView.PORTRAIT_RHS_PANEL_WIDTH;//set to negative of the width we have in css file or the width we set programatically here
-            }
-            //animate the element to right of 0%
-            Main.anim.to('game-view-right-content', 500, {right: '0%'});
-        }
+    getRightPanelWidth: function () {
+        return window.screen.height > window.screen.width ? this.PORTRAIT_RHS_PANEL_WIDTH : this.LANDSCAPE_RHS_PANEL_WIDTH;
     },
-    hideRightContent: function () {
 
-        var el = document.getElementById('game-view-right-content');
-        var negative_width = "-100%";//yes must be -100%
-
-        if (el.style.right === '0%') {
-            el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-view-right-content', 500, {right: negative_width}, Ns.GameView.afterRightContentHide);
-        }
+    getRightPanelOffRight: function () {
+        return '-100%';
     },
-    Content: function (data) {
 
-        Ns.ui.GamePanel.rightContentName = '';
+    getRightPanelPinnedID: function () {
+        //return nothing
+    },
 
-        Ns.GameView.rightPanelHTML = document.getElementById('game-view-right-content').outerHTML;
+    getRightPanelCloseID: function () {
+        return 'game-view-right-panel-close';
+    },
 
-        var panel_main = document.getElementById('game-view-main');
-        var board_el = document.getElementById('game-view-main-board');
-        var upper_el = document.getElementById('game-view-main-upper');
-        var lower_el = document.getElementById('game-view-main-lower');
+    getRightPanelHeaderID: function () {
+        return 'game-view-right-panel-header';
+    },
 
-        Ns.ui.GamePanel.ownGameView(data, panel_main, resizeMain);
+    getRightPanelBodyID: function () {
+        return 'game-view-right-panel-body';
+    },
 
-        function resizeMain(match, board_size, upper_height, lower_height) {
+    getRightPanelHeaderTitleID: function () {
+        return 'game-view-right-panel-header-title';
+    },
 
-            board_el.style.width = board_size + 'px';
-            board_el.style.height = board_size + 'px';
+    getRightContentID: function () {
+        return 'game-view-right-content';
+    },
 
-            upper_el.style.width = board_el.style.width;
-            upper_el.style.height = upper_height + 'px';
+    getMainID: function () {
+        return 'game-view-main';
+    },
 
-            lower_el.style.width = board_el.style.width;
-            lower_el.style.height = lower_height + 'px';
+    getMainBoardID: function () {
+        return 'game-view-main-board';
+    },
 
+    getMainUpperID: function () {
+        return 'game-view-main-upper';
+    },
 
-            //right panel
-            var el = document.getElementById('game-view-right-content');
+    getMainLowerID: function () {
+        return 'game-view-main-lower';
+    },
 
-            if (window.screen.width > window.screen.height) {
-                el.style.width = Ns.GameView.LANDSCAPE_RHS_PANEL_WIDTH;
-            } else {
-                el.style.width = Ns.GameView.PORTRAIT_RHS_PANEL_WIDTH;
-            }
+    getBackButtonID: function () {
+        return 'game-view-back-btn';
+    },
 
-            Ns.ui.GamePanel.showGame(data, 'game-view-main-board');
-        }
+    onClickBackButton: function () {
+        Ns.GameHome.home();
+    },
 
-        $('#game-view-back-btn').on('click', function () {
-            Ns.GameHome.home();
-        });
-
-
-    }
+    onViewReady: function (data) {
+        Ns.ui.GamePanel.ownGameView(data);
+    },
 
 };

@@ -16,6 +16,8 @@ $score_width : 100px;
 $right_panel_width_md : 40%;
 $right_panel_width_ld : 30%;
 
+$lp_bg_color: #307e4e;
+
 .game9ja-game-watch{
     position: absolute;
     top : 0;
@@ -69,7 +71,8 @@ $right_panel_width_ld : 30%;
             >:nth-child(1){/*center the upper panel inside the ceter panel*/
                 position: relative;
                 margin : 0 auto;
-                //background: red;
+                background-color: $lp_bg_color;
+
                 > :nth-child(1){/*general feedback*/
                     font-size: 14px;
                     font-style: italic;
@@ -154,7 +157,7 @@ $right_panel_width_ld : 30%;
                 margin : 0 auto;
                 padding : $base_padding;
                 @include box-sizing(border-box);
-                //background: green;
+                background-color: $lp_bg_color;
 
                 > :nth-child(1){/*the player_2 countdown time in the lower panel*/
                     position: absolute;

@@ -11,6 +11,39 @@ Ns.GameHome = {
     GAME_WATCH_HTML: 'game-watch.html',
     GAME_WAIT_HTML: 'wait-player.html',
 
+    constructor: function () {
+        window.oncontextmenu = function () {
+            return false;
+        };
+
+        Ns.Auth.login();
+
+    },
+    
+    show: function () {
+        Main.page.show({
+            url: "game-home.html",
+            effect: "fade", //we will now use fade since slide effect has performace issue for large page content
+            duration: 3000,
+            onBeforeShow: Ns.GameHome.Content.bind(Ns.GameHome),
+            data: Ns.ui.UI.selectedGame
+        });
+
+    },
+    
+    switchGame: function (game) {
+                 
+        //note Main.page.removeAndShow will not work if we are targeting the same page url so we will use Main.card.removeTo         
+        Main.card.removeTo({
+            container: '#home-layout',
+            url: "game-home.html",
+            fade: true,
+            data: game,
+            onShow: Ns.GameHome.Content.bind(Ns.GameHome)
+        });
+
+    },
+    
     back: function (obj) {
 
         if (obj) {
@@ -23,9 +56,8 @@ Ns.GameHome = {
         }
     },
 
+    removeAndShowGroupDetails: function (group) {
 
-    removeAndShowGroupDetails: function (group) {     
-        
         Main.page.removeAndShow({
             url: 'group-details.html',
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
@@ -34,9 +66,9 @@ Ns.GameHome = {
             data: group
         });
     },
-    
+
     removeAndShowTournamentDetails: function (tournament) {
-        
+
         Main.page.removeAndShow({
             url: 'tournament-details.html',
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
@@ -45,7 +77,6 @@ Ns.GameHome = {
             data: tournament
         });
     },
-    
 
     Content: function (selected_game) {
         Ns.ui.UI.init(selected_game);
@@ -58,7 +89,7 @@ Ns.GameHome = {
             url: Ns.GameHome.GAME_VIEW_HTML,
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
-            onBeforeShow: Ns.GameView.Content,
+            onBeforeShow: Ns.GameView.Content.bind(Ns.GameView),
             data: match});
 
     },
@@ -68,7 +99,7 @@ Ns.GameHome = {
             url: Ns.GameHome.GAME_VIEW_B_HTML,
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
-            onBeforeShow: Ns.GameViewB.Content,
+            onBeforeShow: Ns.GameViewB.Content.bind(Ns.GameViewB),
             onShow: function () {
                 //hide uneccessary component
                 document.getElementById("game-view-b-bluetooth-icon").style.display = 'none';
@@ -82,7 +113,7 @@ Ns.GameHome = {
             url: Ns.GameHome.GAME_WATCH_HTML,
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
-            onBeforeShow: Ns.GameWatch.Content,
+            onBeforeShow: Ns.GameWatch.Content.bind(Ns.GameWatch),
             data: match
         });
     },
@@ -92,7 +123,7 @@ Ns.GameHome = {
             url: Ns.GameHome.GAME_VIEW_B_HTML,
             effect: "fade", //we will now use fade since slide effect has performace issue for large page content
             duration: 300,
-            onBeforeShow: Ns.GameViewB.Content,
+            onBeforeShow: Ns.GameViewB.Content.bind(Ns.GameViewB),
             onShow: function () {
                 //show bluetooth icon
                 document.getElementById("game-view-b-bluetooth-icon").style.display = 'block';
@@ -198,7 +229,7 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showGroupChat: function (group) {
 
         Main.page.show({
@@ -211,7 +242,7 @@ Ns.GameHome = {
         });
 
     },
-    
+
     showTournamentGeneralChat: function (tournament) {
 
         Main.page.show({
@@ -223,7 +254,7 @@ Ns.GameHome = {
             data: tournament
         });
     },
-    
+
     showTournamentInhouseChat: function (tournament) {
 
         Main.page.show({

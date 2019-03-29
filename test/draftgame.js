@@ -8,7 +8,7 @@ function draughtsFn(variant) {
     //12 x 12 board is supported only for human to human players and not for robot.
     //12 x 12 board is not supported by the game engine (robot) because the bit value max is 127 and so storing bit move is very difficult if not impossible for maximum performance 
     //with 12 x 12 board (ie 144 squares which is greate than 127). so we only support 10 x 10 and 8 x 8 for robot.
-    
+
     this.MAX_VALUE = 1000000;
     this.turn = true; //white
     this.board = [];
@@ -95,7 +95,13 @@ function draughtsFn(variant) {
      * @return {undefined}
      */
     this.boardPosition = function (board_positon) {
-        if (typeof board_positon === 'string') {
+
+        if (!board_positon) {
+
+            Draughts(variant);
+            board_positon = boardPosition.call(this);
+
+        } else if (typeof board_positon === 'string') {
             board_positon = parseFEN.call(this, board_positon);
         } else {
             throw new Error("expected FEN string representation of board position");
@@ -110,6 +116,7 @@ function draughtsFn(variant) {
         }
 
         this.turn = board_positon.turn;
+
         initBoard.call(this);
 
         var gm_pieces = board_positon.pieces;
@@ -190,12 +197,16 @@ function draughtsFn(variant) {
         boardPiecesCount.call(this);
     };
 
-    function parseFEN(fen) {
-        var position = {
-            turn: null,
+    function boardPosition() {
+        return {
+            turn: this.turn,
             size: this.SIZE,
-            pieces: null
+            pieces: this.pieces
         };
+    }
+
+    function parseFEN(fen) {
+        var position = boardPosition.call(this);
 
         if (fen.charAt(0) !== '[' || fen.charAt(fen.length - 1) !== ']') {
             throw Error('Invalid FEN  - openning or closing square brackets missing!');
@@ -976,7 +987,7 @@ function draughtsFn(variant) {
         var caps = [];
 
         //do the capture
-        findCaptives(pce.crowned, origin, origin, 0, pce.white, null, caps, false);
+        findCaptives.call(this, pce.crowned, origin, origin, 0, pce.white, null, caps, false);
 
         return pce.crowned ? normalizeKingCaps(caps) : caps;
     };
@@ -1038,7 +1049,7 @@ function draughtsFn(variant) {
          * 
          */
         for (var direction = 1; direction < 5; direction++) {
-            c = nextCaptive(crowned, origin, from_sq, old_direction, direction, !white);
+            c = nextCaptive.call(this, crowned, origin, from_sq, old_direction, direction, !white);
             if (c) {
 
                 var node = {};
@@ -1049,7 +1060,7 @@ function draughtsFn(variant) {
                 cyclic = node.visited[c.capture] === 1; //detect if capture square has already been visited to avoid aroundabout (cyclic) trip capable of causing stackoverflow on recursion.
                 node.visited[c.capture] = 1;
 
-                findCaptives(crowned, origin, c.dest_sq, direction, white, node, caps, cyclic);
+                findCaptives.call(this, crowned, origin, c.dest_sq, direction, white, node, caps, cyclic);
 
                 c = cyclic ? null : c;
                 if (!cyclic) {
@@ -1084,9 +1095,9 @@ function draughtsFn(variant) {
                 {
                     if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
                         var next = draughts.board[from_sq].SquareRightUp;
-                        return manCaptive(origin, next, next.SquareRightUp, opponent);
+                        return manCaptive.call(this, origin, next, next.SquareRightUp, opponent);
                     } else {
-                        return flyingKingCaptive(origin, from_sq, 'SquareRightUp', opponent);
+                        return flyingKingCaptive.call(this, origin, from_sq, 'SquareRightUp', opponent);
                     }
                 }
                 break;
@@ -1095,9 +1106,9 @@ function draughtsFn(variant) {
 
                     if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
                         var next = draughts.board[from_sq].SquareLeftUp;
-                        return manCaptive(origin, next, next.SquareLeftUp, opponent);
+                        return manCaptive.call(this, origin, next, next.SquareLeftUp, opponent);
                     } else {
-                        return flyingKingCaptive(origin, from_sq, 'SquareLeftUp', opponent);
+                        return flyingKingCaptive.call(this, origin, from_sq, 'SquareLeftUp', opponent);
                     }
 
                 }
@@ -1106,9 +1117,9 @@ function draughtsFn(variant) {
                 {
                     if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
                         var next = draughts.board[from_sq].SquareRightDown;
-                        return manCaptive(origin, next, next.SquareRightDown, opponent);
+                        return manCaptive.call(this, origin, next, next.SquareRightDown, opponent);
                     } else {
-                        return flyingKingCaptive(origin, from_sq, 'SquareRightDown', opponent);
+                        return flyingKingCaptive.call(this, origin, from_sq, 'SquareRightDown', opponent);
                     }
 
                 }
@@ -1118,9 +1129,9 @@ function draughtsFn(variant) {
 
                     if (!crowned || (crowned && !this.Rules.flying_kings)) { // for men and non-flying kings
                         var next = draughts.board[from_sq].SquareLeftDown;
-                        return manCaptive(origin, next, next.SquareLeftDown, opponent);
+                        return manCaptive.call(this, origin, next, next.SquareLeftDown, opponent);
                     } else {
-                        return flyingKingCaptive(origin, from_sq, 'SquareLeftDown', opponent);
+                        return flyingKingCaptive.call(this, origin, from_sq, 'SquareLeftDown', opponent);
                     }
                 }
                 break;
@@ -2058,11 +2069,11 @@ function draughtsFn(variant) {
         }
 
         if (this.SIZE === 10) {//For 10 x 10
-            if (wk_count > 0 || b_count <= 3) {//it is believed the game can no longer be won
+            if (wk_count <= 3 && b_count <= 3) {//it is believed the game can no longer be won
                 return this.DRAW; //draw
             }
 
-            if (bk_count > 0 || w_count <= 3) {//it is believed the game can no longer be won
+            if (bk_count <= 3 && w_count <= 3) {//it is believed the game can no longer be won
                 return this.DRAW;//draw
             }
         }
@@ -2534,6 +2545,8 @@ function draughtsFn(variant) {
             var best = bestMove.call(draughts, draughts.DEPTH);
             draughts.moveTo(best.from, best.path, fn);
         };
+        
+        return this;
     };
 
 
@@ -2640,7 +2653,31 @@ function draughtsFn(variant) {
     };
     return this;
 }
-;
+
+onmessage = function(e) {
+
+    try {
+        
+        var data = e.data;
+        var obj = JSON.parse(data);
+        if (!obj.position) {
+            return;
+        }
+        var draft = Draughts();
+        
+        var robot = draft.Robot(obj.position, obj.depth);
+        robot.play(function (r) {
+            var result = JSON.stringify(r);
+            postMessage(result);
+        });
+
+    } catch (e) {
+        console.log(e);
+    }
+
+
+};
+
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = Draughts;

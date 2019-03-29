@@ -12,7 +12,31 @@ Ns.GameHome = {
     GAME_VIEW_B_HTML: 'game-view-b-ld.html',
     GAME_WATCH_HTML: 'game-watch-ld.html',
     GAME_WAIT_HTML: 'wait-player-ld.html',
+    
+    show: function () {
+        
+        Main.page.show({
+            container: '#home-main',
+            url: "game-home-ld.html",
+            fade: true,
+            data: Ns.ui.UI.selectedGame,
+            onShow: Ns.GameHome.Content
+        });
 
+    },
+    
+    switchGame: function (game) {
+                
+        Main.card.removeTo({
+            container: '#home-layout',
+            url: "game-home-ld.html",
+            fade: true,
+            data: game,
+            onShow: Ns.GameHome.Content
+        });
+
+    },
+    
     back: function (obj) {
         if (!obj.container) {
             obj.container = '#home-main';
@@ -50,7 +74,6 @@ Ns.GameHome = {
         document.getElementById("home-game-panel").innerHTML = Ns.ui.UI.gameViewHtml;
         Ns.GameView.Content(match);
 
-
     },
     showGameViewB: function (match) {
 
@@ -67,50 +90,6 @@ Ns.GameHome = {
     },
     Content: function (selected_game) {
         Ns.ui.UI.init(selected_game);
-
-        checkOrientation();
-
-
-        function checkOrientation() {
-
-            var left_panel = document.getElementById('home-main');
-            var right_panel = document.getElementById('home-game-panel');
-
-            layoutHome();
-            Main.dom.removeListener(window, 'orientationchange', layoutHome);
-            Main.dom.addListener(window, 'orientationchange', layoutHome);
-
-            function layoutHome() {
-
-                right_panel.style.position = 'absolute';
-                right_panel.style.top = 0;
-                right_panel.style.bottom = 0;
-
-                if (Main.device.isXLarge()) {
-
-                    left_panel.style.width = '25%';
-
-                    right_panel.style.position = 'absolute';
-                    right_panel.style.top = 0;
-                    right_panel.style.bottom = 0;
-                    right_panel.style.left = left_panel.style.width;
-                    right_panel.style.width = '75%';
-
-
-                } else {
-
-                    left_panel.style.width = '40%';
-
-                    right_panel.style.position = 'absolute';
-                    right_panel.style.top = 0;
-                    right_panel.style.bottom = 0;
-                    right_panel.style.left = left_panel.style.width;
-                    right_panel.style.width = '60%';
-
-                }
-            }
-        }
-
     },
     showBluetoothGame: function () {
         //show a dialog to display startup settings

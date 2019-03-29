@@ -1,6 +1,6 @@
 
 
-var draft = require('./draftgame-1')();
+var draft = require('./draftgame')();
 
 
 
@@ -80,15 +80,15 @@ console.log('-------------------------------------');
 
 draft.printBoard();
 
-var depth = 5;
-/*var BoardPostion = '';//TODO
+var depth = 13;
+var BoardPostion = '';//TODO
 var robot = new draft.Robot(BoardPostion, depth);
 
 
 robot.play(function(result){
-    console.log(JSON.stringify(result));
+    console.log('best move', JSON.stringify(result));
 });
-*/
+
 
 draft.printBoard();
 

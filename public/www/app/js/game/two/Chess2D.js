@@ -20,6 +20,20 @@ Ns.game.two.Chess2D = {
 
     },
 
+    getMoveSearcTime: function () {
+
+        //TODO - The search time will depend on game difficulty level
+
+        return 5000;
+    },
+    
+    robotSearchMove: function(game_position) {
+
+        this.gameEngineWorker.postMessage('position fen ' + game_position);
+        this.gameEngineWorker.postMessage('go movetime ' + this.getMoveSearcTime());
+        
+    },
+    
     getGameEngineWorkerJs: function () {
         return 'resources/game_engines/stockfish.js';
     },

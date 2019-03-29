@@ -4,88 +4,67 @@
 
 
 Ns.GameView = {
-    rightPanelTitleComp: null,
-    rightPanelHTML: null,
+    
+    extend: 'Ns.ui.AbstractGameSection',
 
-    afterRightContentHide: function () {
-        if (Ns.GameView.rightPanelTitleComp) {
-            Ns.GameView.rightPanelTitleComp.innerHTML = '';
-            document.getElementById('game-view-right-content').outerHTML = Ns.GameView.rightPanelHTML;
-            Ns.ui.GamePanel.rightContentName = '';
-        }
+    getRightPanelWidth: function(){
+        return '80%';        
+    },
+    
+    getRightPanelOffRight: function () {
+        return '-' + this.getRightPanelWidth();
     },
 
-    showRightContent: function (data, title, func) {
-
-        $('#game-view-right-panel-close').on('click', function () {
-            Ns.GameView.hideRightContent();
-        });
-        
-        Main.card.back('game-view-right-panel-header');//clear any card on the header
-        
-        document.getElementById("game-view-right-panel-body").innerHTML = '';
-
-        Ns.GameView.rightPanelTitleComp = document.getElementById("game-view-right-panel-header-title");
-        Ns.GameView.rightPanelTitleComp.innerHTML = title;
-
-        document.getElementById("game-view-right-panel-body").innerHTML = '';
-
-        var el = document.getElementById('game-view-right-content');
-
-        var is_visible = $(el).is(':visible');
-        
-        el.style.display = 'block';//make visible
-        
-        func();
-
-        if (!is_visible) {
-            el.style.width = '80%';//we set this width programatically here
-            el.style.right = "-80%";//set to negative of the width we have in css file or the width we set programatically here
-            //animate the element to right of 0%
-            Main.anim.to('game-view-right-content', 500, {right: '0%'});
-        }
-
+    getRightPanelPinnedID: function () {
+        //return nothing
     },
-    hideRightContent: function () {
-        var el = document.getElementById('game-view-right-content');
-        var negative_width = "-80%";//set to negative of the width we have in css file or the width we set programatically here
-        if (el.style.right === '0%') {
-            el.style.display = 'block';//ensure visible        
-            Main.anim.to('game-view-right-content', 500, {right: negative_width}, Ns.GameView.afterRightContentHide);
-        }
+
+    getRightPanelCloseID: function(){        
+        return 'game-view-right-panel-close';
     },
-    Content: function (data) {
-
-        Ns.ui.GamePanel.rightContentName = '';
-
-        Ns.GameView.rightPanelHTML = document.getElementById('game-view-right-content').outerHTML;
-
-        var panel_main = document.getElementById('game-view-main');
-        var board_el = document.getElementById('game-view-main-board');
-        var upper_el = document.getElementById('game-view-main-upper');
-        var lower_el = document.getElementById('game-view-main-lower');
-
-        Ns.ui.GamePanel.ownGameView(data, panel_main, resizeMain);
-
-        function resizeMain(data, board_size, upper_height, lower_height) {
-            board_el.style.width = board_size + 'px';
-            board_el.style.height = board_size + 'px';
-
-            upper_el.style.width = board_el.style.width;
-            upper_el.style.height = upper_height + 'px';
-
-            lower_el.style.width = board_el.style.width;
-            lower_el.style.height = lower_height + 'px';
-
-            Ns.ui.GamePanel.showGame(data, 'game-view-main-board');
-        }
-
-        $('#game-view-back-btn').off('click');
-        $('#game-view-back-btn').on('click', function () {
-            Main.page.back();
-        });
-
-
-    }
-
+    
+    getRightPanelHeaderID: function(){        
+        return 'game-view-right-panel-header';
+    },
+    
+    getRightPanelBodyID: function(){  
+        return 'game-view-right-panel-body';      
+    },
+    
+    getRightPanelHeaderTitleID: function(){  
+        return 'game-view-right-panel-header-title';      
+    },
+    
+    getRightContentID: function(){      
+        return 'game-view-right-content';  
+    },
+    
+    getMainID: function(){   
+        return 'game-view-main';     
+    },
+    
+    getMainBoardID: function(){        
+        return 'game-view-main-board';
+    },
+    
+    getMainUpperID: function(){       
+        return 'game-view-main-upper'; 
+    },
+    
+    getMainLowerID: function(){        
+        return 'game-view-main-lower';
+    },
+    
+    getBackButtonID: function(){
+        return 'game-view-back-btn';
+    },
+    
+    onClickBackButton: function(){
+        Main.page.back();
+    },
+    
+    onViewReady: function(data){
+        Ns.ui.GamePanel.ownGameView(data);
+    },
+    
 };
