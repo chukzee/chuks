@@ -76,9 +76,7 @@ Main.on("pagecreate", function (arg) {
      <button id="btn-season-delete" style="margin: 5px;">Season delete</button>
      <button id="btn-season-count" style="margin: 5px;">Season count</button>
      <button id="btn-get-seasons" style="margin: 5px;">Get seasons</button>
-     <button id="btn-season-table-standings" style="margin: 5px;">Season Table Standings</button>
-    
-     
+     <button id="btn-season-table-standings" style="margin: 5px;">Season Table Standings</button>         
      */
 
     $('#btn-create-tournament').on('click', function () {
@@ -240,6 +238,7 @@ Main.on("pagecreate", function (arg) {
         } else {
             tournament_names_arr = [];
         }
+        
         Main.ro.tourn.getTournamentsInfoList(tournament_names_arr)
                 .get(function (data) {
                     //alert(data);

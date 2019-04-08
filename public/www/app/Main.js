@@ -3,6 +3,9 @@ var Main = {};
 
 (function () {
 
+    var _host = window.location.hostname;
+    var _protocol = window.location.protocol;
+    var _pathname = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
     var isPageInit = false;
     var transitionInProgress = false;
     var devicePageRouteUrl;
@@ -239,6 +242,41 @@ var Main = {};
 
     })();
 
+    Main.host = function(){
+        return _host;
+    };
+
+    Main.protocol = function(){
+        return _protocol;
+    };
+
+    Main.pathname = function(){
+        return _pathname;
+    };
+
+    function urlWithHostAndProtocol(url) {
+
+        var index = url.indexOf('?');
+        var u = url;
+        var param_part = '';
+
+        if (index > -1) {
+            u = url.substring(0, index);
+            param_part = url.substring(index);
+        }
+
+        if (u.indexOf('://') === -1) {
+            if (!u.startsWith('/')) {
+                u = '/' + u;
+            }
+            u = _protocol + '//' + _host + u;
+        }
+
+        url = u + param_part;
+
+        return url;
+    }
+
     function xhrReq(send, method, url) {
         var data, successFn, errorFn, completeFn;
         if (arguments.length === 4) {
@@ -305,7 +343,7 @@ var Main = {};
             }
         }
 
-
+        url = urlWithHostAndProtocol(url);
         send(xhttp, method, url, param, headers, timeout);
     }
 
@@ -376,6 +414,7 @@ var Main = {};
             }
             xhrReq.apply(this, argu);
             function sendGet(xhttp, method, url, param, headers, timeout) {
+
                 xhttp.open(method, url + (param ? ('?' + param) : ''), true);
 
                 for (var name in headers) {
@@ -432,6 +471,7 @@ var Main = {};
          * @returns {undefined}
          */
         this.send = function (f, action_url, successFn, errorFn) {
+            action_url = urlWithHostAndProtocol(action_url);
             var inputs = f;
             if (f instanceof window.HTMLFormElement) {
                 inputs = f.querySelectorAll('[name]');
@@ -546,6 +586,7 @@ var Main = {};
     Main.device = {
 
         isMobileDeviceReady: false,
+        isDesktop: false,
         backActions: [], //array of functions to execute when back button is press
         menuButtonAction: null,
         searchButtonAction: null,
@@ -1137,8 +1178,9 @@ var Main = {};
             var serial = 0;
             var reconnectFactor = 1;
             var last_conn_time = new Date().getTime();
-            var url = 'https://' + window.location.hostname + '/rcall';
 
+            var url = '/rcall';
+            url = urlWithHostAndProtocol(url);
             if (window.io) {
                 sock();
             }
@@ -2350,7 +2392,7 @@ var Main = {};
                         showPg(pg, transition, forward, null, pgShowObj, hasBackAction);
                         return;
                     }
-                    
+
                     //now make it the last page
                     pages.splice(pg_index, 1);//remove from old location
                     pages.push(pg);//put at the end
@@ -2380,6 +2422,7 @@ var Main = {};
                 }
             }
             var inUrl = intentUrl(url);
+
             $.get(inUrl, function (response) {
 
                 var found = false;
@@ -4103,8 +4146,8 @@ var Main = {};
      */
     function jsClassName(js_file_name) {
 
-        var device_size_cat = deviceSizeCategory();
-        var deviceJs = deviceUrl + device_size_cat + '/js/';
+        //var device_size_cat = deviceSizeCategory();
+        var deviceJs = deviceUrl + device_category + '/js/';
         var appJs = appUrl + 'js/';
         if (js_file_name.startsWith(deviceJs)) {
             if (js_file_name.endsWith('-sd.js')
@@ -5990,7 +6033,8 @@ var Main = {};
             } else {
                 device_size_cat = deviceSizeCategory();
             }
-            var pkg = appUrl + "include.json";
+            
+            var pkg = _pathname + appUrl + "include.json";
 
             Main.ajax.get(pkg,
                     function (res) {
@@ -6010,6 +6054,30 @@ var Main = {};
 
 
                         var json = window[variable];
+
+                        if (!json.domain) {
+                            throw Error('Invalid include - must contain property "domain"');
+                        } else if (!Main.util.isString(json.domain)) {
+                            throw Error('Invalid value of property of domain in include file');
+                        }
+
+
+                        if (!json.protocol) {
+                            throw Error('Invalid include - must contain property "protocol"');
+                        } else if (!Main.util.isString(json.protocol)) {
+                            throw Error('Invalid value of property of protocol in include file');
+                        }
+
+                        if ((window.location.protocol !== 'http:' && window.location.protocol !== 'https:')
+                                || !_host) {//likely a desktop or mobile app
+                            _host = json.domain;
+                            _protocol = json.protocol;
+                        }
+
+                        if (_host === 'localhost' || _host === '127.0.0.1') {
+                            console.warn('WARNING!!! You are connecting to local server using "' + _host + '". Is this intentional? ');
+                        }
+
                         //setup the application namespace
                         if (Main.util.isString(json.namespace)) {
                             if (window[json.namespace]) {
@@ -6478,23 +6546,34 @@ var Main = {};
         //use them. STICK ONLY TO window.innerHeight and window.innerWidth
 
 
-        portriat_height = window.innerWidth > window.innerHeight ?
+        var longer_size = window.innerWidth > window.innerHeight ?
                 window.innerWidth
                 : window.innerHeight;
 
 
-        portriat_width = window.innerWidth < window.innerHeight ?
+        var short_size = window.innerWidth < window.innerHeight ?
                 window.innerWidth
                 : window.innerHeight;
+
+        portriat_height = longer_size;
+        portriat_width = short_size;
 
         //portriat_width = portriat_width / window.devicePixelRatio;
 
-        if (portriat_width >= 800) {//desktops and laptops
+        if (longer_size >= 800 && short_size >= 800) {//desktops and laptops
             device_category = "large";
-        } else if (portriat_width < 800 && portriat_width >= 480) {//tablets
+        } else if (longer_size >= 600) {//tablets
             device_category = "medium";
         } else {//smart phones
             device_category = "small";
+        }
+        
+        if(window.innerWidth >= 800 
+                && !('onorientationchange' in window)
+                && window.devicePixelRatio === 1)
+        {//a good guess that it is a desktop
+            device_category = "large";
+            Main.device.isDesktop = true;
         }
 
         return device_category;

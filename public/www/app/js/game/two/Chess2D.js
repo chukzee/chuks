@@ -16,6 +16,7 @@ Ns.game.two.Chess2D = {
 
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_PIECE_2D_CHANGE, this.onOptionPieceChange.bind(this));
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_BOARD_TOP_CHANGE, this.onOptionBoardTopChange.bind(this));
+        Main.event.on(Ns.Const.EVT_GAME_OPTIONS_BOARD_FRAME_CHANGE, this.onOptionBoardFrameChange.bind(this));
         Main.event.on(Ns.Const.EVT_GAME_OPTIONS_SOUND_CHANGE, this.onOptionSoundChange.bind(this));
 
     },
@@ -26,20 +27,20 @@ Ns.game.two.Chess2D = {
 
         return 5000;
     },
-    
-    robotSearchMove: function(game_position) {
+
+    robotSearchMove: function (game_position) {
 
         this.gameEngineWorker.postMessage('position fen ' + game_position);
         this.gameEngineWorker.postMessage('go movetime ' + this.getMoveSearcTime());
-        
+
     },
-    
+
     getGameEngineWorkerJs: function () {
-        return 'resources/game_engines/stockfish.js';
+        return Main.pathname() + 'resources/game_engines/stockfish.js';
     },
 
     getGameEngineWorkerJsAsm: function () {
-        return 'resources/game_engines/stockfish.asm.js';
+        return Main.pathname() + 'resources/game_engines/stockfish.asm.js';
     },
 
     getBestMoveFromGameEngineOutput: function (output) {
@@ -114,13 +115,17 @@ Ns.game.two.Chess2D = {
         return Ns.Options.getChessBoardThemeUrl();
     },
 
+    getBoardFrameThemeUrl: function () {
+        return Ns.Options.getChessBoardFrameThemeUrl();
+    },
+
     getPieceTheme: function () {
         return Ns.Options.get2DChessPieceTheme();
     },
 
     setPieceAppearance: function (pceEl, piece_theme) {
         var type = pceEl.dataset.name.charAt(0);
-        pceEl.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pceEl.dataset.color + type + '.png';
+        pceEl.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + pceEl.dataset.color + type + '.png';
     },
 
     promotePiece: function (pieceElement, promotion) {
@@ -131,25 +136,25 @@ Ns.game.two.Chess2D = {
 
             case'q':
             {
-                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'queen';
                 break;
             }
             case'r':
             {
-                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'rook';
                 break;
             }
             case'n':
             {
-                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'knight';
                 break;
             }
             case'b':
             {
-                pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'bishop';
                 break;
             }
@@ -158,7 +163,7 @@ Ns.game.two.Chess2D = {
 
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('img');
-        pieceElement.src = '../resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
+        pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
         pieceElement.dataset.color = pce.color;
 
         switch (pce.type) {

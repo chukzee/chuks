@@ -7,6 +7,29 @@ Ns.ui.AbstractGameSection = {
     rightPanelHTML: null,
     isLayoutViewListener: false,
     isRigthPanelPinned: false,
+    
+    initContent: function (data) {
+        var me = this;
+        if (!this.isLayoutViewListenerAdded) {
+            //Do not use orientationchange - does not work properly because it fires too quickly before Dom elements are resized, i believe!
+            Main.dom.addListener(window, 'resize', function (evt) {
+                me.layoutView.call(me);
+            });
+            this.isLayoutViewListenerAdded = true;
+        }
+
+        Ns.ui.GamePanel.rightContentName = '';
+
+        this.layoutView(data);
+
+        this.onViewReady(data);
+
+        $('#' + this.getBackButtonID()).off('click');
+        $('#' + this.getBackButtonID()).on('click', function () {
+            me.onClickBackButton.call(me);
+        });
+
+    },
 
     afterRightContentHide: function () {
 
@@ -14,6 +37,18 @@ Ns.ui.AbstractGameSection = {
             this.rightPanelTitleComp.innerHTML = '';
             Ns.ui.GamePanel.rightContentName = '';
         }
+    },
+
+    getMainUpperHeight: function () {
+        return 50;//can be overridden by subclass
+    },
+
+    getMainLowerHeight: function () {
+        return 50;//can be overridden by subclass
+    },
+
+    getMainPadding: function () {
+        return 10;//can be overridden by subclass
     },
 
     getRightPanelWidth: function () {
@@ -146,7 +181,13 @@ Ns.ui.AbstractGameSection = {
 
     },
 
-    hideRightContent: function () {
+    hideRightContent: function (obj) {
+        if(obj && obj.tapped_surface === true){
+            if(this.isRigthPanelPinned){
+                return;
+            }
+        }
+        
         var me = this;
 
         var el = document.getElementById(me.getRightContentID());
@@ -175,15 +216,12 @@ Ns.ui.AbstractGameSection = {
         if (!board_el || !upper_el || !lower_el) {
             return;
         }
-        //panel_main.style = 'background-color: brown;';
 
-        var topBottomHeight = 50;
+        upper_el.style = 'position: absolute; top: 0; left: 0; right: 0; height: ' + this.getMainUpperHeight() + 'px';
+        board_el.style = 'position: absolute; top: ' + this.getMainUpperHeight() + 'px; bottom: ' + this.getMainLowerHeight() + 'px; left: 0; right: 0;';
+        lower_el.style = 'position: absolute; bottom: 0; left: 0; right: 0;  height: ' + this.getMainLowerHeight() + 'px;';
 
-        upper_el.style = 'position: absolute; top: 0; left: 0; right: 0; height: ' + topBottomHeight + 'px';
-        board_el.style = 'position: absolute; top: ' + topBottomHeight + 'px; bottom: ' + topBottomHeight + 'px; left: 0; right: 0;';
-        lower_el.style = 'position: absolute; bottom: 0; left: 0; right: 0;  height: ' + topBottomHeight + 'px;';
-
-        var padding = 10;
+        var padding = this.getMainPadding();
 
         var bound = board_el.getBoundingClientRect();
 
@@ -203,42 +241,20 @@ Ns.ui.AbstractGameSection = {
 
         size -= padding;
 
-        board_el.style.top = (topBottomHeight + padding + extraVerticalPadding) + 'px';
-        board_el.style.bottom = (topBottomHeight + padding + extraVerticalPadding) + 'px';
+        board_el.style.top = (this.getMainUpperHeight() + padding + extraVerticalPadding) + 'px';
+        board_el.style.bottom = (this.getMainLowerHeight() + padding + extraVerticalPadding) + 'px';
         board_el.style.left = (padding + extraHorizontalPadding) + 'px';
         board_el.style.right = (padding + extraHorizontalPadding) + 'px';
 
-        console.log(board_el.getBoundingClientRect());
+        //console.log(board_el.getBoundingClientRect());
 
         Ns.ui.GamePanel.showGame(match, this.getMainBoardID());
+        
         //resize right panel
-
         var right_panel = document.getElementById(this.getRightContentID());
         right_panel.style.width = this.getRightPanelWidth();
 
-    },
-
-    Content: function (data) {
-        var me = this;
-        if (!this.isLayoutViewListenerAdded) {
-            //Do not use orientationchange - does not work properly because it fires too quickly before Dom elements are resized, i believe!
-            Main.dom.addListener(window, 'resize', function (evt) {
-                me.layoutView.call(me);
-            });
-            this.isLayoutViewListenerAdded = true;
-        }
-
-        Ns.ui.GamePanel.rightContentName = '';
-
-        this.layoutView(data);
-
-        this.onViewReady(data);
-
-        $('#' + this.getBackButtonID()).off('click');
-        $('#' + this.getBackButtonID()).on('click', function () {
-            me.onClickBackButton.call(me);
-        });
-
     }
+
 
 };

@@ -14,6 +14,14 @@ Ns.GameView = {
         Main.event.on(Ns.Const.EVT_LAYOUT_GAME_PANEL, this.layoutView.bind(this));
     },
 
+    Content: function(data){
+      this.initContent(data);  
+    },
+
+    getMainPadding: function () {
+        return 0;
+    },
+
     getRightPanelWidth: function () {
         return window.screen.height > window.screen.width ? this.PORTRAIT_RHS_PANEL_WIDTH : this.LANDSCAPE_RHS_PANEL_WIDTH;
     },
@@ -72,6 +80,13 @@ Ns.GameView = {
 
     onViewReady: function (data) {
         Ns.ui.GamePanel.ownGameView(data);
+        
+        if (Ns.GameHome.isLandscape()) {//landscape
+            $('.game9ja-portrait-only').hide();
+        } else {
+            $('.game9ja-portrait-only').show();
+        }
+
     },
 
 };

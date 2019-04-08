@@ -7,6 +7,10 @@ Ns.GameView = {
     extend: 'Ns.ui.AbstractGameSection',
 
     rightPanelTitleComp: null,
+    
+    Content: function(data){
+      this.initContent(data);  
+    },
 
     getRightPanelWidth: function () {
         return '40%';

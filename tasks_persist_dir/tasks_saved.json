@@ -31,5 +31,65 @@
         "startTime": 1519903910000,
         "repeat": false,
         "count_run": 0
-    }
+    },
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "1_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0"
+    ],
+    "taskId": "2_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1554499538792,
+    "repeat": false,
+    "count_run": 0
+},
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "4_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0"
+    ],
+    "taskId": "5_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1554499555560,
+    "repeat": false,
+    "count_run": 0
+},
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "7_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0"
+    ],
+    "taskId": "8_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1554499562062,
+    "repeat": false,
+    "count_run": 0
+},
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "10_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0"
+    ],
+    "taskId": "11_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1554499568216,
+    "repeat": false,
+    "count_run": 0
+},
+{
+    "delay": 300000,
+    "classMethod": "game/PlayRequest/_expire",
+    "param": [
+        "15_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0"
+    ],
+    "taskId": "16_ID_NAEoeO368I7PXyBmsYMZwrdHMOHMy1ZB8KauMwNCvLNLVCc7v6Te6PaQbHIqH9C0",
+    "machineId": "J2140054EALKBA",
+    "startTime": 1554670986002,
+    "repeat": false,
+    "count_run": 0
+}
 ]

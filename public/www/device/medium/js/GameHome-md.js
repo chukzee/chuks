@@ -158,17 +158,26 @@ Ns.GameHome = {
         right_panel.style.bottom = 0;
 
         if (Ns.GameHome.isLandscape()) {//landscape
+            
             left_panel.style.width = '40%';
             left_panel.style.display = 'block';
 
             right_panel.style.width = '60%';
             right_panel.style.left = left_panel.style.width;
             right_panel.style.display = 'block';
-
+            
+            var gameObj = Ns.Util.getGameObject(Ns.ui.UI.selectedGame);
+            if (!gameObj.config) {
+                return Ns.Robot.showGame();
+            }
             Main.event.fire(Ns.Const.EVT_LAYOUT_GAME_PANEL);
+            
+            $('.game9ja-portrait-only').hide();
 
         } else {//portrait
             Ns.GameHome.portraitView(false);
+            
+            $('.game9ja-portrait-only').show();
         }
     },
     checkOrientation: function () {
@@ -186,7 +195,7 @@ Ns.GameHome = {
         Ns.ui.UI.init(selected_game);
 
         Ns.GameHome.checkOrientation();
-
+        
     },
     showBluetoothGame: function () {
         //show a dialog to display startup settings

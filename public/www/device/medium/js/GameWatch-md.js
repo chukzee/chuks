@@ -12,6 +12,22 @@ Ns.GameWatch = {
     constructor: function () {
         Main.event.on(Ns.Const.EVT_LAYOUT_GAME_PANEL, this.layoutView.bind(this));
     },
+   
+    Content: function(data){
+      this.initContent(data);  
+    },
+ 
+    getMainPadding: function () {
+        return 0;
+    },
+
+    getMainUpperHeight: function () {
+        return 60;
+    },
+
+    getMainLowerHeight: function () {
+        return 50;
+    },
 
     getRightPanelWidth: function () {
         return window.screen.height > window.screen.width ? this.PORTRAIT_RHS_PANEL_WIDTH : this.LANDSCAPE_RHS_PANEL_WIDTH;
@@ -72,6 +88,13 @@ Ns.GameWatch = {
 
     onViewReady: function (data) {
         Ns.ui.GamePanel.watchGame(data);
+        
+        if (Ns.GameHome.isLandscape()) {//landscape
+            $('.game9ja-portrait-only').hide();
+        } else {
+            $('.game9ja-portrait-only').show();
+        }
+
     },
 
 };

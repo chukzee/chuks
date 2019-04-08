@@ -11,7 +11,6 @@ and open the template in the editor.
 
 $h_color_1 : #333;
 $h_color_2 : #222;
-//$base_background : linear-gradient($h_color_1, $h_color_2);
 $base_background : $h_color_2;
 $base_text_color : #eee;
 $base_padding : 5px;
@@ -33,7 +32,7 @@ $header_margin : 0;
 
 //Small Header variables
 $small_header_height : 35px;
-$small_header_bg : $h_color_1;
+$small_header_bg : #307e4e;
 
 
 //Footer variables
@@ -55,7 +54,6 @@ $list_item_hover_color: #eee;
     margin: 0;
     width: 100%;
     height: $header_height;
-    background: $h_color_1;//fallback to browser that do not support gradient
     background: $header_bg;
     color: $header_text_color;
     //border-bottom: 1px  groove;
@@ -76,7 +74,6 @@ $list_item_hover_color: #eee;
     bottom :0;
     width: 100%;
     height: $small_header_height;
-    //background: $h_color_1;//fallback to browser that do not support gradient
     background: $footer_bg;
     color: $header_text_color;
     //border-top: 1px  groove;

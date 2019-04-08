@@ -710,6 +710,11 @@ Ns.view.Tournament = {
             }
         };
 
+        if (!tournament.seasons || tournament.seasons.length === 0) {
+            Main.toast.show('No season found. First create a season.');
+            return;
+        }
+
         Main.dialog.show({
             visible: false, //first hide it - we will manually show it only when the dialog and it content is fully rendered by call setVisible to avoid an annoying visual issue
             title: 'Slots',
@@ -732,6 +737,7 @@ Ns.view.Tournament = {
                 table.className = 'slots-edit';
                 var season_index = tournament.seasons.length - 1;
                 var current_season = tournament.seasons[season_index];
+
                 var tr_rows = [];
                 for (var i = 0; i < current_season.slots.length; i++) {
 

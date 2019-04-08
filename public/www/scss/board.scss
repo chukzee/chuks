@@ -93,12 +93,14 @@ piece{
 
 .white-piece-o{
     @extend piece;
-    background: #CC0000;
+    //background-image: url(../../resources/images/wood_base_1.jpg);
+    background-color: #CC0000;
 }
 
 .black-piece-o{
     @extend piece;
-    background: #00001F;
+    //background-image: url(../../resources/images/wood_base_1.jpg);
+    background-color: #00001F;
 }
 
 

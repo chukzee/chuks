@@ -6,6 +6,14 @@
 Ns.GameViewB = {
 
     extend: 'Ns.ui.AbstractGameSection',
+    
+    Content: function(data){
+      this.initContent(data);  
+    },
+
+    getMainPadding: function () {
+        return 0;
+    },
 
     getRightPanelWidth: function(){
         return '80%';        

@@ -128,7 +128,7 @@ Ns.game.AbstractBoard2D = {
 
         //var board_cls = this.getBoardClass(obj.invertedBoard);//@Deprecated
 
-        var gameboard = this.board(el);
+        var gameboard = this.board(this.boardContainer);
 
         this.boardContainer.appendChild(gameboard);
 
@@ -174,6 +174,9 @@ Ns.game.AbstractBoard2D = {
      * @returns {undefined}
      */
     properlySizedBoardContainer: function (el, row_count, inverted_board) {
+    
+        el.style.backgroundImage = 'url(' + this.getBoardFrameThemeUrl() + ')';
+        el.style.backgroundRepeat = 'repeat';
 
         var proper_container = document.createElement('div');
 
@@ -182,13 +185,17 @@ Ns.game.AbstractBoard2D = {
         proper_container.style.backgroundSize = 100 / (this.boardRowCount / 2) + '%';
         console.log(proper_container.style.backgroundSize);
         var box = el.getBoundingClientRect();
-
-        var row_width = Math.floor(box.width / row_count); // to ensure the board theme image is properly repeated
+        var padding = 10;
+        var size = box.width - padding * 2;
+        var row_width = Math.floor(size / row_count); // to ensure the board theme image is properly repeated
 
         var cont_size = row_width * row_count;
         proper_container.style.width = cont_size + 'px';
         proper_container.style.height = cont_size + 'px';
 
+        proper_container.style.position = 'absolute';
+        proper_container.style.top = (box.width - cont_size)/2 + 'px';
+        proper_container.style.left = (box.width - cont_size)/2 + 'px';
 
         return proper_container;
     },
@@ -285,6 +292,13 @@ Ns.game.AbstractBoard2D = {
         this.boardContainer.style.backgroundImage = 'url(' + this.getBoardThemeUrl(this.config.invertedBoard) + ')';
     },
 
+    onOptionBoardFrameChange: function () {
+        if (!this.boardContainer) {
+            return;
+        }
+        this.boardContainer.parentNode.style.backgroundImage = 'url(' + this.getBoardFrameThemeUrl() + ')';
+    },
+
     onOptionSoundChange: function () {
         alert('onOptionSoundChange');
     },
@@ -294,6 +308,10 @@ Ns.game.AbstractBoard2D = {
     },
 
     getBoardThemeUrl: function () {
+        throw Error('Abstract method expected to be implemented by subclass.');
+    },
+
+    getBoardFrameThemeUrl: function () {
         throw Error('Abstract method expected to be implemented by subclass.');
     },
 

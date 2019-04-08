@@ -42,9 +42,9 @@ Ns.Options = {
     },
 
     init: function () {
-        
+
         var me = this;
-        
+
         me._localGetOption('chessPiece2d', function (value) {
             me.chessPiece2d = value;
             if (me.chessPiece2d === null) {
@@ -145,10 +145,13 @@ Ns.Options = {
         this.init();
         var me = this;
         Main.tpl.template({
-            tplUrl: 'game-view-options.html',
+            tplUrl: 'game-view-options-tpl.html',
             data: match.wdl,
             onReplace: function (tpl_var, wdl) {
 
+                if (tpl_var === 'pathname') {
+                    return Main.pathname();
+                }
 
             },
             afterReplace: function (el, data) {
@@ -526,27 +529,27 @@ Ns.Options = {
     },
 
     getChessBoardThemeUrl: function () {
-        return "../resources/games/chess/board/themes/" + this.chessBoardTop + "/60.png";
+        return Main.pathname() + "resources/games/chess/board/themes/" + this.chessBoardTop + "/60.png";
     },
 
     getDraughtsBoardThemeUrl: function (inverted_board) {
-        return "../resources/games/draughts/board/themes/" + this.draughtsBoardTop + "/60" + (inverted_board ? "-inverse" : "") + ".png";
+        return Main.pathname() + "resources/games/draughts/board/themes/" + this.draughtsBoardTop + "/60" + (inverted_board ? "-inverse" : "") + ".png";
     },
 
     getChessBoardFrameThemeUrl: function () {
-        return "../resources/images/" + this.chessBoardFrame + ".jpg";
+        return Main.pathname() + "resources/images/" + this.chessBoardFrame + ".jpg";
     },
 
-    getDrauhtsBoardFrameThemeUrl: function () {
-        return "../resources/images/" + this.draughtsBoardFrame + ".jpg";
+    getDraughtsBoardFrameThemeUrl: function () {
+        return Main.pathname() + "resources/images/" + this.draughtsBoardFrame + ".jpg";
     },
 
     getChessBoardFloorThemeUrl: function () {
-        return "../resources/images/" + this.chessBoardFloor + ".jpg";
+        return Main.pathname() + "resources/images/" + this.chessBoardFloor + ".jpg";
     },
 
     getDraughtsBoardFloorThemeUrl: function () {
-        return "../resources/images/" + this.druahtsBoardFloor + ".jpg";
+        return Main.pathname() + "resources/images/" + this.druahtsBoardFloor + ".jpg";
     },
 
     isSoundAllow: function () {

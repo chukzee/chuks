@@ -173,9 +173,9 @@ Main.on("pagecreate", function (arg) {
     //which lead to memory leak
     
     Main.device.isTesting = true; //TESTING!!!
-    Main.device.isMobileDeviceReady = true; //TESTING!!!
+    Main.device.isMobileDeviceReady = !Main.device.isDesktop; //TESTING!!!
     
-    console.log('Test line to be removed - Main.device.isMobileDeviceReady = true;');
+    console.log('Test line to be removed - Main.device.isMobileDeviceReady = !Main.device.isDesktop;');
     
     document.body.addEventListener('keypress', Main.test.simulateBackButtonListener);
 

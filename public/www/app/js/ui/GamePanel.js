@@ -302,7 +302,7 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-view-main').on('click', function () {
-            Ns.GameView.hideRightContent();
+            Ns.GameView.hideRightContent({tapped_surface: true});
         });
 
     },
@@ -375,7 +375,7 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-view-b-main').on('click', function () {
-            Ns.GameViewB.hideRightContent();
+            Ns.GameViewB.hideRightContent({tapped_surface: true});
         });
 
     },
@@ -432,7 +432,7 @@ Ns.ui.GamePanel = {
         });
 
         $('#game-watch-main').on('click', function () {
-            Ns.GameWatch.hideRightContent();
+            Ns.GameWatch.hideRightContent({tapped_surface: true});
         });
 
     },
@@ -451,7 +451,9 @@ Ns.ui.GamePanel = {
         }
 
         //show robot match
-        Ns.Robot.showGame();
+        if (!(Main.device.isMedium() && Main.device.isPortriat())) {
+            Ns.Robot.showGame();
+        }
 
         Ns.ui.GamePanel.isGamePanelSetup = true;
 

@@ -6,6 +6,22 @@
 Ns.GameWatch = {
 
     extend: 'Ns.ui.AbstractGameSection',
+    
+    Content: function(data){
+      this.initContent(data);  
+    },
+
+    getMainPadding: function () {
+        return 0;
+    },
+
+    getMainUpperHeight: function () {
+        return 60;
+    },
+
+    getMainLowerHeight: function () {
+        return 50;
+    },
 
     getRightPanelWidth: function(){
         return '80%';        

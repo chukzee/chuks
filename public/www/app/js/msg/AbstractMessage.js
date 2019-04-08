@@ -251,6 +251,7 @@ Ns.msg.AbstractMessage = {
         return true;
 
     },
+    
     content: function (data, argu1) {
 
         this.refStateIndex++;
@@ -394,6 +395,7 @@ Ns.msg.AbstractMessage = {
             msg_body.innerHTML = ''; //clear the previous messages
         }  
     },
+
     _redisplayMsgTimeOnNextDay: function () {
 
         var date = new Date();
@@ -449,7 +451,6 @@ Ns.msg.AbstractMessage = {
         };
 
         //TODO: show loading indicator
-
 
         me.rcallGetMessages(bindFn)
                 .after(function () {
@@ -646,6 +647,7 @@ Ns.msg.AbstractMessage = {
             for (var n in msgObj) {
                 copy[n] = msgObj[n];
             }
+            copy._rawContent = copy.content; //the non-html formated content as it was
             copy.content = replacement;
 
             msg_arr.push(copy);
@@ -779,27 +781,28 @@ Ns.msg.AbstractMessage = {
             var msg = child[dom_extra_field];
             msgs.push(msg);
             var content = '';
+            
             if (count > 1) {
                 var full_name = msg.user ? msg.user.full_name : msg.user.user_id;
                 content = '[' + Ns.Util.formatTime(msg.time, true) + ' ' + full_name + ']\n'
-                        + (msg.content ? msg.content : msg.msg)
+                        + (msg._rawContent ? msg._rawContent: ( msg.content ? msg.content : msg.msg))
                         + (i === count - 1 ? '' : '\n');
             } else {
-                content = msg.content ? msg.content : msg.msg;
+                content = msg._rawContent ? msg._rawContent: ( msg.content ? msg.content : msg.msg);
             }
-
+            
             text += content + (i === count - 1 ? '' : '\n');
         }
-
+        
         return {count: count, text: text, msgs: msgs};
     },
-
+        
     shareSelectedContent: function (evt, _this) {
         var s = _this._formatSelection(evt, _this);
         if (s.count === 0) {
             return;
         }
-
+        
         alert('TODO - shareSelectedContent');
     },
 
@@ -808,12 +811,12 @@ Ns.msg.AbstractMessage = {
         if (s.count === 0) {
             return;
         }
-
-
+        
+        
         _this.showReply(evt, s.msgs[0]);
         _this._closeSelection(evt, _this);
     },
-
+        
     copySelectedContent: function (evt, _this) {
         var s = _this._formatSelection(evt, _this);
         if (s.count === 0) {

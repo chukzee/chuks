@@ -26,7 +26,6 @@ Ns.ui.UI = {
         Main.tab({
             container: document.getElementById("home-tab-container"),
             onShow: {
-
                 //"#home-contacts-matches": contactsMatchList,
                 //"#home-groups-matches": groupsMatchList,
                 //"#home-tournaments-matches": tournamentsMatchList
@@ -42,7 +41,6 @@ Ns.ui.UI = {
                 'Create group',
                 'Create tournament',
                 'Profile',
-                'Select game',
                 'Settings',
                 'Help'
             ];
@@ -359,9 +357,6 @@ Ns.ui.UI = {
                 break;
             case 'Profile':
                 Ns.GameHome.showUserProfile(Ns.view.UserProfile.appUser);
-                break;
-            case 'Select game':
-                Main.page.home();//to the index page
                 break;
             case 'Settings':
                 Ns.GameHome.showSettings();

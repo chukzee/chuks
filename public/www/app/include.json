@@ -4,7 +4,11 @@
     "app_name": "GameBaba",
 
     "namespace": "Ns",
-
+    
+    "domain": "localhost", // used if loaded from a desktop or mobile device
+    
+    "protocol": "https:",  // used if loaded from a desktop or mobile device
+    
     /**
      The build tool is responsible for automatically creating this property.   
      */
@@ -82,8 +86,8 @@
             "form.css",
             "tab.css",
             "login.css",
-            "font-awesome-4.7.0.min.css",
             "font-awesome-5.7.2.all.min.css",
+            "font-awesome-4.7.0.min.css",//most be below version 5
             "menu.css",
             "dialog.css",
             "header-items.css",

@@ -68,9 +68,9 @@ piece, .white-piece-o, .black-piece-o {
   transition: 0.3s ease-in-out;*/ }
 
 .white-piece-o {
-  background: #CC0000; }
+  background-color: #CC0000; }
 
 .black-piece-o {
-  background: #00001F; }
+  background-color: #00001F; }
 
 /*# sourceMappingURL=board.css.map */

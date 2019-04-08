@@ -79,12 +79,12 @@ input[disabled=disabled], input[disabled=""] {
 .game9ja-hide {
   visibility: hidden; }
 
-@media screen and (min-width: 768px) {
-  .game9ja-hide-ld {
-    visibility: hidden; } }
-@media screen and (min-width: 640px) {
-  .game9ja-hide-md {
-    visibility: hidden; } }
+.game9ja-hide-ld {
+  visibility: hidden; }
+
+.game9ja-hide-md {
+  visibility: hidden; }
+
 .game9ja-error {
   color: #dd2222; }
 
