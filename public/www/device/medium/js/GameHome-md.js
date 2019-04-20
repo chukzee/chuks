@@ -187,6 +187,7 @@ Ns.GameHome = {
             Main.dom.addListener(window, 'resize', Ns.GameHome.layoutHome);
             Ns.GameHome.isLayoutHomeListenerAdded = true;
         }
+        window.onresize = Ns.GameHome.layoutHome;
 
     },
 

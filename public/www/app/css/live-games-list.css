@@ -43,7 +43,7 @@ and open the template in the editor.
   list-style-type: none; }
 
 .game9ja-live-games-list:hover {
-  background-color: #eee; }
+  background-color: #efe; }
 
 /*1st content is expected to show white player full name*/
 .game9ja-live-games-list > :nth-child(1) {

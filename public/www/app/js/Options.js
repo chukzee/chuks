@@ -529,27 +529,27 @@ Ns.Options = {
     },
 
     getChessBoardThemeUrl: function () {
-        return Main.pathname() + "resources/games/chess/board/themes/" + this.chessBoardTop + "/60.png";
+        return Main.pathname() + "app/resources/games/chess/board/themes/" + this.chessBoardTop + "/60.png";
     },
 
     getDraughtsBoardThemeUrl: function (inverted_board) {
-        return Main.pathname() + "resources/games/draughts/board/themes/" + this.draughtsBoardTop + "/60" + (inverted_board ? "-inverse" : "") + ".png";
+        return Main.pathname() + "app/resources/games/draughts/board/themes/" + this.draughtsBoardTop + "/60" + (inverted_board ? "-inverse" : "") + ".png";
     },
 
     getChessBoardFrameThemeUrl: function () {
-        return Main.pathname() + "resources/images/" + this.chessBoardFrame + ".jpg";
+        return Main.pathname() + "app/resources/images/" + this.chessBoardFrame + ".jpg";
     },
 
     getDraughtsBoardFrameThemeUrl: function () {
-        return Main.pathname() + "resources/images/" + this.draughtsBoardFrame + ".jpg";
+        return Main.pathname() + "app/resources/images/" + this.draughtsBoardFrame + ".jpg";
     },
 
     getChessBoardFloorThemeUrl: function () {
-        return Main.pathname() + "resources/images/" + this.chessBoardFloor + ".jpg";
+        return Main.pathname() + "app/resources/images/" + this.chessBoardFloor + ".jpg";
     },
 
     getDraughtsBoardFloorThemeUrl: function () {
-        return Main.pathname() + "resources/images/" + this.druahtsBoardFloor + ".jpg";
+        return Main.pathname() + "app/resources/images/" + this.druahtsBoardFloor + ".jpg";
     },
 
     isSoundAllow: function () {

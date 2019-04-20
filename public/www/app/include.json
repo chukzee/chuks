@@ -48,7 +48,7 @@
             "lib/three.min.js",
             "lib/chess.min.js",
             "lib/localforage.min.js",            
-            "resources/game_engines/draftgame.js",//we also use it worker for draughts engine
+            "app/resources/game_engines/draftgame.js",//we also use it worker for draughts engine
             "lib/socket.io.js",
             "lib/jquery-1.10.2.min.js",
             //"lib/bootstrap.min.js",// // @Deprecated - does not integrate well with game9ja css design 

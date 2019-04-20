@@ -12,6 +12,10 @@ Ns.GameView = {
       this.initContent(data);  
     },
 
+    canSaveState: function(){
+        return false; 
+    },
+
     getMainPadding: function () {
         return 0;
     },

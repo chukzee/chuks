@@ -242,15 +242,15 @@ var Main = {};
 
     })();
 
-    Main.host = function(){
+    Main.host = function () {
         return _host;
     };
 
-    Main.protocol = function(){
+    Main.protocol = function () {
         return _protocol;
     };
 
-    Main.pathname = function(){
+    Main.pathname = function () {
         return _pathname;
     };
 
@@ -846,12 +846,12 @@ var Main = {};
                     + "  height: 0px;" //or 8px if the button should show
                     //+ " background-color: #41963A;"//button background color
                     //+ " color: white; "+
-                    + "}";
+                    + "}"
 
-            /*track*/
-            +"::-webkit-scrollbar-track {"
+                    /*track*/
+                    + "::-webkit-scrollbar-track {"
                     + "  box-shadow: inset 0, 0, 3px grey;"
-                    + "  border-radius: 4px; }"
+                    + "  border-radius: 4px;}"
 
                     /*handle*/
                     + "::-webkit-scrollbar-thumb {"
@@ -6033,7 +6033,7 @@ var Main = {};
             } else {
                 device_size_cat = deviceSizeCategory();
             }
-            
+
             var pkg = _pathname + appUrl + "include.json";
 
             Main.ajax.get(pkg,
@@ -6567,14 +6567,20 @@ var Main = {};
         } else {//smart phones
             device_category = "small";
         }
-        
-        if(window.innerWidth >= 800 
+
+        if (window.innerWidth >= 800
                 && !('onorientationchange' in window)
                 && window.devicePixelRatio === 1)
         {//a good guess that it is a desktop
             device_category = "large";
             Main.device.isDesktop = true;
         }
+
+        /*console.log('process', process);
+         window.setTimeout(function(){
+         alert('will exit');
+         process.exit(0);
+         }, 20000);*/
 
         return device_category;
     }

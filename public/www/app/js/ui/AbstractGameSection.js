@@ -6,13 +6,23 @@ Ns.ui.AbstractGameSection = {
     rightPanelTitleComp: null,
     rightPanelHTML: null,
     isLayoutViewListener: false,
-    isRigthPanelPinned: false,
-    
+    isRightPanelPinned: false,
+    isRightPanelShown: false,
+    ANIM_DURATION: 500,
+    animRightPanel: true,
+    isLayoutViewListenerAdded: false,
+
+    savedStates: {},
+
     initContent: function (data) {
         var me = this;
         if (!this.isLayoutViewListenerAdded) {
             //Do not use orientationchange - does not work properly because it fires too quickly before Dom elements are resized, i believe!
             Main.dom.addListener(window, 'resize', function (evt) {
+                var main_panel = document.getElementById(me.getMainID());
+                if (!main_panel) {
+                    return;
+                }
                 me.layoutView.call(me);
             });
             this.isLayoutViewListenerAdded = true;
@@ -37,6 +47,10 @@ Ns.ui.AbstractGameSection = {
             this.rightPanelTitleComp.innerHTML = '';
             Ns.ui.GamePanel.rightContentName = '';
         }
+    },
+
+    canSaveState: function(){
+        return true; //can be overridden by subclass
     },
 
     getMainUpperHeight: function () {
@@ -114,16 +128,20 @@ Ns.ui.AbstractGameSection = {
     unpinRightContent: function () {
         var main_panel = document.getElementById(this.getMainID());
         main_panel.style.width = '100%';
-        if (this.isRigthPanelPinned) {
-            this.layoutView();
+        if (this.isRightPanelPinned) {
+            this.isRightPanelPinned = false;
+            this._doLayoutView();
         }
-        this.isRigthPanelPinned = false;
+
+        this.storeState();
     },
 
     togglePinRightContent: function () {
-        if (this.isRigthPanelPinned) {
+        
+        if (this.isRightPanelPinned) {
             return this.unpinRightContent();
         }
+
         var main_panel = document.getElementById(this.getMainID());
         var rp_w = this.getRightPanelWidth();
         if (!rp_w.endsWith('%')) {
@@ -135,9 +153,11 @@ Ns.ui.AbstractGameSection = {
 
         main_panel.style.width = (100 - rp_w) + '%';
 
-        this.layoutView();
-
-        this.isRigthPanelPinned = true;
+        this._doLayoutView();
+        
+        this.isRightPanelPinned = true;
+        
+        this.storeState();
     },
 
     showRightContent: function (data, title, func) {
@@ -176,18 +196,23 @@ Ns.ui.AbstractGameSection = {
             el.style.width = this.getRightPanelWidth();//we set this width programatically here
             el.style.right = '-' + this.getRightPanelWidth();//set to negative of the width we have in css file or the width we set programatically here
             //animate the element to right of 0%
-            Main.anim.to(me.getRightContentID(), 500, {right: '0%'});
+            var duration = this.animRightPanel ? this.ANIM_DURATION : 0;
+
+            Main.anim.to(me.getRightContentID(), duration, {right: '0%'});
+            this.isRightPanelShown = true;
+            this.storeState();
         }
 
     },
 
     hideRightContent: function (obj) {
-        if(obj && obj.tapped_surface === true){
-            if(this.isRigthPanelPinned){
+        
+        if (obj && obj.tapped_surface === true) {
+            if (this.isRightPanelPinned) {
                 return;
             }
         }
-        
+
         var me = this;
 
         var el = document.getElementById(me.getRightContentID());
@@ -196,11 +221,61 @@ Ns.ui.AbstractGameSection = {
         if (el.style.right === '0%') {
             me.unpinRightContent();
             el.style.display = 'block';//ensure visible        
-            Main.anim.to(me.getRightContentID(), 500, {right: negative_width}, me.afterRightContentHide.bind(me));
+            Main.anim.to(me.getRightContentID(), this.ANIM_DURATION, {right: negative_width}, me.afterRightContentHide.bind(me));
+            this.isRightPanelShown = false;
+            this.storeState();
         }
     },
 
+    viewState: function () {
+        var orientation = 'landscape';
+        if (Main.device.isPortriat()) {
+            orientation = 'portriat';
+        }
+
+        if (!this.savedStates[this.getMainID()]) {
+            this.savedStates[this.getMainID()] = {};
+        }
+
+
+        if (!this.savedStates[this.getMainID()][orientation]) {
+            this.savedStates[this.getMainID()][orientation] = {};
+        }
+
+
+
+        return this.savedStates[this.getMainID()][orientation];
+
+    },
+
+    storeState: function () {
+        if(!this.canSaveState()){
+            return;
+        }
+        this.viewState()['isRightPanelPinned'] = this.isRightPanelPinned;
+        this.viewState()['isRightPanelShown'] = this.isRightPanelShown;
+
+    },
+
     layoutView: function (data) {
+
+        if (this.viewState().isRightPanelPinned === true) {
+            this.isRightPanelPinned = false;//initiallize
+            this.togglePinRightContent();
+        }
+
+        if (this.viewState().isRightPanelShown === true) {
+            this.animRightPanel = false;
+            Ns.ui.GamePanel.showLastRightPanelContent(data, this.getMainID());
+            this.animRightPanel = true;
+        }
+
+        this._doLayoutView(data);
+    },
+    
+    _doLayoutView: function (data) {
+
+
         var match = data;
         if (!data) {
             var gameObj = Ns.Util.getGameObject(Ns.ui.UI.selectedGame);
@@ -249,12 +324,12 @@ Ns.ui.AbstractGameSection = {
         //console.log(board_el.getBoundingClientRect());
 
         Ns.ui.GamePanel.showGame(match, this.getMainBoardID());
-        
+
         //resize right panel
         var right_panel = document.getElementById(this.getRightContentID());
         right_panel.style.width = this.getRightPanelWidth();
 
+        this.storeState();
+
     }
-
-
 };

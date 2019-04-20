@@ -278,13 +278,17 @@ Ns.view.Group = {
             title: 'Add members',
             multiSelect: true,
             onSelect: function (contants) {
+                
                 if (!contants || contants.length === 0) {
                     return;
                 }
+                
                 var user_ids = [];
+                
                 for (var i = 0; i < contants.length; i++) {
                     user_ids[i] = contants[i].user_id;
                 }
+                
                 var app_user_id = Ns.view.UserProfile.appUser.user_id;
                 Main.ro.group.adddBulkMembers(app_user_id, group.name, user_ids)
                         .get(function (data) {
@@ -305,6 +309,7 @@ Ns.view.Group = {
                         .error(function (err) {
                             console.log(err);
                         });
+                        
             }
         });
     },

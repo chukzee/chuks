@@ -36,11 +36,11 @@ Ns.game.two.Draughts2D = {
     },
 
     getGameEngineWorkerJs: function () {
-        return Main.pathname() + 'resources/game_engines/draftgame.js';
+        return Main.pathname() + 'app/resources/game_engines/draftgame.js';
     },
 
     getGameEngineWorkerJsAsm: function () {
-        return Main.pathname() + 'resources/game_engines/draftgame.js';
+        return Main.pathname() + 'app/resources/game_engines/draftgame.js';
     },
 
     getBestMoveFromGameEngineOutput: function (output) {

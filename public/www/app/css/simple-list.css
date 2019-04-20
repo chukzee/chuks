@@ -40,7 +40,7 @@ and open the template in the editor.
   padding: 0;
   list-style-type: none; }
   .game9ja-simple-list-a:hover {
-    background-color: #eee; }
+    background-color: #efeeee; }
 
 .game9ja-simple-list-b {
   position: relative;
@@ -53,7 +53,7 @@ and open the template in the editor.
   padding: 0;
   list-style-type: none; }
   .game9ja-simple-list-b:hover {
-    background-color: #eee; }
+    background-color: #efeeee; }
 
 .game9ja-simple-list-c {
   position: relative;
@@ -66,7 +66,7 @@ and open the template in the editor.
   padding: 0;
   list-style-type: none; }
   .game9ja-simple-list-c:hover {
-    background-color: #eee; }
+    background-color: #efeeee; }
 
 .game9ja-simple-list-a > :nth-child(1) {
   position: absolute;

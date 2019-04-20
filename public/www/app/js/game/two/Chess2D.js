@@ -36,11 +36,11 @@ Ns.game.two.Chess2D = {
     },
 
     getGameEngineWorkerJs: function () {
-        return Main.pathname() + 'resources/game_engines/stockfish.js';
+        return Main.pathname() + 'app/resources/game_engines/stockfish.js';
     },
 
     getGameEngineWorkerJsAsm: function () {
-        return Main.pathname() + 'resources/game_engines/stockfish.asm.js';
+        return Main.pathname() + 'app/resources/game_engines/stockfish.asm.js';
     },
 
     getBestMoveFromGameEngineOutput: function (output) {
@@ -124,8 +124,14 @@ Ns.game.two.Chess2D = {
     },
 
     setPieceAppearance: function (pceEl, piece_theme) {
-        var type = pceEl.dataset.name.charAt(0);
-        pceEl.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + pceEl.dataset.color + type + '.png';
+        var pce_name = pceEl.dataset.name;
+        var type;
+        if(pce_name === 'knight'){
+            type = 'n';
+        }else{
+            type = pce_name.charAt(0);
+        }
+        pceEl.src = Main.pathname() + 'app/resources/games/chess/2D/pieces/' + piece_theme + '/' + pceEl.dataset.color + type + '.png';
     },
 
     promotePiece: function (pieceElement, promotion) {
@@ -136,25 +142,25 @@ Ns.game.two.Chess2D = {
 
             case'q':
             {
-                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'app/resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'queen';
                 break;
             }
             case'r':
             {
-                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'app/resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'rook';
                 break;
             }
             case'n':
             {
-                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'app/resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'knight';
                 break;
             }
             case'b':
             {
-                pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
+                pieceElement.src = Main.pathname() + 'app/resources/games/chess/2D/pieces/' + piece_theme + '/' + color + promotion + '.png';
                 pieceElement.dataset.name = 'bishop';
                 break;
             }
@@ -163,7 +169,7 @@ Ns.game.two.Chess2D = {
 
     createPieceElement: function (pce, piece_theme) {
         var pieceElement = document.createElement('img');
-        pieceElement.src = Main.pathname() + 'resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
+        pieceElement.src = Main.pathname() + 'app/resources/games/chess/2D/pieces/' + piece_theme + '/' + pce.color + pce.type + '.png';
         pieceElement.dataset.color = pce.color;
 
         switch (pce.type) {

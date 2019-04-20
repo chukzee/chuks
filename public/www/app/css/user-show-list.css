@@ -40,7 +40,7 @@ and open the template in the editor.
   padding: 0;
   list-style-type: none; }
   .game9ja-user-show-list:hover {
-    background-color: #eee; }
+    background-color: #efeeee; }
   .game9ja-user-show-list > :nth-child(1) > :nth-child(1) {
     /*profile pic container to help centering and setting border radius*/
     width: 60px;

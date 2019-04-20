@@ -183,7 +183,9 @@ Ns.game.AbstractBoard2D = {
         proper_container.style.backgroundImage = 'url(' + this.getBoardThemeUrl(inverted_board) + ')';
         proper_container.style.backgroundRepeat = 'repeat';
         proper_container.style.backgroundSize = 100 / (this.boardRowCount / 2) + '%';
-        console.log(proper_container.style.backgroundSize);
+        
+        //console.log(proper_container.style.backgroundSize);
+        
         var box = el.getBoundingClientRect();
         var padding = 10;
         var size = box.width - padding * 2;
@@ -1097,7 +1099,7 @@ Ns.game.AbstractBoard2D = {
 
             container.appendChild(pe);
 
-            console.log(ibPce);
+            //console.log(ibPce);
             //console.log(pe.getBoundingClientRect());
         }
 

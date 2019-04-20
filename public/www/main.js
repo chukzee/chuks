@@ -1,11 +1,6 @@
 /* global __dirname */
 
-require('update-electron-app')({
-  logger: require('electron-log')
-});
-
 const path = require('path');
-const glob = require('glob');
 const electron =  require('electron');
 const {app, BrowserWindow} = electron;
 
@@ -18,8 +13,6 @@ const minHeight = 600;
 
 const debug = /--debug/.test(process.argv[2]);
 
-if (process.mas) app.setName('Electron APIs');
-
 let mainWindow = null;
 
 let ignoreCertificateError = true;
@@ -27,14 +20,11 @@ let ignoreCertificateError = true;
 function initialize () {
   makeSingleInstance();
 
-  loadDemos();
-
   function createWindow () {
     var screen = electron.screen;  
     var mainScreen = screen.getPrimaryDisplay();
 
     var dimensions = mainScreen.workArea; // dimension without the screen task bar 
-
 
     var desiredWidth = dimensions.width * 0.9;
     var desiredHeight = dimensions.height * 0.9;
@@ -59,11 +49,11 @@ function initialize () {
         desiredHeight = dimensions.height;
     }
 
-      console.log(dimensions.width, desiredWidth);
-      console.log(dimensions.height, desiredHeight);
+    //console.log(dimensions.width, desiredWidth);
+    //console.log(dimensions.height, desiredHeight);
       
     const windowOptions = {
-      width: 1229,
+      width: desiredWidth,
       minWidth: minWidth,
       height: desiredHeight,
       minHeight: minHeight,
@@ -84,7 +74,7 @@ function initialize () {
     // Launch fullscreen with DevTools open, usage: npm run debug
     if (debug) {
       mainWindow.webContents.openDevTools();
-      mainWindow.maximize();
+      //mainWindow.maximize();
       require('devtron').install();
     }
 
@@ -108,8 +98,7 @@ function initialize () {
       createWindow();
     }
   });
-  
-  
+    
   app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
     
     if(ignoreCertificateError){
@@ -144,12 +133,6 @@ function makeSingleInstance () {
       mainWindow.focus();
     }
   });
-}
-
-// Require each JS file in the main-process dir
-function loadDemos () {
-  const files = glob.sync(path.join(__dirname, 'main-process/**/*.js'));
-  files.forEach((file) => { require(file); });
 }
 
 initialize();

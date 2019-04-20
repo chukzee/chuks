@@ -6,6 +6,9 @@ Ns.ui.GamePanel = {
     matchData: null,
     rightContentName: null,
     isGamePanelSetup: false,
+    viewID: '',
+    rpFuncMap: {},
+    rpLastMap: {},
 
     /**
      * this constructor is called once automatically by the framework
@@ -13,7 +16,6 @@ Ns.ui.GamePanel = {
      * @returns {undefined}
      */
     constructor: function () {
-
 
     },
 
@@ -102,6 +104,15 @@ Ns.ui.GamePanel = {
 
     },
 
+    showLastRightPanelContent: function (match, view_id) {
+        Ns.ui.GamePanel.matchData = match;
+        this.viewID = view_id;
+        var name = this.rpLastMap[this.viewID];
+        if (name) {
+            this._showViewBy(name);
+        }
+    },
+
     _showChats: function (view, id_obj) {
         var title = 'Chat';
         if (Ns.ui.GamePanel.rightContentName
@@ -166,7 +177,14 @@ Ns.ui.GamePanel = {
 
     },
 
-    _showByMenuItem: function (item, view, id_obj) {
+    _showViewBy: function (name) {
+        if (Main.util.isFunc(this.rpFuncMap[this.viewID][name])) {
+            this.rpLastMap[this.viewID] = name;
+            this.rpFuncMap[this.viewID][name]();
+        }
+    },
+
+    _showByMenuItem: function (item) {
 
         switch (item) {
             case 'Draw offer':
@@ -181,12 +199,12 @@ Ns.ui.GamePanel = {
                 break;
             case 'Stats':
                 {
-                    Ns.ui.GamePanel._showStats(view, id_obj);
+                    Ns.ui.GamePanel._showViewBy('stats');
                 }
                 break;
             case 'Options':
                 {
-                    Ns.ui.GamePanel._showOptions(view, id_obj);
+                    Ns.ui.GamePanel._showViewBy('options');
                 }
                 break;
             case 'Leave':
@@ -202,7 +220,7 @@ Ns.ui.GamePanel = {
         }
     },
 
-    _createMenu: function (id_selector, view, id_obj) {
+    _createMenu: function (id_selector) {
 
         Main.menu.create({
             width: 150,
@@ -217,7 +235,7 @@ Ns.ui.GamePanel = {
             ],
             onSelect: function (evt) {
                 var item = this.item;
-                Ns.ui.GamePanel._showByMenuItem(item, view, id_obj);
+                Ns.ui.GamePanel._showByMenuItem(item);
                 //finally hide the menu
                 this.hide();
             }
@@ -228,6 +246,16 @@ Ns.ui.GamePanel = {
     ownGameView: function (match) {
         var me = this;
 
+        this.viewID = 'game-view-main';
+
+        if (!this.rpFuncMap[this.viewID]) {
+            this.rpFuncMap[this.viewID] = {};
+        }
+
+        if (!this.rpLastMap[this.viewID]) {
+            this.rpLastMap[this.viewID] = null;
+        }
+
         var id_obj = {
             view_id: "game-view-right-content",
             view_body_id: "game-view-right-panel-body",
@@ -235,7 +263,11 @@ Ns.ui.GamePanel = {
             search_button_id: "TODO"
         };
 
-        var titleChat = 'Chat';
+        this.rpFuncMap[this.viewID]['chat'] = me._showChats.bind(this, Ns.GameView, id_obj);
+        this.rpFuncMap[this.viewID]['comments'] = me._showComments.bind(this, Ns.GameView, id_obj);
+        this.rpFuncMap[this.viewID]['spectators'] = me._showSpectators.bind(this, Ns.GameView, id_obj);
+        this.rpFuncMap[this.viewID]['stats'] = me._showStats.bind(this, Ns.GameView, id_obj);
+        this.rpFuncMap[this.viewID]['options'] = me._showOptions.bind(this, Ns.GameView, id_obj);
 
         Ns.ui.GamePanel.matchData = match;
 
@@ -248,7 +280,7 @@ Ns.ui.GamePanel = {
         $('#game-view-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-view-game-status').html(match.status);
 
-        me._createMenu("#game-view-menu", Ns.GameView, id_obj);
+        me._createMenu("#game-view-menu");
 
         var white_wdl, black_wdl;
         if (match.wdl) {
@@ -277,29 +309,11 @@ Ns.ui.GamePanel = {
 
         }
 
-        /*if (Main.device.isXLarge()) {
-         me._showChats(Ns.GameView, id_obj);
-         }*/
-
-        $('#game-view-footer-chat').on('click', function () {
-            me._showChats(Ns.GameView, id_obj, titleChat);
-        });
-
-        $('#game-view-footer-comments').on('click', function () {
-            me._showComments(Ns.GameView, id_obj);
-        });
-
-        $('#game-view-footer-spectators').on('click', function () {
-            me._showSpectators(Ns.GameView, id_obj);
-        });
-
-        $('#game-view-footer-stats').on('click', function () {
-            me._showStats(Ns.GameView, id_obj);
-        });
-
-        $('#game-view-footer-options').on('click', function () {
-            me._showOptions(Ns.GameView, id_obj);
-        });
+        $('#game-view-footer-chat').on('click', this._showViewBy.bind(this, 'chat'));
+        $('#game-view-footer-comments').on('click', this._showViewBy.bind(this, 'comments'));
+        $('#game-view-footer-spectators').on('click', this._showViewBy.bind(this, 'spectators'));
+        $('#game-view-footer-stats').on('click', this._showViewBy.bind(this, 'stats'));
+        $('#game-view-footer-options').on('click', this._showViewBy.bind(this, 'options'));
 
         $('#game-view-main').on('click', function () {
             Ns.GameView.hideRightContent({tapped_surface: true});
@@ -310,12 +324,27 @@ Ns.ui.GamePanel = {
     ownGameViewB: function (match) {
         var me = this;
 
+        this.viewID = 'game-view-b-main';
+
+        if (!this.rpFuncMap[this.viewID]) {
+            this.rpFuncMap[this.viewID] = {};
+        }
+
+        if (!this.rpLastMap[this.viewID]) {
+            this.rpLastMap[this.viewID] = null;
+        }
+
         var id_obj = {
             view_id: "game-view-b-right-content",
             view_body_id: "game-view-b-right-panel-body",
             view_header_id: "game-view-b-right-panel-header",
             search_button_id: "TODO"
         };
+
+
+        this.rpFuncMap[this.viewID]['comments'] = me._showComments.bind(this, Ns.GameViewB, id_obj);
+        this.rpFuncMap[this.viewID]['stats'] = me._showStats.bind(this, Ns.GameViewB, id_obj);
+        this.rpFuncMap[this.viewID]['options'] = me._showOptions.bind(this, Ns.GameViewB, id_obj);
 
         Ns.ui.GamePanel.matchData = match;
 
@@ -328,7 +357,7 @@ Ns.ui.GamePanel = {
         $('#game-view-b-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-view-b-game-status').html(match.status);
 
-        me._createMenu("#game-view-b-menu", Ns.GameViewB, id_obj);
+        me._createMenu("#game-view-b-menu");
 
         var white_wdl, black_wdl;
         if (match.wdl) {
@@ -357,10 +386,6 @@ Ns.ui.GamePanel = {
 
         }
 
-        /*if (Main.device.isXLarge()) {
-         me._showOptions(Ns.GameViewB, id_obj);
-         }*/
-
         $('#game-view-b-bluetooth-icon').on('click', function () {
             var device_name = 'TODO device name'; //TODO
             var signal_strength = 'TODO  excellent';//TODO
@@ -382,6 +407,16 @@ Ns.ui.GamePanel = {
 
     watchGame: function (match) {
         var me = this;
+        this.viewID = 'game-watch-main';
+
+        if (!this.rpFuncMap[this.viewID]) {
+            this.rpFuncMap[this.viewID] = {};
+        }
+
+        if (!this.rpLastMap[this.viewID]) {
+            this.rpLastMap[this.viewID] = null;
+        }
+
 
         var id_obj = {
             view_id: "game-watch-right-content",
@@ -390,7 +425,9 @@ Ns.ui.GamePanel = {
             search_button_id: "TODO"
         };
 
-        var titleComment = 'Comments';
+        this.rpFuncMap[this.viewID]['comments'] = me._showComments.bind(this, Ns.GameWatch, id_obj);
+        this.rpFuncMap[this.viewID]['stats'] = me._showStats.bind(this, Ns.GameWatch, id_obj);
+        this.rpFuncMap[this.viewID]['options'] = me._showOptions.bind(this, Ns.GameWatch, id_obj);
 
         Ns.ui.GamePanel.matchData = match;
 
@@ -419,17 +456,9 @@ Ns.ui.GamePanel = {
         $('#game-watch-game-score').html(match.scores[0] + ' - ' + match.scores[1]);
         $('#game-watch-game-status').html(match.status);
 
-        me._createMenu("#game-watch-menu", Ns.GameWatch, id_obj);
+        me._createMenu("#game-watch-menu");
 
-        /*
-         if (Main.device.isXLarge()) {
-         Ns.GameWatch.showRightContent(Ns.ui.GamePanel.matchData, titleComment, Ns.msg.GameComment.content.bind(Ns.msg.GameComment, Ns.ui.GamePanel.matchData, id_obj));
-         }*/
-
-
-        $('#game-watch-comment-icon').on('click', function () {
-            me._showComments(Ns.GameWatch, id_obj, titleComment);
-        });
+        $('#game-watch-comment-icon').on('click', this._showViewBy.bind(this, 'comments'));
 
         $('#game-watch-main').on('click', function () {
             Ns.GameWatch.hideRightContent({tapped_surface: true});
@@ -485,7 +514,6 @@ Ns.ui.GamePanel = {
         getGameViewB(function (html) {
             Main.event.fire(Ns.Const.EVT_GAME_PANEL_SETUP);
         });
-
 
         Main.event.off(Ns.Const.EVT_GAME_PANEL_SETUP);
         Main.event.on(Ns.Const.EVT_GAME_PANEL_SETUP, Ns.ui.GamePanel.gamePanelSetupListener);
