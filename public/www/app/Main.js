@@ -845,7 +845,7 @@ var Main = {};
                     + "::-webkit-scrollbar-button {"
                     + "  height: 0px;" //or 8px if the button should show
                     //+ " background-color: #41963A;"//button background color
-                    //+ " color: white; "+
+                    //+ " color: white;  "+
                     + "}"
 
                     /*track*/
