@@ -587,6 +587,7 @@ var Main = {};
 
         isMobileDeviceReady: false,
         isDesktop: false,
+        isDesktopApplication: false,
         backActions: [], //array of functions to execute when back button is press
         menuButtonAction: null,
         searchButtonAction: null,
@@ -840,24 +841,29 @@ var Main = {};
                 return;
             }
             var desktop_scrollbar = "::-webkit-scrollbar {"/*width*/
-                    + " width: 8px; }"
+                    + " width: 8px; height: 8px; }"//width and height must be same - width for vertical and height for horizontal scrollbar orientaion
 
                     + "::-webkit-scrollbar-button {"
-                    + "  height: 0px;" //or 8px if the button should show
+                    + " width: 0px; height: 0px;" //or 8px if the button should show
                     //+ " background-color: #41963A;"//button background color
                     //+ " color: white; "+
                     + "}"
 
                     /*track*/
                     + "::-webkit-scrollbar-track {"
-                    + "  box-shadow: inset 0, 0, 3px grey;"
-                    + "  border-radius: 4px;}"
+                    + " -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); "
+                    + " box-shadow: inset 0 0 6px rgba(0,0,0,0.3); "
+                    + " -webkit-border-radius: 4px;"
+                    + " border-radius: 4px;"
+                    + "}"
 
                     /*handle*/
                     + "::-webkit-scrollbar-thumb {"
                     + " background-color: #41963A;"
-                    + " border-radius: 4px; }"
-
+                    + " -webkit-border-radius: 4px;"
+                    + " border-radius: 4px;"
+                    + "}"
+            
                     /*handle on hover*/
                     + "::-webkit-scrollbar-thumb:hover {"
                     + "background-color: #64BB31; }";
@@ -6575,13 +6581,19 @@ var Main = {};
             device_category = "large";
             Main.device.isDesktop = true;
         }
-
-        /*console.log('process', process);
-         window.setTimeout(function(){
-         alert('will exit');
-         process.exit(0);
-         }, 20000);*/
-
+        
+        console.log('user agent', window.navigator.userAgent);
+        
+        var user_agent = window.navigator.userAgent.toLowerCase();
+        
+        if(user_agent.indexOf(' electron/') > -1){
+            Main.device.isDesktopApplication = true;//Electron application
+        }else if(typeof process !== 'undefined' && process.versions && process.versions['node-webkit']){
+            Main.device.isDesktopApplication = true;//nwjs application
+        }
+        
+        console.log('Main.device.isDesktopApplication', Main.device.isDesktopApplication);
+        
         return device_category;
     }
 
