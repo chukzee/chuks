@@ -2215,8 +2215,8 @@ select.mobile-device {
 
 .btn-light {
     padding: 13px 40px;
-    font-size: 18px;
-    border: 2px solid #ffffff !important;
+    font-size: 18px;/*comment out by chuks*/
+    border: 2px solid #ffffff !important; /*comment out by chuks*/
     color: #ffffff;
     background-color: transparent;
 }
@@ -2236,12 +2236,15 @@ select.mobile-device {
 }
 
 body.host_version .slide-btn.btn-light{
-	background-color: #2d3032 !important;
+	/*background-color: #2d3032 !important;*/ /*commented out by chuks*/
+        background-color: #0B6623 !important;/*added by chuks*/
 	color: #ffffff !important;
-	border: 2px solid #2d3032 !important;
+	/*border: 2px solid #2d3032 !important;*/ /*commented out by chuks*/
+        border: 1px solid #0B6623 !important;/*added by chuks*/
 }
 body.host_version .first-section .effect-1.slide-btn::after{
-	box-shadow: 0 0 0 2px #2d3032;
+	/*box-shadow: 0 0 0 2px #2d3032;*/ /*commented out by chuks*/
+        box-shadow: 0 0 0 1px #0B6623;
 }
 
 

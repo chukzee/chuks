@@ -1,0 +1,51 @@
+.app-color{
+    color: #0B6623 !important;
+}
+
+.app-bg{
+    background: #0B6623 !important;
+}
+
+.app-menu-link{
+    border-bottom: #fff solid 2px;
+    box-sizing: border-box !important;
+}
+
+.app-menu-link:active{
+    border-bottom: #0B6623 solid 2px;
+}
+
+.app-menu-link > a{
+    font-size: 16px !important;
+    color: #0B6623 !important;
+}
+
+.app-menu-link-active{
+    color: #0B6623 !important;
+    background: #eee;
+    border-bottom: #0B6623 solid 2px;
+}
+
+.app-menu-link > a:hover{
+    color: #4F7942 !important;
+}
+
+.app-menu-link:hover{
+    border-bottom: #4F7942 solid 2px;
+}
+
+
+.app-login-link{
+    border: none !important;
+    color: #0B6623 !important;
+    font-size: 16px !important;
+}
+
+.app-login-link:hover{
+    color: #0B6623 !important;
+    font-size: 18px !important;
+}
+
+
+
+

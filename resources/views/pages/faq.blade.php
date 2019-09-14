@@ -12,7 +12,7 @@
 @section('content')
 
 <div class="ui stackable grid" style="min-height: 80%; padding: 20px;">
-    <div class="six wide column">
+    <div class="twelve wide column">
         <ul>
             <li><a href="#">What is USSD?</a></li>
             <li><a href="#">How do I use USSD to buy vehicle ticket?</a></li>
@@ -41,7 +41,9 @@
         <div> Bla bla bla  Bla bla bla  Bla bla bla  Bla bla bla  Bla bla bla  Bla bla bla  Bla bla bla </div>
         
     </div>
-    <div class="six wide column"></div>
+    <div class="four wide column">
+        <div class="ui half page test ad" data-text="Half Page"></div>
+    </div>
 </div>
 
 @endsection

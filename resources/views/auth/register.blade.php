@@ -13,83 +13,63 @@
     <div class="five wide column"></div>
     <div class="six wide column">
 
-        <form method="post" action="register" class="ui form" style="margin: 0 auto; ; padding: 20px;">
+        <form method="post" action="register" class="ui form" style="margin: 0 auto; ; padding: 20px;"  onsubmit="document.getElementById('register-form-submit-btn').className = 'green large circular ui loading button';">
             @csrf
             <div class="field">
                 <label>Email</label>
-                <input type="email" name="email" placeholder="Email">
+                <input type="email" name="email" class="big ui input @error('email') is-invalid @enderror" placeholder="Email">
 
                 @error('email')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
+                <div class="ui pointing red basic label">
+                    {{ $message }}
+                </div>
                 @enderror
             </div>
             <div class="field">
                 <label>Password</label>
-                <input type="password"  name="password" class="form-control @error('password') is-invalid @enderror" required autocomplete="new-password" placeholder="Password">
+                <input type="password"  name="password" class="big ui input @error('password') is-invalid @enderror" required autocomplete="new-password" placeholder="Password">
 
                 @error('password')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
+                <div class="ui pointing red basic label">
+                        {{ $message }}
+                </div>
                 @enderror
             </div>
             <div class="field">
                 <label>Confirm password</label>
-                <input  type="password" name="password_confirmation" class="form-control" required autocomplete="new-password" placeholder="Confirm password">
+                <input  type="password" name="password_confirmation" class="big ui input" required autocomplete="new-password" placeholder="Confirm password">
             </div>
             <div class="field">
                 <label>First name</label>
-                <input type="text" name="first_name" placeholder="First name">
+                <input type="text" name="first_name" class="big ui input @error('first_name') is-invalid @enderror" placeholder="First name">
 
                 @error('first_name')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
+                <div class="ui pointing red basic label">
+                        {{ $message }}
+                </div>
                 @enderror
             </div>
             <div class="field">
                 <label>Last name</label>
-                <input type="text" name="last_name" placeholder="Last name">
+                <input type="text" name="last_name" class="big ui input @error('last_name') is-invalid @enderror" placeholder="Last name">
 
                 @error('last_name')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
+                <div class="ui pointing red basic label">
+                        {{ $message }}
+                </div>
                 @enderror
             </div>
             <div class="field">
                 <label>Phone number</label>
-                <input type="text" name="phone_no" placeholder="Phone number">
-                
+                <input type="text" name="phone_no" class="big ui input @error('phone_no') is-invalid @enderror" placeholder="Phone number">
+
                 @error('phone_no')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
+                <div class="ui pointing red basic label">
+                        {{ $message }}
+                </div>
                 @enderror
             </div>
-            <div class="field">
-                <label>Vehicle plate number</label>
-                <input type="text" name="vehicle_plate_no" placeholder="Vehicle plate number">
-
-                @error('vehicle_plate_no')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-            <div class="field">
-                <label>Vehicle registration number</label>
-                <input type="text" name="vehicle_reg_no" placeholder="Vehicle registration number">
-
-                @error('vehicle_reg_no')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-            <button class="primary ui button" type="submit">I'm Done</button>
+            <button  id= "register-form-submit-btn" class="green large circular ui button" type="submit" style="min-width: 200px;">I'm Done</button>
         </form>
     </div>
     <div class="five wide column"></div>

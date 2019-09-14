@@ -1,5 +1,6 @@
 
 <!-- Basic -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">   
 
@@ -35,19 +36,13 @@
 <!-- Sematic calendar CSS-->
 <link rel="stylesheet" type="text/css" href="{{ url('/') }}/semantic/calendar.min.css">
 
+
+<!-- App CSS-->
+<link rel="stylesheet" type="text/css" href="{{ url('/') }}/app/css/main.css">
+
+
 <!-- Modernizer for Portfolio -->
 <script src="{{ url('/') }}/js/modernizer.js"></script>
-
-<!-- JQUERY-->
-<script src="{{ url('/') }}/jquery/jquery.min.js"></script>
-<!-- Sematic JS-->
-<script src="{{ url('/') }}/semantic/semantic.min.js"></script>
-
-<!-- Sematic calender modulteS-->
-<script src="{{ url('/') }}/semantic/calendar.min.js"></script>
-
-<!-- Vehicle Ticket JS-->
-<script src="{{ url('/') }}/js/vehicle_ticket/account.js"></script>
 
 
 <!--[if lt IE 9]>

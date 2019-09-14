@@ -11,31 +11,32 @@
     <div class="five wide column"></div>
     <div class="six wide column">
         <div style="padding: 20px;">
-            <h4>Don't have an account?<a href="registration"> <a href="register"><button class="primary ui button">Click To Register</button></a></h4>
-            <h1>Login</h1>
+            <h4>Don't have an account yet?<a href="registration"></h4>
+            <a href="register"><button class="green large circular ui button">Click To Register</button></a>
+            <h1 style="color: #444">Login</h1>
 
-            <form  method="POST" action="login" class="ui form">
+            <form  method="POST" action="login" class="ui form" onsubmit="document.getElementById('login-form-submit-btn').className = 'green large circular ui loading button';">
                 @csrf
 
                 <div class="field">
                     <!--<label>First Name</label>-->
-                    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" required placeholder="Email">
+                    <input type="email" name="email" class="big ui input @error('email') is-invalid @enderror" required placeholder="Email">
 
                     @error('email')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
+                    <div class="ui pointing red basic label">
+                        {{ $message }}
+                    </div>
                     @enderror
 
                 </div>
                 <div class="field">
                     <!---<label>Last Name</label>-->
-                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required placeholder="Password">
+                    <input type="password" name="password" class="big ui input @error('password') is-invalid @enderror" required placeholder="Password">
 
                     @error('password')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
+                    <div class="ui pointing red basic label">
+                        {{ $message }}
+                    </div>
                     @enderror
                 </div>
                 <div class="field">
@@ -44,17 +45,15 @@
                         <label for="remember">Remember me</label>
                     </div>
                 </div>
-                <button class="primary ui button" type="submit">Login <div class="ui active tiny inline loader"></div></button>
+                <button id="login-form-submit-btn" class="green large circular ui button" style="width: 200px; margin: 2px;" type="submit">Login</button>
                 @if (Route::has('password.request'))
-                <button class="ui button"><a href="{{ route('password.request') }}">Forgot password?</a></button>
+                <button class="green large circular basic ui button" style="width: 200px; margin: 2px;"><a style="color: inherit" href="{{ route('password.request') }}">Forgot password?</a></button>
                 @endif
             </form>
         </div>
     </div>
     <div class="five wide column"></div>
 </div>
-
-
 
 @endsection
 

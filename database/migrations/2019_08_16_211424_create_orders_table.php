@@ -14,12 +14,17 @@ class CreateOrdersTable extends Migration
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->string('email')->unique();
-            $table->string('ticket')->unique();
-            $table->string('vehicle_reg_no')->nullable();
+            
+            $table->bigIncrements('id');
+            $table->string('email')->nullable();
             $table->string('type')->nullable(); //whether keke, car, bus, nurtw e.t.s
+            $table->string('ticket')->unique();
+            $table->string('station')->nullable();
+            $table->string('via')->nullable();// via website or ussd
             $table->integer('amount')->nullable();  
+            $table->string('bank_account_info')->nullable();          
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

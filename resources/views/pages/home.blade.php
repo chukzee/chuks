@@ -7,36 +7,70 @@
 
 @section('content')
 
-<div class="row" style="padding: 20px;"> 
-    <p style="padding-left: 20px;">This is my body content.</p>
 
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="icon-wrapper wow fadeIn" data-wow-duration="1s" data-wow-delay="0.2s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.2s; animation-name: fadeIn;">
-            <i class="flaticon-server global-radius effect-1 alignleft"></i>
-            <h3>Buy ticket via USSD</h3>
-            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
-        </div><!-- end icon-wrapper -->
-    </div><!-- end col -->
 
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="icon-wrapper wow fadeIn" data-wow-duration="1s" data-wow-delay="0.6s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.6s; animation-name: fadeIn;">
-            <i class="flaticon-cloud-computing-1 global-radius effect-1 alignleft"></i>
-            <h3>Buy ticket online</h3>
-            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo !<small class="readmore"><a href="#">Read more</a></small></p>
-        </div><!-- end icon-wrapper -->
-    </div><!-- end col -->
-
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="icon-wrapper wow fadeIn" data-wow-duration="1s" data-wow-delay="0.4s" style="visibility: visible; animation-duration: 1s; animation-delay: 0.4s; animation-name: fadeIn;">
-            <i class="flaticon-world-wide-web global-radius effect-1 alignleft"></i>
-            <h3>Open Services</h3>
-            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
-        </div><!-- end icon-wrapper -->
-    </div><!-- end col -->
+<div id="verify_ticket_header" style="max-width: 800px; margin: 0 auto;  padding-top: 40px;">
+    <center>
+        <p style="font-size: 36px; color:  #444;">Find Ticket Owner</p>
+        <div class="large ui action input" id='cnt_find_ticket_owner' data-url = '{{ url("/") }}/account/find_ticket_owner' style="width: 100%;">
+                <input type="text" id='txt_find_ticket_owner' placeholder="Enter ticket of owner">
+                <button class="ui button" id='btn_find_ticket_owner'>Find</button>
+         </div >
+    </center>
 </div>
 
 
+<div style="max-width: 800px; margin: 0 auto; font-size: 36px; padding: 20px; color: #777">
+    <center>
+        <p>This is my body content. This is my body content.This is my body content.This is my body content.This is my body content.</p>
+        <button class="green large circular ui button"  style="min-width: 200px;" type="button">Learn More >></button>
+    </center>
+</div>
 
+<div class="row" style="padding: 20px;"> 
+    <div class="ui stackable centered grid">
+        <div class="five wide column">
+
+            <div id='buy_ticket_via_ussd_header' class="fa fa-phone-square" style="font-size: 48px; text-align: center; width: 100%;"></div>
+            <h3 style="text-align: center;">Buy ticket via USSD</h3>
+            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
+
+        </div>
+        <div class="five wide column">
+
+            <div class="fa fa-globe" style="font-size: 48px; text-align: center; width: 100%"></div>
+            <h3 style="text-align: center;">Buy ticket online</h3>
+            <p>
+                todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo !
+                <small class="readmore"><a href="#">Read more</a></small>
+
+            </p>
+            <button class="green large circular ui button"  style="min-width: 200px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button>
+
+        </div>
+        <div class="five wide column">
+
+            <div class="fa fa-group" style="font-size: 48px; text-align: center; width: 100%"></div>
+            <h3 style="text-align: center;">Open Services</h3>
+            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div class="row" style="padding: 20px;"> 
+    <div class="ui stackable centered grid">
+        <div class="eight wide column">
+            <center>
+                <h4>Don’t have an account with us yet?</h4>
+                <p>Sign up. It's absolutely free!</p>
+                <button class="green large circular ui button" style="min-width: 200px;" onclick="window.location = '{{ url("/") }}/register'">Sign Up</button>
+            </center>
+        </div>
+    </div>
+</div>
 @endsection
 
 
