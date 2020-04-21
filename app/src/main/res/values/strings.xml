@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BeepMe</string>
+    <string name="welcome">Welcome!</string>
+    <string name="forward_angle_bracket"><![CDATA[>]]></string>
+    <string name="i_agree">I Agree</string>
+    <string name="please_read_our_privacy_policy_and_terms_and_conitions">Please read our Privacy Policy and Terms and Conitions</string>
+    <string name="beep_me_welcome_page_image">Beep Me Welcome Page Image</string>
+</resources>
