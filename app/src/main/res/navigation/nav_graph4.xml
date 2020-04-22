@@ -20,9 +20,13 @@
         android:name="com.beepmemobile.www.Second4Fragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second4">
-
         <action
-            android:id="@+id/action_Second4Fragment_to_First4Fragment"
-            app:destination="@id/First4Fragment" />
+            android:id="@+id/action_Second4Fragment_to_third4Fragment3"
+            app:destination="@id/third4Fragment" />
     </fragment>
+    <fragment
+        android:id="@+id/third4Fragment"
+        android:name="com.beepmemobile.www.Third4Fragment"
+        android:label="fragment_third4"
+        tools:layout="@layout/fragment_third4" />
 </navigation>
