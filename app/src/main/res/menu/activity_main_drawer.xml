@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+        <item
+        android:id="@+id/nav_main_upgrade"
+        android:icon="@drawable/ic_menu_camera"
+        android:title="Upgrade" />
+
+        <item
+            android:id="@+id/nav_main_edit_profile"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Edit Profile" />
+
+        <item
+        android:id="@+id/nav_main_support_chat"
+        android:icon="@drawable/ic_menu_camera"
+        android:title="Support Chat" />
+
+        <item
+            android:id="@+id/nav_main_settings"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/action_settings" />
+
+        <item
+            android:id="@+id/nav_main_help"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Help" />
+
+</menu>
