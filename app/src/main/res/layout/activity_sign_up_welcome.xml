@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_send" />
+        app:srcCompat="@drawable/ic_chevron_right_light_24dp" />
 
     <CheckBox
         android:id="@+id/checkBox"

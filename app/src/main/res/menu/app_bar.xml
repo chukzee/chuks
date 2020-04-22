@@ -2,9 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:id="@+id/app_bar_menu"
+        android:orderInCategory="300"
+        android:title="@string/title_activity_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:orderInCategory="101"
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
+
+
+    <item
+        android:id="@+id/make_call"
+        android:icon="@drawable/ic_call_dark"
+        android:orderInCategory="102"
+        android:title="@string/make_call"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/app_bar_sms"
+        android:icon="@drawable/ic_sms_dark"
+        android:orderInCategory="103"
+        android:title="@string/send_sms"
+        app:showAsAction="ifRoom" />
+
 </menu>
