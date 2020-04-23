@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/MainFragment">
+
+    <fragment
+        android:id="@+id/MainFragment"
+        android:name="com.beepmemobile.www.ui.main.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/main_fragment" >
+        <action
+        android:id="@+id/action_MainFragment_to_helpFragment"
+        app:destination="@id/HelpFragment" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_signup"
+            app:destination="@id/nav_graph_signup" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_sms"
+            app:destination="@id/nav_graph_sms" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_support_chat"
+            app:destination="@id/nav_graph_support_chat" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_profile"
+            app:destination="@id/nav_graph_profile" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_search"
+            app:destination="@id/nav_graph_search" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_settings"
+            app:destination="@id/nav_graph_settings" />
+        <action
+            android:id="@+id/action_MainFragment_to_nav_graph_contacts"
+            app:destination="@id/nav_graph_contacts" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/HelpFragment"
+        android:name="com.beepmemobile.www.ui.support.HelpFragment"
+        android:label="HelpFragment"
+        tools:layout="@layout/help_fragment" >
+    <!-- TODO add action -->
+    </fragment>
+
+    <include app:graph="@navigation/nav_graph_signup"/>
+    <include app:graph="@navigation/nav_graph_call"/>
+    <include app:graph="@navigation/nav_graph_contacts"/>
+    <include app:graph="@navigation/nav_graph_profile"/>
+    <include app:graph="@navigation/nav_graph_search"/>
+    <include app:graph="@navigation/nav_graph_settings"/>
+    <include app:graph="@navigation/nav_graph_sms"/>
+    <include app:graph="@navigation/nav_graph_search"/>
+    <include app:graph="@navigation/nav_graph_settings"/>
+    <include app:graph="@navigation/nav_graph_support_chat"/>
+    <include app:graph="@navigation/nav_graph_upgrade"/>
+</navigation>
