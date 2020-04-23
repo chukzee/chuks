@@ -2,6 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_support_chat"
-    >
+    app:startDestination="@id/SupportChatFragment">
 
+    <fragment
+        android:id="@+id/SupportChatFragment"
+        android:name="com.beepmemobile.www.ui.sopport.SupportChatFragment"
+        android:label="SupportChatFragment"
+        tools:layout="@layout/support_chat_fragment" >
+        <!--TODO Add action-->
+    </fragment>
+	
 </navigation>

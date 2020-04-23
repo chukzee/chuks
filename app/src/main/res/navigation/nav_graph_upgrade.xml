@@ -2,6 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_upgrade"
-    >
+    app:startDestination="@id/UpgradeFragment">
+
+    <fragment
+        android:id="@+id/UpgradeFragment"
+        android:name="com.beepmemobile.www.ui.upgrade.UpgradeFragment"
+        android:label="UpgradeFragment"
+        tools:layout="@layout/upgrade_fragment" >
+        <!--TODO Add action-->
+    </fragment>
 
 </navigation>

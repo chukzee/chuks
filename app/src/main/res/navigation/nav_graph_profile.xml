@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph_profile">
+    android:id="@+id/nav_graph_profile"  
+	app:startDestination="@id/ProfileFragment">
+
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.beepmemobile.www.ui.profile.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/profile_fragment" >
+        <!--TODO Add action-->
+    </fragment>
+
 
 </navigation>

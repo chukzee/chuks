@@ -4,9 +4,8 @@
     android:id="@+id/nav_graph_call"
     app:startDestination="@id/CallFragment">
 
-
     <fragment
-        android:id="@+id/signUpWelcomeFragment"
+        android:id="@+id/CallFragment"
         android:name="com.beepmemobile.www.ui.call.CallFragment"
         android:label="CallFragment"
         tools:layout="@layout/call_fragment" >

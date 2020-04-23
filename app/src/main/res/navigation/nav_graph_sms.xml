@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph_sms"
-    >
+    android:id="@+id/nav_graph_sms"  
+	app:startDestination="@id/SmsFragment">
+
+    <fragment
+        android:id="@+id/SmsFragment"
+        android:name="com.beepmemobile.www.ui.sms.SmsFragment"
+        android:label="SmsFragment"
+        tools:layout="@layout/sms_fragment" >
+        <!--TODO Add action-->
+    </fragment>
 
 </navigation>
