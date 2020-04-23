@@ -9,48 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".actions.sms.SMSActivity"
-            android:label="@string/title_activity_s_m_s"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".actions.upgrade.UpgradeActivity"
-            android:label="@string/title_activity_upgrade"
-            android:theme="@style/NoActionBar" />
-        <activity
-            android:name=".actions.supportchat.SupportChatActivity"
-            android:label="@string/title_activity_support_chat"
-            android:theme="@style/NoActionBar" />
-        <activity
-            android:name=".actions.profile.UserProfileActivity"
-            android:label="@string/title_activity_user_profile"
-            android:theme="@style/NoActionBar" />
-        <activity
-            android:name=".actions.call.CallActivity"
-            android:label="@string/title_activity_call"
-            android:theme="@style/NoActionBar" />
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-
-        <activity android:name=".signup.SignUpWelcomeActivity" />
-        <activity android:name=".signup.SignUpUsernameActivity" />
-        <activity android:name=".signup.SignUpProfilePhotoActivity" />
-        <activity android:name=".signup.SignUpPhoneNumberVerificationActivity" />
-        <activity android:name=".signup.SignUpPasswordActivity" />
-        <activity android:name=".signup.SignUpFullNameActivity" />
-        <activity android:name=".signup.SignUpConfirmVerificationCodeActivity" />
     </application>
 
 </manifest>
