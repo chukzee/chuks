@@ -27,10 +27,10 @@
 
     <div class="four column centered row">
         <div class="column">
-            <button id="btn_result_buy_ticket_back" data-url="{{ url('/') }}/account/main"  class="green large ui circular button alignright" style="min-width: 200px;" type="button"><i class="icon arrow left"></i>Back</button>
+            <button data-el="btn_result_buy_ticket_back" data-url="{{ url('/') }}/account/main"  class="green large ui circular button alignright" style="min-width: 200px;" type="button"><i class="icon arrow left"></i>Back</button>
         </div>
         <div class="column">
-            <button id="btn_result_buy_ticket_print" class="green large ui circular button alignleft" style="min-width: 200px;" type="button"><i class="icon print"></i>Print Ticket</button>
+            <button data-el="btn_result_buy_ticket_print" class="green large ui circular button alignleft" style="min-width: 200px;" type="button"><i class="icon print"></i>Print Ticket</button>
         </div>
     </div>
 </div>

@@ -40,7 +40,7 @@
                     <input  type="password" name="password_confirmation" class="form-control" required autocomplete="new-password" placeholder="Confirm password">
                 </div>
 
-                <button class="primary ui button" type="submit">Reset <div class="ui active tiny inline loader"></div></button>
+                <button  class="green large circular ui button" style="min-width: 200px;" type="submit">Reset <div class="ui active tiny inline loader"></div></button>
 
             </form>            
         </div>

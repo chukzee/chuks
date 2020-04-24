@@ -79,7 +79,7 @@ body.host_version .grd1:hover,
 body.host_version .grd1:focus {
     background-position: 100px;
     color: #ffffff !important;
-    background: #00aeef;
+    background: #4F7942;/*edited by chuks*/
 }
 
 body.host_version .checkdomain {

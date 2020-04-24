@@ -54,9 +54,7 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'first_name' => ['required', 'string', 'max:200'],
             'last_name' => ['required', 'string', 'max:200'],
-            'phone_no' => ['required', 'numeric'],//come back
-            'vehicle_plate_no' => ['required', 'string', 'max:200'],
-            'vehicle_reg_no' => ['required', 'string', 'max:200'],
+            'phone_no' => ['required', 'numeric'],
         ]);
     }
 
@@ -75,8 +73,6 @@ class RegisterController extends Controller
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'phone_no' => $data['phone_no'],
-            'vehicle_plate_no' => $data['vehicle_plate_no'],
-            'vehicle_reg_no' => $data['vehicle_reg_no'],
         ]);
     }
 }

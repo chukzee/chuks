@@ -36,4 +36,16 @@ class Util {
         }
         return $str;
     }
+    
+    static function getNigerianBanks(){
+        return ['FirstBank', 'Fedelity', 'Unioun', 'FCMB'];
+    }
+    
+    static function getNigerianStates(){
+        return ['Delta', 'Edo', 'Enugu', 'Lagos'];
+    }
+    
+    static function getTicketTypes(){
+        return ['Keke', 'Car', 'Bus','NURTW'];
+    }
 }

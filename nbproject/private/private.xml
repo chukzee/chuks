@@ -3,21 +3,45 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/public/app/js/gentle_scroll.js</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/menu_mobile.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/public/app/js/account.js</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/public/css/colors.css</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/auth/verify.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/copyrights.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/app/Util.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/register_keke/register_keke.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/content.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/head.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/menu_tablet.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/public/style.css</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/profile_card.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/main.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/menu_computer.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/footer.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/app/Http/Controllers/Auth/RegisterController.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/confirm_buy_ticket.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/public/css/versions.css</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/ticket_order_history.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/view/view.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/ticket_owner.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/help/help.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/carousel.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/auth/login.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/public/js/custom.js</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/pages/account.blade.php</file>
-            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/public/app/css/main.css</file>
-            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/head.blade.php</file>
-            <file>file:/C:/Ampps/www/KeKeTicketApp/public/style.css</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/main/result_buy_ticket.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/header.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/app/Http/Controllers/AccountController.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/layouts/default.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/edit/edit.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/pages/home.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/scroll_to_top.blade.php</file>
+            <file>file:/C:/Ampps/www/KeKeTicketApp/routes/web.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/pages/faq.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/pages/contact.blade.php</file>
-            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/settings.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/public/css/flaticon.css</file>
-            <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/includes/account/edit.blade.php</file>
             <file>file:/C:/Ampps/www/KeKeTicketApp/resources/views/pages/about.blade.php</file>
         </group>
     </open-files>

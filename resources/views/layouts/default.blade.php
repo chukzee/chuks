@@ -55,7 +55,7 @@
 
         <!-- App JS-->
         <script src="{{ url('/') }}/app/js/account.js"></script>
-        <script src="{{ url('/') }}/app/js/auto_slide.js"></script>
+        <script src="{{ url('/') }}/app/js/combine.js"></script>
 
 
     </body>

@@ -16,18 +16,18 @@
                         <div class="col-md-12 col-sm-12 text-center">
                             <div class="big-tagline">
                                 <img src="images/apple-touch-icon.png" alt="image">
-                                <h2 data-animation="animated zoomInRight"> <strong  class="app-color">Vehicle</strong> Ticketing Services</h2>
+                                <h2 data-animation="animated zoomInRight"> <strong  class="app-color">Mobile</strong> Ticketing Services</h2>
                                 <p class="lead" data-animation="animated fadeInLeft">Buying vehicle tickets made easy via USSD on your mobile device. </p>
-                                <div class="ui stackable two column grid">                                    
+                                <div class="ui stackable two column grid" style="max-width: 600px; margin: 0 auto;">                                    
                                     <div class="row">       
-                                        <div class="column"><button class="green large circular ui button alignright" style="min-width: 220px;" onclick="document.getElementById('buy_ticket_via_ussd_link_1').click()"><a id='buy_ticket_via_ussd_link_1' data-scroll href="#buy_ticket_via_ussd_header" style="color: inherit;">Buy Ticket Via USSD</a></button></div>
-                                        <div class="column"><button class="green large circular ui button alignleft" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button></div>
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="document.getElementById('buy_ticket_via_ussd_link_3').click()"><a id='buy_ticket_via_ussd_link_3' data-scroll-to="#buy_ticket_via_ussd_header" style="color: inherit;">Buy Ticket Via USSD</a></button></div>
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button></div>
                                     </div>
                                     <div class="row">
-                                        <div class="column"><button class="green large circular ui button alignright" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account/register_keke'">Register Keke</button></div>                                    
-                                        <div class="column"><button class="green large circular ui button alignleft" style="min-width: 220px;" onclick="document.getElementById('verify_ticket_link_1').click()"><a id='verify_ticket_link_1' data-scroll href="#verify_ticket_header" style="color: inherit;">Verify Ticket</a></button></div>                                    
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account/register_keke'">Register Keke</button></div>                                    
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="document.getElementById('verify_ticket_link_3').click()"><a id='verify_ticket_link_3' data-scroll-to="#verify_ticket_header" style="color: inherit;">Verify Ticket</a></button></div>                                    
                                     </div>
-                                </div>
+                                </div> 
                             </div>
                         </div>
                     </div><!-- end row -->            
@@ -43,16 +43,16 @@
                                 <img src="images/apple-touch-icon.png" alt="image">
                                 <h2 data-animation="animated zoomInRight">Buy Vehicle Tickets <strong class="app-color">Right Here!</strong></h2>
                                 <p class="lead" data-animation="animated fadeInLeft">Simply login into your account and order for your daily ticket. </p>
-                                <div class="ui stackable two column grid">                                    
+                                <div class="ui stackable two column grid" style="max-width: 600px; margin: 0 auto;">                                    
                                     <div class="row">       
-                                        <div class="column"><button class="green large circular ui button alignright" style="min-width: 220px;" onclick="document.getElementById('buy_ticket_via_ussd_link_2').click()"><a id='buy_ticket_via_ussd_link_2' data-scroll href="#buy_ticket_via_ussd_header" style="color: inherit;">Buy Ticket Via USSD</a></button></div>
-                                        <div class="column"><button class="green large circular ui button alignleft" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button></div>
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="document.getElementById('buy_ticket_via_ussd_link_3').click()"><a id='buy_ticket_via_ussd_link_3' data-scroll-to="#buy_ticket_via_ussd_header" style="color: inherit;">Buy Ticket Via USSD</a></button></div>
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button></div>
                                     </div>
                                     <div class="row">
-                                        <div class="column"><button class="green large circular ui button alignright" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account/register_keke'">Register Keke</button></div>                                    
-                                        <div class="column"><button class="green large circular ui button alignleft" style="min-width: 220px;" onclick="document.getElementById('verify_ticket_link_2').click()"><a id='verify_ticket_link_2' data-scroll href="#verify_ticket_header" style="color: inherit;">Verify Ticket</a></button></div>                                    
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account/register_keke'">Register Keke</button></div>                                    
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="document.getElementById('verify_ticket_link_3').click()"><a id='verify_ticket_link_3' data-scroll-to="#verify_ticket_header" style="color: inherit;">Verify Ticket</a></button></div>                                    
                                     </div>
-                                </div>
+                                </div> 
                             </div>
                         </div>
                     </div><!-- end row -->            
@@ -68,14 +68,14 @@
                                 <img src="images/apple-touch-icon.png" alt="image">
                                 <h2 data-animation="animated zoomInRight">All Is <strong  class="app-color">Welcome!</strong> </h2>
                                 <p class="lead" data-animation="animated fadeInLeft">We welcome any </strong> company</h2> to use our services</p>
-                                <div class="ui stackable two column grid">                                    
+                                <div class="ui stackable two column grid" style="max-width: 600px; margin: 0 auto;">                                    
                                     <div class="row">       
-                                        <div class="column"><button class="green large circular ui button alignright" style="min-width: 220px;" onclick="document.getElementById('buy_ticket_via_ussd_link_3').click()"><a id='buy_ticket_via_ussd_link_3' data-scroll href="#buy_ticket_via_ussd_header" style="color: inherit;">Buy Ticket Via USSD</a></button></div>
-                                        <div class="column"><button class="green large circular ui button alignleft" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button></div>
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="document.getElementById('buy_ticket_via_ussd_link_3').click()"><a id='buy_ticket_via_ussd_link_3' data-scroll-to="#buy_ticket_via_ussd_header" style="color: inherit;">Buy Ticket Via USSD</a></button></div>
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account'">Buy Ticket Online</button></div>
                                     </div>
                                     <div class="row">
-                                        <div class="column"><button class="green large circular ui button alignright" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account/register_keke'">Register Keke</button></div>                                    
-                                        <div class="column"><button class="green large circular ui button alignleft" style="min-width: 220px;" onclick="document.getElementById('verify_ticket_link_3').click()"><a id='verify_ticket_link_3' data-scroll href="#verify_ticket_header" style="color: inherit;">Verify Ticket</a></button></div>                                    
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="window.location = '{{ url("/") }}/account/register_keke'">Register Keke</button></div>                                    
+                                        <div class="column"><button class="green large circular ui button aligncenter" style="min-width: 220px;" onclick="document.getElementById('verify_ticket_link_3').click()"><a id='verify_ticket_link_3' data-scroll-to="#verify_ticket_header" style="color: inherit;">Verify Ticket</a></button></div>                                    
                                     </div>
                                 </div>                                
                             </div>

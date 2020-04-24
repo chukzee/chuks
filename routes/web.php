@@ -24,6 +24,7 @@ Route::get('/faq', function () {
 Route::post('/account/save_profile', 'AccountController@saveProfile');
 Route::post('/account/store_registered_keke', 'AccountController@storeRegisteredKeke');
 Route::post('/account/pre_buy_ticket', 'AccountController@preBuyTicket');
+Route::post('/account/restore_pre_buy_ticket', 'AccountController@restorePreBuyTicket');
 Route::post('/account/buy_ticket', 'AccountController@buyTicket');
 Route::post('/account/find_ticket_owner', 'AccountController@findTicketOwner');
 Route::post('/account/delete_order_history', 'AccountController@deleteOrder');
@@ -31,7 +32,7 @@ Route::post('/account/permanent_delete_order_history', 'AccountController@perman
 Route::post('/account/restore_deleted_order_history', 'AccountController@restoreDeletedOrder');
 Route::post('/account/trashed_order_history', 'AccountController@showTrashedOrder');
 Route::post('/account/show_order_history', 'AccountController@showOrderHistory');
-
+Route::post('/account/upload_profile_photo', 'AccountController@uploadProilePhoto');
 
 Route::get('/account/{content?}', 'AccountController@showGet');
 Route::post('/account/{content?}', 'AccountController@showPost');

@@ -46,6 +46,19 @@
     font-size: 18px !important;
 }
 
+.app-progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 10px;
+}
 
+.app-progress-bar > div {
+  width: 0%;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  border-radius: 10px;
+}
 
 

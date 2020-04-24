@@ -28,7 +28,7 @@
 
                 </div>
 
-                <button class="primary ui button" type="submit">Send Password Recovery Link <div class="ui active tiny inline loader"></div></button>
+                <button  class="green large circular ui button" style="min-width: 200px;" type="submit">Send Password Recovery Link</div></button>
 
             </form>            
         </div>

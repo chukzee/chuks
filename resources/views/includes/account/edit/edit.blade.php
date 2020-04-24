@@ -1,12 +1,11 @@
 
 <div>
 
-    <div class="ui info message" id="resend_verify_email_msg">
+    <div class="ui info message" data-el="resend_verify_email_msg">
         <p>Fill out the form below</p>
     </div>
 
-
-    <form  id='frm_edit_profile' method="POST" class="ui form">
+    <form  data-el='frm_edit_profile' method="POST" class="ui form">
         @csrf
         <div class="ui stackable grid">
 
@@ -15,10 +14,20 @@
                 <div class="ui green segment">
                     <h3>Personal Information</h3>
                     <div class="field">
-                        <a class="ui label">
-                            <img src="{{  url('/') }}{{ !empty(Auth::user()->photo_url) &&  Auth::user()->photo_url ? Auth::user()->photo_url: '/uploads/matthew.png'}}">
-                            <span>Change profile picture</span>
-                        </a>
+                        <div class="ui stackable two column grid">
+                            <div class="column">
+                                <a class="ui label" data-el="profile_upload" >
+                                    <img  data-el="profile_edit_photo" src="{{  url('/') }}{{ !empty(Auth::user()->photo_url) &&  Auth::user()->photo_url ? Auth::user()->photo_url: '/uploads/matthew.png'}}">
+                                    <span>Change profile picture</span>
+                                </a>
+                                <input type="file" class="hidden"  data-el="profile_upload_file" data-base-url="{{  url('/') }}" data-url="{{  url('/') }}/account/upload_profile_photo" />
+                            </div>
+                            <div class="column" style="margin: 5px;">
+                                <div class="app-progress-bar hidden">
+                                    <div data-el="profile_upload_progress">0%</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="field">
@@ -45,7 +54,7 @@
 
                     <div class="field">
                         <label>Date Of Birth</label>
-                        <div class="ui calendar" id="rangestart">
+                        <div class="ui calendar" data-el="rangestart">
                             <div class="ui input left icon">
                                 <i class="calendar icon"></i>
                                 <input type="text" value="{{ Auth::user()->dob}}" name="bod" class="big ui input @error('bod') is-invalid @enderror" required placeholder="Date of birth">
@@ -87,16 +96,15 @@
                             <label>State</label>
                             <select   name="state"  class="big ui @error('state') red @enderror">
                                 <?php
-                                
-                                $states = ['Delta', 'Edo', 'Lagos', 'Oyo', 'Rivers'];
-                                
+                                $states = App\Util::getNigerianStates();
+
                                 echo '<option value="">Select State</option>';
                                 foreach ($states as $state) {
-                                 if ($state == Auth::user()->state) {
+                                    if ($state == Auth::user()->state) {
                                         echo '<option selected value="' . $state . '">' . $state . '</option>';
                                     } else {
                                         echo '<option value="' . $state . '">' . $state . '</option>';
-                                    }   
+                                    }
                                 }
                                 ?>
                             </select>
@@ -134,8 +142,9 @@
                         <select name="bank_name" value="{{ Auth::user()->bank_name}}" >
 
                             <?php
-                            $banks = ['FirstBank', 'Fedelity', 'Unioun', 'FCMB'];
-                            
+                            $banks = App\Util::getNigerianBanks();
+                            ;
+
                             echo '<option value="">Select State</option>';
                             foreach ($banks as $bank) {
                                 if ($bank == Auth::user()->bank_name) {
@@ -144,7 +153,6 @@
                                     echo '<option value="' . $bank . '">' . $bank . '</option>';
                                 }
                             }
-                            
                             ?>
                         </select>
                         @error('bank')
@@ -193,7 +201,7 @@
         </div>
         <div class="ui stackable grid">
             <div class="three wide column centered">
-                <button  data-url="{{ url('/') }}/account/save_profile" id='btn_edit_profile_save_change' class="green large circular ui button" style="min-width: 200px;" type="button" >Save changes</button>
+                <button  data-url="{{ url('/') }}/account/save_profile" data-el='btn_edit_profile_save_change' class="green large circular ui button" style="min-width: 200px;" type="button" >Save changes</button>
             </div>
         </div>
 

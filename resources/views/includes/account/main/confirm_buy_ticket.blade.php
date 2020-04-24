@@ -1,7 +1,7 @@
 <div class="ui stackable centered grid">
     <div class="twelve wide column">
         <h1  class="ui block header">Please confirm  the follow entries</h1>
-        <form id="confirm_buy_ticket_form" method="POST" class="ui form">
+        <form data-el="confirm_buy_ticket_form" method="POST" class="ui form">
             @csrf
             <input type="hidden" name="via" value="website">
             <div class="ui stackable grid">
@@ -22,7 +22,7 @@
                     <label>Bank</label>
                     <select name="bank_name" >
                         <?php
-                        $banks = ['FirstBank', 'Fedelity', 'Unioun', 'FCMB'];
+                        $banks = App\Util::getNigerianBanks();
 
                         echo '<option value="">Select State</option>';
                         foreach ($banks as $bank) {
@@ -78,10 +78,10 @@
 
             <div class="ui stackable two column grid">
                 <div class="column">
-                    <button id="btn_confirm_buy_ticket_back" data-url="{{ url('/') }}/account/main"  class="basic green large ui circular button alignright" style="min-width: 200px;" type="button"><i class="icon arrow left"></i>Back</button>
+                    <button data-el="btn_confirm_buy_ticket_back" data-url="{{ url('/') }}/account/main"  class="basic green large ui circular button alignright" style="min-width: 200px;" type="button"><i class="icon arrow left"></i>Back</button>
                 </div>
                 <div class="column">
-                    <button id="btn_confirm_buy_ticket_proceed" data-url="{{ url('/') }}/account/buy_ticket" class="green large ui circular button alignleft" style="min-width: 200px;" type="button">Proceed<i class="icon arrow right"></i></button>
+                    <button data-el="btn_confirm_buy_ticket_proceed" data-url="{{ url('/') }}/account/buy_ticket" class="green large ui circular button alignleft" style="min-width: 200px;" type="button">Proceed<i class="icon arrow right"></i></button>
                 </div>
             </div>
 

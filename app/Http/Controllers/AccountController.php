@@ -159,6 +159,20 @@ class AccountController extends Controller {
         return $data;
     }
 
+    public function restorePreBuyTicket(Request $request) {
+
+        $order = Order::latest()->first(); //get the last record
+
+        $last_entry = [
+            'amount' => $order ? $order->amount : '',
+            'type' => $order ? $order->type : '',
+            'state' => $order ? $order->state : '',
+            'lga' => $order ? $order->lga : '',
+        ];
+
+        return view('includes.account.main.main', $last_entry);
+    }
+
     /**
      *
      * @param  Request  $request
@@ -193,7 +207,8 @@ class AccountController extends Controller {
         $order->email = $user->email;
 
         $order->amount = $request->amount;
-        $order->station = $request->state . ', ' . $request->lga;
+        $order->state = $request->state;
+        $order->lga = $request->lga;
         $order->type = $request->type;
         $order->via = $request->via; // set in hidden field in the client
         $order->ticket = $this->generateTicket();
@@ -258,46 +273,85 @@ class AccountController extends Controller {
         return $ticket_owner;
     }
 
-    function deleteOrder(Request $request){
-        
-        //delete orders
+    function deleteOrder(Request $request) {
+
+        //soft delete orders
         Order::destroy($request->record_ids);
-        
+
         return view('includes.account.main.ticket_order_history');
     }
-    
-    function showOrderHistory(Request $request){
-        
+
+    function showOrderHistory(Request $request) {
+
         return view('includes.account.main.ticket_order_history');
     }
-    
-    function permanentDeleteOrder(Request $request){
-        
+
+    function permanentDeleteOrder(Request $request) {
+
         //permanently delete orders
         Order::onlyTrashed()
                 ->whereIn('id', $request->record_ids)
-                ->get()
                 ->forceDelete();
-        
-        return view('includes.account.main.ticket_order_history', ['trash'=> 'true']);
+
+        return view('includes.account.main.ticket_order_history', ['trash' => 'true']);
     }
-    
-    function restoreDeletedOrder(Request $request){
-        
+
+    function restoreDeletedOrder(Request $request) {
+
         //permanently delete orders
         Order::onlyTrashed()
                 ->whereIn('id', $request->record_ids)
-                ->get()
                 ->restore();
-        
-        return view('includes.account.main.ticket_order_history', ['trash'=> 'true']);
+
+
+        return view('includes.account.main.ticket_order_history', ['trash' => 'true']);
     }
-    
-    function showTrashedOrder(Request $request){
-        
+
+    function showTrashedOrder(Request $request) {
+
         //show trashed orders
-        
-        return view('includes.account.main.ticket_order_history', ['trash'=> 'true']);
+
+        return view('includes.account.main.ticket_order_history', ['trash' => 'true']);
     }
-    
+
+    function uploadProilePhoto(Request $request) {
+
+        $validator = Validator::make($request->all(), [
+                    'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return ['success' => false, 'err_msg' => 'invalid file upload'];
+        }
+
+        $id = auth()->user()->id;
+        // Get current user
+        $user = User::findOrFail($id);
+        // Set user name
+        //$user->name = $request->input('name');
+        // Check if a profile image has been uploaded
+        if ($request->has('profile_image')) {
+            // Get image file
+            $image = $request->file('profile_image');
+            // Make a image name based on user id whiche is unique for all users
+            $name = $id; 
+            // Define folder path
+            $folder = '/uploads/profiles/';
+            // Make a file path where image will be stored [ folder path + file name + file extension]
+            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+            // Upload image
+            //$disk = 'public';
+            //$uploadedFile->storeAs($folder, $name . '.' . $uploadedFile->getClientOriginalExtension(), $disk);
+
+            $image->move(public_path($folder), $filePath);
+
+            // Set user profile image path in database to filePath
+            $user->photo_url = $filePath;
+        }
+
+        // Persist user record to database
+        $user->save();
+        return ['success' => true, 'photo_url'=>$user->photo_url];
+    }
+
 }

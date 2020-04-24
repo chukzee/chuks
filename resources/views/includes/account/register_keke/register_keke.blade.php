@@ -5,7 +5,7 @@
     <div class="five wide column"></div>
     <div class="six wide column">
 
-        <form id='frm_register_keke' method="post" class="ui form" style="margin: 0 auto; ; padding: 20px;">
+        <form data-el='frm_register_keke' method="post" class="ui form" style="margin: 0 auto; ; padding: 20px;">
             @csrf
             <div class="field">
                 <label>Keke plate number</label>
@@ -27,7 +27,7 @@
                 </div>
                 @enderror
             </div>
-            <button data-url="{{ url('/') }}/account/store_registered_keke" id='btn_register_keke' class="green large circular ui button" style="min-width: 200px;" type="button">Register</button>
+            <button data-url="{{ url('/') }}/account/store_registered_keke" data-el='btn_register_keke' class="green large circular ui button" style="min-width: 200px;" type="button">Register</button>
         </form>
     </div>
     <div class="five wide column"></div>

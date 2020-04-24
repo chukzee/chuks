@@ -22,7 +22,8 @@
 
 <div style="max-width: 800px; margin: 0 auto; font-size: 36px; padding: 20px; color: #777">
     <center>
-        <p>This is my body content. This is my body content.This is my body content.This is my body content.This is my body content.</p>
+        <p>Love a smart way of buying and selling tickets? We do also!
+            This platform provides a convenient way to buy and sell various kinds of tickets.</p>
         <button class="green large circular ui button"  style="min-width: 200px;" type="button">Learn More >></button>
     </center>
 </div>
@@ -33,15 +34,20 @@
 
             <div id='buy_ticket_via_ussd_header' class="fa fa-phone-square" style="font-size: 48px; text-align: center; width: 100%;"></div>
             <h3 style="text-align: center;">Buy ticket via USSD</h3>
-            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
+            <p style="font-size: 16px;">Straight from you mobile device you can buy tickets the smart way via USSD application. 
+                Simply dial the USSD code corresponding to the ticketing category of your choice!
+                <small class="readmore"><a href="#">Read more</a></small></p>
 
         </div>
         <div class="five wide column">
 
             <div class="fa fa-globe" style="font-size: 48px; text-align: center; width: 100%"></div>
             <h3 style="text-align: center;">Buy ticket online</h3>
-            <p>
-                todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo !
+            <p style="font-size: 16px;">
+                Alternatively you can buy ticket directly from this website. 
+                Ensure to <a href='{{ url("/") }}/register'>sign up for free</a> 
+                with  us in order to be able to use the service online.
+                Once you finish registering the rest is a breeze. Simply login to your account and enjoy! 
                 <small class="readmore"><a href="#">Read more</a></small>
 
             </p>
@@ -52,7 +58,7 @@
 
             <div class="fa fa-group" style="font-size: 48px; text-align: center; width: 100%"></div>
             <h3 style="text-align: center;">Open Services</h3>
-            <p>todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
+            <p style="font-size: 16px;">todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo todo ! <small class="readmore"><a href="#">Read more</a></small></p>
 
 
         </div>
