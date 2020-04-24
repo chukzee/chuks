@@ -58,8 +58,8 @@
     <include app:graph="@navigation/nav_graph_upgrade"/>
 
     <!--
-    Add global action to HomeFragment. So to access HomeFragment from any where do something
-    like this below:
+     Add global action to HomeFragment. So to access HomeFragment from any where do something
+     like this below:
 
      viewButton.setOnClickListener { view ->
         view.findNavController().navigate(R.id.action_global_HomeFragment)
