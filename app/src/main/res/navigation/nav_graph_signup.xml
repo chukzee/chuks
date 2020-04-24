@@ -62,15 +62,15 @@
             app:destination="@id/signUpConfirmVerificationCodeFragment" />
     </fragment>
 
-    <!-- SignUpConfirmVerificationCodeFragment action will navigate to MainFrame -->
+    <!-- SignUpConfirmVerificationCodeFragment action will navigate to HomeFrame -->
     <fragment
         android:id="@+id/signUpConfirmVerificationCodeFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpConfirmVerificationCodeFragment"
         android:label="sign_up_confirm_verification_code_fragment"
         tools:layout="@layout/sign_up_confirm_verification_code_fragment">
         <action
-            android:id="@+id/action_signUpConfirmVerificationCodeFragment_to_mainFragment"
-            app:destination="@id/MainFragment" />
+            android:id="@+id/action_signUpConfirmVerificationCodeFragment_to_homeFragment"
+            app:destination="@id/HomeFragment" />
     </fragment>
 
 </navigation>
