@@ -1,0 +1,11 @@
+.elementor-element .icon {
+  position: relative;
+}
+.elementor-element .icon .htelementor-icon::after {
+  content: "NEWS";
+  font-size: 10px;
+  opacity: 0.4;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}

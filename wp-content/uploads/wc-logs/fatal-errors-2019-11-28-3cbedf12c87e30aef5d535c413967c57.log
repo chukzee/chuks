@@ -1,0 +1,114 @@
+2019-11-28T20:35:46+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T20:35:46+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T20:35:46+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T20:39:42+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\core\common\modules\connect\apps\base-app.php on line 2
+
+2019-11-28T20:46:53+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\includes\base\controls-stack.php on line 1262
+
+2019-11-28T20:54:54+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\includes\controls\base-data.php on line 65
+
+2019-11-28T20:54:59+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\woocommerce\includes\admin\plugin-updates\class-wc-plugin-updates.php on line 9
+
+2019-11-28T20:56:27+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\includes\base\controls-stack.php on line 1309
+
+2019-11-28T20:57:09+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\includes\base\controls-stack.php on line 1302
+
+2019-11-28T21:07:55+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\core\base\base-object.php on line 99
+
+2019-11-28T21:08:43+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\plugin.php on line 133
+
+2019-11-28T21:26:16+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:26:21+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 162
+
+2019-11-28T21:26:24+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:27:00+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:27:05+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\cache.php on line 123
+
+2019-11-28T21:27:09+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\kses.php on line 1560
+
+2019-11-28T21:27:35+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\post.php on line 7018
+
+2019-11-28T21:27:35+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:27:45+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:27:51+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:34:40+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 162
+
+2019-11-28T21:34:45+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 162
+
+2019-11-28T21:36:52+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\l10n.php on line 1222
+
+2019-11-28T21:36:53+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\l10n.php on line 254
+
+2019-11-28T21:37:43+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-admin\includes\template.php on line 12
+
+2019-11-28T21:38:43+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-admin\includes\ajax-actions.php on line 22
+
+2019-11-28T21:38:47+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 162
+
+2019-11-28T21:38:51+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\includes\managers\icons.php on line 2
+
+2019-11-28T21:38:54+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\class-wp-hook.php on line 272
+
+2019-11-28T21:40:25+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\vendor\codeinwp\themeisle-sdk\start.php on line 32
+
+2019-11-28T21:40:29+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\woocommerce\packages\woocommerce-blocks\src\BlockTypes\ProductTag.php on line 8
+
+2019-11-28T21:41:41+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\woocommerce\packages\woocommerce-blocks\src\Assets.php on line 210
+
+2019-11-28T21:41:47+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\l10n.php on line 1157
+
+2019-11-28T21:41:51+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\pomo\translations.php on line 344
+
+2019-11-28T21:41:54+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\plugin.php on line 184
+
+2019-11-28T21:42:28+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:42:32+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\wpforms-lite\includes\fields\class-text.php on line 12
+
+2019-11-28T21:42:38+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 162
+
+2019-11-28T21:42:42+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-admin\includes\media.php on line 16
+
+2019-11-28T21:42:59+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 437
+
+2019-11-28T21:42:59+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:50:34+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\jft-assitant-plugin\classes\JftAssistant\Admin.php on line 20
+
+2019-11-28T21:51:26+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\Requests\Transport\cURL.php on line 437
+
+2019-11-28T21:52:20+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\wp-db.php on line 2030
+
+2019-11-28T21:53:24+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\class-wp-image-editor-gd.php on line 189
+
+2019-11-28T21:57:43+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-includes\http.php on line 551
+
+2019-11-28T22:26:10+00:00 CRITICAL Maximum execution time of 30 seconds exceeded in C:\Ampps\www\transparencywatch\wp-content\plugins\elementor\core\base\base-object.php on line 99
+

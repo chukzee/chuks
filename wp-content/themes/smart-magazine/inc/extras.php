@@ -1,0 +1,32 @@
+<?php
+/**
+ * Custom functions that act independently of the theme templates
+ *
+ * Eventually, some of the functionality here could be replaced by core features
+ *
+ * @package Smart Magazine
+ */
+
+/**
+ * Adds custom classes to the array of body classes.
+ *
+ * @param array $classes Classes for the body element.
+ * @return array
+ */
+function smart_magazine_body_classes( $classes ) {
+	// Adds a class of group-blog to blogs with more than 1 published author.
+	if ( is_multi_author() ) {
+		$classes[] = 'group-blog';
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'smart_magazine_body_classes' );
+/**
+ * Backwards Compatibility
+ */
+if ( ! function_exists( 'wp_body_open' ) ) {
+	function wp_body_open() {
+			do_action( 'wp_body_open' );
+	}
+}

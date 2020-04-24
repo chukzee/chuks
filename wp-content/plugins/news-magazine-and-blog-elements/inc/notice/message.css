@@ -1,0 +1,41 @@
+.ata-message {
+	overflow: hidden;
+	position: relative;
+	border-left-color: #2ea2cc !important;
+}
+.ata-message a.button-primary,
+.ata-message a.button-secondary {
+	text-decoration: none !important;
+}
+.ata-message a.ata-message-close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 10px 15px 10px 21px;
+	font-size: 13px;
+	line-height: 1.23076923;
+	text-decoration: none;
+}
+.ata-message a.ata-message-close:before {
+	position: absolute;
+	top: 8px;
+	left: 0;
+	-webkit-transition: all .1s ease-in-out;
+	transition: all .1s ease-in-out;
+}
+.pro_text{
+	display:block;
+	color:#D3D3D3;
+	font-style:italic;
+	text-align:right;
+}
+td .pro_text{
+	text-align:left;	
+}
+.ata_wrp_select label{
+	width:35%;
+	display:inline-block;
+}
+.ata_wrp_select select{
+	width:60%;	
+}
