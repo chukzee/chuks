@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_support_chat"
     app:startDestination="@id/SupportChatFragment">
 
     <fragment
         android:id="@+id/SupportChatFragment"
-        android:name="com.beepmemobile.www.ui.sopport.SupportChatFragment"
+        android:name="com.beepmemobile.www.ui.support.SupportChatFragment"
         android:label="SupportChatFragment"
         tools:layout="@layout/support_chat_fragment" >
         <!--TODO Add action-->

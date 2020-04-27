@@ -1,4 +1,4 @@
-package com.beepmemobile.www.ui
+package com.beepmemobile.www.ui.search
 
 import androidx.lifecycle.ViewModel
 
