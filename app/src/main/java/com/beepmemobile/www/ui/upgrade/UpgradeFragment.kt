@@ -8,8 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.beepmemobile.www.R
+import com.beepmemobile.www.databinding.UpgradeFragmentBinding
 
 class UpgradeFragment : Fragment() {
+
+    private var _binding: UpgradeFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+
+    private val binding get() = _binding!!
 
     companion object {
         fun newInstance() = UpgradeFragment()
@@ -21,7 +28,9 @@ class UpgradeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.upgrade_fragment, container, false)
+        _binding = UpgradeFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

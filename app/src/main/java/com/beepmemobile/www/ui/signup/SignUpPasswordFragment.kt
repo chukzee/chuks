@@ -8,8 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.beepmemobile.www.R
+import com.beepmemobile.www.databinding.SignUpPasswordFragmentBinding
 
 class SignUpPasswordFragment : Fragment() {
+
+    private var _binding: SignUpPasswordFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+
+    private val binding get() = _binding!!
 
     companion object {
         fun newInstance() = SignUpPasswordFragment()
@@ -21,7 +28,14 @@ class SignUpPasswordFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.sign_up_password_fragment, container, false)
+        _binding = SignUpPasswordFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

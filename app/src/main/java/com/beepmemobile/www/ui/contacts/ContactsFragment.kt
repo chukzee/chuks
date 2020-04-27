@@ -6,10 +6,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.beepmemobile.www.R
+import com.beepmemobile.www.databinding.ContactsFragmentBinding
 
 class ContactsFragment : Fragment() {
+
+    private var _binding: ContactsFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+
+    private val binding get() = _binding!!
 
     companion object {
         fun newInstance() = ContactsFragment()
@@ -21,7 +27,14 @@ class ContactsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.contacts_fragment, container, false)
+        _binding = ContactsFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

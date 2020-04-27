@@ -8,8 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.beepmemobile.www.R
+import com.beepmemobile.www.databinding.SignUpConfirmVerificationCodeFragmentBinding
 
 class SignUpConfirmVerificationCodeFragment : Fragment() {
+
+    private var _binding: SignUpConfirmVerificationCodeFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+
+    private val binding get() = _binding!!
 
     companion object {
         fun newInstance() = SignUpConfirmVerificationCodeFragment()
@@ -21,11 +28,14 @@ class SignUpConfirmVerificationCodeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(
-            R.layout.sign_up_confirm_verification_code_fragment,
-            container,
-            false
-        )
+        _binding = SignUpConfirmVerificationCodeFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -8,8 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.beepmemobile.www.R
+import com.beepmemobile.www.databinding.SmsFragmentBinding
 
 class SmsFragment : Fragment() {
+
+    private var _binding: SmsFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+
+    private val binding get() = _binding!!
 
     companion object {
         fun newInstance() = SmsFragment()
@@ -21,7 +28,14 @@ class SmsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.sms_fragment, container, false)
+        _binding = SmsFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

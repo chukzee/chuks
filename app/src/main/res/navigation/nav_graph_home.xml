@@ -63,7 +63,7 @@
 
      viewButton.setOnClickListener { view ->
         view.findNavController().navigate(R.id.action_global_HomeFragment)
-    }
+     }
     -->
 
     <action android:id="@+id/action_global_HomeFragment" app:destination="@id/HomeFragment"/>
