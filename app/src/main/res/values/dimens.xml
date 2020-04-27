@@ -17,7 +17,7 @@
     <dimen name="card_side_margin">12dp</dimen>
     <dimen name="card_bottom_margin">26dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
-    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_corner_radius">120dp</dimen>
     <dimen name="list_item_small_height">70dp</dimen>
     <dimen name="list_item_medium_height">100dp</dimen>
     <dimen name="list_item_large_height">150dp</dimen>
