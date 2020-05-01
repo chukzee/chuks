@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_sms"  
-	app:startDestination="@id/SmsFragment">
+    android:id="@+id/nav_graph_sms_view"
+	app:startDestination="@id/SmsViewFragment">
 
     <fragment
-        android:id="@+id/SmsFragment"
-        android:name="com.beepmemobile.www.ui.sms.SmsFragment"
-        android:label="SmsFragment"
-        tools:layout="@layout/sms_fragment" >
+        android:id="@+id/SmsViewFragment"
+        android:name="com.beepmemobile.www.ui.sms.SmsViewFragment"
+        android:label="SmsViewFragment"
+        tools:layout="@layout/sms_view_fragment" >
         <!--TODO Add action-->
     </fragment>
 

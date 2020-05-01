@@ -1,16 +1,16 @@
 package com.beepmemobile.www.ui.support
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 
-import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.SupportChatFragmentBinding
 
 class SupportChatFragment : Fragment() {
+    private val model: SupportChatListViewModel by viewModels()
 
     private var _binding: SupportChatFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -21,8 +21,6 @@ class SupportChatFragment : Fragment() {
     companion object {
         fun newInstance() = SupportChatFragment()
     }
-
-    private lateinit var viewModel: SupportChatViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +38,6 @@ class SupportChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(SupportChatViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
 }

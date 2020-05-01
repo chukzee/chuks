@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="chat_msg" type="com.beepmemobile.www.data.msg.ChatMessage"/>
+        <variable name="user" type="com.beepmemobile.www.data.User"/>
+        <variable name="util" type="com.beepmemobile.www.util.Util"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/support_chat_sent_root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/support_chat_sender_profile_photo"
+            android:layout_width="@dimen/profile_image_smaller_size"
+            android:layout_height="@dimen/profile_image_smaller_size"
+            app:civ_border_color="#EEEEEE"
+            app:civ_border_width="1dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="#8BC34A"
+            app:civ_shadow_radius="5"
+            app:srcCompat="@android:drawable/progress_indeterminate_horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/support_chat_sender_full_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="9dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            tools:text="Sender Full Name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/support_chat_sender_profile_photo"
+            app:layout_constraintBottom_toTopOf="support_chat_received_msg" />
+
+        <TextView
+            android:id="@+id/support_chat_received_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/received_msg_text_view"
+            android:minWidth="80dp"
+            android:maxWidth="300dp"
+            android:shadowColor="#FFFFFF"
+            tools:text="Big text1 Big text2 Big text3 Big text4 Big text5 Big text6  Big text7  Big text8  Big text9  Big text10  Big text11  Big text612 "
+            android:textColor="@color/colorBeepMeTextLight"
+            android:layout_marginLeft="5dp"
+            app:layout_constraintStart_toEndOf="@+id/support_chat_sender_profile_photo"
+            app:layout_constraintTop_toBottomOf="@+id/support_chat_sender_full_name" />
+
+
+        <TextView
+            android:id="@+id/support_chat_received_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:textSize="12dp"
+            app:layout_constraintStart_toEndOf="@+id/support_chat_sender_profile_photo"
+            app:layout_constraintTop_toBottomOf="@id/support_chat_received_msg"
+            tools:text="Yesterday, 20:47" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

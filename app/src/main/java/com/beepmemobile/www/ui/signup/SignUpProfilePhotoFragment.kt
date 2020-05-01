@@ -6,11 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.SignUpProfilePhotoFragmentBinding
+import com.beepmemobile.www.data.*;
 
 class SignUpProfilePhotoFragment : Fragment() {
+    private val model: SignUpProfilePhotoViewModel by viewModels()
 
     private var _binding: SignUpProfilePhotoFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -21,8 +24,6 @@ class SignUpProfilePhotoFragment : Fragment() {
     companion object {
         fun newInstance() = SignUpProfilePhotoFragment()
     }
-
-    private lateinit var viewModel: SignUpProfilePhotoViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +41,6 @@ class SignUpProfilePhotoFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(SignUpProfilePhotoViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
 }

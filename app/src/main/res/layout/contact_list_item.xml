@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="contact" type="com.beepmemobile.www.data.msg.Contact"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_item_small_height"
+        android:background="@android:color/background_light">
+
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/contact_profile_photo"
+            android:layout_width="@dimen/profile_image_small_size"
+            android:layout_height="@dimen/profile_image_small_size"
+            app:civ_border_color="#EEEEEE"
+            app:civ_border_width="2dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="#8BC34A"
+            app:civ_shadow_radius="10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@{contact.photo_url}"
+            tools:src="@android:drawable/progress_indeterminate_horizontal"
+            />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            tools:text="The Name"
+            app:text = "@{contact.display_name}"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/contact_profile_photo"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <include
+            layout="@layout/list_item_divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/contact_profile_photo" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

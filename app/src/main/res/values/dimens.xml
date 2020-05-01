@@ -18,6 +18,14 @@
     <dimen name="card_bottom_margin">26dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="card_corner_radius">120dp</dimen>
+
+    <!--profile image size-->
+    <dimen name="profile_image_smaller_size">40dp</dimen>
+    <dimen name="profile_image_small_size">70dp</dimen>
+    <dimen name="profile_image_medium_size">100dp</dimen>
+    <dimen name="profile_image_large_size">150dp</dimen>
+
+    <!--list item height-->
     <dimen name="list_item_small_height">70dp</dimen>
     <dimen name="list_item_medium_height">100dp</dimen>
     <dimen name="list_item_large_height">150dp</dimen>

@@ -6,11 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.SignUpPasswordFragmentBinding
+import com.beepmemobile.www.data.*;
 
 class SignUpPasswordFragment : Fragment() {
+    private val model: SignUpPasswordViewModel by viewModels()
 
     private var _binding: SignUpPasswordFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -21,8 +24,6 @@ class SignUpPasswordFragment : Fragment() {
     companion object {
         fun newInstance() = SignUpPasswordFragment()
     }
-
-    private lateinit var viewModel: SignUpPasswordViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +41,7 @@ class SignUpPasswordFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(SignUpPasswordViewModel::class.java)
-        // TODO: Use the ViewModel
+
     }
 
 }

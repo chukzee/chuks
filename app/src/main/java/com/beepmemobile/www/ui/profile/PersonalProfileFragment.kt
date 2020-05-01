@@ -1,34 +1,33 @@
-package com.beepmemobile.www.ui.sms
+package com.beepmemobile.www.ui.profile
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import com.beepmemobile.www.databinding.PersonalProfileFragmentBinding
 
-import com.beepmemobile.www.R
-import com.beepmemobile.www.databinding.SmsFragmentBinding
+class PersonalProfileFragment : Fragment() {
+    private val model: PersonalProfileListViewModel by viewModels()
 
-class SmsFragment : Fragment() {
-
-    private var _binding: SmsFragmentBinding? = null
+    private var _binding: PersonalProfileFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
 
     private val binding get() = _binding!!
 
     companion object {
-        fun newInstance() = SmsFragment()
+        fun newInstance() =
+            PersonalProfileFragment()
     }
 
-    private lateinit var viewModel: SmsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = SmsFragmentBinding.inflate(inflater, container, false)
+        _binding = PersonalProfileFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
     }
@@ -40,8 +39,7 @@ class SmsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(SmsViewModel::class.java)
-        // TODO: Use the ViewModel
+
     }
 
 }

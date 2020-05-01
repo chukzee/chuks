@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/ProfileFragment"
-        android:name="com.beepmemobile.www.ui.profile.EditProfileFragment"
+        android:name="com.beepmemobile.www.ui.profile.PersonalProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/edit_profile_fragment" >
+        tools:layout="@layout/personal_profile_fragment" >
         <!--TODO Add action-->
     </fragment>
 

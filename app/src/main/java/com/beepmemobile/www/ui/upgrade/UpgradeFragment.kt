@@ -6,11 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.UpgradeFragmentBinding
+import com.beepmemobile.www.data.*;
 
 class UpgradeFragment : Fragment() {
+    private val model: UpgradeViewModel by viewModels()
 
     private var _binding: UpgradeFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -21,8 +24,6 @@ class UpgradeFragment : Fragment() {
     companion object {
         fun newInstance() = UpgradeFragment()
     }
-
-    private lateinit var viewModel: UpgradeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +41,6 @@ class UpgradeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(UpgradeViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
 }

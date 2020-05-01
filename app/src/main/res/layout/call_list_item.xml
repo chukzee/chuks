@@ -1,75 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:background="@android:color/background_light"
-    android:layout_height="@dimen/list_item_small_height">
+    xmlns:tools="http://schemas.android.com/tools">
 
 
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/call_profile_photo"
-        android:layout_width="@dimen/list_item_small_height"
-        android:layout_height="@dimen/list_item_small_height"
-        app:civ_border_color="#EEEEEE"
-        app:civ_border_width="2dp"
-        app:civ_shadow="true"
-        app:civ_shadow_color="#8BC34A"
-        app:civ_shadow_radius="10"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/progress_indeterminate_horizontal" />
+    <data>
+        <variable name="call" type="com.beepmemobile.www.data.Call"/>
+        <variable name="user" type="com.beepmemobile.www.data.User"/>
+        <variable name="util" type="com.beepmemobile.www.util.Util"/>
+    </data>
 
-    <TextView
-        android:id="@+id/call_full_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/call_img_btn"
-        app:layout_constraintStart_toEndOf="@+id/call_profile_photo"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="The Name" />
-
-    <TextView
-        android:id="@+id/call_time"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginRight="20dp"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/call_img_btn"
-        app:layout_constraintStart_toEndOf="@+id/call_profile_photo"
-        app:layout_constraintTop_toBottomOf="@+id/call_full_name"
-        tools:text="Today, 20:34" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:background="@android:color/background_light"
+        android:layout_height="@dimen/list_item_small_height">
 
 
-    <ImageButton
-        android:id="@+id/call_img_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_call_green_24dp" />
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/call_profile_photo"
+            android:layout_width="@dimen/list_item_small_height"
+            android:layout_height="@dimen/list_item_small_height"
+            app:civ_border_color="#EEEEEE"
+            app:civ_border_width="2dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="#8BC34A"
+            app:civ_shadow_radius="10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@{user.photo_url}"
+            tools:src="@android:drawable/progress_indeterminate_horizontal"/>
 
-    <include
-        layout="@layout/list_item_divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/call_profile_photo" />
+        <TextView
+            android:id="@+id/call_full_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/call_img_btn"
+            app:layout_constraintStart_toEndOf="@+id/call_profile_photo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="The Name"
+            android:text="@{user.display_name}"/>
+
+        <TextView
+            android:id="@+id/call_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="20dp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/call_img_btn"
+            app:layout_constraintStart_toEndOf="@+id/call_profile_photo"
+            app:layout_constraintTop_toBottomOf="@+id/call_full_name"
+            tools:text="Today, 20:34"
+            android:text="@{util.formatTime(call.call_time)}"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:id="@+id/call_img_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_call_green_24dp"
+            android:onClick="@{() -> call.makeCall(call.caller_phone_no, call.receiver_phone_no)}"/>
+
+        <include
+            layout="@layout/list_item_divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/call_profile_photo" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

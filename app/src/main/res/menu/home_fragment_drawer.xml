@@ -10,9 +10,9 @@
         android:title="Upgrade" />
 
         <item
-            android:id="@+id/nav_main_edit_profile"
+            android:id="@+id/nav_main_personal_profile"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Edit Profile" />
+            android:title="Personal Profile" />
 
         <item
         android:id="@+id/nav_main_support_chat"
@@ -28,5 +28,10 @@
             android:id="@+id/nav_main_help"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Help" />
+
+        <item
+            android:id="@+id/nav_main_faq"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="FAQ" />
 
 </menu>

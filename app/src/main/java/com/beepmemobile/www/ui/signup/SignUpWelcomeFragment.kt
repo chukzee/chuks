@@ -6,11 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.SignUpWelcomeFragmentBinding
+import com.beepmemobile.www.data.*;
 
 class SignUpWelcomeFragment : Fragment() {
+    private val model: SignUpWelcomeViewModel by viewModels()
 
     private var _binding: SignUpWelcomeFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -21,8 +24,6 @@ class SignUpWelcomeFragment : Fragment() {
     companion object {
         fun newInstance() = SignUpWelcomeFragment()
     }
-
-    private lateinit var viewModel: SignUpWelcomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +41,6 @@ class SignUpWelcomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(SignUpWelcomeViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
 }
