@@ -14,7 +14,7 @@
 
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/sms_toolbar"
+            android:id="@+id/sms_list_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorBeepMePrimary"
@@ -23,14 +23,13 @@
             app:layout_constraintStart_toStartOf="parent" />
 
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/sms_view_pager"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sms_list_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            app:layout_constraintTop_toBottomOf="@+id/sms_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sms_list_toolbar" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

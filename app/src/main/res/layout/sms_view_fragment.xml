@@ -23,11 +23,11 @@
             app:menu="@menu/sms_app_bar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/sms_scroll_view" />
+            app:layout_constraintBottom_toTopOf="@+id/sms_recycler_view" />
 
 
-        <ScrollView
-            android:id="@+id/sms_scroll_view"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sms_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/sms_input_include"

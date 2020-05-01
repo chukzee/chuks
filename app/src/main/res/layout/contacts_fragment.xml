@@ -23,14 +23,13 @@
             app:layout_constraintStart_toStartOf="parent" />
 
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/contats_view_pager"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/contats_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            app:layout_constraintTop_toBottomOf="@+id/contacts_toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contacts_toolbar" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

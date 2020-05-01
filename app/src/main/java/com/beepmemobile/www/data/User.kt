@@ -1,5 +1,7 @@
 package com.beepmemobile.www.data
 
+import java.util.*
+
 open class User {
 
 
@@ -10,6 +12,8 @@ open class User {
     val display_name get()= (first_name + " " + last_name).trim()
     val full_name get()= display_name
     var address: String = ""
+    var location: String = "" // using google location finder
+    var last_seen_time: Date = Date();
     var phone_no = ""
     var email = ""
 

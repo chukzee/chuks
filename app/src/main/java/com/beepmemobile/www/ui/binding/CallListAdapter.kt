@@ -7,7 +7,6 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.databinding.CallListItemBinding
-import com.beepmemobile.www.databinding.SmsListItemBinding
 
 class CallListAdapter :
     RecyclerView.Adapter<CallListAdapter.CallListViewHolder>() {
@@ -38,6 +37,7 @@ class CallListAdapter :
 
         callListViewListViewHolder.callListItemBinding.call = currentCall
         callListViewListViewHolder.callListItemBinding.user = currentUser
+        callListViewListViewHolder.callListItemBinding.appUser = this.app_user
 
     }
 

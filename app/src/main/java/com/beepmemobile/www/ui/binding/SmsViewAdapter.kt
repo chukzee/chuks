@@ -12,7 +12,7 @@ import com.beepmemobile.www.databinding.SmsSentItemBinding
 class SmsViewAdapter :
     RecyclerView.Adapter<SmsViewAdapter.SmsViewViewHolder>() {
 
-    private var sms_send_message_list = mutableListOf<SmsMessage>()
+    private var sms_view_list = mutableListOf<SmsMessage>()
     private var app_user: AppUser = AppUser();
 
     override fun onCreateViewHolder(
@@ -20,7 +20,7 @@ class SmsViewAdapter :
         i: Int
     ): SmsViewViewHolder {
 
-        val currentSmsMsg: SmsMessage = sms_send_message_list[i]
+        val currentSmsMsg: SmsMessage = sms_view_list[i]
 
         if(currentSmsMsg.sender_phone_no == app_user.phone_no){
             val smsSentItemBinding = SmsSentItemBinding.inflate(LayoutInflater.from(viewGroup.context),
@@ -46,18 +46,19 @@ class SmsViewAdapter :
         smsViewViewHolder: SmsViewViewHolder,
         i: Int
     ) {
-        val current_sms_msg: SmsMessage = sms_send_message_list[i]
+        val current_sms_msg: SmsMessage = sms_view_list[i]
         smsViewViewHolder.smsSentItemBinding.sms = current_sms_msg
         smsViewViewHolder.smsReceivedItemBinding.sms = current_sms_msg
+
     }
 
     override fun getItemCount(): Int {
-           return sms_send_message_list.size
+           return sms_view_list.size
     }
 
-    fun setSmsSendMessageList(app_user: AppUser, sms_send_message_list: MutableList<SmsMessage>) {
+    fun setSmsViewList(app_user: AppUser, sms_view_list: MutableList<SmsMessage>) {
         this.app_user = app_user
-        this.sms_send_message_list = sms_send_message_list
+        this.sms_view_list = sms_view_list
         notifyDataSetChanged()
     }
 

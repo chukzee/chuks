@@ -6,11 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.beepmemobile.www.MainActivity
+import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.databinding.SupportChatFragmentBinding
+import com.beepmemobile.www.ui.binding.SmsViewAdapter
+import com.beepmemobile.www.ui.binding.SupportChatAdapter
 
 class SupportChatFragment : Fragment() {
     private val model: SupportChatListViewModel by viewModels()
+    private var suppertChatAdapter: SupportChatAdapter? =null
 
     private var _binding: SupportChatFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -28,12 +35,35 @@ class SupportChatFragment : Fragment() {
     ): View? {
         _binding = SupportChatFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
+
+
+        // bind RecyclerView
+        var recyclerView: RecyclerView = binding.supportChatRecyclerView
+        recyclerView.setLayoutManager(LinearLayoutManager(this.context));
+        suppertChatAdapter = SupportChatAdapter()
+        recyclerView.adapter = suppertChatAdapter
+
+        createObserversAndGetData()
+
         return view
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun createObserversAndGetData(){
+        var main_act : MainActivity = this.activity as MainActivity
+        var app_user = main_act.app_user
+        // Create the observer which updates the UI.
+        val observer = Observer<MutableList<ChatMessage>> { chat_list ->
+            suppertChatAdapter?.setSupportChatList(app_user, chat_list)
+        }
+
+        // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
+        model.getList().observe(viewLifecycleOwner, observer)
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

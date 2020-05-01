@@ -6,11 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.beepmemobile.www.MainActivity
+import com.beepmemobile.www.data.User
 
 import com.beepmemobile.www.databinding.HomeFragmentBinding
+import com.beepmemobile.www.ui.binding.SearchUserCardListAdapter
 
 class HomeFragment : Fragment() {
     private val model: HomeListViewModel by viewModels()
+    private var searchUserCardListAdapter: SearchUserCardListAdapter? =null
 
     private var _binding: HomeFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -27,9 +34,31 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = HomeFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+            _binding = HomeFragmentBinding.inflate(inflater, container, false)
+            val view = binding.root
+
+            // bind RecyclerView
+            var recyclerView: RecyclerView = binding.homePeopleNearbyRecyclerView
+            recyclerView.setLayoutManager(LinearLayoutManager(this.context));
+            searchUserCardListAdapter = SearchUserCardListAdapter()
+            recyclerView.adapter = searchUserCardListAdapter
+
+            createObserversAndGetData()
+
         return view
+    }
+
+    private fun createObserversAndGetData(){
+        var main_act : MainActivity = this.activity as MainActivity
+        var app_user = main_act.app_user
+        // Create the observer which updates the UI.
+        val observer = Observer<MutableList<User>> { users ->
+            searchUserCardListAdapter?.setSearchUserCardList(app_user, users)
+        }
+
+        // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
+        model.getList().observe(viewLifecycleOwner, observer)
+
     }
 
     override fun onDestroyView() {

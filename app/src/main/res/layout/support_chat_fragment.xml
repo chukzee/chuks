@@ -31,8 +31,8 @@
             app:layout_constraintTop_toBottomOf="@+id/support_chat_toolbar"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ScrollView
-            android:id="@+id/support_chat_scroll_view"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/support_chat_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/support_chat_input_include"

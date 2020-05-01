@@ -13,7 +13,7 @@ class Dummy {
 
     private val dummy_suffix = 0;
 
-    fun getCallInfoMap(count: Int): List<Call> {
+    fun getTestCallInfoList(count: Int): MutableList<Call> {
        var list = mutableListOf<Call>();
 
         for (i in dummy_suffix..count + dummy_suffix){
@@ -42,7 +42,7 @@ class Dummy {
         return list;
     }
 
-    fun getUserMap(count: Int): List<User> {
+    fun getTestUserList(count: Int): MutableList<User> {
         var list = mutableListOf<User>();
 
 
@@ -62,7 +62,7 @@ class Dummy {
         return list;
     }
 
-    fun getContactMap(count: Int): List<Contact> {
+    fun getTestContactList(count: Int): MutableList<Contact> {
         var list = mutableListOf<Contact>();
 
         for (i in dummy_suffix..count + dummy_suffix){
@@ -81,7 +81,7 @@ class Dummy {
         return list;
     }
 
-    fun getChatMessageMap(count: Int): List<ChatMessage> {
+    fun getTestChatMessageList(count: Int): MutableList<ChatMessage> {
         var list = mutableListOf<ChatMessage>();
 
         for (i in dummy_suffix..count + dummy_suffix){
@@ -110,7 +110,7 @@ class Dummy {
         return list;
     }
 
-    fun getSmsMessageMap(count: Int): List<SmsMessage> {
+    fun getTestSmsMessageList(count: Int): MutableList<SmsMessage> {
         var list = mutableListOf<SmsMessage>();
 
         for (i in dummy_suffix..count + dummy_suffix){
@@ -142,7 +142,7 @@ class Dummy {
         return list;
     }
 
-    fun getPostMap(count: Int): List<Post> {
+    fun getTestPostList(count: Int): MutableList<Post> {
         var list = mutableListOf<Post>();
 
 

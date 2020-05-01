@@ -56,6 +56,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/contact_profile_photo" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

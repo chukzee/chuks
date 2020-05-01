@@ -3,27 +3,26 @@ package com.beepmemobile.www.ui.call
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.beepmemobile.www.data.*;
-import com.beepmemobile.www.data.msg.Contact
+import com.beepmemobile.www.dummy.Dummy
 import com.beepmemobile.www.ui.AbstractListViewModel
 
 class CallListViewModel : AbstractListViewModel<Call>() {
-    private val call__list: MutableLiveData<List<Call>> by lazy {
-        MutableLiveData<List<Call>>().also {
-            load()
+    private val call_list: MutableLiveData<MutableList<Call>> by lazy {
+        MutableLiveData<MutableList<Call>>().also {
+            load(it)
         }
     }
 
-    var currentCall : Call = Call();
 
-    fun getCurrentCotact() : Contact{
-        //TODO - Get the contact object through the Map using currentCallInfo phone number or user_id as the case may be
-        return Contact();
-    }
-    override fun getList(): LiveData<List<Call>> {
-        return call__list
+    override fun getList(): LiveData<MutableList<Call>> {
+        return call_list
     }
 
-    override fun load() {
+    fun load(it: MutableLiveData<MutableList<Call>>) {
         // Do an asynchronous operation to fetch users.
+
+        //TODO - REPLACE DUMMY TEST WITH REAL DATA
+
+        it.value = Dummy().getTestCallInfoList(50)
     }
 }

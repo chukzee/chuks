@@ -7,6 +7,7 @@
     <data>
         <variable name="call" type="com.beepmemobile.www.data.Call"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
+        <variable name="app_user" type="com.beepmemobile.www.data.AppUser"/>
         <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
@@ -71,7 +72,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_call_green_24dp"
-            android:onClick="@{() -> call.makeCall(call.caller_phone_no, call.receiver_phone_no)}"/>
+            android:onClick="@{() -> app_user.makeCall(call.caller_phone_no, call.receiver_phone_no, false)}"/>
 
         <include
             layout="@layout/list_item_divider"

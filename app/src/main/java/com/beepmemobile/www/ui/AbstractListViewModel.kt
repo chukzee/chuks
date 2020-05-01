@@ -8,10 +8,6 @@ import com.beepmemobile.www.data.*;
 
 abstract class AbstractListViewModel <T>:ViewModel() {
 
-    open fun getList(): LiveData<List<T>> {return MutableLiveData()}
+    abstract fun getList(): LiveData<MutableList<T>>
 
-    open  fun load() {
-
-        // Do an asynchronous operation to fetch users.
-    }
 }
