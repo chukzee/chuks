@@ -20,8 +20,8 @@
             android:id="@+id/action_HomeFragment_to_nav_graph_sms_list_view"
             app:destination="@id/nav_graph_sms_list_view" />
         <action
-            android:id="@+id/action_HomeFragment_to_nav_graph_support_chat"
-            app:destination="@id/nav_graph_support_chat" />
+            android:id="@+id/action_HomeFragment_to_nav_graph_support_chat_view"
+            app:destination="@id/nav_graph_support_chat_view" />
         <action
             android:id="@+id/action_HomeFragment_to_nav_graph_profile"
             app:destination="@id/nav_graph_profile" />
@@ -54,7 +54,7 @@
     <include app:graph="@navigation/nav_graph_sms_list_view"/>
     <include app:graph="@navigation/nav_graph_search"/>
     <include app:graph="@navigation/nav_graph_settings"/>
-    <include app:graph="@navigation/nav_graph_support_chat"/>
+    <include app:graph="@navigation/nav_graph_support_chat_view"/>
     <include app:graph="@navigation/nav_graph_upgrade"/>
 
     <!--

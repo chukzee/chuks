@@ -7,7 +7,7 @@
     tools:context=".ui.profile.PersonalProfileFragment">
 
         <!-- Scrollable view here -->
-
+<!--
         <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/tall_toolbar_height">
@@ -36,4 +36,6 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
+-->
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

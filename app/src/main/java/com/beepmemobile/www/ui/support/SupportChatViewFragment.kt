@@ -11,34 +11,33 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.data.msg.ChatMessage
-import com.beepmemobile.www.databinding.SupportChatFragmentBinding
-import com.beepmemobile.www.ui.binding.SmsViewAdapter
+import com.beepmemobile.www.databinding.SupportChatViewFragmentBinding
 import com.beepmemobile.www.ui.binding.SupportChatAdapter
 
-class SupportChatFragment : Fragment() {
-    private val model: SupportChatListViewModel by viewModels()
+class SupportChatViewFragment : Fragment() {
+    private val model: SupportChatViewViewModel by viewModels()
     private var suppertChatAdapter: SupportChatAdapter? =null
 
-    private var _binding: SupportChatFragmentBinding? = null
+    private var _binding: SupportChatViewFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
 
     private val binding get() = _binding!!
 
     companion object {
-        fun newInstance() = SupportChatFragment()
+        fun newInstance() = SupportChatViewFragment()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = SupportChatFragmentBinding.inflate(inflater, container, false)
+        _binding = SupportChatViewFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
 
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.supportChatRecyclerView
+        var recyclerView: RecyclerView = binding.supportChatViewRecyclerView
         recyclerView.setLayoutManager(LinearLayoutManager(this.context));
         suppertChatAdapter = SupportChatAdapter()
         recyclerView.adapter = suppertChatAdapter

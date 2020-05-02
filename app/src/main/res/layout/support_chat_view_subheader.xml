@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="support_chat_model" type="com.beepmemobile.www.ui.support.SupportChatListViewModel"/>
-        <variable name="user" type="com.beepmemobile.www.data.User"/>
+        <variable name="supportChatViewModel" type="com.beepmemobile.www.ui.support.SupportChatViewViewModel"/>
         <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
@@ -15,7 +14,7 @@
 
 
         <com.mikhaellopez.circularimageview.CircularImageView
-            android:id="@+id/support_chat_subheader_profile_photo"
+            android:id="@+id/support_chat_view_subheader_profile_photo"
             android:layout_width="@dimen/list_item_small_height"
             android:layout_height="@dimen/list_item_small_height"
             app:civ_border_color="#EEEEEE"
@@ -26,23 +25,25 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/progress_indeterminate_horizontal" />
+            app:imageUrl="@{supportChatViewModel.app_user_chatmate.photo_url}"
+            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
+            tools:src="@android:drawable/progress_indeterminate_horizontal" />
 
         <TextView
-            android:id="@+id/support_chat_subheader_full_name"
+            android:id="@+id/support_chat_view_subheader_full_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/support_chat_subheader_img_btn"
-            app:layout_constraintStart_toEndOf="@+id/support_chat_subheader_profile_photo"
+            app:layout_constraintEnd_toStartOf="@+id/support_chat_view_subheader_img_btn"
+            app:layout_constraintStart_toEndOf="@+id/support_chat_view_subheader_profile_photo"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="The Support Name" />
 
         <TextView
-            android:id="@+id/support_chat_subheader_status"
+            android:id="@+id/support_chat_view_subheader_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -50,9 +51,9 @@
             android:layout_marginRight="20dp"
             android:textSize="12sp"
             android:textStyle="italic"
-            app:layout_constraintEnd_toStartOf="@+id/support_chat_subheader_img_btn"
-            app:layout_constraintStart_toEndOf="@+id/support_chat_subheader_profile_photo"
-            app:layout_constraintTop_toBottomOf="@+id/support_chat_subheader_full_name"
+            app:layout_constraintEnd_toStartOf="@+id/support_chat_view_subheader_img_btn"
+            app:layout_constraintStart_toEndOf="@+id/support_chat_view_subheader_profile_photo"
+            app:layout_constraintTop_toBottomOf="@+id/support_chat_view_subheader_full_name"
             tools:text="e.g online, typing..." />
 
 

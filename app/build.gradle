@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion 29
@@ -46,8 +48,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.2.1'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
+
     implementation 'com.google.android.material:material:1.1.0'//by chuks
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
     implementation 'com.google.android.gms:play-services-ads:18.1.1'
@@ -55,8 +56,30 @@ dependencies {
     implementation 'androidx.gridlayout:gridlayout:1.0.0'//by chuks
     // glide for image
     implementation "com.github.bumptech.glide:glide:4.9.0"//by chuks
-    annotationProcessor "com.github.bumptech.glide:compiler:4.9.0"//by chuks
+
+    //picasso for imgage
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
     // retrofit
     implementation "com.squareup.retrofit2:retrofit:2.6.0"//by chuks
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'//by chuks
+
+    //def nav_version = "2.2.1"//by chuks
+    def nav_version ="2.3.0-alpha06"//chuks
+
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+    // Dynamic Feature Module Support
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+
+    // Testing Navigation
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+
+
 }

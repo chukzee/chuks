@@ -31,7 +31,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@{user.photo_url}"
+                app:imageUrl="@{user.photo_url}"
+                app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
                 tools:src="@android:drawable/sym_def_app_icon" />
 
             <TextView

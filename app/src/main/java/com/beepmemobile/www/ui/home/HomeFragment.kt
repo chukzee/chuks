@@ -7,17 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.beepmemobile.www.Auth
 import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.data.User
 
 import com.beepmemobile.www.databinding.HomeFragmentBinding
 import com.beepmemobile.www.ui.binding.SearchUserCardListAdapter
+import com.beepmemobile.www.ui.signup.SignUpWelcomeFragmentDirections
 
 class HomeFragment : Fragment() {
     private val model: HomeListViewModel by viewModels()
     private var searchUserCardListAdapter: SearchUserCardListAdapter? =null
+
+    val navController by lazy { findNavController() }
 
     private var _binding: HomeFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -34,7 +39,16 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-            _binding = HomeFragmentBinding.inflate(inflater, container, false)
+
+
+
+        if(!Auth().checkOTP()){
+            var direction = HomeFragmentDirections.actionHomeFragmentToNavGraphSignup()
+            navController.navigate(direction)
+        }
+
+
+        _binding = HomeFragmentBinding.inflate(inflater, container, false)
             val view = binding.root
 
             // bind RecyclerView
