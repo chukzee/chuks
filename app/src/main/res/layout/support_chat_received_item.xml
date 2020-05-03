@@ -25,7 +25,7 @@
             app:civ_shadow_color="#8BC34A"
             app:civ_shadow_radius="5"
             app:imageUrl="@{user.photo_url}"
-            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
+
             tools:src="@android:drawable/progress_indeterminate_horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -37,6 +37,7 @@
             android:layout_marginStart="9dp"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
+            android:text="@{user.display_name}"
             tools:text="Sender Full Name"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/support_chat_sender_profile_photo"
@@ -50,6 +51,7 @@
             android:minWidth="80dp"
             android:maxWidth="300dp"
             android:shadowColor="#FFFFFF"
+            android:text="@{chat_msg.content}"
             tools:text="Big text1 Big text2 Big text3 Big text4 Big text5 Big text6  Big text7  Big text8  Big text9  Big text10  Big text11  Big text612 "
             android:textColor="@color/colorBeepMeTextLight"
             android:layout_marginLeft="5dp"
@@ -66,6 +68,7 @@
             android:textSize="12dp"
             app:layout_constraintStart_toEndOf="@+id/support_chat_sender_profile_photo"
             app:layout_constraintTop_toBottomOf="@id/support_chat_received_msg"
+            android:text="@{util.formatTime(chat_msg.msg_time)}"
             tools:text="Yesterday, 20:47" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,8 @@
 
     <data>
         <variable name="supportChatViewModel" type="com.beepmemobile.www.ui.support.SupportChatViewViewModel"/>
+        <variable name="chat_msg" type="com.beepmemobile.www.data.msg.ChatMessage"/>
+        <variable name="user" type="com.beepmemobile.www.data.User"/>
         <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
@@ -26,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:imageUrl="@{supportChatViewModel.app_user_chatmate.photo_url}"
-            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
+
             tools:src="@android:drawable/progress_indeterminate_horizontal" />
 
         <TextView
@@ -40,6 +42,7 @@
             app:layout_constraintEnd_toStartOf="@+id/support_chat_view_subheader_img_btn"
             app:layout_constraintStart_toEndOf="@+id/support_chat_view_subheader_profile_photo"
             app:layout_constraintTop_toTopOf="parent"
+            android:text="@{user.display_name}"
             tools:text="The Support Name" />
 
         <TextView
@@ -54,6 +57,7 @@
             app:layout_constraintEnd_toStartOf="@+id/support_chat_view_subheader_img_btn"
             app:layout_constraintStart_toEndOf="@+id/support_chat_view_subheader_profile_photo"
             app:layout_constraintTop_toBottomOf="@+id/support_chat_view_subheader_full_name"
+            android:text="@{chat_msg.msg_status}"
             tools:text="e.g online, typing..." />
 
 

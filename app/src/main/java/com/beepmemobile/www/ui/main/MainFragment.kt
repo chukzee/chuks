@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.PrecomputedTextCompat
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.beepmemobile.www.Auth
@@ -18,6 +21,9 @@ import com.beepmemobile.www.databinding.HomeFragmentBinding
 import com.beepmemobile.www.ui.home.HomeFragmentDirections
 import com.beepmemobile.www.ui.signup.SignUpWelcomeFragmentDirections
 import kotlinx.android.synthetic.main.home_nav_header.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
     private val model: MainViewModel by viewModels()
@@ -48,8 +54,19 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        var longTextContent = ""
+        viewLifecycleOwner.lifecycleScope.launch {
+            val params = TextViewCompat.getTextMetricsParams(textView)
+            val precomputedText = withContext(Dispatchers.Default) {
+                PrecomputedTextCompat.create(longTextContent, params)
+            }
+            TextViewCompat.setPrecomputedText(textView, precomputedText)
+        }
+
         super.onViewCreated(view, savedInstanceState)
     }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     }

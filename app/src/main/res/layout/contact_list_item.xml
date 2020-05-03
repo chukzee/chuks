@@ -25,7 +25,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@{contact.photo_url}"
+
             tools:src="@android:drawable/progress_indeterminate_horizontal"
             />
 
@@ -38,7 +38,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
             tools:text="The Name"
-            app:text = "@{contact.display_name}"
+            android:text = "@{contact.display_name}"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -48,6 +48,7 @@ class HomeFragment : Fragment() {
         }
 
 
+
         _binding = HomeFragmentBinding.inflate(inflater, container, false)
             val view = binding.root
 

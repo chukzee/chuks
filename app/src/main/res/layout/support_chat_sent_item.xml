@@ -28,6 +28,7 @@
             android:layout_marginRight="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:text="@{chat_msg.content}"
             tools:text="Big text1 Big text2 Big text3 Big text4 Big text5 Big text6  Big text7  Big text8  Big text9  Big text10  Big text11  Big text612 " />
 
         <TextView

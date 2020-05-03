@@ -54,5 +54,6 @@ class CallListAdapter :
     inner class CallListViewHolder(binding: CallListItemBinding) :
         RecyclerView.ViewHolder(binding.getRoot()) {
         val callListItemBinding: CallListItemBinding = binding
+
     }
 }
