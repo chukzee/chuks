@@ -1,13 +1,11 @@
 package com.beepmemobile.www.ui.profile
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.beepmemobile.www.data.*;
 import com.beepmemobile.www.ui.AbstractListViewModel
 
-class EditProfileListViewModel : AbstractListViewModel<User>() {
+class PersonalProfileViewModel : ViewModel() {
 
-    override fun getList(): LiveData<MutableList<User>> {
-        //TODO
-        return null!!
-    }
 }

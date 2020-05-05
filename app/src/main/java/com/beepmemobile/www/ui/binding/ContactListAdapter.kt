@@ -10,7 +10,7 @@ import com.beepmemobile.www.databinding.SmsListItemBinding
 
 class ContactListAdapter :
     RecyclerView.Adapter<ContactListAdapter.ContactListViewHolder>() {
-    private var contact_list = mutableListOf<Contact> ()
+    private var contact_list = listOf<Contact> ()
     private var app_user: AppUser = AppUser();
 
     override fun onCreateViewHolder(

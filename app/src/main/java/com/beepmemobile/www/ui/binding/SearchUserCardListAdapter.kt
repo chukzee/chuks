@@ -9,7 +9,7 @@ import com.beepmemobile.www.databinding.SearchUserCardBinding
 
 class SearchUserCardListAdapter :
     RecyclerView.Adapter<SearchUserCardListAdapter.SearchUserCardListViewHolder>() {
-    private var user_list = mutableListOf<User> ()
+    private var user_list = listOf<User> ()
     private var app_user: AppUser = AppUser();
 
     override fun onCreateViewHolder(

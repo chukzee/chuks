@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import com.beepmemobile.www.databinding.PersonalProfileFragmentBinding
 
 class PersonalProfileFragment : Fragment() {
-    private val model: PersonalProfileListViewModel by viewModels()
+    private val model: PersonalProfileViewModel by viewModels()
 
     private var _binding: PersonalProfileFragmentBinding? = null
     // This property is only valid between onCreateView and

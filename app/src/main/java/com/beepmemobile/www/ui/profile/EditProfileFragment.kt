@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.beepmemobile.www.databinding.EditProfileFragmentBinding
 
 class EditProfileFragment : Fragment() {
-    private val model: EditProfileListViewModel by viewModels()
+    private val model: EditProfileViewModel by viewModels()
 
     private var _binding: EditProfileFragmentBinding? = null
     // This property is only valid between onCreateView and

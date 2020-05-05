@@ -12,7 +12,7 @@ import com.beepmemobile.www.databinding.SupportChatSentItemBinding
 class SupportChatAdapter :
     RecyclerView.Adapter<SupportChatAdapter.SupportChatViewHolder>() {
 
-    private var support_chat_list = mutableListOf<ChatMessage>()
+    private var support_chat_list = listOf<ChatMessage>()
     private var app_user: AppUser = AppUser();
 
     override fun onCreateViewHolder(

@@ -97,7 +97,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'//by chuks
 
     //def nav_version = "2.2.1"//by chuks
-    def nav_version ="2.3.0-alpha06"//chuks
+    def nav_version = "2.3.0-alpha06"//chuks
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"

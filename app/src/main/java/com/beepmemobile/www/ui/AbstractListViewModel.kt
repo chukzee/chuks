@@ -8,6 +8,6 @@ import com.beepmemobile.www.data.*;
 
 abstract class AbstractListViewModel <T>:ViewModel() {
 
-    abstract fun getList(): LiveData<MutableList<T>>
+    abstract fun getList(): MutableLiveData<MutableList<T>>
 
 }

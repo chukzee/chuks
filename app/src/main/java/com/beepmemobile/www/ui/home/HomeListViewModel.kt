@@ -13,7 +13,7 @@ class HomeListViewModel : AbstractListViewModel<User>() {
         }
     }
 
-    override fun getList(): LiveData<MutableList<User>> {
+    override fun getList(): MutableLiveData<MutableList<User>> {
         return this.user_list
     }
 

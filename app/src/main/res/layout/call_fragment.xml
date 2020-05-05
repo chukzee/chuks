@@ -8,84 +8,66 @@
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-
         android:id="@+id/call_coordinattor_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         tools:context=".ui.call.CallFragment">
 
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/call_app_bar_Layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <!-- for better understanding  go to https://material.io/develop/android/components/collapsing-toolbar-layout/  -->
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minHeight="?actionBarSize"
+                android:padding="@dimen/appbar_padding"
+                android:text="Call"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            />
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/call_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:contentScrim="?attr/colorPrimary"
-                app:expandedTitleGravity="top"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorBeepMePrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:menu="@menu/call_app_bar" />
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/call_toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="@color/colorBeepMePrimary"
-                    app:layout_collapseMode="pin"
-                    app:menu="@menu/call_app_bar" />
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/call_tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorBeepMePrimary"
+                app:tabGravity="fill"
+                app:tabMode="fixed" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/call_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:maxHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:layout_anchorGravity="bottom"
-            app:layout_anchor="@id/call_toolbar" />
-
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/call_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            app:layout_anchorGravity="bottom"
-            app:layout_anchor="@id/call_tab_layout" >
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/call_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </androidx.viewpager2.widget.ViewPager2>
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            />
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_sign_up_signup6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
             android:clickable="true"
             android:focusable="true"
-            app:layout_anchorGravity="bottom|right"
-            app:layout_anchor="@id/call_app_bar_Layout" />
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin" />
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/background_light">
-
-            <!-- Put other contents here-->
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

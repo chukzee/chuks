@@ -28,8 +28,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-
-
+            app:imageUrl="@{user.photo_url}"
+            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
             tools:src="@android:drawable/progress_indeterminate_horizontal" />
 
         <TextView
@@ -43,7 +43,7 @@
             app:layout_constraintEnd_toStartOf="@+id/imageButton"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             app:layout_constraintTop_toTopOf="parent"
-
+            android:text="@{user.display_name}"
             tools:text="The Name"
             />
 
@@ -58,7 +58,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             app:layout_constraintTop_toBottomOf="@+id/sms_full_name"
-
+            android:text="@{util.contentExcerpt(sms.content)}"
             tools:text="This is the message that display some real cool stuff" />
 
         <TextView
@@ -72,6 +72,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             app:layout_constraintTop_toBottomOf="@+id/sms_msg"
+            android:text="@{util.formatTime(sms.msg_time)}"
             tools:text="Today, 20:34"
             />
 

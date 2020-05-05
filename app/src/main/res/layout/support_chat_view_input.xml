@@ -27,7 +27,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_emoji_dark_24dp"
-
+            android:onClick="@{() -> chat_msg.showEmojiView()}"
             />
 
         <EditText
@@ -63,8 +63,8 @@
             app:layout_constraintStart_toEndOf="@+id/support_chat_view_text"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_mic_dark_24dp"
-
-            tools:layout_editor_absoluteY="26dp" />
+            android:onClick="@{() -> chat_msg.recordSpeech()}"
+             />
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,7 +81,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_send"
-
+            android:onClick="@{() -> chat_msg.send(supportChatViewText.text)}"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.beepmemobile.www.dummy
 
 import com.beepmemobile.www.data.Call
+import com.beepmemobile.www.data.Message
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.data.msg.Contact
@@ -27,11 +28,11 @@ class Dummy {
             obj.caller_phone_no = "080" + (10000000 + i)
             obj.caller_user_id = "user_id_" + dummy_suffix
 
-            if(obj.call_type == obj.RECEIVED_CALL) {
+            if(obj.call_type == Call.RECEIVED_CALL) {
                 obj.call_duration = i + 10L;
             }
 
-            if(obj.call_type == obj.RECEIVED_CALL || obj.call_type == obj.MISSED_CALL) {
+            if(obj.call_type == Call.RECEIVED_CALL || obj.call_type == Call.MISSED_CALL) {
                 obj.receiver_phone_no = "090" + (10000000 + i)
                 obj.receiver_user_id = " user_id_" + dummy_suffix +1
             }
@@ -94,13 +95,13 @@ class Dummy {
 
             obj.sender_id = "user_id_"+ i
 
-            if(obj.MSG_STATUS_DELIVERED ==  obj.msg_status || obj.MSG_STATUS_SEEN ==  obj.msg_status ) {
+            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status || Message.MSG_STATUS_SEEN ==  obj.msg_status ) {
                 obj.receiver_id = "user_id_" + i + 1
             }
 
-            if(obj.MSG_STATUS_DELIVERED ==  obj.msg_status
-                || obj.MSG_STATUS_SEEN ==  obj.msg_status
-                || obj.MSG_STATUS_SENT ==  obj.msg_status ) {
+            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
+                || Message.MSG_STATUS_SEEN ==  obj.msg_status
+                || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
                 obj.msg_time = Date()
             }
 
@@ -125,14 +126,14 @@ class Dummy {
             obj.sender_phone_no = "080" + (10000000 + i)
 
 
-            if(obj.MSG_STATUS_DELIVERED ==  obj.msg_status || obj.MSG_STATUS_SEEN ==  obj.msg_status ) {
+            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status || Message.MSG_STATUS_SEEN ==  obj.msg_status ) {
                 obj.receiver_id = "user_id_" + dummy_suffix + 1
                 obj.receiver_phone_no = "090" + (10000000 + i)
             }
 
-            if(obj.MSG_STATUS_DELIVERED ==  obj.msg_status
-                || obj.MSG_STATUS_SEEN ==  obj.msg_status
-                || obj.MSG_STATUS_SENT ==  obj.msg_status ) {
+            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
+                || Message.MSG_STATUS_SEEN ==  obj.msg_status
+                || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
                 obj.msg_time = Date()
             }
 
@@ -156,8 +157,8 @@ class Dummy {
 
             obj.sender_id = "user_id_"+ i
 
-            if(obj.MSG_STATUS_DELIVERED ==  obj.msg_status
-                || obj.MSG_STATUS_SENT ==  obj.msg_status ) {
+            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
+                || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
                 obj.msg_time = Date()
             }
 

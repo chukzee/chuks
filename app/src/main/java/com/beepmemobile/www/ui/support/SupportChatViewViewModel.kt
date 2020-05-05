@@ -17,7 +17,7 @@ class SupportChatViewViewModel : AbstractListViewModel<ChatMessage>() {
 
     var app_user_chatmate: User? = null
 
-    override fun getList(): LiveData<MutableList<ChatMessage>> {
+    override fun getList(): MutableLiveData<MutableList<ChatMessage>> {
         return support_chat_list
     }
 

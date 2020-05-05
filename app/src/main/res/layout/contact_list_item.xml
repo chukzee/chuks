@@ -25,7 +25,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-
+            app:imageUrl="@{contact.photo_url}"
+            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
             tools:src="@android:drawable/progress_indeterminate_horizontal"
             />
 

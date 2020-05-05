@@ -14,7 +14,7 @@ class SmsListViewModel : AbstractListViewModel<SmsMessage>() {
     }
 
 
-    override fun getList(): LiveData<MutableList<SmsMessage>> {
+    override fun getList(): MutableLiveData<MutableList<SmsMessage>> {
         return sms_list
     }
 

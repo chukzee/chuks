@@ -14,7 +14,7 @@ class CallListViewModel : AbstractListViewModel<Call>() {
     }
 
 
-    override fun getList(): LiveData<MutableList<Call>> {
+    override fun getList(): MutableLiveData<MutableList<Call>> {
         return call_list
     }
 

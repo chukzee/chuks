@@ -25,7 +25,7 @@
             app:civ_shadow_color="#8BC34A"
             app:civ_shadow_radius="5"
             app:imageUrl="@{user.photo_url}"
-
+            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
             tools:src="@android:drawable/progress_indeterminate_horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

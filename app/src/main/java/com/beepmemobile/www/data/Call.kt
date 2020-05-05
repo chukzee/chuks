@@ -4,11 +4,13 @@ import java.util.*
 
 class Call {
 
-    val UNKNOWN =0;
-    val DIALLED_CALL = 1;
-    val MISSED_CALL = 2;
-    val RECEIVED_CALL = 3;
+    companion object {
 
+        val UNKNOWN =0;
+        val DIALLED_CALL = 1;
+        val MISSED_CALL = 2;
+        val RECEIVED_CALL = 3;
+    }
 
     var caller_user_id: String = "" // will help to retrieve the user object of the caller if a BeepMe member
     var receiver_user_id: String = ""// will help to retrieve the user object of the receiver if a BeepMe member

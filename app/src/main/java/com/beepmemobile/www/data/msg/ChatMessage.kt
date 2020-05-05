@@ -2,7 +2,7 @@ package com.beepmemobile.www.data.msg
 
 import com.beepmemobile.www.data.*;
 
-class ChatMessage : AbstractMessage() {
+class ChatMessage : Message() {
 
 
     fun showEmojiView(){
