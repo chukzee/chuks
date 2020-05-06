@@ -45,10 +45,11 @@ class SmsListViewFragment : Fragment() {
         // bind RecyclerView
         var recyclerView: RecyclerView = binding.smsListRecyclerView
         recyclerView.setLayoutManager(LinearLayoutManager(this.context));
-        smsListViewAdapter = SmsListViewAdapter()
+        smsListViewAdapter = SmsListViewAdapter(navController)
         recyclerView.adapter = smsListViewAdapter
 
         createObserversAndGetData()
+
 
         return view
     }

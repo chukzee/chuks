@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
                 viewConten(view)
             }else {
 
-                view.visibility = View.INVISIBLE//come back
+                view.visibility = View.GONE//come back
 
                 when (app_user.auth_state) {
                     AuthState.AUTH_STAGE_BEGIN ->

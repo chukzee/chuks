@@ -12,7 +12,7 @@
         tools:layout="@layout/sms_list_view_fragment" >
 
         <action
-            android:id="@+id/action_SmsListViewFragment_to_nav_graph_sms_view"
+            android:id="@+id/move_to_nav_graph_sms_view"
             app:destination="@id/nav_graph_sms_view" />
     </fragment>
 

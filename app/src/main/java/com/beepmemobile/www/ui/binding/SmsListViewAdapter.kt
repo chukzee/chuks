@@ -1,14 +1,19 @@
 package com.beepmemobile.www.ui.binding
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.SmsListItemBinding
+import com.beepmemobile.www.ui.sms.SmsListViewFragmentDirections
 
-class SmsListViewAdapter  :
+class SmsListViewAdapter(navCtrlr: NavController)  :
     RecyclerView.Adapter<SmsListViewAdapter.SmsListViewViewHolder>(){
+    private val navController = navCtrlr
     private var sms_list_view_list = listOf<SmsMessage> ()
     private var app_user: AppUser = AppUser();
 
@@ -21,6 +26,9 @@ class SmsListViewAdapter  :
             LayoutInflater.from(viewGroup.context),
             viewGroup,
             false)
+
+        var sms = sms_list_view_list[i]
+        smsListItemBinding.root.setOnClickListener(SmsItemListener(sms))
 
         return SmsListViewViewHolder(
             smsListItemBinding
@@ -49,4 +57,17 @@ class SmsListViewAdapter  :
         RecyclerView.ViewHolder(binding.root) {
         val smsListItemBinding: SmsListItemBinding = binding
     }
+
+
+    inner class SmsItemListener(_sms: SmsMessage) : View.OnClickListener {
+        var sms = _sms
+
+        override fun onClick(v: View?) {
+            //TODO - consider passing parameter
+            var direction = SmsListViewFragmentDirections.moveToNavGraphSmsView()
+            navController.navigate(direction)
+        }
+
+    }
 }
+
