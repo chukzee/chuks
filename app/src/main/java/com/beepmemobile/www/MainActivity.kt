@@ -2,12 +2,12 @@ package com.beepmemobile.www
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.ui.main.MainFragment
+import com.beepmemobile.www.ui.main.MainViewModel
 
 class MainActivity : AppCompatActivity() {
-
-    var app_user : AppUser = AppUser()//come back abeg oh!!! LiveData should manage app_user object
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

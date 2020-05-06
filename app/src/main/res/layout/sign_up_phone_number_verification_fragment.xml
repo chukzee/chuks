@@ -14,7 +14,7 @@
         tools:context=".ui.signup.SignUpPhoneNumberVerificationFragment">
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/sign_up_phone_number_verification_btn_back"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             app:layout_constraintVertical_bias="1.0" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_sign_up_signup3"
+            android:id="@+id/sign_up_phone_number_verification_btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
@@ -69,7 +69,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
-            android:id="@+id/spinner2"
+            android:id="@+id/sign_up_phone_number_verification_spn_country"
             android:layout_width="261dp"
             android:layout_height="43dp"
             android:spinnerMode="dropdown"
@@ -80,28 +80,28 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editText6"
+            android:id="@+id/sign_up_phone_number_verification_txt_phone_no"
             android:layout_width="214dp"
             android:layout_height="52dp"
             android:ems="10"
-            android:inputType="number"
+            android:inputType="phone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.54"
-            app:layout_constraintStart_toEndOf="@+id/textView2"
+            app:layout_constraintStart_toEndOf="@+id/sign_up_phone_number_verification_lbl_zip_code"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.6" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/sign_up_phone_number_verification_lbl_zip_code"
             android:layout_width="51dp"
             android:layout_height="28dp"
             android:text="+234"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/editText6"
+            app:layout_constraintEnd_toStartOf="@+id/sign_up_phone_number_verification_txt_phone_no"
             app:layout_constraintHorizontal_bias="0.917"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -116,7 +116,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText6" />
+            app:layout_constraintTop_toBottomOf="@+id/sign_up_phone_number_verification_txt_phone_no" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

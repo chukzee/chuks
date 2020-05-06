@@ -8,13 +8,14 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sign_up_confirm_verification_code_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/background_light"
         tools:context=".ui.signup.SignUpConfirmVerificationCodeFragment">
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/sign_up_confirm_verification_code_back_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
             app:layout_constraintVertical_bias="1.0" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_sign_up_signup6"
+            android:id="@+id/sign_up_confirm_verification_code_next_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
@@ -69,7 +70,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editText5"
+            android:id="@+id/sign_up_confirm_verification_code_txt_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -94,7 +95,7 @@
             app:layout_constraintVertical_bias="0.45" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/sign_up_confirm_verification_code_lbl_phone_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="+2347032710626"

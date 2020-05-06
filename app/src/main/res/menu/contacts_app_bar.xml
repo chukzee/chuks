@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!--Make sure the menu id matches the navigation destination id -->
     <item
         android:id="@+id/contacts_app_bar_search"
         android:icon="@drawable/ic_search_dark_24dp"

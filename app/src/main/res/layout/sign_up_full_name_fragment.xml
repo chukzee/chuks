@@ -14,7 +14,7 @@
         tools:context=".ui.signup.SignUpFullNameFragment">
 
         <EditText
-            android:id="@+id/editText4"
+            android:id="@+id/sign_up_full_name_txt_lastt_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -27,7 +27,7 @@
             app:layout_constraintVertical_bias="0.6" />
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/sign_up_full_name_txt_first_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -41,7 +41,7 @@
             app:layout_constraintVertical_bias="0.51" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/sign_up_full_name_btn_back"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
             app:layout_constraintVertical_bias="1.0" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_sign_up_signup4"
+            android:id="@+id/sign_up_full_name_btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"

@@ -4,34 +4,58 @@
     tools:showIn="navigation_view">
 
 
-        <item
-        android:id="@+id/nav_main_upgrade"
-        android:icon="@drawable/ic_menu_camera"
-        android:title="Upgrade" />
+        <!--Make sure the menu id matches the navigation destination id -->
+        <group
+            android:id="@+id/menu_top"
+            android:checkableBehavior="single">
 
-        <item
-            android:id="@+id/nav_main_personal_profile"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Personal Profile" />
+                <item
+                android:id="@+id/UpgradeFragment"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="Upgrade" />
 
-        <item
-        android:id="@+id/nav_main_support_chat"
-        android:icon="@drawable/ic_menu_camera"
-        android:title="Support Chat" />
+                <item
+                    android:id="@+id/ProfileFragment"
+                    android:icon="@drawable/ic_menu_camera"
+                    android:title="Personal Profile" />
 
-        <item
-            android:id="@+id/nav_main_settings"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/action_settings" />
+                <item
+                    android:id="@+id/ContactsFragment"
+                    android:icon="@drawable/ic_menu_camera"
+                    android:title="Contacts" />
 
-        <item
-            android:id="@+id/nav_main_help"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Help" />
+        </group>
 
-        <item
-            android:id="@+id/nav_main_faq"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="FAQ" />
+        <group
+            android:id="@+id/menu_middle"
+            android:checkableBehavior="single">
 
+                <item
+                android:id="@+id/SupportChatViewFragment"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="Support Chat" />
+
+        </group>
+
+
+        <group
+            android:id="@+id/menu_bottom"
+            android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/SettingsFragment"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="@string/action_settings" />
+
+                <item
+                    android:id="@+id/HelpFragment"
+                    android:icon="@drawable/ic_menu_slideshow"
+                    android:title="Help" />
+
+                <item
+                    android:id="@+id/FaqFragment"
+                    android:icon="@drawable/ic_menu_slideshow"
+                    android:title="FAQ" />
+
+        </group>
 </menu>

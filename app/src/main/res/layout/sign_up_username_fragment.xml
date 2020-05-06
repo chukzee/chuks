@@ -14,7 +14,7 @@
         tools:context=".ui.signup.SignUpUsernameFragment">
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/sign_up_username_btn_back"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             app:layout_constraintVertical_bias="1.0" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_sign_up_signup5"
+            android:id="@+id/sign_up_username_btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
@@ -69,7 +69,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/sign_up_username_txt_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"

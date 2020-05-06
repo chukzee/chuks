@@ -14,7 +14,7 @@
         tools:context=".ui.signup.SignUpWelcomeFragment">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_sign_up_signup"
+            android:id="@+id/sign_up_welcome_btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
@@ -27,7 +27,7 @@
             app:srcCompat="@drawable/ic_chevron_right_light_24dp" />
 
         <CheckBox
-            android:id="@+id/checkBox"
+            android:id="@+id/sign_up_welcome_chk_i_agree"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -78,7 +78,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
             android:text="@string/please_read_our_privacy_policy_and_terms_and_conitions"
-            app:layout_constraintBottom_toTopOf="@+id/checkBox"
+            app:layout_constraintBottom_toTopOf="@+id/sign_up_welcome_chk_i_agree"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

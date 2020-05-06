@@ -6,6 +6,15 @@ class AppUser : User(){
 
     var favourite_list = mutableSetOf<String>()
 
+    val authenticated get() = auth_state == AuthState.AUTH_STAGE_SUCCESS
+
+    var auth_state = AuthState.AUTH_STAGE_NONE
+
+    fun setAuth(stage: AuthState): AppUser{
+        auth_state = stage
+        return this;
+    }
+
     fun isFavourite(user_id: String): Boolean{
         return favourite_list.contains(user_id)
     }

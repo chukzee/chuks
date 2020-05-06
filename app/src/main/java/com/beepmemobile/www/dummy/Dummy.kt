@@ -7,6 +7,7 @@ import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.data.msg.Contact
 import com.beepmemobile.www.data.msg.Post
 import com.beepmemobile.www.data.msg.SmsMessage
+import com.beepmemobile.www.ui.main.MainViewModel
 import java.util.*
 import kotlin.random.Random
 
@@ -178,5 +179,23 @@ class Dummy {
         }
 
         return text.trim();
+    }
+
+    fun signUp(): MainViewModel.Result {
+        var r = MainViewModel.Result()
+
+        r.success = true
+
+        var i = dummy_suffix
+
+        r.auth_user.user_id  = "user_id_"+ i
+        r.auth_user.first_name = "first_name_"+i
+        r.auth_user.last_name = "last_name_"+i
+        r.auth_user.address = "No. " + i + " along Road_"+i +" off Place_"+i+" Ekpan, Delta "
+        r.auth_user.photo_url ="photo_url_"+i
+        r.auth_user.phone_no =  "070" + (10000000 + i)
+        r.auth_user.email = "email_"+i+"4u@gmail.com"
+        return r
+
     }
 }

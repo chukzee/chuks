@@ -12,7 +12,7 @@
         android:label="sign_up_welcome_fragment"
         tools:layout="@layout/sign_up_welcome_fragment" >
         <action
-            android:id="@+id/action_signUpWelcomeFragment_to_signUpUsernameFragment"
+            android:id="@+id/move_to_signUpUsernameFragment"
             app:destination="@id/signUpUsernameFragment" />
     </fragment>
     <fragment
@@ -21,7 +21,7 @@
         android:label="sign_up_username_fragment"
         tools:layout="@layout/sign_up_username_fragment" >
         <action
-            android:id="@+id/action_signUpUsernameFragment_to_signUpPasswordFragment"
+            android:id="@+id/move_to_signUpPasswordFragment"
             app:destination="@id/signUpPasswordFragment" />
     </fragment>
     <fragment
@@ -30,7 +30,7 @@
         android:label="sign_up_password_fragment"
         tools:layout="@layout/sign_up_password_fragment" >
         <action
-            android:id="@+id/action_signUpPasswordFragment_to_signUpFullNameFragment"
+            android:id="@+id/move_to_signUpFullNameFragment"
             app:destination="@id/signUpFullNameFragment" />
     </fragment>
     <fragment
@@ -39,7 +39,7 @@
         android:label="sign_up_full_name_fragment"
         tools:layout="@layout/sign_up_full_name_fragment" >
         <action
-            android:id="@+id/action_signUpFullNameFragment_to_signUpProfilePhotoFragment"
+            android:id="@+id/move_to_signUpProfilePhotoFragment"
             app:destination="@id/signUpProfilePhotoFragment" />
     </fragment>
     <fragment
@@ -48,7 +48,7 @@
         android:label="sign_up_profile_photo_fragment"
         tools:layout="@layout/sign_up_profile_photo_fragment" >
         <action
-            android:id="@+id/action_signUpProfilePhotoFragment_to_signUpPhoneNumberVerificationFragment"
+            android:id="@+id/move_to_signUpPhoneNumberVerificationFragment"
             app:destination="@id/signUpPhoneNumberVerificationFragment" />
     </fragment>
 
@@ -58,7 +58,7 @@
         android:label="sign_up_phone_number_verification_fragment"
         tools:layout="@layout/sign_up_phone_number_verification_fragment">
         <action
-            android:id="@+id/action_signUpPhoneNumberVerificationFragment_to_signUpConfirmVerificationCodeFragment"
+            android:id="@+id/move_to_signUpConfirmVerificationCodeFragment"
             app:destination="@id/signUpConfirmVerificationCodeFragment" />
     </fragment>
 
@@ -69,7 +69,7 @@
         android:label="sign_up_confirm_verification_code_fragment"
         tools:layout="@layout/sign_up_confirm_verification_code_fragment">
         <action
-            android:id="@+id/action_signUpConfirmVerificationCodeFragment_to_homeFragment"
+            android:id="@+id/move_to_homeFragment"
             app:destination="@id/HomeFragment" />
     </fragment>
 

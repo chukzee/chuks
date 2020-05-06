@@ -81,7 +81,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_send"
-            android:onClick="@{() -> chat_msg.send(supportChatViewText.text)}"
+
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

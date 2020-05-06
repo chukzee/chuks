@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.HelpFragmentBinding
@@ -14,7 +17,7 @@ import com.beepmemobile.www.data.*;
 
 class HelpFragment : Fragment() {
     private val model: HelpViewModel by viewModels()
-
+    private val navController by lazy { findNavController() }
     private var _binding: HelpFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -32,6 +35,15 @@ class HelpFragment : Fragment() {
         _binding = HelpFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        binding.helpToolbar
+            .setupWithNavController(navController, appBarConfiguration)
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
