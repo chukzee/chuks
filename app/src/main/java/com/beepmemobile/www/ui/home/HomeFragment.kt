@@ -1,10 +1,12 @@
 package com.beepmemobile.www.ui.home
 
 import android.os.Bundle
+import android.os.Debug
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -50,55 +52,52 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Toast.makeText(this.context, "1 - inside onCreateView of HomeFragement", Toast.LENGTH_LONG).show()
+
+
         _binding = HomeFragmentBinding.inflate(inflater, container, false)
             val view = binding.root
+
+        Toast.makeText(this.context, "2 - inside onCreateView of HomeFragement", Toast.LENGTH_LONG).show()
 
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+
+        //(activity as MainActivity).setSupportActionBar(binding.homeToolbar) //COME - JUST TESTING!!!
+
+        Toast.makeText(this.context, "1 - inside onViewCreated of HomeFragement", Toast.LENGTH_LONG).show()
+
         authNavigation(view)
+
+        Toast.makeText(this.context, "2 - inside onViewCreated of HomeFragement", Toast.LENGTH_LONG).show()
+
+
         super.onViewCreated(view, savedInstanceState)
     }
 
     private fun authNavigation(view: View){
 
         val observer = Observer<AppUser> { app_user ->
-            var direction : NavDirections? = null;
+
             if(app_user.authenticated) {
+
+                Toast.makeText(this.context, "1 - inside authNavigation of HomeFragement", Toast.LENGTH_LONG).show()
+
                 viewConten(view)
-            }else {
+
+            }else if(app_user.auth_state == AuthState.AUTH_STAGE_NONE){
+
+                Toast.makeText(this.context, "2 - inside authNavigation of HomeFragement", Toast.LENGTH_LONG).show()
 
                 view.visibility = View.GONE//come back
 
-                when (app_user.auth_state) {
-                    AuthState.AUTH_STAGE_BEGIN ->
-                        direction = HomeFragmentDirections.moveToNavGraphSignup()
-                    AuthState.AUTH_STAGE_USERNAME ->
-                        direction = SignUpWelcomeFragmentDirections.moveToSignUpUsernameFragment()
-                    AuthState.AUTH_STAGE_PASSWORD ->
-                        direction = SignUpUsernameFragmentDirections.moveToSignUpPasswordFragment()
-                    AuthState.AUTH_STAGE_FULL_NANE ->
-                        direction = SignUpPasswordFragmentDirections.moveToSignUpFullNameFragment()
-                    AuthState.AUTH_STAGE_PROFILE_PHOTO ->
-                        direction =
-                            SignUpFullNameFragmentDirections.moveToSignUpProfilePhotoFragment()
-                    AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY ->
-                        direction =
-                            SignUpProfilePhotoFragmentDirections.moveToSignUpPhoneNumberVerificationFragment()
-                    AuthState.AUTH_STAGE_CONFIRM_VERIFICATION_CODE ->
-                        direction =
-                            SignUpPhoneNumberVerificationFragmentDirections.moveToSignUpConfirmVerificationCodeFragment()
-                    AuthState.AUTH_STAGE_SUCCESS -> {
-                        view.visibility = View.VISIBLE //come back
-                        direction =
-                            SignUpConfirmVerificationCodeFragmentDirections.moveToHomeFragment()
-                    }
+                        Toast.makeText(this.context, "AuthState.AUTH_STAGE_NONE", Toast.LENGTH_LONG)
+                            .show()
 
-                }
-            }
-
-            if (direction != null) {
+                var direction = HomeFragmentDirections.moveToNavGraphSignup()
                 navController.navigate(direction)
             }
 
@@ -128,7 +127,7 @@ class HomeFragment : Fragment() {
         searchUserCardListAdapter = SearchUserCardListAdapter()
         recyclerView.adapter = searchUserCardListAdapter
 
-        createObserversAndGetData()
+        //createObserversAndGetData()
     }
 
     private fun createObserversAndGetData(){

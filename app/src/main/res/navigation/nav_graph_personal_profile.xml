@@ -2,13 +2,13 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_profile"  
-	app:startDestination="@id/ProfileFragment">
+    android:id="@+id/nav_graph_personal_profile"
+	app:startDestination="@id/PersonalProfileFragment">
 
     <fragment
-        android:id="@+id/ProfileFragment"
+        android:id="@+id/PersonalProfileFragment"
         android:name="com.beepmemobile.www.ui.profile.PersonalProfileFragment"
-        android:label="ProfileFragment"
+        android:label="PersonalProfileFragment"
         tools:layout="@layout/personal_profile_fragment" >
         <!--TODO Add action-->
     </fragment>

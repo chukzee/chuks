@@ -1,5 +1,6 @@
 package com.beepmemobile.www.ui.main
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,60 +22,61 @@ class MainViewModel : ViewModel() {
     private fun checkAuth(it: MutableLiveData<AppUser>) {
 
         this.viewModelScope.launch {
-            it.value = readUseInfoFromDisk()
+            it.postValue(readUseInfoFromDisk())
         }
 
     }
 
-    fun singupStage(data: String, stage: AuthState){
+    fun singupStage(data: Map<String, String>, stage: AuthState){
 
         this.viewModelScope.launch{
 
             when (stage) {
-                AuthState.AUTH_STAGE_BEGIN -> {
+                AuthState.AUTH_STAGE_NONE -> {
+
                     //update the LiveData
-                    auth.value = auth.value?.setAuth(AuthState.AUTH_STAGE_USERNAME)
+                    auth.postValue(auth.value?.modifyAuth(AuthState.AUTH_STAGE_USERNAME))
                 }
                 AuthState.AUTH_STAGE_USERNAME -> {
-                    val res = sendAuth(data, "username")
+                    val res = sendAuth(data)
                     if(res.success) {
                         //update the LiveData
-                        auth.value = res.auth_user.setAuth(AuthState.AUTH_STAGE_PASSWORD)
+                        auth.postValue(res.auth_user.modifyAuth(AuthState.AUTH_STAGE_PASSWORD))
                     }
                 }
                 AuthState.AUTH_STAGE_PASSWORD -> {
-                    val res = sendAuth(data, "password")
+                    val res = sendAuth(data)
                     if(res.success) {
                         //update the LiveData
-                        auth.value = res.auth_user.setAuth(AuthState.AUTH_STAGE_FULL_NANE)
+                        auth.postValue(res.auth_user.modifyAuth(AuthState.AUTH_STAGE_FULL_NANE))
                     }
                 }
                 AuthState.AUTH_STAGE_FULL_NANE -> {
-                    val res = sendAuth(data, "full_name")
+                    val res = sendAuth(data)
                     if(res.success) {
                         //update the LiveData
-                        auth.value = res.auth_user.setAuth(AuthState.AUTH_STAGE_PROFILE_PHOTO)
+                        auth.postValue(res.auth_user.modifyAuth(AuthState.AUTH_STAGE_PROFILE_PHOTO))
                     }
                 }
                 AuthState.AUTH_STAGE_PROFILE_PHOTO -> {
-                    val res = sendAuth(data, "profile_photo")
+                    val res = sendAuth(data)
                     if(res.success) {
                         //update the LiveData
-                        auth.value = res.auth_user.setAuth(AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY)
+                        auth.postValue(res.auth_user.modifyAuth(AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY))
                     }
                 }
                 AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY -> {
-                    val res = sendAuth(data, "phone_no_verify")
+                    val res = sendAuth(data)
                     if(res.success) {
                         //update the LiveData
-                        auth.value = res.auth_user.setAuth(AuthState.AUTH_STAGE_CONFIRM_VERIFICATION_CODE)
+                        auth.postValue(res.auth_user.modifyAuth(AuthState.AUTH_STAGE_CONFIRM_VERIFICATION_CODE))
                     }
                 }
                 AuthState.AUTH_STAGE_CONFIRM_VERIFICATION_CODE -> {
-                    val res = sendAuth(data, "confirm_verification_code")
+                    val res = sendAuth(data)
                     if(res.success && saveUserInfoToDisk(res.auth_user)) {
                         //update the LiveData
-                        auth.value = res.auth_user.setAuth(AuthState.AUTH_STAGE_SUCCESS)
+                        auth.postValue(res.auth_user.modifyAuth(AuthState.AUTH_STAGE_SUCCESS))
                     }
                 }
             }
@@ -82,7 +84,7 @@ class MainViewModel : ViewModel() {
 
     }
 
-    fun sendAuth(data: String, query_param: String): Result{
+    fun sendAuth(data: Map<String, String>): Result{
         //TODO Send the data to the server
 
 

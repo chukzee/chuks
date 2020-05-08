@@ -1,5 +1,6 @@
 package com.beepmemobile.www.data
 
+import android.text.Editable
 import java.util.*
 
 abstract class Message{
@@ -22,7 +23,9 @@ abstract class Message{
 
     var user = User()
 
-    open fun send(text: String){
+    abstract fun send(text: String)
 
+    fun send(editable: Editable){
+        send(editable.toString())
     }
 }

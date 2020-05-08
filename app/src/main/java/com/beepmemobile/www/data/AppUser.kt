@@ -10,7 +10,7 @@ class AppUser : User(){
 
     var auth_state = AuthState.AUTH_STAGE_NONE
 
-    fun setAuth(stage: AuthState): AppUser{
+    fun modifyAuth(stage: AuthState): AppUser{
         auth_state = stage
         return this;
     }
