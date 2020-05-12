@@ -43,7 +43,6 @@ class SignUpConfirmVerificationCodeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        Toast.makeText(this.context, "1 - inside onViewCreated of SignUpConfirmVerificationCodeFragment", Toast.LENGTH_LONG).show()
 
         binding.signUpConfirmVerificationCodeBtnNext.setOnClickListener {
 
@@ -62,12 +61,6 @@ class SignUpConfirmVerificationCodeFragment : Fragment() {
 		
 			if(app_user.auth_state == AuthState.AUTH_STAGE_SUCCESS){
 
-                        Toast.makeText(
-                            this.context,
-                            "AuthState.AUTH_STAGE_SUCCESS",
-                            Toast.LENGTH_LONG
-                        ).show()
-
                 view.visibility = View.VISIBLE //come back
                 val direction =
                             SignUpConfirmVerificationCodeFragmentDirections.moveToHomeFragment()
@@ -80,8 +73,6 @@ class SignUpConfirmVerificationCodeFragment : Fragment() {
 		// Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         authModel.auth.observe(viewLifecycleOwner, observer)
 
-
-        Toast.makeText(this.context, "2 - inside onViewCreated of SignUpConfirmVerificationCodeFragment", Toast.LENGTH_LONG).show()
 
         super.onViewCreated(view, savedInstanceState)
     }

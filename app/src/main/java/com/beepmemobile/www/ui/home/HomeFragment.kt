@@ -1,43 +1,27 @@
 package com.beepmemobile.www.ui.home
 
-import android.app.AlertDialog
+import android.app.ActionBar
 import android.os.Bundle
-import android.os.Debug
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavDirections
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.AuthState
 import com.beepmemobile.www.data.User
-
 import com.beepmemobile.www.databinding.HomeFragmentBinding
-import com.beepmemobile.www.databinding.MainFragmentBinding
 import com.beepmemobile.www.ui.binding.SearchUserCardListAdapter
-import com.beepmemobile.www.ui.main.MainFragment
 import com.beepmemobile.www.ui.main.MainViewModel
-import com.beepmemobile.www.ui.signup.*
-import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.main_fragment.*
-import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private val model: HomeListViewModel by viewModels()
@@ -77,11 +61,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
 
-        Toast.makeText(this.context, "1 - inside onViewCreated of HomeFragement", Toast.LENGTH_LONG).show()
-
         authNavigation(view)
-
-        Toast.makeText(this.context, "2 - inside onViewCreated of HomeFragement", Toast.LENGTH_LONG).show()
 
 
         super.onViewCreated(view, savedInstanceState)
@@ -94,26 +74,11 @@ class HomeFragment : Fragment() {
 
                 if (app_user.authenticated) {
 
-                    Toast.makeText(
-                        this.context,
-                        "1 - inside authNavigation of HomeFragement",
-                        Toast.LENGTH_LONG
-                    ).show()
-
                     viewConten(view)
 
                 } else if (app_user.auth_state == AuthState.AUTH_STAGE_NONE) {
 
-                    Toast.makeText(
-                        this.context,
-                        "2 - inside authNavigation of HomeFragement",
-                        Toast.LENGTH_LONG
-                    ).show()
-
                     view.visibility = View.GONE//come back
-
-                    Toast.makeText(this.context, "AuthState.AUTH_STAGE_NONE", Toast.LENGTH_LONG)
-                        .show()
 
                     var direction = HomeFragmentDirections.moveToNavGraphSignup()
                     navController.navigate(direction)
@@ -135,20 +100,25 @@ class HomeFragment : Fragment() {
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
 
-        binding.homeToolbar
+        binding.homeContent.homeToolbar
             .setupWithNavController(navController, appBarConfiguration)
 
         binding.homeNavView
             .setupWithNavController(navController)
 
-            // bind RecyclerView
-            var recyclerView: RecyclerView = binding.homePeopleNearbyRecyclerView
+        activity?.actionBar?.setDisplayHomeAsUpEnabled(true);
+
+        //OR
+        //activity?.actionBar?.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM or ActionBar.DISPLAY_SHOW_HOME or ActionBar.DISPLAY_HOME_AS_UP)
+        //activity?.actionBar?.setIcon(android.R.color.transparent)
+
+        // bind RecyclerView
+            var recyclerView: RecyclerView = binding.homeContent.homePeopleNearbyRecyclerView
             recyclerView.layoutManager = LinearLayoutManager(this.context);
             searchUserCardListAdapter = SearchUserCardListAdapter()
             recyclerView.adapter = searchUserCardListAdapter
 
             recyclerView.setHasFixedSize(true)
-
 
 
         createObserversAndGetData() // i am working

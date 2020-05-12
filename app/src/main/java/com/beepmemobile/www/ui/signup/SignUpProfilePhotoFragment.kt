@@ -42,8 +42,6 @@ class SignUpProfilePhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        Toast.makeText(this.context, "1 - inside onViewCreated of SignUpProfilePhotoFragment", Toast.LENGTH_LONG).show()
-
         binding.signUpProfilePhotoBtnNext.setOnClickListener {
 
             var profileImag = binding.signUpProfilePhotoImgPhoto
@@ -62,12 +60,6 @@ class SignUpProfilePhotoFragment : Fragment() {
 		
 			if(app_user.auth_state == AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY){
 
-                        Toast.makeText(
-                            this.context,
-                            "AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY",
-                            Toast.LENGTH_LONG
-                        ).show()
-
                 val direction =
                             SignUpProfilePhotoFragmentDirections.moveToSignUpPhoneNumberVerificationFragment()
 				navController.navigate(direction)
@@ -77,9 +69,6 @@ class SignUpProfilePhotoFragment : Fragment() {
 		
 		// Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         authModel.auth.observe(viewLifecycleOwner, observer)
-
-
-        Toast.makeText(this.context, "2 - inside onViewCreated of SignUpProfilePhotoFragment", Toast.LENGTH_LONG).show()
 
         super.onViewCreated(view, savedInstanceState)
     }

@@ -15,6 +15,14 @@
         android:fitsSystemWindows="true"
         tools:openDrawer="start"> <!-- READ: SHOWS THE NAVIGATION DRAWER ONLY IN DESIGN TIME -->
 
+
+        <include layout="@layout/home_content" android:id="@+id/home_content"/>
+
+        <!--
+        Yes the NavigationView must come after the home_content layout otherwise
+         the NavigationView menu becomes unclickable
+         -->
+
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/home_nav_view"
             android:layout_width="wrap_content"
@@ -23,65 +31,27 @@
             android:background="@android:color/background_light"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/home_nav_header"
-            app:menu="@menu/home_fragment_drawer" /><!-- added by chuks-->
+            app:menu="@menu/home_fragment_drawer" />
+
+        <!--If you what the navigation view header no be fixed and only the menu scrolling
+        then replace the commented NavigationView below with the one above but make sure to
+        added empty menu on top depending on the height of the header-->
+        <!--<com.google.android.material.navigation.NavigationView
+            android:id="@+id/home_nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@android:color/background_light"
+            android:fitsSystemWindows="true"
+            app:menu="@menu/home_fragment_drawer" >
 
 
-
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <com.google.android.material.appbar.AppBarLayout
+            <include
+                layout="@layout/home_nav_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:theme="@style/BeepMeTheme.AppBarOverlay">
+                android:layout_height="wrap_content" />
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/home_toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:popupTheme="@style/BeepMeTheme.PopupOverlay"
-                    app:menu="@menu/home_app_bar" />
-
-            </com.google.android.material.appbar.AppBarLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                android:orientation="vertical">
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/home_people_nearby_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
-
-                <!-- TODO add more RecyclerViews for other kind of cotents here
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/home_content_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                -->
-
-
-            </LinearLayout>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/home_search_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:clickable="true"
-                android:focusable="true"
-                app:srcCompat="@drawable/ic_search_dark_24dp" />
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
+        </com.google.android.material.navigation.NavigationView>-->
 
 
     </androidx.drawerlayout.widget.DrawerLayout>

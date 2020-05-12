@@ -47,8 +47,6 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        Toast.makeText(this.context, "inside onViewCreated of MainFragement", Toast.LENGTH_LONG).show()
-
         super.onViewCreated(view, savedInstanceState)
     }
 

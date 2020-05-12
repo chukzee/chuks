@@ -40,8 +40,6 @@ class SignUpPasswordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        Toast.makeText(this.context, "1 - inside onViewCreated of SignUpPasswordFragment", Toast.LENGTH_LONG).show()
-
         binding.signUpPasswordBtnNext.setOnClickListener {
 
             var password = binding.signUpPasswordTxtPassword.text.toString()
@@ -59,12 +57,6 @@ class SignUpPasswordFragment : Fragment() {
 		
 			if(app_user.auth_state == AuthState.AUTH_STAGE_FULL_NANE){
 
-                        Toast.makeText(
-                            this.context,
-                            "AuthState.AUTH_STAGE_FULL_NANE",
-                            Toast.LENGTH_LONG
-                        ).show()
-
                 val direction = SignUpPasswordFragmentDirections.moveToSignUpFullNameFragment()
 				navController.navigate(direction)
             }
@@ -73,9 +65,6 @@ class SignUpPasswordFragment : Fragment() {
 		
 		// Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         authModel.auth.observe(viewLifecycleOwner, observer)
-
-
-        Toast.makeText(this.context, "2 - inside onViewCreated of SignUpPasswordFragment", Toast.LENGTH_LONG).show()
 
         super.onViewCreated(view, savedInstanceState)
     }
