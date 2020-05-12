@@ -83,21 +83,21 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.1.0'//by chuks
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
-	
-	//------START---------PLEASE READ! VERY IMPORTANT!------------------------
-	
-	//I bro. Chuks comment out 'gms:play-services-ads' and 'play-services-maps' becase they are
-	//very large libraries that will require me to enable MultiDex which causes me trouble.
-	//MultiDex crashes my app as soon as it is launched. So I disabled it and commented out
-	//play-services so that i don't get compiler error which says i have reached max. method
-	//call of 64K on a singel dex file thus requiring me to enable MultiDex - I will enable
-	//MultiDex later after i have found a way out of the crash on startup
-	
+
+    //------START---------PLEASE READ! VERY IMPORTANT!------------------------
+
+    //I bro. Chuks comment out 'gms:play-services-ads' and 'play-services-maps' becase they are
+    //very large libraries that will require me to enable MultiDex which causes me trouble.
+    //MultiDex crashes my app as soon as it is launched. So I disabled it and commented out
+    //play-services so that i don't get compiler error which says i have reached max. method
+    //call of 64K on a singel dex file thus requiring me to enable MultiDex - I will enable
+    //MultiDex later after i have found a way out of the crash on startup
+
     //implementation 'com.google.android.gms:play-services-ads:18.1.1'
     //implementation 'com.google.android.gms:play-services-maps:17.0.0'
-	
-	//------END--------------------------------------------------------------
-	
+
+    //------END--------------------------------------------------------------
+
     implementation 'androidx.gridlayout:gridlayout:1.0.0'//by chuks
     // glide for image
     implementation "com.github.bumptech.glide:glide:4.9.0"//by chuks
@@ -128,5 +128,37 @@ dependencies {
 
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"
+
+    //Accra - App Crash Error Reporter - go to https://github.com/ACRA/acra/wiki/BasicSetup
+    def acraVersion = '5.4.0'
+
+    //send crash report via http
+    implementation "ch.acra:acra-http:$acraVersion"
+
+    //send crash report via email
+    implementation "ch.acra:acra-mail:$acraVersion"
+
+    //send crash report via custom implementation
+    implementation "ch.acra:acra-core:$acraVersion"
+
+    //interaction via dialog
+    implementation "ch.acra:acra-dialog:$acraVersion"
+
+    //interaction via notification
+    implementation "ch.acra:acra-notification:$acraVersion"
+
+    //interaction via toast
+    implementation "ch.acra:acra-toast:$acraVersion"
+
+    //optional plugin - limiter : (limits how many reports acra sends from one device)
+    implementation "ch.acra:acra-limiter:$acraVersion"
+
+    //advance scheduler
+    //implementation "ch.acra:acra-advanced-scheduler:$acraVersion"
+
+    implementation "androidx.annotation:annotation:1.0.0"
+
+    compileOnly "com.google.auto.service:auto-service-annotations:1.0-rc6"
+    annotationProcessor "com.google.auto.service:auto-service:1.0-rc6"
 
 }

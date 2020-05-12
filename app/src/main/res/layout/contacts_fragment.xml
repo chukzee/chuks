@@ -17,7 +17,8 @@
             android:id="@+id/contacts_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorBeepMePrimary"
+            app:popupTheme="@style/BeepMeTheme.PopupOverlay"
+            android:theme="@style/BeepMeTheme.AppBarOverlay"
             app:menu="@menu/contacts_app_bar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

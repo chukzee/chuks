@@ -3,9 +3,12 @@ package com.beepmemobile.www.ui.binding
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.SearchUserCardBinding
+import com.beepmemobile.www.dummy.Dummy
+import com.google.android.material.card.MaterialCardView
 
 class SearchUserCardListAdapter :
     RecyclerView.Adapter<SearchUserCardListAdapter.SearchUserCardListViewHolder>() {
@@ -35,7 +38,6 @@ class SearchUserCardListAdapter :
 
         callListViewListViewHolder.searchUserCardBinding.user = currentUser
         callListViewListViewHolder.searchUserCardBinding.appUser = this.app_user
-
     }
 
     override fun getItemCount(): Int {
@@ -49,7 +51,7 @@ class SearchUserCardListAdapter :
     }
 
     inner class SearchUserCardListViewHolder(binding: SearchUserCardBinding) :
-        RecyclerView.ViewHolder(binding.getRoot()) {
+        RecyclerView.ViewHolder(binding.root) {
         val searchUserCardBinding: SearchUserCardBinding = binding
     }
 }

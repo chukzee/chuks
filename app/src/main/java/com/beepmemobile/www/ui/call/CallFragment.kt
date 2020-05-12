@@ -83,7 +83,7 @@ class CallFragment : Fragment() {
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<Call>> { calls ->
             if (app_user != null) {
-                callListAdapter?.setCallList(app_user, calls)
+                callListAdapter.setCallList(app_user, calls)
             }
         }
 

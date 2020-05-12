@@ -9,18 +9,22 @@
         <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
-    <com.google.android.material.card.MaterialCardView
+    <!--
+      Sorry I dropped using 'com.google.android.material.card.MaterialCardView' to using
+     'androidx.cardview.widget.CardView' for now because it require the app theme to be of
+      Theme.MaterialComponent or its descendant otherwise it throws Error upon inflating layout
+     -->
+    <androidx.cardview.widget.CardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:background="@color/colorBeepPrimaryLightBg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="20dp"
-            android:background="@android:color/transparent">
+            android:background="@android:color/transparent"
+            android:paddingBottom="20dp">
 
 
             <ImageView
@@ -28,11 +32,11 @@
                 android:layout_width="0dp"
                 android:layout_height="194dp"
                 android:scaleType="centerCrop"
+                app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
+                app:imageUrl="@{user.photo_url}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:imageUrl="@{user.photo_url}"
-                app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
                 tools:src="@android:drawable/sym_def_app_icon" />
 
             <TextView
@@ -40,13 +44,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginRight="5dp"
                 android:layout_marginTop="10dp"
-                android:textSize="24sp"
+                android:layout_marginRight="5dp"
+                android:text="@{user.display_name}"
+                android:textSize="18dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_photo"
-                android:text="@{user.display_name}"
                 tools:text="Full Name" />
 
             <Switch
@@ -57,8 +61,8 @@
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 android:checked="@{app_user.isFavourite(user.user_id)}"
-                android:text="Favorite"
                 android:onClick="@{() -> app_user.addRemoveFavourite(searchUserFavorite, user.user_id)}"
+                android:text="Favorite"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_photo" />
 
@@ -70,10 +74,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="5dp"
                 android:text="@{user.location}"
-                tools:text="Location: Warri, Nigeria"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_full_name" />
+                app:layout_constraintTop_toBottomOf="@+id/search_user_full_name"
+                tools:text="Location: Warri, Nigeria" />
 
             <TextView
                 android:id="@+id/search_user_phone_number"
@@ -81,10 +85,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
+                android:text="@{user.phone_no}"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_location"
-                android:text="@{user.photo_url}"
                 tools:text="+2347032710379" />
 
 
@@ -94,22 +98,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="0dp"
-                android:layout_marginRight="0dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginRight="0dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_phone_number" />
 
             <TextView
                 android:id="@+id/search_user_last_seen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="18dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@android:color/transparent"
+                android:text="@{util.formatTime(user.last_seen_time)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
-                android:text="@{util.formatTime(user.last_seen_time)}"
-                tools:text="Last seen today, 12:32 | online" />
+                tools:text="Last seen: 12:20 PM" />
 
 
             <ImageButton
@@ -119,10 +123,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="20dp"
                 android:background="@android:color/transparent"
+                android:onClick="@{() -> app_user.viewProfile(user)}"
                 app:layout_constraintEnd_toStartOf="@+id/search_user_send_sms"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
-                app:srcCompat="@drawable/ic_info_outline_blue_light_24dp"
-                android:onClick="@{() -> app_user.viewProfile(user)}"/>
+                app:srcCompat="@drawable/ic_info_outline_blue_light_24dp" />
 
             <ImageButton
                 android:id="@+id/search_user_send_sms"
@@ -144,12 +148,12 @@
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 android:background="@android:color/transparent"
+                android:onClick="@{() -> app_user.makeCall(app_user.phone_no, user.phone_no, true)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
-                android:onClick="@{() -> app_user.makeCall(app_user.phone_no, user.phone_no, true)}"
                 app:srcCompat="@drawable/ic_call_blue_light_24dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 </layout>

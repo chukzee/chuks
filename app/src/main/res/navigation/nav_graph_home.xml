@@ -14,39 +14,39 @@
 
         <action
             android:id="@+id/move_to_nav_graph_signup"
-            app:destination="@id/include_nav_graph_signup" />
+            app:destination="@id/nav_graph_signup" />
 
         <action
             android:id="@+id/move_to_nav_graph_sms_list_view"
-            app:destination="@id/include_nav_graph_sms_list_view" />
+            app:destination="@id/nav_graph_sms_list_view" />
 
         <action
             android:id="@+id/move_to_nav_graph_support_chat_view"
-            app:destination="@id/include_nav_graph_support_chat_view" />
+            app:destination="@id/nav_graph_support_chat_view" />
 
         <action
             android:id="@+id/move_to_nav_graph_personal_profile"
-            app:destination="@id/include_nav_graph_personal_profile" />
+            app:destination="@id/nav_graph_personal_profile" />
 
         <action
             android:id="@+id/move_to_nav_graph_search"
-            app:destination="@id/include_nav_graph_search" />
+            app:destination="@id/nav_graph_search" />
 
         <action
             android:id="@+id/move_to_nav_graph_settings"
-            app:destination="@id/include_nav_graph_settings" />
+            app:destination="@id/nav_graph_settings" />
 
         <action
             android:id="@+id/move_to_nav_graph_contacts"
-            app:destination="@id/include_nav_graph_contacts" />
+            app:destination="@id/nav_graph_contacts" />
 
         <action
             android:id="@+id/move_to_nav_graph_call"
-            app:destination="@id/include_nav_graph_call" />
+            app:destination="@id/nav_graph_call" />
 
         <action
             android:id="@+id/move_to_nav_graph_upgrade"
-            app:destination="@id/include_nav_graph_upgrade" />
+            app:destination="@id/nav_graph_upgrade" />
 
         <action
             android:id="@+id/move_to_helpFragment"
@@ -55,6 +55,7 @@
         <action
             android:id="@+id/move_to_FaqFragment"
             app:destination="@id/FaqFragment" />
+
 
     </fragment>
 
@@ -75,46 +76,31 @@
     </fragment>
 
 
-
-
     <include
-        android:id="@+id/include_nav_graph_signup"
         app:graph="@navigation/nav_graph_signup"/>
 
     <include
-        android:id="@+id/include_nav_graph_call"
         app:graph="@navigation/nav_graph_call"/>
 
     <include
-        android:id="@+id/include_nav_graph_contacts"
         app:graph="@navigation/nav_graph_contacts"/>
 
     <include
-        android:id="@+id/include_nav_graph_personal_profile"
         app:graph="@navigation/nav_graph_personal_profile"/>
 
     <include
-        android:id="@+id/include_nav_graph_search"
         app:graph="@navigation/nav_graph_search"/>
 
     <include
-        android:id="@+id/include_nav_graph_sms_list_view"
         app:graph="@navigation/nav_graph_sms_list_view"/>
 
     <include
-        android:id="@+id/include_nav_graph_search"
-        app:graph="@navigation/nav_graph_search"/>
-
-    <include
-        android:id="@+id/include_nav_graph_settings"
         app:graph="@navigation/nav_graph_settings"/>
 
     <include
-        android:id="@+id/include_nav_graph_support_chat_view"
         app:graph="@navigation/nav_graph_support_chat_view"/>
 
     <include
-        android:id="@+id/include_nav_graph_upgrade"
         app:graph="@navigation/nav_graph_upgrade"/>
 
     <!--

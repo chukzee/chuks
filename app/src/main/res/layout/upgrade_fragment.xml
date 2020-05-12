@@ -17,7 +17,8 @@
             android:id="@+id/upgrade_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorBeepMePrimary"/>
+            app:popupTheme="@style/BeepMeTheme.PopupOverlay"
+            android:theme="@style/BeepMeTheme.AppBarOverlay"/>
 
     </FrameLayout>
 </layout>

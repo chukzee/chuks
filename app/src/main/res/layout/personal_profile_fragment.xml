@@ -32,7 +32,9 @@
                 android:id="@+id/personal_profile_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/toolbar_collapsed_height"
-                app:layout_collapseMode="pin"/>
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/BeepMeTheme.PopupOverlay"
+                android:theme="@style/BeepMeTheme.AppBarOverlay"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

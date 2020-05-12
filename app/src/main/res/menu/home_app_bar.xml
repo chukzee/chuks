@@ -4,30 +4,32 @@
 
     <!--Make sure the menu id matches the navigation destination id -->
     <item
-        android:id="@+id/SettingsFragment"
+        android:id="@+id/nav_graph_settings"
+        android:icon="@android:drawable/ic_menu_search"
         android:orderInCategory="300"
         android:title="@string/title_activity_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        />
 
 
     <item
-        android:id="@+id/CallFragment"
-        android:icon="@drawable/ic_call_dark"
+        android:id="@+id/nav_graph_call"
+        android:icon="@android:drawable/ic_menu_call"
         android:orderInCategory="101"
         android:title="@string/make_call"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/SmsViewFragment"
-        android:icon="@drawable/ic_sms_dark"
+        android:id="@+id/nav_graph_sms_list_view"
+        android:icon="@drawable/ic_sms_light"
         android:orderInCategory="102"
         android:title="@string/send_sms"
         app:showAsAction="ifRoom" />
 
 
     <item
-        android:id="@+id/app_bar_search"
-        android:icon="@drawable/ic_search_dark_24dp"
+        android:id="@+id/nav_graph_search"
+        android:icon="@android:drawable/ic_menu_search"
         android:orderInCategory="103"
         android:title="@string/search"
         app:showAsAction="ifRoom" />

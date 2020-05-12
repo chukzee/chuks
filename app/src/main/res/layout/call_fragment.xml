@@ -36,7 +36,8 @@
                 android:id="@+id/call_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/colorBeepMePrimary"
+                app:popupTheme="@style/BeepMeTheme.PopupOverlay"
+                android:theme="@style/BeepMeTheme.AppBarOverlay"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:menu="@menu/call_app_bar" />
 
@@ -44,7 +45,8 @@
                 android:id="@+id/call_tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorBeepMePrimary"
+                app:popupTheme="@style/BeepMeTheme.PopupOverlay"
+                android:theme="@style/BeepMeTheme.AppBarOverlay"
                 app:tabGravity="fill"
                 app:tabMode="fixed" />
 

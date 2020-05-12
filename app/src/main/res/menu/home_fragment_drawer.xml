@@ -10,17 +10,17 @@
             android:checkableBehavior="single">
 
                 <item
-                    android:id="@+id/include_nav_graph_upgrade"
+                    android:id="@+id/nav_graph_upgrade"
                     android:icon="@drawable/ic_menu_camera"
                     android:title="Upgrade" />
 
                 <item
-                    android:id="@+id/include_nav_graph_personal_profile"
+                    android:id="@+id/nav_graph_personal_profile"
                     android:icon="@drawable/ic_menu_camera"
                     android:title="Personal Profile" />
 
                 <item
-                    android:id="@+id/include_nav_graph_contacts"
+                    android:id="@+id/nav_graph_contacts"
                     android:icon="@drawable/ic_menu_camera"
                     android:title="Contacts" />
 
@@ -31,7 +31,7 @@
             android:checkableBehavior="single">
 
                 <item
-                    android:id="@+id/include_nav_graph_support_chat_view"
+                    android:id="@+id/nav_graph_support_chat_view"
                     android:icon="@drawable/ic_menu_camera"
                     android:title="Support Chat" />
 
@@ -43,8 +43,8 @@
             android:checkableBehavior="single">
 
                 <item
-                    android:id="@+id/include_nav_graph_settings"
-                    android:icon="@drawable/ic_menu_gallery"
+                    android:id="@+id/nav_graph_settings"
+                    android:icon="@drawable/ic_menu_slideshow"
                     android:title="@string/action_settings" />
 
                 <item

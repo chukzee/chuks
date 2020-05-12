@@ -18,7 +18,7 @@ class Dummy {
     fun getTestCallInfoList(count: Int): MutableList<Call> {
        var list = mutableListOf<Call>();
 
-        for (i in dummy_suffix..count + dummy_suffix){
+        for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = Call()
 
             obj.call_time = Date()
@@ -48,7 +48,7 @@ class Dummy {
         var list = mutableListOf<User>();
 
 
-        for (i in dummy_suffix..count + dummy_suffix){
+        for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = User()
             obj.user_id  = "user_id_"+ i
             obj.first_name = "first_name_"+i
@@ -67,7 +67,7 @@ class Dummy {
     fun getTestContactList(count: Int): MutableList<Contact> {
         var list = mutableListOf<Contact>();
 
-        for (i in dummy_suffix..count + dummy_suffix){
+        for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = Contact()
             obj.user_id  = "user_id_"+ i
             obj.first_name = "first_name_"+i
@@ -86,7 +86,7 @@ class Dummy {
     fun getTestChatMessageList(count: Int): MutableList<ChatMessage> {
         var list = mutableListOf<ChatMessage>();
 
-        for (i in dummy_suffix..count + dummy_suffix){
+        for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = ChatMessage()
 
             obj.content = this.randomDummyWord("ChatWord")
@@ -115,7 +115,7 @@ class Dummy {
     fun getTestSmsMessageList(count: Int): MutableList<SmsMessage> {
         var list = mutableListOf<SmsMessage>();
 
-        for (i in dummy_suffix..count + dummy_suffix){
+        for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = SmsMessage()
 
             obj.content = this.randomDummyWord("PostWord")
@@ -148,7 +148,7 @@ class Dummy {
         var list = mutableListOf<Post>();
 
 
-        for (i in dummy_suffix..count + dummy_suffix){
+        for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = Post()
 
             obj.content = this.randomDummyWord("SmsWord")

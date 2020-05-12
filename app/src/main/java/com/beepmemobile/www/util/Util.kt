@@ -13,7 +13,7 @@ class Util {
 
          */
 
-        return date.toString()
+        return "date.toString()"
     }
 
     fun contentExcerpt(content: String):String{
