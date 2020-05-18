@@ -13,13 +13,5 @@
         tools:context=".ui.search.SearchFragment">
 
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/search_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/BeepMeTheme.PopupOverlay"
-            android:theme="@style/BeepMeTheme.AppBarOverlay"/>
-
-
     </FrameLayout>
 </layout>

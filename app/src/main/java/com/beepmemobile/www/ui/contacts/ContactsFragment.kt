@@ -1,10 +1,9 @@
 package com.beepmemobile.www.ui.contacts
 
+import android.icu.text.PluralFormat
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -14,6 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.MainActivity
+import com.beepmemobile.www.R
 import com.beepmemobile.www.data.msg.Contact
 import com.beepmemobile.www.databinding.ContactsFragmentBinding
 import com.beepmemobile.www.ui.binding.ContactListAdapter
@@ -36,6 +36,12 @@ class ContactsFragment : Fragment() {
     }
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,10 +63,6 @@ class ContactsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.contactsToolbar
-            .setupWithNavController(navController, appBarConfiguration)
-
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -72,15 +74,30 @@ class ContactsFragment : Fragment() {
 
     private fun createObserversAndGetData(){
         var app_user = authModel.app_user
+
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<Contact>> { contacts ->
             if (app_user != null) {
                 contactListAdapter?.setContactList(app_user, contacts)
+                var title = contacts.size.toString() + " Contacts"
+                if(contacts.size < 2){
+                    title = contacts.size.toString() + " Contact"
+                }
+               (this.activity as MainActivity).supportActionBar?.title = title
             }
         }
 
         // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         model.getList().observe(viewLifecycleOwner, observer)
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        menu.clear() // clear the initial ones, otherwise they are included
+
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.contacts_app_bar, menu)
 
     }
 

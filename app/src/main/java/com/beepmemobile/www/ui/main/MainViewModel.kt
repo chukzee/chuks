@@ -98,7 +98,7 @@ class MainViewModel : ViewModel() {
     fun readUseInfoFromDisk() : AppUser{
         //TODO Read user info saved to the system
 
-        var dummy_user = AppUser()//TODO - To be replace by real code - data read from the system
+        var dummy_user = Dummy().getDummyAppUser()//TODO - To be replace by real code - data read from the system
 
         return dummy_user
     }
@@ -113,6 +113,6 @@ class MainViewModel : ViewModel() {
      class Result{
         var success =false;
         var responseStr = ""
-        var auth_user  = AppUser()
+        var auth_user  = Dummy().getDummyAppUser()//TODO - To be replace by real code - data read from the system
     }
 }

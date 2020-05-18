@@ -1,10 +1,8 @@
 package com.beepmemobile.www.ui.call
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.beepmemobile.www.MainActivity
+import com.beepmemobile.www.R
 
 import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.User
@@ -43,6 +42,12 @@ class CallFragment : Fragment() {
         fun newInstance() = CallFragment()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,9 +64,6 @@ class CallFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.callToolbar
-            .setupWithNavController(navController, appBarConfiguration)
 
         val tabLayout = binding.callTabLayout
         viewPager = binding.callViewPager
@@ -90,6 +92,14 @@ class CallFragment : Fragment() {
         // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         model.getList().observe(viewLifecycleOwner, observer)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        menu.clear() // clear the initial ones, otherwise they are included
+
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.call_app_bar, menu)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

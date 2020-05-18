@@ -16,5 +16,6 @@ open class User {
     var last_seen_time: Date = Date();
     var phone_no = ""
     var email = ""
+    var chat_activity = ""//whether online, typing e.t.c
 
 }

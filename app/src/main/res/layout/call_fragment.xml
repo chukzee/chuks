@@ -20,27 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:minHeight="?actionBarSize"
-                android:padding="@dimen/appbar_padding"
-                android:text="Call"
-                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-            />
-
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/call_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/BeepMeTheme.PopupOverlay"
-                android:theme="@style/BeepMeTheme.AppBarOverlay"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:menu="@menu/call_app_bar" />
-
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/call_tab_layout"
                 android:layout_width="match_parent"
@@ -56,19 +35,20 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/call_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             />
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_sign_up_signup6"
+            android:id="@+id/call_dial_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
             android:clickable="true"
             android:focusable="true"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin" />
+            android:src="@drawable/ic_dialpad_white_48dp" />
 
 
 

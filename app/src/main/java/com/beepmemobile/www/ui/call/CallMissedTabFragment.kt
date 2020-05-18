@@ -28,13 +28,14 @@ class CallMissedTabFragment(_callListAdapter: CallListAdapter) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+
+        _binding = CallMissedTabFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+
         // bind RecyclerView
         var recyclerView: RecyclerView = binding.callMissedTabRecylerView
         recyclerView.setLayoutManager(LinearLayoutManager(this.context));
         recyclerView.adapter = callListAdapter
-
-        _binding = CallMissedTabFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
 
         return view
     }

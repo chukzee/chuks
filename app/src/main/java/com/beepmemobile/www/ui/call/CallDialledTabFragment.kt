@@ -29,13 +29,13 @@ class CallDialledTabFragment(_callListAdapter: CallListAdapter) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        _binding = CallDialledTabFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+
         // bind RecyclerView
         var recyclerView: RecyclerView = binding.callDialledTabRecylerView
         recyclerView.setLayoutManager(LinearLayoutManager(this.context));
         recyclerView.adapter = callListAdapter
-
-        _binding = CallDialledTabFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
 
         return view
     }

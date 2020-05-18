@@ -13,6 +13,7 @@
         android:id="@+id/support_chat_sent_root_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:background="@android:color/transparent">
 
 
@@ -21,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/sent_msg_text_view"
-            android:maxWidth="300dp"
+            android:maxWidth="200dp"
             android:minWidth="80dp"
             android:shadowColor="#FFFFFF"
             android:textColor="@color/colorBeepMeTextLight"
@@ -52,7 +53,8 @@
             android:layout_marginRight="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/support_chat_sent_msg"
-            app:srcCompat="@android:drawable/star_big_on" />
+            app:srcCompat="@android:drawable/star_big_on"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

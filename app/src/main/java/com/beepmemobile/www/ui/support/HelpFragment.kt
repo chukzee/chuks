@@ -1,10 +1,8 @@
 package com.beepmemobile.www.ui.support
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -27,6 +25,12 @@ class HelpFragment : Fragment() {
         fun newInstance() = HelpFragment()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,11 +42,15 @@ class HelpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.helpToolbar
-            .setupWithNavController(navController, appBarConfiguration)
-
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        menu.clear() // clear the initial ones, otherwise they are included
+
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //inflater.inflate(R.menu.upgrade_app_bar, menu)
     }
 
     override fun onDestroyView() {

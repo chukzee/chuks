@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.beepmemobile.www.ui2.home.HomeFragment"
+        android:label="home"
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_gallery"
+            app:destination="@id/nav_gallery" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_slideshow"
+            app:destination="@id/nav_slideshow" />
+        <action
+            android:id="@+id/action_nav_home_to_action_settings"
+            app:destination="@id/action_settings" />
+        <action
+            android:id="@+id/move_to_nav_graph_upgrade"
+            app:destination="@id/nav_graph_upgrade" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.beepmemobile.www.ui2.gallery.GalleryFragment"
+        android:label="gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.beepmemobile.www.ui2.slideshow.SlideshowFragment"
+        android:label="slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/action_settings"
+        android:name="com.beepmemobile.www.ui2.settings.SettingsFragment"
+        android:label="slideshow"
+        tools:layout="@layout/fragment_settings" />
+
+    <include
+        app:graph="@navigation/nav_graph_upgrade"/>
+
+</navigation>

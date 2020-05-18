@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.AuthState
 
@@ -37,7 +39,6 @@ class SignUpWelcomeFragment : Fragment() {
 
         _binding = SignUpWelcomeFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
-
         return view
     }
 

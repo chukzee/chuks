@@ -13,13 +13,6 @@
         tools:context=".ui.support.HelpFragment">
 
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/help_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/BeepMeTheme.PopupOverlay"
-            android:theme="@style/BeepMeTheme.AppBarOverlay"/>
-
 
     </FrameLayout>
 </layout>

@@ -19,20 +19,28 @@ import com.squareup.picasso.Picasso
  *
  */
 @BindingAdapter(value=["imageUrl" ,"imageErrorUrl", "imagePlaceholder", "imageResize"], requireAll=false)
-fun setImagePropeties(view: ImageView, url: String, errUr: Drawable?, placeholder: Drawable?, resize: Int) {
+fun setImagePropeties(view: ImageView, url: String?, errUr: Drawable?, placeholder: Drawable?, resize: Int) {
 
-    var p = Picasso.get()
-        .load(url)
-        /*.centerCrop()*/ //NOTE: centerCrop will require setting imageResize variable
-                            // otherwise Picasso will throw IllegalState Exception
 
-    if(errUr!=null){
-        p.error(errUr)
+    if(url != null && url.isEmpty()){
+        return;
     }
+
+    var p = Picasso.get().load(url);// if url is null, no problem
+
+    //p.centerCrop()*/ //NOTE: centerCrop will require setting imageResize variable
+                            // otherwise Picasso will throw IllegalState Exception
 
     if(placeholder!=null){
         p.placeholder(placeholder)
     }
+
+     if(errUr!=null) {
+         p.error(errUr)
+     }else if(placeholder!=null) {
+         p.error(placeholder) // if the user does not set for error then use the placeholder
+     }
+
 
     if(resize > 0){
         p.resize(resize, resize)

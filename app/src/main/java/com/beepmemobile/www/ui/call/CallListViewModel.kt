@@ -23,6 +23,6 @@ class CallListViewModel : AbstractListViewModel<Call>() {
 
         //TODO - REPLACE DUMMY TEST WITH REAL DATA
 
-        it.value = Dummy().getTestCallInfoList(50)
+        it.value = Dummy().getTestCallInfoList(100)
     }
 }

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/CallFragment"
         android:name="com.beepmemobile.www.ui.call.CallFragment"
-        android:label="CallFragment"
+        android:label="Call"
         tools:layout="@layout/call_fragment" >
         <!--TODO Add action-->
     </fragment>

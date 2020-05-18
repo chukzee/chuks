@@ -20,69 +20,67 @@
             android:id="@+id/sms_profile_photo"
             android:layout_width="@dimen/list_item_medium_height"
             android:layout_height="@dimen/list_item_medium_height"
-            app:civ_border_color="#EEEEEE"
-            app:civ_border_width="2dp"
-            app:civ_shadow="true"
-            app:civ_shadow_color="#8BC34A"
-            app:civ_shadow_radius="10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:imageUrl="@{user.photo_url}"
-            app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
-            tools:src="@android:drawable/progress_indeterminate_horizontal" />
+            app:imagePlaceholder="@{@drawable/ic_person_black_70dp}"
+            tools:src="@drawable/ic_person_black_70dp"/>
 
         <TextView
             android:id="@+id/sms_full_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:textSize="18sp"
+            android:singleLine="true"
+            android:text="@{user.display_name}"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="14dp"
             app:layout_constraintEnd_toStartOf="@+id/imageButton"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@{user.display_name}"
-            tools:text="The Name"
-            />
+            tools:text="The Name" />
 
         <TextView
             android:id="@+id/sms_msg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="20dp"
-            android:textSize="14sp"
+            android:textSize="12dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             app:layout_constraintTop_toBottomOf="@+id/sms_full_name"
             android:text="@{util.contentExcerpt(sms.content)}"
-            tools:text="This is the message that display some real cool stuff" />
+            tools:text="This is the message that display some real cool stuff This is the message that display some real cool stuff" />
 
         <TextView
             android:id="@+id/sms_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:textSize="12sp"
+            android:singleLine="true"
+            android:text="@{util.formatTime(sms.msg_time)}"
+            android:textSize="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             app:layout_constraintTop_toBottomOf="@+id/sms_msg"
-            android:text="@{util.formatTime(sms.msg_time)}"
-            tools:text="Today, 20:34"
-            />
+            tools:text="Today, 20:34" />
 
 
         <include
             layout="@layout/list_item_divider"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo" />

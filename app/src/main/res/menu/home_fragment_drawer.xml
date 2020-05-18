@@ -11,17 +11,17 @@
 
                 <item
                     android:id="@+id/nav_graph_upgrade"
-                    android:icon="@drawable/ic_menu_camera"
+                    android:icon="@drawable/ic_star_gold_32dp"
                     android:title="Upgrade" />
 
                 <item
                     android:id="@+id/nav_graph_personal_profile"
-                    android:icon="@drawable/ic_menu_camera"
+                    android:icon="@drawable/ic_person_black_24dp"
                     android:title="Personal Profile" />
 
                 <item
                     android:id="@+id/nav_graph_contacts"
-                    android:icon="@drawable/ic_menu_camera"
+                    android:icon="@drawable/ic_contacts_black_24dp"
                     android:title="Contacts" />
 
         </group>
@@ -31,8 +31,18 @@
             android:checkableBehavior="single">
 
                 <item
+                    android:id="@+id/nav_graph_call"
+                    android:icon="@drawable/ic_phone_black_24dp"
+                    android:title="Make Call" />
+
+                <item
+                    android:id="@+id/nav_graph_sms_list_view"
+                    android:icon="@drawable/ic_sms_black_24dp"
+                    android:title="Send SMS" />
+
+                <item
                     android:id="@+id/nav_graph_support_chat_view"
-                    android:icon="@drawable/ic_menu_camera"
+                    android:icon="@drawable/ic_chat_black_24dp"
                     android:title="Support Chat" />
 
         </group>
@@ -44,17 +54,17 @@
 
                 <item
                     android:id="@+id/nav_graph_settings"
-                    android:icon="@drawable/ic_menu_slideshow"
+                    android:icon="@drawable/ic_build_black_24dp"
                     android:title="@string/action_settings" />
 
                 <item
                     android:id="@+id/HelpFragment"
-                    android:icon="@drawable/ic_menu_slideshow"
+                    android:icon="@drawable/ic_help_outline_black_24dp"
                     android:title="Help" />
 
                 <item
                     android:id="@+id/FaqFragment"
-                    android:icon="@drawable/ic_menu_slideshow"
+                    android:icon="@drawable/ic_question_answer_black_24dp"
                     android:title="FAQ" />
 
         </group>

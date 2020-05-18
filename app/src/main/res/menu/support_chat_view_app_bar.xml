@@ -5,7 +5,7 @@
     <!--Make sure the menu id matches the navigation destination id -->
     <item
         android:id="@+id/support_chat_view_app_bar_search"
-        android:icon="@drawable/ic_search_dark_24dp"
+        android:icon="@drawable/ic_search_white_24dp"
         android:orderInCategory="103"
         android:title="@string/search"
         app:showAsAction="ifRoom" />

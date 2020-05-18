@@ -39,10 +39,7 @@ class BeepMeApp : MultiDexApplication(){
                          .setEnabled(true)
             }
 
-
             ACRA.init(this, builder)
-
-
 
     }
 }

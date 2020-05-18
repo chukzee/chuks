@@ -7,12 +7,15 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.databinding.CallListItemBinding
+import com.beepmemobile.www.util.Util
 
 class CallListAdapter() :
     RecyclerView.Adapter<CallListAdapter.CallListViewHolder>() {
     private var call_list_by_type = listOf<Call> ()
     private var call_list_all = listOf<Call> ()
     private var app_user: AppUser = AppUser();
+    private val util = Util()
+
     var type =  Call.UNKNOWN
 
     override fun onCreateViewHolder(
@@ -44,9 +47,11 @@ class CallListAdapter() :
         val currentCall: Call = call_list_by_type[i]
         val currentUser: User = call_list_by_type[i].user
 
+
         callListViewListViewHolder.callListItemBinding.call = currentCall
         callListViewListViewHolder.callListItemBinding.user = currentUser
         callListViewListViewHolder.callListItemBinding.appUser = this.app_user
+        callListViewListViewHolder.callListItemBinding.util = util
 
     }
 

@@ -1,10 +1,8 @@
 package com.beepmemobile.www.ui.sms
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -14,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.MainActivity
+import com.beepmemobile.www.R
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.SmsViewFragmentBinding
 import com.beepmemobile.www.ui.binding.SmsViewAdapter
@@ -33,6 +32,12 @@ class SmsViewFragment : Fragment() {
 
     companion object {
         fun newInstance() = SmsViewFragment()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -56,10 +61,6 @@ class SmsViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.smsToolbar
-            .setupWithNavController(navController, appBarConfiguration)
-
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -80,6 +81,14 @@ class SmsViewFragment : Fragment() {
         // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         model.getList().observe(viewLifecycleOwner, observer)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        menu.clear() // clear the initial ones, otherwise they are included
+
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.sms_app_bar, menu)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -13,6 +13,7 @@
         android:id="@+id/sms_sent_root_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:background="@android:color/transparent">
 
 
@@ -23,7 +24,6 @@
             android:background="@drawable/received_msg_text_view"
             android:minWidth="80dp"
             android:maxWidth="300dp"
-
             android:shadowColor="#FFFFFF"
             tools:text="Big text1 Big text2 Big text3 Big text4 Big text5 Big text6  Big text7  Big text8  Big text9  Big text10  Big text11  Big text612 "
             android:textColor="@color/colorBeepMeTextLight"

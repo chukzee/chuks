@@ -18,40 +18,48 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="5dp"
+        app:cardCornerRadius="10dp"
+        android:elevation="10dp"
         android:background="@color/colorBeepPrimaryLightBg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:paddingBottom="20dp">
+            android:paddingBottom="10dp">
 
 
             <ImageView
                 android:id="@+id/search_user_photo"
                 android:layout_width="0dp"
                 android:layout_height="194dp"
+                android:background="@color/colorBeautifulBlueLightest"
                 android:scaleType="centerCrop"
-                app:imagePlaceholder="@{@android:drawable/progress_indeterminate_horizontal}"
+                app:imagePlaceholder="@{@drawable/ic_person_outline_blue_translucent_200dp}"
                 app:imageUrl="@{user.photo_url}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@android:drawable/sym_def_app_icon" />
+                tools:src="@drawable/ic_person_outline_blue_translucent_200dp" />
 
             <TextView
                 android:id="@+id/search_user_full_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="30dp"
+                android:singleLine="true"
                 android:text="@{user.display_name}"
+                android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="18dp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/search_user_favorite"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_photo"
-                tools:text="Full Name" />
+                tools:text="Full Name1 Full Name2 Full Name3 Full Name4" />
 
             <Switch
                 android:id="@+id/search_user_favorite"
@@ -59,7 +67,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
                 android:checked="@{app_user.isFavourite(user.user_id)}"
                 android:onClick="@{() -> app_user.addRemoveFavourite(searchUserFavorite, user.user_id)}"
                 android:text="Favorite"
@@ -68,25 +75,30 @@
 
             <TextView
                 android:id="@+id/search_user_location"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginEnd="20dp"
                 android:text="@{user.location}"
-                android:textSize="18sp"
+                android:textSize="14dp"
+                android:singleLine="true"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_full_name"
                 tools:text="Location: Warri, Nigeria" />
 
             <TextView
                 android:id="@+id/search_user_phone_number"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
                 android:text="@{user.phone_no}"
                 android:textStyle="bold"
+                android:singleLine="true"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_location"
                 tools:text="+2347032710379" />
@@ -107,10 +119,13 @@
                 android:id="@+id/search_user_last_seen"
                 android:layout_width="0dp"
                 android:layout_height="18dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="10dp"
+                android:singleLine="true"
                 android:background="@android:color/transparent"
                 android:text="@{util.formatTime(user.last_seen_time)}"
+                app:layout_constraintEnd_toStartOf="@+id/search_user_info"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
                 tools:text="Last seen: 12:20 PM" />
@@ -138,7 +153,7 @@
                 android:onClick="@{() -> app_user.createSms(app_user.phone_no, user.phone_no, true)}"
                 app:layout_constraintEnd_toStartOf="@+id/search_user_make_call"
                 app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
-                app:srcCompat="@drawable/ic_message_blue_light_24dp" />
+                app:srcCompat="@drawable/ic_sms_blue_light_24dp" />
 
             <ImageButton
                 android:id="@+id/search_user_make_call"

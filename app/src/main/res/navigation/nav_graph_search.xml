@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/SearchFragment"
         android:name="com.beepmemobile.www.ui.search.SearchFragment"
-        android:label="SearchFragment"
+        android:label="Search"
         tools:layout="@layout/search_fragment" >
         <!--TODO Add action-->
     </fragment>

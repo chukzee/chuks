@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/UpgradeFragment"
         android:name="com.beepmemobile.www.ui.upgrade.UpgradeFragment"
-        android:label="UpgradeFragment"
+        android:label="Upgrade"
         tools:layout="@layout/upgrade_fragment" >
         <!--TODO Add action-->
     </fragment>

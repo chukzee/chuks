@@ -8,12 +8,14 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.SmsReceivedItemBinding
 import com.beepmemobile.www.databinding.SmsSentItemBinding
+import com.beepmemobile.www.util.Util
 
 class SmsViewAdapter :
     RecyclerView.Adapter<SmsViewAdapter.SmsViewViewHolder>() {
 
     private var sms_view_list = listOf<SmsMessage>()
     private var app_user: AppUser = AppUser();
+    private val util = Util()
 
     override fun onCreateViewHolder(
         viewGroup: ViewGroup,
@@ -47,8 +49,9 @@ class SmsViewAdapter :
         i: Int
     ) {
         val current_sms_msg: SmsMessage = sms_view_list[i]
-        smsViewViewHolder.smsSentItemBinding.sms = current_sms_msg
-        smsViewViewHolder.smsReceivedItemBinding.sms = current_sms_msg
+        smsViewViewHolder.smsSentItemBinding?.sms = current_sms_msg
+        smsViewViewHolder.smsReceivedItemBinding?.sms = current_sms_msg
+        smsViewViewHolder.smsReceivedItemBinding?.util = util
 
     }
 
@@ -63,8 +66,8 @@ class SmsViewAdapter :
     }
 
     inner class SmsViewViewHolder: RecyclerView.ViewHolder {
-        lateinit var smsReceivedItemBinding : SmsReceivedItemBinding
-        lateinit var smsSentItemBinding : SmsSentItemBinding
+        var smsReceivedItemBinding : SmsReceivedItemBinding? = null
+        var smsSentItemBinding : SmsSentItemBinding? = null
         constructor(binding: SmsSentItemBinding):super(binding.root){
             smsSentItemBinding = binding
         }
