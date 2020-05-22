@@ -49,7 +49,7 @@ class Dummy {
 
             obj.call_time = Date()
 
-            var rand_type = Random.nextInt(1,3)
+            var rand_type = (1..3).random()
             obj.call_type = rand_type;
 
             obj.caller_phone_no = "080" + (10000000 + i)
@@ -115,7 +115,7 @@ class Dummy {
             obj.content = this.randomDummyWord("ChatWord")
             obj.msg_time = Date()
 
-            obj.msg_status = Random.nextInt(1, 4)
+            obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix
@@ -150,7 +150,7 @@ class Dummy {
             obj.content = this.randomDummyWord("SmsWord")
             obj.msg_time = Date()
 
-            obj.msg_status = Random.nextInt(1, 4)
+            obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix
@@ -190,7 +190,7 @@ class Dummy {
             obj.content = this.randomDummyWord("PostWord")
             obj.msg_time = Date()
 
-            obj.msg_status = Random.nextInt(1, 4)
+            obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix
@@ -213,7 +213,7 @@ class Dummy {
     private fun randomDummyWord(prefix: String): String{
         var text = ""
         var start = 1;
-        var end = Random.nextInt(start , 10);
+        var end = (1..30).random();
 
         for(i in start..end){
             text += prefix + i +" ";

@@ -17,14 +17,16 @@ class SupportChatAdapter :
     private var app_user: AppUser = AppUser();
     private val util = Util()
 
+    private val SENT_TYPE = 1
+    private val RECEIVED_TYPE = 2
+
     override fun onCreateViewHolder(
         viewGroup: ViewGroup,
         i: Int
     ): SupportChatViewHolder {
 
-        val currentSupportChatMsg: ChatMessage = support_chat_list[i]
 
-        if(currentSupportChatMsg.user.phone_no == app_user.phone_no){
+        if(i == SENT_TYPE){
             val supportChatSentItemBinding = SupportChatSentItemBinding.inflate(LayoutInflater.from(viewGroup.context),
                 viewGroup,
                 false
@@ -52,6 +54,17 @@ class SupportChatAdapter :
         supportChatViewHolder.supportChatSentItemBinding?.chatMsg = current_support_chat_msg
         supportChatViewHolder.supportChatReceivedItemBinding?.chatMsg = current_support_chat_msg
         supportChatViewHolder.supportChatReceivedItemBinding?.util = util
+    }
+
+    override fun getItemViewType(position: Int): Int {
+
+        val currentSupportChatMsg: ChatMessage = support_chat_list[position]
+
+        if(currentSupportChatMsg.user.user_id == app_user.user_id){
+            return SENT_TYPE
+        }else{
+            return RECEIVED_TYPE
+        }
     }
 
     override fun getItemCount(): Int {

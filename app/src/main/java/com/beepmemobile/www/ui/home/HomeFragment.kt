@@ -1,6 +1,5 @@
 package com.beepmemobile.www.ui.home
 
-import android.app.ActionBar
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -8,10 +7,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
@@ -19,15 +15,15 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.AuthState
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.HomeFragmentBinding
-import com.beepmemobile.www.ui.binding.SearchUserLargeCardListAdapter
-import com.beepmemobile.www.ui.binding.SearchUserSmallCardListAdapter
+import com.beepmemobile.www.ui.binding.UserSmallCardListAdapter
 import com.beepmemobile.www.ui.main.MainViewModel
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(){
+    private var popupItemData: Any? = null
     private val model: HomeListViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
 
-    private var searchUserCardListAdapter: SearchUserSmallCardListAdapter? =null
+    private var userCardListAdapter: UserSmallCardListAdapter? =null
 
     private val navController by lazy { findNavController() }
 
@@ -95,18 +91,27 @@ class HomeFragment : Fragment() {
 
     private fun viewConten(view: View){
 
-        // bind RecyclerView
-            val title = "People You May Know Nearby"
+        binding.root.post {
+
+            // bind RecyclerView
+
+            var column_count = 2
+            var preferred_column_width = binding.root.context.resources.getDimensionPixelSize(R.dimen.user_small_card_width)
+
+            if(binding.root.width != 0){
+                column_count = binding.root.width / preferred_column_width
+            }
+
+            binding.homePeopleNearbyHeader.listSubheaderTitle.text  = "People You May Know Nearby"
+
             var recyclerView: RecyclerView = binding.homePeopleNearbyRecyclerView
-            recyclerView.layoutManager = GridLayoutManager(this.context, 2)
-            searchUserCardListAdapter = SearchUserSmallCardListAdapter(title)
-            recyclerView.adapter = searchUserCardListAdapter
+            recyclerView.layoutManager = GridLayoutManager(this.context, column_count)
+            userCardListAdapter = UserSmallCardListAdapter(this, "", false)
+            recyclerView.adapter = userCardListAdapter
 
-            recyclerView.setHasFixedSize(true)
+            createObserversAndGetData()
 
-
-        createObserversAndGetData()
-
+        }
     }
 
     private fun createObserversAndGetData(){
@@ -114,14 +119,16 @@ class HomeFragment : Fragment() {
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<User>> { users ->
             if (app_user != null) {
-                searchUserCardListAdapter?.setSearchUserCardList(app_user, users)
+                userCardListAdapter?.setUserCardList(app_user, users)
             }
         }
 
         // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         model.getList().observe(viewLifecycleOwner, observer)
 
+
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -131,6 +138,5 @@ class HomeFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     }
-
 
 }

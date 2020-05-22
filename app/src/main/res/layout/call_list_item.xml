@@ -66,7 +66,6 @@
             android:layout_height="30dp"
             android:layout_marginEnd="20dp"
             android:background="@android:color/transparent"
-            android:onClick="@{() -> app_user.makeCall(call.caller_phone_no, call.receiver_phone_no, false)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

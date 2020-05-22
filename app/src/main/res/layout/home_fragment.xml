@@ -18,6 +18,11 @@
             android:orientation="vertical">
 
 
+            <include
+                layout="@layout/list_sub_header"
+                android:id="@+id/home_people_nearby_header"
+                />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/home_people_nearby_recycler_view"
                 android:layout_width="match_parent"

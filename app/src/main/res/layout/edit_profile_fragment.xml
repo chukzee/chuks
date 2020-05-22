@@ -19,6 +19,7 @@
             android:layout_height="@dimen/tall_toolbar_height">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/edit_profile_collapsing_toolbar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:contentScrim="?attr/colorPrimary"
@@ -38,7 +39,7 @@
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/edit_profile_toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/toolbar_collapsed_height"
+                    android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"/>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 

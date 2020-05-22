@@ -17,22 +17,23 @@ class SmsViewAdapter :
     private var app_user: AppUser = AppUser();
     private val util = Util()
 
+    private val SENT_TYPE = 1
+    private val RECEIVED_TYPE = 2
+
     override fun onCreateViewHolder(
         viewGroup: ViewGroup,
         i: Int
     ): SmsViewViewHolder {
 
-        val currentSmsMsg: SmsMessage = sms_view_list[i]
 
-        if(currentSmsMsg.sender_phone_no == app_user.phone_no){
+        if(i == SENT_TYPE){
             val smsSentItemBinding = SmsSentItemBinding.inflate(LayoutInflater.from(viewGroup.context),
                 viewGroup,
                 false
             )
 
             return SmsViewViewHolder(smsSentItemBinding)
-        }
-        else{
+        }else{
 
             val smsReceivedItemBinding = SmsReceivedItemBinding.inflate(LayoutInflater.from(viewGroup.context),
                 viewGroup,
@@ -53,6 +54,16 @@ class SmsViewAdapter :
         smsViewViewHolder.smsReceivedItemBinding?.sms = current_sms_msg
         smsViewViewHolder.smsReceivedItemBinding?.util = util
 
+    }
+
+    override fun getItemViewType(position: Int): Int {
+
+        val currentSmsMsg: SmsMessage = sms_view_list[position]
+        if(currentSmsMsg.sender_phone_no == app_user.phone_no){
+            return SENT_TYPE
+        }else{
+            return RECEIVED_TYPE
+        }
     }
 
     override fun getItemCount(): Int {

@@ -71,7 +71,7 @@
 
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            android:text="@string/please_read_our_privacy_policy_and_terms_and_conitions"
+            android:text="@string/please_read_our_privacy_policy_and_terms_and_conditions"
             app:layout_constraintBottom_toTopOf="@+id/sign_up_welcome_chk_i_agree"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

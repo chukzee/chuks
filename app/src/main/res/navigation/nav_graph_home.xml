@@ -21,6 +21,10 @@
             app:destination="@id/nav_graph_sms_list_view" />
 
         <action
+            android:id="@+id/move_to_nav_graph_sms_view"
+            app:destination="@id/nav_graph_sms_view" />
+
+        <action
             android:id="@+id/move_to_nav_graph_support_chat_view"
             app:destination="@id/nav_graph_support_chat_view" />
 
@@ -55,6 +59,9 @@
         <action
             android:id="@+id/move_to_FaqFragment"
             app:destination="@id/FaqFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_nav_graph_sms_list_view"
+            app:destination="@id/nav_graph_sms_list_view" />
 
 
     </fragment>
@@ -92,6 +99,9 @@
         app:graph="@navigation/nav_graph_search"/>
 
     <include
+        app:graph="@navigation/nav_graph_sms_view"/>
+
+    <include
         app:graph="@navigation/nav_graph_sms_list_view"/>
 
     <include
@@ -104,16 +114,20 @@
         app:graph="@navigation/nav_graph_upgrade"/>
 
     <!--
-     Add global action to HomeFragment. So to access HomeFragment from any where do something
+     Add global action to TheFragment. So to access TheFragment from any where do something
      like this below:
 
      viewButton.setOnClickListener { view ->
-        view.findNavController().navigate(R.id.action_global_HomeFragment)
+        view.findNavController().navigate(R.id.action_global_TheFragment)
      }
     -->
 
-    <action android:id="@+id/action_global_HomeFragment" app:destination="@id/HomeFragment"/>
+    <action android:id="@+id/action_global_CallFragment" app:destination="@id/nav_graph_call"/>
 
+    <action android:id="@+id/action_global_ContactsFragment" app:destination="@id/nav_graph_contacts"/>
 
+    <action android:id="@+id/action_global_PersonalProfileFragment" app:destination="@id/nav_graph_personal_profile"/>
+
+    <action android:id="@+id/action_global_SmsViewFragment" app:destination="@id/nav_graph_sms_view"/>
 
 </navigation>

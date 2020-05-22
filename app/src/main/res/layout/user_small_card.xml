@@ -16,10 +16,9 @@
      -->
     <androidx.cardview.widget.CardView
         android:id="@+id/small_card"
-        android:layout_width="150dp"
+        android:layout_width="@dimen/user_small_card_width"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_marginBottom="5dp"
+        android:layout_margin="5dp"
         android:background="@color/colorBeepPrimaryLightBg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +29,7 @@
 
 
             <ImageView
-                android:id="@+id/search_small_user_photo"
+                android:id="@+id/small_user_photo"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:background="@color/colorBeautifulBlueLightest"
@@ -43,7 +42,7 @@
                 tools:src="@drawable/ic_person_outline_blue_translucent_200dp" />
 
             <TextView
-                android:id="@+id/search_small_user_full_name"
+                android:id="@+id/small_user_full_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -54,49 +53,51 @@
                 android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="12dp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/search_small_user_favorite"
+                app:layout_constraintEnd_toStartOf="@+id/small_user_popup_menu_icon"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_small_user_photo"
+                app:layout_constraintTop_toBottomOf="@+id/small_user_photo"
                 tools:text="Full Name1 Full Name2 Full Name3 Full Name4" />
 
             <ImageButton
-                android:id="@+id/search_small_user_favorite"
+                android:id="@+id/small_user_popup_menu_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/ic_more_vert_black_24dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_small_user_photo" />
+                app:layout_constraintTop_toBottomOf="@+id/small_user_photo" />
 
             <TextView
-                android:id="@+id/search_small_user_location"
+                android:id="@+id/small_user_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
+                android:singleLine="true"
                 android:text="@{user.location}"
                 android:textSize="10dp"
-                android:singleLine="true"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_small_user_full_name"
+                app:layout_constraintTop_toBottomOf="@+id/small_user_full_name"
                 tools:text="Location: Warri, Nigeria" />
 
             <TextView
-                android:id="@+id/search_small_user_phone_number"
+                android:id="@+id/small_user_phone_number"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
+                android:singleLine="true"
                 android:text="@{user.phone_no}"
                 android:textSize="10dp"
-                android:singleLine="true"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_small_user_location"
+                app:layout_constraintTop_toBottomOf="@+id/small_user_location"
                 tools:text="+2347032710379" />
 
 

@@ -25,9 +25,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class CallFragment : Fragment() {
 
-    private val model: CallListViewModel by viewModels()
-    private val authModel: MainViewModel by activityViewModels()
-    private val callListAdapter: CallListAdapter by lazy { CallListAdapter() }
     private val navController by lazy { findNavController() }
     private lateinit var viewPager: ViewPager2
     private var tab_titles = arrayOf<String>("DIALLED","RECEIVED","MISSED")
@@ -56,23 +53,24 @@ class CallFragment : Fragment() {
         _binding = CallFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        binding.callViewPager.adapter = CallTabViewPagerAdapter(this, callListAdapter, tab_titles)
-
-        createObserversAndGetData()
+        binding.callViewPager.adapter = CallTabViewPagerAdapter(this, tab_titles)
 
         return view
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val tabLayout = binding.callTabLayout
         viewPager = binding.callViewPager
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-              tab.text = tab_titles[position];
+              tab.text = tab_titles[position]
+
             //tab.icon = ...//TODO
             //tab.badge = ...//TODO
         }.attach()
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -80,19 +78,6 @@ class CallFragment : Fragment() {
         _binding = null
     }
 
-    private fun createObserversAndGetData(){
-        var app_user = authModel.app_user
-        // Create the observer which updates the UI.
-        val observer = Observer<MutableList<Call>> { calls ->
-            if (app_user != null) {
-                callListAdapter.setCallList(app_user, calls)
-            }
-        }
-
-        // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
-        model.getList().observe(viewLifecycleOwner, observer)
-
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/SmsListViewFragment"
         android:name="com.beepmemobile.www.ui.sms.SmsListViewFragment"
-        android:label="Sms Messages"
+        android:label="SMS Messages"
         tools:layout="@layout/sms_list_view_fragment" >
 
         <action

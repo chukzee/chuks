@@ -16,7 +16,7 @@
      -->
     <androidx.cardview.widget.CardView
         android:id="@+id/card"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_marginBottom="5dp"
@@ -32,8 +32,8 @@
 
 
             <ImageView
-                android:id="@+id/search_user_photo"
-                android:layout_width="0dp"
+                android:id="@+id/user_photo"
+                android:layout_width="300dp"
                 android:layout_height="194dp"
                 android:background="@color/colorBeautifulBlueLightest"
                 android:scaleType="centerCrop"
@@ -45,7 +45,7 @@
                 tools:src="@drawable/ic_person_outline_blue_translucent_200dp" />
 
             <TextView
-                android:id="@+id/search_user_full_name"
+                android:id="@+id/user_full_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
@@ -56,56 +56,56 @@
                 android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="18dp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/search_user_favorite"
+                app:layout_constraintEnd_toStartOf="@+id/user_favorite"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_photo"
+                app:layout_constraintTop_toBottomOf="@+id/user_photo"
                 tools:text="Full Name1 Full Name2 Full Name3 Full Name4" />
 
             <Switch
-                android:id="@+id/search_user_favorite"
+                android:id="@+id/user_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginEnd="20dp"
                 android:checked="@{app_user.isFavourite(user.user_id)}"
-                android:onClick="@{() -> app_user.addRemoveFavourite(searchUserFavorite, user.user_id)}"
                 android:text="Favorite"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_photo" />
+                app:layout_constraintTop_toBottomOf="@+id/user_photo" />
 
             <TextView
-                android:id="@+id/search_user_location"
+                android:id="@+id/user_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:singleLine="true"
                 android:text="@{user.location}"
                 android:textSize="14dp"
-                android:singleLine="true"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_full_name"
+                app:layout_constraintTop_toBottomOf="@+id/user_full_name"
                 tools:text="Location: Warri, Nigeria" />
 
             <TextView
-                android:id="@+id/search_user_phone_number"
+                android:id="@+id/user_phone_number"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:singleLine="true"
                 android:text="@{user.phone_no}"
                 android:textStyle="bold"
-                android:singleLine="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_location"
+                app:layout_constraintTop_toBottomOf="@+id/user_location"
                 tools:text="+2347032710379" />
 
 
             <include
-                android:id="@+id/search_user_divider"
+                android:id="@+id/user_divider"
                 layout="@layout/list_item_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -113,10 +113,10 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginRight="0dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_phone_number" />
+                app:layout_constraintTop_toBottomOf="@+id/user_phone_number" />
 
             <TextView
-                android:id="@+id/search_user_last_seen"
+                android:id="@+id/user_last_seen"
                 android:layout_width="0dp"
                 android:layout_height="18dp"
                 android:layout_marginTop="10dp"
@@ -125,47 +125,44 @@
                 android:singleLine="true"
                 android:background="@android:color/transparent"
                 android:text="@{util.formatTime(user.last_seen_time)}"
-                app:layout_constraintEnd_toStartOf="@+id/search_user_info"
+                app:layout_constraintEnd_toStartOf="@+id/user_info"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
+                app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 tools:text="Last seen: 12:20 PM" />
 
 
             <ImageButton
-                android:id="@+id/search_user_info"
+                android:id="@+id/user_info"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="20dp"
                 android:background="@android:color/transparent"
-                android:onClick="@{() -> app_user.viewProfile(user)}"
-                app:layout_constraintEnd_toStartOf="@+id/search_user_send_sms"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
+                app:layout_constraintEnd_toStartOf="@+id/user_send_sms"
+                app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 app:srcCompat="@drawable/ic_info_outline_blue_light_24dp" />
 
             <ImageButton
-                android:id="@+id/search_user_send_sms"
+                android:id="@+id/user_send_sms"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="20dp"
                 android:background="@android:color/transparent"
-                android:onClick="@{() -> app_user.createSms(app_user.phone_no, user.phone_no, true)}"
-                app:layout_constraintEnd_toStartOf="@+id/search_user_make_call"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
+                app:layout_constraintEnd_toStartOf="@+id/user_make_call"
+                app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 app:srcCompat="@drawable/ic_sms_blue_light_24dp" />
 
             <ImageButton
-                android:id="@+id/search_user_make_call"
+                android:id="@+id/user_make_call"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 android:background="@android:color/transparent"
-                android:onClick="@{() -> app_user.makeCall(app_user.phone_no, user.phone_no, true)}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_user_divider"
+                app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 app:srcCompat="@drawable/ic_call_blue_light_24dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

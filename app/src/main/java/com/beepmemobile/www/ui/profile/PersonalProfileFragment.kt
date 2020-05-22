@@ -43,8 +43,13 @@ class PersonalProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         super.onViewCreated(view, savedInstanceState)
+
+        val layout = binding.personalProfileCollapsingToolbarLayout
+        val toolbar = binding.personalProfileToolbar
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        layout.setupWithNavController(toolbar, navController, appBarConfiguration)
+
     }
 
     override fun onDestroyView() {
