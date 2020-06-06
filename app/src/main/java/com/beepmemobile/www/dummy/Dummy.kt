@@ -10,7 +10,6 @@ import com.beepmemobile.www.data.msg.Post
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.ui.main.MainViewModel
 import java.util.*
-import kotlin.random.Random
 
 class Dummy {
 
@@ -32,11 +31,15 @@ class Dummy {
         obj.user_id  = "user_id_"+ i
         obj.first_name = "first_name_"+i
         obj.last_name = "last_name_"+i
-        obj.address = "No. " + i + " along Road_"+i +" off Place_"+i+" Ekpan, Delta "
+        obj.home_address = "No. " + i + " along Road_"+i +" off Place_"+i+" Ekpan, Delta"
+        obj.office_address = "No. " + i + "Airport Road, Delta"
         obj.photo_url ="photo_url_"+i
-        obj.email = "email_"+i+"4u@gmail.com"
-        obj.location = "Location: Warri "+i
-        obj.phone_no =  "070" + (10000000 + i)
+        obj.personal_email = "persona_email_"+i+"4u@gmail.com"
+        obj.work_email = "work_email_"+i+"4u@beepme.com"
+        obj.location = "Warri, Nigeria "+i
+        obj.status_message = "This is my status message "+i
+        obj.mobile_phone_no =  "070" + (10000000 + i)
+        obj.work_phone_no =  "071" + (22200000 + i)
 
         return obj
     }
@@ -118,20 +121,25 @@ class Dummy {
             obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
-                i = dummy_suffix
+                i = dummy_suffix // app user
+
+                obj.sender_id = "user_id_"+ i//app user
+                obj.receiver_id = "user_id_" + i + 1// other user
+
+            }else{
+                i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
+
+                obj.sender_id = "user_id_"+ i// other user
+                obj.receiver_id = "user_id_" + dummy_suffix//app user
             }
 
-            obj.sender_id = "user_id_"+ i
             obj.user = createUser(i, obj.user)
 
-            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status || Message.MSG_STATUS_SEEN ==  obj.msg_status ) {
-                obj.receiver_id = "user_id_" + i + 1
-            }
 
             if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
                 || Message.MSG_STATUS_SEEN ==  obj.msg_status
                 || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
-                obj.msg_time = Date()
+                obj.msg_time = Date(Date().time - (10 *1000) * n)
             }
 
             list.add(obj)
@@ -153,24 +161,28 @@ class Dummy {
             obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
-                i = dummy_suffix
+                i = dummy_suffix//app user
+
+                obj.sender_id = "user_id_"+ i//app user
+                obj.sender_phone_no = "080" + (10000000 + i)//app user
+                obj.receiver_id = "user_id_" + i + 1// other user
+                obj.receiver_phone_no = "090" + (10000000 + i + 1)// other user
+            }else{
+                i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
+
+                obj.sender_id = "user_id_"+ i// other user
+                obj.sender_phone_no = "080" + (10000000 + i)// other user
+                obj.receiver_id = "user_id_" + dummy_suffix//app user
+                obj.receiver_phone_no = "090" + (10000000 + dummy_suffix)//app user
             }
 
-            obj.sender_id = "user_id_"+ dummy_suffix
-            obj.sender_phone_no = "080" + (10000000 + i)
             obj.user = createUser(i, obj.user)
 
-
-
-            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status || Message.MSG_STATUS_SEEN ==  obj.msg_status ) {
-                obj.receiver_id = "user_id_" + dummy_suffix + 1
-                obj.receiver_phone_no = "090" + (10000000 + i)
-            }
 
             if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
                 || Message.MSG_STATUS_SEEN ==  obj.msg_status
                 || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
-                obj.msg_time = Date()
+                obj.msg_time = Date(Date().time - (10 *1000) * n)
             }
 
             list.add(obj)
@@ -193,15 +205,22 @@ class Dummy {
             obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
-                i = dummy_suffix
+                i = dummy_suffix//app user
+
+                obj.sender_id = "user_id_"+ i//app user
+                obj.receiver_id = "user_id_" + i + 1// other user
+            }else{
+                i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
+
+                obj.sender_id = "user_id_"+ i// other user
+                obj.receiver_id = "user_id_" + dummy_suffix//app user
             }
 
-            obj.sender_id = "user_id_"+ i
             obj.user = createUser(i, obj.user)
 
             if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
                 || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
-                obj.msg_time = Date()
+                obj.msg_time = Date(Date().time - (10 *1000) * n)
             }
 
             list.add(obj)
@@ -213,7 +232,7 @@ class Dummy {
     private fun randomDummyWord(prefix: String): String{
         var text = ""
         var start = 1;
-        var end = (1..30).random();
+        var end = (1..10).random();
 
         for(i in start..end){
             text += prefix + i +" ";

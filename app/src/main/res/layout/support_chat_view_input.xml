@@ -20,23 +20,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="42dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="14dp"
             android:background="@android:color/transparent"
+            android:onClick="@{() -> chat_msg.showEmojiView()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_emoji_dark_24dp"
-            android:onClick="@{() -> chat_msg.showEmojiView()}"
-            />
+            app:srcCompat="@drawable/ic_emoji_dark_24dp" />
 
         <EditText
             android:id="@+id/support_chat_view_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:ems="10"
             android:gravity="start|top"
             android:hint="@string/chat_input_placehoder"
@@ -47,7 +46,7 @@
             app:layout_constraintStart_toEndOf="@+id/support_chat_view_emoji_icon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.516"
-            tools:text="Big text1 Big text2 Big text3 Big text4 Big text5 Big text6 Big text7 Big text8 Big text9 Big text10 Big text11 Big text12 Big text13 Big text14 Big text15 Big text16 Big text17 Big text18 Big text19 text20 text21  text22  text23  text24  text25  text26   text27  text28  text29  text30  text31   text32 text33  text34  text35  text36  text37  text38  text39  text40" />
+            tools:text="Hi there" />
 
 
         <ImageButton
@@ -71,14 +70,14 @@
             android:id="@+id/support_chat_view_send_msg_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
             android:clickable="true"
-            app:layout_constraintStart_toEndOf="@+id/support_chat_view_speak_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/support_chat_view_speak_icon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_send"
 

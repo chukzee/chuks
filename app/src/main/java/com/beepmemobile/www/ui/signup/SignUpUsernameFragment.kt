@@ -42,6 +42,8 @@ class SignUpUsernameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        (this.activity as MainActivity).supportActionBar?.hide();
+
         binding.signUpUsernameBtnNext.setOnClickListener {
 
             var username = binding.signUpUsernameTxtUsername.text.toString()

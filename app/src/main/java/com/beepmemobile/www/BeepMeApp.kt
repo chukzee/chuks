@@ -2,9 +2,8 @@ package com.beepmemobile.www
 
 import android.content.Context
 import androidx.multidex.MultiDexApplication
-import com.beepmemobile.www.handle.acrareport.*
+import com.beepmemobile.www.handle.acrareport.BeepMeCrashReportDialog
 import org.acra.ACRA
-import org.acra.annotation.AcraCore
 import org.acra.config.CoreConfigurationBuilder
 import org.acra.config.DialogConfigurationBuilder
 import org.acra.data.StringFormat

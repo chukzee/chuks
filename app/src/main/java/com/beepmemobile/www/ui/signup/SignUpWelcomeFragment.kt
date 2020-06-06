@@ -44,6 +44,8 @@ class SignUpWelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        (this.activity as MainActivity).supportActionBar?.hide();
+
         binding.signUpWelcomeBtnNext.setOnClickListener {
 
             authModel.singupStage(mapOf(), AuthState.AUTH_STAGE_NONE)

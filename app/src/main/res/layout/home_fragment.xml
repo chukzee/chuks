@@ -36,6 +36,12 @@
                 android:layout_height="wrap_content" />
             -->
 
+            <!--Add some space under-->
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="60dp" />
+
 
         </LinearLayout>
 

@@ -45,6 +45,7 @@ class SignUpConfirmVerificationCodeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        (this.activity as MainActivity).supportActionBar?.hide();
 
         binding.signUpConfirmVerificationCodeBtnNext.setOnClickListener {
 

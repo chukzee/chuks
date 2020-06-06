@@ -59,7 +59,7 @@ class SmsViewAdapter :
     override fun getItemViewType(position: Int): Int {
 
         val currentSmsMsg: SmsMessage = sms_view_list[position]
-        if(currentSmsMsg.sender_phone_no == app_user.phone_no){
+        if(currentSmsMsg.sender_phone_no == app_user.mobile_phone_no){
             return SENT_TYPE
         }else{
             return RECEIVED_TYPE
@@ -70,9 +70,13 @@ class SmsViewAdapter :
            return sms_view_list.size
     }
 
-    fun setSmsViewList(app_user: AppUser, sms_view_list: MutableList<SmsMessage>) {
+    fun setSmsViewList(app_user: AppUser, other_user_phone_no: String?, sms_view_list: MutableList<SmsMessage>) {
         this.app_user = app_user
-        this.sms_view_list = sms_view_list
+
+        this.sms_view_list = sms_view_list.filter {
+            it.user.mobile_phone_no ==  other_user_phone_no
+        }
+
         notifyDataSetChanged()
     }
 

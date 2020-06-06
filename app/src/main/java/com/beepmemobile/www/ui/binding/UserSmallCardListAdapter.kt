@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.UserLargeCardBinding
 import com.beepmemobile.www.databinding.UserSmallCardBinding
+import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
 
 class UserSmallCardListAdapter(
@@ -209,7 +211,7 @@ class UserSmallCardListAdapter(
                     //TODO - implementation
                     //TODO - use popupItemData
 
-                    var phone = (data as User).phone_no
+                    var phone = (data as User).mobile_phone_no
 
                     AlertDialog.Builder(fragment.context)
                         .setTitle("TODO")
@@ -220,15 +222,18 @@ class UserSmallCardListAdapter(
                     true
                 }
                 R.id.user_small_card_popup_sms -> {
-                    //TODO - use popupItemData
+                    var other_user_phone_no = (data as User).mobile_phone_no
+
+                    val bundle = bundleOf(Constant.OTHER_USER_PHONE_NO to other_user_phone_no)
                     val c = NavHostFragment.findNavController(fragment)
-                    c.navigate(R.id.action_global_SmsViewFragment)
+                    c.navigate(R.id.action_global_SmsViewFragment, bundle)
+
                     true
                 }
                 R.id.user_small_card_popup_view_profile -> {
-                    //TODO - use popupItemData
+                    val bundle = bundleOf(Constant.USER_ID to (data as User).user_id)
                     val c = NavHostFragment.findNavController(fragment)
-                    c.navigate(R.id.action_global_PersonalProfileFragment)
+                    c.navigate(R.id.action_global_PersonalProfileFragment, bundle)
                     true
                 }
                 else -> false

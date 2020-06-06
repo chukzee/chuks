@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Switch
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,7 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.UserLargeCardBinding
+import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
 
 
@@ -151,7 +153,7 @@ class UserLargeCardListAdapter(
             currentUser,
             callback
         ))
-        userCardBinding?.userSendSms?.setOnClickListener(ItemListener(
+        userCardBinding?.userFavorite?.setOnClickListener(ItemListener(
             FAVOURITE_ACTION,
             currentUser,
             callback
@@ -209,30 +211,33 @@ class UserLargeCardListAdapter(
         override fun onCheckedChanged(cbtn: CompoundButton?, b: Boolean) {
 
             when(action){
-                FAVOURITE_ACTION -> handleSmsIconCheckChange(cbtn, b)
+                FAVOURITE_ACTION -> handleFavouriteIconCheckChange(cbtn, b)
             }
 
         }
 
         private fun handleSmsIconClick(v: View){
-            //TODO - pass data to destination
+
+            var other_user_phone_no = (data as User).mobile_phone_no
+
+            val bundle = bundleOf(Constant.OTHER_USER_PHONE_NO to other_user_phone_no)
             val c = NavHostFragment.findNavController(fragment)
-            c.navigate(R.id.action_global_SmsViewFragment)
+            c.navigate(R.id.action_global_SmsViewFragment, bundle)
         }
 
         private fun handleCallIconClick(v: View){
         //TODO - implementation
             AlertDialog.Builder(v.context)
                 .setTitle("TODO")
-                .setMessage("user phone- " + (data as User).phone_no )
+                .setMessage("user phone- " + (data as User).mobile_phone_no )
                 .create()
                 .show()
         }
 
         private fun handleProfileIconClick(v: View){
-            //TODO - pass data to destination
+            val bundle = bundleOf(Constant.USER_ID to (data as User).user_id)
             val c = NavHostFragment.findNavController(fragment)
-            c.navigate(R.id.action_global_PersonalProfileFragment)
+            c.navigate(R.id.action_global_PersonalProfileFragment, bundle)
         }
 
         private fun handlePhotoClick(v: View){
@@ -242,7 +247,7 @@ class UserLargeCardListAdapter(
             dialog.show()
         }
 
-        private fun handleSmsIconCheckChange(cbtn: CompoundButton?, b: Boolean){
+        private fun handleFavouriteIconCheckChange(cbtn: CompoundButton?, b: Boolean){
             app_user.modifyFavourite(cbtn as Switch, (data as User).user_id)
         }
 

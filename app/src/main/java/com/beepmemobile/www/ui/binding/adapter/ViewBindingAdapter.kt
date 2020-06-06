@@ -1,8 +1,10 @@
 package com.beepmemobile.www.ui.binding.adapter
 
 import android.graphics.drawable.Drawable
+import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.beepmemobile.www.data.Message
 import com.squareup.picasso.Picasso
 
 /**
@@ -47,5 +49,25 @@ fun setImagePropeties(view: ImageView, url: String?, errUr: Drawable?, placehold
     }
 
     p.into(view)
+
+}
+
+@BindingAdapter(value=["statusFeeback"], requireAll=false)
+fun setStatusFeedback(view: ImageButton, status: Int?) {
+
+    when(status){
+        Message.MSG_STATUS_NOT_SENT ->{
+
+        }
+        Message.MSG_STATUS_SENT ->{
+
+        }
+        Message.MSG_STATUS_DELIVERED ->{
+
+        }
+        Message.MSG_STATUS_SEEN ->{
+
+        }
+    }
 
 }

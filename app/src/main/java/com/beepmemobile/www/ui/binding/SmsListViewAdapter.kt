@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
@@ -15,8 +15,8 @@ import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.SmsListItemBinding
 import com.beepmemobile.www.ui.sms.SmsListViewFragmentDirections
+import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
-import kotlin.math.roundToInt
 
 class SmsListViewAdapter(navCtrlr: NavController)  :
     RecyclerView.Adapter<SmsListViewAdapter.SmsListViewViewHolder>(){
@@ -85,6 +85,7 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
             smsListViewViewHolder.smsListItemBinding?.sms = currentSms
             smsListViewViewHolder.smsListItemBinding?.user = currentUser
             smsListViewViewHolder.smsListItemBinding?.util = util
+
         }
     }
 
@@ -132,13 +133,17 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
     }
 
 
-    inner class SmsItemListener(_sms: SmsMessage) : View.OnClickListener {
-        var sms = _sms
+    inner class SmsItemListener(val sms: SmsMessage) : View.OnClickListener {
 
         override fun onClick(v: View?) {
-            //TODO - consider passing parameter
+            val other_user_phone_no = if (sms.sender_phone_no == app_user.mobile_phone_no)
+                sms.receiver_phone_no
+            else
+                sms.sender_phone_no
+
+            val bundle = bundleOf(Constant.OTHER_USER_PHONE_NO to other_user_phone_no)
             var direction = SmsListViewFragmentDirections.moveToNavGraphSmsView()
-            navController.navigate(direction)
+            navController.navigate(direction.actionId, bundle)
         }
 
     }

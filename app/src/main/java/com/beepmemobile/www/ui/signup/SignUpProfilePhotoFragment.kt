@@ -44,6 +44,8 @@ class SignUpProfilePhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        (this.activity as MainActivity).supportActionBar?.hide();
+
         binding.signUpProfilePhotoBtnNext.setOnClickListener {
 
             var profileImag = binding.signUpProfilePhotoImgPhoto

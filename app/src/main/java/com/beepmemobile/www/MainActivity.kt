@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     var navView: NavigationView? = null
     var drawerLayout: DrawerLayout? = null
+    var toolbar: Toolbar? = null;
 
         override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,17 +36,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        val toolbar: Toolbar = findViewById(R.id.main_app_bar_toolbar)
-        setSupportActionBar(toolbar)
+            toolbar = findViewById(R.id.main_app_bar_toolbar)
+            setSupportActionBar(toolbar)
 
-         drawerLayout = findViewById(R.id.home_drawer_layout)
-         navView = findViewById(R.id.home_nav_view)
+             drawerLayout = findViewById(R.id.home_drawer_layout)
+             navView = findViewById(R.id.home_nav_view)
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.HomeFragment), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView?.setupWithNavController(navController)
+            // Passing each menu ID as a set of Ids because each
+            // menu should be considered as top level destinations.
+            appBarConfiguration = AppBarConfiguration(setOf(R.id.HomeFragment), drawerLayout)
+            setupActionBarWithNavController(navController, appBarConfiguration)
+            navView?.setupWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

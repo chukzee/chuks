@@ -63,15 +63,26 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="5dp"
             android:layout_marginBottom="10dp"
             android:singleLine="true"
             android:text="@{util.formatTime(sms.msg_time)}"
             android:textSize="10dp"
             app:layout_constraintBottom_toTopOf="@+id/sms_list_item_divider"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/sms_status"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo"
             tools:text="Today, 20:34" />
+
+
+        <ImageButton
+            android:id="@+id/sms_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            app:statusFeeback="@{sms.msg_status}"
+            app:layout_constraintBottom_toTopOf="@+id/sms_list_item_divider"
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
         <include
@@ -84,7 +95,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sms_profile_photo" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

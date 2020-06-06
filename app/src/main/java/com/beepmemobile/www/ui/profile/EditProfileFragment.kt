@@ -1,20 +1,27 @@
 package com.beepmemobile.www.ui.profile
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.beepmemobile.www.MainActivity
-import com.beepmemobile.www.R
-
 import com.beepmemobile.www.databinding.EditProfileFragmentBinding
+import com.beepmemobile.www.ui.main.MainViewModel
+import com.beepmemobile.www.util.Util
+import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
+
 
 class EditProfileFragment : Fragment() {
-    private val model: EditProfileViewModel by viewModels()
+    private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
+    private val model: EditProfileViewModel by viewModels()
+    private val util = Util()
 
     private var _binding: EditProfileFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -26,12 +33,17 @@ class EditProfileFragment : Fragment() {
         fun newInstance() = EditProfileFragment()
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (this.activity as MainActivity).supportActionBar?.hide();
+        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
         setHasOptionsMenu(true)
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,16 +57,57 @@ class EditProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
+
         val layout = binding.editProfileCollapsingToolbarLayout
         val toolbar = binding.editProfileToolbar
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         layout.setupWithNavController(toolbar, navController, appBarConfiguration)
 
+        var mainActivity = this.activity as MainActivity
+        mainActivity.setSupportActionBar(toolbar)
+
+        //Update the UI
+        binding.user = authModel.app_user; // definitely the app user
+        binding.appUser =authModel.app_user
+        binding.util = util
+
+        binding.editProfileEditInfoInclude.user = authModel.app_user
+        binding.editProfileEditInfoInclude.appUser = authModel.app_user
+        binding.editProfileEditInfoInclude.util = util
+
+        var display_name = authModel.app_user?.display_name
+
+        mainActivity.supportActionBar?.title = " "
+
+        binding.editProfileAppBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
+
+            //If the AppBarLayout’s ‘verticalOffset’ is zero, then its fully expanded
+
+            if (Math.abs(verticalOffset) > 200) {
+                //appBarExpanded = false
+                //invalidateOptionsMenu()
+                mainActivity.supportActionBar?.title = display_name
+
+            } else {
+                mainActivity.supportActionBar?.title = ""
+                //appBarExpanded = true
+                //invalidateOptionsMenu()
+            }
+
+        })
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (this.activity as MainActivity).supportActionBar?.show();
+
+        val mainActivity = activity as  MainActivity
+        mainActivity.setSupportActionBar(mainActivity.toolbar)
+        mainActivity.supportActionBar?.show();
+
+        (this.activity as MainActivity).toolbar?.visibility = View.VISIBLE;
+
         _binding = null
     }
 

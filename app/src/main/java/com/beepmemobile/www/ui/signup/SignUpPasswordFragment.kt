@@ -42,6 +42,8 @@ class SignUpPasswordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        (this.activity as MainActivity).supportActionBar?.hide();
+
         binding.signUpPasswordBtnNext.setOnClickListener {
 
             var password = binding.signUpPasswordTxtPassword.text.toString()

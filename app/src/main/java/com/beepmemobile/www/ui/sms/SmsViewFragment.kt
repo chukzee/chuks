@@ -13,10 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
+import com.beepmemobile.www.data.Message
+import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.SmsViewFragmentBinding
 import com.beepmemobile.www.ui.binding.SmsViewAdapter
 import com.beepmemobile.www.ui.main.MainViewModel
+import com.beepmemobile.www.util.Constant
 
 class SmsViewFragment : Fragment() {
     private val model: SmsViewViewModel by viewModels()
@@ -74,7 +77,8 @@ class SmsViewFragment : Fragment() {
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<SmsMessage>> { sms_list ->
             if (app_user != null) {
-                smsViewAdapter?.setSmsViewList(app_user, sms_list)
+                var other_user_phone_no = arguments?.getString(Constant.OTHER_USER_PHONE_NO)
+                smsViewAdapter?.setSmsViewList(app_user, other_user_phone_no,sms_list)
             }
         }
 

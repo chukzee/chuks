@@ -126,7 +126,6 @@ class HomeFragment : Fragment(){
         // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
         model.getList().observe(viewLifecycleOwner, observer)
 
-
     }
 
 

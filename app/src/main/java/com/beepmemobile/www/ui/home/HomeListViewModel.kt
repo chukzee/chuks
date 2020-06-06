@@ -17,6 +17,10 @@ class HomeListViewModel : AbstractListViewModel<User>() {
         return this.user_list
     }
 
+    fun getUser(user_id: String?): User?{
+        return user_list.value?.filter { it.user_id == user_id }?.get(0)
+    }
+
     fun load(it: MutableLiveData<MutableList<User>>) {
         // Do an asynchronous operation to fetch users.
 

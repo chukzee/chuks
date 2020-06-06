@@ -5,12 +5,26 @@
     android:id="@+id/nav_graph_personal_profile"
 	app:startDestination="@id/PersonalProfileFragment">
 
+    <!-- we remove the label to dynamically set later. Important! -->
     <fragment
         android:id="@+id/PersonalProfileFragment"
         android:name="com.beepmemobile.www.ui.profile.PersonalProfileFragment"
-        android:label="Personal Profile"
+        android:label=""
         tools:layout="@layout/personal_profile_fragment" >
-        <!--TODO Add action-->
+        <action
+            android:id="@+id/to_EditProfileFragment"
+            app:destination="@id/EditProfileFragment" />
+
+    </fragment>
+
+
+    <!-- we remove the label to dynamically set later. Important! -->
+    <fragment
+        android:id="@+id/EditProfileFragment"
+        android:name="com.beepmemobile.www.ui.profile.EditProfileFragment"
+        android:label=""
+        tools:layout="@layout/edit_profile_fragment" >
+        <!-- TODO add action -->
     </fragment>
 
 
