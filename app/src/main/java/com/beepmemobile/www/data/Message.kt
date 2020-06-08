@@ -21,7 +21,7 @@ abstract class Message{
     var msg_time: Date = Date();
     var msg_status: Int = UNKNOWN;
 
-    var user = User()
+    var user = User()// sender
 
     abstract fun send(text: String)
 

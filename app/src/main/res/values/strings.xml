@@ -7,8 +7,10 @@
     <string name="title_activity_settings">Settings</string>
     <string name="send_sms">Send SMS</string>
     <string name="make_call">Make Call</string>
+    <string name="chat_me_up">Chat Me Up</string>
     <string name="search">Search</string>
     <string name="edit">Edit</string>
+    <string name="help">Help</string>
 
     <!-- App bar menu items configure -->
 

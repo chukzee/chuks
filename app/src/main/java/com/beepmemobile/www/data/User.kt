@@ -5,7 +5,7 @@ import java.util.*
 open class User {
 
 
-    var user_id = ""
+    var user_id = "" // which the verified phone number during registraion
     var first_name: String = ""
     var last_name: String = ""
     var photo_url: String = ""
@@ -15,7 +15,7 @@ open class User {
     var office_address: String = ""
     var location: String = "" // using google location finder
     var last_seen_time: Date = Date();
-    var mobile_phone_no = ""
+    val mobile_phone_no get() = user_id // which the verified phone number during registraion
     var work_phone_no = ""
     var personal_email = ""
     var work_email = ""

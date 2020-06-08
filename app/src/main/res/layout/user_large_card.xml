@@ -48,37 +48,26 @@
                 android:id="@+id/user_full_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginRight="10dp"
                 android:singleLine="true"
                 android:text="@{user.display_name}"
                 android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="18dp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/user_favorite"
+                app:layout_constraintEnd_toStartOf="@+id/user_info"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/user_photo"
-                tools:text="Full Name1 Full Name2 Full Name3 Full Name4" />
-
-            <Switch
-                android:id="@+id/user_favorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:checked="@{app_user.isFavourite(user.user_id)}"
-                android:text="Favorite"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/user_photo" />
+                tools:text="Full Name1 Full Name2" />
 
             <TextView
                 android:id="@+id/user_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
+                android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginLeft="20dp"
                 android:singleLine="true"
                 android:text="@{`Location: `+user.location}"
                 android:textSize="14dp"
@@ -92,9 +81,9 @@
                 android:id="@+id/user_phone_number"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
+                android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginLeft="20dp"
                 android:singleLine="true"
                 android:text="@{user.mobile_phone_no}"
                 android:textStyle="bold"
@@ -110,8 +99,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="0dp"
-                android:layout_marginTop="30dp"
                 android:layout_marginRight="0dp"
+                android:layout_marginTop="30dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/user_phone_number" />
 
@@ -119,13 +108,11 @@
                 android:id="@+id/user_last_seen"
                 android:layout_width="0dp"
                 android:layout_height="18dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="10dp"
-                android:singleLine="true"
                 android:background="@android:color/transparent"
+                android:singleLine="true"
                 android:text="@{util.formatTime(user.last_seen_time)}"
-                app:layout_constraintEnd_toStartOf="@+id/user_info"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 tools:text="Last seen: 12:20 PM" />
@@ -136,10 +123,10 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:background="@android:color/transparent"
-                app:layout_constraintEnd_toStartOf="@+id/user_send_sms"
-                app:layout_constraintTop_toBottomOf="@+id/user_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/user_photo"
                 app:srcCompat="@drawable/ic_info_outline_blue_light_24dp" />
 
             <ImageButton
@@ -147,7 +134,7 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:background="@android:color/transparent"
                 app:layout_constraintEnd_toStartOf="@+id/user_make_call"
                 app:layout_constraintTop_toBottomOf="@+id/user_divider"
@@ -158,12 +145,22 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginEnd="20dp"
                 android:background="@android:color/transparent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 app:srcCompat="@drawable/ic_call_blue_light_24dp" />
+
+            <ImageButton
+                android:id="@+id/user_chat_me_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintEnd_toStartOf="@+id/user_send_sms"
+                app:layout_constraintTop_toBottomOf="@+id/user_divider"
+                app:srcCompat="@drawable/ic_chat_blue_24dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

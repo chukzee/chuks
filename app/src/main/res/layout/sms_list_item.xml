@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:background="@android:color/background_light"
-        android:layout_height="@dimen/list_item_medium_height">
+        android:layout_height="@dimen/list_item_large_height">
 
 
         <com.mikhaellopez.circularimageview.CircularImageView

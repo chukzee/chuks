@@ -11,8 +11,6 @@ import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.CallListItemBinding
 import com.beepmemobile.www.util.Util
-import kotlin.math.nextUp
-import kotlin.math.roundToInt
 
 
 class CallListAdapter(val type: Int) :
@@ -48,7 +46,7 @@ class CallListAdapter(val type: Int) :
                 //width
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 //height
-                viewGroup.context.resources.getDimensionPixelOffset(R.dimen.list_item_medium_height)
+                viewGroup.context.resources.getDimensionPixelOffset(R.dimen.list_item_large_height)
             )
 
             return CallListViewHolder(space)

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <!--this may not be used since we will only used the resource id to set the header to
+        toolbar title-->
+        <variable name="user" type="com.beepmemobile.www.data.User"/>
+        <variable name="util" type="com.beepmemobile.www.util.Util"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_item_small_height"
+        android:background="@android:color/background_light">
+
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/chat_me_up_header_profile_photo"
+            android:layout_width="@dimen/profile_image_small_size"
+            android:layout_height="@dimen/profile_image_small_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:imageUrl=""
+            app:imagePlaceholder="@{@drawable/ic_person_black_70dp}"
+            tools:src="@drawable/ic_person_black_70dp"
+            />
+
+        <TextView
+            android:id="@+id/chat_me_up_header_full_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/chat_me_up_header_profile_photo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="The Name The Name The Name" />
+
+        <TextView
+            android:id="@+id/chat_me_up_header_last_seen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="8dp"
+            android:text=""
+            tools:text="Last seen: 12:00AM|online"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/chat_me_up_header_full_name"
+            app:layout_constraintStart_toEndOf="@+id/chat_me_up_header_profile_photo" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

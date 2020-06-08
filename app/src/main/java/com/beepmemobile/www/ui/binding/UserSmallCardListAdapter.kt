@@ -82,16 +82,16 @@ class UserSmallCardListAdapter(
     }
 
     override fun onBindViewHolder(
-        callListViewListViewHolder: UserCardListViewHolder,
+        userCarListViewListViewHolder: UserCardListViewHolder,
         i: Int
     ) {
 
         if(isHeader(i)){
-            callListViewListViewHolder.listSubHeaderBinding?.listSubheaderTitle?.text = title
+            userCarListViewListViewHolder.listSubHeaderBinding?.listSubheaderTitle?.text = title
         }else if(isUserObject(i)){
             val currentUser: User = map_data[i] as User
 
-            var bnd = callListViewListViewHolder.userCardBinding;
+            var bnd = userCarListViewListViewHolder.userCardBinding;
             bnd?.user = currentUser
             bnd?.appUser = this.app_user
             bnd?.util = this.util
@@ -221,10 +221,20 @@ class UserSmallCardListAdapter(
 
                     true
                 }
+
+                R.id.user_small_card_popup_chat_me_up -> {
+                    var other_user_id = (data as User).user_id
+
+                    val bundle = bundleOf(Constant.USER_ID to other_user_id)
+                    val c = NavHostFragment.findNavController(fragment)
+                    c.navigate(R.id.action_global_ChatMeUpFragment, bundle)
+
+                    true
+                }
                 R.id.user_small_card_popup_sms -> {
                     var other_user_phone_no = (data as User).mobile_phone_no
 
-                    val bundle = bundleOf(Constant.OTHER_USER_PHONE_NO to other_user_phone_no)
+                    val bundle = bundleOf(Constant.PHONE_NO to other_user_phone_no)
                     val c = NavHostFragment.findNavController(fragment)
                     c.navigate(R.id.action_global_SmsViewFragment, bundle)
 

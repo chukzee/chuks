@@ -11,18 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.User
-import com.beepmemobile.www.data.msg.SmsMessage
+import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
-import com.beepmemobile.www.databinding.SmsListItemBinding
-import com.beepmemobile.www.ui.sms.SmsListViewFragmentDirections
+import com.beepmemobile.www.databinding.ChatMeUpListItemBinding
+import com.beepmemobile.www.ui.chat.ChatMeUpListFragmentDirections
 import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
 
-class SmsListViewAdapter(navCtrlr: NavController)  :
-    RecyclerView.Adapter<SmsListViewAdapter.SmsListViewViewHolder>(){
+class ChatMeUpListAdapter(navCtrlr: NavController)  :
+    RecyclerView.Adapter<ChatMeUpListAdapter.ChatMeUpListViewViewHolder>(){
     private val navController = navCtrlr
-    private var sms_map = mutableMapOf<Any, Any> ()
-    private  var keys = sms_map.keys.toList()
+    private var chat_map = mutableMapOf<Any, Any> ()
+    private  var keys = chat_map.keys.toList()
     private var app_user: AppUser = AppUser();
     private val util = Util()
 
@@ -36,14 +36,14 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
         return keys[i] is String &&  keys[i] == FOOTER
     }
 
-    private fun isSmsMessageObject(i:Int): Boolean{
-        return keys[i] is Int && sms_map[keys[i]] is SmsMessage
+    private fun isChatMessageObject(i:Int): Boolean{
+        return keys[i] is Int && chat_map[keys[i]] is ChatMessage
     }
 
     override fun onCreateViewHolder(
         viewGroup: ViewGroup,
         i: Int
-    ): SmsListViewViewHolder {
+    ): ChatMeUpListViewViewHolder {
 
         if(i == FOOTER_TYPE){
             var space = Space(viewGroup.context)
@@ -54,37 +54,37 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
                 viewGroup.context.resources.getDimensionPixelOffset(R.dimen.list_item_large_height)
             )
 
-            return SmsListViewViewHolder(space)
+            return ChatMeUpListViewViewHolder(space)
 
         }else {
-            val smsListItemBinding = SmsListItemBinding.inflate(
+            val chatListItemBinding = ChatMeUpListItemBinding.inflate(
                 LayoutInflater.from(viewGroup.context),
                 viewGroup,
                 false
             )
 
-            var sms = sms_map[i] as SmsMessage
-            smsListItemBinding.root.setOnClickListener(SmsItemListener(sms))
+            var chat = chat_map[i] as ChatMessage
+            chatListItemBinding.root.setOnClickListener(ChatItemListener(chat))
 
-            return SmsListViewViewHolder(
-                smsListItemBinding
+            return ChatMeUpListViewViewHolder(
+                chatListItemBinding
             )
         }
     }
 
     override fun onBindViewHolder(
-        smsListViewViewHolder: SmsListViewViewHolder,
+        chatListViewViewHolder: ChatMeUpListViewViewHolder,
         i: Int
     ) {
         if(isFooter(i)){
             //TODO - may added click event to footer
         }else {
-            val currentSms: SmsMessage = sms_map[i] as SmsMessage
-            val currentUser: User = currentSms.user
+            val currentChat: ChatMessage = chat_map[i] as ChatMessage
+            val currentUser: User = currentChat.user
 
-            smsListViewViewHolder.smsListItemBinding?.sms = currentSms
-            smsListViewViewHolder.smsListItemBinding?.user = currentUser
-            smsListViewViewHolder.smsListItemBinding?.util = util
+            chatListViewViewHolder.chatListItemBinding?.chatMsg = currentChat
+            chatListViewViewHolder.chatListItemBinding?.user = currentUser
+            chatListViewViewHolder.chatListItemBinding?.util = util
 
         }
     }
@@ -98,31 +98,31 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
     }
 
     override fun getItemCount(): Int {
-        return sms_map.size
+        return chat_map.size
     }
 
-    fun setSmsListViewList(app_user: AppUser, sms_list_view_list: MutableList<SmsMessage>) {
+    fun setChatMeUpList(app_user: AppUser, chat_list_view_list: MutableList<ChatMessage>) {
         this.app_user = app_user
 
         var index = 0
-        sms_list_view_list.forEach{
-            sms_map[index]=it
+        chat_list_view_list.forEach{
+            chat_map[index]=it
             index++
         }
 
-        sms_map[FOOTER] = ""
-        keys = sms_map.keys.toList()
+        chat_map[FOOTER] = ""
+        keys = chat_map.keys.toList()
 
         notifyDataSetChanged()
     }
 
-    inner class SmsListViewViewHolder :
+    inner class ChatMeUpListViewViewHolder :
         RecyclerView.ViewHolder{
-        var smsListItemBinding: SmsListItemBinding? = null
+        var chatListItemBinding: ChatMeUpListItemBinding? = null
         var listSubHeaderBinding: ListSubHeaderBinding? = null
 
-        constructor(binding: SmsListItemBinding):super(binding.root){
-            smsListItemBinding = binding
+        constructor(binding: ChatMeUpListItemBinding):super(binding.root){
+            chatListItemBinding = binding
         }
 
         constructor(binding: ListSubHeaderBinding):super(binding.root){
@@ -133,16 +133,16 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
     }
 
 
-    inner class SmsItemListener(val sms: SmsMessage) : View.OnClickListener {
+    inner class ChatItemListener(val chat: ChatMessage) : View.OnClickListener {
 
         override fun onClick(v: View?) {
-            val other_user_phone_no = if (sms.sender_phone_no == app_user.mobile_phone_no)
-                sms.receiver_phone_no
+            val other_user_id = if (chat.sender_id == app_user.user_id)
+                chat.receiver_id
             else
-                sms.sender_phone_no
+                chat.sender_id
 
-            val bundle = bundleOf(Constant.PHONE_NO to other_user_phone_no)
-            var direction = SmsListViewFragmentDirections.moveToNavGraphSmsView()
+            val bundle = bundleOf(Constant.USER_ID to other_user_id)
+            var direction = ChatMeUpListFragmentDirections.moveToNavGraphChatMeUp()
             navController.navigate(direction.actionId, bundle)
         }
 

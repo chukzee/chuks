@@ -41,6 +41,11 @@
                     android:title="Send SMS" />
 
                 <item
+                    android:id="@+id/nav_graph_chat_me_up_list"
+                    android:icon="@drawable/ic_chat_black_24dp"
+                    android:title="Chat Me Up" />
+
+                <item
                     android:id="@+id/nav_graph_support_chat_view"
                     android:icon="@drawable/ic_chat_black_24dp"
                     android:title="Support Chat" />

@@ -43,7 +43,7 @@ class UserLargeCardListAdapter(
     val CALL_ICON_ACTION = 2
     val PROFILE_ICON_ACTION = 3
     val PHOTO_ACTION = 4
-    val FAVOURITE_ACTION = 5
+    val CHAT_ME_UP_ICON_ACTION = 5
 
     private fun isHeader(i:Int): Boolean{
         return keys[i] is String &&  keys[i] == HEADER
@@ -153,8 +153,8 @@ class UserLargeCardListAdapter(
             currentUser,
             callback
         ))
-        userCardBinding?.userFavorite?.setOnClickListener(ItemListener(
-            FAVOURITE_ACTION,
+        userCardBinding?.userChatMeUp?.setOnClickListener(ItemListener(
+            CHAT_ME_UP_ICON_ACTION,
             currentUser,
             callback
         ))
@@ -201,6 +201,7 @@ class UserLargeCardListAdapter(
             when(action){
                 SMS_ICON_ACTION -> handleSmsIconClick(v)
                 CALL_ICON_ACTION -> handleCallIconClick(v)
+                CHAT_ME_UP_ICON_ACTION -> handleChatMeUpIconClick(v)
                 PROFILE_ICON_ACTION -> handleProfileIconClick(v)
                 PHOTO_ACTION -> handlePhotoClick(v)
             }
@@ -210,9 +211,9 @@ class UserLargeCardListAdapter(
 
         override fun onCheckedChanged(cbtn: CompoundButton?, b: Boolean) {
 
-            when(action){
+            /*when(action){
                 FAVOURITE_ACTION -> handleFavouriteIconCheckChange(cbtn, b)
-            }
+            }*/
 
         }
 
@@ -220,10 +221,20 @@ class UserLargeCardListAdapter(
 
             var other_user_phone_no = (data as User).mobile_phone_no
 
-            val bundle = bundleOf(Constant.OTHER_USER_PHONE_NO to other_user_phone_no)
+            val bundle = bundleOf(Constant.PHONE_NO to other_user_phone_no)
             val c = NavHostFragment.findNavController(fragment)
             c.navigate(R.id.action_global_SmsViewFragment, bundle)
         }
+
+        private fun handleChatMeUpIconClick(v: View){
+
+            var other_user_id = (data as User).user_id
+
+            val bundle = bundleOf(Constant.USER_ID to other_user_id)
+            val c = NavHostFragment.findNavController(fragment)
+            c.navigate(R.id.action_global_ChatMeUpFragment, bundle)
+        }
+
 
         private fun handleCallIconClick(v: View){
         //TODO - implementation

@@ -14,7 +14,8 @@
 
     <!--list item height-->
     <dimen name="list_item_small_height">60dp</dimen>
-    <dimen name="list_item_medium_height">100dp</dimen>
+    <dimen name="list_item_medium_height">80dp</dimen>
+    <dimen name="list_item_large_height">100dp</dimen>
     <dimen name="max_edit_input_height">240dp</dimen>
     <dimen name="toolbar_offset_top">48dp</dimen>
     <dimen name="toolbar_offset_start">124dp</dimen>

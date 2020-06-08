@@ -38,7 +38,7 @@ class Dummy {
         obj.work_email = "work_email_"+i+"4u@beepme.com"
         obj.location = "Warri, Nigeria "+i
         obj.status_message = "This is my status message "+i
-        obj.mobile_phone_no =  "070" + (10000000 + i)
+        //obj.mobile_phone_no =  "070" + (10000000 + i)
         obj.work_phone_no =  "071" + (22200000 + i)
 
         return obj

@@ -67,13 +67,9 @@ class HomeFragment : Fragment(){
 
                 if (app_user.authenticated) {
 
-                    (this.activity as MainActivity).supportActionBar?.show();
-
                     viewConten(view)
 
                 } else if (app_user.auth_state == AuthState.AUTH_STAGE_NONE) {
-
-                    (this.activity as MainActivity).supportActionBar?.hide();
 
                     view.visibility = View.GONE//come back
 

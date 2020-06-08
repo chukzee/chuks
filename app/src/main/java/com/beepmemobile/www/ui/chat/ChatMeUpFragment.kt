@@ -1,5 +1,6 @@
-package com.beepmemobile.www.ui.sms
+package com.beepmemobile.www.ui.chat
 
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -9,28 +10,31 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.beepmemobile.www.MainActivity
+
 import com.beepmemobile.www.R
-import com.beepmemobile.www.data.msg.SmsMessage
-import com.beepmemobile.www.databinding.SmsViewFragmentBinding
-import com.beepmemobile.www.ui.binding.SmsViewAdapter
+import com.beepmemobile.www.data.User
+import com.beepmemobile.www.data.msg.ChatMessage
+import com.beepmemobile.www.databinding.ChatMeUpFragmentBinding
+import com.beepmemobile.www.ui.binding.ChatMeUpAdapter
 import com.beepmemobile.www.ui.main.MainViewModel
 import com.beepmemobile.www.util.Constant
 
-class SmsViewFragment : Fragment() {
-    private val model: SmsViewViewModel by viewModels()
+class ChatMeUpFragment : Fragment() {
+    private val model: ChatMeUpViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
-    private var _binding: SmsViewFragmentBinding? = null
-    private var smsViewAdapter: SmsViewAdapter? =null
-
+    private var chatMeUpAdapter: ChatMeUpAdapter? =null
+    private var _binding: ChatMeUpFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
 
     private val binding get() = _binding!!
 
     companion object {
-        fun newInstance() = SmsViewFragment()
+        fun newInstance() = ChatMeUpFragment()
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,24 +46,18 @@ class SmsViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        _binding = SmsViewFragmentBinding.inflate(inflater, container, false)
+        _binding = ChatMeUpFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.smsRecyclerView
+        var recyclerView: RecyclerView = binding.chatMeUpRecyclerView
         recyclerView.setLayoutManager(LinearLayoutManager(this.context));
-        smsViewAdapter = SmsViewAdapter()
-        recyclerView.adapter = smsViewAdapter
+        chatMeUpAdapter = ChatMeUpAdapter()
+        recyclerView.adapter = chatMeUpAdapter
 
         createObserversAndGetData()
 
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -69,11 +67,14 @@ class SmsViewFragment : Fragment() {
 
     private fun createObserversAndGetData(){
         var app_user = authModel.app_user
+
         // Create the observer which updates the UI.
-        val observer = Observer<MutableList<SmsMessage>> { sms_list ->
+        val observer = Observer<MutableList<ChatMessage>> { chat_list ->
             if (app_user != null) {
-                var other_user_phone_no = arguments?.getString(Constant.PHONE_NO)
-                smsViewAdapter?.setSmsViewList(app_user, other_user_phone_no, sms_list)
+                var other_user_id = arguments?.getString(Constant.USER_ID)
+                chatMeUpAdapter?.setChatMeUpList(app_user, other_user_id,  chat_list)
+
+                (this.activity as MainActivity).supportActionBar?.setTitle(R.layout.chat_me_up_header)
             }
         }
 
@@ -87,7 +88,8 @@ class SmsViewFragment : Fragment() {
         menu.clear() // clear the initial ones, otherwise they are included
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.sms_app_bar, menu)
+        inflater.inflate(R.menu.chat_me_up_app_bar, menu)
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+        <variable name="chat_msg" type="com.beepmemobile.www.data.msg.ChatMessage"/>
+        <variable name="user" type="com.beepmemobile.www.data.User"/>
+        <variable name="util" type="com.beepmemobile.www.util.Util"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_item_medium_height"
+        android:background="@android:color/background_light">
+
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/chat_me_up_list_profile_photo"
+            android:layout_width="@dimen/list_item_small_height"
+            android:layout_height="@dimen/list_item_small_height"
+            app:imagePlaceholder="@{@drawable/ic_person_black_70dp}"
+            app:imageUrl="@{user.photo_url}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_person_black_70dp" />
+
+        <TextView
+            android:id="@+id/chat_me_up_list_full_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:singleLine="true"
+            android:text="@{user.display_name}"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/chat_me_up_list_time"
+            app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_profile_photo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="The Name" />
+
+        <TextView
+            android:id="@+id/chat_me_up_list_msg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{chat_msg.content}"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/chat_me_up_list_list_item_divider"
+            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            tools:text="This is the mesay so" />
+
+
+        <include
+            android:id="@+id/chat_me_up_list_list_item_divider"
+            layout="@layout/list_item_divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_profile_photo" />
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/chat_me_up_list_msg"
+            app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_profile_photo"
+            app:srcCompat="@android:drawable/btn_star_big_on" />
+
+        <TextView
+            android:id="@+id/chat_me_up_list_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:text="@{util.formatTime(chat_msg.msg_time)}"
+            tools:text="12:00AM"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

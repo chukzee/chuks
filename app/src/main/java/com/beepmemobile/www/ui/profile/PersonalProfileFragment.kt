@@ -41,13 +41,11 @@ class PersonalProfileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
         setHasOptionsMenu(true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
     }
 
     override fun onCreateView(
@@ -61,8 +59,6 @@ class PersonalProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
 
         val layout = binding.personalProfileCollapsingToolbarLayout
         val toolbar = binding.personalProfileToolbar
@@ -82,7 +78,7 @@ class PersonalProfileFragment : Fragment() {
 
         var display_name = authModel.app_user?.display_name
 
-        mainActivity.supportActionBar?.title = " "
+        toolbar.title = ""
 
         binding.personalProfileAppBar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
 
@@ -91,10 +87,10 @@ class PersonalProfileFragment : Fragment() {
             if (Math.abs(verticalOffset) > 200) {
                 //appBarExpanded = false
                 //invalidateOptionsMenu()
-                mainActivity.supportActionBar?.title = display_name
+                toolbar.title = display_name
 
             } else {
-                mainActivity.supportActionBar?.title = ""
+                toolbar.title = ""
                 //appBarExpanded = true
                 //invalidateOptionsMenu()
             }
@@ -141,13 +137,6 @@ class PersonalProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        val mainActivity = activity as  MainActivity
-        mainActivity.setSupportActionBar(mainActivity.toolbar)
-        mainActivity.supportActionBar?.show();
-
-        (this.activity as MainActivity).toolbar?.visibility = View.VISIBLE;
-
         _binding = null
     }
 

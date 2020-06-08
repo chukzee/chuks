@@ -10,9 +10,7 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.msg.Contact
 import com.beepmemobile.www.databinding.ContactListItemBinding
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
-import com.beepmemobile.www.databinding.SmsListItemBinding
 import com.beepmemobile.www.util.Util
-import kotlin.math.roundToInt
 
 class ContactListAdapter :
     RecyclerView.Adapter<ContactListAdapter.ContactListViewHolder>() {
@@ -46,7 +44,7 @@ class ContactListAdapter :
                 //width
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 //height
-                viewGroup.context.resources.getDimensionPixelOffset(R.dimen.list_item_medium_height)
+                viewGroup.context.resources.getDimensionPixelOffset(R.dimen.list_item_large_height)
             )
 
             return ContactListViewHolder(space)

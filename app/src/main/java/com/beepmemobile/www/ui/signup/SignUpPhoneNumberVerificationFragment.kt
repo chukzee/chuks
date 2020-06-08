@@ -44,8 +44,6 @@ class SignUpPhoneNumberVerificationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        (this.activity as MainActivity).supportActionBar?.hide();
-
         binding.signUpPhoneNumberVerificationBtnNext.setOnClickListener {
 
             var phone_no = binding.signUpPhoneNumberVerificationTxtPhoneNo.text.toString()

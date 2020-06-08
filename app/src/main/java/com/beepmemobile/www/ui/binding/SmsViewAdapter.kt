@@ -73,8 +73,10 @@ class SmsViewAdapter :
     fun setSmsViewList(app_user: AppUser, other_user_phone_no: String?, sms_view_list: MutableList<SmsMessage>) {
         this.app_user = app_user
 
+        //TODO consider the case where other_user_phone_no is not registered
+
         this.sms_view_list = sms_view_list.filter {
-            it.user.mobile_phone_no ==  other_user_phone_no
+            it.sender_id ==  other_user_phone_no || it.receiver_id == other_user_phone_no // applicable to  other_user_phone_no registered user
         }
 
         notifyDataSetChanged()

@@ -25,6 +25,10 @@
             app:destination="@id/nav_graph_sms_view" />
 
         <action
+            android:id="@+id/move_to_nav_graph_chat_me_up_list"
+            app:destination="@+id/nav_graph_chat_me_up_list"/>
+
+        <action
             android:id="@+id/move_to_nav_graph_support_chat_view"
             app:destination="@id/nav_graph_support_chat_view" />
 
@@ -96,6 +100,9 @@
         app:graph="@navigation/nav_graph_personal_profile"/>
 
     <include
+        app:graph="@navigation/nav_graph_chat_me_up_list"/>
+
+    <include
         app:graph="@navigation/nav_graph_search"/>
 
     <include
@@ -129,5 +136,7 @@
     <action android:id="@+id/action_global_PersonalProfileFragment" app:destination="@id/nav_graph_personal_profile"/>
 
     <action android:id="@+id/action_global_SmsViewFragment" app:destination="@id/nav_graph_sms_view"/>
+
+    <action android:id="@+id/action_global_ChatMeUpFragment" app:destination="@id/nav_graph_chat_me_up"/>
 
 </navigation>

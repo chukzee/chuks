@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.beepmemobile.www.MainActivity
+import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.EditProfileFragmentBinding
 import com.beepmemobile.www.ui.main.MainViewModel
 import com.beepmemobile.www.util.Util
@@ -35,13 +36,11 @@ class EditProfileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
         setHasOptionsMenu(true)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
     }
 
 
@@ -56,8 +55,6 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        (this.activity as MainActivity).toolbar?.visibility = View.GONE;
 
         val layout = binding.editProfileCollapsingToolbarLayout
         val toolbar = binding.editProfileToolbar
@@ -78,7 +75,7 @@ class EditProfileFragment : Fragment() {
 
         var display_name = authModel.app_user?.display_name
 
-        mainActivity.supportActionBar?.title = " "
+        toolbar.title = ""
 
         binding.editProfileAppBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
 
@@ -87,10 +84,10 @@ class EditProfileFragment : Fragment() {
             if (Math.abs(verticalOffset) > 200) {
                 //appBarExpanded = false
                 //invalidateOptionsMenu()
-                mainActivity.supportActionBar?.title = display_name
+                toolbar.title =  display_name
 
             } else {
-                mainActivity.supportActionBar?.title = ""
+                toolbar.title =  ""
                 //appBarExpanded = true
                 //invalidateOptionsMenu()
             }
@@ -101,13 +98,6 @@ class EditProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        val mainActivity = activity as  MainActivity
-        mainActivity.setSupportActionBar(mainActivity.toolbar)
-        mainActivity.supportActionBar?.show();
-
-        (this.activity as MainActivity).toolbar?.visibility = View.VISIBLE;
-
         _binding = null
     }
 
@@ -116,7 +106,7 @@ class EditProfileFragment : Fragment() {
         menu.clear() // clear the initial ones, otherwise they are included
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        //inflater.inflate(R.menu.upgrade_app_bar, menu)
+        inflater.inflate(R.menu.edit_profille_app_bar, menu)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
