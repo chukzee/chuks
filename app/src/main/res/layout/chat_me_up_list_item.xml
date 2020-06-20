@@ -5,6 +5,7 @@
 
 
     <data>
+        <import type="android.view.View"/>
         <variable name="chat_msg" type="com.beepmemobile.www.data.msg.ChatMessage"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
         <variable name="util" type="com.beepmemobile.www.util.Util"/>
@@ -38,7 +39,6 @@
             android:text="@{user.display_name}"
             android:textColor="@color/design_default_color_on_secondary"
             android:textSize="18sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/chat_me_up_list_time"
             app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_profile_photo"
             app:layout_constraintTop_toTopOf="parent"
@@ -48,14 +48,15 @@
             android:id="@+id/chat_me_up_list_msg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:ellipsize="end"
             android:singleLine="true"
             android:text="@{chat_msg.content}"
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/chat_me_up_list_list_item_divider"
-            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            app:layout_constraintEnd_toStartOf="@+id/chat_me_up_list_unread_count"
+            app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_msg_status"
             tools:text="This is the mesay so" />
 
 
@@ -70,17 +71,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_profile_photo" />
 
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/chat_me_up_list_msg_status"
+            android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
             android:background="@android:color/transparent"
+            android:text="@{util.msgStatusTick(chat_msg.msg_status)}"
+            app:msgStatusColor="@{chat_msg.msg_status}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/chat_me_up_list_msg"
             app:layout_constraintStart_toEndOf="@+id/chat_me_up_list_profile_photo"
-            app:srcCompat="@android:drawable/btn_star_big_on" />
+            tools:text="\u2713\u2713" />
 
         <TextView
             android:id="@+id/chat_me_up_list_time"
@@ -92,6 +95,24 @@
             tools:text="12:00AM"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/chat_me_up_list_unread_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/unread_list_badge"
+            android:minWidth="15dp"
+            android:visibility="@{chat_msg.read_count > 0? View.VISIBLE : View.GONE}"
+            android:text="@{``+chat_msg.read_count}"
+            android:textAlignment="center"
+            android:textColor="@color/colorBeepMeTextLight"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/chat_me_up_list_list_item_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="9" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

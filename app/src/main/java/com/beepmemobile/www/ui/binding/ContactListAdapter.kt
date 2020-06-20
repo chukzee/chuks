@@ -7,7 +7,7 @@ import android.widget.Space
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
-import com.beepmemobile.www.data.msg.Contact
+import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.ContactListItemBinding
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.util.Util
@@ -30,7 +30,7 @@ class ContactListAdapter :
     }
 
     private fun isContactObject(i:Int): Boolean{
-        return keys[i] is Int && contact_map[keys[i]] is Contact
+        return keys[i] is Int && contact_map[keys[i]] is User
     }
 
     override fun onCreateViewHolder(
@@ -69,7 +69,7 @@ class ContactListAdapter :
         if(isFooter(i)){
             //TODO - may added click event to footer
         }else {
-            val currentContact: Contact = contact_map[i] as Contact
+            val currentContact: User = contact_map[i] as User
             contactListViewListViewHolder.contactListItemBinding?.contact = currentContact
         }
     }
@@ -86,7 +86,7 @@ class ContactListAdapter :
         return contact_map.size
     }
 
-    fun setContactList(app_user: AppUser, contact_list: MutableList<Contact>) {
+    fun setContactList(app_user: AppUser, contact_list: MutableList<User>) {
         this.app_user = app_user
 
         var index = 0

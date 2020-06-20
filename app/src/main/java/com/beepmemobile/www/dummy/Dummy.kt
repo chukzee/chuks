@@ -5,11 +5,11 @@ import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.Message
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.msg.ChatMessage
-import com.beepmemobile.www.data.msg.Contact
 import com.beepmemobile.www.data.msg.Post
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.ui.main.MainViewModel
 import java.util.*
+
 
 class Dummy {
 
@@ -18,6 +18,7 @@ class Dummy {
     fun getDummyAppUser(): AppUser{
         var u = AppUser()
          u = createUser(dummy_suffix, u) as AppUser
+         u.joined_date = null // make it unregistered
         return u
     }
 
@@ -28,14 +29,15 @@ class Dummy {
 
     fun createUser(i: Int, obj :User): User{
 
-        obj.user_id  = "user_id_"+ i
-        obj.first_name = "first_name_"+i
-        obj.last_name = "last_name_"+i
+        obj.user_id  = "080" + (10000000 + i)
+        obj.joined_date = Date()
+        obj.display_name = "Person Name_"+i
         obj.home_address = "No. " + i + " along Road_"+i +" off Place_"+i+" Ekpan, Delta"
         obj.office_address = "No. " + i + "Airport Road, Delta"
         obj.photo_url ="photo_url_"+i
         obj.personal_email = "persona_email_"+i+"4u@gmail.com"
         obj.work_email = "work_email_"+i+"4u@beepme.com"
+        obj.website = "www.mywebsite"+i+".com"
         obj.location = "Warri, Nigeria "+i
         obj.status_message = "This is my status message "+i
         //obj.mobile_phone_no =  "070" + (10000000 + i)
@@ -50,29 +52,22 @@ class Dummy {
         for (i in dummy_suffix..count - 1 + dummy_suffix){
             var obj = Call()
 
-            obj.call_time = Date()
+            obj.time = Date()
 
             var rand_type = (1..3).random()
-            obj.call_type = rand_type;
+            obj.type = rand_type;
 
-            obj.caller_phone_no = "080" + (10000000 + i)
-            obj.caller_user_id = "user_id_" + dummy_suffix
+            obj.call_id = "080" + (10000000 + i)
 
-            if(obj.call_type == Call.RECEIVED_CALL) {
-                obj.call_duration = i + 10L;
+            if(obj.type == Call.RECEIVED_CALL) {
+                obj.duration = i + 10L;
             }
 
-            if(obj.call_type == Call.RECEIVED_CALL || obj.call_type == Call.MISSED_CALL) {
-                obj.receiver_phone_no = "090" + (10000000 + i)
-                obj.receiver_user_id = " user_id_" + dummy_suffix +1
-                obj.caller_phone_no = "080" + (10000000 + i)
-                obj.caller_user_id = "user_id_" + dummy_suffix
+            if(obj.type == Call.RECEIVED_CALL || obj.type == Call.MISSED_CALL) {
+                obj.call_id = "080" + (10000000 + i)
                 obj.user = createUser(dummy_suffix + 1, obj.user)
-            }else if(obj.call_type == Call.DIALLED_CALL){
-                obj.receiver_phone_no = "090" + (10000000 + i)
-                obj.receiver_user_id = " user_id_" + dummy_suffix
-                obj.caller_phone_no = "080" + (10000000 + i)
-                obj.caller_user_id = "user_id_" + dummy_suffix + 1
+            }else if(obj.type == Call.DIALLED_CALL){
+                obj.call_id = "080" + (10000000 + i)
                 obj.user = createUser(dummy_suffix, obj.user)
             }
 
@@ -95,17 +90,6 @@ class Dummy {
         return list;
     }
 
-    fun getTestContactList(count: Int): MutableList<Contact> {
-        var list = mutableListOf<Contact>();
-
-        for (i in dummy_suffix..count - 1 + dummy_suffix){
-            var obj = Contact()
-            obj = createUser(i, obj) as Contact
-            list.add(obj)
-        }
-
-        return list;
-    }
 
     fun getTestChatMessageList(count: Int): MutableList<ChatMessage> {
         var list = mutableListOf<ChatMessage>();
@@ -116,7 +100,7 @@ class Dummy {
             var obj = ChatMessage()
 
             obj.content = this.randomDummyWord("ChatWord")
-            obj.msg_time = Date()
+            obj.received_time = Date()
 
             obj.msg_status = (1..4).random()
 
@@ -136,10 +120,10 @@ class Dummy {
             obj.user = createUser(i, obj.user)
 
 
-            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
-                || Message.MSG_STATUS_SEEN ==  obj.msg_status
+            if(Message.MSG_STATUS_SEEN ==  obj.msg_status
+                || Message.MSG_STATUS_READ ==  obj.msg_status
                 || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
-                obj.msg_time = Date(Date().time - (10 *1000) * n)
+                obj.received_time = Date(Date().time - (10 *1000) * n)
             }
 
             list.add(obj)
@@ -156,33 +140,29 @@ class Dummy {
             var obj = SmsMessage()
 
             obj.content = this.randomDummyWord("SmsWord")
-            obj.msg_time = Date()
+            obj.received_time = Date()
 
             obj.msg_status = (1..4).random()
 
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix//app user
 
-                obj.sender_id = "user_id_"+ i//app user
-                obj.sender_phone_no = "080" + (10000000 + i)//app user
-                obj.receiver_id = "user_id_" + i + 1// other user
-                obj.receiver_phone_no = "090" + (10000000 + i + 1)// other user
+                obj.sender_id = "080" + (10000000 + i)//app user
+                obj.receiver_id = "090" + (10000000 + i + 1)// other user
             }else{
                 i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
 
-                obj.sender_id = "user_id_"+ i// other user
-                obj.sender_phone_no = "080" + (10000000 + i)// other user
-                obj.receiver_id = "user_id_" + dummy_suffix//app user
-                obj.receiver_phone_no = "090" + (10000000 + dummy_suffix)//app user
+                obj.sender_id = "080" + (10000000 + i)// other user
+                obj.receiver_id = "090" + (10000000 + dummy_suffix)//app user
             }
 
             obj.user = createUser(i, obj.user)
 
 
-            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
-                || Message.MSG_STATUS_SEEN ==  obj.msg_status
+            if(Message.MSG_STATUS_SEEN ==  obj.msg_status
+                || Message.MSG_STATUS_READ ==  obj.msg_status
                 || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
-                obj.msg_time = Date(Date().time - (10 *1000) * n)
+                obj.received_time = Date(Date().time - (10 *1000) * n)
             }
 
             list.add(obj)
@@ -200,7 +180,7 @@ class Dummy {
 
             var obj = Post()
             obj.content = this.randomDummyWord("PostWord")
-            obj.msg_time = Date()
+            obj.received_time = Date()
 
             obj.msg_status = (1..4).random()
 
@@ -218,9 +198,9 @@ class Dummy {
 
             obj.user = createUser(i, obj.user)
 
-            if(Message.MSG_STATUS_DELIVERED ==  obj.msg_status
+            if(Message.MSG_STATUS_SEEN ==  obj.msg_status
                 || Message.MSG_STATUS_SENT ==  obj.msg_status ) {
-                obj.msg_time = Date(Date().time - (10 *1000) * n)
+                obj.received_time = Date(Date().time - (10 *1000) * n)
             }
 
             list.add(obj)

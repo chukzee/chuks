@@ -13,6 +13,7 @@ import com.beepmemobile.www.util.Util
 class SmsViewAdapter :
     RecyclerView.Adapter<SmsViewAdapter.SmsViewViewHolder>() {
 
+    private var other_user_phone_no = "";
     private var sms_view_list = listOf<SmsMessage>()
     private var app_user: AppUser = AppUser();
     private val util = Util()
@@ -50,16 +51,21 @@ class SmsViewAdapter :
         i: Int
     ) {
         val current_sms_msg: SmsMessage = sms_view_list[i]
+        var currentUser = current_sms_msg.user
+
         smsViewViewHolder.smsSentItemBinding?.sms = current_sms_msg
+        smsViewViewHolder.smsSentItemBinding?.user = currentUser
+        smsViewViewHolder.smsSentItemBinding?.util = util
+
         smsViewViewHolder.smsReceivedItemBinding?.sms = current_sms_msg
+        smsViewViewHolder.smsReceivedItemBinding?.user = currentUser
         smsViewViewHolder.smsReceivedItemBinding?.util = util
 
     }
 
     override fun getItemViewType(position: Int): Int {
-
         val currentSmsMsg: SmsMessage = sms_view_list[position]
-        if(currentSmsMsg.sender_phone_no == app_user.mobile_phone_no){
+        if(currentSmsMsg.receiver_id == other_user_phone_no){
             return SENT_TYPE
         }else{
             return RECEIVED_TYPE
@@ -70,14 +76,26 @@ class SmsViewAdapter :
            return sms_view_list.size
     }
 
-    fun setSmsViewList(app_user: AppUser, other_user_phone_no: String?, sms_view_list: MutableList<SmsMessage>) {
+    fun setSmsViewList(app_user: AppUser, other_user_phone_no: String, sms_view_list: MutableList<SmsMessage>) {
         this.app_user = app_user
+        this.other_user_phone_no = other_user_phone_no
 
-        //TODO consider the case where other_user_phone_no is not registered
-
-        this.sms_view_list = sms_view_list.filter {
-            it.sender_id ==  other_user_phone_no || it.receiver_id == other_user_phone_no // applicable to  other_user_phone_no registered user
+        var sms_view_list_filtered = sms_view_list.filter {
+            it.sender_id ==  other_user_phone_no || it.receiver_id == other_user_phone_no //bug - come back
         }
+
+		//sort in asceding order
+        this.sms_view_list = sms_view_list_filtered.sortedWith(Comparator<SmsMessage> { a, b ->
+            val time_a = a.msg_time?.time ?: 0
+            val time_b = b.msg_time?.time ?: 0
+            when {
+                time_a > time_b -> 1
+                time_a == time_b -> 0
+                else -> -1
+            }
+
+        })
+		
 
         notifyDataSetChanged()
     }

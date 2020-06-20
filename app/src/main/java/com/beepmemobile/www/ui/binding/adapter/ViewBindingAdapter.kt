@@ -1,8 +1,9 @@
 package com.beepmemobile.www.ui.binding.adapter
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.beepmemobile.www.data.Message
 import com.squareup.picasso.Picasso
@@ -21,14 +22,15 @@ import com.squareup.picasso.Picasso
  *
  */
 @BindingAdapter(value=["imageUrl" ,"imageErrorUrl", "imagePlaceholder", "imageResize"], requireAll=false)
-fun setImagePropeties(view: ImageView, url: String?, errUr: Drawable?, placeholder: Drawable?, resize: Int) {
+fun setImagePropeties(view: ImageView,  url: String?, errUr: Drawable?, placeholder: Drawable?, resize: Int) {
 
+    var imgUrl = url
 
-    if(url != null && url.isEmpty()){
-        return;
+    if(imgUrl != null && imgUrl.isEmpty()){
+        imgUrl = null
     }
 
-    var p = Picasso.get().load(url);// if url is null, no problem
+    var p = Picasso.get().load(imgUrl);// if url is null, no problem
 
     //p.centerCrop()*/ //NOTE: centerCrop will require setting imageResize variable
                             // otherwise Picasso will throw IllegalState Exception
@@ -52,21 +54,21 @@ fun setImagePropeties(view: ImageView, url: String?, errUr: Drawable?, placehold
 
 }
 
-@BindingAdapter(value=["statusFeeback"], requireAll=false)
-fun setStatusFeedback(view: ImageButton, status: Int?) {
+@BindingAdapter(value=["msgStatusColor"], requireAll=false)
+fun setMsgStatusColor(view: TextView, status: Int?) {
 
     when(status){
         Message.MSG_STATUS_NOT_SENT ->{
-
+            view.setTextColor(Color.GRAY)
         }
         Message.MSG_STATUS_SENT ->{
-
-        }
-        Message.MSG_STATUS_DELIVERED ->{
-
+            view.setTextColor(Color.GRAY)
         }
         Message.MSG_STATUS_SEEN ->{
-
+            view.setTextColor(Color.GRAY)
+        }
+        Message.MSG_STATUS_READ ->{
+            view.setTextColor(Color.BLUE)
         }
     }
 

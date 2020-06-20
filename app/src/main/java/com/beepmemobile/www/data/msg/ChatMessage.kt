@@ -5,7 +5,6 @@ import com.beepmemobile.www.data.*;
 
 class ChatMessage : Message() {
 
-
     fun showEmojiView(){
 
     }

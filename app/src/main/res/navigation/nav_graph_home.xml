@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/HomeFragment"
         android:name="com.beepmemobile.www.ui.home.HomeFragment"
-        android:label="@string/app_name"
         tools:layout="@layout/home_fragment" >
 
 
@@ -18,54 +17,86 @@
 
         <action
             android:id="@+id/move_to_nav_graph_sms_list_view"
-            app:destination="@id/nav_graph_sms_list_view" />
+            app:destination="@id/nav_graph_sms_list_view"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"/>
 
         <action
             android:id="@+id/move_to_nav_graph_sms_view"
-            app:destination="@id/nav_graph_sms_view" />
+            app:destination="@id/nav_graph_sms_view"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_chat_me_up_list"
-            app:destination="@+id/nav_graph_chat_me_up_list"/>
+            app:destination="@+id/nav_graph_chat_me_up_list"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"/>
+
+        <action
+            android:id="@+id/move_to_nav_graph_chat_me_up"
+            app:destination="@+id/nav_graph_chat_me_up"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"/>
 
         <action
             android:id="@+id/move_to_nav_graph_support_chat_view"
-            app:destination="@id/nav_graph_support_chat_view" />
+            app:destination="@id/nav_graph_support_chat_view"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_personal_profile"
-            app:destination="@id/nav_graph_personal_profile" />
+            app:destination="@id/nav_graph_personal_profile"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_search"
-            app:destination="@id/nav_graph_search" />
+            app:destination="@id/search"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_settings"
-            app:destination="@id/nav_graph_settings" />
+            app:destination="@id/nav_graph_settings"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_contacts"
-            app:destination="@id/nav_graph_contacts" />
+            app:destination="@id/nav_graph_contacts"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_call"
-            app:destination="@id/nav_graph_call" />
+            app:destination="@id/nav_graph_call"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_nav_graph_upgrade"
-            app:destination="@id/nav_graph_upgrade" />
+            app:destination="@id/nav_graph_upgrade"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_helpFragment"
-            app:destination="@id/HelpFragment" />
+            app:destination="@id/HelpFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
         <action
             android:id="@+id/move_to_FaqFragment"
-            app:destination="@id/FaqFragment" />
+            app:destination="@id/FaqFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
         <action
             android:id="@+id/action_HomeFragment_to_nav_graph_sms_list_view"
-            app:destination="@id/nav_graph_sms_list_view" />
+            app:destination="@id/nav_graph_sms_list_view"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
 
 
     </fragment>
@@ -103,7 +134,7 @@
         app:graph="@navigation/nav_graph_chat_me_up_list"/>
 
     <include
-        app:graph="@navigation/nav_graph_search"/>
+        app:graph="@navigation/nav_graph_chat_me_up"/>
 
     <include
         app:graph="@navigation/nav_graph_sms_view"/>
@@ -129,14 +160,34 @@
      }
     -->
 
-    <action android:id="@+id/action_global_CallFragment" app:destination="@id/nav_graph_call"/>
+    <action
+        android:id="@+id/action_global_CallFragment"
+        app:destination="@id/nav_graph_call"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:exitAnim="@anim/fragment_fade_exit"/>
 
-    <action android:id="@+id/action_global_ContactsFragment" app:destination="@id/nav_graph_contacts"/>
+    <action
+        android:id="@+id/action_global_ContactsFragment"
+        app:destination="@id/nav_graph_contacts"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:exitAnim="@anim/fragment_fade_exit"/>
 
-    <action android:id="@+id/action_global_PersonalProfileFragment" app:destination="@id/nav_graph_personal_profile"/>
+    <action
+        android:id="@+id/action_global_PersonalProfileFragment"
+        app:destination="@id/nav_graph_personal_profile"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:exitAnim="@anim/fragment_fade_exit"/>
 
-    <action android:id="@+id/action_global_SmsViewFragment" app:destination="@id/nav_graph_sms_view"/>
+    <action
+        android:id="@+id/action_global_SmsViewFragment"
+        app:destination="@id/nav_graph_sms_view"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:exitAnim="@anim/fragment_fade_exit"/>
 
-    <action android:id="@+id/action_global_ChatMeUpFragment" app:destination="@id/nav_graph_chat_me_up"/>
+    <action
+        android:id="@+id/action_global_ChatMeUpFragment"
+        app:destination="@id/nav_graph_chat_me_up"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:exitAnim="@anim/fragment_fade_exit"/>
 
 </navigation>

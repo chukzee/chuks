@@ -4,8 +4,8 @@ import com.beepmemobile.www.data.*;
 
 class SmsMessage: Message() {
 
-    var sender_phone_no :String = "";
-    var receiver_phone_no :String = "";
+    var subject = ""
+    var sms_phone_no ="";
 
     /*
         NOTE: To avoid binding error make sure the binding methods are defined in the

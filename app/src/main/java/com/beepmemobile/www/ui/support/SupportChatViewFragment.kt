@@ -1,7 +1,10 @@
 package com.beepmemobile.www.ui.support
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -50,7 +53,9 @@ class SupportChatViewFragment : Fragment() {
 
         // bind RecyclerView
         var recyclerView: RecyclerView = binding.supportChatViewRecyclerView
-        recyclerView.setLayoutManager(LinearLayoutManager(this.context));
+        var linerLayoutMgr = LinearLayoutManager(this.context)
+        linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
+        recyclerView.setLayoutManager(linerLayoutMgr);
         suppertChatAdapter = SupportChatAdapter()
         recyclerView.adapter = suppertChatAdapter
 
@@ -60,7 +65,7 @@ class SupportChatViewFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        (activity as MainActivity).supportActionBar?.setTitle(R.string.support_chat)
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -92,6 +97,44 @@ class SupportChatViewFragment : Fragment() {
 
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.support_chat_view_app_bar, menu)
+
+        // Associate searchable configuration with the SearchView
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu.findItem(R.id.search).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo((activity as  MainActivity).componentName))
+            isIconifiedByDefault = false // Do not iconify the widget; expand it by default
+
+            setOnQueryTextListener(getSearchQueryTextListener())
+            setOnCloseListener (getSearchCloseListener())
+
+        }
+
+    }
+
+    private fun getSearchCloseListener(): SearchView.OnCloseListener{
+        return SearchView.OnCloseListener {
+
+            //code body goes here
+
+            true
+        }
+    }
+
+    private fun getSearchQueryTextListener(): SearchView.OnQueryTextListener{
+
+        return object:SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+
+
+                return true
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+
+
+                return true
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -3,8 +3,6 @@ package com.beepmemobile.www.ui.profile
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,7 +14,7 @@ import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.PersonalProfileFragmentBinding
-import com.beepmemobile.www.ui.home.HomeListViewModel
+import com.beepmemobile.www.ui.main.UserListModel
 import com.beepmemobile.www.ui.main.MainViewModel
 import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
@@ -26,7 +24,7 @@ class PersonalProfileFragment : Fragment() {
     private val model: PersonalProfileViewModel by viewModels()
     private val navController by lazy { findNavController() }
     private val authModel: MainViewModel by activityViewModels()
-    private val usersModel: HomeListViewModel by activityViewModels()
+    private val usersModel: UserListModel by activityViewModels()
     private val util = Util()
     private var _binding: PersonalProfileFragmentBinding? = null
     // This property is only valid between onCreateView and
@@ -78,7 +76,7 @@ class PersonalProfileFragment : Fragment() {
 
         var display_name = authModel.app_user?.display_name
 
-        toolbar.title = ""
+        (activity as MainActivity).supportActionBar?.setTitle(R.string.empty)
 
         binding.personalProfileAppBar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
 
@@ -87,12 +85,12 @@ class PersonalProfileFragment : Fragment() {
             if (Math.abs(verticalOffset) > 200) {
                 //appBarExpanded = false
                 //invalidateOptionsMenu()
-                toolbar.title = display_name
+                (activity as MainActivity).supportActionBar?.setTitle(display_name)
 
             } else {
-                toolbar.title = ""
                 //appBarExpanded = true
                 //invalidateOptionsMenu()
+                (activity as MainActivity).supportActionBar?.setTitle(R.string.empty)
             }
 
         })
@@ -138,6 +136,25 @@ class PersonalProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.edit_profile_fragment -> {
+					
+				var direction = PersonalProfileFragmentDirections.toEditProfileFragment()
+				navController.navigate(direction.actionId)
+                true
+            }
+            R.id.personal_profile_settings_fragment -> {
+					
+				var direction = PersonalProfileFragmentDirections.toPersonalProfileSettingsFragment()
+				navController.navigate(direction.actionId)
+                
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

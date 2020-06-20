@@ -2,8 +2,9 @@ package com.beepmemobile.www.data
 
 import android.widget.Switch
 
-class AppUser : User(){
+class AppUser : User() {
 
+    var line1Number: String = ""
     var favourite_list = mutableSetOf<String>()
 
     val authenticated get() = auth_state == AuthState.AUTH_STAGE_SUCCESS

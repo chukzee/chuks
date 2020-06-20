@@ -8,12 +8,13 @@
     <fragment
         android:id="@+id/ChatMeUpListFragment"
         android:name="com.beepmemobile.www.ui.chat.ChatMeUpListFragment"
-        android:label="Chats"
         tools:layout="@layout/chat_me_up_list_fragment" >
 
         <action
             android:id="@+id/move_to_nav_graph_chat_me_up"
-            app:destination="@id/nav_graph_chat_me_up" />
+            app:destination="@id/nav_graph_chat_me_up"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
     </fragment>
 
 

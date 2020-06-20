@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/SettingsFragment"
         android:name="com.beepmemobile.www.ui.settings.SettingsFragment"
-        android:label="Settings"
         tools:layout="@layout/settings_fragment" >
         <!--TODO Add action-->
     </fragment>

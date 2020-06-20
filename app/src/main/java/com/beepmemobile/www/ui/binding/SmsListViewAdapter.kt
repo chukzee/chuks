@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
+import com.beepmemobile.www.data.Message
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
@@ -17,12 +18,14 @@ import com.beepmemobile.www.databinding.SmsListItemBinding
 import com.beepmemobile.www.ui.sms.SmsListViewFragmentDirections
 import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
+import me.everything.providers.android.telephony.TelephonyProvider
 
 class SmsListViewAdapter(navCtrlr: NavController)  :
     RecyclerView.Adapter<SmsListViewAdapter.SmsListViewViewHolder>(){
     private val navController = navCtrlr
     private var sms_map = mutableMapOf<Any, Any> ()
     private  var keys = sms_map.keys.toList()
+    private var all_sms_list = listOf<SmsMessage>()
     private var app_user: AppUser = AppUser();
     private val util = Util()
 
@@ -63,9 +66,6 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
                 false
             )
 
-            var sms = sms_map[i] as SmsMessage
-            smsListItemBinding.root.setOnClickListener(SmsItemListener(sms))
-
             return SmsListViewViewHolder(
                 smsListItemBinding
             )
@@ -76,7 +76,7 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
         smsListViewViewHolder: SmsListViewViewHolder,
         i: Int
     ) {
-        if(isFooter(i)){
+        if(getItemViewType(i) == FOOTER_TYPE){
             //TODO - may added click event to footer
         }else {
             val currentSms: SmsMessage = sms_map[i] as SmsMessage
@@ -86,6 +86,7 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
             smsListViewViewHolder.smsListItemBinding?.user = currentUser
             smsListViewViewHolder.smsListItemBinding?.util = util
 
+            smsListViewViewHolder.smsListItemBinding?.root?.setOnClickListener(SmsItemListener(currentSms))
         }
     }
 
@@ -101,11 +102,71 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
         return sms_map.size
     }
 
+    private fun setCountRead(msg: SmsMessage){
+        var app_user_id = this.app_user.user_id
+        var other_user_id = if (msg.receiver_id != app_user_id) msg.receiver_id else msg.sender_id
+
+        val count = all_sms_list.count {
+            it.msg_status != Message.MSG_STATUS_READ
+                    && msg.type == TelephonyProvider.Filter.INBOX.ordinal
+        }
+
+        msg.read_count = count
+    }
+
+    fun otherUserId(msg: SmsMessage): String{
+        return if (msg.type == TelephonyProvider.Filter.INBOX.ordinal) msg.sender_id else msg.receiver_id
+    }
+
+    fun filterLastMessagePerUserAndSetUnread(sms_list_view_list: MutableList<SmsMessage>): MutableList<SmsMessage>{
+        all_sms_list = sms_list_view_list
+        var grp_list = mutableListOf<SmsMessage>()
+        var app_user_id = this.app_user.user_id
+
+
+        for(msg in sms_list_view_list){
+            //get the other user id according to our definition - see PhoneSms class
+            var other_user_id = otherUserId(msg)
+            //get the last record of each user messages
+            val last_index = sms_list_view_list.indexOfLast { it.receiver_id == other_user_id || it.sender_id == other_user_id }
+
+            if(last_index == -1){
+                continue
+            }
+
+            val lmsg = sms_list_view_list[last_index]
+
+            //check if we have already added it
+            val has = grp_list.any { it.receiver_id == other_user_id || it.sender_id == other_user_id }
+            if(!has){
+                setCountRead(lmsg)
+                grp_list.add(lmsg)
+            }
+        }
+
+        return grp_list
+    }
+
     fun setSmsListViewList(app_user: AppUser, sms_list_view_list: MutableList<SmsMessage>) {
         this.app_user = app_user
 
+        val last_msg_per_user_list = filterLastMessagePerUserAndSetUnread(sms_list_view_list)
+
+
+        //sort in desceding order
+        last_msg_per_user_list.sortWith(Comparator<SmsMessage> { a, b ->
+            val time_a = a.msg_time?.time ?: 0
+            val time_b = b.msg_time?.time ?: 0
+            when {
+                time_a < time_b -> 1
+                time_a == time_b -> 0
+                else -> -1
+            }
+
+        })
+		
         var index = 0
-        sms_list_view_list.forEach{
+        last_msg_per_user_list.forEach{
             sms_map[index]=it
             index++
         }
@@ -136,12 +197,12 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
     inner class SmsItemListener(val sms: SmsMessage) : View.OnClickListener {
 
         override fun onClick(v: View?) {
-            val other_user_phone_no = if (sms.sender_phone_no == app_user.mobile_phone_no)
-                sms.receiver_phone_no
-            else
-                sms.sender_phone_no
 
-            val bundle = bundleOf(Constant.PHONE_NO to other_user_phone_no)
+            val bundle = bundleOf(
+                Constant.PHONE_NO to otherUserId(sms),
+                Constant.SMS_TYPE to sms.type
+            )
+
             var direction = SmsListViewFragmentDirections.moveToNavGraphSmsView()
             navController.navigate(direction.actionId, bundle)
         }

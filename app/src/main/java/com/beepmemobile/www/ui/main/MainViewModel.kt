@@ -1,6 +1,5 @@
 package com.beepmemobile.www.ui.main
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,7 +21,7 @@ class MainViewModel : ViewModel() {
     private fun checkAuth(it: MutableLiveData<AppUser>) {
 
         this.viewModelScope.launch {
-            it.postValue(readUseInfoFromDisk())
+            it.postValue(readUserInfoFromDisk())
         }
 
     }
@@ -95,7 +94,7 @@ class MainViewModel : ViewModel() {
         return result;
     }
 
-    fun readUseInfoFromDisk() : AppUser{
+    fun readUserInfoFromDisk() : AppUser{
         //TODO Read user info saved to the system
 
         var dummy_user = Dummy().getDummyAppUser()//TODO - To be replace by real code - data read from the system

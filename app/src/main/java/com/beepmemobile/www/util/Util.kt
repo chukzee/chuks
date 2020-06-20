@@ -1,18 +1,23 @@
 package com.beepmemobile.www.util
 
+import com.beepmemobile.www.data.Message
 import java.util.*
 
 
 class Util {
 
     /**
-       format to  time part only if today and from yesterday
+        format to  time part only if today and from yesterday
         format as follow
         yesterday -> yesterday, 12:23
         this week -> fri, 12:00
         beyond that ->21 days 12:12
       */
-    fun formatTime(date: Date):String{
+    fun formatTime(date: Date?):String{
+
+        if(date == null){
+            return ""
+        }
 
         var dateStr =""
         var now = Date()
@@ -96,5 +101,26 @@ class Util {
         }
 
         return content.substring(0..len-1)+"..."//come back abeg o!!!
+    }
+
+    fun msgStatusTick(status: Int):String{
+        var tick = ""
+        var symbol = "\u2713"
+        when(status){
+            Message.MSG_STATUS_NOT_SENT ->{
+                tick = "\uD83D\uDD53"
+            }
+            Message.MSG_STATUS_SENT ->{
+                tick = symbol
+            }
+            Message.MSG_STATUS_SEEN ->{
+                tick = symbol+symbol
+            }
+            Message.MSG_STATUS_READ ->{
+                tick = symbol+symbol
+            }
+        }
+
+        return tick
     }
 }

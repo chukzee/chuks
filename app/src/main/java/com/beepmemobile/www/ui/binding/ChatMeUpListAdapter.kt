@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
+import com.beepmemobile.www.data.Message
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
@@ -23,6 +24,7 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
     private val navController = navCtrlr
     private var chat_map = mutableMapOf<Any, Any> ()
     private  var keys = chat_map.keys.toList()
+    private var all_chat_list = listOf<ChatMessage>()
     private var app_user: AppUser = AppUser();
     private val util = Util()
 
@@ -33,7 +35,7 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
     private val ITEM_TYPE = 2
 
     private fun isFooter(i:Int): Boolean{
-        return keys[i] is String &&  keys[i] == FOOTER
+        return keys[i] is String &&  keys[i].equals(FOOTER)
     }
 
     private fun isChatMessageObject(i:Int): Boolean{
@@ -63,9 +65,6 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
                 false
             )
 
-            var chat = chat_map[i] as ChatMessage
-            chatListItemBinding.root.setOnClickListener(ChatItemListener(chat))
-
             return ChatMeUpListViewViewHolder(
                 chatListItemBinding
             )
@@ -76,7 +75,8 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
         chatListViewViewHolder: ChatMeUpListViewViewHolder,
         i: Int
     ) {
-        if(isFooter(i)){
+
+        if(getItemViewType(i) == FOOTER_TYPE){
             //TODO - may added click event to footer
         }else {
             val currentChat: ChatMessage = chat_map[i] as ChatMessage
@@ -85,6 +85,8 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
             chatListViewViewHolder.chatListItemBinding?.chatMsg = currentChat
             chatListViewViewHolder.chatListItemBinding?.user = currentUser
             chatListViewViewHolder.chatListItemBinding?.util = util
+
+            chatListViewViewHolder.chatListItemBinding?.root?.setOnClickListener(ChatItemListener(currentChat))
 
         }
     }
@@ -101,11 +103,54 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
         return chat_map.size
     }
 
+    private fun setCountRead(msg: ChatMessage){
+        var app_user_id = this.app_user.user_id
+        var other_user_id = if (msg.receiver_id != app_user_id) msg.receiver_id else msg.sender_id
+
+        val count = all_chat_list.count {
+            it.msg_status != Message.MSG_STATUS_READ
+                && (it.receiver_id == other_user_id || it.sender_id == other_user_id)
+        }
+
+        msg.read_count = count
+    }
+
+    fun filterLastMessagePerUserAndSetUnread(chat_list: MutableList<ChatMessage>): MutableList<ChatMessage>{
+
+        var grp_list = mutableListOf<ChatMessage>()
+        var app_user_id = this.app_user.user_id
+
+        for(msg in chat_list){
+            var other_user_id = if (msg.receiver_id != app_user_id) msg.receiver_id else msg.sender_id
+            //get the last record of each user messages
+            val last_index = chat_list.indexOfLast { it.receiver_id == other_user_id || it.sender_id == other_user_id }
+
+            if(last_index == -1){
+                continue
+            }
+
+            val lmsg = chat_list[last_index]
+
+            //check if we have already added it
+            val has = grp_list.any { it.receiver_id == other_user_id || it.sender_id == other_user_id }
+            if(!has){
+                setCountRead(lmsg)
+                grp_list.add(lmsg)
+            }
+        }
+
+
+        return grp_list
+    }
+
     fun setChatMeUpList(app_user: AppUser, chat_list_view_list: MutableList<ChatMessage>) {
         this.app_user = app_user
+        this.all_chat_list = chat_list_view_list
+
+        val last_msg_per_user_list = filterLastMessagePerUserAndSetUnread(chat_list_view_list)
 
         var index = 0
-        chat_list_view_list.forEach{
+        last_msg_per_user_list.forEach{
             chat_map[index]=it
             index++
         }

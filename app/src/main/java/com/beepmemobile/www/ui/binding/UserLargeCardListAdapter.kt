@@ -18,6 +18,7 @@ import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.UserLargeCardBinding
 import com.beepmemobile.www.util.Constant
 import com.beepmemobile.www.util.Util
+import me.everything.providers.android.telephony.TelephonyProvider
 
 
 class UserLargeCardListAdapter(
@@ -221,7 +222,11 @@ class UserLargeCardListAdapter(
 
             var other_user_phone_no = (data as User).mobile_phone_no
 
-            val bundle = bundleOf(Constant.PHONE_NO to other_user_phone_no)
+            val bundle = bundleOf(
+                Constant.PHONE_NO to other_user_phone_no,
+                Constant.SMS_TYPE to TelephonyProvider.Filter.INBOX.ordinal
+            )
+
             val c = NavHostFragment.findNavController(fragment)
             c.navigate(R.id.action_global_SmsViewFragment, bundle)
         }

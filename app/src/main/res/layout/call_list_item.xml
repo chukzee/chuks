@@ -52,7 +52,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:singleLine="true"
-            android:text="@{util.formatTime(call.call_time)}"
+            android:text="@{util.formatTime(call.time)}"
             android:textSize="10dp"
             app:layout_constraintEnd_toStartOf="@+id/call_img_btn"
             app:layout_constraintStart_toEndOf="@+id/call_profile_photo"
@@ -62,10 +62,10 @@
 
         <ImageButton
             android:id="@+id/call_img_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginEnd="20dp"
-            android:background="@android:color/transparent"
+            android:background="@drawable/call_ring"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

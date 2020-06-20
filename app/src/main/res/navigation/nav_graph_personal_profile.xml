@@ -9,11 +9,17 @@
     <fragment
         android:id="@+id/PersonalProfileFragment"
         android:name="com.beepmemobile.www.ui.profile.PersonalProfileFragment"
-        android:label=""
         tools:layout="@layout/personal_profile_fragment" >
         <action
             android:id="@+id/to_EditProfileFragment"
-            app:destination="@id/EditProfileFragment" />
+            app:destination="@id/EditProfileFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/to_PersonalProfileSettingsFragment"
+            app:destination="@id/PersonalProfileSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
 
     </fragment>
 
@@ -22,8 +28,14 @@
     <fragment
         android:id="@+id/EditProfileFragment"
         android:name="com.beepmemobile.www.ui.profile.EditProfileFragment"
-        android:label=""
         tools:layout="@layout/edit_profile_fragment" >
+        <!-- TODO add action -->
+    </fragment>
+
+    <fragment
+        android:id="@+id/PersonalProfileSettingsFragment"
+        android:name="com.beepmemobile.www.ui.profile.PersonalProfileSettingsFragment"
+        tools:layout="@layout/personal_profile_settings_fragment" >
         <!-- TODO add action -->
     </fragment>
 

@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/ContactsFragment"
         android:name="com.beepmemobile.www.ui.contacts.ContactsFragment"
-        android:label="Contacts"
         tools:layout="@layout/contacts_fragment" >
         <!--TODO Add action-->
     </fragment>

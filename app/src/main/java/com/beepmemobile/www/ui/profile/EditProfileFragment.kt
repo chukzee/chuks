@@ -3,7 +3,6 @@ package com.beepmemobile.www.ui.profile
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
-import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -75,7 +74,7 @@ class EditProfileFragment : Fragment() {
 
         var display_name = authModel.app_user?.display_name
 
-        toolbar.title = ""
+        (activity as MainActivity).supportActionBar?.setTitle(R.string.empty)
 
         binding.editProfileAppBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
 
@@ -84,10 +83,10 @@ class EditProfileFragment : Fragment() {
             if (Math.abs(verticalOffset) > 200) {
                 //appBarExpanded = false
                 //invalidateOptionsMenu()
-                toolbar.title =  display_name
+                (activity as MainActivity).supportActionBar?.setTitle(display_name)
 
             } else {
-                toolbar.title =  ""
+                (activity as MainActivity).supportActionBar?.setTitle(R.string.empty)
                 //appBarExpanded = true
                 //invalidateOptionsMenu()
             }

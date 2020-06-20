@@ -8,12 +8,13 @@
     <fragment
         android:id="@+id/SmsListViewFragment"
         android:name="com.beepmemobile.www.ui.sms.SmsListViewFragment"
-        android:label="SMS Messages"
         tools:layout="@layout/sms_list_view_fragment" >
 
         <action
             android:id="@+id/move_to_nav_graph_sms_view"
-            app:destination="@id/nav_graph_sms_view" />
+            app:destination="@id/nav_graph_sms_view"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"/>
     </fragment>
 
 

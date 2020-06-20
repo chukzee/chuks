@@ -42,7 +42,7 @@
             android:layout_marginBottom="0dp"
             android:layout_marginLeft="5dp"
             android:textSize="12dp"
-            android:text="@{util.formatTime(sms.msg_time)}"
+            android:text="@{util.formatTime(sms.received_time)}"
             tools:text="Yesterday, 20:47"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/sms_received_msg" />

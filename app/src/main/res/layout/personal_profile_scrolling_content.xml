@@ -28,7 +28,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:id="@+id/personal_profile_last_seen_lbl"
@@ -55,11 +55,23 @@
                         android:textAlignment="center"
                         android:textColor="@color/design_default_color_on_secondary"
                         android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/personal_profile_joined_date"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/personal_profile_last_seen_lbl"
                         tools:text="Location: Warri, Nigeria" />
+
+                    <TextView
+                        android:id="@+id/personal_profile_joined_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@{user.joined_date != null ? `Joined: `+ util.formatTime(user.joined_date): `Unregistered`}"
+                        android:textStyle="italic"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="Joined: 12/03/2020 Mar 3| Unregistered" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -72,7 +84,7 @@
 
             <include
                 android:id="@+id/personal_profile_email_address_include"
-                layout="@layout/user_email_address_item"
+                layout="@layout/user_email_web_address_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp" />

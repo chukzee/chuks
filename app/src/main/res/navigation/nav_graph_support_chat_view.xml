@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/SupportChatViewFragment"
         android:name="com.beepmemobile.www.ui.support.SupportChatViewFragment"
-        android:label="Support Chat"
         tools:layout="@layout/support_chat_view_fragment" >
         <!--TODO Add action-->
     </fragment>

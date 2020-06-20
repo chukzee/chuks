@@ -9,68 +9,80 @@
     <fragment
         android:id="@+id/signUpWelcomeFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpWelcomeFragment"
-        android:label="sign_up_welcome_fragment"
         tools:layout="@layout/sign_up_welcome_fragment" >
         <action
             android:id="@+id/move_to_signUpUsernameFragment"
-            app:destination="@id/signUpUsernameFragment" />
+            app:destination="@id/signUpUsernameFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            />
     </fragment>
     <fragment
         android:id="@+id/signUpUsernameFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpUsernameFragment"
-        android:label="sign_up_username_fragment"
         tools:layout="@layout/sign_up_username_fragment" >
         <action
             android:id="@+id/move_to_signUpPasswordFragment"
-            app:destination="@id/signUpPasswordFragment" />
+            app:destination="@id/signUpPasswordFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
     </fragment>
     <fragment
         android:id="@+id/signUpPasswordFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpPasswordFragment"
-        android:label="sign_up_password_fragment"
         tools:layout="@layout/sign_up_password_fragment" >
         <action
             android:id="@+id/move_to_signUpFullNameFragment"
-            app:destination="@id/signUpFullNameFragment" />
+            app:destination="@id/signUpFullNameFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
     </fragment>
     <fragment
         android:id="@+id/signUpFullNameFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpFullNameFragment"
-        android:label="sign_up_full_name_fragment"
         tools:layout="@layout/sign_up_full_name_fragment" >
         <action
             android:id="@+id/move_to_signUpProfilePhotoFragment"
-            app:destination="@id/signUpProfilePhotoFragment" />
+            app:destination="@id/signUpProfilePhotoFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
     </fragment>
     <fragment
         android:id="@+id/signUpProfilePhotoFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpProfilePhotoFragment"
-        android:label="sign_up_profile_photo_fragment"
         tools:layout="@layout/sign_up_profile_photo_fragment" >
         <action
             android:id="@+id/move_to_signUpPhoneNumberVerificationFragment"
-            app:destination="@id/signUpPhoneNumberVerificationFragment" />
+            app:destination="@id/signUpPhoneNumberVerificationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
     </fragment>
 
     <fragment
         android:id="@+id/signUpPhoneNumberVerificationFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpPhoneNumberVerificationFragment"
-        android:label="sign_up_phone_number_verification_fragment"
         tools:layout="@layout/sign_up_phone_number_verification_fragment">
         <action
             android:id="@+id/move_to_signUpConfirmVerificationCodeFragment"
-            app:destination="@id/signUpConfirmVerificationCodeFragment" />
+            app:destination="@id/signUpConfirmVerificationCodeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
     </fragment>
 
     <!-- SignUpConfirmVerificationCodeFragment action will navigate to HomeFrame -->
     <fragment
         android:id="@+id/signUpConfirmVerificationCodeFragment"
         android:name="com.beepmemobile.www.ui.signup.SignUpConfirmVerificationCodeFragment"
-        android:label="sign_up_confirm_verification_code_fragment"
         tools:layout="@layout/sign_up_confirm_verification_code_fragment">
         <action
             android:id="@+id/move_to_homeFragment"
-            app:destination="@id/HomeFragment" />
+            app:destination="@id/HomeFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/HomeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

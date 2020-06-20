@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/ChatMeUpFragment"
         android:name="com.beepmemobile.www.ui.chat.ChatMeUpFragment"
-        android:label="Chats"
         tools:layout="@layout/chat_me_up_fragment" />
 
 

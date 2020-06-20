@@ -7,6 +7,7 @@ import org.acra.ACRA
 import org.acra.config.CoreConfigurationBuilder
 import org.acra.config.DialogConfigurationBuilder
 import org.acra.data.StringFormat
+import org.acra.sender.JobSenderService
 
 //@AcraCore(reportSenderFactoryClasses = arrayOf(CrashReportSenderFactory::class))
 class BeepMeApp : MultiDexApplication(){

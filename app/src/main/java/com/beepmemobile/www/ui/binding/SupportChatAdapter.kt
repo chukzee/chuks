@@ -51,8 +51,14 @@ class SupportChatAdapter :
         i: Int
     ) {
         val current_support_chat_msg: ChatMessage = support_chat_list[i]
+        var currentUer = current_support_chat_msg.user
+
         supportChatViewHolder.supportChatSentItemBinding?.chatMsg = current_support_chat_msg
+        supportChatViewHolder.supportChatSentItemBinding?.user = currentUer
+        supportChatViewHolder.supportChatSentItemBinding?.util = util
+
         supportChatViewHolder.supportChatReceivedItemBinding?.chatMsg = current_support_chat_msg
+        supportChatViewHolder.supportChatReceivedItemBinding?.user = currentUer
         supportChatViewHolder.supportChatReceivedItemBinding?.util = util
     }
 

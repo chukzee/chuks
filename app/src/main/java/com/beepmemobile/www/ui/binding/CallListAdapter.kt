@@ -1,9 +1,16 @@
 package com.beepmemobile.www.ui.binding
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
@@ -80,6 +87,10 @@ class CallListAdapter(val type: Int) :
             callListViewListViewHolder.callListItemBinding?.user = currentUser
             callListViewListViewHolder.callListItemBinding?.appUser = this.app_user
             callListViewListViewHolder.callListItemBinding?.util = util
+
+            callListViewListViewHolder.callListItemBinding?.callImgBtn?.setOnClickListener{
+                currentCall.callPhoneNumber(it.context)
+            }
         }
     }
 
@@ -97,7 +108,7 @@ class CallListAdapter(val type: Int) :
 
     private fun filterByType(){
         //filter the call list based on the call type
-        call_list_all.filter { it.call_type== type }.also { list ->
+        call_list_all.filter { it.type== type }.also { list ->
             var index = 0
             list.forEach{
                 call_map_by_type[index]=it
@@ -111,7 +122,17 @@ class CallListAdapter(val type: Int) :
     fun setCallList(app_user: AppUser, call_list: MutableList<Call>) {
         this.app_user = app_user
 
-        this.call_list_all = call_list
+
+        //sort in desceding order
+        this.call_list_all = call_list.sortedWith(Comparator<Call> { a, b ->
+            val time_a = a.time?.time ?: 0
+            val time_b = b.time?.time ?: 0
+            when {
+                time_a < time_b -> 1
+                time_a == time_b -> 0
+                else -> -1
+            }
+        })
 
         this.filterByType()
 

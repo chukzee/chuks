@@ -1,29 +1,33 @@
 package com.beepmemobile.www.ui.sms
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
-import com.beepmemobile.www.data.msg.SmsMessage
+import com.beepmemobile.www.data.AppUser
+import com.beepmemobile.www.data.Message
 import com.beepmemobile.www.databinding.SmsListViewFragmentBinding
 import com.beepmemobile.www.ui.binding.SmsListViewAdapter
+import com.beepmemobile.www.ui.main.UserListModel
 import com.beepmemobile.www.ui.main.MainViewModel
+import me.everything.providers.android.telephony.TelephonyProvider
+
 
 class SmsListViewFragment : Fragment() {
-    private val model: SmsListViewModel by viewModels()
+
+    private var recyclerView: RecyclerView? = null
+    private val usersModel: UserListModel by activityViewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
     private var smsListViewAdapter: SmsListViewAdapter? =null
-
     private var _binding: SmsListViewFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -48,18 +52,23 @@ class SmsListViewFragment : Fragment() {
         val view = binding.root
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.smsListRecyclerView
-        recyclerView.setLayoutManager(LinearLayoutManager(this.context));
-        smsListViewAdapter = SmsListViewAdapter(navController)
-        recyclerView.adapter = smsListViewAdapter
-
-        createObserversAndGetData()
+        recyclerView = binding.smsListRecyclerView
+        recyclerView?.setLayoutManager(LinearLayoutManager(this.context));
+        refreshRecylcerView()
 
 
         return view
     }
 
+    fun refreshRecylcerView(){
+        //recyclerView?.removeAllViewsInLayout()//clear all view
+        smsListViewAdapter = SmsListViewAdapter(navController)
+        recyclerView?.adapter = smsListViewAdapter
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (activity as MainActivity).supportActionBar?.setTitle(R.string.inbox)
+        displayInbox()
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -69,18 +78,56 @@ class SmsListViewFragment : Fragment() {
         _binding = null
     }
 
-    private fun createObserversAndGetData(){
-        var app_user = authModel.app_user
-        // Create the observer which updates the UI.
-        val observer = Observer<MutableList<SmsMessage>> { sms_list ->
-            if (app_user != null) {
-                smsListViewAdapter?.setSmsListViewList(app_user, sms_list)
-            }
+    private fun display(filter: TelephonyProvider.Filter){
+
+        var app_user: AppUser = authModel.app_user ?: return
+
+        var phoneSms = PhoneSms(this.requireContext(), app_user, usersModel)
+
+        var strTitle = ""
+        when(filter){
+            TelephonyProvider.Filter.ALL -> strTitle = "All"
+            TelephonyProvider.Filter.INBOX -> strTitle = "Inbox"
+            TelephonyProvider.Filter.OUTBOX -> strTitle = "Outbox"
+            TelephonyProvider.Filter.SENT -> strTitle = "Sent"
+            TelephonyProvider.Filter.DRAFT -> strTitle = "Draft"
         }
 
-        // Observe the LiveData, passing in this fragment LifecycleOwner and the observer.
-        model.getList().observe(viewLifecycleOwner, observer)
+        var smsMessageList = phoneSms.getMessages(filter)
 
+        refreshRecylcerView()
+
+        smsListViewAdapter?.setSmsListViewList(app_user, smsMessageList)
+        val count = smsMessageList.count();
+        strTitle = "$strTitle ($count)"
+
+        if(filter == TelephonyProvider.Filter.INBOX) {
+            val unread_count = smsMessageList.count { it.msg_status != Message.MSG_STATUS_READ };
+            strTitle = "$strTitle - $unread_count unread"
+        }
+
+        (this.activity as MainActivity).supportActionBar?.title = strTitle
+
+    }
+
+    private fun displayAll() {
+        display(TelephonyProvider.Filter.ALL)
+    }
+
+    private fun displayDraft() {
+        display(TelephonyProvider.Filter.DRAFT)
+    }
+
+    private fun displaySent() {
+        display(TelephonyProvider.Filter.SENT)
+    }
+
+    private fun displayOutbox() {
+        display(TelephonyProvider.Filter.OUTBOX)
+    }
+
+    private fun displayInbox() {
+        display(TelephonyProvider.Filter.INBOX)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -89,6 +136,70 @@ class SmsListViewFragment : Fragment() {
 
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.sms_list_app_bar, menu)
+
+        // Associate searchable configuration with the SearchView
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu.findItem(R.id.search).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo((activity as  MainActivity).componentName))
+            isIconifiedByDefault = false // Do not iconify the widget; expand it by default
+
+            setOnQueryTextListener(getSearchQueryTextListener())
+            setOnCloseListener (getSearchCloseListener())
+
+        }
+
+    }
+
+    private fun getSearchCloseListener(): SearchView.OnCloseListener{
+        return SearchView.OnCloseListener {
+
+            //code body goes here
+
+            true
+        }
+    }
+
+    private fun getSearchQueryTextListener(): SearchView.OnQueryTextListener{
+
+        return object:SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+
+
+                return true
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+
+
+                return true
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.sms_app_bar_all -> {
+                displayAll()
+                true
+            }
+            R.id.sms_app_bar_inbox -> {
+                displayInbox()
+                true
+            }
+            R.id.sms_app_bar_outbox -> {
+                displayOutbox()
+                true
+            }
+            R.id.sms_app_bar_sent -> {
+                displaySent()
+                true
+            }
+            R.id.sms_app_bar_draft -> {
+                displayDraft()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

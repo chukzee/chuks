@@ -8,9 +8,19 @@
     <fragment
         android:id="@+id/UpgradeFragment"
         android:name="com.beepmemobile.www.ui.upgrade.UpgradeFragment"
-        android:label="Upgrade"
         tools:layout="@layout/upgrade_fragment" >
-        <!--TODO Add action-->
+        <action
+            android:id="@+id/to_UpgradePaymentFragment"
+            app:destination="@id/UpgradePaymentFragment" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/UpgradePaymentFragment"
+        android:name="com.beepmemobile.www.ui.upgrade.UpgradePaymentFragment"
+        tools:layout="@layout/upgrade_payment_fragment" >
+        <!-- TODO add action -->
     </fragment>
 
 </navigation>

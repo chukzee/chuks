@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.beepmemobile.www.MainActivity
 
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.FaqFragmentBinding
@@ -39,7 +40,7 @@ class FaqFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        (activity as MainActivity).supportActionBar?.setTitle(R.string.faq)
         super.onViewCreated(view, savedInstanceState)
     }
 

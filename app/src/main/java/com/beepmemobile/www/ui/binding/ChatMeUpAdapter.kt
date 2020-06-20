@@ -51,8 +51,14 @@ class ChatMeUpAdapter :
         i: Int
     ) {
         val current_chat_msg: ChatMessage = chat_list[i]
+        var currentUser = current_chat_msg.user
+
         chatMeUpViewHolder.chatMeUpSentItemBinding?.chatMsg = current_chat_msg
+        chatMeUpViewHolder.chatMeUpSentItemBinding?.user = currentUser
+        chatMeUpViewHolder.chatMeUpSentItemBinding?.util = util
+
         chatMeUpViewHolder.chatMeUpReceivedItemBinding?.chatMsg = current_chat_msg
+        chatMeUpViewHolder.chatMeUpReceivedItemBinding?.user = currentUser
         chatMeUpViewHolder.chatMeUpReceivedItemBinding?.util = util
     }
 

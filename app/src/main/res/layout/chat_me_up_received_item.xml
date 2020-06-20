@@ -64,7 +64,7 @@
             android:textSize="12dp"
             app:layout_constraintStart_toEndOf="@+id/chat_me_up_sender_profile_photo"
             app:layout_constraintTop_toBottomOf="@id/chat_me_up_received_msg"
-            android:text="@{util.formatTime(chat_msg.msg_time)}"
+            android:text="@{util.formatTime(chat_msg.received_time)}"
             tools:text="Yesterday, 20:47" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="contact" type="com.beepmemobile.www.data.msg.Contact"/>
+        <variable name="contact" type="com.beepmemobile.www.data.User"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

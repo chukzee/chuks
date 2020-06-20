@@ -161,4 +161,5 @@ dependencies {
     compileOnly "com.google.auto.service:auto-service-annotations:1.0-rc6"
     annotationProcessor "com.google.auto.service:auto-service:1.0-rc6"
 
+    implementation 'me.everything:providers-android:1.0.1'
 }
