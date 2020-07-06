@@ -16,8 +16,7 @@ import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.SmsListItemBinding
 import com.beepmemobile.www.ui.sms.SmsListViewFragmentDirections
-import com.beepmemobile.www.util.Constant
-import com.beepmemobile.www.util.Util
+import com.beepmemobile.www.util.Constants
 import me.everything.providers.android.telephony.TelephonyProvider
 
 class SmsListViewAdapter(navCtrlr: NavController)  :
@@ -27,7 +26,6 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
     private  var keys = sms_map.keys.toList()
     private var all_sms_list = listOf<SmsMessage>()
     private var app_user: AppUser = AppUser();
-    private val util = Util()
 
     private val HEADER = "HEADER"
     private val FOOTER = "FOOTER"
@@ -84,7 +82,6 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
 
             smsListViewViewHolder.smsListItemBinding?.sms = currentSms
             smsListViewViewHolder.smsListItemBinding?.user = currentUser
-            smsListViewViewHolder.smsListItemBinding?.util = util
 
             smsListViewViewHolder.smsListItemBinding?.root?.setOnClickListener(SmsItemListener(currentSms))
         }
@@ -199,8 +196,9 @@ class SmsListViewAdapter(navCtrlr: NavController)  :
         override fun onClick(v: View?) {
 
             val bundle = bundleOf(
-                Constant.PHONE_NO to otherUserId(sms),
-                Constant.SMS_TYPE to sms.type
+                Constants.USER_ID to otherUserId(sms),
+                Constants.PHONE_NO to sms.sms_phone_no,
+                Constants.SMS_TYPE to sms.type
             )
 
             var direction = SmsListViewFragmentDirections.moveToNavGraphSmsView()

@@ -1,5 +1,6 @@
 package com.beepmemobile.www.ui.profile
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +19,7 @@ import com.beepmemobile.www.ui.main.MainViewModel
 import com.beepmemobile.www.ui.settings.SettingsViewModel
 
 
-class PersonalProfileSettingsFragment : Fragment() {
+class PersonalProfileSettingsFragment : Fragment(){
 
     private val model: SettingsViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
@@ -28,7 +29,7 @@ class PersonalProfileSettingsFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = PersonalProfileSettingsFragment()
@@ -40,7 +41,7 @@ class PersonalProfileSettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = PersonalProfileSettingsFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
         var header_item = ListItemData()
         header_item.text = authModel.app_user?.display_name ?: ""
@@ -49,11 +50,11 @@ class PersonalProfileSettingsFragment : Fragment() {
         header_item.left_image_placeholder = this.context?.getDrawable(R.drawable.ic_person_black_70dp)
 
 
-        binding.personalProfileSettingsHeader.item = header_item;
+        binding?.personalProfileSettingsHeader?.item = header_item;
 
         // bind ListView
-        var listView: ListView = binding.personalProfileSettingsListView
-        listView.adapter = PersonalProfileSettingsListAdapter(this.requireContext())
+        var listView: ListView? = binding?.personalProfileSettingsListView
+        listView?.adapter = PersonalProfileSettingsListAdapter(this.requireContext())
 
         return view
     }

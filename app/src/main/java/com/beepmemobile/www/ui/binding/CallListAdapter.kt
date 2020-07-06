@@ -17,7 +17,6 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.CallListItemBinding
-import com.beepmemobile.www.util.Util
 
 
 class CallListAdapter(val type: Int) :
@@ -26,7 +25,6 @@ class CallListAdapter(val type: Int) :
     private  var keys = call_map_by_type.keys.toList()
     private var call_list_all = listOf<Call> ()
     private var app_user: AppUser = AppUser();
-    private val util = Util()
 
     private val FOOTER = "FOOTER"
 
@@ -86,7 +84,6 @@ class CallListAdapter(val type: Int) :
             callListViewListViewHolder.callListItemBinding?.call = currentCall
             callListViewListViewHolder.callListItemBinding?.user = currentUser
             callListViewListViewHolder.callListItemBinding?.appUser = this.app_user
-            callListViewListViewHolder.callListItemBinding?.util = util
 
             callListViewListViewHolder.callListItemBinding?.callImgBtn?.setOnClickListener{
                 currentCall.callPhoneNumber(it.context)

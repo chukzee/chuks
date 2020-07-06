@@ -16,8 +16,7 @@ import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.ChatMeUpListItemBinding
 import com.beepmemobile.www.ui.chat.ChatMeUpListFragmentDirections
-import com.beepmemobile.www.util.Constant
-import com.beepmemobile.www.util.Util
+import com.beepmemobile.www.util.Constants
 
 class ChatMeUpListAdapter(navCtrlr: NavController)  :
     RecyclerView.Adapter<ChatMeUpListAdapter.ChatMeUpListViewViewHolder>(){
@@ -26,7 +25,6 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
     private  var keys = chat_map.keys.toList()
     private var all_chat_list = listOf<ChatMessage>()
     private var app_user: AppUser = AppUser();
-    private val util = Util()
 
     private val HEADER = "HEADER"
     private val FOOTER = "FOOTER"
@@ -84,7 +82,6 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
 
             chatListViewViewHolder.chatListItemBinding?.chatMsg = currentChat
             chatListViewViewHolder.chatListItemBinding?.user = currentUser
-            chatListViewViewHolder.chatListItemBinding?.util = util
 
             chatListViewViewHolder.chatListItemBinding?.root?.setOnClickListener(ChatItemListener(currentChat))
 
@@ -186,7 +183,7 @@ class ChatMeUpListAdapter(navCtrlr: NavController)  :
             else
                 chat.sender_id
 
-            val bundle = bundleOf(Constant.USER_ID to other_user_id)
+            val bundle = bundleOf(Constants.USER_ID to other_user_id)
             var direction = ChatMeUpListFragmentDirections.moveToNavGraphChatMeUp()
             navController.navigate(direction.actionId, bundle)
         }

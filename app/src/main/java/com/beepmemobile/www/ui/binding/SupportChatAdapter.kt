@@ -8,14 +8,12 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.databinding.SupportChatReceivedItemBinding
 import com.beepmemobile.www.databinding.SupportChatSentItemBinding
-import com.beepmemobile.www.util.Util
 
 class SupportChatAdapter :
     RecyclerView.Adapter<SupportChatAdapter.SupportChatViewHolder>() {
 
     private var support_chat_list = listOf<ChatMessage>()
     private var app_user: AppUser = AppUser();
-    private val util = Util()
 
     private val SENT_TYPE = 1
     private val RECEIVED_TYPE = 2
@@ -55,11 +53,9 @@ class SupportChatAdapter :
 
         supportChatViewHolder.supportChatSentItemBinding?.chatMsg = current_support_chat_msg
         supportChatViewHolder.supportChatSentItemBinding?.user = currentUer
-        supportChatViewHolder.supportChatSentItemBinding?.util = util
 
         supportChatViewHolder.supportChatReceivedItemBinding?.chatMsg = current_support_chat_msg
         supportChatViewHolder.supportChatReceivedItemBinding?.user = currentUer
-        supportChatViewHolder.supportChatReceivedItemBinding?.util = util
     }
 
     override fun getItemViewType(position: Int): Int {

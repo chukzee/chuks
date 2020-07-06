@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,6 +17,7 @@ import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.databinding.SignUpFullNameFragmentBinding
 import com.beepmemobile.www.data.*;
 import com.beepmemobile.www.ui.main.MainViewModel
+import com.beepmemobile.www.util.Constants
 
 class SignUpFullNameFragment : Fragment() {
     private val model: SignUpFullNameViewModel by viewModels()
@@ -25,7 +27,7 @@ class SignUpFullNameFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = SignUpFullNameFragment()
@@ -36,23 +38,25 @@ class SignUpFullNameFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = SignUpFullNameFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        binding.signUpFullNameBtnNext.setOnClickListener {
+        var user_id = arguments?.getString(Constants.USER_ID)?:""
 
-            var first_name = binding.signUpFullNameTxtFirstName.text.toString()
-            var last_name = binding.signUpFullNameTxtLasttName.text.toString()
+        binding?.signUpFullNameBtnNext?.setOnClickListener {
+
+            var first_name = binding?.signUpFullNameTxtFirstName?.text.toString()
+            var last_name = binding?.signUpFullNameTxtLasttName?.text.toString()
 
             var req = mapOf<String, String>("first_name" to first_name, "last_name" to last_name)
 
             authModel.singupStage(req, AuthState.AUTH_STAGE_FULL_NANE)
         }
 
-        binding.signUpFullNameBtnBack.setOnClickListener {
+        binding?.signUpFullNameBtnBack?.setOnClickListener {
             //TODO go back
         }
 		
@@ -62,7 +66,12 @@ class SignUpFullNameFragment : Fragment() {
 
                 val direction =
                             SignUpFullNameFragmentDirections.moveToSignUpProfilePhotoFragment()
-				navController.navigate(direction)
+
+                val bundle = bundleOf(
+                    Constants.USER_ID to user_id
+                )
+
+                navController.navigate(direction, bundle)
             }
 		
 		}

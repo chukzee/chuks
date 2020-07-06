@@ -15,6 +15,7 @@ import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.Message
 import com.beepmemobile.www.databinding.SmsListViewFragmentBinding
+import com.beepmemobile.www.phone.PhoneSms
 import com.beepmemobile.www.ui.binding.SmsListViewAdapter
 import com.beepmemobile.www.ui.main.UserListModel
 import com.beepmemobile.www.ui.main.MainViewModel
@@ -82,7 +83,11 @@ class SmsListViewFragment : Fragment() {
 
         var app_user: AppUser = authModel.app_user ?: return
 
-        var phoneSms = PhoneSms(this.requireContext(), app_user, usersModel)
+        var phoneSms = PhoneSms(
+            this.requireContext(),
+            app_user,
+            usersModel
+        )
 
         var strTitle = ""
         when(filter){

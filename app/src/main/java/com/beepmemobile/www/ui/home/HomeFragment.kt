@@ -23,14 +23,21 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.AuthState
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.HomeFragmentBinding
+import com.beepmemobile.www.ui.ViewAnimation
+import com.beepmemobile.www.ui.ViewAnimation.rotateFab
+import com.beepmemobile.www.ui.ViewAnimation.showIn
+import com.beepmemobile.www.ui.ViewAnimation.showOut
 import com.beepmemobile.www.ui.binding.UserSmallCardListAdapter
 import com.beepmemobile.www.ui.main.MainViewModel
 import com.beepmemobile.www.ui.main.UserListModel
+import com.beepmemobile.www.util.GpsUtils
+import com.beepmemobile.www.util.GpsUtils.onGpsListener
 import me.everything.providers.android.contacts.Contact
 import me.everything.providers.android.contacts.ContactsProvider
 
 
 class HomeFragment : Fragment(){
+    private var isRotate = false
     private var contacts: MutableList<Contact>? = null
     private var popupItemData: Any? = null
     private val model: UserListModel by activityViewModels()
@@ -44,7 +51,7 @@ class HomeFragment : Fragment(){
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding // TODO - Somentimes throw KotlinNullPointerException
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -61,7 +68,7 @@ class HomeFragment : Fragment(){
     ): View? {
 
         _binding = HomeFragmentBinding.inflate(inflater, container, false)
-            val view = binding.root
+            val view = binding?.root
 
         return view
     }
@@ -72,11 +79,17 @@ class HomeFragment : Fragment(){
     }
 
     private fun authNavigation(view: View){
+        authModel.context = context
+        authModel.remoteApiService = (activity as MainActivity).remoteApiServe
+        authModel.disposable = (activity as MainActivity).disposable
+
 
         val observer = Observer<AppUser> { app_user ->
 
+                (activity as MainActivity).isAppUserAuthenticated = false
+
                 if (app_user.authenticated) {
-                    //(activity as MainActivity).requestContactPermission()
+                    (activity as MainActivity).isAppUserAuthenticated = true
                     viewConten(view)
 
                 } else if (app_user.auth_state == AuthState.AUTH_STAGE_NONE) {
@@ -97,10 +110,34 @@ class HomeFragment : Fragment(){
 
     private fun viewConten(view: View){
 
-        (activity as MainActivity).supportActionBar?.setTitle(R.string.app_name)
+        var mainActivity = (activity as MainActivity)
 
-        binding.homeSearchFab.setOnClickListener {
-            (activity as MainActivity).onSearchRequested()
+        mainActivity.supportActionBar?.setTitle(R.string.app_name)
+
+        //Enable Location service
+        GpsUtils(mainActivity).turnGPSOn(object : onGpsListener {
+            override fun gpsStatus(isGPSEnable: Boolean) {
+                // turn on GPS
+                mainActivity.isGPSEnable = isGPSEnable
+            }
+        })
+
+        binding?.homeSearchFab?.setOnClickListener {
+            mainActivity.onSearchRequested()
+        }
+
+        binding?.homeAddFab?.setOnClickListener{
+
+                isRotate = rotateFab(it, !isRotate)
+
+                if (isRotate) {
+                    showIn(binding?.homeSearchFab)
+                    showIn(binding?.homeSearchOptionFab)
+                } else {
+                    showOut(binding?.homeSearchFab)
+                    showOut(binding?.homeSearchOptionFab)
+                }
+
         }
 
         val telemamanger =  ContextCompat.getSystemService(this.requireContext(), TelephonyManager::class.java) as TelephonyManager
@@ -133,25 +170,28 @@ class HomeFragment : Fragment(){
         var contactsProvider: ContactsProvider = ContactsProvider(context)
         contacts = contactsProvider.contacts.list;
 
+        model.remoteApiService = (activity as MainActivity).remoteApiServe
+        model.disposable = (activity as MainActivity).disposable
         model.phoneContacts = contacts
+        model.context = context
 
-        binding.root.post {
+        binding?.root?.post {
 
             // bind RecyclerView
 
             var column_count = 2
-            var preferred_column_width = binding.root.context.resources.getDimensionPixelSize(R.dimen.user_small_card_width)
+            var preferred_column_width = binding?.root?.context?.resources?.getDimensionPixelSize(R.dimen.user_small_card_width)?:0
 
-            if(binding.root.width != 0){
-                column_count = binding.root.width / preferred_column_width
+            if(binding?.root?.width != 0){
+                column_count = (binding?.root?.width ?: 0) / preferred_column_width
             }
 
-            binding.homePeopleNearbyHeader.listSubheaderTitle.setText(R.string.people_you_may_know_nearby)
+            binding?.homePeopleNearbyHeader?.listSubheaderTitle?.setText(R.string.people_you_may_know_nearby)
 
-            var recyclerView: RecyclerView = binding.homePeopleNearbyRecyclerView
-            recyclerView.layoutManager = GridLayoutManager(this.context, column_count)
+            var recyclerView: RecyclerView? = binding?.homePeopleNearbyRecyclerView
+            recyclerView?.layoutManager = GridLayoutManager(this.context, column_count)
             userCardListAdapter = UserSmallCardListAdapter(this, "", false)
-            recyclerView.adapter = userCardListAdapter
+            recyclerView?.adapter = userCardListAdapter
 
             createObserversAndGetData()
 
@@ -181,7 +221,7 @@ class HomeFragment : Fragment(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.search -> {
-                (activity as MainActivity).onSearchRequested()
+                //(activity as MainActivity).onSearchRequested()
                 true
             }
             else -> super.onOptionsItemSelected(item)

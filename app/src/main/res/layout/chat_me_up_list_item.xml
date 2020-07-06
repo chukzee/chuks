@@ -6,9 +6,9 @@
 
     <data>
         <import type="android.view.View"/>
+		<import type="com.beepmemobile.www.util.Util"/>
         <variable name="chat_msg" type="com.beepmemobile.www.data.msg.ChatMessage"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -78,7 +78,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
             android:background="@android:color/transparent"
-            android:text="@{util.msgStatusTick(chat_msg.msg_status)}"
+            android:text="@{Util.msgStatusTick(chat_msg.msg_status)}"
             app:msgStatusColor="@{chat_msg.msg_status}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/chat_me_up_list_msg"
@@ -91,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:text="@{util.formatTime(chat_msg.msg_time)}"
+            android:text="@{Util.formatTime(chat_msg.msg_time)}"
             tools:text="12:00AM"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

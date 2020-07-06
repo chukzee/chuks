@@ -5,10 +5,10 @@
 
 
     <data>
+		<import type="com.beepmemobile.www.util.Util"/>
         <variable name="call" type="com.beepmemobile.www.data.Call"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
         <variable name="app_user" type="com.beepmemobile.www.data.AppUser"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,7 +52,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
             android:singleLine="true"
-            android:text="@{util.formatTime(call.time)}"
+            android:text="@{Util.formatTime(call.time)}"
             android:textSize="10dp"
             app:layout_constraintEnd_toStartOf="@+id/call_img_btn"
             app:layout_constraintStart_toEndOf="@+id/call_profile_photo"

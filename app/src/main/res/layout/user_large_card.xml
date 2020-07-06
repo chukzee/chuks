@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+		<import type="com.beepmemobile.www.util.Util"/>
         <variable name="app_user" type="com.beepmemobile.www.data.AppUser"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <!--
@@ -69,7 +69,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
                 android:singleLine="true"
-                android:text="@{`Location: `+user.location}"
+                android:text="@{`Location: `+user.location_address}"
                 android:textSize="14dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -112,7 +112,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@android:color/transparent"
                 android:singleLine="true"
-                android:text="@{util.formatTime(user.last_seen_time)}"
+                android:text="@{Util.formatTime(user.last_seen)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/user_divider"
                 tools:text="Last seen: 12:20 PM" />

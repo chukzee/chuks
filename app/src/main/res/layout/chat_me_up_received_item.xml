@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+		<import type="com.beepmemobile.www.util.Util"/>
         <variable name="chat_msg" type="com.beepmemobile.www.data.msg.ChatMessage"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,7 +64,7 @@
             android:textSize="12dp"
             app:layout_constraintStart_toEndOf="@+id/chat_me_up_sender_profile_photo"
             app:layout_constraintTop_toBottomOf="@id/chat_me_up_received_msg"
-            android:text="@{util.formatTime(chat_msg.received_time)}"
+            android:text="@{Util.formatTime(chat_msg.received_time)}"
             tools:text="Yesterday, 20:47" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

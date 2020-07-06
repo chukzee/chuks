@@ -6,7 +6,6 @@
     <data>
         <variable name="app_user" type="com.beepmemobile.www.data.AppUser"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <!--
@@ -76,7 +75,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:singleLine="true"
-                android:text="@{`Location: `+user.location}"
+                android:text="@{`Location: `+user.location_address}"
                 android:textSize="10dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"

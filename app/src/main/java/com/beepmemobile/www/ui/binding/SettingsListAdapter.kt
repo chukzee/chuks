@@ -9,8 +9,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import com.beepmemobile.www.data.ListItemData
+import com.beepmemobile.www.databinding.ListTextSwitchButtonItemBinding
 import com.beepmemobile.www.databinding.ListTwoTextRightImageBinding
-import com.beepmemobile.www.util.Constant
+import com.beepmemobile.www.util.Constants
 
 class SettingsListAdapter (private val cxt: Context) : ArrayAdapter<String?>(cxt, 0) {
 
@@ -19,7 +20,7 @@ class SettingsListAdapter (private val cxt: Context) : ArrayAdapter<String?>(cxt
     }
 
     enum class Type {
-        TYPE_1
+        TYPE_1, TYPE_2
     }
 
 
@@ -27,23 +28,36 @@ class SettingsListAdapter (private val cxt: Context) : ArrayAdapter<String?>(cxt
 
         var notification = ListItemData()
         notification.type = Type.TYPE_1.ordinal
-        notification.text = Constant.STR_NOTIFICATION
+        notification.text = Constants.STR_NOTIFICATION
         notification.sub_text = "Vibrate only" //e.g Mute, Vibrate only, Vibrate & Sound
 
         var geosensing = ListItemData()
         geosensing.type = PersonalProfileSettingsListAdapter.Type.TYPE_1.ordinal
-        geosensing.text = Constant.STR_GEOSENSING
+        geosensing.text = Constants.STR_GEOSENSING
         geosensing.sub_text = "Default"
 
         var location_proximity = ListItemData()
         location_proximity.type = Type.TYPE_1.ordinal
-        location_proximity.text = Constant.STR_LOCATION_PROXIMITY
+        location_proximity.text = Constants.STR_LOCATION_PROXIMITY
         location_proximity.sub_text = "Default"
+
+        var font_size = ListItemData()
+        font_size.type = Type.TYPE_1.ordinal
+        font_size.text = Constants.STR_FONT_SIZE
+        font_size.sub_text = "Medium"
+
+        var backup_contacts = ListItemData()
+        backup_contacts.type = Type.TYPE_2.ordinal
+        backup_contacts.text = Constants.STR_AUTO_BACKUP_CONTACTS
+        backup_contacts.sub_text = "Yes"
+
 
 
         it.add(notification)
         it.add(geosensing)
         it.add(location_proximity)
+        it.add(font_size)
+        it.add(backup_contacts)
 
     }
 
@@ -54,33 +68,66 @@ class SettingsListAdapter (private val cxt: Context) : ArrayAdapter<String?>(cxt
         parent: ViewGroup
     ): View {
 
-        var listViewItem = ListTwoTextRightImageBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val type = getItemViewType(position)
 
-        listViewItem.item = items[position]
+        if(type == Type.TYPE_1.ordinal) {
+            var listViewItem = ListTwoTextRightImageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            listViewItem.item = items[position]
 
-        listViewItem.root.setOnClickListener {
+            listViewItem.root.setOnClickListener(getViewOnClickListener(position))
 
-            val item = items[position]
+            return listViewItem.root
 
-            if(item.text == Constant.STR_NOTIFICATION){
-                handleNotification()
-            }
+        }else if(type == Type.TYPE_2.ordinal) {
 
-            if(item.text == Constant.STR_LOCATION_PROXIMITY){
-                handleLocationProximity()
-            }
+            var listViewItem = ListTextSwitchButtonItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
 
-            if(item.text == Constant.STR_GEOSENSING){
-                handleGeosensing()
-            }
+            listViewItem.item = items[position]
+
+            listViewItem.root.setOnClickListener(getViewOnClickListener(position))
+
+            return listViewItem.root
 
         }
 
-        return listViewItem.root
+
+        return null!!
+    }
+
+    private fun getViewOnClickListener(position: Int):View.OnClickListener{
+        return View.OnClickListener{
+
+            val item = items[position]
+
+            if(item.text == Constants.STR_NOTIFICATION){
+                handleNotification()
+            }
+
+            if(item.text == Constants.STR_LOCATION_PROXIMITY){
+                handleLocationProximity()
+            }
+
+            if(item.text == Constants.STR_GEOSENSING){
+                handleGeosensing()
+            }
+
+            if(item.text == Constants.STR_FONT_SIZE){
+                handleFontSize()
+            }
+
+            if(item.text == Constants.STR_AUTO_BACKUP_CONTACTS){
+                handleBackupContacts()
+            }
+
+        }
     }
 
     private fun handleGeosensing() {
@@ -120,6 +167,26 @@ class SettingsListAdapter (private val cxt: Context) : ArrayAdapter<String?>(cxt
 
         builder.create()
         builder.show()
+    }
+
+    private fun handleFontSize() {
+        val arr = arrayOf<String>("Small","Medium","Large")
+
+        val builder = AlertDialog.Builder(this.cxt)
+        // Set the dialog title
+        builder.setTitle("Font Size")
+            .setSingleChoiceItems(arr, 0, //TODO Set the checked item
+                DialogInterface.OnClickListener { dialog, which ->
+
+                })
+
+
+        builder.create()
+        builder.show()
+    }
+
+    private fun handleBackupContacts() {
+        //TODO - SAVE TO PREFERENCE
     }
 
     // Returns the number of types of Views that will be created by getView(int, View, ViewGroup)

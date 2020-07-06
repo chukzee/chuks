@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="com.beepmemobile.www.util.Util"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
         <variable name="app_user" type="com.beepmemobile.www.data.AppUser"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -37,7 +37,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="20dp"
-                        android:text="@{`Last seen: `+ util.formatTime(user.last_seen_time)}"
+                        android:text="@{`Last seen: `+ Util.formatTime(user.last_seen)}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -51,7 +51,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
-                        android:text="@{`Location: `+ user.location}"
+                        android:text="@{`Location: `+ user.location_address}"
                         android:textAlignment="center"
                         android:textColor="@color/design_default_color_on_secondary"
                         android:textSize="18sp"
@@ -66,7 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:text="@{user.joined_date != null ? `Joined: `+ util.formatTime(user.joined_date): `Unregistered`}"
+                        android:text="@{user.joined_date != null ? `Joined: `+ Util.formatTime(user.joined_date): `Unregistered`}"
                         android:textStyle="italic"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

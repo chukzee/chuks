@@ -1,6 +1,5 @@
 package com.beepmemobile.www.ui.binding
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +12,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
+import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.UserLargeCardBinding
-import com.beepmemobile.www.util.Constant
-import com.beepmemobile.www.util.Util
+import com.beepmemobile.www.util.Constants
 import me.everything.providers.android.telephony.TelephonyProvider
 
 
@@ -31,7 +30,6 @@ class UserLargeCardListAdapter(
     private var map_data = mutableMapOf<Any, Any>()
     private var app_user: AppUser = AppUser();
     private  var keys = map_data.keys.toList()
-    private val util = Util()
     private val HEADER = "HEADER"
     private val FOOTER = "FOOTER"
 
@@ -101,7 +99,6 @@ class UserLargeCardListAdapter(
 
             bnd?.user = currentUser
             bnd?.appUser = this.app_user
-            bnd?.util = this.util
 
             createInteractions(
                 bnd,
@@ -220,11 +217,13 @@ class UserLargeCardListAdapter(
 
         private fun handleSmsIconClick(v: View){
 
+            var other_user_id = (data as User).user_id
             var other_user_phone_no = (data as User).mobile_phone_no
 
             val bundle = bundleOf(
-                Constant.PHONE_NO to other_user_phone_no,
-                Constant.SMS_TYPE to TelephonyProvider.Filter.INBOX.ordinal
+                Constants.USER_ID to other_user_id,
+                Constants.PHONE_NO to other_user_phone_no,
+                Constants.SMS_TYPE to TelephonyProvider.Filter.INBOX.ordinal
             )
 
             val c = NavHostFragment.findNavController(fragment)
@@ -235,23 +234,22 @@ class UserLargeCardListAdapter(
 
             var other_user_id = (data as User).user_id
 
-            val bundle = bundleOf(Constant.USER_ID to other_user_id)
+            val bundle = bundleOf(Constants.USER_ID to other_user_id)
             val c = NavHostFragment.findNavController(fragment)
             c.navigate(R.id.action_global_ChatMeUpFragment, bundle)
         }
 
 
         private fun handleCallIconClick(v: View){
-        //TODO - implementation
-            AlertDialog.Builder(v.context)
-                .setTitle("TODO")
-                .setMessage("user phone- " + (data as User).mobile_phone_no )
-                .create()
-                .show()
+            var user = data as User
+            var call = Call()
+            call.call_id = user.user_id
+            call.user = user
+            call.callPhoneNumber(v.context)
         }
 
         private fun handleProfileIconClick(v: View){
-            val bundle = bundleOf(Constant.USER_ID to (data as User).user_id)
+            val bundle = bundleOf(Constants.USER_ID to (data as User).user_id)
             val c = NavHostFragment.findNavController(fragment)
             c.navigate(R.id.action_global_PersonalProfileFragment, bundle)
         }

@@ -10,14 +10,12 @@ import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.ContactListItemBinding
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
-import com.beepmemobile.www.util.Util
 
 class ContactListAdapter :
     RecyclerView.Adapter<ContactListAdapter.ContactListViewHolder>() {
     private var contact_map = mutableMapOf<Any, Any> ()
     private  var keys = contact_map.keys.toList()
     private var app_user: AppUser = AppUser();
-    private val util = Util()
 
     private val FOOTER = "FOOTER"
 

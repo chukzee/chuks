@@ -2,16 +2,11 @@ package com.beepmemobile.www.ui.upgrade
 
 import android.os.Bundle
 import android.view.*
-import android.widget.AdapterView
 import android.widget.ListView
-import androidx.core.os.bundleOf
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.beepmemobile.www.MainActivity
 
 import com.beepmemobile.www.R
@@ -19,8 +14,6 @@ import com.beepmemobile.www.databinding.UpgradeFragmentBinding
 import com.beepmemobile.www.data.*;
 import com.beepmemobile.www.ui.binding.UpgradeListAdapter
 import com.beepmemobile.www.ui.main.MainViewModel
-import com.beepmemobile.www.ui.profile.PersonalProfileFragmentDirections.toPersonalProfileSettingsFragment
-import com.beepmemobile.www.util.Constant
 
 class UpgradeFragment : Fragment() {
     private val authModel: MainViewModel by activityViewModels()
@@ -30,7 +23,7 @@ class UpgradeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = UpgradeFragment()
@@ -48,17 +41,17 @@ class UpgradeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = UpgradeFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
         var header_item = ListItemData()
         header_item.text = "Choose a upgrade plan"
         header_item.sub_text = "Get exciting features with no ads"
 
-        binding.upgradeHeader.item = header_item;
+        binding?.upgradeHeader?.item  = header_item;
 
         // bind ListView
-        var listView: ListView = binding.upgradeListView
-        listView.adapter = UpgradeListAdapter(this.requireContext(), navController, authModel.app_user)
+        var listView: ListView? = binding?.upgradeListView
+        listView?.adapter = UpgradeListAdapter(this.requireContext(), navController, authModel.app_user)
 
         //listView.addHeaderView()
         return view

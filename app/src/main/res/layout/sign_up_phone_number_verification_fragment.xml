@@ -71,7 +71,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_sign_up_beep_me4" />
 
-        <Spinner
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/sign_up_phone_number_verification_spn_country"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            app:ccp_autoDetectCountry = "true"
+            app:ccp_showFullName="true"
+            app:ccp_showPhoneCode="false"
+            app:ccp_showNameCode="false"
+            app:ccp_textGravity="LEFT"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <!--<Spinner
             android:id="@+id/sign_up_phone_number_verification_spn_country"
             android:layout_width="250dp"
             android:layout_height="40dp"
@@ -81,15 +97,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />-->
 
         <EditText
             android:id="@+id/sign_up_phone_number_verification_lbl_zip_code"
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginTop="20dp"
             android:inputType="none"
-            android:text="+234"
+            android:focusable="false"
+            android:clickable="false"
+            android:longClickable="false"
+            tools:text="+234"
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/sign_up_phone_number_verification_txt_phone_no"

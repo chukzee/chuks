@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.databinding.SignUpProfilePhotoFragmentBinding
 import com.beepmemobile.www.data.*;
 import com.beepmemobile.www.ui.main.MainViewModel
+import com.beepmemobile.www.util.Constants
 
 class SignUpProfilePhotoFragment : Fragment() {
     private val model: SignUpProfilePhotoViewModel by viewModels()
@@ -27,7 +29,7 @@ class SignUpProfilePhotoFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = SignUpProfilePhotoFragment()
@@ -38,33 +40,43 @@ class SignUpProfilePhotoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = SignUpProfilePhotoFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        binding.signUpProfilePhotoBtnNext.setOnClickListener {
+        var user_id = arguments?.getString(Constants.USER_ID)?:""
 
-            var profileImag = binding.signUpProfilePhotoImgPhoto
-            var profile_photo = imageDataToBase64(profileImag)
+        binding?.signUpProfilePhotoBtnNext?.setOnClickListener {
 
-            var req = mapOf<String, String>("profile_photo" to profile_photo)
+            var profileImag = binding?.signUpProfilePhotoImgPhoto
+            var profile_photo = profileImag?.let { it1 -> imageDataToBase64(it1) }
+
+            var status_message = binding?.signUpProfilePhotoStatusMessage?.text.toString()
+
+            var req = mapOf<String, String>("profile_photo_base64" to (profile_photo?:""), "status_message" to status_message)
 
             authModel.singupStage(req, AuthState.AUTH_STAGE_PROFILE_PHOTO)
         }
 
-        binding.signUpProfilePhotoBtnBack.setOnClickListener {
+        binding?.signUpProfilePhotoBtnBack?.setOnClickListener {
             //TODO go back
         }
 		
 		val observer = Observer<AppUser> { app_user ->
 		
-			if(app_user.auth_state == AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY){
+			if(app_user.auth_state == AuthState.AUTH_STAGE_SUCCESS){
 
+                view.visibility = View.VISIBLE //come back
                 val direction =
-                            SignUpProfilePhotoFragmentDirections.moveToSignUpPhoneNumberVerificationFragment()
-				navController.navigate(direction)
+                            SignUpProfilePhotoFragmentDirections.moveToHomeFragment()
+
+                val bundle = bundleOf(
+                    Constants.USER_ID to user_id
+                )
+
+                navController.navigate(direction, bundle)
             }
 		
 		}

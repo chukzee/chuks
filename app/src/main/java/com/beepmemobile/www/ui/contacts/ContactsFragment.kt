@@ -29,7 +29,7 @@ class ContactsFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = ContactsFragment()
@@ -48,13 +48,13 @@ class ContactsFragment : Fragment() {
     ): View? {
 
         _binding = ContactsFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.contatsRecyclerView
-        recyclerView.setLayoutManager(LinearLayoutManager(this.context));
+        var recyclerView: RecyclerView? = binding?.contatsRecyclerView
+        recyclerView?.setLayoutManager(LinearLayoutManager(this.context));
         contactListAdapter = ContactListAdapter()
-        recyclerView.adapter = contactListAdapter
+        recyclerView?.adapter = contactListAdapter
 
         createObserversAndGetData()
 

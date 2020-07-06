@@ -6,7 +6,6 @@
     <data>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
         <variable name="app_user" type="com.beepmemobile.www.data.AppUser"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

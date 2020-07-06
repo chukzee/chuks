@@ -1,7 +1,9 @@
 package com.beepmemobile.www.ui.profile
 
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.preference.PreferenceManager
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,23 +16,22 @@ import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.PersonalProfileFragmentBinding
+import com.beepmemobile.www.util.Utils
 import com.beepmemobile.www.ui.main.UserListModel
 import com.beepmemobile.www.ui.main.MainViewModel
-import com.beepmemobile.www.util.Constant
-import com.beepmemobile.www.util.Util
+import com.beepmemobile.www.util.Constants
 import com.google.android.material.appbar.AppBarLayout
 
-class PersonalProfileFragment : Fragment() {
+class PersonalProfileFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val model: PersonalProfileViewModel by viewModels()
     private val navController by lazy { findNavController() }
     private val authModel: MainViewModel by activityViewModels()
     private val usersModel: UserListModel by activityViewModels()
-    private val util = Util()
     private var _binding: PersonalProfileFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() =
@@ -51,22 +52,24 @@ class PersonalProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = PersonalProfileFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layout = binding.personalProfileCollapsingToolbarLayout
-        val toolbar = binding.personalProfileToolbar
+        val layout = binding?.personalProfileCollapsingToolbarLayout
+        val toolbar = binding?.personalProfileToolbar
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        layout.setupWithNavController(toolbar, navController, appBarConfiguration)
+        if (toolbar != null) {
+            layout?.setupWithNavController(toolbar, navController, appBarConfiguration)
+        }
 
         var mainActivity = this.activity as MainActivity
         mainActivity.setSupportActionBar(toolbar)
 
-        var user_id = arguments?.getString(Constant.USER_ID)
+        var user_id = arguments?.getString(Constants.USER_ID)
 
         if(user_id != null) {//other user
             createObserversAndGetData(user_id)
@@ -78,7 +81,7 @@ class PersonalProfileFragment : Fragment() {
 
         (activity as MainActivity).supportActionBar?.setTitle(R.string.empty)
 
-        binding.personalProfileAppBar.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
+        binding?.personalProfileAppBar?.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
 
             //If the AppBarLayout’s ‘verticalOffset’ is zero, then its fully expanded
 
@@ -112,25 +115,32 @@ class PersonalProfileFragment : Fragment() {
     }
 
     private fun updateUI(user: User?){
-        binding.user = user;
-        binding.appUser = authModel.app_user
-        binding.util = util
+        binding?.user  = user;
+        binding?.appUser = authModel.app_user
 
-        binding.personalProfileScrollingContent.user = user
-        binding.personalProfileScrollingContent.appUser = authModel.app_user
-        binding.personalProfileScrollingContent.util = util
+        binding?.personalProfileScrollingContent?.user = user
+        binding?.personalProfileScrollingContent?.appUser = authModel.app_user
 
-        binding.personalProfileScrollingContent.personalProfilePhoneNumberInclude.user = user
-        binding.personalProfileScrollingContent.personalProfilePhoneNumberInclude.appUser = authModel.app_user
-        binding.personalProfileScrollingContent.personalProfilePhoneNumberInclude.util = util
+        binding?.personalProfileScrollingContent?.personalProfilePhoneNumberInclude?.user = user
+        binding?.personalProfileScrollingContent?.personalProfilePhoneNumberInclude?.appUser = authModel.app_user
 
-        binding.personalProfileScrollingContent.personalProfileEmailAddressInclude.user = user
-        binding.personalProfileScrollingContent.personalProfileEmailAddressInclude.appUser = authModel.app_user
-        binding.personalProfileScrollingContent.personalProfileEmailAddressInclude.util = util
+        binding?.personalProfileScrollingContent?.personalProfileEmailAddressInclude?.user = user
+        binding?.personalProfileScrollingContent?.personalProfileEmailAddressInclude?.appUser = authModel.app_user
 
-        binding.personalProfileScrollingContent.personalProfileAddressInclude.user = user
-        binding.personalProfileScrollingContent.personalProfileAddressInclude.appUser = authModel.app_user
-        binding.personalProfileScrollingContent.personalProfileAddressInclude.util = util
+        binding?.personalProfileScrollingContent?.personalProfileAddressInclude?.user = user
+        binding?.personalProfileScrollingContent?.personalProfileAddressInclude?.appUser = authModel.app_user
+    }
+
+    override fun onStart() {
+        super.onStart()
+        PreferenceManager.getDefaultSharedPreferences(this.context)
+            .registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onStop() {
+        PreferenceManager.getDefaultSharedPreferences(this.context)
+            .unregisterOnSharedPreferenceChangeListener(this)
+        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -168,6 +178,21 @@ class PersonalProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+
+
+            when(key){
+                Utils.KEY_APP_USER_LAST_LOCATION -> {
+                    if((activity as MainActivity).isAppUserAuthenticated) {
+                        if(binding?.user?.user_id == authModel.app_user?.user_id) {
+                            binding?.personalProfileScrollingContent?.personalProfileLocationLbl?.text =
+                                Utils.getAppUserLocation(context)
+                        }
+                    }
+                }
+            }
     }
 
 }

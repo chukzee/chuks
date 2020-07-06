@@ -3,20 +3,20 @@ package com.beepmemobile.www.ui.binding
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.databinding.SmsReceivedItemBinding
 import com.beepmemobile.www.databinding.SmsSentItemBinding
-import com.beepmemobile.www.util.Util
 
 class SmsViewAdapter :
     RecyclerView.Adapter<SmsViewAdapter.SmsViewViewHolder>() {
 
-    private var other_user_phone_no = "";
+    private var is_all_type = false
+    private var other_user_id = "";
     private var sms_view_list = listOf<SmsMessage>()
     private var app_user: AppUser = AppUser();
-    private val util = Util()
 
     private val SENT_TYPE = 1
     private val RECEIVED_TYPE = 2
@@ -26,12 +26,16 @@ class SmsViewAdapter :
         i: Int
     ): SmsViewViewHolder {
 
-
+        var match_parent = LinearLayout.LayoutParams.MATCH_PARENT
         if(i == SENT_TYPE){
             val smsSentItemBinding = SmsSentItemBinding.inflate(LayoutInflater.from(viewGroup.context),
                 viewGroup,
                 false
             )
+
+            if(!this.is_all_type) {//FOR INBOX, OUTBOX, SENT AND DRAFT ONLY
+                smsSentItemBinding?.smsSentMsg?.layoutParams?.width = match_parent
+            }
 
             return SmsViewViewHolder(smsSentItemBinding)
         }else{
@@ -40,6 +44,10 @@ class SmsViewAdapter :
                 viewGroup,
                 false
             )
+
+            if(!this.is_all_type) {//FOR INBOX, OUTBOX, SENT AND DRAFT ONLY
+                smsReceivedItemBinding?.smsReceivedMsg?.layoutParams?.width = match_parent
+            }
 
             return SmsViewViewHolder(smsReceivedItemBinding)
         }
@@ -55,17 +63,15 @@ class SmsViewAdapter :
 
         smsViewViewHolder.smsSentItemBinding?.sms = current_sms_msg
         smsViewViewHolder.smsSentItemBinding?.user = currentUser
-        smsViewViewHolder.smsSentItemBinding?.util = util
 
         smsViewViewHolder.smsReceivedItemBinding?.sms = current_sms_msg
         smsViewViewHolder.smsReceivedItemBinding?.user = currentUser
-        smsViewViewHolder.smsReceivedItemBinding?.util = util
 
     }
 
     override fun getItemViewType(position: Int): Int {
         val currentSmsMsg: SmsMessage = sms_view_list[position]
-        if(currentSmsMsg.receiver_id == other_user_phone_no){
+        if(currentSmsMsg.receiver_id == other_user_id){
             return SENT_TYPE
         }else{
             return RECEIVED_TYPE
@@ -76,12 +82,19 @@ class SmsViewAdapter :
            return sms_view_list.size
     }
 
-    fun setSmsViewList(app_user: AppUser, other_user_phone_no: String, sms_view_list: MutableList<SmsMessage>) {
+    fun setSmsViewList(
+        app_user: AppUser,
+        other_user_id: String,
+        sms_view_list: MutableList<SmsMessage>,
+        is_all_type: Boolean
+    ) {
+
+        this.is_all_type = is_all_type
         this.app_user = app_user
-        this.other_user_phone_no = other_user_phone_no
+        this.other_user_id = other_user_id
 
         var sms_view_list_filtered = sms_view_list.filter {
-            it.sender_id ==  other_user_phone_no || it.receiver_id == other_user_phone_no //bug - come back
+            it.sender_id ==  other_user_id || it.receiver_id == other_user_id
         }
 
 		//sort in asceding order

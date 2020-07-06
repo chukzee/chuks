@@ -4,7 +4,6 @@
 
     <data>
         <variable name="chate_mate" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

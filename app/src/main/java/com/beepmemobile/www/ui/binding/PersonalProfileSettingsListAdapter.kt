@@ -1,7 +1,6 @@
 package com.beepmemobile.www.ui.binding
 
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import com.beepmemobile.www.data.ListItemData
 import com.beepmemobile.www.databinding.ListTextSwitchButtonItemBinding
 import com.beepmemobile.www.databinding.ListTwoTextRightImageBinding
-import com.beepmemobile.www.util.Constant
+import com.beepmemobile.www.util.Constants
 
 
 class PersonalProfileSettingsListAdapter(private val cxt: Context) : ArrayAdapter<String?>(cxt, 0) {
@@ -29,13 +28,13 @@ class PersonalProfileSettingsListAdapter(private val cxt: Context) : ArrayAdapte
 
         var location_proximity = ListItemData()
         location_proximity.type = Type.TYPE_1.ordinal
-        location_proximity.text = Constant.STR_LOCATION_PROXIMITY
+        location_proximity.text = Constants.STR_LOCATION_PROXIMITY
         location_proximity.sub_text = "Default"
 
 
         var record_call = ListItemData()
         record_call.type = Type.TYPE_2.ordinal
-        record_call.text = Constant.STR_RECORD_CALLS
+        record_call.text = Constants.STR_RECORD_CALLS
         record_call.sub_text = "Default"
 
         it.add(location_proximity)
@@ -128,11 +127,11 @@ class PersonalProfileSettingsListAdapter(private val cxt: Context) : ArrayAdapte
         override fun onClick(p0: View?) {
             val item = items[position]
 
-            if(item.text == Constant.STR_LOCATION_PROXIMITY){
+            if(item.text == Constants.STR_LOCATION_PROXIMITY){
                 handleLocationProximity()
             }
 
-            if(item.text == Constant.STR_RECORD_CALLS){
+            if(item.text == Constants.STR_RECORD_CALLS){
                 handleRecordCalls()
             }
         }

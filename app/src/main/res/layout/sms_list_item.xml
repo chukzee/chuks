@@ -6,9 +6,9 @@
 
     <data>
         <import type="android.view.View"/>
+		<import type="com.beepmemobile.www.util.Util"/>
         <variable name="sms" type="com.beepmemobile.www.data.msg.SmsMessage"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,7 +86,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="10dp"
             android:singleLine="true"
-            android:text="@{util.formatTime(sms.msg_time)}"
+            android:text="@{Util.formatTime(sms.msg_time)}"
             android:textSize="10dp"
             app:layout_constraintBottom_toTopOf="@+id/sms_list_item_divider"
             app:layout_constraintEnd_toStartOf="@+id/sms_status"
@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:text="@{util.msgStatusTick(sms.msg_status)}"
+            android:text="@{Util.msgStatusTick(sms.msg_status)}"
             app:layout_constraintBottom_toTopOf="@+id/sms_list_item_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:msgStatusColor="@{sms.msg_status}"

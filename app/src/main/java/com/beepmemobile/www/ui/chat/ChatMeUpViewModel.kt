@@ -1,7 +1,7 @@
 package com.beepmemobile.www.ui.chat
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.dummy.Dummy
@@ -13,8 +13,7 @@ class ChatMeUpViewModel : AbstractListViewModel<ChatMessage>() {
             load(it)
         }
     }
-
-    var app_user_chatmate: User? = null
+    var context: Context? = null
 
     override fun getList(): MutableLiveData<MutableList<ChatMessage>> {
         return chat_list
@@ -25,6 +24,6 @@ class ChatMeUpViewModel : AbstractListViewModel<ChatMessage>() {
 
         //TODO - REPLACE DUMMY TEST WITH REAL DATA
 
-        it.value = Dummy().getTestChatMessageList(50)
+        it.value = context?.let { it1 -> Dummy(it1).getTestChatMessageList(50) }
     }
 }

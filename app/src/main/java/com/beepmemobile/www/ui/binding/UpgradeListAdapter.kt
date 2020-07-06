@@ -6,18 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.ListItemData
-import com.beepmemobile.www.databinding.ListTextSwitchButtonItemBinding
-import com.beepmemobile.www.databinding.ListTwoTextRightImageBinding
 import com.beepmemobile.www.databinding.ListTwoTextRightLeftImageBinding
 import com.beepmemobile.www.ui.upgrade.UpgradeFragmentDirections
-import com.beepmemobile.www.util.Constant
-import com.bumptech.glide.load.engine.Resource
+import com.beepmemobile.www.util.Constants
 
 class UpgradeListAdapter (private val cxt: Context,
                           private val navController: NavController,
@@ -36,30 +32,30 @@ class UpgradeListAdapter (private val cxt: Context,
 
         var free_users = ListItemData()
         free_users.type = Type.TYPE_1.ordinal
-        free_users.text = Constant.STR_FREE_USERS
+        free_users.text = Constants.STR_FREE_USERS
         free_users.sub_text = "Basic features available"
         free_users.left_image_placeholder = cxt.getDrawable(R.drawable.ic_star_half_gray_100dp)
-        free_users.right_image_placeholder = if(app_user?.user_type == Constant.FREE_USERS )
+        free_users.right_image_placeholder = if(app_user?.user_type == Constants.FREE_USERS )
             cxt.getDrawable(R.drawable.ic_check_green_24dp)
         else
             null
 
         var silver_users = ListItemData()
         silver_users.type = Type.TYPE_1.ordinal
-        silver_users.text = Constant.STR_SILVER_USERS
+        silver_users.text = Constants.STR_SILVER_USERS
         silver_users.sub_text = "More exiciting features - No ads"
         silver_users.left_image_placeholder = cxt.getDrawable(R.drawable.ic_star_silver_100dp)
-        silver_users.right_image_placeholder = if(app_user?.user_type == Constant.SILVER_USERS )
+        silver_users.right_image_placeholder = if(app_user?.user_type == Constants.SILVER_USERS )
             cxt.getDrawable(R.drawable.ic_check_green_24dp)
         else
             null
 
         var gold_users = ListItemData()
         gold_users.type = Type.TYPE_1.ordinal
-        gold_users.text = Constant.STR_GOLD_USERS
+        gold_users.text = Constants.STR_GOLD_USERS
         gold_users.sub_text = "Unlimited access - No ads"
         gold_users.left_image_placeholder = cxt.getDrawable(R.drawable.ic_star_gold_100dp)
-        gold_users.right_image_placeholder = if(app_user?.user_type == Constant.GOLD_USERS )
+        gold_users.right_image_placeholder = if(app_user?.user_type == Constants.GOLD_USERS )
             cxt.getDrawable(R.drawable.ic_check_green_24dp)
         else
             null
@@ -95,19 +91,19 @@ class UpgradeListAdapter (private val cxt: Context,
 
                 val item = items[position]
                 var upgrade = ""
-                if(item.text == Constant.STR_FREE_USERS){
-                    upgrade = Constant.STR_FREE_USERS
+                if(item.text == Constants.STR_FREE_USERS){
+                    upgrade = Constants.STR_FREE_USERS
                 }
 
-                if(item.text == Constant.STR_SILVER_USERS){
-                    upgrade = Constant.STR_SILVER_USERS
+                if(item.text == Constants.STR_SILVER_USERS){
+                    upgrade = Constants.STR_SILVER_USERS
                 }
 
-                if(item.text == Constant.STR_GOLD_USERS){
-                    upgrade = Constant.STR_GOLD_USERS
+                if(item.text == Constants.STR_GOLD_USERS){
+                    upgrade = Constants.STR_GOLD_USERS
                 }
 
-                val bundle = bundleOf(Constant.UPGRADE to upgrade)
+                val bundle = bundleOf(Constants.UPGRADE to upgrade)
                 var direction = UpgradeFragmentDirections.toUpgradePaymentFragment()
                 navController.navigate(direction.actionId, bundle)
             }

@@ -22,6 +22,7 @@ import com.beepmemobile.www.ui.binding.SupportChatAdapter
 import com.beepmemobile.www.ui.main.MainViewModel
 
 class SupportChatViewFragment : Fragment() {
+    private var recyclerView: RecyclerView? = null
     private val model: SupportChatViewViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
@@ -31,7 +32,7 @@ class SupportChatViewFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = SupportChatViewFragment()
@@ -48,16 +49,16 @@ class SupportChatViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = SupportChatViewFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.supportChatViewRecyclerView
+        recyclerView = binding?.supportChatViewRecyclerView
         var linerLayoutMgr = LinearLayoutManager(this.context)
-        linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
-        recyclerView.setLayoutManager(linerLayoutMgr);
+        //linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
+        recyclerView?.layoutManager = linerLayoutMgr;
         suppertChatAdapter = SupportChatAdapter()
-        recyclerView.adapter = suppertChatAdapter
+        recyclerView?.adapter = suppertChatAdapter
 
         createObserversAndGetData()
 
@@ -76,13 +77,16 @@ class SupportChatViewFragment : Fragment() {
 
     private fun createObserversAndGetData(){
         var app_user = authModel.app_user
+        model.context = requireContext()
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<ChatMessage>> { chat_list ->
             if (app_user != null) {
 
-                binding.supportChatViewSubheader.chateMate = model.app_user_chatmate
-
+                binding?.supportChatViewSubheader?.chateMate  = model.app_user_chatmate
                 suppertChatAdapter?.setSupportChatList(app_user, chat_list)
+
+                recyclerView?.scrollToPosition(suppertChatAdapter?.itemCount?.minus(1)?: 0)
+
             }
         }
 

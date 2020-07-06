@@ -60,7 +60,7 @@ class UserSearchContentProvider: ContentProvider() {
 
         for(i in 1..10){
             mRow[0] =  i
-            mRow[1] = Dummy().createUser(i)
+            mRow[1] = context?.let { Dummy(it).createUser(i).display_name }?: "$i The Name "
             mRow[2] = context?.getDrawable(R.drawable.ic_person_black_24dp)
             mRow[3] = i
             searchResults.addRow(mRow)

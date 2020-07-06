@@ -1,7 +1,9 @@
 package com.beepmemobile.www.util
 
-object Constant {
+object Constants {
 
+    val DEFAULT_SEARCH_LIMIT = 10
+    val GPS_REQUEST: Int = 1
     val SMS_TYPE = "SMS_TYPE"
     val UPGRADE = "UPGRADE"
     val PHONE_NO = "PHONE_NO"
@@ -12,6 +14,8 @@ object Constant {
 
     val STR_NA: String = "N/A"
 
+    val STR_AUTO_BACKUP_CONTACTS = "Auto Backup Contacts"
+    val STR_FONT_SIZE = "Font Size"
     val STR_LOCATION_PROXIMITY = "Location Proximity"
     val STR_RECORD_CALLS = "Record Calls"
     val STR_FREE_USERS = "Free Users"

@@ -20,21 +20,20 @@ import com.beepmemobile.www.databinding.ChatMeUpFragmentBinding
 import com.beepmemobile.www.ui.binding.ChatMeUpAdapter
 import com.beepmemobile.www.ui.main.UserListModel
 import com.beepmemobile.www.ui.main.MainViewModel
-import com.beepmemobile.www.util.Constant
-import com.beepmemobile.www.util.Util
+import com.beepmemobile.www.util.Constants
 
 class ChatMeUpFragment : Fragment() {
+    private var recyclerView: RecyclerView?= null
     private val model: ChatMeUpViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val usersModel: UserListModel by activityViewModels()
     private val navController by lazy { findNavController() }
     private var chatMeUpAdapter: ChatMeUpAdapter? =null
     private var _binding: ChatMeUpFragmentBinding? = null
-    private val util = Util()
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = ChatMeUpFragment()
@@ -51,15 +50,15 @@ class ChatMeUpFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = ChatMeUpFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.chatMeUpRecyclerView
+        recyclerView = binding?.chatMeUpRecyclerView
         var linerLayoutMgr = LinearLayoutManager(this.context)
-        linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
-        recyclerView.setLayoutManager(linerLayoutMgr);
+        //linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
+        recyclerView?.layoutManager = linerLayoutMgr;
         chatMeUpAdapter = ChatMeUpAdapter()
-        recyclerView.adapter = chatMeUpAdapter
+        recyclerView?.adapter = chatMeUpAdapter
 
         createObserversAndGetData()
 
@@ -69,7 +68,7 @@ class ChatMeUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val toolbar = binding.chatMeUpAppBarToolbar
+        val toolbar = binding?.chatMeUpAppBarToolbar
 
         var mainActivity = this.activity as MainActivity
         mainActivity.setSupportActionBar(toolbar)
@@ -85,17 +84,18 @@ class ChatMeUpFragment : Fragment() {
 
     private fun createObserversAndGetData(){
         var app_user = authModel.app_user
+        model.context = context
 
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<ChatMessage>> { chat_list ->
             if (app_user != null) {
-                var other_user_id = arguments?.getString(Constant.USER_ID)
+                var other_user_id = arguments?.getString(Constants.USER_ID)
 
                 //Update the Header
-                binding.chatMeUpAppHeader.user = usersModel.getUser(other_user_id)
-                binding.chatMeUpAppHeader.util = util
+                binding?.chatMeUpAppHeader?.user = usersModel.getUser(other_user_id)
 
                 chatMeUpAdapter?.setChatMeUpList(app_user, other_user_id,  chat_list)
+                recyclerView?.scrollToPosition(chatMeUpAdapter?.itemCount?.minus(1)?:0)
             }
         }
 

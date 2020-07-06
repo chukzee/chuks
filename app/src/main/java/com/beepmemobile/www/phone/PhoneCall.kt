@@ -1,10 +1,11 @@
-package com.beepmemobile.www.ui.call
+package com.beepmemobile.www.phone
 
 import android.content.Context
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.ui.main.UserListModel
+import com.beepmemobile.www.util.Util
 import me.everything.providers.android.calllog.Call as EverythingCall
 import me.everything.providers.android.calllog.Call.CallType
 import me.everything.providers.android.calllog.CallsProvider
@@ -42,12 +43,14 @@ class PhoneCall (private val context: Context, private val app_user : AppUser, p
         call.call_id = caller_number
         call.is_read = evcall.isRead
 
+        val phoneNo = Util.reformPhoneNumber(context, caller_number)
+        val numberE164 = phoneNo.numberE164
         var unknownUser = User()
-        unknownUser.user_id = caller_number
+        unknownUser.user_id = numberE164
         unknownUser.display_name = caller_number
 
         call.user = if(!call.unknown) //caller is known - number not hidden
-            usersModel.getUser(caller_number)?: unknownUser
+            usersModel.getUser(numberE164)?: unknownUser
         else//unknown number - number hidden
             unknownUser
 

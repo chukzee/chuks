@@ -1,5 +1,6 @@
 package com.beepmemobile.www.data
 
+import android.location.Location
 import android.widget.Switch
 
 class AppUser : User() {
@@ -13,7 +14,7 @@ class AppUser : User() {
 
     fun modifyAuth(stage: AuthState): AppUser{
         auth_state = stage
-        return this;
+        return this
     }
 
     fun isFavourite(user_id: String): Boolean{

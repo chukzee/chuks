@@ -1,7 +1,7 @@
 package com.beepmemobile.www.ui.binding
 
-import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
@@ -10,12 +10,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
+import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.User
 import com.beepmemobile.www.databinding.ListSubHeaderBinding
 import com.beepmemobile.www.databinding.UserLargeCardBinding
 import com.beepmemobile.www.databinding.UserSmallCardBinding
-import com.beepmemobile.www.util.Constant
-import com.beepmemobile.www.util.Util
+import com.beepmemobile.www.util.Constants
 import me.everything.providers.android.telephony.TelephonyProvider
 
 class UserSmallCardListAdapter(
@@ -28,7 +28,6 @@ class UserSmallCardListAdapter(
     private var map_data = mutableMapOf<Any, Any>()
     private var app_user: AppUser = AppUser();
     private  var keys = map_data.keys.toList()
-    private val util = Util()
     private val HEADER = "HEADER"
     private val FOOTER = "FOOTER"
 
@@ -95,7 +94,6 @@ class UserSmallCardListAdapter(
             var bnd = userCarListViewListViewHolder.userCardBinding;
             bnd?.user = currentUser
             bnd?.appUser = this.app_user
-            bnd?.util = this.util
 
             createInteractions(bnd, currentUser, app_user, {})
         }
@@ -168,9 +166,9 @@ class UserSmallCardListAdapter(
         val data: Any,
         val callback: () -> Unit
     ) : View.OnClickListener,PopupMenu.OnMenuItemClickListener {
-
+        var context: Context? = null
         override fun onClick(v: View) {
-
+            context = v.context
             when(action){
                 USER_PHOTO_ACTION -> handleUserPhotoClick(v)
                 POPUP_MENU_ICON_ACTION -> handlePopupMenuIconClick(v)
@@ -187,7 +185,6 @@ class UserSmallCardListAdapter(
             bnd.card.radius = 0f // remove the corner radius if any
             bnd.user = data as User
             bnd.appUser = app_user
-            bnd.util = util
 
             UserLargeCardListAdapter(fragment, "", false).createInteractions(bnd, bnd.user, bnd.appUser) {
                 d.hide()
@@ -209,35 +206,31 @@ class UserSmallCardListAdapter(
         override fun onMenuItemClick(item: MenuItem): Boolean {
             return when (item.itemId) {
                 R.id.user_small_card_popup_call -> {
-                    //TODO - implementation
-                    //TODO - use popupItemData
-
-                    var phone = (data as User).mobile_phone_no
-
-                    AlertDialog.Builder(fragment.context)
-                        .setTitle("TODO")
-                        .setMessage("user phone- " + phone )
-                        .create()
-                        .show()
-
+                    var user = data as User
+                    var call = Call()
+                    call.call_id = user.user_id
+                    call.user = user
+                    context?.let { call.callPhoneNumber(it) }
                     true
                 }
 
                 R.id.user_small_card_popup_chat_me_up -> {
                     var other_user_id = (data as User).user_id
 
-                    val bundle = bundleOf(Constant.USER_ID to other_user_id)
+                    val bundle = bundleOf(Constants.USER_ID to other_user_id)
                     val c = NavHostFragment.findNavController(fragment)
                     c.navigate(R.id.action_global_ChatMeUpFragment, bundle)
 
                     true
                 }
                 R.id.user_small_card_popup_sms -> {
+                    var other_user_id = (data as User).user_id
                     var other_user_phone_no = (data as User).mobile_phone_no
 
                     val bundle = bundleOf(
-                        Constant.PHONE_NO to other_user_phone_no,
-                        Constant.SMS_TYPE to TelephonyProvider.Filter.INBOX.ordinal
+                        Constants.USER_ID to other_user_id,
+                        Constants.PHONE_NO to other_user_phone_no,
+                        Constants.SMS_TYPE to TelephonyProvider.Filter.INBOX.ordinal
                     )
 
                     val c = NavHostFragment.findNavController(fragment)
@@ -246,7 +239,7 @@ class UserSmallCardListAdapter(
                     true
                 }
                 R.id.user_small_card_popup_view_profile -> {
-                    val bundle = bundleOf(Constant.USER_ID to (data as User).user_id)
+                    val bundle = bundleOf(Constants.USER_ID to (data as User).user_id)
                     val c = NavHostFragment.findNavController(fragment)
                     c.navigate(R.id.action_global_PersonalProfileFragment, bundle)
                     true

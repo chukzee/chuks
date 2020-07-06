@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+		<import type="com.beepmemobile.www.util.Util"/>
         <variable name="user" type="com.beepmemobile.www.data.User"/>
-        <variable name="util" type="com.beepmemobile.www.util.Util"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -48,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="@{util.formatTime(user.last_seen_time)}"
+            android:text="@{Util.formatTime(user.last_seen)}"
             android:textColor="@color/colorBeepMeTextLight"
             app:layout_constraintEnd_toEndOf="@+id/chat_me_up_header_full_name"
             app:layout_constraintStart_toEndOf="@+id/chat_me_up_header_profile_photo"

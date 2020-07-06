@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.AuthState
-
 import com.beepmemobile.www.databinding.SignUpWelcomeFragmentBinding
 import com.beepmemobile.www.ui.main.MainViewModel
 
@@ -26,7 +25,7 @@ class SignUpWelcomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = SignUpWelcomeFragment()
@@ -38,22 +37,22 @@ class SignUpWelcomeFragment : Fragment() {
     ): View? {
 
         _binding = SignUpWelcomeFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        binding.signUpWelcomeBtnNext.setOnClickListener {
+#
+        binding?.signUpWelcomeBtnNext?.setOnClickListener {
 
             authModel.singupStage(mapOf(), AuthState.AUTH_STAGE_NONE)
         }
 		
 		val observer = Observer<AppUser> { app_user ->
 		
-			if(app_user.auth_state == AuthState.AUTH_STAGE_USERNAME){
+			if(app_user.auth_state == AuthState.AUTH_STAGE_PHONE_NUMBER_VERIFY){
 
-                val direction = SignUpWelcomeFragmentDirections.moveToSignUpUsernameFragment()
+                val direction = SignUpWelcomeFragmentDirections.moveToSignUpPhoneNumberVerificationFragment()
 				navController.navigate(direction)
             }
 		

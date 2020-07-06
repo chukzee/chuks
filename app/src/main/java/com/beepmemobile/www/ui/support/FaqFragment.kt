@@ -18,7 +18,7 @@ class FaqFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = FaqFragment()
@@ -35,7 +35,7 @@ class FaqFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FaqFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
         return view
     }
 

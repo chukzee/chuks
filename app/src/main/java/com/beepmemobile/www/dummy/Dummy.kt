@@ -1,5 +1,6 @@
 package com.beepmemobile.www.dummy
 
+import android.content.Context
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.data.Call
 import com.beepmemobile.www.data.Message
@@ -8,12 +9,13 @@ import com.beepmemobile.www.data.msg.ChatMessage
 import com.beepmemobile.www.data.msg.Post
 import com.beepmemobile.www.data.msg.SmsMessage
 import com.beepmemobile.www.ui.main.MainViewModel
+import com.beepmemobile.www.util.Util
 import java.util.*
 
-
-class Dummy {
-
+class Dummy(val context: Context)
+{
     private val dummy_suffix = 0;
+    private val NG = "NG"
 
     fun getDummyAppUser(): AppUser{
         var u = AppUser()
@@ -27,9 +29,10 @@ class Dummy {
         return createUser(i, obj)
     }
 
-    fun createUser(i: Int, obj :User): User{
+    private fun createUser(i: Int, obj :User): User{
 
-        obj.user_id  = "080" + (10000000 + i)
+        val phoneNo = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG)
+        obj.user_id  = phoneNo.numberE164
         obj.joined_date = Date()
         obj.display_name = "Person Name_"+i
         obj.home_address = "No. " + i + " along Road_"+i +" off Place_"+i+" Ekpan, Delta"
@@ -38,10 +41,10 @@ class Dummy {
         obj.personal_email = "persona_email_"+i+"4u@gmail.com"
         obj.work_email = "work_email_"+i+"4u@beepme.com"
         obj.website = "www.mywebsite"+i+".com"
-        obj.location = "Warri, Nigeria "+i
+        obj.location_address = "Warri, Nigeria "+i
         obj.status_message = "This is my status message "+i
-        //obj.mobile_phone_no =  "070" + (10000000 + i)
-        obj.work_phone_no =  "071" + (22200000 + i)
+        obj.mobile_phone_no =  phoneNo.nationNumber
+        obj.work_phone_no =  Util.reformPhoneNumber(context, "071" + (22200000 + i), NG).nationNumber
 
         return obj
     }
@@ -57,17 +60,17 @@ class Dummy {
             var rand_type = (1..3).random()
             obj.type = rand_type;
 
-            obj.call_id = "080" + (10000000 + i)
+            obj.call_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164
 
             if(obj.type == Call.RECEIVED_CALL) {
                 obj.duration = i + 10L;
             }
 
             if(obj.type == Call.RECEIVED_CALL || obj.type == Call.MISSED_CALL) {
-                obj.call_id = "080" + (10000000 + i)
+                obj.call_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164
                 obj.user = createUser(dummy_suffix + 1, obj.user)
             }else if(obj.type == Call.DIALLED_CALL){
-                obj.call_id = "080" + (10000000 + i)
+                obj.call_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164
                 obj.user = createUser(dummy_suffix, obj.user)
             }
 
@@ -107,14 +110,18 @@ class Dummy {
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix // app user
 
-                obj.sender_id = "user_id_"+ i//app user
-                obj.receiver_id = "user_id_" + i + 1// other user
+                obj.sender_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164//app user
+                obj.receiver_id = Util.reformPhoneNumber(context, "090" + (10000000 + i + 1), NG).numberE164// other user
 
             }else{
                 i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
 
-                obj.sender_id = "user_id_"+ i// other user
-                obj.receiver_id = "user_id_" + dummy_suffix//app user
+                obj.sender_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164// other user
+                obj.receiver_id = Util.reformPhoneNumber(
+                    context,
+                    "090" + (10000000 + dummy_suffix),
+                    NG
+                ).numberE164//app user
             }
 
             obj.user = createUser(i, obj.user)
@@ -147,13 +154,17 @@ class Dummy {
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix//app user
 
-                obj.sender_id = "080" + (10000000 + i)//app user
-                obj.receiver_id = "090" + (10000000 + i + 1)// other user
+                obj.sender_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164//app user
+                obj.receiver_id = Util.reformPhoneNumber(context, "090" + (10000000 + i + 1), NG).numberE164// other user
             }else{
                 i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
 
-                obj.sender_id = "080" + (10000000 + i)// other user
-                obj.receiver_id = "090" + (10000000 + dummy_suffix)//app user
+                obj.sender_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164// other user
+                obj.receiver_id = Util.reformPhoneNumber(
+                    context,
+                    "090" + (10000000 + dummy_suffix),
+                    NG
+                ).numberE164//app user
             }
 
             obj.user = createUser(i, obj.user)
@@ -187,13 +198,17 @@ class Dummy {
             if(i% 2 == 0 && obj.msg_status != Message.MSG_STATUS_NOT_SENT){
                 i = dummy_suffix//app user
 
-                obj.sender_id = "user_id_"+ i//app user
-                obj.receiver_id = "user_id_" + i + 1// other user
+                obj.sender_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164//app user
+                obj.receiver_id = Util.reformPhoneNumber(context, "090" + (10000000 + i + 1), NG).numberE164// other user
             }else{
                 i = (dummy_suffix+1 .. dummy_suffix+5).random() // other user
 
-                obj.sender_id = "user_id_"+ i// other user
-                obj.receiver_id = "user_id_" + dummy_suffix//app user
+                obj.sender_id = Util.reformPhoneNumber(context, "080" + (10000000 + i), NG).numberE164// other user
+                obj.receiver_id = Util.reformPhoneNumber(
+                    context,
+                    "090" + (10000000 + dummy_suffix),
+                    NG
+                ).numberE164//app user
             }
 
             obj.user = createUser(i, obj.user)
@@ -222,7 +237,7 @@ class Dummy {
     }
 
     fun signUp(): MainViewModel.Result {
-        var r = MainViewModel.Result()
+        var r = MainViewModel().Result()
 
         r.success = true
 

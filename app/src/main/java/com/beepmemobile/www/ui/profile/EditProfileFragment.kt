@@ -13,21 +13,18 @@ import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
 import com.beepmemobile.www.databinding.EditProfileFragmentBinding
 import com.beepmemobile.www.ui.main.MainViewModel
-import com.beepmemobile.www.util.Util
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 
 
 class EditProfileFragment : Fragment() {
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
-    private val model: EditProfileViewModel by viewModels()
-    private val util = Util()
 
     private var _binding: EditProfileFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = EditProfileFragment()
@@ -48,35 +45,35 @@ class EditProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = EditProfileFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layout = binding.editProfileCollapsingToolbarLayout
-        val toolbar = binding.editProfileToolbar
+        val layout = binding?.editProfileCollapsingToolbarLayout
+        val toolbar = binding?.editProfileToolbar
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        layout.setupWithNavController(toolbar, navController, appBarConfiguration)
+        if (toolbar != null) {
+            layout?.setupWithNavController(toolbar, navController, appBarConfiguration)
+        }
 
         var mainActivity = this.activity as MainActivity
         mainActivity.setSupportActionBar(toolbar)
 
         //Update the UI
-        binding.user = authModel.app_user; // definitely the app user
-        binding.appUser =authModel.app_user
-        binding.util = util
+        binding?.user = authModel.app_user; // definitely the app user
+        binding?.appUser =authModel.app_user
 
-        binding.editProfileEditInfoInclude.user = authModel.app_user
-        binding.editProfileEditInfoInclude.appUser = authModel.app_user
-        binding.editProfileEditInfoInclude.util = util
+        binding?.editProfileEditInfoInclude?.user = authModel.app_user
+        binding?.editProfileEditInfoInclude?.appUser = authModel.app_user
 
         var display_name = authModel.app_user?.display_name
 
         (activity as MainActivity).supportActionBar?.setTitle(R.string.empty)
 
-        binding.editProfileAppBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
+        binding?.editProfileAppBar?.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset -> //  Vertical offset == 0 indicates appBar is fully  expanded.
 
             //If the AppBarLayout’s ‘verticalOffset’ is zero, then its fully expanded
 

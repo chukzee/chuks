@@ -30,7 +30,7 @@ class ChatMeUpListFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = ChatMeUpFragment()
@@ -48,13 +48,13 @@ class ChatMeUpListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = ChatMeUpListFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.chatMeUpListRecyclerView
-        recyclerView.setLayoutManager(LinearLayoutManager(this.context));
+        var recyclerView: RecyclerView? = binding?.chatMeUpListRecyclerView
+        recyclerView?.setLayoutManager(LinearLayoutManager(this.context));
         chatMeUpListAdapter = ChatMeUpListAdapter(navController)
-        recyclerView.adapter = chatMeUpListAdapter
+        recyclerView?.adapter = chatMeUpListAdapter
 
         createObserversAndGetData()
 
@@ -69,6 +69,7 @@ class ChatMeUpListFragment : Fragment() {
     private fun createObserversAndGetData(){
 
         var app_user = authModel.app_user
+        model.context = context
 
         // Create the observer which updates the UI.
         val observer = Observer<MutableList<ChatMessage>> { chat_list ->

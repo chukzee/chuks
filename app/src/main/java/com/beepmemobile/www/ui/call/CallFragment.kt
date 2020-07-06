@@ -24,14 +24,14 @@ class CallFragment : Fragment() {
 
     private val MY_PERMISSIONS_REQUEST_CALL_PHONE = 1
     private val navController by lazy { findNavController() }
-    private lateinit var viewPager: ViewPager2
+    private var viewPager: ViewPager2? = null
     private var tab_titles = arrayOf<String>("DIALLED","RECEIVED","MISSED")
     private var _binding: CallFragmentBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     companion object {
         fun newInstance() = CallFragment()
@@ -49,26 +49,30 @@ class CallFragment : Fragment() {
     ): View? {
 
         _binding = CallFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
+        val view = binding?.root
 
         //callList?.get(0)?.id != app_user.phone // it is received call
 
-        binding.callViewPager.adapter = CallTabViewPagerAdapter(this, tab_titles)
+        binding?.callViewPager?.adapter = CallTabViewPagerAdapter(this, tab_titles)
 
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as MainActivity).supportActionBar?.setTitle(R.string.calls)
-        val tabLayout = binding.callTabLayout
-        viewPager = binding.callViewPager
+        val tabLayout = binding?.callTabLayout
+        viewPager = binding?.callViewPager
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-              tab.text = tab_titles[position]
+        if (tabLayout != null) {
+            viewPager?.let {
+                TabLayoutMediator(tabLayout, it) { tab, position ->
+                    tab.text = tab_titles[position]
 
-            //tab.icon = ...//TODO
-            //tab.badge = ...//TODO
-        }.attach()
+                    //tab.icon = ...//TODO
+                    //tab.badge = ...//TODO
+                }.attach()
+            }
+        }
 
         super.onViewCreated(view, savedInstanceState)
     }

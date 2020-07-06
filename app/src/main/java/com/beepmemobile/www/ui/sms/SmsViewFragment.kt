@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.telephony.SmsManager
 import android.view.*
 import android.widget.SearchView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,10 +19,11 @@ import com.beepmemobile.www.MainActivity
 import com.beepmemobile.www.R
 import com.beepmemobile.www.data.AppUser
 import com.beepmemobile.www.databinding.SmsViewFragmentBinding
+import com.beepmemobile.www.phone.PhoneSms
 import com.beepmemobile.www.ui.binding.SmsViewAdapter
 import com.beepmemobile.www.ui.main.UserListModel
 import com.beepmemobile.www.ui.main.MainViewModel
-import com.beepmemobile.www.util.Constant
+import com.beepmemobile.www.util.Constants
 import me.everything.providers.android.telephony.TelephonyProvider
 
 
@@ -32,6 +31,7 @@ class SmsViewFragment : Fragment() {
     private var message: String = ""
     private var phoneNo: String = ""
     private val MY_PERMISSIONS_REQUEST_SEND_SMS = 1
+    private var recyclerView: RecyclerView? = null
     private val usersModel: UserListModel by activityViewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
@@ -62,12 +62,12 @@ class SmsViewFragment : Fragment() {
         val view = binding.root
 
         // bind RecyclerView
-        var recyclerView: RecyclerView = binding.smsRecyclerView
+        recyclerView = binding.smsRecyclerView
         var linerLayoutMgr = LinearLayoutManager(this.context)
-        linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
-        recyclerView.setLayoutManager(linerLayoutMgr);
+        //linerLayoutMgr.stackFromEnd = true //will set the view to show the last element
+        recyclerView?.layoutManager = linerLayoutMgr;
         smsViewAdapter = SmsViewAdapter()
-        recyclerView.adapter = smsViewAdapter
+        recyclerView?.adapter = smsViewAdapter
 
         return view
     }
@@ -87,10 +87,15 @@ class SmsViewFragment : Fragment() {
 
         var app_user: AppUser = authModel.app_user ?: return
 
-        var other_user_phone_no = arguments?.getString(Constant.PHONE_NO)?:""
-        var sms_type = arguments?.getInt(Constant.SMS_TYPE)
+        var other_user_id = arguments?.getString(Constants.USER_ID)?:""
+        var other_user_phone_no = arguments?.getString(Constants.PHONE_NO)?:""
+        var sms_type = arguments?.getInt(Constants.SMS_TYPE)
 
-        var phoneSms = PhoneSms(this.requireContext(), app_user, usersModel)
+        var phoneSms = PhoneSms(
+            this.requireContext(),
+            app_user,
+            usersModel
+        )
         var filter: TelephonyProvider.Filter = TelephonyProvider.Filter.ALL
 
         when(sms_type){
@@ -100,15 +105,16 @@ class SmsViewFragment : Fragment() {
             TelephonyProvider.Filter.DRAFT.ordinal -> filter = TelephonyProvider.Filter.DRAFT
         }
 
+        var is_all_type = filter == TelephonyProvider.Filter.ALL
+
         var sms_list = phoneSms.getMessages(filter)
-
-        smsViewAdapter?.setSmsViewList(app_user, other_user_phone_no, sms_list)
-
+        smsViewAdapter?.setSmsViewList(app_user, other_user_id, sms_list, is_all_type)
+        recyclerView?.scrollToPosition(smsViewAdapter?.itemCount?.minus(1)?: 0)
         binding.smsToUserInput.smsToUserTxtSelectedPhoneNos.text.append(other_user_phone_no)
-
         binding.smsInputInclude.smsInputSendMsgBtn.setOnClickListener {
             sendSMSMessage()
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
