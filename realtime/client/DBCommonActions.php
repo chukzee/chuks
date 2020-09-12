@@ -46,7 +46,7 @@ trait DBCommonActions
 				$setOp,                 
 				['projection' => ['_id' => 0], 'upsert'=> true, 'returnDocument' => $returnNewDocument? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE]
         );
-var_dump($result);
+
         return $result;  
     }
    
