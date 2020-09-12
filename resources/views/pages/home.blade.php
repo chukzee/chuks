@@ -25,17 +25,17 @@
           </div>
         </div>
       </div>
-      <!--   Icon Section   -->
-      <div class="row">
+      
+      <div class="row" id="home_u_konect_details">
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">WHY U-KONECT</h5>
 
             <p class="light">
-                The platform talks about the completely personalized experience creat
-                ed for every user, and the ability to manage every connection you had, have and will have; hence the name; “U-KONECT”.
-                It's a multidimensional Software Application with different features which allows its users;
+                The platform talks about the completely personalized experience created
+                for every user, and the ability to manage every connection you had, have and will have; hence the name; <strong>“U-KONECT”</strong>.
+                It's a multidimensional Software Application with different features.
 
             </p>
           </div>
@@ -43,7 +43,7 @@
 
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">CALLER IDENTITY</h5>
 
             <p class="light">
@@ -54,7 +54,7 @@
 
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">PROXIMITY REVEAL</h5>
 
             <p class="light">
@@ -73,7 +73,7 @@
       <div class="row">
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">AUTO-BACKUP YOUR CONTACT</h5>
 
             <p class="light">
@@ -85,11 +85,10 @@
             
           </div>
         </div>
-          
-          
+                    
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">VOICEMAIL BOX</h5>
 
             <p class="light">
@@ -101,11 +100,10 @@
             
           </div>
         </div>
-          
-          
+                    
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">GEO-FENCING</h5>
 
             <p class="light">
@@ -122,7 +120,7 @@
       <div class="row">
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">CHAT AND SHARE FILES</h5>
 
             <p class="light">
@@ -132,11 +130,10 @@
             
           </div>
         </div>
-          
-                    
+                              
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">CONNECTION REQUEST</h5>
 
             <p class="light">
@@ -149,7 +146,7 @@
           
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">PROFILE VISITORS </h5>
 
             <p class="light">
@@ -166,7 +163,7 @@
       
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">BLOCK UNWANTED CALLS AND SMS</h5>
 
             <p class="light">
@@ -179,7 +176,7 @@
           
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">ADS BLOCKING</h5>
 
             <p class="light">
@@ -192,7 +189,7 @@
           
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">USER INTERFACE FLEXIBILITY</h5>
 
             <p class="light">
@@ -204,12 +201,11 @@
         </div>
           
       </div>    
-          
-     
+      
       <div class="row"> 
         <div class="col s12 m4">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h2 class="center light-blue-text"><i class="material-icons"></i></h2>
             <h5 class="center">USER UPGRADE</h5>
 
             <p class="light">
@@ -221,8 +217,6 @@
             
           </div>
         </div>
-          
-          
           
       </div>
 

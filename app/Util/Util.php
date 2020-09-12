@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 
 class Util {
     
+	static function millitime(){
+		return round(microtime(true) * 1000);
+	}
+	
     /*
       Get the distance in meters between two points (latitude/longitude) in km using Haversine formula
      */
@@ -78,11 +82,37 @@ class Util {
             $folder = Constants::DEFAULT_UPLOAD_DIR;
         }
 
+		if (!file_exists(public_path($folder))) {
+			mkdir(public_path($folder), 0777, true);
+		}
+
         // Make a file path where image will be stored [ folder path + file name + file extension]
         $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
 
         // Upload image
         $image->move(public_path($folder), $filePath);
+
+        return $filePath;
+    }
+
+    static function uploadBase64(string $base64, string $folder=null, string $filename=null, string $file_extention='') {
+
+        // Make a image name based on user id whiche is unique for all users
+        $name = $filename == null ? static::unique() : $filename;
+        // Define folder path
+
+        if (!$folder) {
+            $folder = Constants::DEFAULT_UPLOAD_DIR;
+        }
+
+		if (!file_exists(public_path().$folder)) {
+			mkdir(public_path().$folder, 0777, true);
+		}
+
+        // Make a file path where image will be stored [ folder path + file name + file extension]
+        $filePath = $folder . $name . ($file_extention? ('.' . $file_extention): '');
+		
+		file_put_contents(public_path().$filePath, base64_decode($base64), LOCK_EX );
 
         return $filePath;
     }

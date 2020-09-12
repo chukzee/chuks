@@ -6,20 +6,11 @@ class Result {
 
     public $success = false;
     public $data = '';
-    public $msg = '';
     public $errMsg = '';
     public $debugMsg = '';
     public $stackTraceMsg = '';
 
-    function success($value = null) {
-        if($value != null){
-            $this->msg = $value;
-        }
-        $this->success = true;
-        return $this;
-    }
-
-    function error($err, $value = null) {
+    function error(string $err, string $value = null) {
         if($err != null){
             $this->errMsg = $err;
         }
@@ -28,14 +19,6 @@ class Result {
         }
         $this->success = false;
         return $this;
-    }
-
-    function successJson($value = null) {
-        return json_encode($this->successArray($value));
-    }
-
-    function successArray($value = null) {
-        return (array)$this->success($value);
     }
 
     function errorJson($err, $value = null) {
@@ -67,8 +50,24 @@ class Result {
     
     function dataArray($send = ''){
         $this->data = $send;
-        return $this->successArray();
+		$this->success = true;
+        return (array)$this;
     }
+
+	/**
+	 * Serialize the data field before serializing the entire class object. 
+	 * This  is particularly useful where the data field on the frontend is of variable object type.
+	 * After the first deserialization the data field is thereafter deserialized to the expected object type	 
+	 */
+	function serialized($data){
+		
+		if(!is_string($data)){
+			$data = json_encode($data);
+		}
+		$this->data = $data;
+		$this->success = true;
+		return $this->json();		
+	}
     
     function json() {
         return json_encode($this);

@@ -3,8 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/wamp64/www/UKonectServer/resources/views/layouts/app.blade.php</file>
-            <file>file:/C:/wamp64/www/UKonectServer/resources/views/home.blade.php</file>
+            <file>file:/C:/wamp64/www/UKonectServer/realtime/client/MessageManager.php</file>
+            <file>file:/C:/wamp64/www/UKonectServer/app/Util/Constants.php</file>
+            <file>file:/C:/wamp64/www/UKonectServer/realtime/client/GroupManager.php</file>
+            <file>file:/C:/wamp64/www/UKonectServer/realtime/client/AuthManager.php</file>
+            <file>file:/C:/wamp64/www/UKonectServer/realtime/client/UserManager.php</file>
         </group>
     </open-files>
 </project-private>
