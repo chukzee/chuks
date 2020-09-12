@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -34,9 +35,8 @@ import java.io.IOException
 
 
 class SignUpProfilePhotoFragment : Fragment() {
+    private var selectedImage: Uri? = null
     private var disposable: Disposable? = null
-    private var selectedImagePath: String? = ""
-    private val model: SignUpProfilePhotoViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
 
@@ -67,16 +67,14 @@ class SignUpProfilePhotoFragment : Fragment() {
 
         binding?.signUpProfilePhotoBtnNext?.setOnClickListener {
 
-
             var status_message = binding?.signUpProfilePhotoStatusMessageTxt?.text.toString()
             var photo_file_extension = ""
 
             disposable = Observable.fromCallable{
                 //return the line below
-                selectedImagePath.let{
-                    var file = File(it)
-                    photo_file_extension = file.extension
-                    Utils.getBase64StringFromFile(file)
+                selectedImage?.toFile()?.let{
+                    photo_file_extension = it.extension
+                    Utils.getBase64StringFromFile(it)
                 }
 
             }.subscribeOn(Schedulers.io())
@@ -84,10 +82,12 @@ class SignUpProfilePhotoFragment : Fragment() {
                 .subscribe(
                     { photo_base64 ->
 
-                        var req = mapOf<String, String>("user_id" to (appUser?.user_id?: ""),
+                        var req = mapOf<String, String>(
+                            "user_id" to (appUser?.user_id ?: ""),
                             "photo_file_extension" to photo_file_extension,
-                            "photo_base64" to photo_base64,
-                            "status_message" to status_message)
+                            "photo_base64" to (photo_base64 ?: ""),
+                            "status_message" to status_message
+                        )
 
                         authModel.singupStage(req, AuthState.AUTH_STAGE_PROFILE_PHOTO)
                     },
@@ -139,16 +139,11 @@ class SignUpProfilePhotoFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode === PPROFIE_PHOTO_REQUEST && resultCode === Activity.RESULT_OK && attr.data != null) {
-            val selectedImage: Uri? = data?.data
+            selectedImage = data?.data
             try {
                 // Do whatever you want with this bitmap (image)
                 //val bitmapImage = MediaStore.Images.Media.getBitmap(activity?.contentResolver, selectedImage)
-
-                selectedImagePath = selectedImage?.path
                 binding?.signUpProfilePhotoImgPhoto?.setImageURI(selectedImage)
-
-                //photo_file_extension
-                //Log.i("Image Path", selectedImage?.getPath())
 
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()

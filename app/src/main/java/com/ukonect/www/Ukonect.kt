@@ -28,7 +28,7 @@ class Ukonect : MultiDexApplication() , SharedPreferences.OnSharedPreferenceChan
     companion object {
         var appUser: AppUser? = null;
         var isAppUserAuthenticated = false
-
+        var context: Context? = null
         /**
          * The desired interval for location updates. Inexact. Updates may be more or less frequent.
          */
@@ -55,6 +55,8 @@ class Ukonect : MultiDexApplication() , SharedPreferences.OnSharedPreferenceChan
         super.onCreate()
 
         Thread.setDefaultUncaughtExceptionHandler(UkonectUncaughtExceptionHandler(this.applicationContext))
+
+        Ukonect.context = this.applicationContext
 
         PreferenceManager.getDefaultSharedPreferences(this)
             .registerOnSharedPreferenceChangeListener(this)

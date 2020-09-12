@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -33,8 +34,8 @@ import java.io.IOException
 
 
 class EditProfileFragment : Fragment() {
+    private var selectedImage: Uri? = null
     private var disposable: Disposable? = null
-    private var selectedImagePath: String? = ""
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
 
@@ -91,7 +92,6 @@ class EditProfileFragment : Fragment() {
         binding?.appUser =authModel.app_user
 
         binding?.editProfileEditInfoInclude?.user = authModel.app_user
-        binding?.editProfileEditInfoInclude?.appUser = authModel.app_user
 
         var display_name = authModel.app_user?.display_name
         var space =" "
@@ -124,14 +124,13 @@ class EditProfileFragment : Fragment() {
 
     private fun getOnClickSaveBtnListener(): View.OnClickListener? {
         var photo_file_extension = ""
-        return View.OnClickListener{view->
+        return View.OnClickListener { view ->
 
-            disposable = Observable.fromCallable{
+            disposable = Observable.fromCallable {
                 //return the line below
-                selectedImagePath.let{
-                    var file = File(it)
-                    photo_file_extension = file.extension
-                    Utils.getBase64StringFromFile(file)
+                selectedImage?.toFile()?.let {
+                    photo_file_extension = it.extension
+                    Utils.getBase64StringFromFile(it)
                 }
 
             }.subscribeOn(Schedulers.io())
@@ -140,18 +139,21 @@ class EditProfileFragment : Fragment() {
                     { photo_base64 ->
                         val c = binding?.editProfileEditInfoInclude;
 
-                        val  profileDetail = User()
-                        profileDetail.user_id = authModel.app_user?.user_id?:""
-                        profileDetail.photo_base64 = photo_base64
+                        val profileDetail = User()
+                        profileDetail.user_id = authModel.app_user?.user_id ?: ""
+                        profileDetail.photo_base64 = photo_base64 ?: ""
                         profileDetail.photo_file_extension = photo_file_extension
                         profileDetail.first_name = c?.userEditInfoFirstNameTxt?.text.toString()
                         profileDetail.last_name = c?.userEditInfoLastNameTxt?.text.toString()
-                        profileDetail.personal_email = c?.userEditInfoPersonalEmailTxt?.text.toString()
+                        profileDetail.personal_email =
+                            c?.userEditInfoPersonalEmailTxt?.text.toString()
                         profileDetail.work_email = c?.userEditInfoWorkEmailTxt?.text.toString()
                         profileDetail.home_address = c?.userEditInfoHomeAddressTxt?.text.toString()
-                        profileDetail.office_address = c?.userEditInfoOfficeAddressTxt?.text.toString()
+                        profileDetail.office_address =
+                            c?.userEditInfoOfficeAddressTxt?.text.toString()
                         profileDetail.website = c?.userEditWebsiteTxt?.text.toString()
-                        profileDetail.status_message = c?.userEditInfoStatusMessageTxt?.text.toString()
+                        profileDetail.status_message =
+                            c?.userEditInfoStatusMessageTxt?.text.toString()
                         profileDetail.work_phone_no = c?.userEditInfoWorkPhoneNoTxt?.text.toString()
 
                         var mainActivity = activity as MainActivity
@@ -160,12 +162,12 @@ class EditProfileFragment : Fragment() {
                                 ?.subscribeOn(Schedulers.io())
                                 ?.observeOn(AndroidSchedulers.mainThread())
                                 ?.subscribe(
-                                    { app_user -> onEdithProfileSuccess(app_user)},
-                                    { error ->  Utils.handleException(context,  error) }
+                                    { app_user -> onEdithProfileSuccess(app_user) },
+                                    { error -> Utils.handleException(context, error) }
                                 )
 
                     },
-                    { error ->  Utils.handleException(context,  error) }
+                    { error -> Utils.handleException(context, error) }
                 )
 
         }
@@ -173,10 +175,21 @@ class EditProfileFragment : Fragment() {
 
     private fun onEdithProfileSuccess(app_user: AppUser) {
 
+        Utils.logExternal(context, "onEdithProfileSuccess 1")//TESTING!!!
+
         authModel.updateAppUser(app_user)
 
+        Utils.logExternal(context, "onEdithProfileSuccess 2")//TESTING!!!
+
+
         val bundle = bundleOf(Constants.USER_ID to app_user.user_id)
+
+        Utils.logExternal(context, "onEdithProfileSuccess 3")//TESTING!!!
+
         navController.navigate(R.id.move_to_PersonalProfileFragmentt, bundle)
+
+        Utils.logExternal(context, "onEdithProfileSuccess 4")//TESTING!!!
+
 
     }
 
@@ -206,12 +219,11 @@ class EditProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode === Constants.PPROFIE_PHOTO_REQUEST && resultCode === Activity.RESULT_OK && android.R.attr.data != null) {
-            val selectedImage: Uri? = data?.data
+            selectedImage = data?.data
             try {
                 // Do whatever you want with this bitmap (image)
                 //val bitmapImage = MediaStore.Images.Media.getBitmap(activity?.contentResolver, selectedImage)
 
-                selectedImagePath = selectedImage?.path
                 binding?.editProfilePhotoImg?.setImageURI(selectedImage)
 
                 //Log.i("Image Path", selectedImage?.getPath())

@@ -19,7 +19,6 @@ import com.ukonect.www.ui.main.MainViewModel
 import com.ukonect.www.util.Constants
 
 class SignUpFullNameFragment : Fragment() {
-    private val model: SignUpFullNameViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
     private var _binding: SignUpFullNameFragmentBinding? = null

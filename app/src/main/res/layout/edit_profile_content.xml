@@ -5,7 +5,6 @@
 
     <data>
         <variable name="user" type="com.ukonect.www.data.User"/>
-        <variable name="app_user" type="com.ukonect.www.data.AppUser"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,8 +37,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="First name"
-                android:inputType="phone"
-                android:text="@{user.work_phone_no}" />
+                android:inputType="textPersonName"
+                android:text="@{user.first_name}" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -58,8 +57,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Last name"
-                android:inputType="textEmailAddress"
-                android:text="@{user.personal_email}" />
+                android:inputType="textPersonName"
+                android:text="@{user.last_name}" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -140,7 +139,7 @@
                 android:ems="10"
                 android:hint="Website"
                 android:text="@{user.website}"
-                android:inputType="textPersonName" />
+                android:inputType="textUri" />
 
             <TextView
                 android:id="@+id/textView9"

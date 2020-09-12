@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Type
 import java.util.*
+import java.util.Base64.getEncoder
 import kotlin.math.*
 
 
@@ -38,26 +39,15 @@ class Utils {
 
         @JvmStatic
         fun getBase64StringFromFile(f: File): String {
-
-            var inputStream: InputStream? = null
-            var encodedFile = ""
-            try {
-                inputStream = FileInputStream(f.absolutePath)
-                val buffer = ByteArray(10240) //specify the size to allow
-                var bytesRead: Int = 0;
-                val output = ByteArrayOutputStream()
-                val output64 = Base64OutputStream(output, Base64.DEFAULT)
-                while (inputStream.read(buffer).also({ bytesRead = it }) != -1) {
-                    output64.write(buffer, 0, bytesRead)
+            return FileInputStream(f).use { inputStream ->
+                ByteArrayOutputStream().use { outputStream ->
+                    Base64OutputStream(outputStream, Base64.DEFAULT).use { base64FilterStream ->
+                        inputStream.copyTo(base64FilterStream)
+                        base64FilterStream.close() // This line is required
+                        outputStream.toString()
+                    }
                 }
-                output64.close()
-                encodedFile = output.toString()
-            } catch (e1: FileNotFoundException) {
-                e1.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
             }
-            return encodedFile
         }
 
         /**

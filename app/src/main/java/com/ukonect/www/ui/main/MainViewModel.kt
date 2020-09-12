@@ -53,10 +53,13 @@ class MainViewModel : ViewModel() {
         Asynchronously check authentication of user
         Read the user auth saved to the system
      */
-    private fun checkAuth(it: MutableLiveData<AppUser>) {
+    private fun checkAuth(liveAppUser: MutableLiveData<AppUser>) {
 
         this.viewModelScope.launch {
-            it.postValue(readUserInfoFromDisk())
+            readUserInfoFromDisk()?.let {
+                    liveAppUser.postValue(it)
+            }
+
         }
 
     }
@@ -109,7 +112,7 @@ class MainViewModel : ViewModel() {
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe(
                 { app_user ->
-                    appUser = app_user;
+                    auth.value = app_user
                     onSuccess()
                 },
                 { error ->  Utils.handleException(context,  error)}
@@ -117,24 +120,25 @@ class MainViewModel : ViewModel() {
     }
 
 
-    private fun readUserInfoFromDisk() : AppUser{
-        var serializedAppUser = PreferenceManager.getDefaultSharedPreferences(context)
+    private fun readUserInfoFromDisk() : AppUser?{
+        var serializedAppUser: String? = PreferenceManager.getDefaultSharedPreferences(context)
             .getString(Constants.KEY_APP_USER, null)
+            ?: return null
+        val app_user: AppUser = gson.fromJson(serializedAppUser, AppUser::class.java)
 
-        val appUser: AppUser = gson.fromJson(serializedAppUser, AppUser::class.java)
-
-        Ukonect.appUser = appUser;
-        return appUser
+        appUser = app_user;
+        return app_user
     }
 
     private fun saveUserInfoToDisk(app_user: AppUser?): Boolean{
         var serializedAppUser = gson.toJson(app_user)
+
         PreferenceManager.getDefaultSharedPreferences(context)
             .edit()
             .putString(Constants.KEY_APP_USER, serializedAppUser)
             .apply()
 
-        Ukonect.appUser = app_user;
+        appUser = app_user;
         return true
     }
 

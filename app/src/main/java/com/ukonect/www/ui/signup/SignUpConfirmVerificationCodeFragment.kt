@@ -18,7 +18,6 @@ import com.ukonect.www.ui.main.MainViewModel
 import com.ukonect.www.util.Constants
 
 class SignUpConfirmVerificationCodeFragment : Fragment() {
-    private val model: SignUpConfirmVerificationCodeViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
     private var _binding: SignUpConfirmVerificationCodeFragmentBinding? = null

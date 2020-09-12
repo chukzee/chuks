@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.laurencegarmstrong.kwamp.client.core.ClientImpl
 import com.laurencegarmstrong.kwamp.client.core.call.DeferredCallResult
 import com.laurencegarmstrong.kwamp.core.Uri
+import com.ukonect.www.Ukonect
 import com.ukonect.www.Ukonect.Companion.appUser
 import com.ukonect.www.data.AppUser
 import com.ukonect.www.data.Group
@@ -33,15 +34,19 @@ class WampCaller internal constructor(private val wampClient: ClientImpl?) {
                 var gson =  Gson();
                 var result= gson.fromJson(json, Model.Result::class.java)
 
-                var msg = result.msg;
+
+                Utils.logExternal(Ukonect.context, "onCallResult")//TESTING!!!
+                Utils.logExternal(Ukonect.context, json)//TESTING!!!
+                Utils.logExternal(Ukonect.context, "-------------------------------")//TESTING!!!
+                Utils.logExternal(Ukonect.context, result.data)//TESTING!!!
 
                 if(result.success) {
 
                     if (T::class == String::class) {
-                        emitter.onNext(result.msg as T)//we know T is String
+                        emitter.onNext(result.data as T)//we know T is String
                     } else {
-                        var data = gson.fromJson(json, T::class.java)
-                        emitter.onNext(data)
+                        var obj = gson.fromJson(result.data, T::class.java)
+                        emitter.onNext(obj)
                     }
                 }else {
                     emitter.onError(
@@ -76,8 +81,8 @@ class WampCaller internal constructor(private val wampClient: ClientImpl?) {
                 var result = Gson().fromJson(json, Model.Result::class.java)
 
                 if (result.success) {
-                    var data = Utils.jsonArrayToList(json, T::class.java)
-                    emitter.onNext(data)
+                    var obj = Utils.jsonArrayToList(result.data, T::class.java)
+                    emitter.onNext(obj)
                 } else {
                     emitter.onError(
                         UkonectException(result)

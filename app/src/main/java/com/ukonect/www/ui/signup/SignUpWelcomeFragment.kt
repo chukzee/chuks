@@ -15,7 +15,6 @@ import com.ukonect.www.databinding.SignUpWelcomeFragmentBinding
 import com.ukonect.www.ui.main.MainViewModel
 
 class SignUpWelcomeFragment : Fragment() {
-    private val model: SignUpWelcomeViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
     private var _binding: SignUpWelcomeFragmentBinding? = null

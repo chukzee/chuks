@@ -11,7 +11,7 @@ object Model {
 
     class Result{//must match the result class in the server
           var success = false
-          var msg = ""
+          var data = ""
           var errMsg = ""
           var debugMsg = ""
           var stackTraceMsg = ""

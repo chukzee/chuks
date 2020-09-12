@@ -18,7 +18,6 @@ import com.ukonect.www.util.Utils
 
 
 class SignUpPhoneNumberVerificationFragment : Fragment() {
-    private val model: SignUpPhoneNumberVerificationViewModel by viewModels()
     private val authModel: MainViewModel by activityViewModels()
     private val navController by lazy { findNavController() }
 
@@ -63,7 +62,7 @@ class SignUpPhoneNumberVerificationFragment : Fragment() {
             var phoneNo =
                 country_code?.let { it1 -> Utils.reformPhoneNumber(requireContext(), phone_no, it1) }
 
-            AlertDialog.Builder(this.requireContext())//TODO TO BE REMOVED ABEG O!!!
+            /*AlertDialog.Builder(this.requireContext())//TODO TO BE REMOVED ABEG O!!!
                 .setTitle("Something")
                 .setMessage("country_code: ${Utils.countryNameCode(requireContext())}," +
                         " dialling_code: ${Utils.countryNumericCode(requireContext(), Utils.countryNameCode(requireContext()))}," +
@@ -73,7 +72,7 @@ class SignUpPhoneNumberVerificationFragment : Fragment() {
                             Utils.countryNameCode(requireContext())
                         )}")
                 .create()
-                .show()
+                .show()*/
 
              // display the dialling code
 

@@ -23,7 +23,6 @@ open class User() {
     var photo_base64: String = ""//Note: We will not store  this feild in the mongo document
     var photo_file_extension: String=""
     var first_name = ""
-    var display_name = ""
     var last_name = ""
     var home_address: String = Constants.STR_NA
     var office_address: String = Constants.STR_NA
@@ -39,6 +38,7 @@ open class User() {
     var status_message = ""
     var online = false
     var updated_at: Long = 0L 
-	var created_at: Long = 0L 
+	var created_at: Long = 0L
 
+    val display_name: String get() = "$first_name $last_name"
 }

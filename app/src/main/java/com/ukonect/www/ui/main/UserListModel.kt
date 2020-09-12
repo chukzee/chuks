@@ -127,8 +127,6 @@ class UserListModel : AbstractListViewModel<User>(), ILocationUpdate, IUserProfi
                 }
             })
 
-            it.value = users
-
             //return users below
             users
 
@@ -136,6 +134,8 @@ class UserListModel : AbstractListViewModel<User>(), ILocationUpdate, IUserProfi
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { users ->
+
+                    it.value = users
                     //subscribe
                     wampService?.getSubscriber()?.subscribeChat(users)
                     wampService?.getSubscriber()?.subscribePost(users)
